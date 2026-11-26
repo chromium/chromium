@@ -33,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -91,7 +90,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
@@ -564,7 +562,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   shown_suggestion_types_ = base::ToVector(suggestions, &Suggestion::type);
   const FillingProduct new_product = GetMainFillingProduct();
 
-  if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source)) {
+  if (suggestions.empty()) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete. On Android
@@ -601,9 +599,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   const bool are_caret_bounds_valid =
       caret_bounds_ != gfx::Rect() &&
       trigger_field->bounds().Contains(gfx::RectF(caret_bounds_));
-  const bool is_at_memory = IsAtMemoryTriggerSource(trigger_source_);
   const bool should_use_caret_bounds =
-      (show_proactive_nudge_at_caret || is_at_memory) && are_caret_bounds_valid;
+      show_proactive_nudge_at_caret && are_caret_bounds_valid;
 
   const PopupAnchorType default_anchor_type =
 #if BUILDFLAG(IS_ANDROID)
@@ -857,10 +854,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           effective_field_id, suggestion.main_text.value,
           FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
       break;
-    case SuggestionType::kAtMemorySearchResult:
-      NOTIMPLEMENTED()
-          << "Previewing for AtMemory is not implemented: b/540805115";
-      break;
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateTrustedVaultError:
@@ -874,6 +867,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryShortcutSettingsPromo:
     case SuggestionType::kAtMemorySourceAttribution:
     case SuggestionType::kAutocompleteAtMemoryButton:
@@ -1201,21 +1195,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           /*require_user_confirmation=*/false, /*blocked_fields=*/{});
       break;
     }
-    case SuggestionType::kAtMemoryInactivityNudge:
-    case SuggestionType::kAutocompleteAtMemoryButton:
-      // TODO(crbug.com/527392582): kAtMemoryContextMenu is the wrong source.
-      manager_->driver().RendererShouldTriggerSuggestions(
-          effective_field_id,
-          AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-      break;
-    case SuggestionType::kAtMemoryOpenGemini:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      manager_->client().OpenGeminiInSidebar(
-          suggestion.GetPayload<Suggestion::OpenGeminiPayload>().prompt);
-      break;
-#else
-      NOTREACHED();
-#endif
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateTrustedVaultError:
@@ -1241,11 +1220,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchAffordance:
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryShortcutSettingsPromo:
     case SuggestionType::kAtMemorySourceAttribution:
+    case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:

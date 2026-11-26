@@ -27,7 +27,6 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -312,7 +311,6 @@ class MockAutofillClient : public TestAutofillClient {
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
   MOCK_METHOD(void, OpenGmailForOtps, (), (override));
-  MOCK_METHOD(void, OpenGeminiInSidebar, (const std::u16string&), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(void,
               TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey,
@@ -657,25 +655,6 @@ class AutofillExternalDelegateTest : public testing::Test,
     external_delegate().OnSuggestionsReturned(field, input_suggestions);
   }
 
-  FormData CreateTestFormWithBounds(
-      const gfx::RectF& bounds = gfx::RectF(0, 0, 100, 20)) {
-    test::FieldDescription field_desc = {
-        .role = NAME_FIRST,
-        .autocomplete_attribute = "given-name",
-    };
-
-    test::FormDescription form_desc;
-    form_desc.fields.push_back(field_desc);
-
-    FormData form = test::GetFormData(form_desc);
-    std::vector<FormFieldData> fields = form.ExtractFields();
-    if (!fields.empty()) {
-      fields[0].set_bounds(bounds);
-      form.set_fields(std::move(fields));
-    }
-    return form;
-  }
-
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
 
  private:
@@ -791,154 +770,6 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kCreditCard);
 }
-
-// Test that accepting the Autocomplete AtMemory button triggers AtMemory
-// dialog.
-TEST_F(AutofillExternalDelegateTest, SelectAutocompleteAtMemoryButton) {
-  IssueOnQuery();
-  EXPECT_CALL(autofill_driver(),
-              RendererShouldTriggerSuggestions(
-                  queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
-  external_delegate().DidAcceptSuggestion(
-      Suggestion(SuggestionType::kAutocompleteAtMemoryButton),
-      SuggestionPosition{.multi_index = {0}});
-}
-
-TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-
-  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
-
-  // Return empty suggestions.
-  OnSuggestionsReturned(queried_field(), {});
-}
-
-// Tests that accessibility annotator trigger source uses the caret anchor
-// type when valid caret bounds are available.
-TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
-  gfx::RectF field_bounds(0, 0, 100, 20);
-  gfx::Rect caret_bounds(10, 10, 1, 1);
-  FormData form = CreateTestFormWithBounds(field_bounds);
-
-  IssueOnQuery(form, caret_bounds,
-               AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillSuggestions(
-                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
-                              gfx::RectF(caret_bounds)),
-                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
-                              PopupAnchorType::kCaret)),
-                  _));
-
-  OnSuggestionsReturned(
-      queried_field(),
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
-}
-
-// Tests that AtMemory trigger source uses the default anchor type when caret
-// bounds are empty.
-TEST_F(AutofillExternalDelegateTest, AtMemoryUsesDefaultAnchorWhenCaretEmpty) {
-  gfx::RectF field_bounds(0, 0, 100, 20);
-  gfx::Rect empty_caret_bounds;
-  FormData form = CreateTestFormWithBounds(field_bounds);
-
-  IssueOnQuery(form, empty_caret_bounds,
-               AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-
-  const PopupAnchorType expected_anchor_type =
-#if BUILDFLAG(IS_ANDROID)
-      PopupAnchorType::kKeyboardAccessory;
-#else
-      PopupAnchorType::kField;
-#endif
-
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillSuggestions(
-                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
-                              field_bounds),
-                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
-                              expected_anchor_type)),
-                  _));
-
-  OnSuggestionsReturned(
-      queried_field(),
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
-}
-
-// Tests that accessibility annotator context menu trigger source uses the
-// caret anchor type.
-TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
-  gfx::RectF field_bounds(0, 0, 100, 20);
-  gfx::Rect caret_bounds(10, 10, 1, 1);
-  FormData form = CreateTestFormWithBounds(field_bounds);
-
-  IssueOnQuery(form, caret_bounds,
-               AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillSuggestions(
-                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
-                              gfx::RectF(caret_bounds)),
-                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
-                              PopupAnchorType::kCaret)),
-                  _));
-
-  OnSuggestionsReturned(
-      queried_field(),
-      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
-}
-
-class AutofillExternalDelegateAutoSuggestInactivityTest
-    : public AutofillExternalDelegateTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AutofillExternalDelegateAutoSuggestInactivityTest() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillNewSuggestionGeneration, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillExternalDelegateAutoSuggestInactivityTest,
-                         testing::Bool());
-
-// Test that selecting the AutoSuggest inactivity triggers the AtMemory dialog.
-TEST_P(AutofillExternalDelegateAutoSuggestInactivityTest,
-       SelectAutoSuggestInactivity) {
-  IssueOnQuery();
-  EXPECT_CALL(autofill_driver(),
-              RendererShouldTriggerSuggestions(
-                  queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
-  external_delegate().DidAcceptSuggestion(
-      Suggestion(SuggestionType::kAtMemoryInactivityNudge),
-      SuggestionPosition{.multi_index = {0}});
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Tests that when the "Open Gemini" suggestion is accepted, it triggers
-// opening Gemini in the sidebar.
-TEST_F(AutofillExternalDelegateTest, AtMemoryAcceptOpenGeminiSuggestion) {
-  IssueOnQuery();
-
-  Suggestion suggestion(SuggestionType::kAtMemoryOpenGemini);
-  suggestion.payload = Suggestion::OpenGeminiPayload(u"test prompt");
-
-  EXPECT_CALL(autofill_client(),
-              OpenGeminiInSidebar(std::u16string(u"test prompt")));
-  EXPECT_CALL(autofill_client(),
-              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
-                              Eq(std::nullopt)));
-
-  external_delegate().DidAcceptSuggestion(
-      suggestion, SuggestionPosition{.multi_index = {0}});
-}
-#endif
 
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
