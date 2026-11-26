@@ -696,6 +696,42 @@ TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_LinkTagReturned) {
 }
 
 TEST_F(ReadAnythingNodeUtilsTest,
+       GetHtmlTagForPdf_ImageRoleReturnsImgWhenHeuristicsEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  ui::AXNodeData data;
+  data.id = 2;
+  data.role = ax::mojom::Role::kImage;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, ""), "img");
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "img");
+  EXPECT_EQ(a11y::GetHtmlTag(&node, /*is_pdf=*/true, /*is_docs=*/false), "img");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       GetHtmlTagForPdf_ImageRoleUsesDefaultWhenHeuristicsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  ui::AXNodeData data;
+  data.id = 2;
+  data.role = ax::mojom::Role::kImage;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, ""), "span");
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "p");
+  EXPECT_EQ(a11y::GetHtmlTag(&node, /*is_pdf=*/true, /*is_docs=*/false),
+            "span");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
        GetHtmlTagForPdf_ParagraphRoleReturnsParagraphTag) {
   ui::AXNodeData data = test::TextNode(2);
   data.role = ax::mojom::Role::kParagraph;

@@ -153,6 +153,11 @@ std::string GetHtmlTagForPDF(const ui::AXNode* ax_node,
       return "p";
     case ax::mojom::Role::kLink:
       return "a";
+    case ax::mojom::Role::kImage:
+      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+        return "img";
+      }
+      return html_tag.empty() ? "span" : html_tag;
     case ax::mojom::Role::kStaticText:
       return "";
     case ax::mojom::Role::kHeading:

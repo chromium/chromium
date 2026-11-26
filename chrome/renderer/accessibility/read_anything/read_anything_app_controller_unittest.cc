@@ -1546,6 +1546,55 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
   EXPECT_EQ("h2", controller().GetHtmlTag(3));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDFImage_HeuristicsEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData image_node;
+  image_node.id = 2;
+  image_node.role = ax::mojom::Role::kImage;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {image_node.id};
+  root.role = ax::mojom::Role::kPdfRoot;
+  update.root_id = root.id;
+  update.nodes = {std::move(root), std::move(image_node)};
+  AccessibilityEventReceived({std::move(update)});
+
+  OnAXTreeDistilled(tree_id_, {});
+  EXPECT_EQ("img", controller().GetHtmlTag(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDFImage_HeuristicsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData image_node;
+  image_node.id = 2;
+  image_node.role = ax::mojom::Role::kImage;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {image_node.id};
+  root.role = ax::mojom::Role::kPdfRoot;
+  update.root_id = root.id;
+  update.nodes = {std::move(root), std::move(image_node)};
+  AccessibilityEventReceived({std::move(update)});
+
+  OnAXTreeDistilled(tree_id_, {});
+  EXPECT_EQ("span", controller().GetHtmlTag(2));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
                                        /*is_pdf=*/true);
