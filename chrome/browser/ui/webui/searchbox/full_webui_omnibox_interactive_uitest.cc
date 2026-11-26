@@ -12196,6 +12196,50 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                                    "el => el.aimButtonVisible_", false)));
 }
 
+// Focusing the omnibox on a web page shows zero-prefix suggestions and the AIM
+// button. Clearing the input keeps the button visible while user input is in
+// progress, and so does the first Escape, which only closes the dropdown. The
+// second Escape restores the selected page URL and ends user input without
+// changing the (already empty) autocomplete result. With no user input and no
+// suggestions, the AIM button should then be hidden.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonHiddenAfterClearingAndReverting) {
+  const std::string display_url =
+      GetTestPageUrl().spec().substr(strlen("https://"));
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GetTestPageUrl()),
+      WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      // Zero-prefix suggestions are shown, so the AIM button is visible.
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => el.dropdownIsVisible")),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => el.aimButtonVisible_")),
+      // Backspace deletes the selected URL. User input is now in progress, so
+      // the AIM button stays visible.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_BACK, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("")), CheckUserInputInProgress(true),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => el.aimButtonVisible_")),
+      // The first Escape closes the dropdown but keeps the (empty) user input,
+      // so the AIM button stays visible.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => !el.dropdownIsVisible")),
+      CheckUserInputInProgress(true),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      // The second Escape restores the page URL and ends user input. With no
+      // user input and no suggestions, the AIM button should be hidden.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue(display_url)),
+      CheckUserInputInProgress(false),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => !el.aimButtonVisible_")),
+      CheckShouldShowAimButton(false));
+}
+
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {
  public:

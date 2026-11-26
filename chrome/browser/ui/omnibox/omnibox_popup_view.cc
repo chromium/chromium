@@ -41,6 +41,8 @@ bool OmniboxPopupView::IsReverting() const {
 
 void OmniboxPopupView::SetIsReverting(bool reverting) {}
 
+void OmniboxPopupView::UpdateAimButtonVisibility() {}
+
 bool OmniboxPopupView::RequestWebUIContextMenu(
     const gfx::Point& screen_point,
     ui::mojom::MenuSourceType source_type) {

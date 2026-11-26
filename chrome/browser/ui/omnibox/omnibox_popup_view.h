@@ -141,6 +141,10 @@ class OmniboxPopupView {
   virtual bool IsReverting() const;
   virtual void SetIsReverting(bool reverting);
 
+  // Updates the AI Mode button shown by popups that host it. Called whenever
+  // the location bar refreshes its AI Mode page action.
+  virtual void UpdateAimButtonVisibility();
+
   // Called when a browser fullscreen transition starts, in either direction.
   virtual void OnFullscreenTransitionStarting() {}
 

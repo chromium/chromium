@@ -1519,6 +1519,10 @@ void WebUILocationBar::RefreshAiModePageAction() {
   if (aim_page_action_controller) {
     aim_page_action_controller->UpdatePageAction();
   }
+  // Keep the popup's AI Mode button in sync with the page action.
+  if (omnibox_popup_view_) {
+    omnibox_popup_view_->UpdateAimButtonVisibility();
+  }
 
   // TODO(crbug.com/491707187): kShowRhsAimHint support, if relevant.
 }

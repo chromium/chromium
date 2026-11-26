@@ -655,6 +655,13 @@ void OmniboxPopupViewFullWebUI::SetIsReverting(bool reverting) {
   is_reverting_ = reverting;
 }
 
+void OmniboxPopupViewFullWebUI::UpdateAimButtonVisibility() {
+  if (auto* webui_content = popup_host()->GetWebUIContent()) {
+    static_cast<OmniboxFullPopupWebUIContent*>(webui_content)
+        ->UpdateAimButtonVisibility();
+  }
+}
+
 // TODO(crbug.com/582852137): Handle ChromeOS in
 // `OnFullscreenTransitionStarting` too, instead of in
 // `BrowserView::PrepareFullscreen()` (crrev.com/c/8717429).

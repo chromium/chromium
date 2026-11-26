@@ -1628,6 +1628,10 @@ void LocationBarView::RefreshAiModePageAction() {
   if (aim_page_action_controller) {
     aim_page_action_controller->UpdatePageAction();
   }
+  // Keep the popup's AI Mode button in sync with the page action.
+  if (omnibox_popup_view_) {
+    omnibox_popup_view_->UpdateAimButtonVisibility();
+  }
 
   if (omnibox::kShowRhsAimHint.Get()) {
     if (omnibox_controller_->popup_state_manager()->popup_state() ==
