@@ -148,3 +148,56 @@ multi_builder_test(async (t, builder, otherBuilder) => {
   assert_throws_js(
       TypeError, () => builder.scatterElements(input, indices, updates));
 }, '[scatterElements] Throw if updates is from another builder');
+
+validateOperandRankOutOfRange('scatterElements', 'input', (builder, input) => {
+  const rank = input.shape.length;
+  const indices = builder.input(
+      'indices', {dataType: 'int32', shape: Array(rank).fill(kExampleDimSize)});
+  const updates = builder.input(
+      'updates',
+      {dataType: input.dataType, shape: Array(rank).fill(kExampleDimSize)});
+  return builder.scatterElements(input, indices, updates);
+});
+
+validateOperandRankOutOfRange(
+    'scatterElements', 'indices', (builder, indices) => {
+      const rank = indices.shape.length;
+      const input = builder.input(
+          'input',
+          {dataType: 'float32', shape: Array(rank).fill(kExampleDimSize)});
+      const updates = builder.input(
+          'updates',
+          {dataType: input.dataType, shape: Array(rank).fill(kExampleDimSize)});
+      return builder.scatterElements(input, indices, updates);
+    });
+
+// scatterElements requires indices.rank == updates.rank == input.rank, so
+// only the diagonal of (input rank, indices rank) is a valid combination.
+// Iterate the overlap of both rank ranges directly, using uniform
+// [kExampleDimSize] dims so all three operands' shapes match position-wise.
+promise_test(async t => {
+  const opLimits = context.opSupportLimits().scatterElements;
+  if (!opLimits)
+    return;
+  const {min: inputMin, max: inputMax} = opLimits.input.rankRange;
+  const {min: indicesMin, max: indicesMax} = opLimits.indices.rankRange;
+  const rankMin = Math.max(inputMin, indicesMin);
+  const rankMax = Math.min(inputMax, indicesMax);
+  const inputDataTypeInfo = pickSupportedDataTypeInfo(opLimits.input);
+  const indicesDataTypeInfo = pickSupportedDataTypeInfo(opLimits.indices);
+  if (!inputDataTypeInfo || !indicesDataTypeInfo)
+    return;
+  for (let rank = rankMin; rank <= rankMax; rank++) {
+    const builder = new MLGraphBuilder(context);
+    const shape = Array(rank).fill(kExampleDimSize);
+    const input = buildInputOperand(builder, 'input', inputDataTypeInfo, shape);
+    const indices =
+        buildInputOperand(builder, 'indices', indicesDataTypeInfo, shape);
+    const updates =
+        buildInputOperand(builder, 'updates', inputDataTypeInfo, shape);
+    const output = builder.scatterElements(input, indices, updates);
+    assert_true(output instanceof MLOperand,
+                `(input rank ${rank}, indices rank ${rank}, updates rank ${
+                    rank}) should be accepted`);
+  }
+}, '[scatterElements] accept every (input rank, indices rank, updates rank) allowed by opSupportLimits');
