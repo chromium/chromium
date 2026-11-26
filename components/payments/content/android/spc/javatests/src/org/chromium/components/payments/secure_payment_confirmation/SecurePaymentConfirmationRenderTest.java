@@ -15,9 +15,7 @@ import static java.util.Collections.emptyList;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 
-import androidx.annotation.NonNull;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -26,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -41,13 +38,8 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
-import org.chromium.components.payments.SPCTransactionMode;
-import org.chromium.payments.mojom.PaymentCurrencyAmount;
-import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
-import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -58,7 +50,8 @@ import java.util.Objects;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 // Covers the legacy bottom sheet. With Adaptive UI, desktop shows SPC in a dialog.
-// TODO(crbug.com/581058945): Cover the Adaptive UI dialog in its own test.
+// SecurePaymentConfirmationAdaptiveUiRenderTest renders the Adaptive UI sheet and dialog, and
+// SecurePaymentConfirmationDesktopDialogTest tests the desktop dialog.
 @DisableFeatures("AndroidAdaptiveUiTransitions")
 public class SecurePaymentConfirmationRenderTest {
     @ParameterAnnotations.ClassParameter
@@ -269,14 +262,8 @@ public class SecurePaymentConfirmationRenderTest {
                 "primary_labels_only");
     }
 
-    @NonNull
     private SecurePaymentConfirmationController createController(
             boolean showOptOut, boolean primaryLabelsOnly, int numberOfPaymentEntitiesLogos) {
-        PaymentItem paymentItem = new PaymentItem();
-        paymentItem.amount = new PaymentCurrencyAmount();
-        paymentItem.amount.currency = "CAD";
-        paymentItem.amount.value = "1.50";
-
         int[] greenBitmapArray = new int[100];
         Arrays.fill(greenBitmapArray, Color.GREEN);
         int[] blueBitmapArray = new int[100];
@@ -315,32 +302,12 @@ public class SecurePaymentConfirmationRenderTest {
                     default -> emptyList();
                 };
 
-        final int paymentItemIconWidth = 40;
-        final int paymentItemIconHeight = 20;
-        int[] redBitmapArray = new int[paymentItemIconWidth * paymentItemIconHeight];
-        Arrays.fill(redBitmapArray, Color.RED);
-
-        return new SecurePaymentConfirmationController(
+        return SecurePaymentConfirmationTestUtils.createController(
                 Objects.requireNonNull(mActivityTestRule.getActivity().getWindowAndroid()),
                 paymentEntityLogos,
-                /* payeeName= */ "The Store",
-                /* payeeOrigin= */ primaryLabelsOnly
-                        ? null
-                        : Origin.create(new GURL("https://test.store")),
-                /* paymentInstrumentLabelPrimary= */ "My Credit Card",
-                /* paymentInstrumentLabelSecondary= */ primaryLabelsOnly ? null : "•••• 1234",
-                paymentItem,
-                new BitmapDrawable(
-                        ContextUtils.getApplicationContext().getResources(),
-                        Bitmap.createBitmap(
-                                redBitmapArray,
-                                /* width= */ paymentItemIconWidth,
-                                /* height= */ paymentItemIconHeight,
-                                Bitmap.Config.ARGB_8888)),
-                /* relyingPartyId= */ "test.store",
+                primaryLabelsOnly,
                 showOptOut,
                 mInformOnly,
-                /* responseCallback= */ result -> {},
-                SPCTransactionMode.NONE);
+                /* responseCallback= */ result -> {});
     }
 }

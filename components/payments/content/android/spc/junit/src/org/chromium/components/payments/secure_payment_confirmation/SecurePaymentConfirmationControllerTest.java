@@ -1273,10 +1273,13 @@ public class SecurePaymentConfirmationControllerTest {
 
     private void createAdaptiveController(
             boolean showOptOut, boolean informOnly, @SPCTransactionMode int transactionMode) {
+        // ChromePaymentRequestService closes SPC on every response except ACCEPT.
         Callback<Integer> reentrantResponseCallback =
                 status -> {
                     mAdaptiveResponses.add(status);
-                    mController.hide();
+                    if (status != SpcResponseStatus.ACCEPT) {
+                        mController.hide();
+                    }
                 };
         mController =
                 new SecurePaymentConfirmationController(

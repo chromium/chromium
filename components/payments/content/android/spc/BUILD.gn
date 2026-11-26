@@ -88,29 +88,48 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationRenderTest.java" ]
+  sources = [
+    "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAdaptiveUiRenderTest.java",
+    "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationDesktopDialogTest.java",
+    "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationRenderTest.java",
+    "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationTestUtils.java",
+  ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:callback_java",
+    "//base/test:public_transit_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
+    "//components/browser_ui/adaptive_ui/android:java",
+    "//components/browser_ui/adaptive_ui/android:java_resources",
+    "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/modaldialog/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/payments/content/android:java_resources",
     "//components/payments/content/android:minimal_java",
     "//components/payments/mojom:mojom_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/google-truth:google_truth_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
     "//url:url_java",
   ]
 
