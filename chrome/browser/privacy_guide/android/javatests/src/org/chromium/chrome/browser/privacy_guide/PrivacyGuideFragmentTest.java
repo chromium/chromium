@@ -55,11 +55,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentType;
@@ -1202,9 +1200,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    // TODO(crbug.com/574950567): Remove once the bottom sheet opens after recreation when
-    // settings is shown in a tab.
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testBottomSheetControllerOnRecreate() {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
