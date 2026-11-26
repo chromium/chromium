@@ -14500,25 +14500,11 @@ be describing additional metrics about the same event.
       the process has responsibilities outside the scope of the relevant tab. If
       this is non-zero, TabPMF will be undefined.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="SubFrameProcessPMF.Included">
     <summary>
       Number of render processes that contributed to SubFrameProcessPMF.Total.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="SubFrameProcessPMF.Total">
     <summary>
