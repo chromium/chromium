@@ -153,7 +153,7 @@ interface OnDeviceAddressChangedEvent : ExtensionEvent {
   static boolean hasListener(OnDeviceAddressChangedListener listener);
 };
 
-// Use the <code>chrome.bluetoothPrivate</code> API to control the Bluetooth
+// Use the <code>browser.bluetoothPrivate</code> API to control the Bluetooth
 // adapter state and handle device pairing.
 // NOTE: This IDL is dependent on bluetooth.idl.
 [implemented_in="extensions/browser/api/bluetooth/bluetooth_private_api.h"]

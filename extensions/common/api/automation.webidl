@@ -1053,7 +1053,7 @@ callback AutomationNodeCreatePositionCallback = AutomationPosition?(
   RoleType role;
 
   // The $(ref:automation.StateType)s describing this node.
-  // <jsexterns>@type {Object<chrome.automation.StateType, boolean>}
+  // <jsexterns>@type {Object<browser.automation.StateType, boolean>}
   // </jsexterns>
   object state;
 
@@ -1683,7 +1683,7 @@ callback AutomationNodeCreatePositionCallback = AutomationPosition?(
   required AutomationNodeCreatePositionCallback createPosition;
 };
 
-// The <code>chrome.automation</code> API allows developers to access the
+// The <code>browser.automation</code> API allows developers to access the
 // automation (accessibility) tree for the browser. The tree resembles the DOM
 // tree, but only exposes the <em>semantic</em> structure of a page. It can be
 // used to programmatically interact with a page by examining names, roles, and

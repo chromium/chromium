@@ -216,7 +216,7 @@ interface OnAllAutomationEventListenersRemovedEvent : ExtensionEvent {
       OnAllAutomationEventListenersRemovedListener listener);
 };
 
-// This is the implementation layer of the chrome.automation API, and is
+// This is the implementation layer of the browser.automation API, and is
 // essentially a translation of the internal accessibility tree update system
 // into an extension API.
 interface AutomationInternal {

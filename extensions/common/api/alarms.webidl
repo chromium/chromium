@@ -58,7 +58,7 @@ interface OnAlarmEvent : ExtensionEvent {
   static boolean hasListener(OnAlarmListener listener);
 };
 
-// Use the <code>chrome.alarms</code> API to schedule code to run
+// Use the <code>browser.alarms</code> API to schedule code to run
 // periodically or at a specified time in the future.
 interface Alarms {
   // Creates an alarm.  Near the time(s) specified by <var>alarmInfo</var>,
