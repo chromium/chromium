@@ -242,16 +242,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Force Shopper Experience</string>
-			<key>Key</key>
-			<string>ForceExperienceForShopper</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Simulate Post Phone Restore</string>
 			<key>Key</key>
 			<string>SimulatePostDeviceRestore</string>

@@ -35,7 +35,6 @@ source_set("system_flags") {
     "//build:branding_buildflags",
     "//components/autofill/core/common",
     "//components/password_manager/core/common:features",
-    "//components/segmentation_platform/public",
     "//components/variations",
     "//components/version_info:channel",
     "//ios/chrome/browser/flags:system_flags",

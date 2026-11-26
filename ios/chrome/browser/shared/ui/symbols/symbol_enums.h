@@ -156,7 +156,6 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolCar,
   SymbolCart,
   SymbolChartBarXAxis,
-  SymbolChartLineDowntrendXYAxis,
   SymbolCheckmark,
   SymbolCheckmarkCircle,
   SymbolCheckmarkCircleFill,

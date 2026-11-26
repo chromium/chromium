@@ -130,7 +130,6 @@ domains:
       - ios/chrome/browser/net/**/*_app_interface.h
       - ios/chrome/browser/optimization_guide/**/*_app_interface.h
       - ios/chrome/browser/partial_translate/**/*_app_interface.h
-      - ios/chrome/browser/price_insights/**/*_app_interface.h
       - ios/chrome/browser/safe_browsing/**/*_app_interface.h
       - ios/chrome/browser/ssl/**/*_app_interface.h
       - ios/chrome/browser/translate/**/*_app_interface.h

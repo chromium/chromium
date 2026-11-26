@@ -277,8 +277,6 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"cart", SymbolType::kSystem};
     case SymbolChartBarXAxis:
       return {@"chart.bar.xaxis", SymbolType::kSystem};
-    case SymbolChartLineDowntrendXYAxis:
-      return {@"chart.line.downtrend.xyaxis", SymbolType::kSystem};
     case SymbolCheckmark:
       return {@"checkmark", SymbolType::kSystem};
     case SymbolCheckmarkCircle:

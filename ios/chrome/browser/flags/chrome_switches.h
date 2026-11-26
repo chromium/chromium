@@ -39,10 +39,6 @@ extern const char kEnableFullscreenSigninPromo[];
 // e.g. "Android."
 extern const char kForceDeviceSwitcherExperienceCommandLineFlag[];
 
-// Enables shopping feature user experience for the segment specified in the
-// argument, e.g. "ShoppingUser" or "Other".
-extern const char kForceShopperExperience[];
-
 // A string used to override the default user agent with a custom one.
 extern const char kUserAgent[];
 

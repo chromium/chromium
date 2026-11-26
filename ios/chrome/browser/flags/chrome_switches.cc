@@ -24,8 +24,6 @@ const char kEnableFullscreenSigninPromo[] = "enable-fullscreen-signin-promo";
 const char kForceDeviceSwitcherExperienceCommandLineFlag[] =
     "force-device-switcher-experience";
 
-const char kForceShopperExperience[] = "force-shopper-experience";
-
 const char kUserAgent[] = "user-agent";
 
 const char kForceFeedSigninPromo[] = "force-feed-signin-promo";

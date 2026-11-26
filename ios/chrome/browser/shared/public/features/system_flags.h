@@ -127,12 +127,6 @@ std::string GetSegmentForForcedDeviceSwitcherExperience();
 // segment is configured.
 std::optional<bool> IsForcedDeviceSwitcherAndroidPhone();
 
-// Returns the selected shopper segment the user wants to simulate as a string.
-// The string should either be nil, "ShoppingUser", or "Other". The value could
-// be set both from Experimental Settings and command line switches, but the
-// former takes precedence.
-std::string GetSegmentForForcedShopperExperience();
-
 // Whether a phone backup/restore state should be simulated due to experimental
 // settings. Uses `tests_hook::SimulatePostDeviceRestore()` to check whether
 // this feature should be enabled for EG tests.

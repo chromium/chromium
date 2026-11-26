@@ -18,7 +18,6 @@
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_switches.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/segmentation_platform/public/constants.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -52,8 +51,6 @@ NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
 // transitive `//ios/web` dependencies are disallowed.
 constexpr std::string_view kForcedDeviceSwitcherAndroidPhoneSegment =
     "AndroidPhone";
-NSString* const kForceExperienceForShopperExperimentalSettings =
-    @"ForceExperienceForShopper";
 NSString* const kSafetyCheckUpdateChromeStateOverride =
     @"SafetyCheckUpdateChromeStateOverride";
 NSString* const kSafetyCheckPasswordStateOverride =
@@ -302,24 +299,6 @@ std::optional<bool> IsForcedDeviceSwitcherAndroidPhone() {
     return std::nullopt;
   }
   return forced_segment == kForcedDeviceSwitcherAndroidPhoneSegment;
-}
-
-std::string GetSegmentForForcedShopperExperience() {
-  // Checks iOS Experimental Settings.
-  std::string segment =
-      [[NSUserDefaults standardUserDefaults]
-          boolForKey:kForceExperienceForShopperExperimentalSettings]
-          ? segmentation_platform::kShoppingUserUmaName
-          : segmentation_platform::kLegacyNegativeLabel;
-  if (segment.empty()) {
-    // Checks command line flag.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kForceShopperExperience)) {
-      segment =
-          command_line->GetSwitchValueNative(switches::kForceShopperExperience);
-    }
-  }
-  return segment;
 }
 
 bool SimulatePostDeviceRestore() {
