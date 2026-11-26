@@ -30,8 +30,6 @@ public class OmniboxMetrics {
      */
     private static final int MAX_SUGGEST_TILE_TYPE_POSITION = 15;
 
-    public static final int MAX_AUTOCOMPLETE_POSITION = 30;
-
     /**
      * Duration between the request for suggestions and the time the first (synchronous) reply is
      * converted to the UI model.
@@ -380,26 +378,6 @@ public class OmniboxMetrics {
                 "Omnibox.SuggestTiles.SelectedTileIndex", position, MAX_SUGGEST_TILE_TYPE_POSITION);
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.SuggestTiles.SelectedTileType", tileType, SuggestTileType.COUNT);
-    }
-
-    /**
-     * Records relevant histogram(s) when a Journeys action is clicked in the omnibox. Not emitted
-     * if the given position is <0.
-     */
-    public static void recordResumeJourneyClick(int position) {
-        if (position < 0) return;
-        RecordHistogram.recordExactLinearHistogram(
-                "Omnibox.SuggestionUsed.ResumeJourney", position, MAX_AUTOCOMPLETE_POSITION);
-    }
-
-    /**
-     * Records relevant histogram(s) when a Journeys action is shown in the omnibox. Not emitted if
-     * the given position is <0.
-     */
-    public static void recordResumeJourneyShown(int position) {
-        if (position < 0) return;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.ResumeJourneyShown", position, MAX_AUTOCOMPLETE_POSITION);
     }
 
     /**

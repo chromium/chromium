@@ -752,10 +752,6 @@ std::string SearchboxHandler::VectorIconToResourceName(
                                : omnibox::kJourneysChromeRefreshOldIcon.name)) {
     resource_name = kJourneysIconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
-                               ? omnibox::kConversionPathIcon.name
-                               : omnibox::kJourneysOldIcon.name)) {
-    resource_name = kJourneysIconResourceName;
-  } else if (icon.name == (features::IsRoundedIconsEnabled()
                                ? omnibox::kNotesSparkIcon.name
                                : omnibox::kNotesSparkOldIcon.name)) {
     resource_name = kNotesSparkIconResourceName;

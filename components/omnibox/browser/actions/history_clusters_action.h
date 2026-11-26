@@ -8,15 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 
 struct AutocompleteMatch;
 class GURL;
-
-namespace gfx {
-struct VectorIcon;
-}
 
 namespace history_clusters {
 
@@ -32,9 +27,9 @@ int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
                  std::vector<AutocompleteMatch>::const_iterator matches_end,
                  TopRelevanceFilter filter);
 
-// Return if the history cluster action or suggestion should be excluded due to
-// matches indicating a nav-intent input. Should only be called if nav-intent
-// filtering is enabled to avoid extra computations.
+// Return if the history cluster suggestion should be excluded due to matches
+// indicating a nav-intent input. Should only be called if nav-intent filtering
+// is enabled to avoid extra computations.
 bool IsNavigationIntent(int top_search_relevance,
                         int top_navigation_relevance,
                         int navigation_intent_score_threshold);
@@ -42,8 +37,8 @@ bool IsNavigationIntent(int top_search_relevance,
 // Gets the Journeys WebUI URL for `query`, i.e. chrome://history/journeys?q=%s.
 GURL GetFullJourneysUrlForQuery(const std::string& query);
 
-// Made public for testing.
-// TODO(crbug.com/356236364): Investigate and remove.
+// Takeover action attached to HistoryClusterProvider and ShortcutsProvider
+// matches to open Journeys and record metrics.
 class HistoryClustersAction : public OmniboxAction {
  public:
   explicit HistoryClustersAction(const std::string& query);
@@ -51,9 +46,6 @@ class HistoryClustersAction : public OmniboxAction {
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
   OmniboxActionId ActionId() const override;
-#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-  const gfx::VectorIcon& GetVectorIcon() const override;
-#endif
 
  private:
   ~HistoryClustersAction() override;

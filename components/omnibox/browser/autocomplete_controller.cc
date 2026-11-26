@@ -110,7 +110,6 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"

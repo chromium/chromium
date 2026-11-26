@@ -24,9 +24,8 @@ BASE_DECLARE_FEATURE(kJourneysImages);
 // Enables images to cover the full container for Journeys in UI.
 extern const base::FeatureParam<bool> kJourneysImagesCover;
 
-// Enables the `HistoryClusterProvider` to surface Journeys as a suggestion row
-// instead of an action chip. Journeys must also be enabled for this to take
-// effect.
+// Enables the `HistoryClusterProvider` to surface Journeys as a suggestion row.
+// Journeys must also be enabled for this to take effect.
 BASE_DECLARE_FEATURE(kOmniboxHistoryClusterProvider);
 
 // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

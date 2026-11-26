@@ -40,7 +40,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
@@ -434,7 +433,6 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, PedalVectorIcons) {
 // in the NTP Realbox.
 IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, ActionVectorIcons) {
   std::vector<scoped_refptr<OmniboxAction>> actions = {
-      base::MakeRefCounted<history_clusters::HistoryClustersAction>("test"),
       base::MakeRefCounted<TabSwitchAction>(GURL("test")),
   };
   for (auto const& action : actions) {

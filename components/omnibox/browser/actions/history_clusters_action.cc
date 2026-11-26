@@ -6,28 +6,16 @@
 
 #include <algorithm>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/escape.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/url_constants.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
-#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
-
-#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-#include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#endif
 
 namespace history_clusters {
 
@@ -60,13 +48,8 @@ GURL GetFullJourneysUrlForQuery(const std::string& query) {
 }
 
 HistoryClustersAction::HistoryClustersAction(const std::string& query)
-    : OmniboxAction(
-          OmniboxAction::LabelStrings(
-              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-              IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-              IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
-          GetFullJourneysUrlForQuery(query)),
+    : OmniboxAction(OmniboxAction::LabelStrings(),
+                    GetFullJourneysUrlForQuery(query)),
       query_(query) {}
 
 void HistoryClustersAction::RecordActionShown(size_t position,
@@ -94,13 +77,6 @@ void HistoryClustersAction::Execute(ExecutionContext& context) const {
 OmniboxActionId HistoryClustersAction::ActionId() const {
   return OmniboxActionId::HISTORY_CLUSTERS;
 }
-
-#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
-  return features::IsRoundedIconsEnabled() ? omnibox::kConversionPathIcon
-                                           : omnibox::kJourneysOldIcon;
-}
-#endif
 
 HistoryClustersAction::~HistoryClustersAction() = default;
 

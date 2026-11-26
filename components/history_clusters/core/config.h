@@ -86,8 +86,7 @@ struct Config {
 
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 
-  // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
-  // instead of an action chip.
+  // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row.
   bool omnibox_history_cluster_provider = false;
 
   // If `omnibox_history_cluster_provider` is enabled, hides its suggestions but
