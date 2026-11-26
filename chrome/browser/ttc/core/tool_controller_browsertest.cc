@@ -197,7 +197,9 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
 
 // `navigate` has been replaced by `open_url` and is no longer dispatched.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, NavigateIsUnsupported) {
-  const GURL start_url = web_contents()->GetLastCommittedURL();
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
 
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
