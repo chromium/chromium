@@ -376,7 +376,7 @@ TEST_F(PasswordProtectionServiceTest,
   base::RunLoop run_loop;
   password_protection_service_->MaybeStartOtpPhishingRequest(
       web_contents_.get(), GURL(kTargetUrl),
-      base::BindLambdaForTesting([&](bool verdict) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](OtpPhishingVerdict) { run_loop.Quit(); }));
   run_loop.Run();
 }
 
@@ -389,7 +389,10 @@ TEST_F(PasswordProtectionServiceTest,
   base::RunLoop run_loop;
   password_protection_service_->MaybeStartOtpPhishingRequest(
       web_contents_.get(), GURL(kTargetUrl),
-      base::BindLambdaForTesting([&](bool verdict) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](OtpPhishingVerdict verdict) {
+        EXPECT_EQ(verdict, OtpPhishingVerdict::kCheckFailed);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -408,8 +411,8 @@ TEST_F(PasswordProtectionServiceTest,
   base::RunLoop run_loop;
   password_protection_service_->MaybeStartOtpPhishingRequest(
       web_contents_.get(), GURL(kTargetUrl),
-      base::BindLambdaForTesting([&](bool verdict) {
-        EXPECT_FALSE(verdict);
+      base::BindLambdaForTesting([&](OtpPhishingVerdict verdict) {
+        EXPECT_EQ(verdict, OtpPhishingVerdict::kNotPhishing);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -430,8 +433,8 @@ TEST_F(PasswordProtectionServiceTest,
   base::RunLoop run_loop;
   password_protection_service_->MaybeStartOtpPhishingRequest(
       web_contents_.get(), GURL(kTargetUrl),
-      base::BindLambdaForTesting([&](bool verdict) {
-        EXPECT_FALSE(verdict);
+      base::BindLambdaForTesting([&](OtpPhishingVerdict verdict) {
+        EXPECT_EQ(verdict, OtpPhishingVerdict::kNotPhishing);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1429,7 +1432,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestAndResponseSuccessful) {
   InitializeAndStartOtpRequest(
       /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
       base::BindLambdaForTesting(
-          [&](bool verdict) { callback_called = true; }));
+          [&](OtpPhishingVerdict) { callback_called = true; }));
   password_protection_service_->WaitForResponse();
   EXPECT_TRUE(callback_called);
 
@@ -1457,25 +1460,62 @@ TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestCallbackIsCalled) {
   InitializeAndStartOtpRequest(
       /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
       base::BindLambdaForTesting(
-          [&](bool verdict) { callback_called = true; }));
+          [&](OtpPhishingVerdict) { callback_called = true; }));
   password_protection_service_->WaitForResponse();
   EXPECT_TRUE(callback_called);
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, OtpRequestAllowlistMatchIsSafe) {
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  base::test::TestFuture<bool> verdict;
+  base::test::TestFuture<OtpPhishingVerdict> verdict;
   InitializeAndStartOtpRequest(
       /*match_allowlist=*/true, /*timeout_in_ms=*/10000, web_contents.get(),
       verdict.GetCallback());
-  EXPECT_FALSE(verdict.Get());
+  EXPECT_EQ(verdict.Get(), OtpPhishingVerdict::kNotPhishing);
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, OtpRequestTimeoutIsCheckFailed) {
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  base::test::TestFuture<OtpPhishingVerdict> verdict;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/0, web_contents.get(),
+      verdict.GetCallback());
+  EXPECT_EQ(verdict.Get(), OtpPhishingVerdict::kCheckFailed);
+}
+
+TEST_P(PasswordProtectionServiceBaseTest,
+       OtpRequestEmptyResponseIsCheckFailed) {
+  test_url_loader_factory_.AddResponse(url_.spec(), std::string());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  base::test::TestFuture<OtpPhishingVerdict> verdict;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
+      verdict.GetCallback());
+  EXPECT_EQ(verdict.Get(), OtpPhishingVerdict::kCheckFailed);
+  // Rules out the request timeout, which also reports `kCheckFailed`.
+  EXPECT_THAT(histograms_.GetAllSamples(
+                  kOneTimePasswordFieldDetectedRequestOutcomeHistogram),
+              ElementsAre(base::Bucket(1 /* SUCCEEDED */, 1)));
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, OtpCallbackRunsAfterRequestFinished) {
+  test_url_loader_factory_.AddResponse(url_.spec(), std::string());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  base::test::TestFuture<bool> request_finished;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
+      base::BindLambdaForTesting([&](OtpPhishingVerdict) {
+        request_finished.SetValue(
+            password_protection_service_->latest_response() != nullptr);
+      }));
+  EXPECT_TRUE(request_finished.Get());
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, OtpRequestCancelDoesNotRunCallback) {
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
   InitializeAndStartOtpRequest(
       /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
-      base::BindOnce([](bool) { ADD_FAILURE(); }));
+      base::BindOnce([](OtpPhishingVerdict) { ADD_FAILURE(); }));
   request_->Cancel(/*timed_out=*/false);
 }
 

@@ -210,6 +210,7 @@ source_set("impl") {
     "//components/profile_metrics",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
+    "//components/safe_browsing/core/browser/password_protection",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/content",
     "//components/strings:components_strings_grit",
