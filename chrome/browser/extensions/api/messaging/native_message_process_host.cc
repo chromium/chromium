@@ -11,11 +11,12 @@
 #include <utility>
 
 #include "base/byte_size.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/task/single_thread_task_runner.h"
@@ -203,13 +204,9 @@ void NativeMessageProcessHost::OnMessage(const std::string& json) {
   static_assert(sizeof(uint32_t) == kMessageHeaderSize,
                 "kMessageHeaderSize is incorrect");
   const uint32_t message_size = base::checked_cast<uint32_t>(json.size());
-  UNSAFE_TODO(memcpy(buffer->data(),
-                     reinterpret_cast<const char*>(&message_size),
-                     kMessageHeaderSize));
-
-  buffer->span()
-      .subspan(kMessageHeaderSize)
-      .copy_from_nonoverlapping(base::as_byte_span(json));
+  auto [header, body] = buffer->span().split_at<kMessageHeaderSize>();
+  header.copy_from(base::U32ToNativeEndian(message_size));
+  body.copy_from_nonoverlapping(base::as_byte_span(json));
 
   // Push new message to the write queue.
   write_queue_.push(buffer);
@@ -317,9 +314,8 @@ void NativeMessageProcessHost::ProcessIncomingData(
       return;
     }
 
-    // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
-    size_t message_size =
-        *UNSAFE_TODO(reinterpret_cast<const uint32_t*>(incoming_data_.data()));
+    size_t message_size = base::U32FromNativeEndian(
+        base::as_byte_span(incoming_data_).first<kMessageHeaderSize>());
 
     if (message_size > kMaximumNativeMessageSize) {
       NM_LOG(ERROR) << "Native Messaging host tried sending a message that is "
