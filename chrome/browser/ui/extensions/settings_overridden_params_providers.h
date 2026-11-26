@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_PARAMS_PROVIDERS_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_PARAMS_PROVIDERS_H_
 
-#include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 
@@ -51,15 +49,10 @@ bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile);
 bool HasUnacknowledgedMatchingDseExtension(Profile* profile);
 
 // Retrieves the params for displaying the dialog indicating that the default
-// search engine has been overridden, if there is a controlling extension, and
-// asynchronously passes them to the supplied callback. Otherwise, the callback
-// is invoked with nullptr. Asynchronous operation allows fetching of
-// extension-related resources such as icons.
-void GetSearchOverriddenParamsThenRun(
-    Profile& profile,
-    base::OnceCallback<
-        void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
-        done_callback);
+// search engine has been overridden, if there is a controlling extension.
+// Otherwise, returns std::nullopt.
+std::optional<ExtensionSettingsOverriddenDialog::Params>
+GetSearchOverriddenParams(Profile& profile);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace settings_overridden_params

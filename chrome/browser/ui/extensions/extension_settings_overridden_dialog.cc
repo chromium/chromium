@@ -14,7 +14,9 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/types/to_address.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"  // IWYU pragma: keep
 #include "chrome/browser/ui/extensions/extensions_overrides/simple_overrides.h"
 #include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -207,6 +210,15 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
   CHECK(extension, base::NotFatalUntil::M162);
 
   return params_.content;
+}
+
+image_fetcher::ImageFetcher*
+ExtensionSettingsOverriddenDialog::GetImageFetcher() {
+  image_fetcher::ImageFetcherService* service =
+      ImageFetcherServiceFactory::GetForKey(profile_->GetProfileKey());
+  return service ? service->GetImageFetcher(
+                       image_fetcher::ImageFetcherConfig::kNetworkOnly)
+                 : nullptr;
 }
 
 void ExtensionSettingsOverriddenDialog::OnDialogWillBeShown() {

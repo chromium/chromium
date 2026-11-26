@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -58,10 +57,6 @@ class DefaultSearchExtensionControlledController {
           dialog_result);
 
  private:
-  void OnParamsLoaded(
-      ConfirmationCallback callback,
-      std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params);
-
   // Tracks the active controller instance currently showing (or preparing to
   // show) the confirmation dialog. Used to enforce that only one dialog is
   // active at any time across all browser windows, suppressing duplicate prompt

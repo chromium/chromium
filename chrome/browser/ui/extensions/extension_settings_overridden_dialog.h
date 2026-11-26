@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -25,6 +26,10 @@ class Extension;
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -104,6 +109,7 @@ class ExtensionSettingsOverriddenDialog
   // SettingsOverriddenDialogController:
   bool ShouldShow() override;
   ShowParams GetShowParams() override;
+  image_fetcher::ImageFetcher* GetImageFetcher() override;
   void OnDialogWillBeShown() override;
   void HandleDialogResult(DialogResult result) override;
 

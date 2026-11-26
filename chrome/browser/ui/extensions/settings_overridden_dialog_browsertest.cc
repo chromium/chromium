@@ -64,6 +64,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
  private:
   bool ShouldShow() override { return true; }
   ShowParams GetShowParams() override { return show_params_; }
+  image_fetcher::ImageFetcher* GetImageFetcher() override { return nullptr; }
   void OnDialogWillBeShown() override {}
   void HandleDialogResult(DialogResult result) override {
     ASSERT_FALSE(dialog_result_out_->has_value());

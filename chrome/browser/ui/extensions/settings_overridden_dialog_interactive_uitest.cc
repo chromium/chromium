@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
@@ -34,7 +35,9 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -48,7 +51,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
@@ -751,6 +756,48 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 
       // Finish the dialog to clean up.
       PressButton(kSaveButtonId), WaitForHide(kSettingsOverriddenDialogId));
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       AsyncIconFetchUpdatesDialogOptionLive) {
+  image_fetcher::ImageFetcherCallback captured_callback;
+  RunTestSequence(
+      SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
+      LoadExtensionOverridingSearch(), Do([&]() {
+        auto* service = static_cast<MockImageFetcherService*>(
+            ImageFetcherServiceFactory::GetForKey(
+                browser()->GetProfile()->GetProfileKey()));
+        ASSERT_TRUE(service);
+        EXPECT_CALL(
+            *service->mock_image_fetcher(),
+            FetchImageAndData_(GURL(kDefaultSearch.favicon_url), _, _, _))
+            .WillOnce([&](const GURL&, image_fetcher::ImageDataFetcherCallback*,
+                          image_fetcher::ImageFetcherCallback* callback,
+                          image_fetcher::ImageFetcherParams) {
+              captured_callback = std::move(*callback);
+            });
+      }),
+      PerformSearchFromOmnibox(),
+      // The dialog must appear immediately without waiting for icon fetches.
+      WaitForDialogToShow(),
+      CheckView(kPreviousSettingButtonId,
+                [](extensions::RichRadioButton* button) {
+                  return button->GetImageForTesting().IsVectorIcon();
+                }),
+      // Simulate the asynchronous image fetch response arriving while the
+      // dialog is open.
+      Do([&]() {
+        ASSERT_TRUE(captured_callback);
+        constexpr int kFaviconSize = 32;
+        gfx::Image fetched(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
+                                                 kFaviconSize, SK_ColorGREEN));
+        std::move(captured_callback)
+            .Run(fetched, image_fetcher::RequestMetadata());
+      }),
+      CheckView(kPreviousSettingButtonId,
+                [](extensions::RichRadioButton* button) {
+                  return button->GetImageForTesting().IsImage();
+                }));
 }
 
 class SettingsOverriddenLegacyDialogInteractiveUiTest

@@ -6,14 +6,17 @@
 
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace extensions {
@@ -43,7 +46,9 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
             .SetDefault(views::kMarginsKey, gfx::Insets(10));
       }))
       .AddChildren(
-          views::Builder<views::ImageView>().SetImage(image),
+          views::Builder<views::ImageView>()
+              .CopyAddressTo(&image_view_)
+              .SetImage(image),
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
               .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -85,8 +90,20 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
 
 RichRadioButton::~RichRadioButton() = default;
 
+void RichRadioButton::SetImage(const ui::ImageModel& image) {
+  image_view_->SetImage(image);
+}
+
+base::WeakPtr<RichRadioButton> RichRadioButton::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 bool RichRadioButton::GetCheckedForTesting() const {
   return radio_button_->GetChecked();
+}
+
+ui::ImageModel RichRadioButton::GetImageForTesting() const {
+  return image_view_->GetImageModel();
 }
 
 BEGIN_METADATA(RichRadioButton)

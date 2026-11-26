@@ -9,12 +9,18 @@
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "ui/base/models/dialog_model.h"
 
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
+
 namespace extensions {
 
 // Adds a pair of custom radio buttons to the dialog model, offering a choice
 // of which setting to use. The buttons are returned inside a container,
 // allowing the radio buttons to be grouped, as well as to support any required
-// customization.
+// customization. When `image_fetcher` is non-null, options referencing a remote
+// favicon URL show a fallback icon initially and update asynchronously once
+// fetched.
 void AddDialogContent(
     ui::DialogModel::Builder& builder,
     std::u16string dialog_description,
@@ -24,7 +30,8 @@ void AddDialogContent(
     base::RepeatingClosure callback1,
     const SettingsOverriddenDialogController::SettingOption& option2,
     ui::ElementIdentifier id2,
-    base::RepeatingClosure callback2);
+    base::RepeatingClosure callback2,
+    image_fetcher::ImageFetcher* image_fetcher);
 
 }  // namespace extensions
 

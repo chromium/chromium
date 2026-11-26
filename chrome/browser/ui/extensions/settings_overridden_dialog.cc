@@ -82,6 +82,10 @@ class SettingsOverriddenDialogDelegate : public ui::DialogModelDelegate {
     HandleDialogResult(selected_setting_.value());
   }
 
+  image_fetcher::ImageFetcher* GetImageFetcher() {
+    return controller_->GetImageFetcher();
+  }
+
  private:
   void HandleDialogResult(DialogResult result) {
     DCHECK(!result_)
@@ -144,7 +148,8 @@ void BuildSettingsOverriddenDialog(
 void BuildExplicitChoiceDialog(
     ui::DialogModel::Builder& dialog_builder,
     const SettingsOverriddenDialogController::ShowParams& show_params,
-    SettingsOverriddenDialogDelegate* dialog_delegate) {
+    SettingsOverriddenDialogDelegate* dialog_delegate,
+    image_fetcher::ImageFetcher* image_fetcher) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kSearchEngineExplicitChoiceDialog));
   dialog_builder.SetElementIdentifier(kSettingsOverriddenDialogId)
@@ -187,7 +192,7 @@ void BuildExplicitChoiceDialog(
       create_selection_callback(DialogResult::kChangeSettingsBack),
       show_params.new_setting.value(),
       kSettingsOverriddenDialogNewSettingButtonId,
-      create_selection_callback(DialogResult::kKeepNewSettings));
+      create_selection_callback(DialogResult::kKeepNewSettings), image_fetcher);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
@@ -220,7 +225,8 @@ void ShowSettingsOverriddenDialog(
           extensions_features::kSearchEngineExplicitChoiceDialog) &&
       show_params.new_setting && show_params.previous_setting) {
     // Explicit choice options are present, so show the corresponding dialog.
-    BuildExplicitChoiceDialog(dialog_builder, show_params, dialog_delegate);
+    BuildExplicitChoiceDialog(dialog_builder, show_params, dialog_delegate,
+                              dialog_delegate->GetImageFetcher());
   } else {
     BuildSettingsOverriddenDialog(dialog_builder, show_params, dialog_delegate);
   }

@@ -9,6 +9,19 @@
 
 #include "base/memory/raw_ptr.h"
 
+SettingsOverriddenDialogController::SettingOption::SettingOption() = default;
+SettingsOverriddenDialogController::SettingOption::~SettingOption() = default;
+SettingsOverriddenDialogController::SettingOption::SettingOption(
+    const SettingOption& other) = default;
+SettingsOverriddenDialogController::SettingOption&
+SettingsOverriddenDialogController::SettingOption::operator=(
+    const SettingOption& other) = default;
+SettingsOverriddenDialogController::SettingOption::SettingOption(
+    SettingOption&& other) = default;
+SettingsOverriddenDialogController::SettingOption&
+SettingsOverriddenDialogController::SettingOption::operator=(
+    SettingOption&& other) = default;
+
 SettingsOverriddenDialogController::ShowParams::ShowParams() = default;
 SettingsOverriddenDialogController::ShowParams::~ShowParams() = default;
 SettingsOverriddenDialogController::ShowParams::ShowParams(

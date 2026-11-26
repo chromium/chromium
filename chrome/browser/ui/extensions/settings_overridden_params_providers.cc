@@ -9,30 +9,26 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
-#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
-#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"  // IWYU pragma: keep
 #include "chrome/browser/resources_util.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
@@ -40,11 +36,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
-#include "components/image_fetcher/core/image_fetcher.h"
-#include "components/image_fetcher/core/image_fetcher_service.h"
-#include "components/image_fetcher/core/request_metadata.h"
+#include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
@@ -55,20 +51,11 @@
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/ui_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "skia/ext/image_operations.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace settings_overridden_params {
@@ -129,43 +116,43 @@ GetPrepopulatedEngineForSearchUrl(const GURL& search_url, Profile& profile) {
       .GetEngineFromFullList(engine_type);
 }
 
-constexpr extension_misc::ExtensionIcons kDialogIconSize =
-    extension_misc::EXTENSION_ICON_SMALLISH;
-
-// Loads a built-in search engine icon from the resource bundle for the given
-// `image_resource_id`, resized to the dialog icon size.
-ui::ImageModel LoadBuiltinSearchEngineIcon(
-    const std::string& image_resource_id) {
-  const int resource_id = ResourcesUtil::GetThemeResourceId(image_resource_id);
-  CHECK_NE(resource_id, -1);
-  const gfx::ImageSkia* image_skia =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  CHECK(image_skia && !image_skia->isNull());
-  gfx::Size icon_size(kDialogIconSize, kDialogIconSize);
-  return ui::ImageModel::FromImageSkia(
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          *image_skia, skia::ImageOperations::RESIZE_BEST, icon_size));
-}
-
-// Attempts to load a built-in search engine icon for the given search engine.
-// Returns `std::nullopt` if no built-in resource is available (for example, on
-// non-branded builds or for engines without bundled icon assets).
-std::optional<ui::ImageModel> GetBuiltinSearchEngineIcon(
+// Looks up the bundled theme resource ID for a built-in search engine icon,
+// without decoding image bytes.
+std::optional<int> GetBuiltinSearchEngineIconResourceId(
     const TemplateURL& template_url) {
   if (!template_url.GetBaseBuiltinResourceId().has_value()) {
     return std::nullopt;
   }
-  return LoadBuiltinSearchEngineIcon(template_url.GetBuiltinImageResourceId());
+  const int resource_id = ResourcesUtil::GetThemeResourceId(
+      template_url.GetBuiltinImageResourceId());
+  CHECK_NE(resource_id, -1);
+  return resource_id;
 }
 
-std::optional<ui::ImageModel> GetBuiltinSearchEngineIcon(
+std::optional<int> GetBuiltinSearchEngineIconResourceId(
     const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
-  std::optional<std::string> resource_id =
+  std::optional<std::string> image_resource_id =
       TemplateURL::GetBuiltinImageResourceId(engine);
-  if (!resource_id.has_value()) {
+  if (!image_resource_id.has_value()) {
     return std::nullopt;
   }
-  return LoadBuiltinSearchEngineIcon(*resource_id);
+  const int resource_id = ResourcesUtil::GetThemeResourceId(*image_resource_id);
+  CHECK_NE(resource_id, -1);
+  return resource_id;
+}
+
+// Builds a lightweight icon descriptor from a built-in resource ID or remote
+// favicon URL.
+SettingsOverriddenDialogController::SettingOption::IconSource MakeIconSource(
+    std::optional<int> builtin_icon_resource_id,
+    const GURL& favicon_url) {
+  if (builtin_icon_resource_id.has_value()) {
+    return *builtin_icon_resource_id;
+  }
+  if (favicon_url.is_valid() && favicon_url.SchemeIsHTTPOrHTTPS()) {
+    return favicon_url;
+  }
+  return std::monostate{};
 }
 
 // Returns the number of extensions that are currently enabled that override the
@@ -200,8 +187,8 @@ struct SecondarySearchInfo {
   // The name of the search engine, if available.
   std::u16string name;
 
-  // A built-in resource icon for the search engine, if available.
-  std::optional<ui::ImageModel> builtin_icon;
+  // Theme resource ID for a bundled search engine icon, if available.
+  std::optional<int> builtin_icon_resource_id;
 
   // The favicon URL to fetch over the network when no built-in icon is
   // available.
@@ -278,9 +265,9 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile& profile) {
       if (const auto* prepopulated_engine =
               GetPrepopulatedEngineForSearchUrl(search_url, profile)) {
         search_info.name = std::u16string(prepopulated_engine->name);
-        search_info.builtin_icon =
-            GetBuiltinSearchEngineIcon(*prepopulated_engine);
-        if (!search_info.builtin_icon) {
+        search_info.builtin_icon_resource_id =
+            GetBuiltinSearchEngineIconResourceId(*prepopulated_engine);
+        if (!search_info.builtin_icon_resource_id) {
           search_info.favicon_url = GURL(prepopulated_engine->favicon_url);
         }
       } else {
@@ -289,8 +276,9 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile& profile) {
       }
     } else {
       search_info.name = secondary_search->short_name();
-      search_info.builtin_icon = GetBuiltinSearchEngineIcon(*secondary_search);
-      if (!search_info.builtin_icon) {
+      search_info.builtin_icon_resource_id =
+          GetBuiltinSearchEngineIconResourceId(*secondary_search);
+      if (!search_info.builtin_icon_resource_id) {
         search_info.favicon_url = secondary_search->favicon_url();
       }
     }
@@ -306,139 +294,6 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile& profile) {
   }
 
   return search_info;
-}
-
-// Creates a fallback icon for a search engine, in case a favicon can't be
-// fetched.
-ui::ImageModel CreateFallbackSearchIcon() {
-  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                            ? vector_icons::kGlobeIcon
-                                            : vector_icons::kGlobeOldIcon,
-                                        ui::kColorIcon, kDialogIconSize);
-}
-
-// A descriptor containing information required to fetch an icon, and a pointer
-// to the ImageModel that should be populated with the result of the fetch.
-struct IconFetchParams {
-  // The URL from which to fetch.
-  GURL url;
-
-  // The destination image into which the fetched icon will be written.
-  raw_ptr<ui::ImageModel> image = nullptr;
-};
-
-constexpr char kImageFetcherUmaClient[] = "Extensions";
-inline constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
-    net::DefineNetworkTrafficAnnotation(
-        "settings_overridden_dialog_icon_fetcher",
-        R"(
-            semantics {
-              sender: "Image fetcher for the settings-overridden dialog"
-              description:
-                "Fetches a favicon for a search engine to display in the "
-                "settings overridden dialog."
-              trigger:
-                "The user sees a dialog indicating their search settings have "
-                "been overridden by an extension."
-              data: "The URL of the search engine's favicon."
-              destination: WEBSITE
-              internal {
-                contacts {
-                  owners: "extensions/UI_OWNERS"
-                }
-              }
-              user_data {
-                type: NONE
-              }
-              last_reviewed: "2026-02-10"
-            }
-            policy {
-              cookies_allowed: NO
-              setting: "This feature cannot be disabled by settings."
-              policy_exception_justification: "Not implemented."
-            })");
-
-// A utility function that kicks off asynchronous resource load operations, to
-// collect one or more icon images. A supplied callback is invoked when all
-// requested icons have been loaded (leaving the param's image unchanged if the
-// fetch fails).
-void FetchIconsThenRun(
-    std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params,
-    Profile& profile,
-    base::OnceCallback<
-        void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
-        done_callback) {
-  CHECK(base::FeatureList::IsEnabled(
-      extensions_features::kSearchEngineExplicitChoiceDialog));
-  CHECK(params);
-
-  std::vector<IconFetchParams> lookups;
-  if (params->content.previous_setting &&
-      !params->content.previous_setting->favicon_url.is_empty()) {
-    lookups.emplace_back(params->content.previous_setting->favicon_url,
-                         &params->content.previous_setting->image);
-  }
-  if (params->content.new_setting &&
-      !params->content.new_setting->favicon_url.is_empty()) {
-    lookups.emplace_back(params->content.new_setting->favicon_url,
-                         &params->content.new_setting->image);
-  }
-
-  // A barrier closure will invoke the callback when called once per resource.
-  // Post the callback task so it always runs asynchronously, even if all
-  // fetches are synchronous. This ensures that the callback doesn't run before
-  // the code that's queuing it finishes (dangling pointer issues).
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      lookups.size(),
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(std::move(done_callback), std::move(params))));
-
-  // If there were no lookups, the barrier closure will have just executed,
-  // and we can bail out.
-  if (lookups.empty()) {
-    return;
-  }
-
-  image_fetcher::ImageFetcher* image_fetcher =
-      ImageFetcherServiceFactory::GetForKey(profile.GetProfileKey())
-          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly);
-
-  for (auto& lookup : lookups) {
-    if (!lookup.url.is_valid() || !lookup.url.SchemeIsHTTPOrHTTPS() ||
-        !image_fetcher) {
-      barrier_closure.Run();
-      continue;
-    }
-
-    image_fetcher::ImageFetcherParams fetch_params(traffic_annotation,
-                                                   kImageFetcherUmaClient);
-    // Set desired frame size in case the URL is for a multi-resolution .ico
-    // file. After the fetch, a resize is done to the dialog's required icon
-    // size.
-    fetch_params.set_frame_size(gfx::Size(kDialogIconSize, kDialogIconSize));
-
-    image_fetcher->FetchImage(
-        lookup.url,
-        base::BindOnce(
-            [](ui::ImageModel* image_spot, base::RepeatingClosure barrier,
-               const gfx::Image& image,
-               const image_fetcher::RequestMetadata& metadata) {
-              if (!image.IsEmpty()) {
-                // Resize the result to the intended icon size.
-                gfx::ImageSkia skia = image.AsImageSkia();
-                gfx::Size icon_size(kDialogIconSize, kDialogIconSize);
-                gfx::ImageSkia resized =
-                    gfx::ImageSkiaOperations::CreateResizedImage(
-                        skia, skia::ImageOperations::RESIZE_BEST, icon_size);
-
-                *image_spot = ui::ImageModel::FromImageSkia(resized);
-              }
-              barrier.Run();
-            },
-            lookup.image, barrier_closure),
-        fetch_params);
-  }
 }
 
 // The explicit choice dialog requires names for the options. One prior bug
@@ -596,14 +451,12 @@ bool HasUnacknowledgedMatchingDseExtension(Profile* profile) {
       ControlledHomeDialogController::kAcknowledgedPreference);
 }
 
-namespace {
-
-std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>
+std::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile& profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(&profile);
   if (!extension) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // Find the active search engine. This is normally the one provided by
@@ -616,13 +469,13 @@ GetSearchOverriddenParams(Profile& profile) {
       TemplateURLServiceFactory::GetForProfile(&profile);
   if (!template_url_service ||
       !template_url_service->IsExtensionControlledDefaultSearch()) {
-    return nullptr;
+    return std::nullopt;
   }
   const TemplateURL* default_search =
       template_url_service->GetDefaultSearchProvider();
   if (!default_search ||
       default_search->type() != TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // For historical reasons, the search override preference is the same as the
@@ -638,11 +491,9 @@ GetSearchOverriddenParams(Profile& profile) {
   GURL search_url(default_search->url());
   DCHECK(search_url.is_valid()) << default_search->url();
 
-  // Nothing was actually overridden; there is nothing to confirm. Callers check
-  // this synchronously before withholding a navigation; re-check here in case
-  // extension state changed in between.
+  // Nothing was actually overridden; there is nothing to confirm.
   if (ExtensionSearchOverrideMatchesExistingEngine(&profile)) {
-    return nullptr;
+    return std::nullopt;
   }
 
   SecondarySearchInfo secondary_search = GetSecondarySearchInfo(profile);
@@ -690,36 +541,30 @@ GetSearchOverriddenParams(Profile& profile) {
     // On the 'explicit choice' dialog, there is no icon at the title level.
     SettingsOverriddenDialogController::ShowParams show_params(
         std::move(dialog_title), std::move(dialog_message), /*icon=*/nullptr);
-    auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
+    ExtensionSettingsOverriddenDialog::Params params(
         extension->id(), extension->name(), preference_name, histogram_name,
         std::move(show_params));
-    params->search_override_stack = search_override_stack;
+    params.search_override_stack = search_override_stack;
     if (base::FeatureList::IsEnabled(
             features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
-      params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
+      params.hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
     }
 
     // Previous search engine before the extension overrode it.
     SettingsOverriddenDialogController::SettingOption& previous_setting =
-        params->content.previous_setting.emplace();
+        params.content.previous_setting.emplace();
     previous_setting.text = secondary_search.name;
     previous_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
-    if (secondary_search.builtin_icon.has_value()) {
-      previous_setting.image = *secondary_search.builtin_icon;
-    } else {
-      previous_setting.image = CreateFallbackSearchIcon();
-      if (secondary_search.favicon_url.is_valid()) {
-        previous_setting.favicon_url = secondary_search.favicon_url;
-      }
-    }
+    previous_setting.icon_source =
+        MakeIconSource(secondary_search.builtin_icon_resource_id,
+                       secondary_search.favicon_url);
 
     // New search engine from the overriding extension:
     SettingsOverriddenDialogController::SettingOption& new_setting =
-        params->content.new_setting.emplace();
+        params.content.new_setting.emplace();
     new_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE);
-    new_setting.image = CreateFallbackSearchIcon();
 
     // Display the known name and icon for the extension's search,
     // if it is known by the browser. Otherwise, show the formatted search URL
@@ -727,17 +572,14 @@ GetSearchOverriddenParams(Profile& profile) {
     if (const auto* prepopulated_engine =
             GetPrepopulatedEngineForSearchUrl(search_url, profile)) {
       new_setting.text = prepopulated_engine->name;
-      if (std::optional<ui::ImageModel> builtin_icon =
-              GetBuiltinSearchEngineIcon(*prepopulated_engine)) {
-        new_setting.image = *builtin_icon;
-      } else {
-        new_setting.favicon_url = GURL(prepopulated_engine->favicon_url);
-      }
+      new_setting.icon_source = MakeIconSource(
+          GetBuiltinSearchEngineIconResourceId(*prepopulated_engine),
+          GURL(prepopulated_engine->favicon_url));
     } else {
       new_setting.text = FormatSearchUrl(search_url);
     }
 
-    LogMissingParams(*params);
+    LogMissingParams(params);
 
     // After logging any missing parameters, attempt to fill in placeholders.
     // This is a temporary workaround until we've figured out which scenario(s)
@@ -780,34 +622,16 @@ GetSearchOverriddenParams(Profile& profile) {
 
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);
-  auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
+  ExtensionSettingsOverriddenDialog::Params params(
       extension->id(), extension->name(), preference_name, histogram_name,
       std::move(show_params));
-  params->search_override_stack = search_override_stack;
+  params.search_override_stack = search_override_stack;
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
-    params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
+    params.hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
   }
 
   return params;
-}
-
-}  // namespace
-
-void GetSearchOverriddenParamsThenRun(
-    Profile& profile,
-    base::OnceCallback<
-        void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
-        done_callback) {
-  std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params =
-      GetSearchOverriddenParams(profile);
-  if (!params || !base::FeatureList::IsEnabled(
-                     extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    std::move(done_callback).Run(std::move(params));
-    return;
-  }
-
-  FetchIconsThenRun(std::move(params), profile, std::move(done_callback));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

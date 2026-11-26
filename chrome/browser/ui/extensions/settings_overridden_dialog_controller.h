@@ -7,13 +7,17 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 namespace gfx {
 struct VectorIcon;
+}
+
+namespace image_fetcher {
+class ImageFetcher;
 }
 
 // The controller for the SettingsOverriddenDialog. This class is responsible
@@ -24,20 +28,26 @@ class SettingsOverriddenDialogController {
   // Describes the visual elements (texts, icon) of a selectable option in the
   // dialog.
   struct SettingOption {
+    // Lightweight descriptor for an option's icon, resolved when building the
+    // dialog view: no icon (falls back to a generic icon), a bundled theme
+    // resource ID, or a remote favicon URL fetched asynchronously.
+    using IconSource = std::variant<std::monostate, int, GURL>;
+
+    SettingOption();
+    ~SettingOption();
+    SettingOption(const SettingOption& other);
+    SettingOption& operator=(const SettingOption& other);
+    SettingOption(SettingOption&& other);
+    SettingOption& operator=(SettingOption&& other);
+
     // The primary text of the option.
     std::u16string text;
 
     // Additional subtext describing the option.
     std::u16string description;
 
-    // The URL of the favicon. If specified, the icon should be fetched and used
-    // to override the default image.
-    GURL favicon_url;
-
-    // An icon pertaining to the option. It should be populated with a default
-    // or fallback favicon initially, but may be overwritten by an icon fetched
-    // from `favicon_url`.
-    ui::ImageModel image;
+    // Describes how to load the option's icon when the dialog view is built.
+    IconSource icon_source;
   };
 
   // A struct describing the contents to be displayed in the dialog.
@@ -98,6 +108,10 @@ class SettingsOverriddenDialogController {
   // ShouldShow() returns true. Similar to above, this may only be called
   // synchronously.
   virtual ShowParams GetShowParams() = 0;
+
+  // Returns the image fetcher used to asynchronously load option favicons, or
+  // nullptr if network icon fetching is unavailable.
+  virtual image_fetcher::ImageFetcher* GetImageFetcher() = 0;
 
   // Notifies the controller that the dialog will be shown.
   virtual void OnDialogWillBeShown() = 0;

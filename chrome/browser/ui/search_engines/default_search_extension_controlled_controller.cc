@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/default_search_extension_controlled_controller.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -171,21 +172,12 @@ bool DefaultSearchExtensionControlledController::
 void DefaultSearchExtensionControlledController::ShowConfirmationDialog(
     ConfirmationCallback callback) {
   SetDialogCurrentlyShowing(weak_factory_.GetWeakPtr());
-
-  settings_overridden_params::GetSearchOverriddenParamsThenRun(
-      *profile_,
-      base::BindOnce(
-          &DefaultSearchExtensionControlledController::OnParamsLoaded,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DefaultSearchExtensionControlledController::OnParamsLoaded(
-    ConfirmationCallback callback,
-    std::unique_ptr<ExtensionSettingsOverriddenDialog::Params> params) {
   confirmation_callback_ = std::move(callback);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetSearchOverriddenParams(*profile_);
   if (!params) {
-    // Confirmation turned out to be unnecessary, or the extension state
-    // changed while the parameters were loading. No dialog was shown. See
+    // Confirmation turned out to be unnecessary. No dialog was shown. See
     // https://crbug.com/540532980.
     DialogResolved(std::nullopt);
     return;

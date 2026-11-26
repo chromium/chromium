@@ -368,7 +368,6 @@ source_set("unit_tests") {
       "//chrome/browser:resources_util",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
-      "//chrome/browser/image_fetcher",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search_engines",
@@ -416,8 +415,10 @@ source_set("unit_tests") {
     deps += [
       ":extensions",
       "//chrome/browser/ui/views:chrome_views_delegate",
+      "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils",
       "//chrome/test/views",
       "//components/constrained_window",
+      "//ui/resources",
       "//ui/views:test_support",
     ]
   }

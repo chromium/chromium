@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +29,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "ui/base/base_window.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 
@@ -138,27 +139,19 @@ void MaybeShowExtensionControlledSearchNotification(
     return;
   }
 
-  // Asynchronously collect the parameters needed for the dialog, then show it.
-  settings_overridden_params::GetSearchOverriddenParamsThenRun(
-      *profile,
-      base::BindOnce(
-          [](Profile* profile, content::WebContents* web_contents,
-             std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>
-                 params) {
-            if (!params) {
-              return;
-            }
-            auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-                std::move(*params), *profile);
-            if (!dialog->ShouldShow()) {
-              return;
-            }
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetSearchOverriddenParams(*profile);
+  if (!params) {
+    return;
+  }
+  auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
+      std::move(*params), *profile);
+  if (!dialog->ShouldShow()) {
+    return;
+  }
 
-            gfx::NativeWindow parent_window =
-                web_contents->GetTopLevelNativeWindow();
-            ShowSettingsOverriddenDialog(std::move(dialog), parent_window);
-          },
-          profile, web_contents));
+  gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
+  ShowSettingsOverriddenDialog(std::move(dialog), parent_window);
 #endif
 }
 
