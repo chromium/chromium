@@ -13,7 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** Properties for the floating TTC session pill. */
+/** Properties for the TTC session UI: the phone pill, or the voice plate on large screens. */
 @NullMarked
 class TtcSessionProperties {
     /** Whether the pill is shown. True whenever a session is in progress. */
@@ -29,7 +29,29 @@ class TtcSessionProperties {
     static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the session's microphone is muted. Only the voice plate shows it. */
+    static final WritableBooleanPropertyKey MIC_MUTED = new WritableBooleanPropertyKey();
+
+    /**
+     * Click listener for the voice plate's pause button, set by the mediator. It mutes the
+     * microphone, or unmutes it while muted.
+     */
+    static final WritableObjectPropertyKey<View.OnClickListener> ON_PAUSE_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    /**
+     * Whether the voice plate's pause button can be used: only while the session is live, since the
+     * microphone can't be muted before.
+     */
+    static final WritableBooleanPropertyKey PAUSE_ENABLED = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, STATUS_TEXT_RES_ID, AUDIO_LEVEL, ON_CLICK_LISTENER
+        VISIBLE,
+        STATUS_TEXT_RES_ID,
+        AUDIO_LEVEL,
+        ON_CLICK_LISTENER,
+        MIC_MUTED,
+        ON_PAUSE_CLICK_LISTENER,
+        PAUSE_ENABLED
     };
 }

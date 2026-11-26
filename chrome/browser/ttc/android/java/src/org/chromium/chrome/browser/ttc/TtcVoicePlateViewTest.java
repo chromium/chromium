@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ttc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -13,9 +15,9 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.view.PointerIcon;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
 import org.junit.Before;
@@ -40,32 +42,26 @@ public class TtcVoicePlateViewTest {
     @Mock private View.OnClickListener mOnClickListener;
 
     private Activity mActivity;
-    private FrameLayout mParent;
     private TtcVoicePlateView mPlate;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mParent = new FrameLayout(mActivity);
-        mActivity.setContentView(mParent);
-        mPlate = TtcVoicePlateView.create(mParent);
+        mPlate = TtcVoicePlateView.create(mActivity);
     }
 
     @Test
-    public void testCreateAndDestroy() {
-        assertEquals(1, mParent.getChildCount());
-        View root = mParent.getChildAt(0);
-        assertEquals(View.GONE, root.getVisibility());
+    public void testCreatedHidden() {
+        View view = mPlate.getView();
+        assertSame(mPlate.getPillForTesting(), view);
+        assertNull(view.getParent());
+        assertEquals(View.GONE, view.getVisibility());
 
         mPlate.setVisible(true);
-        assertEquals(View.VISIBLE, root.getVisibility());
+        assertEquals(View.VISIBLE, view.getVisibility());
         mPlate.setVisible(false);
-        assertEquals(View.GONE, root.getVisibility());
-
-        mPlate.destroy();
-        assertEquals(0, mParent.getChildCount());
-        assertNull(root.getParent());
+        assertEquals(View.GONE, view.getVisibility());
     }
 
     @Test
@@ -81,6 +77,19 @@ public class TtcVoicePlateViewTest {
         mPlate.setOnPauseClickListener(mOnClickListener);
         pause.performClick();
         verify(mOnClickListener).onClick(pause);
+
+        mPlate.setPauseEnabled(false);
+        assertFalse(pause.isEnabled());
+        // Looks disabled too.
+        assertEquals(
+                ResourcesCompat.getFloat(
+                        mActivity.getResources(), org.chromium.ui.R.dimen.default_disabled_alpha),
+                pause.getAlpha(),
+                0f);
+
+        mPlate.setPauseEnabled(true);
+        assertTrue(pause.isEnabled());
+        assertEquals(1f, pause.getAlpha(), 0f);
     }
 
     @Test

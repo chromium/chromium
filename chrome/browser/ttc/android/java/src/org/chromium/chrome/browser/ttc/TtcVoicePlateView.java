@@ -4,57 +4,43 @@
 
 package org.chromium.chrome.browser.ttc;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.annotation.StringRes;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillView;
 
 /**
  * The large-screen TTC voice plate: a floating pill with the session's waveform and a button to
- * pause (mute) the microphone. It's a {@link FloatingPillView} in a {@link FloatingPillContainer},
- * like auto browse's "Take over task" button. Its owner places it on the bottom edge of the
- * toolbar.
+ * pause (mute) the microphone. It's a {@link FloatingPillView}, which its owner shows in the
+ * window's floating pill container on the bottom edge of the toolbar, next to e.g. auto browse's
+ * "Take over task" button.
  */
 @NullMarked
 class TtcVoicePlateView {
-    private final ViewGroup mRoot;
     private final FloatingPillView mPill;
     private final View mWaveform;
     private final ImageButton mPauseButton;
 
-    /**
-     * Inflates the voice plate and adds it to {@code parent}, hidden.
-     *
-     * @param parent The view to add the plate to, which should cover the activity's content area.
-     *     The plate is added as its last child, so {@code parent} should be where that draws it
-     *     over the toolbar and the page but under the bottom controls, sheets and the tab switcher.
-     */
-    static TtcVoicePlateView create(ViewGroup parent) {
-        ViewGroup root =
-                (ViewGroup)
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(
-                                        R.layout.ttc_voice_plate,
-                                        parent,
-                                        /* attachToRoot= */ false);
-        parent.addView(root);
-        return new TtcVoicePlateView(root);
+    /** Inflates the voice plate, hidden and without a parent. */
+    static TtcVoicePlateView create(Context context) {
+        return new TtcVoicePlateView(
+                (FloatingPillView)
+                        LayoutInflater.from(context).inflate(R.layout.ttc_voice_plate, null));
     }
 
-    private TtcVoicePlateView(ViewGroup root) {
-        Resources res = root.getResources();
+    private TtcVoicePlateView(FloatingPillView pill) {
+        Resources res = pill.getResources();
 
-        mRoot = root;
-        mPill = root.findViewById(R.id.ttc_voice_plate);
+        mPill = pill;
         mWaveform = mPill.findViewById(R.id.ttc_voice_plate_waveform);
         String title = res.getString(R.string.ttc_voice_plate_title);
         // Announced when the plate appears or goes away.
@@ -71,8 +57,13 @@ class TtcVoicePlateView {
         setMicMuted(false);
     }
 
+    /** Returns the plate's view, to add it to the window's floating pill container. */
+    View getView() {
+        return mPill;
+    }
+
     void setVisible(boolean visible) {
-        mRoot.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mPill.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -98,14 +89,19 @@ class TtcVoicePlateView {
         mPauseButton.setTooltipText(description);
     }
 
-    void setOnPauseClickListener(View.@Nullable OnClickListener listener) {
-        mPauseButton.setOnClickListener(listener);
+    /** Enables the pause button, or disables and dims it, e.g. until muting works. */
+    void setPauseEnabled(boolean enabled) {
+        mPauseButton.setEnabled(enabled);
+        mPauseButton.setAlpha(
+                enabled
+                        ? 1f
+                        : ResourcesCompat.getFloat(
+                                mPauseButton.getResources(),
+                                org.chromium.ui.R.dimen.default_disabled_alpha));
     }
 
-    /** Removes the plate from its parent. */
-    void destroy() {
-        ViewGroup parent = (ViewGroup) mRoot.getParent();
-        if (parent != null) parent.removeView(mRoot);
+    void setOnPauseClickListener(View.@Nullable OnClickListener listener) {
+        mPauseButton.setOnClickListener(listener);
     }
 
     FloatingPillView getPillForTesting() {

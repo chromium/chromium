@@ -4350,6 +4350,24 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TTC)
+    @Config(qualifiers = "sw600dp")
+    public void ttcItemEnabled_LargeScreen() {
+        setUpMocksForPageMenu();
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModel.getCount()).thenReturn(1);
+        TtcKeyedService service = mock(TtcKeyedService.class);
+        when(service.isEnabled()).thenReturn(true);
+        TtcKeyedServiceFactory.setForTesting(service);
+
+        assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        // Also on large screens, where the toolbar shortcut may not be TTC or may not fit.
+        assertTrue(isMenuVisible(modelList, R.id.ttc_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
     public void ttcItemDisabled_Incognito() {
         setUpMocksForPageMenu();
         when(mTab.isIncognito()).thenReturn(true);

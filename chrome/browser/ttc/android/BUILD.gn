@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTracker.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcShortcutHandler.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateView.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateViewBinder.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformView.java",
   ]
   deps = [
@@ -32,6 +33,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/floating_pill:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java",
@@ -128,6 +130,7 @@ android_library("settings_java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceTest.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTrackerTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateViewTest.java",
@@ -145,6 +148,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//base:supplier_java",
+    "//base:unowned_user_data_java",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
@@ -152,6 +156,7 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:search_java",
+    "//chrome/browser/ui/android/floating_pill:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",

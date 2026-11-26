@@ -1075,6 +1075,67 @@ public class TtcSessionMediatorTest {
         verify(observer, times(3)).onEntryPointStateChanged();
     }
 
+    @Test
+    public void testMicMutedFollowsService() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        assertFalse(mModel.get(TtcSessionProperties.MIC_MUTED));
+
+        mediator.onMicMutedChanged(true);
+        assertTrue(mModel.get(TtcSessionProperties.MIC_MUTED));
+
+        // An ended session isn't muted.
+        mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
+        assertFalse(mModel.get(TtcSessionProperties.MIC_MUTED));
+    }
+
+    @Test
+    public void testMutedSessionAlreadyActiveOnCreation() {
+        when(mService.isSessionActive()).thenReturn(true);
+        when(mService.isMicMuted()).thenReturn(true);
+        createMediator();
+
+        assertTrue(mModel.get(TtcSessionProperties.MIC_MUTED));
+    }
+
+    @Test
+    public void testPauseEnabledOnlyWhileLive() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        // Connecting: muting would be a no-op.
+        assertFalse(mModel.get(TtcSessionProperties.PAUSE_ENABLED));
+
+        mediator.onSessionLifecycleChanged(SessionLifecycle.LIVE);
+        assertTrue(mModel.get(TtcSessionProperties.PAUSE_ENABLED));
+
+        mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
+        assertFalse(mModel.get(TtcSessionProperties.PAUSE_ENABLED));
+    }
+
+    @Test
+    public void testPauseEnabledForSessionAlreadyLiveOnCreation() {
+        when(mService.isSessionActive()).thenReturn(true);
+        when(mService.getSessionLifecycle()).thenReturn(SessionLifecycle.LIVE);
+        createMediator();
+
+        assertTrue(mModel.get(TtcSessionProperties.PAUSE_ENABLED));
+    }
+
+    @Test
+    public void testPauseClickTogglesMute() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+
+        mModel.get(TtcSessionProperties.ON_PAUSE_CLICK_LISTENER).onClick(null);
+        verify(mService).setMicMuted(true);
+        // The model only changes once the native side reports it.
+        assertFalse(mModel.get(TtcSessionProperties.MIC_MUTED));
+
+        mediator.onMicMutedChanged(true);
+        mModel.get(TtcSessionProperties.ON_PAUSE_CLICK_LISTENER).onClick(null);
+        verify(mService).setMicMuted(false);
+    }
+
     private void resolvePermissionRequest(int grantResult) {
         ArgumentCaptor<PermissionCallback> captor =
                 ArgumentCaptor.forClass(PermissionCallback.class);

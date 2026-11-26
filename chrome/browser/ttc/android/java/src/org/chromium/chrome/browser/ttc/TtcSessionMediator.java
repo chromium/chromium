@@ -114,6 +114,14 @@ class TtcSessionMediator
                 v -> {
                     if (mService != null) mService.endSession();
                 });
+        // The voice plate's pause button. The model follows once the native side reports the
+        // change, see onMicMutedChanged().
+        mModel.set(
+                TtcSessionProperties.ON_PAUSE_CLICK_LISTENER,
+                v -> {
+                    if (mService == null) return;
+                    mService.setMicMuted(!mModel.get(TtcSessionProperties.MIC_MUTED));
+                });
         // Before observing the profile, so that the entry point's observers hear about the button
         // once, when the service state is known.
         mEntryPoint.setToggleHandler(this::toggleSession);
@@ -274,7 +282,15 @@ class TtcSessionMediator
             clearError();
             mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getSessionStatusTextResId());
             mModel.set(TtcSessionProperties.AUDIO_LEVEL, 0f);
+            // Read from the native session, so that a window that starts showing a session that's
+            // already muted shows it as muted.
+            mModel.set(TtcSessionProperties.MIC_MUTED, mService != null && mService.isMicMuted());
+            mModel.set(
+                    TtcSessionProperties.PAUSE_ENABLED,
+                    mService != null && mService.getSessionLifecycle() == SessionLifecycle.LIVE);
         } else {
+            mModel.set(TtcSessionProperties.MIC_MUTED, false);
+            mModel.set(TtcSessionProperties.PAUSE_ENABLED, false);
             // Leave the error on screen; hideAfterError() hides the pill.
             if (mShowingError) return;
         }
@@ -283,10 +299,17 @@ class TtcSessionMediator
 
     @Override
     public void onSessionLifecycleChanged(@SessionLifecycle int lifecycle) {
+        // Muting is a no-op until the session is live.
+        mModel.set(TtcSessionProperties.PAUSE_ENABLED, lifecycle == SessionLifecycle.LIVE);
         // FINISHED is reported just before SESSION_INACTIVE hides the pill; keep the current text
         // (or error) until then rather than flashing "connecting".
         if (mShowingError || lifecycle == SessionLifecycle.FINISHED) return;
         mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getStatusTextResId(lifecycle));
+    }
+
+    @Override
+    public void onMicMutedChanged(boolean muted) {
+        mModel.set(TtcSessionProperties.MIC_MUTED, muted);
     }
 
     @Override

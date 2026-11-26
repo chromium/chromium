@@ -1552,6 +1552,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTtcSessionCoordinator =
                     new TtcSessionCoordinator(
                             mActivity.findViewById(R.id.coordinator),
+                            getFloatingPillLayer(),
                             mWindowAndroid,
                             mProfileSupplier,
                             mActivityLifecycleDispatcher);

@@ -1646,7 +1646,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (currentTab == null
                 || currentTab.isIncognito()
                 || currentTab.getWebContents() == null
-                || !TtcSessionCoordinator.usesMobileSessionUi(mContext)
                 || TtcSessionCoordinator.getServiceIfAvailable(currentTab.getProfile()) == null) {
             return null;
         }
