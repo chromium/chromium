@@ -56,7 +56,7 @@ bool AutofillAiSaveUpdateEntityPromptViewAndroid::Show(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_AutofillAiSaveUpdateEntityPrompt_create(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      java_controller));
+      java_controller, controller->MustShowEquallyWeightedButtons()));
   if (!java_object_) {
     return false;
   }

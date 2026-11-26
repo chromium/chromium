@@ -62,6 +62,9 @@ class AutofillAiSaveUpdateEntityPromptController {
   // wallet server.
   bool IsWalletableEntity() const;
   bool IsUpdatePrompt() const;
+  // Returns `true` if the save/update dialog must show equally weighted
+  // buttons.
+  bool MustShowEquallyWeightedButtons() const;
 
   const LegalMessageLines& GetPublicPassesNotice() const;
   bool IsEligibleForWalletPassDisclosure() const;

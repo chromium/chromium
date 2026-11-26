@@ -117,7 +117,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity());
+                                            mActivityTestRule.getActivity(),
+                                            /* showEquallyWeightedButtons= */ false);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -169,7 +170,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity());
+                                            mActivityTestRule.getActivity(),
+                                            /* showEquallyWeightedButtons= */ false);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -226,7 +228,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity());
+                                            mActivityTestRule.getActivity(),
+                                            /* showEquallyWeightedButtons= */ false);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",

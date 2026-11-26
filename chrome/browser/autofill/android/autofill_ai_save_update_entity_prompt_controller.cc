@@ -20,10 +20,13 @@
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_view.h"
 #include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -107,6 +110,15 @@ bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {
 
 bool AutofillAiSaveUpdateEntityPromptController::IsUpdatePrompt() const {
   return old_entity_instance_.has_value();
+}
+
+bool AutofillAiSaveUpdateEntityPromptController::
+    MustShowEquallyWeightedButtons() const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return autofill::MustShowEquallyWeightedButtons(
+      profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr,
+      entity_instance_.type());
 }
 
 const LegalMessageLines&

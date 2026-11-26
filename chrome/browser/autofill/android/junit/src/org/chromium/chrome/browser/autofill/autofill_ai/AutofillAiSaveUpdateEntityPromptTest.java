@@ -88,7 +88,10 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mPrompt =
                 new AutofillAiSaveUpdateEntityPrompt(
-                        mPromptController, mModalDialogManager, mActivity);
+                        mPromptController,
+                        mModalDialogManager,
+                        mActivity,
+                        /* showEquallyWeightedButtons= */ false);
     }
 
     @After
@@ -221,6 +224,34 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertEquals(
                 R.drawable.googlewallet_icon_with_gradient,
                 Shadows.shadowOf(titleEndIcon).getCreatedFromResId());
+    }
+
+    /** Tests that the default button style is a filled primary and outlined secondary button. */
+    @Test
+    public void buttonStyles_default() {
+        mPrompt.show();
+        PropertyModel propertyModel = mModalDialogManager.getShownDialogModel();
+
+        assertEquals(
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+                propertyModel.get(ModalDialogProperties.BUTTON_STYLES));
+    }
+
+    /** Tests that the buttons are both filled if equally-weighted buttons are required. */
+    @Test
+    public void buttonStyles_equallyWeighted() {
+        AutofillAiSaveUpdateEntityPrompt prompt =
+                new AutofillAiSaveUpdateEntityPrompt(
+                        mPromptController,
+                        mModalDialogManager,
+                        mActivity,
+                        /* showEquallyWeightedButtons= */ true);
+        prompt.show();
+        PropertyModel propertyModel = mModalDialogManager.getShownDialogModel();
+
+        assertEquals(
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED,
+                propertyModel.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
     @Test

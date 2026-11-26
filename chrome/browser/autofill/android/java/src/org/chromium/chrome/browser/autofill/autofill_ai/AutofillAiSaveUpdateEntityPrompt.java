@@ -59,7 +59,8 @@ public class AutofillAiSaveUpdateEntityPrompt {
     public AutofillAiSaveUpdateEntityPrompt(
             AutofillAiSaveUpdateEntityPromptController controller,
             ModalDialogManager modalDialogManager,
-            Context context) {
+            Context context,
+            boolean showEquallyWeightedButtons) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
         mContext = context;
@@ -75,7 +76,11 @@ public class AutofillAiSaveUpdateEntityPrompt {
                                         modalDialogManager, this::onDismiss))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
-                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                                showEquallyWeightedButtons
+                                        ? ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_FILLED_NEGATIVE_FILLED
+                                        : ModalDialogProperties.ButtonStyles
+                                                .PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
     }
@@ -96,18 +101,23 @@ public class AutofillAiSaveUpdateEntityPrompt {
      *
      * @param windowAndroid the window to supply Android dependencies.
      * @param controller the controller to handle the interaction.
+     * @param showEquallyWeightedButtons whether the positive and negative buttons should have equal
+     *     visual weight.
      * @return instance of the AutofillAiSaveUpdateEntityPrompt or null if the call failed.
      */
     @CalledByNative
     private static @Nullable AutofillAiSaveUpdateEntityPrompt create(
-            WindowAndroid windowAndroid, AutofillAiSaveUpdateEntityPromptController controller) {
+            WindowAndroid windowAndroid,
+            AutofillAiSaveUpdateEntityPromptController controller,
+            boolean showEquallyWeightedButtons) {
         @Nullable Activity activity = windowAndroid.getActivity().get();
         @Nullable ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) {
             return null;
         }
 
-        return new AutofillAiSaveUpdateEntityPrompt(controller, modalDialogManager, activity);
+        return new AutofillAiSaveUpdateEntityPrompt(
+                controller, modalDialogManager, activity, showEquallyWeightedButtons);
     }
 
     /**

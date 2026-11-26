@@ -26,6 +26,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -101,10 +103,20 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
         prompt_closed_callback_.Get());
   }
 
-  void SigninUser(const std::string& email,
-                  signin::ConsentLevel consent_level) {
-    identity_test_env_adaptor_->identity_test_env()
+  AccountInfo SigninUser(const std::string& email,
+                         signin::ConsentLevel consent_level) {
+    return identity_test_env_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(email, consent_level);
+  }
+
+  void SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(
+      AccountInfo account_info,
+      bool must_show) {
+    AccountCapabilitiesTestMutator(&account_info)
+        .set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+            must_show);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -520,6 +532,89 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
       test::GetVehicleEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet}));
   EXPECT_FALSE(prompt_controller().IsEligibleForWalletPassDisclosure());
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns `false` if the feature
+// is disabled since this is the previous default state.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       MustShowEquallyWeightedButtons_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      /*enabled_features=*/{}, /*disabled_features=*/
+      {features::kAutofillRegionalizedPrivatePassesUxRefine});
+  AccountInfo account_info = SigninUser(TestingProfile::kDefaultProfileUserName,
+                                        signin::ConsentLevel::kSignin);
+  SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(account_info,
+                                                              true);
+  CreateController(EntityInstance::RecordType::kServerWallet);
+  EXPECT_FALSE(prompt_controller().MustShowEquallyWeightedButtons());
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns `true` for local and
+// Wallet entities, both new and existing ones, if the account capability is
+// `kTrue`.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       MustShowEquallyWeightedButtons_CapabilityTrue) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  AccountInfo account_info = SigninUser(TestingProfile::kDefaultProfileUserName,
+                                        signin::ConsentLevel::kSignin);
+  SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(account_info,
+                                                              true);
+
+  CreateController(EntityInstance::RecordType::kServerWallet);
+  EXPECT_TRUE(prompt_controller().MustShowEquallyWeightedButtons());
+
+  CreateController(EntityInstance::RecordType::kLocal);
+  EXPECT_TRUE(prompt_controller().MustShowEquallyWeightedButtons());
+
+  CreateController(EntityInstance::RecordType::kServerWallet,
+                   /*entity_updated=*/true);
+  EXPECT_TRUE(prompt_controller().MustShowEquallyWeightedButtons());
+
+  CreateController(EntityInstance::RecordType::kLocal,
+                   /*entity_updated=*/true);
+  EXPECT_TRUE(prompt_controller().MustShowEquallyWeightedButtons());
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns `false` if the account
+// capability is `kFalse`.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       MustShowEquallyWeightedButtons_CapabilityFalse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  AccountInfo account_info = SigninUser(TestingProfile::kDefaultProfileUserName,
+                                        signin::ConsentLevel::kSignin);
+  SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(account_info,
+                                                              false);
+  CreateController(EntityInstance::RecordType::kServerWallet);
+  EXPECT_FALSE(prompt_controller().MustShowEquallyWeightedButtons());
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns `true` if the account
+// capability is `kUnknown`.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       MustShowEquallyWeightedButtons_CapabilityUnknown) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  CreateController(EntityInstance::RecordType::kServerWallet);
+  EXPECT_TRUE(prompt_controller().MustShowEquallyWeightedButtons());
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns `false` for public
+// passes.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       MustShowEquallyWeightedButtons_PublicPass) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  AccountInfo account_info = SigninUser(TestingProfile::kDefaultProfileUserName,
+                                        signin::ConsentLevel::kSignin);
+  SetMustShowEquallyWeightedButtonsForPrivatePassesInAutofill(account_info,
+                                                              true);
+  CreateControllerWithEntity(test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  EXPECT_FALSE(prompt_controller().MustShowEquallyWeightedButtons());
 }
 
 }  // namespace
