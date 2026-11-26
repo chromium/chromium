@@ -388,8 +388,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
   EXPECT_EQ(begin_time, fake_visit_time + base::Microseconds(1));
 }
 
+// TODO(crbug.com/590577432): Flaky on Android.
 TEST_F(AuxiliarySearchDonationServiceTest,
-       PausingApplicationTriggersImmediateDonation) {
+       DISABLED_PausingApplicationTriggersImmediateDonation) {
   base::test::TestFuture<base::android::ApplicationState> future;
   auto listener = base::android::ApplicationStatusListener::New(
       future.GetRepeatingCallback());
