@@ -239,7 +239,14 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
 }
 
 // Verifies that SkImage is processed and produces VideoFrame as expected.
-TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
+// TODO(crbug.com/582405819): Re-enable on MSan once libyuv rolls past the
+// AVX-512 MSan fixes.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_VerifyFrame DISABLED_VerifyFrame
+#else
+#define MAYBE_VerifyFrame VerifyFrame
+#endif
+TEST_P(CanvasCaptureHandlerTest, MAYBE_VerifyFrame) {
   const bool opaque_frame = testing::get<0>(GetParam());
   const bool width = testing::get<1>(GetParam());
   const bool height = testing::get<1>(GetParam());
