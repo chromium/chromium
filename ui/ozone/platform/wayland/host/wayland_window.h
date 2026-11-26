@@ -428,6 +428,9 @@ class WaylandWindow : public PlatformWindow,
   // Updates mask for this window.
   virtual void UpdateWindowMask() = 0;
 
+  // Returns false while bubble activation must be rejected.
+  virtual bool CanActivateBubble() const;
+
   // [Deprecated]
   // If the given |bounds_px| violates size constraints set for this window,
   // fixes them so they don't.
