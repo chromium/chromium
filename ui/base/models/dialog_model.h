@@ -673,7 +673,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
  private:
   // Runs the appropriate variant of the provided ButtonCallbackVariant and
   // returns whether the dialog should close as a result.
-  static bool RunButtonCallback(ButtonCallbackVariant& callback_variant);
+  bool RunButtonCallback(ButtonCallbackVariant& callback_variant);
 
   Button* MaybeGetButtonByUniqueId(ElementIdentifier id);
 

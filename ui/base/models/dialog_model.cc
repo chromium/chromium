@@ -240,19 +240,28 @@ bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
 }
 
 bool DialogModel::RunButtonCallback(ButtonCallbackVariant& callback_variant) {
-  return std::visit(
-      absl::Overload{
-          [](decltype(base::DoNothing())& callback) { return true; },
-          [](base::RepeatingCallback<bool()>& callback) {
-            return callback.Run();
-          },
-          [](base::OnceClosure& callback) {
-            CHECK(callback);
-            std::move(callback).Run();
-            return true;
-          },
-      },
-      callback_variant);
+  return std::visit(absl::Overload{
+                        [this](decltype(base::DoNothing())& callback) {
+                          close_action_callback_.Reset();
+                          return true;
+                        },
+                        [](base::RepeatingCallback<bool()>& callback) {
+                          return callback.Run();
+                        },
+                        [this](base::OnceClosure& callback) {
+                          CHECK(callback);
+                          // Per SetCloseActionCallback(), the close callback
+                          // must not run during accept/cancel. Reset it before
+                          // invoking the OnceClosure because the callback
+                          // itself may synchronously trigger widget close
+                          // (e.g., opening a tab that deactivates a bubble)
+                          // before the host marks the dialog as closing.
+                          close_action_callback_.Reset();
+                          std::move(callback).Run();
+                          return true;
+                        },
+                    },
+                    callback_variant);
 }
 
 void DialogModel::OnDialogCloseAction(base::PassKey<DialogModelHost>) {

@@ -955,4 +955,93 @@ TEST_F(BubbleDialogModelHostTest, ParagraphWithHeaderHasAccessibleMetadata) {
   bubble_widget->CloseNow();
 }
 
+TEST_F(BubbleDialogModelHostTest,
+       AcceptOnceClosureClosingWidgetDoesNotRunCloseActionCallback) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  Widget* bubble_widget = nullptr;
+  bool accepted = false;
+  bool closed = false;
+
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .AddOkButton(base::BindLambdaForTesting([&] {
+            accepted = true;
+            // Simulate the accept callback synchronously triggering widget
+            // close (e.g., uninstalling an extension opens a foreground
+            // uninstall URL tab that deactivates a close-on-deactivate bubble).
+            bubble_widget->CloseWithReason(Widget::ClosedReason::kLostFocus);
+          }))
+          .AddCancelButton(base::DoNothing())
+          .SetCloseActionCallback(
+              base::BindLambdaForTesting([&] { closed = true; }))
+          .Build();
+
+  auto host_unique = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+  auto* host = host_unique.get();
+  bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
+      std::move(host_unique),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  test::WidgetVisibleWaiter shown_waiter(bubble_widget);
+  bubble_widget->Show();
+  shown_waiter.Wait();
+
+  EXPECT_FALSE(accepted);
+  EXPECT_FALSE(closed);
+
+  test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  host->AcceptDialog();
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(accepted);
+  EXPECT_FALSE(closed);
+}
+
+TEST_F(BubbleDialogModelHostTest,
+       CancelOnceClosureClosingWidgetDoesNotRunCloseActionCallback) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  Widget* bubble_widget = nullptr;
+  bool cancelled = false;
+  bool closed = false;
+
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .AddOkButton(base::DoNothing())
+          .AddCancelButton(base::BindLambdaForTesting([&] {
+            cancelled = true;
+            bubble_widget->CloseWithReason(Widget::ClosedReason::kLostFocus);
+          }))
+          .SetCloseActionCallback(
+              base::BindLambdaForTesting([&] { closed = true; }))
+          .Build();
+
+  auto host_unique = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+  auto* host = host_unique.get();
+  bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
+      std::move(host_unique),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  test::WidgetVisibleWaiter shown_waiter(bubble_widget);
+  bubble_widget->Show();
+  shown_waiter.Wait();
+
+  EXPECT_FALSE(cancelled);
+  EXPECT_FALSE(closed);
+
+  test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  host->CancelDialog();
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(cancelled);
+  EXPECT_FALSE(closed);
+}
+
 }  // namespace views
