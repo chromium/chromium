@@ -192,7 +192,7 @@ TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
   const AutofillProfile merged_profile = test::SupersetProfileOf(
       {test::AccountNameEmailProfile(),
        test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome)},
-      app_locale().tag_string(), AutofillProfile::RecordType::kAccount);
+      app_locale(), AutofillProfile::RecordType::kAccount);
   std::unique_ptr<SaveAddressBubbleController> controller = CreateController(
       merged_profile,
       AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge);

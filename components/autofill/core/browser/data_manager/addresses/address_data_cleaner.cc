@@ -126,7 +126,7 @@ std::vector<T> CalculateMinimalIncompatibleTypeSetsImpl(
 void DeduplicateProfiles(const base::i18n::LanguageTag& app_locale,
                          std::vector<ProfileWithAction>& profiles_with_action) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DeduplicateProfiles");
-  const AutofillProfileComparator comparator(app_locale.tag_string());
+  const AutofillProfileComparator comparator(app_locale);
   size_t removed_profiles_count = 0;
   for (auto& [profile, profile_action] : profiles_with_action) {
     // Returns true if `profile` is a subset of `superset`. Note that due to
@@ -190,7 +190,7 @@ void DeduplicateProfiles(const base::i18n::LanguageTag& app_locale,
       }
       const AutofillProfile::ProfileMergeResult merge_result =
           merge_candidate.profile.MergeDataFrom(profile_it->profile,
-                                                app_locale.tag_string());
+                                                app_locale);
       if (merge_result != AutofillProfile::ProfileMergeResult::kMergeFailed) {
         profile_it->action = ProfileAction::kRemove;
         merge_candidate.action = ProfileAction::kUpdate;

@@ -30,8 +30,7 @@ namespace payments {
 PaymentsProfileComparator::PaymentsProfileComparator(
     const base::i18n::LanguageTag& app_locale,
     const PaymentOptionsProvider& options)
-    : autofill::AutofillProfileComparator(app_locale.tag_string()),
-      options_(options) {}
+    : autofill::AutofillProfileComparator(app_locale), options_(options) {}
 
 PaymentsProfileComparator::~PaymentsProfileComparator() = default;
 
@@ -237,17 +236,18 @@ PaymentsProfileComparator::ComputeMissingFields(
   // otherwise. Note that international format numbers will always work--this
   // is just the region that will be used to check if the number is
   // potentially in a local format.
-  const std::string country =
-      autofill::data_util::GetCountryCodeWithFallback(profile, app_locale());
+  const std::string country = autofill::data_util::GetCountryCodeWithFallback(
+      profile, app_locale().tag_string());
 
-  std::u16string phone =
-      profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, app_locale());
+  std::u16string phone = profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
+                                         app_locale().tag_string());
   std::u16string intl_phone = base::UTF8ToUTF16("+" + base::UTF16ToUTF8(phone));
   if (!(autofill::IsPossiblePhoneNumber(phone, country) ||
         autofill::IsPossiblePhoneNumber(intl_phone, country)))
     missing |= kPhone;
 
-  std::u16string email = profile.GetInfo(autofill::EMAIL_ADDRESS, app_locale());
+  std::u16string email =
+      profile.GetInfo(autofill::EMAIL_ADDRESS, app_locale().tag_string());
   if (!autofill::IsValidEmailAddress(email))
     missing |= kEmail;
 
@@ -320,8 +320,8 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
 bool PaymentsProfileComparator::AreRequiredAddressFieldsPresent(
     const autofill::AutofillProfile& profile) const {
   std::unique_ptr<::i18n::addressinput::AddressData> data =
-      autofill::i18n::CreateAddressDataFromAutofillProfile(profile,
-                                                           app_locale());
+      autofill::i18n::CreateAddressDataFromAutofillProfile(
+          profile, app_locale().tag_string());
 
   return autofill::addressinput::HasAllRequiredFields(*data);
 }

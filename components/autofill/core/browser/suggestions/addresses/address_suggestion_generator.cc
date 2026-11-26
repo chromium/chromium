@@ -498,7 +498,7 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // another profile that is later removed by another filtering strategy.
   profiles_to_suggest = DeduplicatedProfilesForSuggestions(
       profiles_to_suggest, field_types,
-      AutofillProfileComparator(address_data.app_locale().tag_string()));
+      AutofillProfileComparator(address_data.app_locale()));
 
   // For field-by-field filling suggestions, we also want to remove suggestions
   // that have the same value as the trigger field. Such suggestions would be

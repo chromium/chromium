@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
@@ -20,10 +21,6 @@
 #include "components/autofill/core/browser/data_model/addresses/email_info.h"
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
-
-namespace base::i18n {
-class LanguageTag;
-}  // namespace base::i18n
 
 namespace autofill {
 
@@ -40,7 +37,7 @@ struct ProfileValueDifference {
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
-  explicit AutofillProfileComparator(std::string_view app_locale);
+  explicit AutofillProfileComparator(const base::i18n::LanguageTag& app_locale);
 
   AutofillProfileComparator(const AutofillProfileComparator&) = delete;
   AutofillProfileComparator& operator=(const AutofillProfileComparator&) =
@@ -150,7 +147,7 @@ class AutofillProfileComparator {
       const AutofillProfile& b) const;
 
   // App locale used when this comparator instance was created.
-  const std::string app_locale() const { return app_locale_; }
+  const base::i18n::LanguageTag& app_locale() const { return app_locale_; }
 
  protected:
   // The result type returned by CompareTokens.
@@ -180,7 +177,7 @@ class AutofillProfileComparator {
                                         const AutofillProfile& p2) const;
 
  private:
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 };
 
 }  // namespace autofill

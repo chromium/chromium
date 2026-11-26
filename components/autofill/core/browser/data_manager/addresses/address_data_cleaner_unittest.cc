@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -496,7 +497,8 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
 }
 
 TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
-  const AutofillProfileComparator comparator("en_US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
   AutofillProfile profile = test::GetFullProfile();
   // FullProfile2 differs from `profile` in numerious ways.
   AutofillProfile other_profile1 = test::GetFullProfile2();

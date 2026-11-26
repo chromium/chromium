@@ -202,7 +202,7 @@ void LogAddressProfileImportUkm(
     builder.SetDuplicationRank(GetDuplicationRank(
         AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             *import_candidate, existing_profiles,
-            AutofillProfileComparator(app_locale.tag_string()))));
+            AutofillProfileComparator(app_locale))));
   }
   builder.Record(ukm_recorder);
 }
@@ -337,7 +337,7 @@ void LogNewProfileImportDecision(
     int duplication_rank = GetDuplicationRank(
         AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
             import_candidate, existing_profiles,
-            AutofillProfileComparator(app_locale.tag_string())));
+            AutofillProfileComparator(app_locale)));
     if (duplication_rank == 1) {
       base::UmaHistogramEnumeration(
           base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
@@ -374,7 +374,7 @@ void LogProfileUpdateImportDecision(
   int duplication_rank = GetDuplicationRank(
       AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
           import_candidate, existing_profiles,
-          AutofillProfileComparator(app_locale.tag_string())));
+          AutofillProfileComparator(app_locale)));
   if (duplication_rank == 1) {
     base::UmaHistogramEnumeration(
         base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);

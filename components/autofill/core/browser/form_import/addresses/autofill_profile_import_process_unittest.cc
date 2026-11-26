@@ -1189,7 +1189,7 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Work_SupersetImport) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, work_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(account_name_email_profile);
@@ -1239,7 +1239,7 @@ TEST_F(AutofillProfileImportProcessTest, NameEmail_Home_SupersetImport) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);
@@ -1293,7 +1293,7 @@ TEST_F(AutofillProfileImportProcessTest,
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);
@@ -1328,7 +1328,7 @@ TEST_F(AutofillProfileImportProcessTest,
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kLocalOrSyncable);
 
   address_data_manager().AddProfile(home_profile);

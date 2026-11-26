@@ -11,6 +11,10 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_util.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill::test {
 
 // Defines the |value| and |verification_status| for a specific Autofill
@@ -83,7 +87,7 @@ AutofillProfile OnlyAddressProfile(AutofillProfile::RecordType record_type =
 // a specific record type.
 AutofillProfile SupersetProfileOf(
     base::span<const AutofillProfile> profiles,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillProfile::RecordType type = AutofillProfile::RecordType::kAccount,
     AddressCountryCode country_code = AddressCountryCode("US"));
 }  // namespace autofill::test

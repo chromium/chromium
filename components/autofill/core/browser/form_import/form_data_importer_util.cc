@@ -85,8 +85,7 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
   // Merging might fail due to an incorrectly complemented country in one of the
   // merge candidates. In this case, multi-step imports are not offered.
   while (candidate != multistep_candidates_.end() &&
-         completed_profile.MergeDataFrom(candidate->profile,
-                                         app_locale_.tag_string()) !=
+         completed_profile.MergeDataFrom(candidate->profile, app_locale_) !=
              AutofillProfile::ProfileMergeResult::kMergeFailed) {
     MergeImportMetadata(candidate->import_metadata, completed_metadata);
     candidate++;

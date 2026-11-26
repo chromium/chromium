@@ -208,7 +208,7 @@ class AutofillProfileComparatorTest : public testing::Test {
     }
   }
 
-  AutofillProfileComparator comparator_{kLocale};
+  AutofillProfileComparator comparator_{kLocaleTag};
 };
 
 TEST_F(AutofillProfileComparatorTest, UniqueTokens) {

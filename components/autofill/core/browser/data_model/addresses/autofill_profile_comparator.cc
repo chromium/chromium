@@ -54,8 +54,8 @@ constexpr char16_t kSpace[] = u" ";
 }  // namespace
 
 AutofillProfileComparator::AutofillProfileComparator(
-    std::string_view app_locale)
-    : app_locale_(app_locale.data(), app_locale.size()) {}
+    const base::i18n::LanguageTag& app_locale)
+    : app_locale_(app_locale) {}
 
 AutofillProfileComparator::~AutofillProfileComparator() = default;
 
@@ -141,8 +141,10 @@ bool AutofillProfileComparator::Compare(
 std::optional<EmailInfo> AutofillProfileComparator::MergeEmailAddresses(
     const AutofillProfile& new_profile,
     const AutofillProfile& old_profile) const {
-  const std::u16string& e1 = new_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
-  const std::u16string& e2 = old_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
+  const std::u16string& e1 =
+      new_profile.GetInfo(EMAIL_ADDRESS, app_locale_.tag_string());
+  const std::u16string& e2 =
+      old_profile.GetInfo(EMAIL_ADDRESS, app_locale_.tag_string());
 
   if (!e1.empty() && !e2.empty() &&
       !l10n::CaseInsensitiveCompare().StringsEqual(e1, e2)) {
@@ -163,7 +165,7 @@ std::optional<EmailInfo> AutofillProfileComparator::MergeEmailAddresses(
   }
 
   EmailInfo merged_value;
-  merged_value.SetInfo(EMAIL_ADDRESS, best, app_locale_);
+  merged_value.SetInfo(EMAIL_ADDRESS, best, app_locale_.tag_string());
   return merged_value;
 }
 
@@ -172,14 +174,15 @@ std::optional<CompanyInfo> AutofillProfileComparator::MergeCompanyNames(
     const AutofillProfile& old_profile) const {
   auto create_company = [&](std::u16string_view company_name) {
     CompanyInfo merged_company;
-    merged_company.SetInfo(COMPANY_NAME, company_name, app_locale_);
+    merged_company.SetInfo(COMPANY_NAME, company_name,
+                           app_locale_.tag_string());
     return merged_company;
   };
 
   const std::u16string& new_company_name =
-      new_profile.GetInfo(COMPANY_NAME, app_locale_);
+      new_profile.GetInfo(COMPANY_NAME, app_locale_.tag_string());
   const std::u16string& old_company_name =
-      old_profile.GetInfo(COMPANY_NAME, app_locale_);
+      old_profile.GetInfo(COMPANY_NAME, app_locale_.tag_string());
 
   if (normalization::HasOnlySkippableCharacters(new_company_name)) {
     return create_company(old_company_name);
@@ -246,7 +249,7 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   // TODO(crbug.com/503704299): Remove this validation once profiles with
   // invalid country codes are cleaned up.
   if (region.empty() || !data_util::IsValidCountryCode(region)) {
-    region = AutofillCountry::CountryCodeForLocale(app_locale_);
+    region = AutofillCountry::CountryCodeForLocale(app_locale_.tag_string());
   }
 
   // Parse the phone numbers.

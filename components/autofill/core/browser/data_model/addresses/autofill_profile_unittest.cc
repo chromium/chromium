@@ -1089,7 +1089,8 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
 }
 
 TEST_F(AutofillProfileTest, IsSubsetOf) {
-  AutofillProfileComparator comparator("en-US");
+  AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
   const AutofillProfile standard_profile = test::StandardProfile();
   const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
 
@@ -1125,7 +1126,8 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
                                    .with_country("US")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // When a form has a NAME_FULL field rather than a NAME_MIDDLE field, consider
   // whether one profile's full name can be derived from the other's.
@@ -1175,7 +1177,8 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
                                    .with_country("US")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_FALSE(
       profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
@@ -1202,7 +1205,8 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
                                    .with_country("US")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_FALSE(
       profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
@@ -1223,7 +1227,8 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentStreetAddresses) {
   profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   profile2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"275 Main Street");
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
                                               {ADDRESS_HOME_STREET_ADDRESS}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
@@ -1249,7 +1254,8 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
                                       .with_country("US")
                                       .Build());
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
       comparator, profile2,
@@ -1363,7 +1369,8 @@ TEST_F(AutofillProfileTest,
                                    .with_country("CA")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-CA");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-CA"));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
                                              {NAME_FULL, ADDRESS_HOME_ZIP}));
@@ -1389,7 +1396,8 @@ TEST_F(AutofillProfileTest,
                                    .with_phone("15144445454")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-CA");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-CA"));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
       comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
@@ -1430,7 +1438,8 @@ TEST_F(AutofillProfileTest,
                                    .with_phone("4445454")
                                    .Build());
 
-  const AutofillProfileComparator comparator("en-US");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
       comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
@@ -1488,7 +1497,8 @@ TEST_F(AutofillProfileTest,
                                    .with_phone("987650000")
                                    .Build());
 
-  const AutofillProfileComparator comparator("pt-BR");
+  const AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("pt-BR"));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
       comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
@@ -1518,7 +1528,8 @@ TEST_F(AutofillProfileTest,
 }
 
 TEST_F(AutofillProfileTest, IsStrictSupersetOf) {
-  AutofillProfileComparator comparator("en-US");
+  AutofillProfileComparator comparator(
+      base::i18n::GetKnownLanguageTag("en-US"));
   const AutofillProfile standard_profile = test::StandardProfile();
   const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
   const AutofillProfile different_profile =
@@ -1786,7 +1797,7 @@ TEST_F(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   b.FinalizeAfterImport();
   a.FinalizeAfterImport();
 
-  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+  EXPECT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
   // Merge has modified profile a, the validation is not updated.
   EXPECT_EQ(base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)),
@@ -1809,7 +1820,7 @@ TEST_F(AutofillProfileTest, MergeDataFrom_SameProfile) {
   b.SetRawInfoWithVerificationStatus(NAME_FULL, b.GetRawInfo(NAME_FULL),
                                      VerificationStatus::kUserVerified);
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+  EXPECT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
   // Merge has modified profile a, the validation is not updated.
   EXPECT_EQ(1u, a.usage_history().use_count());
@@ -1819,7 +1830,7 @@ TEST_F(AutofillProfileTest, MergeDataFrom_SameProfile) {
   AutofillProfile c = a;
   c.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   c.usage_history().set_use_count(3);
-  EXPECT_EQ(a.MergeDataFrom(c, "en-US"),
+  EXPECT_EQ(a.MergeDataFrom(c, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithoutModification);
   // Merge has not modified anything.
   EXPECT_EQ(3u, a.usage_history().use_count());
@@ -1836,7 +1847,8 @@ TEST_F(AutofillProfileTest, MergeDataFrom_NotMergeable) {
   b.FinalizeAfterImport();
 
   const AutofillProfile expected_a = a;
-  EXPECT_EQ(a.MergeDataFrom(b, "en-US"), ProfileMergeResult::kMergeFailed);
+  EXPECT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
+            ProfileMergeResult::kMergeFailed);
   EXPECT_EQ(a, expected_a);
 }
 
@@ -1860,7 +1872,7 @@ TEST_F(AutofillProfileTest, MergeDataFrom_TokenQuality) {
   // Finalize, merge and verify expectations.
   a.FinalizeAfterImport();
   b.FinalizeAfterImport();
-  ASSERT_EQ(a.MergeDataFrom(b, "en-US"),
+  ASSERT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_THAT(
       a.token_quality().GetObservationTypesForFieldType(ADDRESS_HOME_STATE),
@@ -1884,7 +1896,7 @@ TEST_F(AutofillProfileTest, OverwriteName_AddNameFull) {
                                      VerificationStatus::kUserVerified);
   b.FinalizeAfterImport();
 
-  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+  EXPECT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
@@ -1915,7 +1927,7 @@ TEST_F(AutofillProfileTest, OverwriteName_DifferentCase) {
   a.FinalizeAfterImport();
   b.FinalizeAfterImport();
 
-  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+  EXPECT_EQ(a.MergeDataFrom(b, base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
@@ -2387,7 +2399,8 @@ TEST_F(AutofillProfileTest, ProfilesMerge_InvalidCountryCode) {
   // 2. Countries are mergeable because `existing` has no country.
   // This will call `MergeDataFrom(incoming, "en-US")` region hint will be "US"
   // (from app_locale).
-  ASSERT_EQ(existing.MergeDataFrom(incoming, "en-US"),
+  ASSERT_EQ(existing.MergeDataFrom(incoming,
+                                   base::i18n::GetKnownLanguageTag("en-US")),
             ProfileMergeResult::kMergeSucceededWithModification);
 }
 

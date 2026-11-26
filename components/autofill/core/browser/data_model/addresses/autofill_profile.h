@@ -274,8 +274,9 @@ class AutofillProfile : public FormGroup {
   // whether `this` was modified. If mergeable, modifies `this` in-place.
   // Merging two `kAccountNameEmail` profiles will never happen, since there can
   // be at most one of them at any given time.
-  [[nodiscard]] ProfileMergeResult MergeDataFrom(const AutofillProfile& profile,
-                                                 std::string_view app_locale);
+  [[nodiscard]] ProfileMergeResult MergeDataFrom(
+      const AutofillProfile& profile,
+      const base::i18n::LanguageTag& app_locale);
 
   // Creates a differentiating label for each of the `profiles`.
   // Labels consist of the minimal differentiating combination of:

@@ -1537,7 +1537,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, work_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kAccount);
 
   ImportScenarioTestCase test_scenario{
@@ -1570,7 +1570,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kAccount);
 
   ImportScenarioTestCase test_scenario{
@@ -1601,7 +1601,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile_Declined) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, work_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kAccount);
 
   ImportScenarioTestCase test_scenario{
@@ -1632,7 +1632,7 @@ TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile_Declined) {
       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
   const AutofillProfile observed_profile =
       test::SupersetProfileOf({account_name_email_profile, home_profile},
-                              address_data_manager().app_locale().tag_string(),
+                              address_data_manager().app_locale(),
                               AutofillProfile::RecordType::kAccount);
 
   ImportScenarioTestCase test_scenario{

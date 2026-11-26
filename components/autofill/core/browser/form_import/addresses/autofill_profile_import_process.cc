@@ -54,7 +54,7 @@ using UserDecision = AutofillClient::AddressPromptUserDecision;
 bool ShouldCountryApproximationBeRemoved(
     const AutofillProfile& profile,
     base::span<const AutofillProfile* const> existing_profiles,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   auto is_mergeable_with_existing_profiles =
       [&existing_profiles, &app_locale](AutofillProfile& profile_to_check) {
         return std::ranges::any_of(
@@ -175,7 +175,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           ProfileCountrySource::kExplicitlyObserved &&
       ShouldCountryApproximationBeRemoved(observed_profile_,
                                           address_data_manager_->GetProfiles(),
-                                          app_locale_.tag_string())) {
+                                          app_locale_)) {
     observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
     import_metadata_.country_source = ProfileCountrySource::kNoCountry;
   }
@@ -358,8 +358,8 @@ ProfileImportProcess::GetImportCandidates(
   result.reserve(existing_profiles.size());
   for (const AutofillProfile* candidate : existing_profiles) {
     AutofillProfile merged_profile = *candidate;
-    const ProfileMergeResult merge_result = merged_profile.MergeDataFrom(
-        observed_profile, app_locale_.tag_string());
+    const ProfileMergeResult merge_result =
+        merged_profile.MergeDataFrom(observed_profile, app_locale_);
     switch (merge_result) {
       case ProfileMergeResult::kMergeSucceededWithModification: {
         // `ProfilesHaveDifferentSettingsVisibleValues()` compares raw field

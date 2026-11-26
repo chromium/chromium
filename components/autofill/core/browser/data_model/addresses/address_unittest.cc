@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -400,14 +401,16 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
   // The merging should maintain the value because profile2 is not more
   // recently used.
   EXPECT_EQ(
-      profile1.MergeDataFrom(profile2, "en-US"),
+      profile1.MergeDataFrom(profile2,
+                             base::i18n::GetKnownLanguageTag("en-US")),
       AutofillProfile::ProfileMergeResult::kMergeSucceededWithoutModification);
   EXPECT_EQ(profile1.GetRawInfo(ADDRESS_HOME_ZIP), u"12345");
   // Once it is more recently used, the value from profile2 should be copied
   // into profile1.
   profile2.usage_history().set_use_date(new_time);
   EXPECT_EQ(
-      profile1.MergeDataFrom(profile2, "en-US"),
+      profile1.MergeDataFrom(profile2,
+                             base::i18n::GetKnownLanguageTag("en-US")),
       AutofillProfile::ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_EQ(profile1.GetRawInfo(ADDRESS_HOME_ZIP), u"1234");
 
@@ -419,7 +422,8 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
   test::SetProfileInfo(
       &profile3,
       test::SetProfileInfoOptionsBuilder().with_zipcode("67890").Build());
-  EXPECT_EQ(profile1.MergeDataFrom(profile3, "en-US"),
+  EXPECT_EQ(profile1.MergeDataFrom(profile3,
+                                   base::i18n::GetKnownLanguageTag("en-US")),
             AutofillProfile::ProfileMergeResult::kMergeFailed);
 }
 

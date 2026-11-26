@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -179,7 +180,7 @@ AutofillProfile OnlyAddressProfile(AutofillProfile::RecordType record_type) {
 }
 
 AutofillProfile SupersetProfileOf(base::span<const AutofillProfile> profiles,
-                                  std::string_view app_locale,
+                                  const base::i18n::LanguageTag& app_locale,
                                   AutofillProfile::RecordType type,
                                   AddressCountryCode country_code) {
   AutofillProfile new_profile{type, country_code};

@@ -570,7 +570,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     return false;
   }
 
-  const std::string& app_locale = comparator.app_locale();
+  const std::string_view app_locale = comparator.app_locale().tag_string();
   const AddressComponent& address = GetAddress().GetRoot();
   const AddressComponent& other_address = profile.GetAddress().GetRoot();
 
@@ -713,7 +713,7 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 
 AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     const AutofillProfile& profile,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   using enum ProfileMergeResult;
   // TODO(crbug.com/453945181) Move this CHECK to a more suitable place.
   CHECK(record_type() != RecordType::kAccountNameEmail ||
