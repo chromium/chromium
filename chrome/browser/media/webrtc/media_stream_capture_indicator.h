@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_ui_types.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -61,12 +62,19 @@ class MediaStreamCaptureIndicator
   // Registers a new media stream for |web_contents| and returns an object used
   // by the content layer to notify about the state of the stream. Optionally,
   // |ui| is used to display custom UI while the stream is captured.
+  //
+  // |request_origin| is the origin on whose behalf the capture was requested.
+  // It is used, together with |media_id|, to enforce the same-origin tab
+  // capture policy for the lifetime of the stream. It differs from the origin
+  // of |web_contents|'s main frame when the request comes from a cross-origin
+  // subframe. It must be provided if |media_id| identifies a tab.
   std::unique_ptr<content::MediaStreamUI> RegisterMediaStream(
       content::WebContents* web_contents,
       const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui = nullptr,
       const std::u16string application_title = std::u16string(),
-      std::optional<content::DesktopMediaID> media_id = std::nullopt);
+      std::optional<content::DesktopMediaID> media_id = std::nullopt,
+      std::optional<url::Origin> request_origin = std::nullopt);
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;

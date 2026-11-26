@@ -17,7 +17,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -175,6 +178,76 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   const DesktopCaptureAccessHandler::RequestsQueues& GetRequestQueues() {
     return access_handler_->pending_requests_;
+  }
+
+  void SetSameOriginPolicy(const std::string& origin_pattern) {
+    base::ListValue matchlist;
+    matchlist.Append(origin_pattern);
+    profile()->GetPrefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
+                                   std::move(matchlist));
+  }
+
+  std::unique_ptr<content::WebContents> CreateTabAndGetCaptureId(
+      const GURL& url,
+      content::WebContentsMediaCaptureId* out_capture_id) {
+    std::unique_ptr<content::WebContents> tab =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    content::NavigationSimulator::CreateBrowserInitiated(url, tab.get())
+        ->Commit();
+    *out_capture_id = content::WebContentsMediaCaptureId(
+        tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        tab->GetPrimaryMainFrame()->GetRoutingID());
+    return tab;
+  }
+
+  // Registers a stream for the capture of the tab identified by `capture_id`,
+  // like chooseDesktopMedia() does once the user has picked a tab, and returns
+  // the ID of the stream.
+  std::string RegisterStreamForTab(
+      const content::WebContentsMediaCaptureId& capture_id) {
+    return content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        url::Origin::Create(GURL(kOrigin)),
+        content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                                content::DesktopMediaID::kNullId, capture_id),
+        content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+  }
+
+  void RunChangeSourceWithDeviceId(
+      const std::string& video_device_id,
+      blink::mojom::MediaStreamRequestResult* request_result,
+      blink::mojom::StreamDevices* devices_result) {
+    content::MediaStreamRequest request(
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, url::Origin::Create(GURL(kOrigin)), false,
+        blink::MEDIA_DEVICE_UPDATE,
+        /*requested_audio_device_ids=*/{}, {video_device_id},
+        blink::mojom::MediaStreamType::NO_SERVICE,
+        blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+        /*disable_local_echo=*/false,
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*captured_surface_control_active=*/false);
+
+    base::RunLoop wait_loop;
+    content::MediaResponseCallback callback = base::BindOnce(
+        [](base::RunLoop* wait_loop,
+           blink::mojom::MediaStreamRequestResult* request_result,
+           blink::mojom::StreamDevices* devices_result,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
+           blink::mojom::MediaStreamRequestResult result,
+           std::unique_ptr<content::MediaStreamUI> ui) {
+          *request_result = result;
+          if (!stream_devices_set.stream_devices.empty()) {
+            *devices_result = *stream_devices_set.stream_devices[0];
+          }
+          wait_loop->Quit();
+        },
+        &wait_loop, request_result, devices_result);
+    access_handler_->HandleRequest(web_contents(), request, std::move(callback),
+                                   nullptr /* extension */);
+    wait_loop.Run();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -686,6 +759,132 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
   EXPECT_EQ(1u, blink::CountDevices(stream_devices));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(DesktopCaptureAccessHandlerTest, MalformedChangeSourceDeviceID) {
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::OK;
+  blink::mojom::StreamDevices stream_devices;
+  RunChangeSourceWithDeviceId("MALFORMED", &result, &stream_devices);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID,
+            result);
+  EXPECT_EQ(0u, blink::CountDevices(stream_devices));
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceSameOriginPolicyAllowed) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://origin/page2"),
+                               &target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices stream_devices;
+  RunChangeSourceWithDeviceId(target_capture_id.ToString(), &result,
+                              &stream_devices);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(stream_devices));
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       ChangeSourceSameOriginPolicyRejectedForCrossOriginTab) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId cross_origin_capture_id;
+  std::unique_ptr<content::WebContents> cross_origin_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://different-origin/"),
+                               &cross_origin_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices stream_devices;
+  RunChangeSourceWithDeviceId(cross_origin_capture_id.ToString(), &result,
+                              &stream_devices);
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(stream_devices));
+}
+
+// The tab that the user picks in the picker of a change-source request is
+// validated against the same-origin policy.
+TEST_F(DesktopCaptureAccessHandlerTest,
+       ChangeSourcePickerResultSameOriginPolicyAllowed) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://origin/page2"),
+                               &target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices stream_devices;
+  ProcessDeviceUpdateRequest(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              target_capture_id),
+      &result, &stream_devices, blink::MEDIA_DEVICE_UPDATE,
+      /*request_audio=*/false);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, blink::CountDevices(stream_devices));
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       ChangeSourcePickerResultSameOriginPolicyRejectedForCrossOriginTab) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId cross_origin_capture_id;
+  std::unique_ptr<content::WebContents> cross_origin_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://different-origin/"),
+                               &cross_origin_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices stream_devices;
+  ProcessDeviceUpdateRequest(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              cross_origin_capture_id),
+      &result, &stream_devices, blink::MEDIA_DEVICE_UPDATE,
+      /*request_audio=*/false);
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_EQ(0u, blink::CountDevices(stream_devices));
+}
+
+// The tab that a stream was registered for is validated against the
+// same-origin policy when the stream is requested, because the tab may have
+// navigated since the user picked it.
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamSameOriginPolicyAllowedForSameOriginTab) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId target_capture_id;
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://origin/page2"),
+                               &target_capture_id);
+  const std::string stream_id = RegisterStreamForTab(target_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  ProcessGenerateStreamRequest({stream_id}, GURL(kOrigin),
+                               /*extension=*/nullptr, &result, &devices);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_TRUE(devices.video_device.has_value());
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamSameOriginPolicyRejectedForCrossOriginTab) {
+  SetSameOriginPolicy("https://origin/");
+  content::WebContentsMediaCaptureId cross_origin_capture_id;
+  std::unique_ptr<content::WebContents> cross_origin_web_contents =
+      CreateTabAndGetCaptureId(GURL("https://different-origin/"),
+                               &cross_origin_capture_id);
+  const std::string stream_id = RegisterStreamForTab(cross_origin_capture_id);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  ProcessGenerateStreamRequest({stream_id}, GURL(kOrigin),
+                               /*extension=*/nullptr, &result, &devices);
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      result);
+  EXPECT_FALSE(devices.video_device.has_value());
+}
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerEnabled) {

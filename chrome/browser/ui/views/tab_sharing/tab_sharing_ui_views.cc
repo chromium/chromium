@@ -189,10 +189,11 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const std::u16string& capturer_name,
     bool app_preferred_current_tab,
     TabSharingInfoBarDelegate::TabShareType capture_type,
-    bool captured_surface_control_active) {
+    bool captured_surface_control_active,
+    const std::optional<url::Origin>& request_origin) {
   return std::make_unique<TabSharingUIViews>(
       capturer, media_id, capturer_name, app_preferred_current_tab,
-      capture_type, captured_surface_control_active);
+      capture_type, captured_surface_control_active, request_origin);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -201,15 +202,18 @@ TabSharingUIViews::TabSharingUIViews(
     const std::u16string& capturer_name,
     bool app_preferred_current_tab,
     TabSharingInfoBarDelegate::TabShareType capture_type,
-    bool captured_surface_control_active)
+    bool captured_surface_control_active,
+    const std::optional<url::Origin>& request_origin)
     : capture_session_id_(next_capture_session_id_++),
       profile_(ProfileManager::GetLastUsedProfileAllowedByPolicy()),
       capturer_(capturer),
-      capturer_origin_(GetOriginFromId(capturer)),
+      capturer_origin_(request_origin ? *request_origin
+                                      : GetOriginFromId(capturer)),
       can_focus_capturer_(GetOriginFromId(capturer).scheme() !=
                           extensions::kExtensionScheme),
       capturer_restricted_to_same_origin_(
           capture_policy::CapturerRestrictedToSameOrigin(
+              capturer_origin_,
               WebContentsFromId(capturer))),
       shared_tab_media_id_(media_id),
       capturer_name_(std::move(capturer_name)),
@@ -298,6 +302,15 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
 
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   CHECK(main_frame, base::NotFatalUntil::M162);
+
+  // The button is disabled for tabs that the same-origin policy does not allow
+  // sharing, but do not rely on the state of the infobar to enforce the policy.
+  if (capturer_restricted_to_same_origin_ &&
+      !capturer_origin_.IsSameOriginWith(
+          main_frame->GetLastCommittedOrigin())) {
+    return;
+  }
+
   source_callback_.Run(
       content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
                               content::DesktopMediaID::kNullId,

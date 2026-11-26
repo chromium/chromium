@@ -12,17 +12,24 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -46,10 +53,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/audio_service.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,11 +70,17 @@
 #include "media/audio/audio_features.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/display_media_information.mojom.h"
 #include "net/base/filename_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gl/gl_switches.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -298,6 +317,85 @@ void ClickShareThisTabInsteadButton(content::WebContents* web_contents,
   }
   AsTabSharingDelegate(delegate)->ShareThisTabInstead();
 }
+
+bool IsShareThisTabInsteadButtonEnabled(content::WebContents* web_contents,
+                                        size_t infobar_index = 0) {
+  DCHECK(HasShareThisTabInsteadButton(web_contents));  // Test error otherwise.
+  infobars::InfoBarDelegate* delegate =
+      GetDelegate(web_contents, infobar_index);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonEnabled(
+        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  }
+  return AsTabSharingDelegate(delegate)->IsButtonEnabled(
+      TabSharingInfoBarButton::kShareThisTabInstead);
+}
+
+[[nodiscard]] bool WaitForInfoBar(content::WebContents* web_contents) {
+  return base::test::RunUntil([web_contents]() {
+    return !GetInfoBarManager(web_contents)->infobars().empty();
+  });
+}
+
+content::DesktopMediaID GetTabMediaId(content::WebContents* tab) {
+  content::RenderFrameHost* const main_frame = tab->GetPrimaryMainFrame();
+  return content::DesktopMediaID(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          main_frame->GetProcess()->GetDeprecatedID(),
+          main_frame->GetRoutingID()));
+}
+
+// A tab-capture stream that is registered with the capture indicator the way
+// the access handlers register one once they have approved a capture, without
+// involving the rest of the media stream stack. This makes it possible to
+// deterministically test how capture policy is enforced when a stream starts.
+class TestTabCaptureStream {
+ public:
+  // `request_origin` is the origin on whose behalf `capturing_tab` captures
+  // `captured_tab`.
+  TestTabCaptureStream(content::WebContents* capturing_tab,
+                       content::WebContents* captured_tab,
+                       const url::Origin& request_origin)
+      : media_id_(GetTabMediaId(captured_tab)) {
+    blink::MediaStreamDevice device(
+        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+        media_id_.ToString(), /*name=*/"tab");
+    device.display_media_info = media::mojom::DisplayMediaInformation::New(
+        media::mojom::DisplayCaptureSurfaceType::BROWSER,
+        /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+        /*capture_handle=*/nullptr, /*initial_zoom_level=*/100);
+    blink::mojom::StreamDevices devices;
+    devices.video_device = std::move(device);
+    ui_ = MediaCaptureDevicesDispatcher::GetInstance()
+              ->GetMediaStreamCaptureIndicator()
+              ->RegisterMediaStream(capturing_tab, devices, /*ui=*/nullptr,
+                                    /*application_title=*/std::u16string(),
+                                    media_id_, request_origin);
+  }
+
+  // Notifies the capture indicator that the stream has started. Returns
+  // whether the capture indicator stopped the stream in response.
+  bool StartAndCheckIfStopped() {
+    ui_->OnStarted(base::BindLambdaForTesting([this]() { ++stop_count_; }),
+                   content::MediaStreamUI::SourceCallback(), /*label=*/"label",
+                   /*screen_capture_ids=*/{media_id_},
+                   content::MediaStreamUI::StateChangeCallback());
+    return stopped();
+  }
+
+  bool stopped() const { return stop_count_ > 0; }
+
+  // The number of times that the capture indicator has stopped the stream.
+  int stop_count() const { return stop_count_; }
+
+ private:
+  const content::DesktopMediaID media_id_;
+  int stop_count_ = 0;
+  std::unique_ptr<content::MediaStreamUI> ui_;
+};
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
   CHECK(command_line);
@@ -914,6 +1012,284 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   EXPECT_EQ(content::EvalJs(capturing_tab->GetPrimaryMainFrame(),
                             "video_track.readyState;"),
             "live");
+}
+
+// The capture indicator is the last line of defense of the same-origin policy.
+// If the captured tab is not same-origin with the capturer by the time the
+// stream starts, e.g. because the tab navigated while the capture request was
+// still being processed, the stream must be stopped.
+IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
+                       StopsCaptureOfTabThatIsCrossOriginWhenStreamStarts) {
+  content::WebContents* target_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* other_target_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  const url::Origin capturer_origin =
+      capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const GURL same_origin_url = target_tab->GetLastCommittedURL();
+
+  // A stream that starts while the tab is same-origin is not stopped.
+  TestTabCaptureStream started_stream(capturing_tab, target_tab,
+                                      capturer_origin);
+  EXPECT_FALSE(started_stream.StartAndCheckIfStopped());
+
+  // A stream that is approved while the tab is same-origin, but which only
+  // starts after the tab has navigated cross-origin.
+  TestTabCaptureStream pending_stream(capturing_tab, target_tab,
+                                      capturer_origin);
+
+  // A stream with which the same capturer captures another tab.
+  TestTabCaptureStream unrelated_stream(capturing_tab, other_target_tab,
+                                        capturer_origin);
+  EXPECT_FALSE(unrelated_stream.StartAndCheckIfStopped());
+
+  ASSERT_TRUE(
+      content::NavigateToURL(target_tab, GetFileURL(kMainHtmlFileName)));
+  ASSERT_FALSE(capturer_origin.IsSameOriginWith(
+      target_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+
+  // The navigation stops the stream that has already started.
+  EXPECT_TRUE(started_stream.stopped());
+
+  // The pending stream cannot be stopped before it starts, but it is stopped
+  // as soon as it does.
+  EXPECT_FALSE(pending_stream.stopped());
+  EXPECT_TRUE(pending_stream.StartAndCheckIfStopped());
+
+  // The same applies to a stream that is only registered after the navigation.
+  TestTabCaptureStream late_stream(capturing_tab, target_tab, capturer_origin);
+  EXPECT_TRUE(late_stream.StartAndCheckIfStopped());
+
+  // A stream is stopped only once. It takes a while until a stream that has
+  // been stopped is torn down, and the tab may become same-origin, and then
+  // cross-origin again, in the meantime.
+  ASSERT_TRUE(content::NavigateToURL(target_tab, same_origin_url));
+  ASSERT_TRUE(capturer_origin.IsSameOriginWith(
+      target_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  ASSERT_TRUE(
+      content::NavigateToURL(target_tab, GetFileURL(kMainHtmlFileName)));
+  EXPECT_EQ(started_stream.stop_count(), 1);
+  EXPECT_EQ(pending_stream.stop_count(), 1);
+  EXPECT_EQ(late_stream.stop_count(), 1);
+
+  // Only the streams that capture the tab that navigated are stopped.
+  EXPECT_EQ(unrelated_stream.stop_count(), 0);
+}
+
+// chrome.tabCapture is subject to the same-origin policy too. A capture that
+// is approved while the tab is same-origin with the capturer is stopped when
+// it starts if the tab has navigated cross-origin in the meantime.
+IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
+                       StopsTabCaptureOfTabThatIsCrossOriginWhenStreamStarts) {
+  content::WebContents* target_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  const url::Origin capturer_origin =
+      capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  content::RenderFrameHost* const capturing_frame =
+      capturing_tab->GetPrimaryMainFrame();
+  content::RenderFrameHost* const target_frame =
+      target_tab->GetPrimaryMainFrame();
+  const int target_process_id = target_frame->GetProcess()->GetDeprecatedID();
+  const int target_frame_id = target_frame->GetRoutingID();
+
+  extensions::TabCaptureRegistry::Get(browser()->GetProfile())
+      ->AddRequest(target_tab, /*extension_id=*/"", /*is_anonymous=*/false,
+                   capturer_origin.GetURL(), GetTabMediaId(target_tab),
+                   capturing_frame->GetProcess()->GetDeprecatedID(),
+                   capturing_frame->GetRoutingID());
+  const content::MediaStreamRequest request(
+      target_process_id, target_frame_id, /*page_request_id=*/0,
+      capturer_origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/{}, /*requested_video_device_ids=*/{},
+      blink::mojom::MediaStreamType::NO_SERVICE,
+      blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
+
+  TabCaptureAccessHandler access_handler;
+  std::optional<blink::mojom::MediaStreamRequestResult> result;
+  std::unique_ptr<content::MediaStreamUI> ui;
+  access_handler.HandleRequest(
+      capturing_tab, request,
+      base::BindLambdaForTesting(
+          [&](const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult request_result,
+              std::unique_ptr<content::MediaStreamUI> stream_ui) {
+            result = request_result;
+            ui = std::move(stream_ui);
+          }),
+      /*extension=*/nullptr);
+  ASSERT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+  ASSERT_TRUE(ui);
+
+  // The capture cannot be stopped before it has started.
+  ASSERT_TRUE(
+      content::NavigateToURL(target_tab, GetFileURL(kMainHtmlFileName)));
+  ASSERT_FALSE(capturer_origin.IsSameOriginWith(
+      target_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+
+  // It is stopped as soon as it starts.
+  bool stopped = false;
+  ui->OnStarted(base::BindLambdaForTesting([&]() { stopped = true; }),
+                content::MediaStreamUI::SourceCallback(), /*label=*/"label",
+                /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+  EXPECT_TRUE(stopped);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebRtcSameOriginPolicyBrowserTest,
+    ChangeSourceToSameOriginTabSucceedsAndTerminatesOnNavigation) {
+  content::WebContents* initial_target = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* other_same_origin_tab =
+      OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  UpdateWebContentsTitle(
+      initial_target, base::UTF8ToUTF16(std::string(kSameOriginRenamedTitle)));
+
+  RunGetDisplayMedia(
+      capturing_tab,
+      "{video: true, audio: true, surfaceSwitching: \"include\"}",
+      /*expect_success=*/true);
+
+  EXPECT_TRUE(initial_target->IsBeingCaptured());
+  EXPECT_FALSE(other_same_origin_tab->IsBeingCaptured());
+
+  // Wait for the infobar on other_same_origin_tab.
+  ASSERT_TRUE(WaitForInfoBar(other_same_origin_tab));
+  EXPECT_TRUE(HasShareThisTabInsteadButton(other_same_origin_tab));
+  EXPECT_TRUE(IsShareThisTabInsteadButtonEnabled(other_same_origin_tab));
+
+  // Switch capture to the other same-origin tab. The capture of the new tab
+  // starts and the capture of the old tab stops independently of each other,
+  // in no particular order, so wait for both.
+  ClickShareThisTabInsteadButton(other_same_origin_tab);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return other_same_origin_tab->IsBeingCaptured() &&
+           !initial_target->IsBeingCaptured();
+  }));
+
+  EXPECT_EQ(content::EvalJs(capturing_tab->GetPrimaryMainFrame(),
+                            "video_track.readyState;"),
+            "live");
+
+  // Navigate the newly captured tab to a cross-origin URL.
+  int target_index = browser()->GetTabStripModel()->GetIndexOfWebContents(
+      other_same_origin_tab);
+  browser()->GetTabStripModel()->ActivateTabAt(
+      target_index, TabStripUserGestureDetails(
+                        TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetFileURL(kMainHtmlFileName)));
+
+  // Verify that the video stream ends due to policy enforcement.
+  EXPECT_EQ(content::EvalJs(capturing_tab->GetPrimaryMainFrame(),
+                            "waitVideoEnded();"),
+            "ended");
+}
+
+// Runs tests where the capturing page is restricted to capturing same-origin
+// tabs, but embeds a cross-origin subframe which is allowed to capture any tab.
+// Capture policy applies to the origin that requests the capture, which is not
+// necessarily the origin of the page's main frame.
+class WebRtcSubframeCapturePolicyBrowserTest
+    : public WebRtcSameOriginPolicyBrowserTest {
+ public:
+  // The capturing page is served from the embedded test server's default
+  // host. The other hosts are on localhost so that they are secure contexts.
+  static constexpr char kCapturingPageHost[] = "127.0.0.1";
+  static constexpr char kSubframeHost[] = "subframe.localhost";
+  static constexpr char kCapturedPageHost[] = "captured.localhost";
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    WebRtcSameOriginPolicyBrowserTest::SetUpOnMainThread();
+
+    PrefService* const prefs = browser()->GetProfile()->GetPrefs();
+    base::ListValue same_origin_matchlist;
+    same_origin_matchlist.Append(kCapturingPageHost);
+    prefs->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
+                   std::move(same_origin_matchlist));
+    base::ListValue tab_matchlist;
+    tab_matchlist.Append(kSubframeHost);
+    prefs->SetList(prefs::kTabCaptureAllowedByOrigins,
+                   std::move(tab_matchlist));
+  }
+
+  void TearDownOnMainThread() override {
+    browser()->GetProfile()->GetPrefs()->SetList(
+        prefs::kTabCaptureAllowedByOrigins, base::ListValue());
+    WebRtcSameOriginPolicyBrowserTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* OpenPageInNewTab(const std::string& host,
+                                         const std::string& path) {
+    chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(host, path)));
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebRtcSubframeCapturePolicyBrowserTest,
+                       SubframeCanCaptureTabThatIsCrossOriginWithMainFrame) {
+  content::WebContents* target_tab =
+      OpenPageInNewTab(kCapturedPageHost, kCapturedPageMain);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  UpdateWebContentsTitle(
+      target_tab, base::UTF8ToUTF16(std::string(kSameOriginRenamedTitle)));
+
+  ASSERT_TRUE(content::NavigateIframeToURL(
+      capturing_tab, "allowedFrame",
+      embedded_test_server()->GetURL(
+          kSubframeHost,
+          "/webrtc/webrtc_getdisplaymedia_embedded_document.html")));
+  content::RenderFrameHost* const subframe =
+      content::ChildFrameAt(capturing_tab->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_FALSE(subframe->GetLastCommittedOrigin().IsSameOriginWith(
+      capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+
+  EXPECT_EQ(
+      content::EvalJs(subframe,
+                      "navigator.mediaDevices.getDisplayMedia({video: true})"
+                      "    .then(stream => {"
+                      "      window.stream = stream;"
+                      "      return 'capture-success';"
+                      "    })"
+                      "    .catch(error => error.toString());"),
+      "capture-success");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return target_tab->IsBeingCaptured(); }));
+  EXPECT_EQ(content::EvalJs(subframe,
+                            "window.stream.getVideoTracks()[0].readyState;"),
+            "live");
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcSubframeCapturePolicyBrowserTest,
+                       CaptureIndicatorEnforcesPolicyOfRequestOrigin) {
+  content::WebContents* target_tab =
+      OpenPageInNewTab(kCapturedPageHost, kCapturedPageMain);
+  content::WebContents* restricted_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* unrestricted_tab =
+      OpenPageInNewTab(kSubframeHost, kCapturedPageMain);
+  const url::Origin restricted_origin =
+      restricted_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const url::Origin unrestricted_origin =
+      unrestricted_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  // A request from an unrestricted origin, embedded in a page whose main frame
+  // is restricted to same-origin capture, may capture a cross-origin tab.
+  TestTabCaptureStream unrestricted_request(restricted_tab, target_tab,
+                                            unrestricted_origin);
+  EXPECT_FALSE(unrestricted_request.StartAndCheckIfStopped());
+
+  // A request from an origin that is restricted to same-origin capture may not
+  // capture a cross-origin tab, even if it is embedded in a page whose main
+  // frame is unrestricted.
+  TestTabCaptureStream restricted_request(unrestricted_tab, target_tab,
+                                          restricted_origin);
+  EXPECT_TRUE(restricted_request.StartAndCheckIfStopped());
 }
 
 class GetDisplayMediaVideoTrackBrowserTest
