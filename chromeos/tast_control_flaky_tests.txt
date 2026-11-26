@@ -26,3 +26,12 @@ tast.bruschetta.CopyPaste.x11_to_x11
 tast.oobe.Smoke.fieldtrial_testing_config_on
 tast.oobe.Smoke.fieldtrial_testing_config_off
 
+# https://crbug.com/437961311
+tast.bruschetta.Basic.with_fieldtrial_config@betty
+tast.bruschetta.CommandVim@betty
+tast.bruschetta.CopyFilesToGuest@betty
+tast.bruschetta.CopyPaste.wayland_to_x11@betty
+tast.bruschetta.Toolkit.qt5_x11@betty
+tast.bruschetta.Toolkit.qt6_wayland@betty
+tast.bruschetta.Toolkit.qt6_x11@betty
+
