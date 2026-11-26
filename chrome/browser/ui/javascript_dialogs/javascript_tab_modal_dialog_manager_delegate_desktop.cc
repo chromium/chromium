@@ -37,7 +37,9 @@ JavaScriptTabModalDialogManagerDelegateDesktop::
 
 JavaScriptTabModalDialogManagerDelegateDesktop::
     ~JavaScriptTabModalDialogManagerDelegateDesktop() {
-  CHECK(!tab_strip_model_being_observed_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/590606248): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!tab_strip_model_being_observed_);
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
