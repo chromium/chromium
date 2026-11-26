@@ -23,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -310,7 +311,7 @@ std::string CaptureTypeWithPatternOptional(
 }
 
 std::string ParseCountry(std::u16string_view value,
-                         std::string_view app_locale) {
+                         const base::i18n::LanguageTag& app_locale) {
   if (value.empty()) {
     return std::string();
   }

@@ -22,6 +22,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/re2/src/re2/re2.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 struct AddressToken {
@@ -246,7 +250,7 @@ std::string CaptureTypeWithPatternOptional(
 // 2. The value is expected to be a full country name.
 //    It attempts to find a matching country code from the name.
 std::string ParseCountry(std::u16string_view value,
-                         std::string_view app_locale);
+                         const base::i18n::LanguageTag& app_locale);
 
 // Returns true of both vectors contain the same tokens in the same order.
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,

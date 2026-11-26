@@ -44,8 +44,8 @@ bool CountryInfo::SetCountryFromCountryName(
     return false;
   }
   if (CountryNames* country_names = CountryNames::GetInstance()) {
-    country_code_ = country_names->GetCountryCodeForLocalizedCountryName(
-        value, app_locale.tag_string());
+    country_code_ =
+        country_names->GetCountryCodeForLocalizedCountryName(value, app_locale);
     return !country_code_.empty();
   }
   return false;

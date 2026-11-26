@@ -34,18 +34,19 @@ class CountryNames {
   const std::string& GetCountryCode(std::u16string_view country_name) const;
 
   // Returns the country code for a `country_name` provided with a
-  // `locale_name`. If no country code can be determined, an empty string is
+  // `locale`. If no country code can be determined, an empty string is
   // returned. The purpose of this method is to translate country names from a
   // locale different to one the instance was constructed for.
   const std::string& GetCountryCodeForLocalizedCountryName(
       std::u16string_view country_name,
-      std::string_view locale_name);
+      const base::i18n::LanguageTag& locale);
 
 #if defined(UNIT_TEST)
-  // Returns true if the country names for the locale_name are in the cache.
+  // Returns true if the country names for `locale` are in the cache.
   // Only used for testing.
-  bool IsCountryNamesForLocaleCachedForTesting(std::string_view locale_name) {
-    auto iter = localized_country_names_cache_.Get(locale_name);
+  bool IsCountryNamesForLocaleCachedForTesting(
+      const base::i18n::LanguageTag& locale) {
+    auto iter = localized_country_names_cache_.Get(locale);
     return iter != localized_country_names_cache_.end();
   }
 #endif
@@ -63,11 +64,11 @@ class CountryNames {
 
   friend base::NoDestructor<CountryNames>;
 
-  // Caches localized country name for a locale that is neither the application
-  // or default locale. The Cache is keyed by the locale_name and contains
+  // Caches localized country names for a locale that is neither the application
+  // nor default locale. The cache is keyed by the locale and contains
   // `CountryNamesForLocale` instances.
   using LocalizedCountryNamesCache =
-      base::LRUCache<std::string, CountryNamesForLocale, std::less<>>;
+      base::LRUCache<base::i18n::LanguageTag, CountryNamesForLocale>;
 
   // The application locale.
   const base::i18n::LanguageTag application_locale_;

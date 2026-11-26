@@ -180,7 +180,7 @@ void Address::GetMatchingTypes(std::u16string_view text,
   // Check to see if the |text| canonicalized as a country name is a match.
   std::string entered_country_code =
       CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
-          text, app_locale.tag_string());
+          text, app_locale);
   if (!entered_country_code.empty() && country_code == entered_country_code)
     matching_types->insert(ADDRESS_HOME_COUNTRY);
 
@@ -227,7 +227,7 @@ bool Address::SetInfoWithVerificationStatus(
   if (type == ADDRESS_HOME_COUNTRY) {
     // `ParseCountry` handles empty values, trying to parse the country from a
     // country code or a country name
-    const std::string country_code = ParseCountry(value, locale.tag_string());
+    const std::string country_code = ParseCountry(value, locale);
 
     SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY,
                                      base::UTF8ToUTF16(country_code), status);

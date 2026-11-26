@@ -15,7 +15,6 @@
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,30 +110,29 @@ const std::string& CountryNames::GetCountryCode(
 
 const std::string& CountryNames::GetCountryCodeForLocalizedCountryName(
     std::u16string_view country,
-    std::string_view locale_name) {
+    const base::i18n::LanguageTag& locale) {
   // Do an unconditional lookup using the default and app_locale.
   // Chances are that the name of the country matches the localized one.
   const std::string& localized_result = GetCountryCode(country);
   if (!localized_result.empty()) {
     return localized_result;
   }
-  // Terminate if the locale is invalid or matches the default ones.
-  const std::optional<base::i18n::LanguageTag> locale =
-      base::i18n::GetLanguageTagFromString(locale_name);
-  if (!locale || *locale == application_locale_ || *locale == kDefaultLocale) {
+  // Terminate if the locale matches the default ones.
+  if (locale == application_locale_ || locale == kDefaultLocale) {
     return localized_result;
   }
   // Acquire a lock for the localization cache.
   base::AutoLock lock(localized_country_names_cache_lock_);
 
   // Lookup the CountryName for the locale in the cache.
-  auto iter = localized_country_names_cache_.Get(locale_name);
-  if (iter != localized_country_names_cache_.end())
+  auto iter = localized_country_names_cache_.Get(locale);
+  if (iter != localized_country_names_cache_.end()) {
     return iter->second.GetCountryCode(country);
+  }
 
   // Put the country names for the locale into the cache.
-  auto it = localized_country_names_cache_.Put(locale_name,
-                                               CountryNamesForLocale(*locale));
+  auto it =
+      localized_country_names_cache_.Put(locale, CountryNamesForLocale(locale));
   const CountryNamesForLocale& country_names_for_locale = it->second;
   return country_names_for_locale.GetCountryCode(country);
 }

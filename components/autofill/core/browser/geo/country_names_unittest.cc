@@ -75,40 +75,31 @@ TEST(CountryNamesTest, GetCountryCode_EnUsFallback) {
 TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName) {
   // Initialize with the default locale.
   TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
-  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+  constexpr base::i18n::LanguageTag kDe = base::i18n::GetKnownLanguageTag("de");
+  constexpr base::i18n::LanguageTag kNl = base::i18n::GetKnownLanguageTag("nl");
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", kDe),
             "AM");
   // Check that there is no cache by requesting the same result twice.
-  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", kDe),
             "AM");
-  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Azerbeidzjan", "nl"),
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Azerbeidzjan", kNl),
             "AZ");
 }
 
 TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
   // Initialize with the default locale.
   TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
+  constexpr base::i18n::LanguageTag kDe = base::i18n::GetKnownLanguageTag("de");
 
   // Verify that the entry is not cached.
-  EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting("de"));
+  EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting(kDe));
 
   // Make a lookup of the entry that should result in a cache write.
-  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", kDe),
             "AM");
 
   // Verify that the entry is cached.
-  EXPECT_TRUE(names.IsCountryNamesForLocaleCachedForTesting("de"));
-}
-
-// Test that a locale that cannot be parsed returns the result of the lookup in
-// the default and application locales, without populating the cache.
-TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName_InvalidLocale) {
-  TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
-  EXPECT_EQ(
-      names.GetCountryCodeForLocalizedCountryName(u"United States", "!x!"),
-      "US");
-  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "!x!"),
-            "");
-  EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting("!x!"));
+  EXPECT_TRUE(names.IsCountryNamesForLocaleCachedForTesting(kDe));
 }
 
 TEST(CountryNamesTest, GetCountryCode_EmptyString) {
