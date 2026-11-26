@@ -37,7 +37,13 @@ class RegexPredictions {
   RegexPredictions& operator=(RegexPredictions&&);
   ~RegexPredictions();
 
-  // Sets the heuristic types of `fields` according to `this`.
+  // Resets the heuristic types to `NO_SERVER_DATA` and clears regex match info
+  // of `fields` for `source`.
+  static void Reset(HeuristicSource source,
+                    base::span<const std::unique_ptr<AutofillField>> fields);
+
+  // Sets (or resets to `NO_SERVER_DATA`) the heuristic types and regex match
+  // info of `fields` for `source_`.
   void ApplyTo(base::span<const std::unique_ptr<AutofillField>> fields) const;
 
  private:

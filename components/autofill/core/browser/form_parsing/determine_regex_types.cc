@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -110,18 +109,24 @@ RegexPredictions& RegexPredictions::operator=(RegexPredictions&&) = default;
 
 RegexPredictions::~RegexPredictions() = default;
 
+// static
+void RegexPredictions::Reset(
+    HeuristicSource source,
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  RegexPredictions(source, {}, {}).ApplyTo(fields);
+}
+
 void RegexPredictions::ApplyTo(
     base::span<const std::unique_ptr<AutofillField>> fields) const {
   // Fields can share the same field signature. This map records for each
   // signature how many fields with the same signature have been observed.
-  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
-      fields, std::less<>(), [](const std::unique_ptr<AutofillField>& field) {
-        return std::make_pair(field->GetFieldSignature(), 0);
-      });
+  base::flat_map<FieldSignature, size_t> field_rank_map;
 
   for (const std::unique_ptr<AutofillField>& field : fields) {
     auto it = predictions_.find(field->global_id());
     if (it == predictions_.end()) {
+      field->set_heuristic_type(source_, NO_SERVER_DATA);
+      field->set_regex_match_info(std::nullopt);
       continue;
     }
 
@@ -129,7 +134,7 @@ void RegexPredictions::ApplyTo(
     field->set_heuristic_type(source_, candidate.type);
     field->set_regex_match_info(candidate.match_info);
 
-    const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
+    const size_t field_rank = ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
         .field_type = field->heuristic_type(source_),

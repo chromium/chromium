@@ -19,9 +19,11 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/ml_model/model_predictions.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -565,6 +567,92 @@ TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
   // The small form rules should have cleared the prediction.
   EXPECT_THAT(small_form->fields(),
               testing::Pointwise(MlTypeEq(), {UNKNOWN_TYPE}));
+}
+
+// Tests that `ModelPredictions::ApplyTo()` and `ModelPredictions::Reset()`
+// reset unpredicted fields and only mutate `ml_supported_types()` for
+// `HeuristicSource::kAutofillMachineLearning` (preventing Password Manager ML
+// from overwriting Autofill ML's supported types).
+TEST(ModelPredictionsTest, ApplyToAndReset) {
+  test::AutofillUnitTestEnvironment autofill_environment;
+  FormStructure form(
+      test::GetFormData({.fields = {{.label = u"Name"}, {.label = u"Email"}}}));
+  AutofillField& field0 = *form.field(0);
+  AutofillField& field1 = *form.field(1);
+
+  FieldCandidatesMap regex_candidates;
+  regex_candidates.try_emplace(
+      field0.global_id(), NAME_FIRST,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
+      FieldCandidatePriority(/*is_name_or_high_quality_label_match=*/true,
+                             HeuristicParser::kName));
+  regex_candidates.try_emplace(
+      field1.global_id(), EMAIL_ADDRESS,
+      MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
+      FieldCandidatePriority(/*is_name_or_high_quality_label_match=*/true,
+                             HeuristicParser::kEmail));
+  RegexPredictions(HeuristicSource::kRegexes, regex_candidates,
+                   form.ToFormData().fields())
+      .ApplyTo(form.fields());
+  ASSERT_EQ(field0.heuristic_type(HeuristicSource::kRegexes), NAME_FIRST);
+  ASSERT_TRUE(field0.regex_match_info().has_value());
+
+  const FieldTypeSet autofill_supported = {NAME_FULL, NAME_FIRST,
+                                           EMAIL_ADDRESS};
+  ModelPredictions(HeuristicSource::kAutofillMachineLearning,
+                   autofill_supported, {{field0.global_id(), NAME_FULL}})
+      .ApplyTo(form.fields());
+  EXPECT_EQ(field0.heuristic_type(HeuristicSource::kAutofillMachineLearning),
+            NAME_FULL);
+  EXPECT_EQ(field0.ml_supported_types(), autofill_supported);
+  // `field1` had no Autofill ML prediction, so its ML state is reset and
+  // `heuristic_type(kAutofillMachineLearning)` falls back to `EMAIL_ADDRESS`.
+  EXPECT_EQ(test_api(field1).local_type_predictions()[std::to_underlying(
+                HeuristicSource::kAutofillMachineLearning)],
+            NO_SERVER_DATA);
+  EXPECT_EQ(field1.ml_supported_types(), FieldTypeSet{});
+  EXPECT_EQ(field1.heuristic_type(HeuristicSource::kAutofillMachineLearning),
+            EMAIL_ADDRESS);
+
+  // Applying Password Manager ML predictions must not overwrite
+  // `ml_supported_types()` (which would otherwise cause `field0` to fall back
+  // to its regex type `NAME_FIRST`).
+  ModelPredictions(HeuristicSource::kPasswordManagerMachineLearning,
+                   /*supported_types=*/{USERNAME, PASSWORD},
+                   {{field0.global_id(), USERNAME}})
+      .ApplyTo(form.fields());
+  EXPECT_EQ(
+      field0.heuristic_type(HeuristicSource::kPasswordManagerMachineLearning),
+      USERNAME);
+  EXPECT_EQ(field0.ml_supported_types(), autofill_supported);
+  EXPECT_EQ(field0.heuristic_type(HeuristicSource::kAutofillMachineLearning),
+            NAME_FULL);
+
+  // Resetting Password Manager ML clears only its heuristic prediction.
+  ModelPredictions::Reset(HeuristicSource::kPasswordManagerMachineLearning,
+                          form.fields());
+  EXPECT_EQ(test_api(field0).local_type_predictions()[std::to_underlying(
+                HeuristicSource::kPasswordManagerMachineLearning)],
+            NO_SERVER_DATA);
+  EXPECT_EQ(field0.ml_supported_types(), autofill_supported);
+  EXPECT_EQ(field0.heuristic_type(HeuristicSource::kAutofillMachineLearning),
+            NAME_FULL);
+
+  // Resetting Autofill ML clears both its heuristic prediction and
+  // `ml_supported_types()`.
+  ModelPredictions::Reset(HeuristicSource::kAutofillMachineLearning,
+                          form.fields());
+  EXPECT_EQ(test_api(field0).local_type_predictions()[std::to_underlying(
+                HeuristicSource::kAutofillMachineLearning)],
+            NO_SERVER_DATA);
+  EXPECT_EQ(field0.ml_supported_types(), FieldTypeSet{});
+
+  // Resetting RegexPredictions clears both `kRegexes` and `regex_match_info()`.
+  RegexPredictions::Reset(HeuristicSource::kRegexes, form.fields());
+  EXPECT_EQ(test_api(field0).local_type_predictions()[std::to_underlying(
+                HeuristicSource::kRegexes)],
+            NO_SERVER_DATA);
+  EXPECT_FALSE(field0.regex_match_info().has_value());
 }
 
 }  // namespace

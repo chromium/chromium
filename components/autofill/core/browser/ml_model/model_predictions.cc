@@ -35,15 +35,28 @@ ModelPredictions& ModelPredictions::operator=(ModelPredictions&&) = default;
 
 ModelPredictions::~ModelPredictions() = default;
 
+// static
+void ModelPredictions::Reset(
+    HeuristicSource source,
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  ModelPredictions(source, {}, {}).ApplyTo(fields);
+}
+
 void ModelPredictions::ApplyTo(
     base::span<const std::unique_ptr<AutofillField>> fields) const {
   for (const std::unique_ptr<AutofillField>& field : fields) {
     auto it = predictions_.find(field->global_id());
-    if (it == predictions_.end()) {
-      continue;
+    const FieldType type =
+        it != predictions_.end() ? it->second : NO_SERVER_DATA;
+    field->set_heuristic_type(source_, type);
+    // `AutofillField` stores a single `ml_supported_types_` set that is only
+    // read for `kAutofillMachineLearning` (see
+    // `AutofillField::heuristic_type()`), so other ML sources must not
+    // overwrite or clear it.
+    if (source_ == HeuristicSource::kAutofillMachineLearning) {
+      field->set_ml_supported_types(it != predictions_.end() ? supported_types_
+                                                             : FieldTypeSet{});
     }
-    field->set_heuristic_type(source_, it->second);
-    field->set_ml_supported_types(supported_types_);
   }
 }
 

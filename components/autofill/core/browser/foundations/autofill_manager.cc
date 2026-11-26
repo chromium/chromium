@@ -1062,36 +1062,27 @@ void AutofillManager::UpdateFormCache(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.UpdateCache");
 
-  auto reset_predictions = [](FormStructure& form_structure) {
-    for (const std::unique_ptr<AutofillField>& field :
-         form_structure.fields()) {
-      // This is set by running field classification heuristics and the ML
-      // model.
-      for (int i = 0; i <= std::to_underlying(HeuristicSource::kMaxValue);
-           ++i) {
-        HeuristicSource s = static_cast<HeuristicSource>(i);
-        // Resetting all `HeuristicSource`s also resets the
-        // `GetActiveHeuristicSource()`, which in turn resets
-        // AutofillField::overall_type_.
-        field->set_heuristic_type(s, NO_SERVER_DATA);
-      }
-      // This is set by running the ML model.
-      field->set_ml_supported_types({});
-      // This is set when regex matching happens.
-      field->set_regex_match_info(std::nullopt);
-    }
-  };
-
   auto apply_predictions = [](FormStructure& form_structure,
                               const AsyncContext& context, size_t i) {
-    if (!context.autofill_predictions.empty()) {
-      context.autofill_predictions[i].ApplyTo(form_structure.fields());
-    }
-    if (!context.password_manager_predictions.empty()) {
-      context.password_manager_predictions[i].ApplyTo(form_structure.fields());
-    }
-    if (!context.regex_predictions.empty()) {
-      context.regex_predictions[i].ApplyTo(form_structure.fields());
+    for (HeuristicSource source : DenseSet<HeuristicSource>::all()) {
+      auto apply_or_reset = [&]<typename T>(const std::vector<T>& predictions) {
+        if (!predictions.empty()) {
+          predictions[i].ApplyTo(form_structure.fields());
+        } else {
+          T::Reset(source, form_structure.fields());
+        }
+      };
+      switch (source) {
+        case HeuristicSource::kAutofillMachineLearning:
+          apply_or_reset(context.autofill_predictions);
+          break;
+        case HeuristicSource::kPasswordManagerMachineLearning:
+          apply_or_reset(context.password_manager_predictions);
+          break;
+        case HeuristicSource::kRegexes:
+          apply_or_reset(context.regex_predictions);
+          break;
+      }
     }
     form_structure.RationalizeAndAssignSections(context.country_code,
                                                 context.current_page_language,
@@ -1127,7 +1118,6 @@ void AutofillManager::UpdateFormCache(
     cached_form_structure->UpdateFormData(forms[i],
                                           base::PassKey<AutofillManager>());
     if (context) {
-      reset_predictions(*cached_form_structure);
       apply_predictions(*cached_form_structure, *context, i);
     }
     if (preserve_signatures ||
