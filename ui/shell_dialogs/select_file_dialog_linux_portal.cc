@@ -254,15 +254,12 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
       continue;
     }
 
-    // If there is no matching description, use a default description based on
-    // the filter.
+    // Name the filter after its description, if any, and its patterns.
+    std::u16string_view description;
     if (i < file_types().extension_description_overrides.size()) {
-      filter.name =
-          base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
+      description = file_types().extension_description_overrides[i];
     }
-    if (filter.name.empty()) {
-      filter.name = base::JoinString(original_patterns, ",");
-    }
+    filter.name = GetFilterName(description, original_patterns);
 
     // The -1 is required to match against the right filter because
     // |file_type_index_| is 1-indexed.

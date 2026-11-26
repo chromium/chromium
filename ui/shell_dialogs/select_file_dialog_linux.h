@@ -13,6 +13,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/nix/xdg_util.h"
 #include "ui/aura/window.h"
@@ -39,6 +40,12 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinux : public SelectFileDialog {
   // file.txt, file.TXT and file.tXt.
   static std::string GetCaseInsensitiveExtensionPattern(
       std::string_view extension);
+
+  // Returns the name to show for a file filter matching `patterns` (such as
+  // "*.txt"). A non-empty `description` is followed by the patterns, e.g.
+  // "Custom Files (*.txt, *.xml)"; an empty one is replaced by them.
+  static std::string GetFilterName(std::u16string_view description,
+                                   const std::vector<std::string>& patterns);
 
   // BaseShellDialog implementation.
   void ListenerDestroyed() override;

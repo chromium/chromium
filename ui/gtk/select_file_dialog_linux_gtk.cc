@@ -484,19 +484,14 @@ void SelectFileDialogLinuxGtk::AddFilters(GtkFileChooser* chooser) {
     if (!filter)
       continue;
 
-    // The description vector or its entries may be blank, in which case use a
-    // default description based on the filter.
-    std::string name;
+    // Name the filter after its description, if any, and its patterns.
+    std::u16string_view description;
     if (i < file_types().extension_description_overrides.size()) {
-      name = base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
+      description = file_types().extension_description_overrides[i];
     }
-    if (name.empty()) {
-      // There is no system default filter description so use the extensions
-      // themselves if the description is blank.
-      name = base::JoinString(std::vector<std::string>(fallback_labels.begin(),
-                                                       fallback_labels.end()),
-                              ",");
-    }
+    std::string name = GetFilterName(
+        description, std::vector<std::string>(fallback_labels.begin(),
+                                              fallback_labels.end()));
     gtk_file_filter_set_name(filter, name.c_str());
 
     gtk_file_chooser_add_filter(chooser, filter);

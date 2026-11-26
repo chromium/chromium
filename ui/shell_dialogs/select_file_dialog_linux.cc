@@ -8,7 +8,9 @@
 
 #include "base/files/file_util.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace ui {
@@ -49,6 +51,19 @@ std::string SelectFileDialogLinux::GetCaseInsensitiveExtensionPattern(
     }
   }
   return pattern;
+}
+
+// static
+std::string SelectFileDialogLinux::GetFilterName(
+    std::u16string_view description,
+    const std::vector<std::string>& patterns) {
+  if (description.empty()) {
+    return base::JoinString(patterns, ",");
+  }
+  // GTK and portal file choosers show only the filter name, so include the
+  // patterns as the Windows file dialog does.
+  return base::StrCat({base::UTF16ToUTF8(description), " (",
+                       base::JoinString(patterns, ", "), ")"});
 }
 
 bool SelectFileDialogLinux::CallDirectoryExistsOnUIThread(

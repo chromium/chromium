@@ -7,6 +7,7 @@
 #include <fnmatch.h>
 
 #include <string>
+#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,6 +43,16 @@ TEST(SelectFileDialogLinuxTest, CaseInsensitiveExtensionPatternMatches) {
   EXPECT_FALSE(Matches(pattern, "invoice.md"));
   EXPECT_FALSE(Matches(pattern, "invoice.rmdx"));
   EXPECT_FALSE(Matches(pattern, "invoice.txt"));
+}
+
+// Filter names show the patterns along with the description, since the
+// Linux file choosers show only the name (https://crbug.com/41462704).
+TEST(SelectFileDialogLinuxTest, FilterName) {
+  const std::vector<std::string> patterns = {"*.txt", "*.text", "*.xml"};
+  EXPECT_EQ(SelectFileDialogLinux::GetFilterName(u"Custom Files", patterns),
+            "Custom Files (*.txt, *.text, *.xml)");
+  EXPECT_EQ(SelectFileDialogLinux::GetFilterName(u"", patterns),
+            "*.txt,*.text,*.xml");
 }
 
 }  // namespace ui

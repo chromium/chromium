@@ -296,4 +296,18 @@ TEST_F(SelectFileDialogLinuxGtkTest, EmptyFilterDescriptionUsesExtensions) {
             "*.txt");
 }
 
+// Tests that a filter's description is followed by its extensions.
+TEST_F(SelectFileDialogLinuxGtkTest, FilterDescriptionShowsExtensions) {
+  ui::SelectFileDialog::FileTypeInfo file_types({{"txt", "text", "xml"}},
+                                                {u"Custom Files"});
+  dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, u"Open File",
+                      base::FilePath(), &file_types, 1,
+                      base::FilePath::StringType(), nullptr);
+
+  GtkWidget* widget = GetDialogWidget();
+  ASSERT_TRUE(widget);
+  EXPECT_EQ(SelectFileDialogLinuxGtk::GetSelectedFilterNameForTesting(widget),
+            "Custom Files (*.text, *.txt, *.xml)");
+}
+
 }  // namespace gtk
