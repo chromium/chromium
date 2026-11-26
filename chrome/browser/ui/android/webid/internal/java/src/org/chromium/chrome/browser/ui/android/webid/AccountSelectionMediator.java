@@ -1020,8 +1020,6 @@ class AccountSelectionMediator {
                 RecordHistogram.recordBooleanHistogram(
                         "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
                 break;
-            // TODO(crbug.com/581372729): Record how often the identity provider's links are shown,
-            // so that these clicks can be turned into click rates.
             case IdentityRequestDialogLinkType.IDP_ACCOUNT_MANAGEMENT:
                 RecordHistogram.recordBooleanHistogram(
                         "Blink.FedCm.SignUp.IdpAccountManagementClicked", true);
@@ -1730,6 +1728,10 @@ class AccountSelectionMediator {
                 .build();
     }
 
+    /**
+     * Creates the disclosure text item for {@code account}. In active mode with `FedCmIdpLinks`,
+     * also records each of the identity provider's links that it shows.
+     */
     private PropertyModel createDataSharingConsentItem(Account account) {
         IdentityProviderData identityProvider = account.getIdentityProviderData();
         ClientIdMetadata metadata = identityProvider.getClientMetadata();
@@ -1759,6 +1761,12 @@ class AccountSelectionMediator {
                     createLinkClickCallback(
                             IdentityRequestDialogLinkType.IDP_TERMS_OF_SERVICE,
                             idpTermsOfServiceUrl);
+            maybeRecordIdpLinkShown(
+                    "Blink.FedCm.SignUp.IdpAccountManagementShown", idpAccountManagementUrl);
+            maybeRecordIdpLinkShown(
+                    "Blink.FedCm.SignUp.IdpPrivacyPolicyShown", idpPrivacyPolicyUrl);
+            maybeRecordIdpLinkShown(
+                    "Blink.FedCm.SignUp.IdpTermsOfServiceShown", idpTermsOfServiceUrl);
         }
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties(
@@ -1795,6 +1803,15 @@ class AccountSelectionMediator {
             if (!shouldInputBeProcessed()) return;
             showUrl(context, linkType, url);
         };
+    }
+
+    /**
+     * Records {@code histogram} for one of the identity provider's links if the dialog shows it,
+     * i.e. if {@code url} is valid, as `AccountSelectionViewBinder.createLink()` requires.
+     */
+    private static void maybeRecordIdpLinkShown(String histogram, GURL url) {
+        if (GURL.isEmptyOrInvalid(url)) return;
+        RecordHistogram.recordBooleanHistogram(histogram, true);
     }
 
     private PropertyModel createIdpSignInItem(@Nullable String idpForDisplay) {

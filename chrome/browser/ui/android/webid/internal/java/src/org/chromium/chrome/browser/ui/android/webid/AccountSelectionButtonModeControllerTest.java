@@ -33,6 +33,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ShowIdpPickerProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -1342,23 +1344,26 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
     /**
      * Tests that with `FedCmIdpLinks` enabled, the request permission dialog has the identity
-     * provider's links.
+     * provider's links, and records them as shown.
      */
     @Test
     @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
     public void testRequestPermissionDialogHasIdpLinks() {
+        HistogramWatcher histogramWatcher = watchIdpLinksShown(/* times= */ 1);
         DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
         assertEquals(mTestIdpAccountManagementUrl, properties.mIdpAccountManagementUrl);
         assertEquals(mTestIdpPrivacyPolicyUrl, properties.mIdpPrivacyPolicyUrl);
         assertEquals(mTestIdpTermsOfServiceUrl, properties.mIdpTermsOfServiceUrl);
+        histogramWatcher.assertExpected();
     }
 
     /**
      * Tests that without `FedCmIdpLinks`, the request permission dialog doesn't have the identity
-     * provider's links, even though the identity provider has them.
+     * provider's links or record them as shown, even though the identity provider has them.
      */
     @Test
     public void testRequestPermissionDialogHasNoIdpLinksWithoutFlag() {
+        HistogramWatcher histogramWatcher = watchIdpLinksShown(/* times= */ 0);
         DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
         assertTrue(properties.mIdpAccountManagementUrl.isEmpty());
         assertTrue(properties.mIdpPrivacyPolicyUrl.isEmpty());
@@ -1366,6 +1371,27 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertNull(properties.mIdpAccountManagementClickCallback);
         assertNull(properties.mIdpPrivacyPolicyClickCallback);
         assertNull(properties.mIdpTermsOfServiceClickCallback);
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Returns a watcher that expects each of the identity provider's links to be recorded as shown
+     * {@code times} times.
+     */
+    private HistogramWatcher watchIdpLinksShown(int times) {
+        HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
+        for (String histogram :
+                Arrays.asList(
+                        "Blink.FedCm.SignUp.IdpAccountManagementShown",
+                        "Blink.FedCm.SignUp.IdpPrivacyPolicyShown",
+                        "Blink.FedCm.SignUp.IdpTermsOfServiceShown")) {
+            if (times == 0) {
+                builder.expectNoRecords(histogram);
+            } else {
+                builder.expectBooleanRecordTimes(histogram, true, times);
+            }
+        }
+        return builder.build();
     }
 
     /**
@@ -1614,6 +1640,26 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     /**
+     * Tests that the request permission dialog shown when the active mode sheet replaces the
+     * passive mode one records only the identity provider's links that it shows.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testRequestPermissionFromPassiveSheetRecordsOnlyShownIdpLinks() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Blink.FedCm.SignUp.IdpAccountManagementShown", true)
+                        .expectNoRecords("Blink.FedCm.SignUp.IdpPrivacyPolicyShown")
+                        .expectBooleanRecord("Blink.FedCm.SignUp.IdpTermsOfServiceShown", true)
+                        .build();
+        showRequestPermissionFromPassiveSheetWithIdpLinks(
+                mTestIdpAccountManagementUrl,
+                /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                mTestIdpTermsOfServiceUrl);
+        histogramWatcher.assertExpected();
+    }
+
+    /**
      * Tests that continuing or dismissing on the request permission dialog shown for a passive mode
      * request doesn't record `Button.*` UMA or UKM metrics.
      */
@@ -1719,5 +1765,46 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 accounts,
                 idpDataList,
                 account);
+    }
+
+    /**
+     * Shows the request permission dialog from the passive mode sheet for a single-IdP account
+     * whose identity provider has the given links.
+     */
+    private void showRequestPermissionFromPassiveSheetWithIdpLinks(
+            GURL accountManagementUrl, GURL privacyPolicyUrl, GURL termsOfServiceUrl) {
+        IdentityProviderData idpData =
+                new IdentityProviderData(
+                        mTestEtldPlusOne2,
+                        new IdentityProviderMetadata(
+                                Color.BLUE,
+                                Color.GREEN,
+                                /* brandIconBitmap= */ null,
+                                mTestConfigUrl,
+                                mTestLoginUrl,
+                                accountManagementUrl,
+                                privacyPolicyUrl,
+                                termsOfServiceUrl,
+                                /* showUseDifferentAccountButton= */ false),
+                        mIdpData.getClientMetadata(),
+                        RpContext.SIGN_IN,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        /* hasLoginStatusMismatch= */ false);
+        Account account =
+                new Account(
+                        "602214076",
+                        "goto@email.example",
+                        "Sam E. Goto",
+                        "Sam",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isIdpClaimedSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        idpData);
+        showRequestPermissionFromPassiveSheet(
+                Arrays.asList(account), Arrays.asList(idpData), account);
     }
 }
