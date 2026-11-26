@@ -66,6 +66,11 @@ void OverrideManifestAssetManagerDelegate::GetFreeDiskSpace(
   std::move(callback).Run(base::GiB(100));
 }
 
+void OverrideManifestAssetManagerDelegate::GetStagingFreeDiskSpace(
+    base::OnceCallback<void(std::optional<base::ByteSize>)> callback) const {
+  std::move(callback).Run(base::GiB(100));
+}
+
 void OverrideManifestAssetManagerDelegate::SetAssetManager(
     base::WeakPtr<AssetManager> manager) {
   asset_manager_ = std::move(manager);

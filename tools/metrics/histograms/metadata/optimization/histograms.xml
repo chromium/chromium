@@ -2058,6 +2058,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.OnDeviceModel.StagingFreeDiskSpace"
+    units="MB" expires_after="2027-05-20">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the amount of free disk space (in MiB) in the component updater
+    staging directory. Recorded once on startup when `ManifestMonitor`
+    initializes.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.OnDeviceModel.StagingFreeDiskSpaceAtDemandedInstall"
+    units="MB" expires_after="2027-05-20">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the amount of free disk space (in MiB) in the component updater
+    staging directory when a non-installed general-purpose foundational model
+    component finishes registration and satisfies all install criteria (other
+    than staging directory space).
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>

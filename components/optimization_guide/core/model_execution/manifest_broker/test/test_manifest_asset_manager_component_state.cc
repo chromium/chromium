@@ -157,6 +157,16 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
                        state_ ? state_->free_disk_space_ : base::ByteSize(0)));
   }
 
+  void GetStagingFreeDiskSpace(
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
+      const override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  state_ ? std::make_optional(
+                                               state_->staging_free_disk_space_)
+                                         : std::nullopt));
+  }
+
   void SetAssetManager(base::WeakPtr<AssetManager> manager) override {
     if (state_) {
       state_->manager_ = std::move(manager);

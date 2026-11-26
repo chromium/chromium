@@ -345,6 +345,14 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // `UpdateRegistrations()`.
   void OnDiskSpaceEvaluated();
 
+  // Records staging directory free disk space for a to-be-installed
+  // foundational base model when registration completes.
+  void MaybeRecordDemandedInstallStagingFreeDiskSpace(
+      const ComponentContext& context,
+      const proto::OnDemandComponent* component,
+      const std::string& version,
+      bool is_already_installed) const;
+
   // Policy predicates governing component installation, retention, and
   // foreground updates.
   bool CanSupportProactiveDownload() const;

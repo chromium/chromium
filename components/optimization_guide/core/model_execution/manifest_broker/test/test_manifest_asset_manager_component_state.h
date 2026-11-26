@@ -116,6 +116,10 @@ class TestManifestAssetManagerComponentState final {
     free_disk_space_ = free_space_bytes;
   }
 
+  void SetStagingFreeDiskSpace(base::ByteSize staging_free_space_bytes) {
+    staging_free_disk_space_ = staging_free_space_bytes;
+  }
+
   const std::vector<bool>& disk_space_priority_changes() const {
     return disk_space_priority_changes_;
   }
@@ -245,6 +249,8 @@ class TestManifestAssetManagerComponentState final {
 
   // The amount of free disk space we are pretending is available.
   base::ByteSize free_disk_space_ = base::GiB(30);
+  // The amount of staging free disk space we are pretending is available.
+  base::ByteSize staging_free_disk_space_ = base::GiB(30);
   // Effective disk-check priority changes, in order.
   std::vector<bool> disk_space_priority_changes_;
   bool defer_disk_space_callbacks_ = false;

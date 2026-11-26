@@ -829,6 +829,37 @@ void ManifestAssetManager::OnDiskSpaceEvaluated() {
   UpdateRegistrations();
 }
 
+void ManifestAssetManager::MaybeRecordDemandedInstallStagingFreeDiskSpace(
+    const ComponentContext& context,
+    const proto::OnDemandComponent* component,
+    const std::string& version,
+    bool is_already_installed) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_already_installed || !component ||
+      component->target_version() != version ||
+      !disk_space_status_.IsSufficientForOnDemandInstall() ||
+      !ShouldRetain(context)) {
+    return;
+  }
+  // Restrict to large (O(GiB)) general purpose base models so smaller asset
+  // (e.g. classifier, adaptations) downloads do not dilute staging-space
+  // metrics.
+  if (!IsBaseModelAsset(factory_->manifest(), context.asset_id()) ||
+      GetOnDeviceModelCategory(ConvertComponentKeyToEnum(context.asset_id())) !=
+          OnDeviceModelCategory::kGeneralPurpose) {
+    return;
+  }
+  delegate_->GetStagingFreeDiskSpace(
+      base::BindOnce([](std::optional<base::ByteSize> free_space) {
+        if (free_space.has_value()) {
+          base::UmaHistogramCounts10M(
+              "OptimizationGuide.OnDeviceModel."
+              "StagingFreeDiskSpaceAtDemandedInstall",
+              free_space->InMiB());
+        }
+      }));
+}
+
 bool ManifestAssetManager::CanSupportProactiveDownload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(kOnDeviceModelBackgroundDownload)) {
@@ -1122,6 +1153,8 @@ void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
 
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);
+  MaybeRecordDemandedInstallStagingFreeDiskSpace(*context, component, version,
+                                                 is_already_installed);
   if (component) {
     if (component->target_version() != version) {
       // We know we don't have the right version.

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -12,9 +13,11 @@
 #include "base/functional/function_ref.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/run_until.h"
@@ -166,12 +169,6 @@ class DummyManifest {
 
 class ManifestAssetManagerTest : public testing::Test {
  public:
-  ManifestAssetManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationGuideModelExecution},
-        {features::kAIModelUnloadableProgress});
-  }
-
   void UpdateManifest(const DummyManifest& manifest) {
     component_state_.UpdateManifest(manifest.BuildAsset());
   }
@@ -216,9 +213,11 @@ class ManifestAssetManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      {features::kOptimizationGuideModelExecution},
+      {features::kAIModelUnloadableProgress}};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   ModelBrokerPrefService local_state_;
   TestManifestAssetManagerComponentState component_state_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
@@ -2520,6 +2519,151 @@ TEST_F(ManifestAssetManagerTest, RecordsOnDemandUpdateResults) {
         error, 1);
   }
 }
+
+TEST_F(ManifestAssetManagerTest,
+       StartupRecordsFreeDiskSpaceAndStagingFreeDiskSpaceSeparately) {
+  base::HistogramTester histogram_tester;
+  component_state_.SetFreeDiskSpace(base::GiB(25));
+  component_state_.SetStagingFreeDiskSpace(base::GiB(7));
+
+  DummyAsset asset =
+      DummyAsset::For("compose").WithAssetId("nano_v3_gpu_component");
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !histogram_tester
+                .GetAllSamples("OptimizationGuide.OnDeviceModel.FreeDiskSpace")
+                .empty() &&
+           !histogram_tester
+                .GetAllSamples(
+                    "OptimizationGuide.OnDeviceModel.StagingFreeDiskSpace")
+                .empty();
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.FreeDiskSpace", base::GiB(25).InMiB(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.StagingFreeDiskSpace",
+      base::GiB(7).InMiB(), 1);
+}
+
+struct DemandedInstallStagingSpaceTestCase {
+  std::string_view name;
+  std::string_view use_case;
+  std::string_view asset_id;
+  bool is_already_installed = false;
+  bool is_adaptation = false;
+  bool expect_recorded;
+};
+
+class ManifestAssetManagerDemandedInstallStagingSpaceTest
+    : public ManifestAssetManagerTest,
+      public testing::WithParamInterface<DemandedInstallStagingSpaceTestCase> {
+};
+
+TEST_P(ManifestAssetManagerDemandedInstallStagingSpaceTest,
+       RecordsOnlyForUninstalledGeneralPurposeBaseModel) {
+  const auto& test_case = GetParam();
+  component_state_.SetFreeDiskSpace(base::GiB(25));
+  component_state_.SetStagingFreeDiskSpace(base::GiB(6));
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+
+  DummyAsset asset = DummyAsset::For(std::string(test_case.use_case))
+                         .WithAssetId(std::string(test_case.asset_id));
+  if (test_case.is_already_installed) {
+    component_state_.SetInstalled(asset.ToInstallTarget());
+  }
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+
+  DummyManifest manifest;
+  if (test_case.is_adaptation) {
+    DummyAsset base_model =
+        DummyAsset::For("compose").WithAssetId("nano_v3_gpu_component");
+    component_state_.SetInstalled(base_model.ToInstallTarget());
+    manifest.Add(base_model).AddAdaptation(asset, base_model.asset_id);
+  } else {
+    manifest.Add(asset);
+  }
+  UpdateManifest(manifest);
+
+  base::HistogramTester histogram_tester;
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  const std::string registration_histogram =
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceModelInstalledAtRegistrationTime.",
+                    ConvertComponentKeyToUmaModelName(asset.asset_id)});
+  if (test_case.expect_recorded) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(
+                 registration_histogram, test_case.is_already_installed) == 1 &&
+             !histogram_tester
+                  .GetAllSamples(
+                      "OptimizationGuide.OnDeviceModel."
+                      "StagingFreeDiskSpaceAtDemandedInstall")
+                  .empty();
+    }));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.OnDeviceModel.StagingFreeDiskSpaceAtDemandedInstall",
+        base::GiB(6).InMiB(), 1);
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(
+                 registration_histogram, test_case.is_already_installed) == 1;
+    }));
+    // Flush any task posted by `GetStagingFreeDiskSpace()` on the current
+    // sequence before asserting that no sample was recorded.
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.OnDeviceModel.StagingFreeDiskSpaceAtDemandedInstall",
+        0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManifestAssetManagerDemandedInstallStagingSpaceTest,
+    testing::Values(
+        DemandedInstallStagingSpaceTestCase{
+            .name = "UninstalledGeneralPurposeBaseModel",
+            .use_case = "compose",
+            .asset_id = "nano_v3_gpu_component",
+            .expect_recorded = true,
+        },
+        DemandedInstallStagingSpaceTestCase{
+            .name = "AlreadyInstalledBaseModel",
+            .use_case = "test",
+            .asset_id = "nano_v3_cpu_component",
+            .is_already_installed = true,
+            .expect_recorded = false,
+        },
+        DemandedInstallStagingSpaceTestCase{
+            .name = "Classifier",
+            .use_case = "scam_detection",
+            .asset_id = "classifier_component",
+            .expect_recorded = false,
+        },
+        DemandedInstallStagingSpaceTestCase{
+            .name = "SmallExpert",
+            .use_case = "proofreader_api",
+            .asset_id = "proofreader_small_expert_model_component",
+            .expect_recorded = false,
+        },
+        DemandedInstallStagingSpaceTestCase{
+            .name = "Adaptation",
+            .use_case = "summarizer_api",
+            .asset_id = "summarizer_lora_component",
+            .is_adaptation = true,
+            .expect_recorded = false,
+        }),
+    [](const testing::TestParamInfo<DemandedInstallStagingSpaceTestCase>&
+           info) { return std::string(info.param.name); });
 
 }  // namespace
 }  // namespace optimization_guide

@@ -46,6 +46,13 @@ class ManifestMonitorDelegate : public ManifestProvider {
       base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
       const = 0;
 
+  // Gets the available free disk space in the component updater staging
+  // directory, or `std::nullopt` if unknown. The callback may run
+  // synchronously.
+  virtual void GetStagingFreeDiskSpace(
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
+      const = 0;
+
   // Promotes queued and subsequent disk checks while any reason needs them.
   // Each caller must clear its reason when its disk-dependent work completes.
   void SetDiskSpaceCheckPriority(DiskSpaceCheckReason reason,

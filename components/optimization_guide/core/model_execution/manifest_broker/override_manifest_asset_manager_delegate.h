@@ -44,6 +44,10 @@ class OverrideManifestAssetManagerDelegate final
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override;
 
+  void GetStagingFreeDiskSpace(
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
+      const override;
+
   void SetAssetManager(base::WeakPtr<AssetManager> manager) override;
 
   void RegisterOnDemandComponent(const std::string& public_key_hex,

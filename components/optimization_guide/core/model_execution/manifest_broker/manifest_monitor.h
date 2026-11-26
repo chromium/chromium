@@ -60,6 +60,7 @@ class ManifestMonitor {
  private:
   // This should be called once during initialization.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
+  void OnStagingDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
 
   // Called when the manifest component is ready / updated.
   void OnManifestReady(base::FilePath manifest_dir);

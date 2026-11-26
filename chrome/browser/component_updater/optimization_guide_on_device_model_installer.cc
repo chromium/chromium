@@ -52,6 +52,7 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/hash.h"
 #include "net/base/network_change_notifier.h"
@@ -209,14 +210,17 @@ FindInstalledAssetsOnDisk(const base::FilePath& component_install_dir) {
   return installed_assets;
 }
 
-#if !BUILDFLAG(CHROME_FOR_TESTING)
 std::optional<base::ByteSize> GetFreeDiskSpaceFromSystem(
     const base::FilePath& path) {
   std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
       base::SysInfo::AmountOfDiskSpace(path);
   return disk_space ? std::make_optional(disk_space->available) : std::nullopt;
 }
-#endif
+
+std::optional<base::ByteSize> GetStagingFreeDiskSpaceFromSystem() {
+  std::optional<base::FilePath> staging_dir = update_client::GetTempDirectory();
+  return staging_dir ? GetFreeDiskSpaceFromSystem(*staging_dir) : std::nullopt;
+}
 
 // A generic installer policy for components listed as Assets in the On-Device
 // Model Manifest.
@@ -722,6 +726,15 @@ class ManifestAssetManagerDelegateImpl final
     disk_task_runner_->UpdatePriority(user_visible
                                           ? base::TaskPriority::USER_VISIBLE
                                           : base::TaskPriority::BEST_EFFORT);
+  }
+
+  void GetStagingFreeDiskSpace(
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
+      const override {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&GetStagingFreeDiskSpaceFromSystem),
+        std::move(callback));
   }
 
   void GetInstalledAssets(base::OnceCallback<void(std::vector<InstalledAsset>)>

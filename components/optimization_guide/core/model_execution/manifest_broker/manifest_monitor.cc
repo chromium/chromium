@@ -102,6 +102,9 @@ ManifestMonitor::ManifestMonitor(PrefService& local_state,
 
   delegate.GetFreeDiskSpace(base::BindOnce(
       &ManifestMonitor::OnDiskSpaceEvaluated, weak_ptr_factory_.GetWeakPtr()));
+  delegate.GetStagingFreeDiskSpace(
+      base::BindOnce(&ManifestMonitor::OnStagingDiskSpaceEvaluated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 ManifestMonitor::~ManifestMonitor() {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::~ManifestMonitor",
@@ -127,6 +130,18 @@ void ManifestMonitor::OnDiskSpaceEvaluated(
                                 free_space->InMiB());
   }
   OnInputsChanged();
+}
+
+void ManifestMonitor::OnStagingDiskSpaceEvaluated(
+    std::optional<base::ByteSize> free_space) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestMonitor::OnStagingDiskSpaceEvaluated",
+              perfetto::Flow::FromPointer(this));
+  if (free_space.has_value()) {
+    base::UmaHistogramCounts10M(
+        "OptimizationGuide.OnDeviceModel.StagingFreeDiskSpace",
+        free_space->InMiB());
+  }
 }
 
 void ManifestMonitor::OnManifestReady(base::FilePath manifest_dir) {

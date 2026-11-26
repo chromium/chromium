@@ -34,6 +34,12 @@ class FakeManifestMonitorDelegate : public ManifestMonitorDelegate {
     pending_callbacks_.push_back(std::move(callback));
   }
 
+  void GetStagingFreeDiskSpace(
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
+      const override {
+    std::move(callback).Run(std::nullopt);
+  }
+
   size_t pending_count() const { return pending_callbacks_.size(); }
 
   void ResolveNext(std::optional<base::ByteSize> free_space) {
