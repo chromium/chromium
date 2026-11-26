@@ -252,7 +252,7 @@ CountryCodeNode::CountryCodeNode(SubcomponentsList children)
 
 CountryCodeNode::~CountryCodeNode() = default;
 
-// DependentLocalities are mergeable when the tokens of one is a subset of the
+// Dependent localities are mergeable when the tokens of one is a subset of the
 // other one. Take the longer one.
 // Exception: India, where the merge mode doesn't matter.
 DependentLocalityNode::DependentLocalityNode(SubcomponentsList children)
@@ -261,6 +261,15 @@ DependentLocalityNode::DependentLocalityNode(SubcomponentsList children)
                        MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
 
 DependentLocalityNode::~DependentLocalityNode() = default;
+
+// Dependent sub-localities are mergeable when the tokens of one are a subset
+// of the other. The longer one is taken.
+DependentSubLocalityNode::DependentSubLocalityNode(SubcomponentsList children)
+    : AddressComponent(ADDRESS_HOME_DEPENDENT_SUB_LOCALITY,
+                       std::move(children),
+                       MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
+
+DependentSubLocalityNode::~DependentSubLocalityNode() = default;
 
 // Cities are mergeable when the tokens of one is a subset of the other one.
 // Take the shorter non-empty one.

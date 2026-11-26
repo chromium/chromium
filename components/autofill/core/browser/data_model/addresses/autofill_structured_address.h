@@ -201,6 +201,13 @@ class DependentLocalityNode : public AddressComponent {
   ~DependentLocalityNode() override;
 };
 
+// Stores the dependent sub-locality of an address.
+class DependentSubLocalityNode : public AddressComponent {
+ public:
+  explicit DependentSubLocalityNode(SubcomponentsList children);
+  ~DependentSubLocalityNode() override;
+};
+
 // Stores the city of an address.
 class CityNode : public AddressComponent {
  public:
