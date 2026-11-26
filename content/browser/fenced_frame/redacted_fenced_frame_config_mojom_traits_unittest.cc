@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
@@ -312,7 +313,16 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
   }
 }
 
-TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
+// TODO(crbug.com/571559325): Flaky death test timeout on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ConfigMojomTraitsNullInternalUrnTest \
+  DISABLED_ConfigMojomTraitsNullInternalUrnTest
+#else
+#define MAYBE_ConfigMojomTraitsNullInternalUrnTest \
+  ConfigMojomTraitsNullInternalUrnTest
+#endif
+TEST_F(FencedFrameConfigMojomTraitsTest,
+       MAYBE_ConfigMojomTraitsNullInternalUrnTest) {
   FencedFrameConfig browser_config;
   RedactedFencedFrameConfig input_config =
       browser_config.RedactFor(FencedFrameEntity::kEmbedder);
