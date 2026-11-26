@@ -504,15 +504,11 @@ public class KeyboardAccessoryViewTest {
                     mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
                 });
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-        CriteriaHelper.pollUiThread(
-                () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
-        CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
+        waitForLastBarItemRightAligned(view);
 
         try {
             rotateActivityToLandscape();
-            CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
-            CriteriaHelper.pollUiThread(
-                    viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
+            waitForLastBarItemRightAligned(view);
         } finally {
             if (mActivityTestRule.getActivity() != null) {
                 mActivityTestRule
@@ -1252,14 +1248,19 @@ public class KeyboardAccessoryViewTest {
                 });
     }
 
-    private Runnable viewsAreRightAligned(View staticView, View changingView) {
-        Rect accessoryViewRect = new Rect();
-        staticView.getGlobalVisibleRect(accessoryViewRect);
-        return () -> {
-            Rect keyItemRect = new Rect();
-            changingView.getGlobalVisibleRect(keyItemRect);
-            Criteria.checkThat(keyItemRect.right, is(accessoryViewRect.right));
-        };
+    private void waitForLastBarItemRightAligned(KeyboardAccessoryView view) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(view.mBarItemsView.isShown(), is(true));
+                    View lastChild = view.mBarItemsView.getChildAt(1);
+                    Criteria.checkThat(lastChild, not(nullValue()));
+                    Criteria.checkThat(lastChild.isShown(), is(true));
+                    Rect accessoryViewRect = new Rect();
+                    Rect keyItemRect = new Rect();
+                    Criteria.checkThat(view.getGlobalVisibleRect(accessoryViewRect), is(true));
+                    Criteria.checkThat(lastChild.getGlobalVisibleRect(keyItemRect), is(true));
+                    Criteria.checkThat(keyItemRect.right, is(accessoryViewRect.right));
+                });
     }
 
     private BarItem[] createAutofillChipAndTab(String label, Callback<Boolean> chipCallback) {
