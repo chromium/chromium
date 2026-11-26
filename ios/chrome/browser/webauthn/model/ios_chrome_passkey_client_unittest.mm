@@ -11,7 +11,6 @@
 #import <utility>
 #import <vector>
 
-#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/protobuf_matchers.h"
@@ -112,17 +111,13 @@ constexpr std::string_view kDeviceAuthorizationKey = "device_authorization_key";
 // `FetchTrustedVaultKeys()`.
 class TestPasskeyKeychainProvider : public PasskeyKeychainProvider {
  public:
-  // TODO(crbug.com/588274186): Clean this up after refactor.
-  TestPasskeyKeychainProvider(bool is_enrolled,
-                              webauthn::SharedKeyList keys,
-                              bool in_degraded_recoverability)
+  TestPasskeyKeychainProvider(
+      bool is_enrolled,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
+      bool in_degraded_recoverability)
       : PasskeyKeychainProvider(/*metrics_reporting_enabled=*/false),
         is_enrolled_(is_enrolled),
-        keys_(base::ToVector(keys,
-                             [](const webauthn::SharedKey& key) {
-                               return trusted_vault::TrustedVaultKeyAndVersion(
-                                   key, /*version=*/0);
-                             })),
+        keys_(std::move(keys)),
         in_degraded_recoverability_(in_degraded_recoverability) {}
 
   void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {
@@ -250,10 +245,10 @@ class IOSChromePasskeyClientTest : public PlatformTest {
   // Signs in a primary account, overrides `PasskeyKeychainProviderBridge` with
   // a `TestPasskeyKeychainProvider`, configures an `OCMStrictProtocolMock`
   // commands handler, and invokes `FetchTrustedVaultKeys()`.
-  std::pair<webauthn::SharedKeyList, bool>
+  std::pair<std::vector<trusted_vault::TrustedVaultKeyAndVersion>, bool>
   FetchTrustedVaultKeysWithTestProvider(
       bool is_enrolled,
-      webauthn::SharedKeyList keys,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
       bool in_degraded_recoverability,
       bool allow_ui,
       bool expect_dismiss_welcome_screen,
@@ -280,14 +275,16 @@ class IOSChromePasskeyClientTest : public PlatformTest {
     }
     client_->SetIOSPasskeyClientCommandsHandler(strict_commands_handler);
 
-    base::test::TestFuture<webauthn::SharedKeyList, bool> future;
+    base::test::TestFuture<
+        std::vector<trusted_vault::TrustedVaultKeyAndVersion>, bool>
+        future;
     client_->FetchTrustedVaultKeys(
         webauthn::ReauthenticatePurpose::kEncrypt,
         webauthn::PasskeyUserVerificationStatus::kNotRequired, allow_ui,
         future.GetCallback());
 
-    std::pair<webauthn::SharedKeyList, bool> result(future.Get<0>(),
-                                                    future.Get<1>());
+    std::pair<std::vector<trusted_vault::TrustedVaultKeyAndVersion>, bool>
+        result(future.Get<0>(), future.Get<1>());
     if (out_check_degraded_recoverability_called) {
       *out_check_degraded_recoverability_called =
           provider_ptr->check_degraded_recoverability_called();
@@ -653,7 +650,7 @@ TEST_F(IOSChromePasskeyClientTest, DeviceAuthorizationServiceNull) {
 // `FetchTrustedVaultKeys` returns empty keys without presenting UI.
 TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysNotEnrolledSilent) {
   auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
-      /*is_enrolled=*/false, webauthn::SharedKeyList{},
+      /*is_enrolled=*/false, /*keys=*/{},
       /*in_degraded_recoverability=*/false, /*allow_ui=*/false,
       /*expect_dismiss_welcome_screen=*/false);
 
@@ -665,7 +662,7 @@ TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysNotEnrolledSilent) {
 // `FetchTrustedVaultKeys` returns empty keys without presenting UI.
 TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysEmptyKeysSilent) {
   auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
-      /*is_enrolled=*/true, webauthn::SharedKeyList{},
+      /*is_enrolled=*/true, /*keys=*/{},
       /*in_degraded_recoverability=*/false, /*allow_ui=*/false,
       /*expect_dismiss_welcome_screen=*/false);
 
@@ -678,16 +675,18 @@ TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysEmptyKeysSilent) {
 // check and returns the fetched keys without presenting UI.
 TEST_F(IOSChromePasskeyClientTest,
        FetchTrustedVaultKeysDegradedRecoverabilitySilent) {
-  const webauthn::SharedKey test_key(32u, 1);
+  const trusted_vault::TrustedVaultKeyAndVersion test_key(
+      std::vector<uint8_t>(32u, 1), /*version=*/42);
   bool check_degraded_recoverability_called = true;
   auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
-      /*is_enrolled=*/true, webauthn::SharedKeyList{test_key},
+      /*is_enrolled=*/true, {test_key},
       /*in_degraded_recoverability=*/true, /*allow_ui=*/false,
       /*expect_dismiss_welcome_screen=*/false,
       &check_degraded_recoverability_called);
 
   EXPECT_FALSE(check_degraded_recoverability_called);
-  EXPECT_EQ(keys, webauthn::SharedKeyList{test_key});
+  EXPECT_EQ(keys,
+            std::vector<trusted_vault::TrustedVaultKeyAndVersion>{test_key});
   EXPECT_FALSE(did_complete_uv);
 }
 
@@ -695,16 +694,18 @@ TEST_F(IOSChromePasskeyClientTest,
 // `FetchTrustedVaultKeys` checks degraded recoverability and dismisses any
 // welcome screen on completion.
 TEST_F(IOSChromePasskeyClientTest, FetchTrustedVaultKeysInteractiveSuccess) {
-  const webauthn::SharedKey test_key(32u, 1);
+  const trusted_vault::TrustedVaultKeyAndVersion test_key(
+      std::vector<uint8_t>(32u, 1), /*version=*/42);
   bool check_degraded_recoverability_called = false;
   auto [keys, did_complete_uv] = FetchTrustedVaultKeysWithTestProvider(
-      /*is_enrolled=*/true, webauthn::SharedKeyList{test_key},
+      /*is_enrolled=*/true, {test_key},
       /*in_degraded_recoverability=*/false, /*allow_ui=*/true,
       /*expect_dismiss_welcome_screen=*/true,
       &check_degraded_recoverability_called);
 
   EXPECT_TRUE(check_degraded_recoverability_called);
-  EXPECT_EQ(keys, webauthn::SharedKeyList{test_key});
+  EXPECT_EQ(keys,
+            std::vector<trusted_vault::TrustedVaultKeyAndVersion>{test_key});
   EXPECT_FALSE(did_complete_uv);
 }
 

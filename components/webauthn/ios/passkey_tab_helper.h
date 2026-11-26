@@ -15,6 +15,7 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/remote_validation.h"
@@ -229,7 +230,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
       bool did_complete_uv);
 
   // Callback which creates a passkey given `params`, `client_data_json`,
-  // `device_authorization_keys`, and `shared_key_list`. The newly created
+  // `device_authorization_keys`, and `trusted_vault_keys`. The newly created
   // passkey is added to the passkey model and the parameters required to
   // resolve the `PublicKeyCredential` request are sent to
   // `PasskeyJavaScriptFeature`.
@@ -237,7 +238,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
       RegistrationRequestParams params,
       std::string client_data_json,
       DeviceAuthorizationKeys device_authorization_keys,
-      SharedKeyList shared_key_list,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
       bool did_complete_uv);
 
   // Callback which continues `StartPasskeyAssertion()` with the fetched
@@ -261,15 +262,15 @@ class PasskeyTabHelper : public web::WebStateObserver,
       bool did_complete_uv);
 
   // Callback which uses the provided passkey for assertion given the provided
-  // shared keys list, device authorization keys and params. The parameters
-  // required to resolve the `PublicKeyCredential` request are sent to
-  // `PasskeyJavaScriptFeature`.
+  // `trusted_vault_keys`, `device_authorization_keys` and `params`. The
+  // parameters required to resolve the `PublicKeyCredential` request are sent
+  // to `PasskeyJavaScriptFeature`.
   void CompletePasskeyAssertion(
       AssertionRequestParams params,
       sync_pb::WebauthnCredentialSpecifics passkey,
       std::string client_data_json,
       DeviceAuthorizationKeys device_authorization_keys,
-      SharedKeyList shared_key_list,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
       bool did_complete_uv);
 
   // Starts remote validation for the given origin and RP ID. If validation

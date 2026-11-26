@@ -33,10 +33,12 @@ void FakeIOSPasskeyClient::FetchTrustedVaultKeys(
     // Return a single 32 bytes key (zeroed out) by default.
     bool did_complete_uv =
         user_verification_status == PasskeyUserVerificationStatus::kCompleted;
-    SharedKeyList keys =
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys =
         trusted_vault_keys_.has_value()
             ? *trusted_vault_keys_
-            : SharedKeyList{std::vector<uint8_t>(kKeyLength, 0)};
+            : std::vector<trusted_vault::TrustedVaultKeyAndVersion>{
+                  trusted_vault::TrustedVaultKeyAndVersion(
+                      std::vector<uint8_t>(kKeyLength, 0), /*version=*/0)};
     std::move(callback).Run(std::move(keys), did_complete_uv);
   }
 }
@@ -94,7 +96,8 @@ bool FakeIOSPasskeyClient::DidFetchTrustedVaultKeys() const {
   return fetch_trusted_vault_keys_called_;
 }
 
-void FakeIOSPasskeyClient::SetTrustedVaultKeys(SharedKeyList keys) {
+void FakeIOSPasskeyClient::SetTrustedVaultKeys(
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys) {
   trusted_vault_keys_ = std::move(keys);
 }
 

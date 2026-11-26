@@ -83,12 +83,11 @@ using SharedKeyList = std::vector<SharedKey>;
 using KeysWithVersionsFetchedCallback = base::OnceCallback<
     void(std::vector<trusted_vault::TrustedVaultKeyAndVersion>, NSError*)>;
 
-// Callback to be called once trusted vault keys are fetched, including user
-// verification completion status.
-// TODO(crbug.com/588274186): Migrate `SharedKeyList` to
-// `std::vector<trusted_vault::TrustedVaultKeyAndVersion>`.
-using FetchTrustedVaultKeysCallback =
-    base::OnceCallback<void(SharedKeyList, bool did_complete_uv)>;
+// Callback to be called once trusted vault keys and their versions are fetched,
+// including user verification completion status.
+using FetchTrustedVaultKeysCallback = base::OnceCallback<void(
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion>,
+    bool did_complete_uv)>;
 
 }  // namespace webauthn
 

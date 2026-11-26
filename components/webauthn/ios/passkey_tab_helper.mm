@@ -23,6 +23,7 @@
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
@@ -74,7 +75,7 @@ std::vector<uint8_t> ToByteVector(const std::string& str) {
 std::pair<sync_pb::WebauthnCredentialSpecifics,
           PasskeyJavaScriptFeature::AttestationData>
 CreatePasskeyAndAttestationObject(
-    const SharedKey& trusted_vault_key,
+    const trusted_vault::TrustedVaultKeyAndVersion& trusted_vault_key,
     base::optional_ref<const DeviceAuthorizationKey> device_authorization_key,
     std::string client_data_json,
     std::string_view rp_id,
@@ -84,9 +85,9 @@ CreatePasskeyAndAttestationObject(
   passkey_model_utils::ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] =
       passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-          rp_id, user_entity, trusted_vault_key,
-          /*trusted_vault_key_version=*/0, device_authorization_key,
-          extension_input_data, &extension_output_data);
+          rp_id, user_entity, trusted_vault_key.key, trusted_vault_key.version,
+          device_authorization_key, extension_input_data,
+          &extension_output_data);
 
   device::AttestationObject attestation_object =
       passkey_model_utils::MakeAttestationObjectForCreation(
@@ -104,7 +105,7 @@ CreatePasskeyAndAttestationObject(
 // Utility function to create an assertion object from the provided parameters.
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyAssertion.
 std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
-    const SharedKey& trusted_vault_key,
+    const trusted_vault::TrustedVaultKeyAndVersion& trusted_vault_key,
     base::span<const uint8_t> device_authorization_key,
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     std::string client_data_json,
@@ -114,7 +115,7 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
   // Fetch secrets from passkey if possible.
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   if (!passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          trusted_vault_key, device_authorization_key, passkey,
+          trusted_vault_key.key, device_authorization_key, passkey,
           &credential_secrets)) {
     return std::nullopt;
   }
@@ -1081,7 +1082,7 @@ void PasskeyTabHelper::CompletePasskeyCreation(
     RegistrationRequestParams params,
     std::string client_data_json,
     DeviceAuthorizationKeys device_authorization_keys,
-    SharedKeyList shared_key_list,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     bool did_complete_uv) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {
@@ -1089,8 +1090,10 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   }
 
   // `hw_protected` security domain currently supports a single secret.
+  // TODO(crbug.com/588274186): Support multiple keys and pick the one with the
+  // highest version instead of checking `size() != 1` and taking index `0`.
   const std::string& passkey_request_id = params.RequestId();
-  if (shared_key_list.size() != 1) {
+  if (trusted_vault_keys.size() != 1) {
     DeferToRendererForFrame(web_frame, passkey_request_id, params.Type());
     return;
   }
@@ -1099,7 +1102,7 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   passkey_model_utils::ExtensionInputData extension_input_data =
       params.ExtensionInputForCreation();
   auto [passkey, attestation_data] = CreatePasskeyAndAttestationObject(
-      shared_key_list[0],
+      trusted_vault_keys[0],
       passkey_model_utils::FindLatestDeviceAuthorizationKey(
           device_authorization_keys),
       std::move(client_data_json), params.RpId(), params.UserEntity(),
@@ -1219,7 +1222,7 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     sync_pb::WebauthnCredentialSpecifics passkey,
     std::string client_data_json,
     DeviceAuthorizationKeys device_authorization_keys,
-    SharedKeyList shared_key_list,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     bool did_complete_uv) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {
@@ -1227,8 +1230,11 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
   }
 
   // `hw_protected` security domain currently supports a single secret.
+  // TODO(crbug.com/588274186): Support multiple keys (matching
+  // `passkey.key_version()` or trying keys until decryption succeeds) instead
+  // of checking `size() != 1` and taking index `0`.
   const std::string& passkey_request_id = params.RequestId();
-  if (shared_key_list.size() != 1) {
+  if (trusted_vault_keys.size() != 1) {
     DeferToRendererForFrame(web_frame, passkey_request_id, params.Type());
     return;
   }
@@ -1251,7 +1257,7 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
   passkey_model_utils::ExtensionInputData extension_input_data =
       params.ExtensionInputForCredential(ToByteVector(credential_id));
   std::optional<PasskeyJavaScriptFeature::AssertionData> assertion_data =
-      CreateAssertionObject(shared_key_list[0], device_authorization_key,
+      CreateAssertionObject(trusted_vault_keys[0], device_authorization_key,
                             passkey, std::move(client_data_json), params.RpId(),
                             extension_input_data, did_complete_uv);
 

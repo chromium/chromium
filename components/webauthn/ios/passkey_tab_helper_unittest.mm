@@ -6,6 +6,7 @@
 
 #import <cstdint>
 #import <string_view>
+#import <vector>
 
 #import "base/base64.h"
 #import "base/containers/span.h"
@@ -30,6 +31,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -2187,6 +2189,21 @@ TEST_F(PasskeyTabHelperTest,
   EXPECT_TRUE(passkeys[0].has_encrypted());
   EXPECT_FALSE(passkeys[0].has_security_domain_encrypted());
   EXPECT_FALSE(passkeys[0].has_device_authorization_key_version());
+}
+
+// Tests that the trusted vault key version returned by `IOSPasskeyClient` is
+// recorded on the created passkey.
+TEST_F(PasskeyTabHelperTest, TrustedVaultKeyVersionIsStoredOnPasskeyCreation) {
+  client_->SetTrustedVaultKeys({trusted_vault::TrustedVaultKeyAndVersion(
+      std::vector<uint8_t>(32u, 1), /*version=*/7)});
+
+  HandleCreateRequestAndStartCreation();
+
+  const std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
+                                  PasskeyModel::ShadowedCredentials::kInclude);
+  ASSERT_EQ(passkeys.size(), 1u);
+  EXPECT_EQ(passkeys[0].key_version(), 7);
 }
 
 // Test fixture with `kDeviceAuthorizationPasskeyDecryption` and

@@ -10,7 +10,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/span.h"
-#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
@@ -241,11 +240,8 @@ void IOSChromePasskeyClient::FetchTrustedVaultKeys(
         bool did_complete_uv =
             [delegate userVerificationStatus] ==
             webauthn::PasskeyUserVerificationStatus::kCompleted;
-        // TODO(crbug.com/588274186): Clean this up after refactor.
         std::move(inner_callback)
-            .Run(base::ToVector(trusted_vault_keys,
-                                &trusted_vault::TrustedVaultKeyAndVersion::key),
-                 did_complete_uv);
+            .Run(std::move(trusted_vault_keys), did_complete_uv);
         if (allow_ui) {
           [handler dismissPasskeyWelcomeScreen];
         }
