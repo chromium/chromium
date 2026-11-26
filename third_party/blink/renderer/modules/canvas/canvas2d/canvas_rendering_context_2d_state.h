@@ -118,9 +118,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetLineDash(const Vector<double>&);
   const Vector<double>& LineDash() const { return line_dash_; }
 
-  void SetShouldAntialias(bool);
-  bool ShouldAntialias() const;
-
   void SetLineDashOffset(double);
   double LineDashOffset() const { return line_dash_offset_; }
 

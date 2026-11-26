@@ -1952,9 +1952,7 @@ void BaseRenderingContext2D::WillDraw(
     CanvasPerformanceMonitor::DrawType draw_type) {
   CHECK(HasBacking());
   gfx::Rect adjusted_dirty_rect = dirty_rect;
-  if (GetState().ShouldAntialias()) {
-    adjusted_dirty_rect.Outset(1);
-  }
+  adjusted_dirty_rect.Outset(1);
 
   CanvasRenderingContext::DidDraw(adjusted_dirty_rect, draw_type);
 

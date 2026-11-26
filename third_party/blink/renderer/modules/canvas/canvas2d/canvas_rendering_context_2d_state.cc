@@ -314,18 +314,6 @@ ALWAYS_INLINE void CanvasRenderingContext2DState::UpdateLineDash() const {
   line_dash_dirty_ = false;
 }
 
-void CanvasRenderingContext2DState::SetShouldAntialias(bool should_antialias) {
-  fill_flags_.setAntiAlias(should_antialias);
-  stroke_flags_.setAntiAlias(should_antialias);
-  image_flags_.setAntiAlias(should_antialias);
-}
-
-bool CanvasRenderingContext2DState::ShouldAntialias() const {
-  DCHECK(fill_flags_.isAntiAlias() == stroke_flags_.isAntiAlias() &&
-         fill_flags_.isAntiAlias() == image_flags_.isAntiAlias());
-  return fill_flags_.isAntiAlias();
-}
-
 void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
   global_alpha_ = alpha;
   stroke_style_.ApplyToFlags(stroke_flags_, global_alpha_);

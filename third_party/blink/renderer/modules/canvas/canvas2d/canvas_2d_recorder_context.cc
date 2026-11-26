@@ -2116,9 +2116,6 @@ void Canvas2DRecorderContext::drawImage(const V8CanvasImageSource* image_source,
 
 bool Canvas2DRecorderContext::ShouldDrawImageAntialiased(
     const gfx::RectF& dest_rect) const {
-  if (!GetState().ShouldAntialias()) {
-    return false;
-  }
   const cc::PaintCanvas* c = GetPaintCanvas();
   DCHECK(c);
 

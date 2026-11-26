@@ -27,7 +27,6 @@ PaintRenderingContext2D::PaintRenderingContext2D(
   scale(zoom, zoom);
 
   clip_antialiasing_ = kAntiAliased;
-  GetState().SetShouldAntialias(true);
 
   GetPaintCanvas()->clear(context_settings->alpha() ? SkColors::kTransparent
                                                     : SkColors::kBlack);
