@@ -26,9 +26,11 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
@@ -236,12 +238,25 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
     EXPECT_TRUE(restricted.Wait());
   }
 
-  // Simulates a user speech turn and waits for a restricted context update
-  // with `reason`.
-  void SpeakExpectingRestricted(PageRestrictionReason reason) {
-    auto refreshed = ExpectRestrictedUpdate(reason);
+  TtcPageContextMonitor* page_context_monitor() {
+    auto* session_controller =
+        static_cast<SessionControllerImpl*>(ttc_service().session_controller());
+    return session_controller
+               ? session_controller->page_context_monitor_for_testing()
+               : nullptr;
+  }
+
+  // Simulates a user speech turn and verifies that no refresh is started and no
+  // context update is sent.
+  void SpeakExpectingNoUpdate() {
+    EXPECT_CALL(*conversation(), SendContextUpdate(testing::_)).Times(0);
     ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
-    EXPECT_TRUE(refreshed.Wait());
+    TtcPageContextMonitor* monitor = page_context_monitor();
+    EXPECT_TRUE(monitor);
+    if (monitor) {
+      EXPECT_FALSE(monitor->IsFetchingForTesting());
+    }
+    FlushMessageLoop();
     ttc_service().session_controller()->OnSpeakerChanged(Speaker::kIdle);
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
   }
@@ -472,9 +487,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-    // The user speaking refreshes the restricted status without leaking the
-    // page.
-    SpeakExpectingRestricted(PageRestrictionReason::kUnsupportedScheme);
+    // The user speaking on an already-restricted page does not re-fetch or
+    // resend the restricted status before navigation.
+    SpeakExpectingNoUpdate();
 
     // Starting a new session when extracted content is cached must still emit
     // only `kUnsupportedScheme`.
@@ -619,8 +634,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
                   .has_value());
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // The user speaking refreshes `kSafetyPolicy` without leaking the page.
-  SpeakExpectingRestricted(PageRestrictionReason::kSafetyPolicy);
+  // The user speaking on an already-restricted page skips re-fetching and does
+  // not resend `kSafetyPolicy`.
+  SpeakExpectingNoUpdate();
 
   // Starting a new session when extracted content is cached must also emit
   // `kSafetyPolicy`.
@@ -675,8 +691,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   EXPECT_TRUE(sent.Wait());
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // The user speaking on a crashed tab refreshes `kRendererUnavailable`.
-  SpeakExpectingRestricted(PageRestrictionReason::kRendererUnavailable);
+  // The user speaking on a crashed tab skips refreshing `kRendererUnavailable`.
+  SpeakExpectingNoUpdate();
 
   // Starting a new session on an already-crashed tab emits
   // `kRendererUnavailable`.
@@ -723,8 +739,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // The user speaking refreshes `kEnterprisePolicy`.
-  SpeakExpectingRestricted(PageRestrictionReason::kEnterprisePolicy);
+  // The user speaking on an enterprise-blocked page skips refreshing
+  // `kEnterprisePolicy`.
+  SpeakExpectingNoUpdate();
 
   // Starting a new session when extracted content is cached must also emit
   // `kEnterprisePolicy`.
@@ -817,9 +834,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorEligibilityBrowserTest,
       StartSessionExpectingRestricted(PageRestrictionReason::kSafetyPolicy));
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // Speaking triggers an actionable APC refresh, which must also enforce
-  // server-upload eligibility and emit `kSafetyPolicy`.
-  SpeakExpectingRestricted(PageRestrictionReason::kSafetyPolicy);
+  // Speaking on an already-ineligible page skips actionable APC extraction and
+  // does not resend `kSafetyPolicy`.
+  SpeakExpectingNoUpdate();
 
   // Navigating to an eligible page resumes sending normal page context.
   auto navigated = ExpectPageChange();

@@ -107,7 +107,7 @@ SessionJournalImpl& TtcPageContextMonitor::GetJournal() {
 }
 
 void TtcPageContextMonitor::RefreshPageContext() {
-  if (!web_contents()) {
+  if (!web_contents() || last_reported_restriction_.has_value()) {
     return;
   }
 
@@ -193,6 +193,7 @@ void TtcPageContextMonitor::OnPageContentReset(content::Page& current_page,
 
   // Deliberately not gated on `GetPageRestrictionForUrl()`, so that
   // observers learn that context for the previous page no longer applies.
+  last_reported_restriction_.reset();
   pending_cached_notification_.Cancel();
   fetch_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -338,14 +339,19 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
   }
   const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
   if (!result.has_value() && result.error().restriction.has_value()) {
-    GetJournal().Log("TtcPageContextBlocked",
-                     actor::JournalDetailsBuilder()
-                         .Add("url", url)
-                         .Add("reason", *result.error().restriction)
-                         .Build());
+    const PageRestrictionReason reason = *result.error().restriction;
+    if (last_reported_restriction_ == reason) {
+      return;
+    }
+    last_reported_restriction_ = reason;
+    GetJournal().Log("TtcPageContextBlocked", actor::JournalDetailsBuilder()
+                                                  .Add("url", url)
+                                                  .Add("reason", reason)
+                                                  .Build());
     on_page_context_fetched_.Run(*weak_page, result);
     return;
   }
+  last_reported_restriction_.reset();
   GetJournal().Log("TtcPageContextUpdated",
                    actor::JournalDetailsBuilder().Add("url", url).Build());
   on_page_context_fetched_.Run(*weak_page, result);

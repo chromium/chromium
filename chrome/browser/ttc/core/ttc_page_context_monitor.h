@@ -114,7 +114,8 @@ class TtcPageContextMonitor
 
   // Triggers a fresh extraction of page context for the monitored page,
   // bypassing any cached extraction, and invokes `on_page_context_fetched_`
-  // once it completes.
+  // once it completes. No-ops when the current page was already reported as
+  // restricted since the last navigation.
   void RefreshPageContext();
 
   // Returns whether `page` is the primary page of the monitored WebContents.
@@ -171,6 +172,12 @@ class TtcPageContextMonitor
   // construction, or the result for a PDF or synchronously restricted page.
   // Cancelled if a navigation or fresh extraction supersedes it.
   base::CancelableOnceClosure pending_cached_notification_;
+
+  // Set when a restricted `PageContextError` has been delivered for the
+  // current monitored page; cleared on `OnPageContentReset()` or when a
+  // non-restricted update is delivered. Used to skip redundant speech-turn
+  // refreshes before the next navigation.
+  std::optional<PageRestrictionReason> last_reported_restriction_;
 
   // Scopes in-flight extraction requests (`IsFetchingForTesting()`).
   base::WeakPtrFactory<TtcPageContextMonitor> fetch_weak_ptr_factory_{this};
