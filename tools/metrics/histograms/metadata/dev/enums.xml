@@ -990,6 +990,12 @@ Called by update_protocol_commands_enum.py.-->
       label="AI Assistance - Opened from Application panel floating button"/>
   <int value="209"
       label="AI Assistance - Opened from Application panel context menu"/>
+  <int value="210" label="AI Assistance - Opted out"/>
+</enum>
+
+<enum name="DevToolsAiAssistanceOptIn">
+  <int value="0" label="Settings"/>
+  <int value="1" label="FirstPromptDialog"/>
 </enum>
 
 <enum name="DevToolsAiClientRequestResult">

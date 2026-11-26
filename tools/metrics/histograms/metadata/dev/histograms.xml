@@ -29,6 +29,20 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
+<histogram name="DevTools.AiAssistance.OptIn" enum="DevToolsAiAssistanceOptIn"
+    expires_after="2027-11-01">
+  <owner>jacktfranklin@google.com</owner>
+  <owner>victorporof@google.com</owner>
+  <component>1633102</component>
+  <summary>
+    Records the UI path (Settings toggle vs. inline first-prompt consent dialog)
+    through which a user opts in to DevTools AI Assistance. Recorded each time a
+    user enables AI Assistance from a disabled state in Settings or by
+    confirming the first-prompt consent dialog. This is a strictly categorical
+    counter and logs no prompt text or inspected page identifiers.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.AiClient.RequestResult{Surface}"
     enum="DevToolsAiClientRequestResult" expires_after="2027-11-01">
   <owner>jacktfranklin@google.com</owner>
