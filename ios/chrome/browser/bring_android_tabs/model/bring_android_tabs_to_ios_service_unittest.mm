@@ -192,28 +192,28 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   // loads the user's tabs. Also records that the prompt is displayed if at
   // least one tab is loaded.
   void SetUpBringAndroidTabsServiceAndLoadTabs(bool is_android_switcher) {
-    // Create BringAndroidTabsToIOSService dependencies. These dependencies are
-    // only used in `LoadTabs()`, therefore they can be scoped within this
-    // method.
-    auto session_sync_service =
+    // Reset any existing service first before recreating its dependencies
+    // (e.g., when called a second time to simulate a restart).
+    bring_android_tabs_service_.reset();
+    dispatcher_.reset();
+    session_sync_service_ =
         std::make_unique<sync_sessions::MockSessionSyncService>();
-    ON_CALL(*session_sync_service, GetOpenTabsUIDelegate)
+    ON_CALL(*session_sync_service_, GetOpenTabsUIDelegate)
         .WillByDefault(testing::Return(open_ui_delegate_.get()));
     const char* classification_label =
         is_android_switcher
             ? segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel
             : segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel;
-    segmentation_platform::IOSFieldTrialRegisterImpl field_trial_register_ =
-        segmentation_platform::IOSFieldTrialRegisterImpl();
-    bring_android_tabs::FakeDeviceSwitcherResultDispatcher dispatcher(
+    dispatcher_ = std::make_unique<
+        bring_android_tabs::FakeDeviceSwitcherResultDispatcher>(
         &segmentation_platform_service_, device_info_tracker_.get(),
         prefs_.get(), &field_trial_register_, classification_label);
 
-    // Create the BringAndroidTabsToIOSService and load tabs.
+    // Create the `BringAndroidTabsToIOSService` and load tabs.
     bring_android_tabs_service_ =
         std::make_unique<BringAndroidTabsToIOSService>(
-            &dispatcher, test_sync_service_.get(), session_sync_service.get(),
-            prefs_.get());
+            dispatcher_.get(), test_sync_service_.get(),
+            session_sync_service_.get(), prefs_.get());
     bring_android_tabs_service_->LoadTabs();
     // Record that the prompt has displayed.
     if (bring_android_tabs_service_->GetNumberOfAndroidTabs() > 0) {
@@ -257,13 +257,24 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<sync_sessions::FakeOpenTabsUIDelegate> open_ui_delegate_;
-  std::unique_ptr<BringAndroidTabsToIOSService> bring_android_tabs_service_;
   // Service dependencies.
   testing::NiceMock<segmentation_platform::MockSegmentationPlatformService>
       segmentation_platform_service_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  segmentation_platform::IOSFieldTrialRegisterImpl field_trial_register_;
+  std::unique_ptr<sync_sessions::MockSessionSyncService> session_sync_service_;
+  // Declared after `segmentation_platform_service_`, `device_info_tracker_`,
+  // `prefs_`, and `field_trial_register_` so it is destroyed before the
+  // dependencies it holds `raw_ptr`s to.
+  std::unique_ptr<bring_android_tabs::FakeDeviceSwitcherResultDispatcher>
+      dispatcher_;
+
+  // Service under test. Declared after all service dependencies so it is
+  // destroyed before them.
+  std::unique_ptr<BringAndroidTabsToIOSService> bring_android_tabs_service_;
+
   base::HistogramTester histogram_tester_;
 };
 
