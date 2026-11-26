@@ -486,8 +486,6 @@ BASE_DECLARE_FEATURE(kManageYourSavedInfoPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kResetNativePointerInCreditCardAuthDialog);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kShowAutocompleteAtMemoryButton);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);

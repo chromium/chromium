@@ -1306,11 +1306,6 @@ BASE_FEATURE(kManageYourSavedInfoPerceptionSurvey,
 BASE_FEATURE(kResetNativePointerInCreditCardAuthDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, an entry point to AtMemory will be shown at the bottom of the
-// Autocomplete dialogs.
-BASE_FEATURE(kShowAutocompleteAtMemoryButton,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, "Manage information" menu item for enhanced autofill will
 // redirect user either to "/travel" or "/identityDocs" pages instead of
 // "/yourSavedInfo" always.
