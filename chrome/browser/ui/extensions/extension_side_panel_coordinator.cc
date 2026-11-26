@@ -285,7 +285,9 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
 
 SidePanelNativeView ExtensionSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
-  CHECK(!host_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/590318457): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!host_);
   if (delegate_) {
     host_ = delegate_->CreateHost(side_panel_url_);
   }
