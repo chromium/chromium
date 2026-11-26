@@ -288,34 +288,64 @@ std::unique_ptr<URLRequest> CreateRequestWithContext(
   return request;
 }
 
-class RequestContextCapturingInterceptor : public URLRequestInterceptor {
- public:
-  explicit RequestContextCapturingInterceptor(
-      base::RepeatingCallback<void(CapturedRequestContext)> on_intercept,
-      bool auto_advance = true)
-      : auto_advance_(auto_advance), on_intercept_(std::move(on_intercept)) {}
+struct TestHttpResponse {
+  std::string body;
+  std::string headers = "HTTP/1.1 200 OK\n\n";
+};
 
-  ~RequestContextCapturingInterceptor() override = default;
+class TestUrlInterceptor : public URLRequestInterceptor {
+ public:
+  using ResponseCallback =
+      base::RepeatingCallback<TestHttpResponse(const URLRequest&)>;
+
+  explicit TestUrlInterceptor(ResponseCallback response_callback)
+      : response_callback_(std::move(response_callback)) {}
+
+  ~TestUrlInterceptor() override = default;
 
   std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
       URLRequest* request) const override {
-    CapturedRequestContext context{
-        .site_for_cookies = request->site_for_cookies(),
-        .isolation_info = request->isolation_info(),
-        .initiator = request->initiator(),
-    };
-    if (on_intercept_) {
-      on_intercept_.Run(std::move(context));
-    }
-    return std::make_unique<URLRequestTestJob>(request, "HTTP/1.1 200 OK\n\n",
-                                               /*response_data=*/"",
-                                               auto_advance_);
+    TestHttpResponse response = response_callback_.Run(*request);
+    return std::make_unique<URLRequestTestJob>(
+        request, response.headers, response.body, /*auto_advance=*/true);
   }
 
  private:
-  const bool auto_advance_ = true;
-  base::RepeatingCallback<void(CapturedRequestContext)> on_intercept_;
+  ResponseCallback response_callback_;
 };
+
+// Registers an HTTP response handler for `url` on `URLRequestFilter` (cleared
+// in `TearDown()`).
+void AddHttpResponseHandler(const GURL& url,
+                            TestUrlInterceptor::ResponseCallback callback) {
+  URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<TestUrlInterceptor>(std::move(callback)));
+}
+
+void AddHttpResponse(const GURL& url, TestHttpResponse response = {}) {
+  AddHttpResponseHandler(
+      url, base::BindRepeating([](const TestHttpResponse& response,
+                                  const URLRequest&) { return response; },
+                               std::move(response)));
+}
+
+void AddDefaultHttpResponseAndCaptureRequestContext(
+    const GURL& url,
+    base::RepeatingCallback<void(CapturedRequestContext)> on_intercept) {
+  AddHttpResponseHandler(
+      url,
+      base::BindRepeating(
+          [](base::RepeatingCallback<void(CapturedRequestContext)> on_intercept,
+             const URLRequest& request) {
+            on_intercept.Run(CapturedRequestContext{
+                .site_for_cookies = request.site_for_cookies(),
+                .isolation_info = request.isolation_info(),
+                .initiator = request.initiator(),
+            });
+            return TestHttpResponse{};
+          },
+          std::move(on_intercept)));
+}
 
 // Creates a `URLRequest` for `url` with `DeviceBoundSessionMode::kAllowed`.
 std::unique_ptr<URLRequest> CreateAllowedRequest(URLRequestContext* context,
@@ -401,32 +431,6 @@ void ExhaustProviderSigningQuota(SessionServiceImpl& service,
   EXPECT_FALSE(
       service.TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
 }
-
-// Stands in for a refresh endpoint that wants a signed challenge: answers a
-// request without a `Secure-Session-Response` header with a 403, and a request
-// with one with an empty 200. Runs `on_unsigned_request` for each request of
-// the first kind.
-class SignedRefreshInterceptor : public URLRequestInterceptor {
- public:
-  explicit SignedRefreshInterceptor(base::RepeatingClosure on_unsigned_request)
-      : on_unsigned_request_(std::move(on_unsigned_request)) {}
-
-  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
-      URLRequest* request) const override {
-    const bool is_signed =
-        request->extra_request_headers().HasHeader("Secure-Session-Response");
-    if (!is_signed) {
-      on_unsigned_request_.Run();
-    }
-    return std::make_unique<URLRequestTestJob>(
-        request,
-        is_signed ? "HTTP/1.1 200 OK\n\n" : "HTTP/1.1 403 Forbidden\n\n",
-        /*response_data=*/"", /*auto_advance=*/true);
-  }
-
- private:
-  const base::RepeatingClosure on_unsigned_request_;
-};
 
 class SessionServiceImplTest : public ::testing::Test,
                                public WithTaskEnvironment {
@@ -3919,9 +3923,8 @@ TEST_F(SessionServiceImplWithStoreTest,
   FinishLoadingSessions(std::move(session_map));
 
   base::test::TestFuture<CapturedRequestContext> intercept_future;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                           intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRefreshUrl, intercept_future.GetRepeatingCallback());
 
   // Create request1 (context A) that should be deferred due to missing cookie.
   const url::Origin origin1 = url::Origin::Create(kTestUrl);
@@ -4309,9 +4312,7 @@ TEST_F(ConcurrentKeyRestoreTest, RefreshSucceedsBeforeKeyIsRestored) {
   SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
   LoadSessionWithUnrestoredKey(&restore_key_callback, kRefreshUrlString);
 
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl,
-      std::make_unique<RequestContextCapturingInterceptor>(base::DoNothing()));
+  AddHttpResponse(kTestRefreshUrl);
   EXPECT_CALL(
       store(),
       SaveSession(session_key_.site,
@@ -4352,9 +4353,22 @@ TEST_F(ConcurrentKeyRestoreTest, RestoredKeySignsChallenge) {
   ASSERT_TRUE(loaded_session);
 
   base::test::TestFuture<void> unsigned_request;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<SignedRefreshInterceptor>(
-                           unsigned_request.GetRepeatingCallback()));
+  // Simulate a refresh endpoint requiring a signed challenge: respond with an
+  // empty 200 to signed requests (`Secure-Session-Response` header present),
+  // and signal `unsigned_request` while returning 403 for unsigned requests.
+  AddHttpResponseHandler(
+      kTestRefreshUrl,
+      base::BindRepeating(
+          [](base::RepeatingClosure on_unsigned_request,
+             const URLRequest& request) {
+            if (request.extra_request_headers().HasHeader(
+                    "Secure-Session-Response")) {
+              return TestHttpResponse{};
+            }
+            on_unsigned_request.Run();
+            return TestHttpResponse{.headers = "HTTP/1.1 403 Forbidden\n\n"};
+          },
+          unsigned_request.GetRepeatingCallback()));
   base::test::TestFuture<RefreshResult> future;
   DeferRefreshRequest(future);
   ASSERT_TRUE(restore_key_callback);
@@ -7211,9 +7225,8 @@ TEST_F(SessionServiceImplTest,
       CreateRequestWithContext(context(), kTestUrl, expected_origin, &delegate);
 
   base::test::TestFuture<CapturedRequestContext> intercept_future;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                           intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRefreshUrl, intercept_future.GetRepeatingCallback());
 
   base::test::TestFuture<RefreshResult> refresh_future;
   DbscRequest dbsc_request(request.get());
@@ -7248,9 +7261,8 @@ TEST_F(SessionServiceImplTest,
   request->set_maybe_sent_cookies({{*cookie, CookieAccessResult()}});
 
   base::test::TestFuture<CapturedRequestContext> intercept_future;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                           intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRefreshUrl, intercept_future.GetRepeatingCallback());
 
   // The request shouldn't be deferred, but it should trigger a proactive
   // refresh.
@@ -7269,9 +7281,8 @@ TEST_F(SessionServiceImplTest,
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   base::test::TestFuture<CapturedRequestContext> intercept_future;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                           intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRefreshUrl, intercept_future.GetRepeatingCallback());
 
   base::test::TestFuture<SessionPrewarmResult> prewarm_future;
   service().PrewarmSessionsForUrl(kTestUrl, prewarm_future.GetCallback());
@@ -7296,9 +7307,8 @@ TEST_F(SessionServiceImplTest,
       expected_site_for_cookies);
 
   base::test::TestFuture<CapturedRequestContext> intercept_future;
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRegisterUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                            intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRegisterUrl, intercept_future.GetRepeatingCallback());
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestRegisterUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
@@ -7317,9 +7327,8 @@ TEST_F(SessionServiceImplTest,
 
   base::test::TestFuture<CapturedRequestContext> intercept_future(
       base::test::TestFutureMode::kQueue);
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
-                           intercept_future.GetRepeatingCallback()));
+  AddDefaultHttpResponseAndCaptureRequestContext(
+      kTestRefreshUrl, intercept_future.GetRepeatingCallback());
 
   const url::Origin origin1 = url::Origin::Create(kTestUrl);
   net::TestDelegate delegate1;
