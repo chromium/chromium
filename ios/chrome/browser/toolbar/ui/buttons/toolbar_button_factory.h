@@ -51,6 +51,10 @@
 // Creates a tools menu button.
 - (ToolbarButton*)makeToolsMenuButton;
 
+// Creates the vertical sidebar's new tab button. It shows a plain plus in
+// every layout, matching the sidebar spec.
+- (ToolbarButton*)makeNewTabButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_BUTTON_FACTORY_H_

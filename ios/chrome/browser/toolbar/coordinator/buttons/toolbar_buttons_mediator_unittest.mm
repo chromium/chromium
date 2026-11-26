@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/buttons/toolbar_buttons_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -30,14 +33,18 @@
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/voice_search_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -71,6 +78,11 @@
 @end
 
 namespace {
+
+// Completion of a deferred menu element's provider, with the menu's items.
+using MenuElementsCompletion = void (^)(NSArray<UIMenuElement*>*);
+// Provider of a deferred menu element's items.
+using DeferredMenuProvider = void (^)(MenuElementsCompletion);
 
 MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
 
@@ -131,6 +143,9 @@ class ToolbarButtonsMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
@@ -186,10 +201,57 @@ class ToolbarButtonsMediatorTest : public PlatformTest {
                       profile:profile_.get()
                   prefService:profile_->GetPrefs()
         authenticationService:auth_service_
+           templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
+                                  profile_.get())
            geminiBrowserAgent:gemini_browser_agent_];
     mediator.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
     return mediator;
+  }
+
+  // Creates a regular mediator, and returns in `provider` the provider of the
+  // deferred element of its new tab button's menu, which builds the menu's
+  // items when the menu shows.
+  ToolbarButtonsMediator* CreateMediatorWithNewTabMenuProvider(
+      DeferredMenuProvider* provider) {
+    // The camera search action is the QR scanner's when Lens isn't available.
+    id qr_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:qr_scanner_handler
+                     forProtocol:@protocol(QRScannerCommands)];
+    id voice_search_handler = OCMProtocolMock(@protocol(VoiceSearchCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:voice_search_handler
+                     forProtocol:@protocol(VoiceSearchCommands)];
+
+    __block DeferredMenuProvider captured_provider = nil;
+    UIDeferredMenuElement* element = [UIDeferredMenuElement
+        elementWithUncachedProvider:^(MenuElementsCompletion){
+        }];
+    id deferred_element_mock = OCMClassMock([UIDeferredMenuElement class]);
+    OCMStub(
+        ClassMethod([deferred_element_mock
+            elementWithUncachedProvider:[OCMArg checkWithBlock:^BOOL(id obj) {
+              captured_provider = obj;
+              return YES;
+            }]]))
+        .andReturn(element);
+    ToolbarButtonsMediator* mediator = CreateMediator(/*incognito=*/NO);
+    [deferred_element_mock stopMocking];
+    *provider = captured_provider;
+    return mediator;
+  }
+
+  // Returns the elements that `provider` shows, or nil without `provider`.
+  NSArray<UIMenuElement*>* ShowMenu(DeferredMenuProvider provider) {
+    EXPECT_TRUE(provider) << "The new tab menu has no deferred element.";
+    __block NSArray<UIMenuElement*>* shown_elements = nil;
+    if (provider) {
+      provider(^(NSArray<UIMenuElement*>* elements) {
+        shown_elements = elements;
+      });
+    }
+    return shown_elements;
   }
 
   // Returns a new fake web state and sets the fake navigation manager to the
@@ -447,9 +509,12 @@ TEST_F(ToolbarButtonsMediatorTest, TestActivationSyncsConsumer) {
   OCMExpect([consumer setCanGoBack:YES]);
   OCMExpect([consumer setCanGoForward:NO animated:NO]);
   OCMExpect([consumer setShareEnabled:YES]);
+  OCMExpect([consumer setNewTabEnabled:YES]);
   OCMExpect([consumer setNTPVisible:NO isLoading:NO loadingProgress:0.0]);
   OCMExpect([consumer setMenu:[OCMArg any]
                 forButtonType:ToolbarButtonTypeBack]);
+  OCMExpect([consumer setMenu:[OCMArg isNotNil]
+                forButtonType:ToolbarButtonTypeNewTab]);
   OCMExpect([consumer updateTabCount:1]);
   OCMExpect([consumer setInTabGroup:NO]);
   [mediator_ addConsumer:consumer];
@@ -825,6 +890,40 @@ TEST_F(ToolbarButtonsMediatorTest, TestRecordUserActionsForButtonTappedOnNTP) {
                                       IOSHomeActionType::kTabSwitcher, 2);
 }
 
+// Tests that the new tab button tap records its user actions, with the NTP and
+// incognito variants.
+TEST_F(ToolbarButtonsMediatorTest, TestRecordUserActionsForNewTabButtonTapped) {
+  base::UserActionTester user_action_tester;
+  InsertActiveWebState();
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeNewTab];
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileTabNewTab"));
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"));
+
+  InsertActiveNTPWebState(/*start_surface=*/false);
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeNewTab];
+  EXPECT_EQ(2,
+            user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"));
+
+  // The incognito variant, on a page other than the NTP.
+  InsertActiveWebState();
+  ToolbarButtonsMediator* incognito_mediator =
+      CreateMediator(/*incognito=*/YES);
+  [incognito_mediator recordUserActionsForButtonTapped:ToolbarButtonTypeNewTab];
+  [incognito_mediator disconnect];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileToolbarNewIncognitoTabShortcut"));
+  EXPECT_EQ(2,
+            user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"));
+  EXPECT_EQ(3, user_action_tester.GetActionCount("MobileTabNewTab"));
+}
+
 // Tests that the button taps record their user actions without an active
 // WebState, except the tools menu's.
 TEST_F(ToolbarButtonsMediatorTest,
@@ -900,6 +999,89 @@ TEST_F(ToolbarButtonsMediatorTest, TestTabGridMenu_IncognitoDisabled) {
   UIAction* close_tab_action = (UIAction*)menu.children[2];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
               close_tab_action.title);
+}
+
+// Tests that the new tab button follows live changes of the incognito policy
+// without an active WebState, and that a consumer added then is synced with it.
+TEST_F(ToolbarButtonsMediatorTest,
+       TestNewTabEnabledFollowsPolicyWithoutWebState) {
+  OCMExpect([consumer_ setNewTabEnabled:NO]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  id consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+  OCMExpect([consumer setNewTabEnabled:NO]);
+  [mediator_ addConsumer:consumer];
+  EXPECT_OCMOCK_VERIFY(consumer);
+
+  OCMExpect([consumer_ setNewTabEnabled:YES]);
+  profile_->GetTestingPrefService()->RemoveManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the new tab button follows live changes of the incognito policy
+// with an active WebState, and that navigations don't update it.
+TEST_F(ToolbarButtonsMediatorTest, TestNewTabEnabledFollowsPolicyWithWebState) {
+  InsertActiveWebState();
+
+  OCMExpect([consumer_ setNewTabEnabled:NO]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setNewTabEnabled:YES]);
+  profile_->GetTestingPrefService()->RemoveManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMReject([consumer_ setNewTabEnabled:NO]).ignoringNonObjectArgs();
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:ToolbarButtonTypeNewTab]);
+  InsertActiveWebState();
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the incognito new tab button follows live changes of the incognito
+// policy, which only disables it when incognito mode is disabled.
+TEST_F(ToolbarButtonsMediatorTest, TestIncognitoNewTabFollowsPolicy) {
+  ToolbarButtonsMediator* incognito_mediator =
+      CreateMediator(/*incognito=*/YES);
+  id consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+  OCMExpect([consumer setNewTabEnabled:YES]);
+  [incognito_mediator addConsumer:consumer];
+  EXPECT_OCMOCK_VERIFY(consumer);
+
+  OCMExpect([consumer setNewTabEnabled:NO]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kDisabled)));
+  EXPECT_OCMOCK_VERIFY(consumer);
+
+  OCMExpect([consumer setNewTabEnabled:YES]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+  EXPECT_OCMOCK_VERIFY(consumer);
+  [incognito_mediator disconnect];
+}
+
+// Tests that the regular new tab button stays enabled when incognito mode is
+// disabled by policy.
+TEST_F(ToolbarButtonsMediatorTest, TestNewTabEnabledWhenIncognitoDisabled) {
+  OCMExpect([consumer_ setNewTabEnabled:YES]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kDisabled)));
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests that the TabGrid button menu contains "Close Tab", "New Tab", and "New
@@ -1021,4 +1203,115 @@ TEST_F(ToolbarButtonsMediatorTest, TestAssistantButtonVisibleInIncognito) {
   OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
   [mediator_ geminiAvailabilityChanged:YES];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the new tab button's menu, once shown, has the search actions at
+// its top level, with the search for the copied text, rather than a single
+// untitled submenu holding them.
+TEST_F(ToolbarButtonsMediatorTest, TestNewTabMenuShowsActionsAtTopLevel) {
+  auto clipboard = std::make_unique<FakeClipboardRecentContent>();
+  clipboard->SetClipboardText(u"copied text", base::Seconds(1));
+  ClipboardRecentContent::SetInstance(std::move(clipboard));
+  DeferredMenuProvider provider = nil;
+  ToolbarButtonsMediator* mediator =
+      CreateMediatorWithNewTabMenuProvider(&provider);
+  NSArray<UIMenuElement*>* shown_elements = ShowMenu(provider);
+  [mediator disconnect];
+  ClipboardRecentContent::SetInstance(nullptr);
+
+  // The search for the copied text, then an inline section with the new
+  // search, incognito search, voice search and camera search actions.
+  ASSERT_EQ(2u, shown_elements.count);
+  EXPECT_TRUE([shown_elements[0] isKindOfClass:[UIAction class]]);
+  UIMenu* section = base::apple::ObjCCast<UIMenu>(shown_elements[1]);
+  ASSERT_TRUE(section);
+  EXPECT_TRUE(section.options & UIMenuOptionsDisplayInline);
+  EXPECT_EQ(4u, section.children.count);
+  for (UIMenuElement* child in section.children) {
+    EXPECT_TRUE([child isKindOfClass:[UIAction class]]);
+  }
+}
+
+// Tests that without copied text, the new tab button's menu shows the search
+// actions themselves at its top level.
+TEST_F(ToolbarButtonsMediatorTest, TestNewTabMenuWithoutCopiedText) {
+  ClipboardRecentContent::SetInstance(
+      std::make_unique<FakeClipboardRecentContent>());
+  DeferredMenuProvider provider = nil;
+  ToolbarButtonsMediator* mediator =
+      CreateMediatorWithNewTabMenuProvider(&provider);
+  NSArray<UIMenuElement*>* shown_elements = ShowMenu(provider);
+  [mediator disconnect];
+  ClipboardRecentContent::SetInstance(nullptr);
+
+  ASSERT_EQ(4u, shown_elements.count);
+  for (UIMenuElement* element in shown_elements) {
+    EXPECT_TRUE([element isKindOfClass:[UIAction class]]);
+  }
+}
+
+// Tests that the new tab button's menu shows no items once its mediator is
+// disconnected, which releases the menu factory.
+TEST_F(ToolbarButtonsMediatorTest, TestNewTabMenuEmptyAfterDisconnect) {
+  DeferredMenuProvider provider = nil;
+  ToolbarButtonsMediator* mediator =
+      CreateMediatorWithNewTabMenuProvider(&provider);
+  [mediator disconnect];
+  NSArray<UIMenuElement*>* shown_elements = ShowMenu(provider);
+  ASSERT_TRUE(shown_elements);
+  EXPECT_EQ(0u, shown_elements.count);
+}
+
+// Tests that a consumer gets the new tab button's menu, built when it shows,
+// when the consumer is added.
+TEST_F(ToolbarButtonsMediatorTest, TestAddedConsumerGetsNewTabMenu) {
+  id consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+  OCMExpect([consumer setMenu:[OCMArg checkWithBlock:^BOOL(UIMenu* menu) {
+                        return menu.children.count == 1 &&
+                               [menu.children[0]
+                                   isKindOfClass:[UIDeferredMenuElement class]];
+                      }]
+                forButtonType:ToolbarButtonTypeNewTab]);
+  [mediator_ addConsumer:consumer];
+  EXPECT_OCMOCK_VERIFY(consumer);
+}
+
+// Tests that a consumer added after the mediator is disconnected gets nothing.
+TEST_F(ToolbarButtonsMediatorTest,
+       TestConsumerAddedAfterDisconnectGetsNothing) {
+  [mediator_ disconnect];
+  id consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+  OCMReject([consumer setMenu:[OCMArg any]
+                forButtonType:ToolbarButtonTypeNewTab]);
+  OCMReject([consumer setNewTabEnabled:NO]).ignoringNonObjectArgs();
+  OCMReject([consumer updateTabCount:0]).ignoringNonObjectArgs();
+  [mediator_ addConsumer:consumer];
+  EXPECT_OCMOCK_VERIFY(consumer);
+}
+
+// Tests that opening a new tab opens a regular tab, animated from the given
+// point.
+TEST_F(ToolbarButtonsMediatorTest, TestOpenNewTabFromPoint) {
+  mediator_.sceneHandler = scene_handler_;
+  OCMExpect([scene_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        return !command.inIncognito &&
+               CGPointEqualToPoint(command.originPoint, CGPointMake(12, 34));
+      }]]);
+  [mediator_ openNewTabFromPoint:CGPointMake(12, 34)];
+  EXPECT_OCMOCK_VERIFY(scene_handler_);
+}
+
+// Tests that opening a new tab in an incognito browser opens an incognito tab.
+TEST_F(ToolbarButtonsMediatorTest, TestOpenNewTabFromPointInIncognito) {
+  ToolbarButtonsMediator* incognito_mediator =
+      CreateMediator(/*incognito=*/YES);
+  incognito_mediator.sceneHandler = scene_handler_;
+  OCMExpect([scene_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        return command.inIncognito;
+      }]]);
+  [incognito_mediator openNewTabFromPoint:CGPointZero];
+  EXPECT_OCMOCK_VERIFY(scene_handler_);
+  [incognito_mediator disconnect];
 }

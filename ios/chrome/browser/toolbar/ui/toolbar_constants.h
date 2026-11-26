@@ -21,6 +21,9 @@ extern NSString* const kToolbarTabGridButtonIdentifier;
 extern NSString* const kToolbarToolsMenuButtonIdentifier;
 extern NSString* const kToolbarOmniboxButtonIdentifier;
 extern NSString* const kToolbarAssistantButtonIdentifier;
+// Accessibility identifier of the new tab button, only shown in the iPhone Duo
+// vertical sidebar.
+extern NSString* const kToolbarOpenNewTabButtonIdentifier;
 
 // The height of the promo banner displayed in the toolbar.
 extern const CGFloat kToolbarPromoBannerHeight;

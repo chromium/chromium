@@ -15,7 +15,9 @@ class GeminiBrowserAgent;
 @protocol GeminiCommands;
 class PrefService;
 class ProfileIOS;
+@protocol SceneCommands;
 class TabBasedIPHBrowserAgent;
+class TemplateURLService;
 @protocol ToolbarButtonsConsumer;
 @class ToolbarButtonsMediator;
 @protocol ToolbarTabGridMenuConsumer;
@@ -53,6 +55,9 @@ class WebStateList;
 // Dispatcher for Gemini commands.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
+// Dispatcher for scene commands, which open new tabs.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
 // Base view controller for presenting UI sheets.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -67,6 +72,7 @@ class WebStateList;
                           profile:(ProfileIOS*)profile
                       prefService:(PrefService*)prefService
             authenticationService:(AuthenticationService*)authenticationService
+               templateURLService:(TemplateURLService*)templateURLService
                geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 

@@ -27,8 +27,9 @@ class WebStateList;
 // Initializer for this factory when used by the Toolbar.
 - (instancetype)initForToolbarWithIncognito:(BOOL)incognito
                                webStateList:(WebStateList*)webStateList
-                              actionFactory:
-                                  (BrowserActionFactory*)actionFactory;
+                              actionFactory:(BrowserActionFactory*)actionFactory
+                         templateURLService:
+                             (TemplateURLService*)templateURLService;
 
 // Initializer for this factory when used by the App Bar.
 - (instancetype)initForAppBarWithIncognito:(BOOL)incognito
@@ -50,6 +51,11 @@ class WebStateList;
 
 // Returns the context menu for the New Tab button.
 - (UIMenu*)menuForNewTabButton;
+
+// Returns a menu showing the items of `-menuForNewTabButton`, built each time
+// it's shown so that they're up to date (e.g. the search for the copied text).
+// It has no items once the factory is deallocated.
+- (UIMenu*)deferredMenuForNewTabButton;
 
 // Returns the context menu for the Tab Grid button.
 - (UIMenu*)menuForTabGridButton;

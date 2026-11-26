@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
@@ -1509,15 +1510,19 @@ inline LayoutStateToolbarPassKey PassKey() {
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:browser
              scenario:kMenuScenarioHistogramToolbarMenu];
-  ProfileIOS* regularProfile = self.profile->GetOriginalProfile();
+  ProfileIOS* profile = self.profile;
+  BOOL incognito = profile->IsOffTheRecord();
+  ProfileIOS* regularProfile = profile->GetOriginalProfile();
 
   _toolbarButtonsMediator = [[ToolbarButtonsMediator alloc]
-          initWithIncognito:self.profile->IsOffTheRecord()
+          initWithIncognito:incognito
                webStateList:browser->GetWebStateList()
               actionFactory:actionFactory
                     profile:regularProfile
                 prefService:regularProfile->GetPrefs()
       authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                regularProfile)
+         templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
                                 regularProfile)
          geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(browser)];
   _toolbarButtonsMediator.navigationBrowserAgent =
@@ -1526,6 +1531,8 @@ inline LayoutStateToolbarPassKey PassKey() {
       TabBasedIPHBrowserAgent::FromBrowser(browser);
   _toolbarButtonsMediator.geminiHandler =
       HandlerForProtocol(dispatcher, GeminiCommands);
+  _toolbarButtonsMediator.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   _toolbarButtonsMediator.baseViewController = self.baseViewController;
   _toolbarButtonsMediator.delegate = self;
 
@@ -1537,7 +1544,7 @@ inline LayoutStateToolbarPassKey PassKey() {
       HandlerForProtocol(dispatcher, ActivityServiceCommands);
   _toolbarButtonActions.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
-  if (!self.profile->IsOffTheRecord() && IsActorEnabled()) {
+  if (!incognito && IsActorEnabled()) {
     _toolbarButtonActions.actorOverlayHandler =
         HandlerForProtocol(dispatcher, ActorOverlayCommands);
   }

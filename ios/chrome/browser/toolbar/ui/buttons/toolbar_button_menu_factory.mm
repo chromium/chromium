@@ -43,13 +43,16 @@
 
 - (instancetype)initForToolbarWithIncognito:(BOOL)incognito
                                webStateList:(WebStateList*)webStateList
-                              actionFactory:
-                                  (BrowserActionFactory*)actionFactory {
+                              actionFactory:(BrowserActionFactory*)actionFactory
+                         templateURLService:
+                             (TemplateURLService*)templateURLService {
   if ((self = [super init])) {
     CHECK(actionFactory);
+    CHECK(templateURLService);
     _incognito = incognito;
     _webStateList = webStateList;
     _actionFactory = actionFactory;
+    _templateURLService = templateURLService;
   }
   return self;
 }
@@ -60,14 +63,11 @@
                         templateURLService:
                             (TemplateURLService*)templateURLService
                               tabGridState:(TabGridState*)tabGridState {
-  if ((self = [super init])) {
-    CHECK(actionFactory);
-    CHECK(templateURLService);
-    CHECK(tabGridState);
-    _incognito = incognito;
-    _webStateList = webStateList;
-    _actionFactory = actionFactory;
-    _templateURLService = templateURLService;
+  CHECK(tabGridState);
+  if ((self = [self initForToolbarWithIncognito:incognito
+                                   webStateList:webStateList
+                                  actionFactory:actionFactory
+                             templateURLService:templateURLService])) {
     _tabGridState = tabGridState;
   }
   return self;
@@ -117,8 +117,9 @@
 }
 
 - (UIMenu*)menuForNewTabButton {
+  // Only the App Bar's factory has a tab grid state.
   BOOL isTabGroupsPageVisible =
-      _tabGridState.currentPage == TabGridPageTabGroups;
+      _tabGridState && _tabGridState.currentPage == TabGridPageTabGroups;
   BOOL isTabGroupVisible =
       _tabGridState.tabGridVisible && _tabGridState.visibleTabGroup;
 
@@ -171,7 +172,6 @@
   }
 
   // Context menu for while browsing.
-  CHECK(_templateURLService);
   const bool useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::PlusButton,
@@ -211,6 +211,18 @@
                     identifier:nil
                        options:UIMenuOptionsDisplayInline
                       children:staticActions];
+}
+
+- (UIMenu*)deferredMenuForNewTabButton {
+  // The deferred element is replaced by the menu's children, not the menu
+  // itself, which would otherwise show as a single untitled submenu.
+  __weak __typeof(self) weakSelf = self;
+  UIDeferredMenuElement* element =
+      [UIDeferredMenuElement elementWithUncachedProvider:^(
+                                 void (^completion)(NSArray<UIMenuElement*>*)) {
+        completion([weakSelf menuForNewTabButton].children ?: @[]);
+      }];
+  return [UIMenu menuWithChildren:@[ element ]];
 }
 
 - (UIMenu*)menuForTabGridButton {

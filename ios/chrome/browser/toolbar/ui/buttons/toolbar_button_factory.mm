@@ -168,6 +168,18 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
   return button;
 }
 
+- (ToolbarButton*)makeNewTabButton {
+  ToolbarButton* button = [self toolbarButtonForSymbol:SymbolPlus];
+  button.visibilityMask = ToolbarButtonVisibility::kAlways;
+  button.accessibilityIdentifier = kToolbarOpenNewTabButtonIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(_incognito ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO
+                                        : IDS_IOS_TOOLBAR_OPEN_NEW_TAB);
+  button.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB);
+  return button;
+}
+
 #pragma mark - Private
 
 // Returns a toolbar button with the given symbol.

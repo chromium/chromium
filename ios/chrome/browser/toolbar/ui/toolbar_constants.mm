@@ -24,6 +24,8 @@ NSString* const kToolbarOmniboxButtonIdentifier =
     @"kToolbarOmniboxButtonIdentifier";
 NSString* const kToolbarAssistantButtonIdentifier =
     @"kToolbarAssistantButtonIdentifier";
+NSString* const kToolbarOpenNewTabButtonIdentifier =
+    @"ToolbarOpenNewTabButtonIdentifier";
 
 constexpr CGFloat kToolbarPromoBannerHeight = 50;
 

@@ -76,6 +76,10 @@ void AddMenuTriggeredActionToButton(ToolbarButton* button) {
     case ToolbarButtonTypeTools:
       tapAction = @selector(toolsMenuButtonTapped);
       break;
+    case ToolbarButtonTypeNewTab:
+      tapAction = @selector(newTabButtonTapped:);
+      AddMenuTriggeredActionToButton(button);
+      break;
   }
   CHECK(tapAction);
   [button addTarget:self
@@ -168,6 +172,13 @@ void AddMenuTriggeredActionToButton(ToolbarButton* button) {
 - (void)toolsMenuButtonTapped {
   [self.mutator recordUserActionsForButtonTapped:ToolbarButtonTypeTools];
   [self.popupMenuHandler showToolsMenuPopup];
+}
+
+// Handles new tab button tap.
+- (void)newTabButtonTapped:(UIView*)sender {
+  [self.mutator recordUserActionsForButtonTapped:ToolbarButtonTypeNewTab];
+  [self.mutator openNewTabFromPoint:[sender.superview convertPoint:sender.center
+                                                            toView:nil]];
 }
 
 // Handles tab grid button touch down.

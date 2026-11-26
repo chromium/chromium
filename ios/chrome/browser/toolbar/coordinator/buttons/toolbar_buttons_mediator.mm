@@ -19,9 +19,11 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -30,6 +32,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_buttons_consumer.h"
@@ -82,6 +86,8 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
   std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
   base::CallbackListSubscription _activeWebStateControlSubscription;
   BOOL _isIncognito;
+  // The context menu of the new tab button.
+  UIMenu* _newTabMenu;
   // The consumers receiving updates.
   NSHashTable<id<ToolbarButtonsConsumer>>* _activeConsumers;
 }
@@ -92,6 +98,7 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
                           profile:(ProfileIOS*)profile
                       prefService:(PrefService*)prefService
             authenticationService:(AuthenticationService*)authenticationService
+               templateURLService:(TemplateURLService*)templateURLService
                geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent {
   self = [super init];
   if (self) {
@@ -113,8 +120,10 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
     _buttonMenuFactory = [[ToolbarButtonMenuFactory alloc]
         initForToolbarWithIncognito:incognito
                        webStateList:webStateList
-                      actionFactory:actionFactory];
+                      actionFactory:actionFactory
+                 templateURLService:templateURLService];
     _buttonMenuFactory.delegate = self;
+    _newTabMenu = [_buttonMenuFactory deferredMenuForNewTabButton];
 
     _authenticationService = authenticationService;
     CHECK(prefService);
@@ -139,11 +148,15 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
 
 - (void)addConsumer:(id<ToolbarButtonsConsumer>)consumer {
   CHECK(consumer);
-  if ([_activeConsumers containsObject:consumer]) {
+  // `-disconnect` resets `_webStateList`, after which consumers get nothing.
+  if (!_webStateList || [_activeConsumers containsObject:consumer]) {
     return;
   }
   [_activeConsumers addObject:consumer];
   [self updateConsumers:@[ consumer ]];
+  // The new tab button's menu builds its items when it's shown, so it's only
+  // given once.
+  [consumer setMenu:_newTabMenu forButtonType:ToolbarButtonTypeNewTab];
 }
 
 - (void)removeConsumer:(id<ToolbarButtonsConsumer>)consumer {
@@ -170,6 +183,7 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
   _webStateListObserver.reset();
   _webStateList = nullptr;
   _buttonMenuFactory = nil;
+  _newTabMenu = nil;
   _navigationBrowserAgent = nullptr;
   _tabBasedIPHAgent = nullptr;
   _geminiObserver.reset();
@@ -237,6 +251,15 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
                                 completion:nil];
 }
 
+// TODO(crbug.com/590238414): Share the new tab logic with the App Bar and the
+// Legacy toolbar.
+- (void)openNewTabFromPoint:(CGPoint)originPoint {
+  [self.sceneHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithIncognito:_isIncognito
+                                                  originPoint:originPoint]];
+  [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
+}
+
 - (void)recordUserActionsForButtonTapped:(ToolbarButtonType)type {
   web::WebState* webState =
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
@@ -294,6 +317,20 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
       return;
     case ToolbarButtonTypeTools:
       RecordUserActionsForToolsMenuTapped(webState);
+      return;
+    case ToolbarButtonTypeNewTab:
+      if (isNTP) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarNewTabShortcutOnNTP"));
+      }
+      if (_isIncognito) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarNewIncognitoTabShortcut"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarNewTabShortcut"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
       return;
   }
   NOTREACHED();
@@ -410,6 +447,7 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == policy::policy_prefs::kIncognitoModeAvailability) {
+    [self updateConsumersNewTabButton:_activeConsumers.allObjects];
     if (_webStateList && _webStateList->GetActiveWebState()) {
       [self updateConsumersWithWebState:_webStateList->GetActiveWebState()
                                animated:NO];
@@ -448,6 +486,7 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
   if (!_webStateList) {
     return;
   }
+  [self updateConsumersNewTabButton:consumers];
   if (web::WebState* activeWebState = _webStateList->GetActiveWebState()) {
     [self updateConsumers:consumers withWebState:activeWebState animated:NO];
     [self updateTabGridMenu];
@@ -527,6 +566,16 @@ void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
   for (id<ToolbarButtonsConsumer> consumer in consumers) {
     [consumer updateTabCount:tabCount];
     [consumer setInTabGroup:inTabGroup];
+  }
+}
+
+// Updates the new tab button state of `consumers`, which doesn't depend on the
+// WebState.
+- (void)updateConsumersNewTabButton:
+    (NSArray<id<ToolbarButtonsConsumer>>*)consumers {
+  BOOL newTabEnabled = IsAddNewTabAllowedByPolicy(_prefService, _isIncognito);
+  for (id<ToolbarButtonsConsumer> consumer in consumers) {
+    [consumer setNewTabEnabled:newTabEnabled];
   }
 }
 

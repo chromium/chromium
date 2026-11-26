@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -105,6 +106,9 @@ class ToolbarMediatorTest : public PlatformTest,
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
@@ -154,6 +158,8 @@ class ToolbarMediatorTest : public PlatformTest,
                       profile:profile_.get()
                   prefService:profile_->GetPrefs()
         authenticationService:auth_service_
+           templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
+                                  profile_.get())
            geminiBrowserAgent:gemini_browser_agent_];
     buttons_mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
@@ -313,9 +319,7 @@ TEST_P(ToolbarMediatorTest, TestInactiveToolbarSkipsConsumerUpdates) {
   // menu updates should be skipped, while the top toolbar still updates NTP
   // visibility.
   if (top_position) {
-    OCMExpect([consumer_ setNTPVisible:NO
-                             isLoading:NO
-                       loadingProgress:0]);
+    OCMExpect([consumer_ setNTPVisible:NO isLoading:NO loadingProgress:0]);
   } else {
     OCMReject([consumer_ setNTPVisible:OCMOCK_ANY
                              isLoading:OCMOCK_ANY

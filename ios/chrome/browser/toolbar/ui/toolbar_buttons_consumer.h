@@ -22,6 +22,9 @@
 // Sets whether the share button is enabled.
 - (void)setShareEnabled:(BOOL)enabled;
 
+// Sets whether the new tab button is enabled.
+- (void)setNewTabEnabled:(BOOL)enabled;
+
 // Sets whether the current page is the NTP, whether the page is loading, and
 // the `progress` between 0.0 and 1.0 for the loading progress bar.
 - (void)setNTPVisible:(BOOL)ntpVisible

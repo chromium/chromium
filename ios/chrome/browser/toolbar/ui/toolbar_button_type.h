@@ -17,6 +17,7 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
   ToolbarButtonTypeAssistant,
   ToolbarButtonTypeTabGrid,
   ToolbarButtonTypeTools,
+  ToolbarButtonTypeNewTab,
 };
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_BUTTON_TYPE_H_

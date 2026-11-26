@@ -79,19 +79,24 @@ TEST_F(ToolbarButtonActionsTest, ForwardTapRecordsActionsThenGoesForward) {
   EXPECT_OCMOCK_VERIFY(mutator_);
 }
 
-// Tests that the back and forward buttons' menus record their user action.
-TEST_F(ToolbarButtonActionsTest, NavigationMenusRecordMenuTriggered) {
+// Tests that the back, forward and new tab buttons' menus record their user
+// action.
+TEST_F(ToolbarButtonActionsTest, ButtonMenusRecordMenuTriggered) {
   ToolbarButton* back_button = [factory_ makeBackButton];
   [actions_ configureButton:back_button ofType:ToolbarButtonTypeBack];
   ToolbarButton* forward_button = [factory_ makeForwardButton];
   [actions_ configureButton:forward_button ofType:ToolbarButtonTypeForward];
+  ToolbarButton* new_tab_button = [factory_ makeNewTabButton];
+  [actions_ configureButton:new_tab_button ofType:ToolbarButtonTypeNewTab];
 
   base::UserActionTester user_action_tester;
   [back_button sendActionsForControlEvents:UIControlEventMenuActionTriggered];
   [forward_button
       sendActionsForControlEvents:UIControlEventMenuActionTriggered];
+  [new_tab_button
+      sendActionsForControlEvents:UIControlEventMenuActionTriggered];
   EXPECT_EQ(
-      2, user_action_tester.GetActionCount("MobileMenuToolbarMenuTriggered"));
+      3, user_action_tester.GetActionCount("MobileMenuToolbarMenuTriggered"));
 }
 
 // Tests that the reload button records its user actions, then reloads.
@@ -231,4 +236,23 @@ TEST_F(ToolbarButtonActionsTest,
   OCMExpect([actor_overlay_handler showActorInteractionLimitedSnackbar]);
   [actions_ disabledNavigationButtonTapped];
   EXPECT_OCMOCK_VERIFY(actor_overlay_handler);
+}
+
+// Tests that the new tab button records its user actions, then opens a new tab
+// from the button's center, in window coordinates.
+TEST_F(ToolbarButtonActionsTest, NewTabTapRecordsActionsThenOpensTab) {
+  ToolbarButton* button = [factory_ makeNewTabButton];
+  [actions_ configureButton:button ofType:ToolbarButtonTypeNewTab];
+  UIWindow* window =
+      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  UIView* container =
+      [[UIView alloc] initWithFrame:CGRectMake(10, 20, 100, 100)];
+  [window addSubview:container];
+  [container addSubview:button];
+  button.frame = CGRectMake(30, 40, 44, 44);
+  OCMExpect(
+      [mutator_ recordUserActionsForButtonTapped:ToolbarButtonTypeNewTab]);
+  OCMExpect([mutator_ openNewTabFromPoint:CGPointMake(62, 82)]);
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_OCMOCK_VERIFY(mutator_);
 }

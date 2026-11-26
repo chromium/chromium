@@ -726,6 +726,10 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   _trailingShareButton.enabled = enabled;
 }
 
+- (void)setNewTabEnabled:(BOOL)enabled {
+  // The toolbar has no new tab button.
+}
+
 - (void)setHasOmnibox:(BOOL)hasOmnibox {
   if (_hasOmnibox == hasOmnibox) {
     return;
@@ -802,6 +806,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       return;
     case ToolbarButtonTypeTabGrid:
       NOTREACHED() << "The tab grid menu is given to ToolbarButtonActions";
+    case ToolbarButtonTypeNewTab:
+      // The toolbar has no new tab button.
+      return;
     case ToolbarButtonTypeReload:
     case ToolbarButtonTypeStop:
     case ToolbarButtonTypeShare:
