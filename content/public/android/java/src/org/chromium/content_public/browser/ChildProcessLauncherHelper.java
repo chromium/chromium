@@ -21,7 +21,19 @@ public final class ChildProcessLauncherHelper {
      * @param context the application context used for the connection.
      */
     public static void warmUpOnAnyThread(Context context) {
-        ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context);
+        warmUpOnAnyThread(context, /* lowerPriorityDelayMs= */ -1);
+    }
+
+    /**
+     * Same as {@link #warmUpOnAnyThread(Context)}, but lowers the child process's binding to WAIVED
+     * after {@code lowerPriorityDelayMs} if no launch has consumed it by then.
+     *
+     * @param context the application context used for the connection.
+     * @param lowerPriorityDelayMs the delay after which the binding is lowered. 0 lowers it right
+     *     away. A negative value disables lowering.
+     */
+    public static void warmUpOnAnyThread(Context context, int lowerPriorityDelayMs) {
+        ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, lowerPriorityDelayMs);
     }
 
     /** Initializes the ChildProcessLauncher. */

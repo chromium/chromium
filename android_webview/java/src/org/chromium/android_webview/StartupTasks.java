@@ -117,7 +117,8 @@ public final class StartupTasks {
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT,
                         () -> {
-                            ChildProcessLauncherHelper.warmUpOnAnyThread(appContext);
+                            ChildProcessLauncherHelper.warmUpOnAnyThread(
+                                    appContext, getWarmUpConnectionLowerPriorityDelayMs());
                         });
             }
             DisplayAndroidManager.disableHdrSdrRatioCallback();
@@ -131,6 +132,19 @@ public final class StartupTasks {
                     DualTraceEvent.scoped("StartupTasks.maybeEnableSafeBrowsingFromManifest")) {
                 AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
             }
+        }
+    }
+
+    private static int getWarmUpConnectionLowerPriorityDelayMs() {
+        String feature = AwFeatures.WEBVIEW_LOWER_WARM_UP_PROCESS_PRIORITY;
+        WebViewCachedFlags flags = WebViewCachedFlags.get();
+        if (!flags.isCachedFeatureEnabled(feature)) return -1;
+        // A malformed value disables lowering instead of throwing during startup.
+        try {
+            return flags.getCachedFeatureParamAsInt(
+                    feature, WebViewCachedFlags.LOWER_PRIORITY_DELAY_MS_PARAM);
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 

@@ -118,6 +118,11 @@ public class TestChildProcessConnection extends ChildProcessConnection {
         return mServiceCallback;
     }
 
+    /** Simulates the process crashing or being killed by the OS. */
+    public void simulateServiceDisconnected() {
+        onServiceDisconnectedOnLauncherThread();
+    }
+
     public boolean getAndResetRebindCalled() {
         boolean called = mRebindCalled;
         mRebindCalled = false;

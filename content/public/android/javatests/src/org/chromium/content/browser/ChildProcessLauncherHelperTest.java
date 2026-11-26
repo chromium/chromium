@@ -67,7 +67,8 @@ public class ChildProcessLauncherHelperTest {
     private static void warmUpOnUiThreadBlocking(final Context context) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context);
+                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(
+                            context, /* lowerPriorityDelayMs= */ -1);
                 });
         ChildProcessConnection connection = getWarmUpConnection();
         Assert.assertNotNull(connection);

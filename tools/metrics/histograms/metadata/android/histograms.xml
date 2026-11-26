@@ -6179,6 +6179,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.SpareChildConnection.AliveWhenRequested"
+    enum="Boolean" expires_after="2027-11-23">
+  <owner>colibie@chromium.org</owner>
+  <owner>src/content/public/android/OWNERS</owner>
+  <summary>
+    Records whether the warmed-up renderer connection was still alive when a
+    renderer could have used it. False means the connection had already died,
+    e.g. because the OS reclaimed it, so the launch had to start a new process.
+    Recorded at most once per spare connection, on the first launch that could
+    have used it. Recorded by both Chrome and WebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.SpareChildConnection.LifecycleEvent"
+    enum="SpareChildConnectionLifecycleEvent" expires_after="2027-11-23">
+  <owner>colibie@chromium.org</owner>
+  <owner>src/content/public/android/OWNERS</owner>
+  <summary>
+    Records the lifecycle of the warmed-up renderer connection: when it is
+    created, when a renderer launch consumes it, and when its process dies. A
+    death is recorded as either unused, died (before any launch consumed it) or
+    Consumed, died while launching (the launch that consumed it failed). Only
+    deaths the browser didn't cause (a crash or the OS killing the process) are
+    recorded, not normal shutdowns or intentional kills. Also records when its
+    binding is lowered while it is unused. Recorded by both Chrome and WebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.SpareChildConnection.LoweredStatus"
+    enum="SpareChildConnectionLoweredStatus" expires_after="2027-11-23">
+  <owner>colibie@chromium.org</owner>
+  <owner>src/content/public/android/OWNERS</owner>
+  <summary>
+    Records the status of the request to lower the warmed up connections's
+    binding. The options are whether a renderer launch consumed it, or its
+    process died while unused, before or after the binding was lowered. Deaths
+    only count crashes and the OS killing the process. Recorded at most once per
+    spare connection, when it is consumed or dies. Only recorded when lowering
+    is scheduled.
+  </summary>
+</histogram>
+
+<histogram name="Android.SpareChildConnection.TimeFromConsumedToDeath"
+    units="ms" expires_after="2027-11-23">
+  <owner>colibie@chromium.org</owner>
+  <owner>src/content/public/android/OWNERS</owner>
+  <summary>
+    Time from a renderer launch consuming the warmed-up renderer connection to
+    that renderer process dying, for launches that finished. Deaths shortly
+    after the launch suggest the process was killed before its raised binding
+    took effect. Only deaths the browser didn't cause (a crash or the OS killing
+    the process) are recorded, not normal shutdowns or intentional kills. Deaths
+    after 3 minutes are recorded in one bucket, which is fine since only early
+    deaths matter here. Recorded by both Chrome and WebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.SpareTab.FinalStatus" enum="SpareTabFinalStatus"
     expires_after="2026-01-18">
   <owner>sreejakshetty@chromium.org</owner>

@@ -2591,6 +2591,29 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Desktop"/>
 </enum>
 
+<!-- LINT.IfChange(SpareChildConnectionLifecycleEvent) -->
+
+<enum name="SpareChildConnectionLifecycleEvent">
+  <int value="0" label="Created"/>
+  <int value="1" label="Consumed"/>
+  <int value="2" label="Unused, died"/>
+  <int value="3" label="Consumed, died while launching"/>
+  <int value="4" label="Priority lowered"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/android/java/src/org/chromium/content/browser/SpareChildConnection.java:SpareChildConnectionLifecycleEvent) -->
+
+<!-- LINT.IfChange(SpareChildConnectionLoweredStatus) -->
+
+<enum name="SpareChildConnectionLoweredStatus">
+  <int value="0" label="Consumed before lowered"/>
+  <int value="1" label="Consumed after lowered"/>
+  <int value="2" label="Unused, died before lowered"/>
+  <int value="3" label="Unused, died after lowered"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/android/java/src/org/chromium/content/browser/SpareChildConnection.java:SpareChildConnectionLoweredStatus) -->
+
 <enum name="SpareTabFinalStatus">
   <int value="0" label="Tab Created Not Used"/>
   <int value="1" label="Tab Creation In Progress"/>

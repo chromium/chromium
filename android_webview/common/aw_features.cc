@@ -270,6 +270,12 @@ BASE_FEATURE(kWebViewLatchedCookiePolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewLimitCrossOriginNonActivatedPaintHolding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the renderer process that WebView warms up during startup is
+// lowered to a WAIVED binding if it is still unused after a delay, so the OS
+// can reclaim it if the app never creates a WebView.
+BASE_FEATURE(kWebViewLowerWarmUpProcessPriority,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Install the profiling client with memory_system::Initializer. If this is
 // enabled the profiler MAY be started by
 // HeapProfilerController::StartIfEnabled, which is controlled by the

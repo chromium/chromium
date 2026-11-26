@@ -1075,6 +1075,15 @@ public class ChildProcessConnection {
     }
 
     /**
+     * @return true if the service disconnected, i.e. the process crashed or was killed by the OS,
+     *     rather than being stopped or killed by the browser.
+     */
+    public boolean isServiceDisconnected() {
+        assert isRunningOnLauncherThread();
+        return mServiceDisconnected;
+    }
+
+    /**
      * @return true if the connection is intentionally killed by calling kill().
      */
     public boolean isKilledByUs() {

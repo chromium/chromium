@@ -35,6 +35,9 @@ import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.content.browser.SpareChildConnection.LifecycleEvent;
+import org.chromium.content.browser.SpareChildConnection.LoweredStatus;
 
 /** Unit tests for the SpareChildConnection class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -86,6 +89,15 @@ public class SpareChildConnectionTest {
         public void simulateConnectionDied() {
             mConnection.getServiceCallback().onChildProcessDied(mConnection);
             RobolectricUtil.runAllBackgroundAndUi();
+        }
+
+        public void simulateServiceDisconnected() {
+            mConnection.simulateServiceDisconnected();
+            RobolectricUtil.runAllBackgroundAndUi();
+        }
+
+        public void simulateConnectionSetUp() {
+            mConnection.setPid(123);
         }
 
         public void reset() {
@@ -281,5 +293,189 @@ public class SpareChildConnectionTest {
                 default -> {}
             }
         }
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testRecordsConsumedConnection() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                                LifecycleEvent.CONSUMED)
+                        .expectBooleanRecord(
+                                SpareChildConnection.ALIVE_WHEN_REQUESTED_HISTOGRAM, true)
+                        .expectAnyRecord(SpareChildConnection.TIME_FROM_CONSUMED_TO_DEATH_HISTOGRAM)
+                        .build();
+
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+        mTestConnectionFactory.simulateConnectionSetUp();
+        mTestConnectionFactory.simulateServiceDisconnected();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testRecordsUnusedDied() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                                LifecycleEvent.UNUSED_DIED)
+                        .expectBooleanRecord(
+                                SpareChildConnection.ALIVE_WHEN_REQUESTED_HISTOGRAM, false)
+                        .build();
+
+        mTestConnectionFactory.simulateServiceDisconnected();
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testRecordsConsumedDiedWhileLaunching() {
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                        LifecycleEvent.CONSUMED_DIED_WHILE_LAUNCHING);
+
+        mTestConnectionFactory.simulateServiceDisconnected();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testDoesNotRecordNormalShutdown() {
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+        mTestConnectionFactory.simulateConnectionSetUp();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM)
+                        .expectNoRecords(SpareChildConnection.TIME_FROM_CONSUMED_TO_DEATH_HISTOGRAM)
+                        .build();
+
+        // The browser stopping the process reports it as died, without a service disconnect.
+        mTestConnectionFactory.simulateConnectionDied();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testLowerPriorityAfterDelay() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        ChildProcessConnection connection = mSpareConnection.getConnection();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                                LifecycleEvent.PRIORITY_LOWERED,
+                                LifecycleEvent.CONSUMED)
+                        .expectIntRecord(
+                                SpareChildConnection.LOWERED_STATUS_HISTOGRAM,
+                                LoweredStatus.CONSUMED_AFTER_LOWERED)
+                        .build();
+
+        mSpareConnection.lowerPriorityAfterDelay(1000);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+
+        // The launch that consumes it adds the binding it requests.
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.STRONG);
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testDoesNotLowerPriorityOnceConsumed() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        mSpareConnection.lowerPriorityAfterDelay(1000);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                                LifecycleEvent.CONSUMED)
+                        .expectIntRecord(
+                                SpareChildConnection.LOWERED_STATUS_HISTOGRAM,
+                                LoweredStatus.CONSUMED_BEFORE_LOWERED)
+                        .build();
+
+        ChildProcessConnection connection =
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testLoweredThenConsumedBeforeReady() {
+        ChildProcessConnection connection = mSpareConnection.getConnection();
+        lowerPriority();
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+
+        mSpareConnection.getConnection(
+                mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
+
+        // The requested binding is applied once the process starts.
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testRecordsUnusedDiedAfterLowered() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        lowerPriority();
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SpareChildConnection.LOWERED_STATUS_HISTOGRAM,
+                        LoweredStatus.UNUSED_DIED_AFTER_LOWERED);
+
+        mTestConnectionFactory.simulateServiceDisconnected();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testDoesNotLowerPriorityOnceUnbound() {
+        mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SpareChildConnection.LIFECYCLE_EVENT_HISTOGRAM,
+                                LifecycleEvent.UNUSED_DIED)
+                        .expectIntRecord(
+                                SpareChildConnection.LOWERED_STATUS_HISTOGRAM,
+                                LoweredStatus.UNUSED_DIED_BEFORE_LOWERED)
+                        .build();
+
+        // ChildConnectionAllocator posts the death callback, so the lowering runs after the
+        // connection is unbound but before the spare connection knows it died.
+        mSpareConnection.lowerPriorityAfterDelay(0);
+        mTestConnectionFactory.simulateServiceDisconnected();
+
+        watcher.assertExpected();
+    }
+
+    private void lowerPriority() {
+        mSpareConnection.lowerPriorityAfterDelay(0);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

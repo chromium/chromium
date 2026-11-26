@@ -22449,6 +22449,24 @@
             ]
         }
     ],
+    "WebViewLowerWarmUpProcessPriority": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "lower_priority_delay_ms": "10000"
+                    },
+                    "enable_features": [
+                        "WebViewLowerWarmUpProcessPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMoveWorkToProviderInit": [
         {
             "platforms": [

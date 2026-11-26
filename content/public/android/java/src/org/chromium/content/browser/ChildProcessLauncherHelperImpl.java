@@ -510,26 +510,31 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     /**
-     * @see {@link ChildProcessLauncherHelper#warmUp(Context)}.
+     * @see {@link ChildProcessLauncherHelper#warmUpOnAnyThread(Context, int)}.
      */
-    public static void warmUpOnAnyThread(final Context context) {
+    public static void warmUpOnAnyThread(final Context context, final int lowerPriorityDelayMs) {
         LauncherThread.post(
                 new Runnable() {
                     @Override
                     public void run() {
-                        warmUpOnLauncherThread(context);
+                        warmUpOnLauncherThread(context, lowerPriorityDelayMs);
                     }
                 });
     }
 
-    private static void warmUpOnLauncherThread(Context context) {
+    private static void warmUpOnLauncherThread(Context context, int lowerPriorityDelayMs) {
         if (sSpareSandboxedConnection != null && !sSpareSandboxedConnection.isEmpty()) {
             return;
         }
 
         Bundle serviceBundle = populateServiceBundle(new Bundle());
         ChildConnectionAllocator allocator = getConnectionAllocator(context, ServiceType.SANDBOXED);
-        sSpareSandboxedConnection = new SpareChildConnection(context, allocator, serviceBundle);
+        SpareChildConnection spareConnection =
+                new SpareChildConnection(context, allocator, serviceBundle);
+        if (lowerPriorityDelayMs >= 0) {
+            spareConnection.lowerPriorityAfterDelay(lowerPriorityDelayMs);
+        }
+        sSpareSandboxedConnection = spareConnection;
     }
 
     /**

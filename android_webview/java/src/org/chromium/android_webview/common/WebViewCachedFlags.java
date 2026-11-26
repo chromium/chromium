@@ -55,6 +55,13 @@ public class WebViewCachedFlags {
     private static final String CACHED_ENABLED_FLAGS_PREF = "CachedFlagsEnabled";
     private static final String CACHED_DISABLED_FLAGS_PREF = "CachedFlagsDisabled";
     private static final String CACHED_PARAMS_PREF = "CachedParams";
+
+    /**
+     * The delay param of AwFeatures.WEBVIEW_LOWER_WARM_UP_PROCESS_PRIORITY. Defaults to 10 seconds.
+     * 0 lowers the warm-up renderer right away. A negative value disables lowering.
+     */
+    public static final String LOWER_PRIORITY_DELAY_MS_PARAM = "lower_priority_delay_ms";
+
     private static final String CACHED_FLAGS_EXIST_HISTOGRAM_NAME =
             "Android.WebView.CachedFlagsExist";
 
@@ -158,10 +165,17 @@ public class WebViewCachedFlags {
                     Map.entry(AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API, DefaultState.ENABLED),
                     Map.entry(AwFeatures.WEBVIEW_INIT_IN_CONSTRUCTOR, DefaultState.DISABLED),
                     Map.entry(AwFeatures.WEBVIEW_RELAX_DATA_DIR_LOCKING, DefaultState.DISABLED),
+                    Map.entry(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED, DefaultState.ENABLED),
                     Map.entry(
-                            AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED, DefaultState.ENABLED));
+                            AwFeatures.WEBVIEW_LOWER_WARM_UP_PROCESS_PRIORITY,
+                            DefaultState.DISABLED));
 
-    private static final Map<String, String> PARAM_DEFINITIONS = Map.of();
+    private static final Map<String, String> PARAM_DEFINITIONS =
+            Map.ofEntries(
+                    param(
+                            AwFeatures.WEBVIEW_LOWER_WARM_UP_PROCESS_PRIORITY,
+                            LOWER_PRIORITY_DELAY_MS_PARAM,
+                            "10000"));
 
     /**
      * Initializes the singleton instance and reads the cached values from prefs. This method must
