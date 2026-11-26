@@ -117,6 +117,7 @@ source_set("glic") {
     "//base",
     "//chrome/browser:shell_integration",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:types",
     "//chrome/browser/actor/ui:states",
     "//chrome/browser/enterprise",
     "//chrome/browser/glic/public:features",
@@ -202,7 +203,6 @@ source_set("glic") {
 
     deps += [
       "//chrome/browser:primitives",
-      "//chrome/browser/actor:types",
       "//chrome/browser/ui/tabs",
     ]
   } else {  # is_android
@@ -214,7 +214,6 @@ source_set("glic") {
     ]
 
     deps += [
-      ":actor_types_for_migration",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android:jni_headers",
@@ -882,7 +881,6 @@ source_set("impl") {
     ]
 
     deps += [
-      ":actor_types_for_migration",
       "//chrome/browser/actor/android",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android",
@@ -1623,24 +1621,5 @@ if (!is_android) {
   group("internal_tests") {
     testonly = true
     deps = [ "e2e_test:glic_internal_e2e_interactive_ui_tests" ]
-  }
-}
-
-if (is_android) {
-  source_set("actor_types_for_migration") {
-    sources = [
-      "//chrome/browser/actor/actor_task_delegate.h",
-      "//components/actor/core/task_id.h",
-    ]
-    deps = [
-      "//base",
-      "//chrome/common:actor_webui_mojom",
-      "//chrome/common:mojo_bindings",
-      "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
-      "//components/password_manager/core/browser/actor_login:common",
-      "//components/tabs:public",
-      "//ui/gfx",
-      "//url",
-    ]
   }
 }
