@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
@@ -55,9 +56,14 @@ base::Time ComputeSubscriptionExpiration() {
 }
 
 ukm::SourceId GetPageUkmSourceId(AutofillClient& client) {
+  // Any active non-embedded driver shares the outermost main frame's page UKM
+  // source ID (see `AutofillDriver::GetPageUkmSourceId()`).
+  // TODO(crbug.com/590798542): Avoid calling `GetParent()` here because
+  // `ContentAutofillDriver::GetParent()` may lazily create a parent driver and
+  // synchronously notify lifecycle observers.
   for (AutofillDriver* driver :
        client.GetAutofillDriverFactory().GetExistingDrivers()) {
-    if (driver && !driver->GetParent() && IsActiveNonEmbeddedDriver(*driver)) {
+    if (driver && IsActiveNonEmbeddedDriver(*driver)) {
       return driver->GetPageUkmSourceId();
     }
   }
@@ -190,7 +196,7 @@ bool GmailOtpSource::HasActiveSubscriptionForOriginForTesting(
   return HasActiveSubscriptionForOrigin(origin);
 }
 
-void GmailOtpSource::ProlongSubscriptionForOrigin(const url::Origin& origin) {
+void GmailOtpSource::ProlongSubscriptionForOrigin(url::Origin origin) {
   CHECK(gmail_otp_service_);
   one_time_tokens::ExpiringSubscription* subscription =
       base::FindOrNull(continuous_subscriptions_per_origin_, origin);
@@ -202,10 +208,18 @@ void GmailOtpSource::ProlongSubscriptionForOrigin(const url::Origin& origin) {
     subscription->SetExpirationTime(expiration);
     return;
   }
-  *subscription = SubscribeToService(origin, expiration);
+  // Avoid holding `subscription` across `SubscribeToService()` in case
+  // `continuous_subscriptions_per_origin_` is modified or reallocated during
+  // the call.
+  one_time_tokens::ExpiringSubscription new_subscription =
+      SubscribeToService(origin, expiration);
+  if (one_time_tokens::ExpiringSubscription* current =
+          base::FindOrNull(continuous_subscriptions_per_origin_, origin)) {
+    *current = std::move(new_subscription);
+  }
 }
 
-void GmailOtpSource::CreateNewSubscriptionForOrigin(const url::Origin& origin) {
+void GmailOtpSource::CreateNewSubscriptionForOrigin(url::Origin origin) {
   CHECK(gmail_otp_service_);
   CHECK(UserOptedIntoGmailOtpFilling());
   continuous_subscriptions_per_origin_.insert_or_assign(
@@ -218,9 +232,10 @@ void GmailOtpSource::FetchFreshestCachedOtpForOrigin(
   if (!HasActiveSubscriptionForOrigin(origin)) {
     return;
   }
+  const ukm::SourceId page_ukm_source_id = GetPageUkmSourceId(*client_);
   gmail_otp_service_->GetFreshestCachedOtp(
-      origin, one_time_tokens::GmailOtpFlow::kAutofill,
-      GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
+      origin, one_time_tokens::GmailOtpFlow::kAutofill, page_ukm_source_id,
+      /*allow_psl_matching=*/true,
       base::BindOnce(&GmailOtpSource::OnCachedOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), origin));
 }
@@ -229,9 +244,10 @@ one_time_tokens::ExpiringSubscription GmailOtpSource::SubscribeToService(
     const url::Origin& origin,
     base::Time expiration) {
   CHECK(gmail_otp_service_);
+  const ukm::SourceId page_ukm_source_id = GetPageUkmSourceId(*client_);
   return gmail_otp_service_->Subscribe(
-      origin, one_time_tokens::GmailOtpFlow::kAutofill,
-      GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true, expiration,
+      origin, one_time_tokens::GmailOtpFlow::kAutofill, page_ukm_source_id,
+      /*allow_psl_matching=*/true, expiration,
       base::BindRepeating(&GmailOtpSource::OnIncomingTokenReceived,
                           weak_ptr_factory_.GetWeakPtr(), origin),
       base::BindOnce(&GmailOtpSource::ProlongSubscriptionForOrigin,
@@ -246,7 +262,10 @@ void GmailOtpSource::OnGmailOtpFillingEnabledPrefChanged() {
     verified_store_per_origin_.clear();
     return;
   }
-  for (const auto& [origin, _] : continuous_subscriptions_per_origin_) {
+  const std::vector<url::Origin> origins =
+      base::ToVector(continuous_subscriptions_per_origin_,
+                     [](const auto& entry) { return entry.first; });
+  for (const url::Origin& origin : origins) {
     if (HasActiveSubscriptionForOrigin(origin)) {
       ProlongSubscriptionForOrigin(origin);
       continue;

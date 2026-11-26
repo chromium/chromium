@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_source.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,6 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -24,13 +28,16 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_service_impl.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -938,6 +945,214 @@ TEST_F(GmailOtpSourceTest, RecordsSenderDomainMatchUkmAgainstPage) {
       UkmEntry::kGmail_SenderDomainMatchAcceptedMatchType_ReceivedName,
       std::to_underlying(one_time_tokens::GmailOtpSenderDomainMatchType::kPsl));
 
+  client_.set_gmail_otp_service(nullptr);
+}
+
+// -----------------------------------------------------------------------------
+// 13. Container mutation safety and page UKM lookup (regression tests for
+// crbug.com/590484044)
+// -----------------------------------------------------------------------------
+
+class ReentrantGmailOtpService : public FakeGmailOtpService {
+ public:
+  void SetOnSubscribeCallback(base::RepeatingClosure callback) {
+    on_subscribe_callback_ = std::move(callback);
+  }
+
+  one_time_tokens::ExpiringSubscription Subscribe(
+      const url::Origin& origin,
+      one_time_tokens::GmailOtpFlow flow,
+      ukm::SourceId ukm_source_id,
+      bool allow_psl_matching,
+      base::Time expiration,
+      IncomingTokenCallback callback,
+      base::OnceClosure expiration_callback) override {
+    one_time_tokens::ExpiringSubscription subscription =
+        FakeGmailOtpService::Subscribe(
+            origin, flow, ukm_source_id, allow_psl_matching, expiration,
+            std::move(callback), std::move(expiration_callback));
+    if (on_subscribe_callback_) {
+      on_subscribe_callback_.Run();
+    }
+    return subscription;
+  }
+
+ private:
+  base::RepeatingClosure on_subscribe_callback_;
+};
+
+TEST_F(GmailOtpSourceTest,
+       ProlongSubscriptionForOrigin_ReentrantMapReallocationPreservesRenewal) {
+  auto reentrant_service = std::make_unique<ReentrantGmailOtpService>();
+  ReentrantGmailOtpService* reentrant_service_ptr = reentrant_service.get();
+  service_ = reentrant_service_ptr;
+  client_.set_gmail_otp_service(std::move(reentrant_service));
+
+  GmailOtpSource source(client_);
+  const OtpTarget target_a = MakeTarget("https://a.test");
+  source.Start(target_a);
+  ASSERT_EQ(reentrant_service_ptr->num_callbacks(), 1u);
+
+  constexpr size_t kNumExtraOrigins = 16;
+  bool triggered_reentrancy = false;
+  reentrant_service_ptr->SetOnSubscribeCallback(
+      base::BindLambdaForTesting([&]() {
+        if (triggered_reentrancy) {
+          return;
+        }
+        triggered_reentrancy = true;
+        for (size_t i = 0; i < kNumExtraOrigins; ++i) {
+          source.Start(
+              MakeTarget(base::StringPrintf("https://reentrant%zu.test", i)));
+        }
+      }));
+
+  const base::TimeDelta period =
+      one_time_tokens::features::kGmailOtpSubscriptionPeriodParam.Get();
+  task_environment_.FastForwardBy(period);
+
+  EXPECT_TRUE(triggered_reentrancy);
+  EXPECT_TRUE(source.HasActiveSubscriptionForOriginForTesting(target_a.origin));
+  EXPECT_EQ(reentrant_service_ptr->num_callbacks(), kNumExtraOrigins + 1);
+}
+
+TEST_F(GmailOtpSourceTest,
+       OnGmailOtpFillingEnabledPrefChanged_ReentrantMapReallocationSafe) {
+  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), false);
+  auto reentrant_service = std::make_unique<ReentrantGmailOtpService>();
+  ReentrantGmailOtpService* reentrant_service_ptr = reentrant_service.get();
+  service_ = reentrant_service_ptr;
+  client_.set_gmail_otp_service(std::move(reentrant_service));
+
+  GmailOtpSource source(client_);
+  const OtpTarget target_a = MakeTarget("https://a.test");
+  const OtpTarget target_b = MakeTarget("https://b.test");
+  source.Start(target_a);
+  source.Start(target_b);
+  ASSERT_EQ(reentrant_service_ptr->num_callbacks(), 0u);
+
+  constexpr size_t kNumExtraOrigins = 16;
+  bool triggered_reentrancy = false;
+  reentrant_service_ptr->SetOnSubscribeCallback(
+      base::BindLambdaForTesting([&]() {
+        if (triggered_reentrancy) {
+          return;
+        }
+        triggered_reentrancy = true;
+        for (size_t i = 0; i < kNumExtraOrigins; ++i) {
+          source.Start(
+              MakeTarget(base::StringPrintf("https://reentrant%zu.test", i)));
+        }
+      }));
+
+  prefs::SetAutofillGmailOtpFillingEnabled(client_.GetPrefs(), true);
+
+  EXPECT_TRUE(triggered_reentrancy);
+  EXPECT_TRUE(source.HasActiveSubscriptionForOriginForTesting(target_a.origin));
+  EXPECT_TRUE(source.HasActiveSubscriptionForOriginForTesting(target_b.origin));
+  EXPECT_EQ(reentrant_service_ptr->num_callbacks(), kNumExtraOrigins + 2);
+}
+
+class GetParentCountingAutofillDriver : public TestAutofillDriver {
+ public:
+  GetParentCountingAutofillDriver(TestAutofillClient* client,
+                                  ukm::SourceId page_ukm_source_id)
+      : TestAutofillDriver(client), page_ukm_source_id_(page_ukm_source_id) {}
+
+  TestAutofillDriver* GetParent() override {
+    ++get_parent_calls_;
+    return TestAutofillDriver::GetParent();
+  }
+
+  ukm::SourceId GetPageUkmSourceId() const override {
+    return page_ukm_source_id_;
+  }
+
+  size_t get_parent_calls() const { return get_parent_calls_; }
+
+ private:
+  const ukm::SourceId page_ukm_source_id_;
+  size_t get_parent_calls_ = 0;
+};
+
+TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
+  using UkmEntry = ukm::builders::OneTimeTokens;
+  affiliations::FakeAffiliationService affiliation_service;
+  one_time_tokens::FakeGmailOtpBackend backend;
+  service_ = nullptr;
+  client_.set_gmail_otp_service(
+      std::make_unique<one_time_tokens::GmailOtpServiceImpl>(
+          &backend, &affiliation_service, std::nullopt));
+
+  const ukm::SourceId expected_source_id = ukm::UkmRecorder::GetNewSourceID();
+  client_.GetUkmRecorder()->UpdateSourceURL(expected_source_id,
+                                            GURL("https://a.test"));
+
+  auto inactive_driver = std::make_unique<GetParentCountingAutofillDriver>(
+      &client_, ukm::UkmRecorder::GetNewSourceID());
+  inactive_driver->SetIsActive(false);
+  inactive_driver->set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(inactive_driver.get()));
+  GetParentCountingAutofillDriver* inactive_driver_ptr = inactive_driver.get();
+  client_.GetAutofillDriverFactory().TakeOwnership(std::move(inactive_driver));
+
+  auto embedded_driver = std::make_unique<GetParentCountingAutofillDriver>(
+      &client_, ukm::UkmRecorder::GetNewSourceID());
+  embedded_driver->SetIsEmbedded(true);
+  embedded_driver->set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(embedded_driver.get()));
+  GetParentCountingAutofillDriver* embedded_driver_ptr = embedded_driver.get();
+  client_.GetAutofillDriverFactory().TakeOwnership(std::move(embedded_driver));
+
+  auto active_child_driver = std::make_unique<GetParentCountingAutofillDriver>(
+      &client_, expected_source_id);
+  active_child_driver->set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(active_child_driver.get()));
+  GetParentCountingAutofillDriver* active_child_driver_ptr =
+      active_child_driver.get();
+  client_.GetAutofillDriverFactory().TakeOwnership(
+      std::move(active_child_driver));
+
+  auto main_driver = std::make_unique<GetParentCountingAutofillDriver>(
+      &client_, expected_source_id);
+  main_driver->set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(main_driver.get()));
+  GetParentCountingAutofillDriver* main_driver_ptr = main_driver.get();
+  client_.GetAutofillDriverFactory().TakeOwnership(std::move(main_driver));
+  active_child_driver_ptr->SetParent(main_driver_ptr);
+
+  {
+    GmailOtpSource source(client_);
+    source.SetObserver(&observer_);
+
+    const OtpTarget target = MakeTarget("https://a.test");
+    source.Start(target);
+
+    // Trigger `ProlongSubscriptionForOrigin()` via subscription expiration.
+    const base::TimeDelta period =
+        one_time_tokens::features::kGmailOtpSubscriptionPeriodParam.Get();
+    task_environment_.FastForwardBy(period);
+
+    backend.ProcessCallbacks(MakeToken("654321", "otp@mail.a.test"));
+    task_environment_.RunUntilIdle();
+
+    EXPECT_THAT(observer_.last_result(),
+                Optional(ValueIs(IsGmailCandidate(target.origin, "654321"))));
+  }
+
+  EXPECT_EQ(inactive_driver_ptr->get_parent_calls(), 0u);
+  EXPECT_EQ(embedded_driver_ptr->get_parent_calls(), 0u);
+  EXPECT_EQ(active_child_driver_ptr->get_parent_calls(), 0u);
+  EXPECT_EQ(main_driver_ptr->get_parent_calls(), 0u);
+
+  auto entries =
+      client_.GetUkmRecorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id, expected_source_id);
+
+  // Clear `parent_` before `TestAutofillDriverFactory::DeleteAll()` destroys
+  // `main_driver` (LIFO) ahead of `active_child_driver`.
+  active_child_driver_ptr->SetParent(nullptr);
   client_.set_gmail_otp_service(nullptr);
 }
 
