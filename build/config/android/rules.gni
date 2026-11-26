@@ -623,6 +623,7 @@ if (!is_robolectric && enable_java_templates) {
         android_resources_rtxt_deps = [ ":$_prepare_target_name" ]
         android_resources_walk_keys = _assetres_deps
         android_assetres_walk_keys = _assetres_deps
+        android_java_walk_keys = []
         if (!disable_android_lint) {
           android_lint_resource_deps = [ invoker.generating_target ]
         }
@@ -945,6 +946,7 @@ if (!is_robolectric && enable_java_templates) {
         android_resources_rtxt_deps = [ ":$_prepare_target_name" ]
         android_resources_walk_keys = _assetres_deps
         android_assetres_walk_keys = _assetres_deps
+        android_java_walk_keys = []
 
         # Emit lint resource deps only when a first-party resource file is
         # generated (under root_build_dir, so rebasing does not start with
@@ -1099,8 +1101,10 @@ if (!is_robolectric && enable_java_templates) {
         deps = _asset_walk_deps + _non_asset_deps
       }
       metadata = {
-        # Consumed by generate_r_java() to stop R.txt walks at android_assets().
+        # Consumed by generate_r_java() and java walks to stop at
+        # android_assets().
         android_resources_walk_keys = []
+        android_java_walk_keys = []
 
         # Consumed by resource, manifest, lint, asset, and size-info walks.
         android_assetres_walk_keys = _asset_walk_deps
@@ -1202,13 +1206,16 @@ if (!is_robolectric && enable_java_templates) {
 
     _assetres_deps = []
     _expanded_lib_deps = []
+    _lib_walk_deps = []
     _other_deps = []
     foreach(_dep, _invoker_deps) {
       _dep_label = get_label_info(_dep, "label_no_toolchain")
       if (filter_include([ _dep_label ], java_resource_patterns) != []) {
         _assetres_deps += [ _dep ]
+        _lib_walk_deps += [ _dep ]
       } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
         _expanded_lib_deps += [ _dep_label ]
+        _lib_walk_deps += [ _dep ]
       } else {
         _other_deps += [ _dep ]
       }
@@ -1283,22 +1290,20 @@ if (!is_robolectric && enable_java_templates) {
         }
         deps += [ ":${target_name}__assetres" ]
       }
-      if (is_cronet_for_aosp_build || _is_resource_group) {
-        metadata = {
-          if (_is_resource_group) {
-            # Consumed by generate_r_java() and resource, manifest, lint,
-            # asset, and size-info walks when this resource-named java_group()
-            # is walked directly rather than via __assetres.
-            android_resources_walk_keys = [ ":${target_name}__assetres" ]
-            android_assetres_walk_keys = [ ":${target_name}__assetres" ]
-          }
-          if (is_cronet_for_aosp_build) {
-            java_library_deps = []
-            if (defined(invoker.deps)) {
-              foreach(dep, invoker.deps) {
-                java_library_deps +=
-                    [ get_label_info(dep, "label_no_toolchain") ]
-              }
+      metadata = {
+        android_java_walk_keys = _lib_walk_deps
+        if (_is_resource_group) {
+          # Consumed by generate_r_java() and resource, manifest, lint,
+          # asset, and size-info walks when this resource-named java_group()
+          # is walked directly rather than via __assetres.
+          android_resources_walk_keys = [ ":${target_name}__assetres" ]
+          android_assetres_walk_keys = [ ":${target_name}__assetres" ]
+        }
+        if (is_cronet_for_aosp_build) {
+          java_library_deps = []
+          if (defined(invoker.deps)) {
+            foreach(dep, invoker.deps) {
+              java_library_deps += [ get_label_info(dep, "label_no_toolchain") ]
             }
           }
         }
@@ -1966,10 +1971,12 @@ if (!is_robolectric && enable_java_templates) {
                                    "repackage_classes",
                                    "version_code",
                                  ])
-      deps = [ ":$_build_config_target_name" ] + _deps
+      deps = [ ":$_build_config_target_name" ]
       build_config = _build_config
       output = invoker.output
       if (defined(proguard_enabled) && proguard_enabled) {
+        deps += _deps
+
         # The individual dependencies would have caught real missing deps in
         # their respective dex steps. False positives that were suppressed at
         # per-target dex steps are emitted here since this is using jar files
@@ -1978,6 +1985,11 @@ if (!is_robolectric && enable_java_templates) {
       } else {
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         input_dex_filearg = "@FileArg(${_rebased_build_config}:all_dex_files)"
+        enable_desugar = false
+
+        # Walk deps to depend only on library __dex targets for pure dex
+        # merging.
+        dex_walk_deps = _deps
       }
     }
   }
@@ -3099,13 +3111,13 @@ if (!is_robolectric && enable_java_templates) {
           proguard_enabled = _proguard_enabled
           build_config = _build_config
           output = _final_dex_path
-          deps = [
-            ":$_build_config_target",
-            ":$_java_target_name",
-          ]
+          deps = [ ":$_build_config_target" ]
           if (_proguard_enabled) {
             # Generates proguard configs
-            deps += [ ":$_compile_resources_target" ]
+            deps += [
+              ":$_compile_resources_target",
+              ":$_java_target_name",
+            ]
             proguard_mapping_path = _proguard_mapping_path
 
             if (!defined(enable_proguard_checks) && defined(testonly) &&
@@ -3129,7 +3141,6 @@ if (!is_robolectric && enable_java_templates) {
             if (_optimize_resources) {
               resources_input = _proto_resources_path
               resources_output = _shrunk_proto_resources_path
-              deps += [ ":${_compile_resources_target}" ]
             }
           } else {
             if (_min_sdk_version >= default_min_sdk_version) {
@@ -3139,9 +3150,17 @@ if (!is_robolectric && enable_java_templates) {
                   "@FileArg(${_rebased_build_config}:all_dex_files)"
               include_global_synthetics = true
 
+              # Walk __java to depend only on library __dex targets for pure
+              # dex merging.
+              dex_walk_deps = [ ":$_java_target_name" ]
+
               # Pure dex-merge.
               enable_desugar = false
             } else {
+              deps += [ ":${_java_target_name}__host" ]
+              if (defined(invoker.apk_under_test)) {
+                deps += [ "${invoker.apk_under_test}__java__host" ]
+              }
               input_classes_filearg =
                   "@FileArg($_rebased_build_config:processed_classpath)"
             }
@@ -5020,10 +5039,11 @@ if (!is_robolectric && enable_java_templates) {
           enable_desugar = false
           include_global_synthetics = _module.name == "base"
 
-          deps = [
-            ":${_module_target_name}__java",
-            _build_config_target,
-          ]
+          deps = [ _build_config_target ]
+
+          # Walk module __java to depend only on library __dex targets for pure
+          # dex merging.
+          dex_walk_deps = [ "${_module_target}__java" ]
         }
       }
       _dex_target_for_module = ":$_dex_target"

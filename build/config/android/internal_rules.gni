@@ -2007,6 +2007,27 @@ if (enable_java_templates) {
         _input_dex_jars = invoker.input_dex_jars
       }
       _deps = invoker.deps
+      if (defined(invoker.dex_walk_deps)) {
+        assert(!_enable_desugar,
+               "dex_walk_deps only covers __dex targets, not desugar classpath")
+
+        # Walk java targets without depending on them and depend only on the
+        # library __dex targets needed for this merge (or partition).
+        _dex_deps_target = "${target_name}__dex_deps"
+        if (defined(invoker.dex_dep_key)) {
+          _dex_dep_key = invoker.dex_dep_key
+        } else {
+          _dex_dep_key = "android_dex_deps"
+        }
+
+        walk_deps_group(_dex_deps_target) {
+          forward_variables_from(invoker, [ "testonly" ])
+          walk_deps = invoker.dex_walk_deps
+          dep_keys = [ _dex_dep_key ]
+          walk_keys = [ "android_java_walk_keys" ]
+        }
+        _deps += [ ":$_dex_deps_target" ]
+      }
 
       # Per-library dexing discards D8's "global synthetics" (classes shared
       # app-wide, e.g. RecordTag from record desugaring), so the final dex of
@@ -4092,6 +4113,7 @@ if (enable_java_templates) {
     # combine the two concepts to save on a group() target.
     _java_host_deps = []  # Processed host .jar + javac .jar.
     _lib_deps = []
+    _lib_walk_deps = []
     _non_java_deps = []
     foreach(_dep, _invoker_deps) {
       # Expand labels before matching patterns like "*android*:resources"
@@ -4101,8 +4123,15 @@ if (enable_java_templates) {
       _dep_label = get_label_info(_dep, "label_no_toolchain")
       if (filter_include([ _dep_label ], java_resource_patterns) != []) {
         _java_assetres_deps += [ _dep ]
+
+        # Walk resource-named targets too so resource-named java_group()s that
+        # wrap java_library deps are traversed; android_resources,
+        # android_generated_resources, and android_assets stop the walk with
+        # empty android_java_walk_keys barriers.
+        _lib_walk_deps += [ _dep ]
       } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
         _lib_deps += [ _dep_label ]
+        _lib_walk_deps += [ _dep ]
         _java_assetres_deps += [ "${_dep_label}__assetres" ]
         _java_header_deps += [ "${_dep_label}__header" ]
         _java_host_deps += [ "${_dep_label}__host" ]
@@ -4201,6 +4230,7 @@ if (enable_java_templates) {
                  "_java_assetres_deps",
                  "_javac_classpath_deps",
                  "_lib_deps",
+                 "_lib_walk_deps",
                  "_non_java_deps",
                  "_rjava_srcjar_deps",
                  "_supports_host",
@@ -5062,6 +5092,29 @@ if (enable_java_templates) {
     # 1) To allow building the target explicitly via ninja,
     # 2) To trigger all analysis deps,
     # 3) By custom action() targets that want to use artifacts as inputs.
+    _emit_dex_metadata = defined(_dex_target_name) &&
+                         !(defined(invoker.omit_dex_path_from_build_config) &&
+                           invoker.omit_dex_path_from_build_config)
+    if (_emit_dex_metadata && tiered_dex_assembly) {
+      _rebased_dex_path = rebase_path(_dex_path, root_build_dir)
+      _dex_partition_idx = -1
+      _dex_fallback_idx = -1
+      _idx = 0
+      foreach(_partition, tiered_dex_partitions) {
+        if (defined(_partition.fallback) && _partition.fallback) {
+          _dex_fallback_idx = _idx
+        } else if (_dex_partition_idx == -1 && defined(_partition.patterns) &&
+                   filter_include([ _rebased_dex_path ], _partition.patterns) !=
+                   []) {
+          _dex_partition_idx = _idx
+        }
+        _idx += 1
+      }
+      if (_dex_partition_idx == -1) {
+        _dex_partition_idx = _dex_fallback_idx
+      }
+    }
+
     group(target_name) {
       forward_variables_from(invoker,
                              [
@@ -5081,6 +5134,7 @@ if (enable_java_templates) {
         if (defined(invoker.public_deps)) {
           public_deps += invoker.public_deps
         }
+        _java_walk_deps = _lib_walk_deps
         if (is_cronet_build) {
           # See crbug/1449896 for more details about the metadata fields
           # and why they are added.
@@ -5141,6 +5195,7 @@ if (enable_java_templates) {
           public_deps +=
               filter_exclude(invoker.public_deps, java_target_patterns)
         }
+        _java_walk_deps = []
       }
       if (defined(invoker.proguard_enabled) && invoker.proguard_enabled &&
           defined(_android_sdk_dep)) {
@@ -5171,6 +5226,47 @@ if (enable_java_templates) {
       }
       if (!defined(data_deps)) {
         data_deps = []
+      }
+
+      if (!defined(metadata)) {
+        metadata = {
+        }
+      }
+      metadata.android_java_walk_keys = _java_walk_deps
+      if (_emit_dex_metadata) {
+        metadata.android_dex_deps = [ ":$_dex_target_name" ]
+        if (tiered_dex_assembly) {
+          # GN metadata keys must be static identifiers; up to 12 partitions
+          # get dedicated keys and any partition at index >= 12 falls back to
+          # android_dex_deps.
+          # LINT.IfChange(TieredDexPartitionKeys)
+          if (_dex_partition_idx == 0) {
+            metadata.android_dex_deps_0 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 1) {
+            metadata.android_dex_deps_1 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 2) {
+            metadata.android_dex_deps_2 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 3) {
+            metadata.android_dex_deps_3 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 4) {
+            metadata.android_dex_deps_4 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 5) {
+            metadata.android_dex_deps_5 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 6) {
+            metadata.android_dex_deps_6 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 7) {
+            metadata.android_dex_deps_7 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 8) {
+            metadata.android_dex_deps_8 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 9) {
+            metadata.android_dex_deps_9 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 10) {
+            metadata.android_dex_deps_10 = [ ":$_dex_target_name" ]
+          } else if (_dex_partition_idx == 11) {
+            metadata.android_dex_deps_11 = [ ":$_dex_target_name" ]
+          }
+          # LINT.ThenChange(//build/config/android/tiered_dex.gni:TieredDexPartitionKeys)
+        }
       }
     }
   }
