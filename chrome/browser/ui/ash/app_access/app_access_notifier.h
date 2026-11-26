@@ -66,10 +66,6 @@ class AppAccessNotifier
   std::vector<std::u16string> GetAppsAccessingMicrophone();
 
  protected:
-  // Returns the active user's account ID if we have an active user, an empty
-  // account ID otherwise.
-  virtual AccountId GetActiveUserAccountId();
-
   // Compares the active user's account ID to our last known value and, if the
   // ID has changed, then updates the AppCapabilityAccessCache that we observe
   // as well as the last known account ID.

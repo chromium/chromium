@@ -29,6 +29,7 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
@@ -298,21 +299,13 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
                                 registry_cache->GetAppType(app_id));
 }
 
-AccountId AppAccessNotifier::GetActiveUserAccountId() {
-  auto* manager = user_manager::UserManager::Get();
-  const user_manager::User* active_user = manager->GetActiveUser();
-  if (!active_user) {
-    return EmptyAccountId();
-  }
-
-  return active_user->GetAccountId();
-}
-
 void AppAccessNotifier::CheckActiveUserChanged() {
-  AccountId id = GetActiveUserAccountId();
-  if (id == EmptyAccountId() || id == active_user_account_id_) {
+  const session_manager::Session* const session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session || session->account_id() == active_user_account_id_) {
     return;
   }
+  const AccountId& id = session->account_id();
 
   if (active_user_account_id_ != EmptyAccountId()) {
     app_capability_access_cache_observation_.Reset();
@@ -341,6 +334,9 @@ apps::AppRegistryCache* AppAccessNotifier::GetActiveUserAppRegistryCache() {
 
 apps::AppCapabilityAccessCache*
 AppAccessNotifier::GetActiveUserAppCapabilityAccessCache() {
-  return apps::AppCapabilityAccessCacheWrapper::Get()
-      .GetAppCapabilityAccessCache(GetActiveUserAccountId());
+  const session_manager::Session* const session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  return session ? apps::AppCapabilityAccessCacheWrapper::Get()
+                       .GetAppCapabilityAccessCache(session->account_id())
+                 : nullptr;
 }
