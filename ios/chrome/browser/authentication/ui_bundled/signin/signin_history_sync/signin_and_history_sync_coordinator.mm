@@ -270,6 +270,7 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
                              browser:self.browser
                         contextStyle:self.contextStyle
                          accessPoint:self.accessPoint
+                      prefilledEmail:nil
                 confirmChangeProfile:nil
                 prepareChangeProfile:nil
                 continuationProvider:_continuationProvider];

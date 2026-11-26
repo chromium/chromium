@@ -246,7 +246,8 @@
   [sceneSignInHandler showSignin:command baseViewController:baseViewController];
 }
 
-+ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url {
++ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url
+                                    prefilledEmail:(NSString*)prefilledEmail {
   const GURL gURL = net::GURLWithNSURL(url);
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();
@@ -254,7 +255,8 @@
       chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
       SceneSignInCommands);
   [sceneSignInHandler showWebSigninPromoFromViewController:baseViewController
-                                                       URL:gURL];
+                                                       URL:gURL
+                                            prefilledEmail:prefilledEmail];
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

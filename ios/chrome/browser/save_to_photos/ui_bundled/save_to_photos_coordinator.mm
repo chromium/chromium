@@ -454,6 +454,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
                                                       signin_metrics::
                                                           AccessPoint::
                                                               kSaveToPhotosIos
+                                               prefilledEmail:nil
                                          confirmChangeProfile:
                                              confirmChangeProfile
                                          prepareChangeProfile:nil

@@ -30,17 +30,21 @@
 @implementation ConsistencyDefaultAccountCoordinator {
   // Used to customize content on screen.
   SigninContextStyle _contextStyle;
+  // Email to pre-select, if any.
+  NSString* _prefilledEmail;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                               contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint {
+                                   (signin_metrics::AccessPoint)accessPoint
+                            prefilledEmail:(NSString*)prefilledEmail {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
+    _prefilledEmail = [prefilledEmail copy];
   }
   return self;
 }
@@ -63,7 +67,8 @@
                                     profile)
                     syncService:SyncServiceFactory::GetForProfile(profile)
                    contextStyle:_contextStyle
-                    accessPoint:self.accessPoint];
+                    accessPoint:self.accessPoint
+                 prefilledEmail:_prefilledEmail];
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
   self.mediator.consumer = self.defaultAccountViewController;

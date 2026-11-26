@@ -29,9 +29,11 @@ class GURL;
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
 // Redirects to `url` when the sign-in flow is complete.
+// `prefilledEmail` optionally specifies the email of the account to pre-select.
 - (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
-                                         URL:(const GURL&)url;
+                                         URL:(const GURL&)url
+                              prefilledEmail:(NSString*)prefilledEmail;
 
 // Shows the fullscreen sign-in promo with a completion block that is called
 // when the promo is dismissed.

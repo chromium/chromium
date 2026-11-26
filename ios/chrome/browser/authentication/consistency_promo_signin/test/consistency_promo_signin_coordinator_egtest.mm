@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/gurl.h"
 
 // ConsistencyPromoSigninCoordinator EarlGrey tests.
 // Note: Since those tests are not using real identities, it is not possible
@@ -59,7 +60,8 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           ConsistencySigninSkipButtonMatcher()]
@@ -74,7 +76,8 @@
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
 
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
 }
@@ -92,7 +95,8 @@
   // Show the web sign-in consistency dialog for the last time.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           ConsistencySigninSkipButtonMatcher()]
@@ -103,7 +107,8 @@
       [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
       @"Dismissal count should be increased to the max value");
   // Asks for the web sign-in consistency that should not succeed.
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   GREYAssertEqual(
       kDefaultWebSignInDismissalCount,
@@ -119,7 +124,8 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
@@ -149,7 +155,8 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url
+                                              prefilledEmail:nil];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
@@ -304,6 +311,28 @@
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+}
+
+// Tests that when multiple accounts are on the device and `prefilledEmail`
+// matches the second account, that account is pre-selected in the web sign-in
+// bottom sheet.
+- (void)testPrefilledAccountSelected {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL url = self.testServer->GetURL("/echo");
+
+  [SigninEarlGrey
+      triggerConsistencyPromoSigninDialogWithURL:url
+                                  prefilledEmail:fakeIdentity2.userEmail];
+
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

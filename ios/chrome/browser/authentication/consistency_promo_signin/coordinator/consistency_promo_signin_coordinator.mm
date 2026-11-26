@@ -83,6 +83,8 @@
   // Block to confirm the user actually wants to change profile.
   // Can be nil, which means the user always accepts.
   SigninChangeProfileConfirmationBlock _confirmChangeProfile;
+  // Email to pre-select, if any.
+  NSString* _prefilledEmail;
 }
 
 #pragma mark - Public
@@ -92,6 +94,7 @@
                        browser:(Browser*)browser
                   contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
+                prefilledEmail:(NSString*)prefilledEmail
           confirmChangeProfile:
               (SigninChangeProfileConfirmationBlock)confirmChangeProfile
           prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
@@ -105,6 +108,7 @@
     _continuationProvider = continuationProvider;
     _confirmChangeProfile = [confirmChangeProfile copy];
     _prepareChangeProfile = [prepareChangeProfile copy];
+    _prefilledEmail = [prefilledEmail copy];
   }
   return self;
 }
@@ -163,7 +167,8 @@
       initWithBaseViewController:self.navigationController
                          browser:self.browser
                     contextStyle:self.contextStyle
-                     accessPoint:self.accessPoint];
+                     accessPoint:self.accessPoint
+                  prefilledEmail:_prefilledEmail];
   self.defaultAccountCoordinator.delegate = self;
   self.defaultAccountCoordinator.layoutDelegate = self;
   [self.defaultAccountCoordinator start];

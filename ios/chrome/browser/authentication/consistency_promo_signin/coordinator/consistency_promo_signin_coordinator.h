@@ -16,6 +16,7 @@ enum class AccessPoint : int;
 @interface ConsistencyPromoSigninCoordinator : SigninCoordinator
 
 // Initializes the coordinator.
+// * `prefilledEmail` is the optional email of the account to pre-select.
 // * `confirmChangeProfile` is a block called if the successful authentication
 //   flow would cause a profile switch, to get the user to decide whether they
 //   want this switch to occur or not. Can be nil, which means the user always
@@ -25,6 +26,7 @@ enum class AccessPoint : int;
                        browser:(Browser*)browser
                   contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
+                prefilledEmail:(NSString*)prefilledEmail
           confirmChangeProfile:
               (SigninChangeProfileConfirmationBlock)confirmChangeProfile
           prepareChangeProfile:(ProceduralBlock)prepareChangeProfile

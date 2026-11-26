@@ -100,6 +100,7 @@ using signin_metrics::PromoAction;
                                                          command.contextStyle
                                                       accessPoint:
                                                           command.accessPoint
+                                                   prefilledEmail:nil
                                              confirmChangeProfile:
                                                  command.confirmChangeProfile
                                              prepareChangeProfile:
@@ -320,6 +321,8 @@ using signin_metrics::PromoAction;
                                                 accessPoint:
                                                     (signin_metrics::
                                                          AccessPoint)accessPoint
+                                             prefilledEmail:
+                                                 (NSString*)prefilledEmail
                                        confirmChangeProfile:
                                            (SigninChangeProfileConfirmationBlock)
                                                confirmChangeProfile
@@ -333,6 +336,7 @@ using signin_metrics::PromoAction;
                          browser:browser
                     contextStyle:contextStyle
                      accessPoint:accessPoint
+                  prefilledEmail:prefilledEmail
             confirmChangeProfile:confirmChangeProfile
             prepareChangeProfile:prepareChangeProfile
             continuationProvider:continuationProvider];

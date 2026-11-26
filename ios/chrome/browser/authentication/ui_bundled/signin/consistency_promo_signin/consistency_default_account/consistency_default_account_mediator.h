@@ -41,6 +41,7 @@ enum class SigninContextStyle;
                             syncService:(syncer::SyncService*)syncService
                            contextStyle:(SigninContextStyle)contextStyle
                             accessPoint:(signin_metrics::AccessPoint)accessPoint
+                         prefilledEmail:(NSString*)prefilledEmail
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

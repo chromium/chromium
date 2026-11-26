@@ -24,6 +24,7 @@ source_set("eg2_tests") {
     "//net",
     "//net:test_support",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

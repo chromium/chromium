@@ -95,7 +95,9 @@ enum class UserSelectableType;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController with `url` that triggered the dialog.
-+ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
+// `prefilledEmail` optionally specifies the email of the account to pre-select.
++ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url
+                                    prefilledEmail:(NSString*)prefilledEmail;
 
 // Sets whether the sync data `type` is `enabled`.
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;

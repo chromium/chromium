@@ -10,14 +10,19 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_preview_preference_string_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
@@ -232,17 +237,20 @@ NSString* GetPromoLabelString(
   raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
   // Used to customize content on screen.
   SigninContextStyle _contextStyle;
+  // Email to pre-select, if any.
+  NSString* _prefilledEmail;
 }
 
-- (instancetype)
-      initWithIdentityManager:(signin::IdentityManager*)identityManager
-        accountManagerService:
-            (ChromeAccountManagerService*)accountManagerService
-    accountPreviewDataService:
-        (signin::AccountPreviewDataService*)accountPreviewDataService
-                  syncService:(syncer::SyncService*)syncService
-                 contextStyle:(SigninContextStyle)contextStyle
-                  accessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService
+              accountPreviewDataService:
+                  (signin::AccountPreviewDataService*)accountPreviewDataService
+                            syncService:(syncer::SyncService*)syncService
+                           contextStyle:(SigninContextStyle)contextStyle
+                            accessPoint:(signin_metrics::AccessPoint)accessPoint
+                         prefilledEmail:(NSString*)prefilledEmail {
   if ((self = [super init])) {
     CHECK(identityManager);
     CHECK(accountManagerService);
@@ -254,6 +262,7 @@ NSString* GetPromoLabelString(
     _syncService = syncService;
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
+    _prefilledEmail = [prefilledEmail copy];
 
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -305,7 +314,8 @@ NSString* GetPromoLabelString(
 #pragma mark - Private
 
 // Selects the default identity to be either:
-// * the preferred account from _accountPreviewDataService,
+// * the account matching `_prefilledEmail` if on device,
+// * otherwise the preferred account from `_accountPreviewDataService`,
 // * otherwise the device default identity if any,
 // * otherwise nil.
 // Also updates the UI accordingly.
@@ -315,6 +325,16 @@ NSString* GetPromoLabelString(
   }
 
   id<SystemIdentity> identity;
+  if (_prefilledEmail.length > 0) {
+    std::optional<AccountInfo> accountInfo =
+        signin::GetAccountInfoOnDeviceWithEmail(
+            _identityManager, base::SysNSStringToUTF8(_prefilledEmail));
+    if (accountInfo.has_value()) {
+      identity = _accountManagerService->GetIdentityOnDeviceWithGaiaID(
+          accountInfo->GetGaiaId());
+    }
+  }
+
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       preference;
   if (_accountPreviewDataService &&
@@ -322,10 +342,18 @@ NSString* GetPromoLabelString(
           switches::kEnableAccountPreviewPreferredAccount)) {
     preference = _accountPreviewDataService->GetPreferredAccountForSignin();
     if (preference.has_value()) {
-      identity =
-          _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
-      if (!identity) {
-        preference = std::nullopt;
+      if (identity) {
+        // TODO(crbug.com/579498250): Check which string to use if an account is
+        // both preferred and prefilled.
+        if (identity.gaiaId != preference->gaia_id) {
+          preference = std::nullopt;
+        }
+      } else {
+        identity =
+            _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
+        if (!identity) {
+          preference = std::nullopt;
+        }
       }
     }
   }
@@ -427,10 +455,24 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)accountsOnDeviceDidChange {
-  if (_accountManagerService &&
-      !_accountManagerService->IsValidIdentity(self.selectedIdentity.gaiaId)) {
-    // The currently selected identity is not valid anymore. Let’s select the
-    // default identity instead.
+  CHECK(_identityManager, base::NotFatalUntil::M165);
+  if (!_identityManager) {
+    return;
+  }
+  BOOL isSelectedIdentityOnDevice = NO;
+  if (self.selectedIdentity) {
+    const GaiaId& selectedGaiaId = self.selectedIdentity.gaiaId;
+    for (const AccountInfo& accountInfo :
+         _identityManager->GetAccountsOnDevice()) {
+      if (accountInfo.GetGaiaId() == selectedGaiaId) {
+        isSelectedIdentityOnDevice = YES;
+        break;
+      }
+    }
+  }
+  if (!isSelectedIdentityOnDevice) {
+    // The currently selected identity is not on the device anymore. Let’s
+    // select the default identity instead.
     [self selectDefaultIdentity];
   }
 }

@@ -198,6 +198,7 @@ class PrefRegistrySyncable;
 // to sign in with an account available on the device, or to add an account if
 // none are available.
 // `viewController` presents the promo.
+// `prefilledEmail` optionally specifies the email of the account to pre-select.
 // The owner must be aware that the authentication view may have disappeared
 // silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
@@ -209,6 +210,8 @@ class PrefRegistrySyncable;
                                                 accessPoint:
                                                     (signin_metrics::
                                                          AccessPoint)accessPoint
+                                             prefilledEmail:
+                                                 (NSString*)prefilledEmail
                                        confirmChangeProfile:
                                            (SigninChangeProfileConfirmationBlock)
                                                confirmChangeProfile

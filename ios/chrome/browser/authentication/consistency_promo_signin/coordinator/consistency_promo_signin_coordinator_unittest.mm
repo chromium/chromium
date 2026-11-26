@@ -8,6 +8,7 @@
 
 #import <utility>
 
+#import "base/types/expected.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -15,6 +16,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/not_reached_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -24,6 +27,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -51,6 +55,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
                        accessPoint:access_point_
+                    prefilledEmail:nil
               confirmChangeProfile:nil
               prepareChangeProfile:nil
               continuationProvider:NotReachedContinuationProvider()];
@@ -70,7 +75,9 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  void StartCoordinator() {
+  // Starts `coordinator_`, expecting it to initialize
+  // `ConsistencyDefaultAccountCoordinator` with `expected_prefilled_email`.
+  void StartCoordinator(NSString* expected_prefilled_email) {
     // View controller for default account coordinator.
     UIViewController* default_account_view_controller =
         [[UIViewController alloc] init];
@@ -100,7 +107,8 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                       consistency_sheet_navigation_controller_mock_
                                      browser:browser_.get()
                                 contextStyle:SigninContextStyle::kDefault
-                                 accessPoint:access_point_])
+                                 accessPoint:access_point_
+                              prefilledEmail:expected_prefilled_email])
         .andReturn(consistency_default_account_coordinator_mock_);
     OCMExpect([consistency_default_account_coordinator_mock_
         setDelegate:(id)coordinator_]);
@@ -132,6 +140,35 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                                                      completion:nil]);
     OCMExpect([mediator_mock_ setDelegate:(id)coordinator_]);
     [coordinator_ start];
+  }
+
+  // Sets up expectations for `coordinator_` dismissing its navigation
+  // controller and stopping its child coordinator and mediator with
+  // `expected_result`.
+  void ExpectStopCoordinator(bool dismiss_animated,
+                             id dismiss_completion,
+                             SigninCoordinatorResult expected_result) {
+    OCMExpect([base_view_controller_mock_
+        dismissViewControllerAnimated:dismiss_animated
+                           completion:dismiss_completion]);
+    // Expect the navigation controller delegates to be reset.
+    OCMExpect([consistency_sheet_navigation_controller_mock_ setDelegate:nil]);
+    OCMExpect([consistency_sheet_navigation_controller_mock_
+        setTransitioningDelegate:nil]);
+    // Expect account coordinator delegates to be reset.
+    OCMExpect([consistency_default_account_coordinator_mock_ setDelegate:nil]);
+    OCMExpect(
+        [consistency_default_account_coordinator_mock_ setLayoutDelegate:nil]);
+    OCMExpect([consistency_default_account_coordinator_mock_ stop]);
+    // Expect the mediator to be stopped and the delegate to be reset.
+    OCMExpect([mediator_mock_ setDelegate:nil]);
+    OCMExpect([[(id)mediator_mock_ ignoringNonObjectArgs]
+                  disconnectWithResult:base::unexpected(expected_result)])
+        .andCallBlockWithParameterAtIndex(
+            const SigninCoordinatorResultOrIdentity, 0,
+            ^(const SigninCoordinatorResultOrIdentity* result) {
+              EXPECT_EQ(*result, base::unexpected(expected_result));
+            });
   }
 
   // Returns coordinator_ as a ConsistencyDefaultAccountCoordinatorDelegate.
@@ -178,32 +215,10 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
     coordinator_result = std::move(result);
     signin_completion_called = true;
   };
-  StartCoordinator();
+  StartCoordinator(nil);
   // Simulate cancel from the user.
-  OCMExpect([base_view_controller_mock_
-      dismissViewControllerAnimated:YES
-                         completion:[OCMArg invokeBlock]]);
-  // Expect the navigation controller delegates to be reset.
-  OCMExpect([consistency_sheet_navigation_controller_mock_ setDelegate:nil]);
-  OCMExpect([consistency_sheet_navigation_controller_mock_
-      setTransitioningDelegate:nil]);
-  // Expect account coordinator delegates to be reset.
-  OCMExpect([consistency_default_account_coordinator_mock_ setDelegate:nil]);
-  OCMExpect(
-      [consistency_default_account_coordinator_mock_ setLayoutDelegate:nil]);
-  OCMExpect([consistency_default_account_coordinator_mock_ stop]);
-  // Expect the mediator to be stopped and the delegate to be reset.
-  OCMExpect([mediator_mock_ setDelegate:nil]);
-  OCMExpect(
-      [[(id)mediator_mock_ ignoringNonObjectArgs]
-          disconnectWithResult:base::unexpected(
-                                   SigninCoordinatorResultCanceledByUser)])
-      .andCallBlockWithParameterAtIndex(
-          const SigninCoordinatorResultOrIdentity, 0,
-          ^(const SigninCoordinatorResultOrIdentity* result) {
-            EXPECT_EQ(*result,
-                      base::unexpected(SigninCoordinatorResultCanceledByUser));
-          });
+  ExpectStopCoordinator(/*dismiss_animated=*/YES, [OCMArg invokeBlock],
+                        SigninCoordinatorResultCanceledByUser);
   // Call the cancel skip method.
   [GetConsistencyDefaultAccountCoordinatorDelegate()
       consistencyDefaultAccountCoordinatorSkip:
@@ -216,6 +231,32 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   [coordinator_ stop];
   coordinator_ = nil;
   EXPECT_FALSE(scene_state_.signinInProgress);
+}
+
+// Tests that `ConsistencyPromoSigninCoordinator` passes `prefilledEmail` to
+// `ConsistencyDefaultAccountCoordinator`.
+TEST_F(ConsistencyPromoSigninCoordinatorTest, PrefilledEmailForwarded) {
+  NSString* prefilled_email = @"user@example.com";
+  coordinator_ = [[ConsistencyPromoSigninCoordinator alloc]
+      initWithBaseViewController:base_view_controller_mock_
+                         browser:browser_.get()
+                    contextStyle:SigninContextStyle::kDefault
+                     accessPoint:access_point_
+                  prefilledEmail:prefilled_email
+            confirmChangeProfile:nil
+            prepareChangeProfile:nil
+            continuationProvider:NotReachedContinuationProvider()];
+  coordinator_.signinCompletion = ^(SigninCoordinator* coordinator,
+                                    SigninCoordinatorResultOrIdentity result) {
+  };
+
+  StartCoordinator(prefilled_email);
+
+  ExpectStopCoordinator(/*dismiss_animated=*/NO, nil,
+                        SigninCoordinatorResultInterrupted);
+
+  [coordinator_ stop];
+  coordinator_ = nil;
 }
 
 }  // namespace

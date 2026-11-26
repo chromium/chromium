@@ -246,6 +246,26 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountShowsAddAccount) {
                        browser_->GetWebStateList()->GetActiveWebState());
 }
 
+// Tests that `OnAddAccount()` with an email of an account on device when the
+// user is signed out shows the web sign-in promo bottom sheet with prefilled
+// email.
+TEST_F(AccountConsistencyBrowserAgentTest,
+       OnAddAccountShowsWebSigninPromoWithPrefilledEmail) {
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity2];
+  GetSystemIdentityManager()->AddIdentity(fake_identity);
+
+  OCMStub([base_view_controller_mock_ presentedViewController])
+      .andReturn((id)nil);
+
+  OCMExpect([mock_scene_sign_in_handler_
+      showWebSigninPromoFromViewController:base_view_controller_mock_
+                                       URL:url_
+                            prefilledEmail:fake_identity.userEmail]);
+
+  agent_->OnAddAccount(url_, base::SysNSStringToUTF8(fake_identity.userEmail),
+                       browser_->GetWebStateList()->GetActiveWebState());
+}
+
 // Tests that calling the `OnManageAccounts()` callback invokes the account
 // settings command.
 TEST_F(AccountConsistencyBrowserAgentTest, OnManageAccountsCallsCommand) {
@@ -287,7 +307,8 @@ TEST_F(AccountConsistencyBrowserAgentTest,
       browser_.get()->GetWebStateList()->GetActiveWebState();
   OCMExpect([mock_scene_sign_in_handler_
       showWebSigninPromoFromViewController:base_view_controller_mock_
-                                       URL:url_]);
+                                       URL:url_
+                            prefilledEmail:nil]);
   agent_->OnShowConsistencyPromo(url_, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have been called.
   // This is ensured by TearDown because mock_scene_sign_in_handler_ is a strict

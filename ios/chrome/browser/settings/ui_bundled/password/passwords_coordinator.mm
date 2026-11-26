@@ -760,6 +760,7 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
                                                      SigninContextStyle::
                                                          kDefault
                                                   accessPoint:accessPoint
+                                               prefilledEmail:nil
                                          confirmChangeProfile:nil
                                          prepareChangeProfile:nil
                                          continuationProvider:

@@ -161,9 +161,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
 }
 
-- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url {
+- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url
+                                    prefilledEmail:(NSString*)prefilledEmail {
   [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)
+                                  prefilledEmail:prefilledEmail];
 }
 
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {

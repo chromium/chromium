@@ -220,6 +220,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
                                                        contextStyle:
                                                            context_style
                                                         accessPoint:access_point
+                                                     prefilledEmail:nil
                                                confirmChangeProfile:[OCMArg any]
                                                prepareChangeProfile:[OCMArg any]
                                                continuationProvider:

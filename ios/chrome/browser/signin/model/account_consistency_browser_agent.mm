@@ -149,7 +149,8 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
       reconcilor->GetState());
   [scene_sign_in_handler_
       showWebSigninPromoFromViewController:base_view_controller_
-                                       URL:url];
+                                       URL:url
+                            prefilledEmail:nil];
 }
 
 void AccountConsistencyBrowserAgent::OnAddAccount(
@@ -199,7 +200,9 @@ void AccountConsistencyBrowserAgent::OnAddPrefilledAccount(
     // select the account in the account consistency view.
     [scene_sign_in_handler_
         showWebSigninPromoFromViewController:base_view_controller_
-                                         URL:url];
+                                         URL:url
+                              prefilledEmail:base::SysUTF8ToNSString(
+                                                 prefilled_email)];
   }
 }
 

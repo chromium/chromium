@@ -47,6 +47,7 @@ enum class AccessPoint : int;
                               contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
+                            prefilledEmail:(NSString*)prefilledEmail
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

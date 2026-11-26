@@ -1627,6 +1627,7 @@
                                                        SigninContextStyle::
                                                            kDefault
                                                     accessPoint:accessPoint
+                                                 prefilledEmail:nil
                                            confirmChangeProfile:nil
                                            prepareChangeProfile:nil
                                            continuationProvider:

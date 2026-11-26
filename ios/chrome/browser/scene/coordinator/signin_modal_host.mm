@@ -155,19 +155,25 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 - (void)showWebSigninPromoFromViewController:(UIViewController*)viewController
-                                         URL:(const GURL&)URL {
+                                         URL:(const GURL&)URL
+                              prefilledEmail:(NSString*)prefilledEmail {
   // Do not display the web sign-in promo if there is any UI on the screen.
   if (viewController.presentedViewController ||
       ![self.delegate
           isTabAvailableToPresentViewControllerForSigninModalHost:self]) {
     return;
   }
+  // TODO(crbug.com/579498250): Check whether `ShouldPresentWebSignin()`
+  // should ignore `kDefaultWebSignInDismissalCount` when `prefilledEmail` is
+  // non-empty.
   if (!signin::ShouldPresentWebSignin(_regularBrowser->GetProfile())) {
     return;
   }
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   _signinCoordinator =
-      [self webSigninCoordinatorWithBaseViewController:viewController URL:URL];
+      [self webSigninCoordinatorWithBaseViewController:viewController
+                                                   URL:URL
+                                        prefilledEmail:prefilledEmail];
   base::WeakPtr<Browser> regularBrowser = _regularBrowser->AsWeakPtr();
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = URL;
@@ -299,11 +305,13 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 // Returns the consistency promo `SigninCoordinator` for the web sign-in, which
-// opens `URL` in the new profile if the user switches profile.
-- (SigninCoordinator*)webSigninCoordinatorWithBaseViewController:
-                          (UIViewController*)baseViewController
-                                                             URL:(const GURL&)
-                                                                     URL {
+// opens `URL` in the new profile if the user switches profile, and
+// pre-selects the account matching `prefilledEmail` if any.
+- (SigninCoordinator*)
+    webSigninCoordinatorWithBaseViewController:
+        (UIViewController*)baseViewController
+                                           URL:(const GURL&)URL
+                                prefilledEmail:(NSString*)prefilledEmail {
   Browser* currentBrowser =
       _regularBrowser->GetSceneState().browserProviderInterface.currentBrowser;
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
@@ -323,6 +331,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
                                                   accessPoint:signin_metrics::
                                                                   AccessPoint::
                                                                       kWebSignin
+                                               prefilledEmail:prefilledEmail
                                          confirmChangeProfile:nil
                                          prepareChangeProfile:
                                              prepareChangeProfile

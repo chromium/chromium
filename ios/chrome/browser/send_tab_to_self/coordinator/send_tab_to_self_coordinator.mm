@@ -373,6 +373,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                                       browser:self.browser
                                                  contextStyle:style
                                                   accessPoint:accessPoint
+                                               prefilledEmail:nil
                                          confirmChangeProfile:nil
                                          prepareChangeProfile:
                                              prepareChangeProfile

@@ -119,7 +119,9 @@ class GURL;
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
 // `url` that triggered the web sign-in/consistency dialog.
-- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url;
+// `prefilledEmail` optionally specifies the email of the account to pre-select.
+- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url
+                                    prefilledEmail:(NSString*)prefilledEmail;
 
 // Triggers the reauth dialog for `identity`. This is done by sending
 // ShowSigninCommand to SceneController, without any UI interaction to open the
