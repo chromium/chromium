@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/commands/editing_state.h"
+#include "third_party/blink/renderer/core/editing/commands/split_text_node_command.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -136,6 +138,66 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
           HighlightLayer{HighlightLayerType::kCustom, AtomicString("bar")},
       }))
       << "should return kCustom layers no more than once each";
+}
+
+TEST_F(HighlightOverlayTest, ComputeLayersAfterSplittingHighlightedText) {
+  SetBodyInnerHTML(R"HTML(<div contenteditable>abcdef</div>)HTML");
+  auto* text = To<Text>(GetDocument().body()->firstChild()->firstChild());
+  auto* registry = HighlightRegistry::From(*GetDocument().domWindow());
+  auto* foo_range_1 = Range::Create(GetDocument());
+  foo_range_1->setStart(text, 0);
+  foo_range_1->setEnd(text, 1);
+  auto* foo_range_2 = Range::Create(GetDocument());
+  foo_range_2->setStart(text, 2);
+  foo_range_2->setEnd(text, 3);
+  auto* bar_range = Range::Create(GetDocument());
+  bar_range->setStart(text, 4);
+  bar_range->setEnd(text, 6);
+  registry->SetForTesting(AtomicString("foo"),
+                          Highlight::Create(HeapVector<Member<AbstractRange>>{
+                              foo_range_1, foo_range_2}));
+  registry->SetForTesting(
+      AtomicString("bar"),
+      Highlight::Create(HeapVector<Member<AbstractRange>>{bar_range}));
+  UpdateAllLifecyclePhasesForTest();
+
+  SimpleEditCommand* command =
+      MakeGarbageCollected<SplitTextNodeCommand>(text, 4);
+  EditingState editing_state;
+  command->DoApply(&editing_state);
+  ASSERT_FALSE(editing_state.IsAborted());
+  auto* prefix = To<Text>(text->previousSibling());
+  ASSERT_EQ("abcd", prefix->data());
+  ASSERT_EQ("ef", text->data());
+
+  // Synchronous SVG resource painting can run before highlight validation
+  // rebuilds the per-node registry after editing moves markers.
+  PaintController controller;
+  GraphicsContext context(controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
+  TextPaintStyle text_style;
+  DocumentMarkerVector none;
+  auto& markers = GetDocument().Markers();
+  for (Text* node : {prefix, text}) {
+    const auto custom = markers.MarkersFor(
+        *node, DocumentMarker::MarkerTypes::CustomHighlight());
+    ASSERT_EQ(node == prefix ? 2u : 1u, custom.size());
+    const auto layers = HighlightOverlay::ComputeLayers(
+        GetDocument(), node, node->GetLayoutObject()->Style(), text_style,
+        paint_info, nullptr, custom, none, none, none, none);
+    EXPECT_EQ(layers,
+              (HeapVector<HighlightLayer>{
+                  HighlightLayer{HighlightLayerType::kOriginating},
+                  HighlightLayer{HighlightLayerType::kCustom,
+                                 AtomicString(node == prefix ? "foo" : "bar")},
+              }));
+    const auto edges = HighlightOverlay::ComputeEdges(
+        node, node->GetLayoutObject(), false,
+        TextOffsetRange{0, node->length()}, layers, nullptr, custom, none, none,
+        none, none);
+    EXPECT_EQ(custom.size() * 2, edges.size());
+  }
 }
 
 TEST_F(HighlightOverlayTest, ComputeEdges) {

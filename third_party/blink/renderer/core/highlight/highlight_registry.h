@@ -61,7 +61,6 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   wtf_size_t size() const { return highlights_.size(); }
 
   const HighlightRegistryMap& GetHighlights() const { return highlights_; }
-  const HashSet<AtomicString>& GetActiveHighlights(const Text& node) const;
   // Returns the active custom highlight names for a replaced element (e.g.
   // <img>), or a reference to a static empty set if none.
   const HashSet<AtomicString>& GetActiveHighlightsForReplacedElement(
@@ -128,7 +127,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   HeapHashSet<WeakMember<RegistryLiveIterator>> active_iterators_;
   void NotifyIteratorsWillRemoveEntry(HighlightRegistryMapEntry* entry);
   void NotifyIteratorsWillClear();
-  // Only valid after ValidateHighlightMarkers(), used to optimize painting.
+  // Only valid after ValidateHighlightMarkers(), used to optimize hit testing.
   HeapHashMap<WeakMember<const Text>, HashSet<AtomicString>>
       active_highlights_in_node_;
   // Replaced elements (e.g. <img>) covered by custom highlight ranges,
