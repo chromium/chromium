@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>Workspace-like EditContext Test Page</title>
+<body>
+<div id="editor" tabindex="0">visual-canvas-placeholder</div>
+<script>
+  // Models a custom-rendered editor (such as Google Docs) whose attached
+  // EditContext holds only a '_' placeholder until IME input or a
+  // 'contextrequest' event demands full document serialization.
+  const editor = document.getElementById('editor');
+  window.ec = new EditContext({
+    text: '_',
+    selectionStart: 1,
+    selectionEnd: 1,
+  });
+  editor.editContext = window.ec;
+  window.imeEvents = [];
+  window.contextRequestCount = 0;
+  editor.addEventListener('keydown', (e) => {
+    window.imeEvents.push('keydown:' + e.keyCode);
+  });
+  window.ec.addEventListener('textupdate', () => {
+    window.imeEvents.push('textupdate');
+  });
+</script>
+</body>
+</html>

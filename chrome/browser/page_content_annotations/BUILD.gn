@@ -385,3 +385,27 @@ source_set("test_support") {
     "//url",
   ]
 }
+
+if (!is_android) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "page_content_edit_context_interactive_uitest.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
+      "//chrome/test/base:interactive_test_utils",
+      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/page_content_annotations/core:features",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//url",
+    ]
+  }
+}

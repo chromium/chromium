@@ -1661,6 +1661,7 @@ test("content_browsertests") {
     "../browser/renderer_host/input/composited_scrolling_browsertest.cc",
     "../browser/renderer_host/input/compositor_event_ack_browsertest.cc",
     "../browser/renderer_host/input/double_tap_to_zoom_browsertest.cc",
+    "../browser/renderer_host/input/edit_context_text_input_browsertest.cc",
     "../browser/renderer_host/input/fling_browsertest.cc",
     "../browser/renderer_host/input/input_event_browsertest.cc",
     "../browser/renderer_host/input/interaction_mq_dynamic_browsertest.cc",

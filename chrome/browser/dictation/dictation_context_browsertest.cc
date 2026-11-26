@@ -26,13 +26,13 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "content/public/browser/global_dom_node_id.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace dictation {
@@ -482,29 +482,20 @@ class DictationEditContextBrowserTest : public DictationBrowserTestBase {
   // world" and selects "world". The page is marked eligible for page context
   // unless `add_eligible_hint` is false.
   void NavigateToEditor(std::string_view host, bool add_eligible_hint = true) {
-    const GURL url = https_server_.GetURL(host, "/simple.html");
+    const GURL url =
+        https_server_.GetURL(host, "/workspace_like_editcontext.html");
     if (add_eligible_hint) {
       AddOptimizationGuideEligibleHint(url);
     }
     ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
     ASSERT_TRUE(content::ExecJs(web_contents(), R"JS(
-      const editor = document.createElement('div');
-      editor.id = 'editor';
-      document.body.appendChild(editor);
-      window.ec =
-          new EditContext({text: '_', selectionStart: 1, selectionEnd: 1});
-      editor.editContext = ec;
-      window.imeEvents = [];
-      editor.addEventListener(
-          'keydown', (e) => imeEvents.push('keydown:' + e.keyCode));
-      ec.addEventListener('textupdate', () => {
-        imeEvents.push('textupdate');
-        if (ec.text === '_') {
-          ec.updateText(0, 1, 'Hello world');
-          ec.updateSelection(6, 11);
+      window.ec.addEventListener('textupdate', () => {
+        if (window.ec.text === '_') {
+          window.ec.updateText(0, 1, 'Hello world');
+          window.ec.updateSelection(6, 11);
         }
       });
-      editor.focus();
+      document.getElementById('editor').focus();
     )JS"));
   }
 
@@ -596,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationEditContextBrowserTest,
                        EditContextNotPopulatedWithIneligibleHint) {
   AddOptimizationGuideIneligibleHint(
-      https_server_.GetURL(kListedHost, "/simple.html"));
+      https_server_.GetURL(kListedHost, "/workspace_like_editcontext.html"));
   NavigateToEditor(kListedHost, /*add_eligible_hint=*/false);
 
   std::optional<DictationContext> context = StartDictationInEditor();
@@ -606,18 +597,11 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextBrowserTest,
   EXPECT_EQ(content::EvalJs(web_contents(), "ec.text"), "_");
 }
 
-// End-to-end multi-process Dictation tests for EditContextOnDemand across
-// `DictationContextFetcher`, `DictationAgentImpl::PopulateEditContext`,
+// End-to-end multi-process Dictation tests for `EditContextOnDemand` across
+// `DictationContextFetcher`, `DictationAgentImpl::PopulateEditContext()`,
 // `AIPageContent`, and `InnerText`.
 class DictationEditContextOnDemandBrowserTest
     : public DictationEditContextBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationEditContextBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "EditContextOnDemand");
-  }
-
  protected:
   void SetupOnDemandEditor(content::ToRenderFrameHost target,
                            std::string_view full_text,
@@ -625,40 +609,25 @@ class DictationEditContextOnDemandBrowserTest
                            int sel_end) {
     ASSERT_TRUE(content::ExecJs(target, content::JsReplace(
                                             R"JS(
-              const existing = document.getElementById('editor');
-              if (existing) existing.remove();
-              const editor = document.createElement('div');
-              editor.id = 'editor';
-              editor.textContent = 'visual-canvas-placeholder';
-              document.body.appendChild(editor);
-              window.ec = new EditContext({
-                text: '_',
-                selectionStart: 1,
-                selectionEnd: 1,
-              });
-              editor.editContext = window.ec;
-              window.imeEvents = [];
-              window.contextRequestCount = 0;
               window.modelText = $1;
               window.modelSelStart = $2;
               window.modelSelEnd = $3;
-              editor.addEventListener(
-                  'keydown',
-                  (e) => window.imeEvents.push('keydown:' + e.keyCode));
-              window.ec.addEventListener('textupdate', () => {
-                window.imeEvents.push('textupdate');
-              });
               window.ec.addEventListener('contextrequest', () => {
                 window.contextRequestCount++;
-                window.ec.updateText(0, window.ec.text.length, window.modelText);
+                window.ec.updateText(
+                    0, window.ec.text.length, window.modelText);
                 window.ec.updateSelection(
                     window.modelSelStart, window.modelSelEnd);
               });
-              editor.focus();
+              document.getElementById('editor').focus();
               window.ec.invalidate();
             )JS",
                                             full_text, sel_start, sel_end)));
   }
+
+ private:
+  base::test::ScopedFeatureList on_demand_feature_list_{
+      blink::features::kEditContextOnDemand};
 };
 
 // Unlisted hosts (not in `populate_edit_context_hosts`) pull fresh text and
@@ -667,7 +636,8 @@ class DictationEditContextOnDemandBrowserTest
 // dispatching synthetic `keydown(229)` / `textupdate`.
 IN_PROC_BROWSER_TEST_F(DictationEditContextOnDemandBrowserTest,
                        UnlistedHostPopulatesDictationContextWithoutAllowlist) {
-  const GURL url = https_server_.GetURL(kUnlistedHost, "/simple.html");
+  const GURL url =
+      https_server_.GetURL(kUnlistedHost, "/workspace_like_editcontext.html");
   AddOptimizationGuideEligibleHint(url);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   SetupOnDemandEditor(web_contents(), "Paragraph 1: Hello world", 19, 24);
@@ -685,14 +655,15 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextOnDemandBrowserTest,
 }
 
 // Listed hosts (`populate_edit_context_hosts`) clean the invalidated
-// EditContext inside `DictationAgentImpl::PopulateEditContext`, skipping the
-// legacy synthetic `keydown(229)` + `textupdate` workaround and avoiding
+// `EditContext` inside `DictationAgentImpl::PopulateEditContext()`, skipping
+// the legacy synthetic `keydown(229)` + `textupdate` workaround and avoiding
 // duplicate `contextrequest` dispatches during subsequent `AIPageContent` /
 // `InnerText` extraction.
 IN_PROC_BROWSER_TEST_F(
     DictationEditContextOnDemandBrowserTest,
     ListedHostSkipsSyntheticKeydownAndFiresSingleContextRequest) {
-  const GURL url = https_server_.GetURL(kListedHost, "/simple.html");
+  const GURL url =
+      https_server_.GetURL(kListedHost, "/workspace_like_editcontext.html");
   AddOptimizationGuideEligibleHint(url);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   SetupOnDemandEditor(web_contents(), "Listed host document", 7, 11);
@@ -709,13 +680,16 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Subframe `#editor` detaching its own `<iframe>` synchronously inside
-// `contextrequest` during `DictationContextFetcher::Fetch` recovers cleanly and
-// extracts surviving main-frame text without crashing or hanging.
+// `contextrequest` during `DictationContextFetcher::Fetch()` recovers cleanly
+// and extracts surviving main-frame text without crashing or hanging.
 IN_PROC_BROWSER_TEST_F(DictationEditContextOnDemandBrowserTest,
                        SubframeDetachInsideContextRequestDoesNotCrashOrHang) {
-  const GURL url = https_server_.GetURL(kListedHost, "/simple.html");
-  AddOptimizationGuideEligibleHint(url);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  const GURL main_url = https_server_.GetURL(kListedHost, "/simple.html");
+  const GURL sub_url =
+      https_server_.GetURL(kListedHost, "/workspace_like_editcontext.html");
+  AddOptimizationGuideEligibleHint(main_url);
+  AddOptimizationGuideEligibleHint(sub_url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_url));
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
       content::JsReplace(
@@ -724,23 +698,18 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextOnDemandBrowserTest,
           "document.body.appendChild(p); "
           "const f = document.createElement('iframe'); f.id = 'sub'; "
           "f.src = $1; document.body.appendChild(f);",
-          url)));
+          sub_url)));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 
   content::RenderFrameHost* sub_rfh =
       content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(sub_rfh);
   ASSERT_TRUE(content::ExecJs(sub_rfh, R"JS(
-    const editor = document.createElement('div');
-    editor.id = 'editor';
-    document.body.appendChild(editor);
-    const ec = new EditContext({text: '_'});
-    editor.editContext = ec;
-    ec.addEventListener('contextrequest', () => {
+    window.ec.addEventListener('contextrequest', () => {
       window.frameElement.remove();
     });
-    editor.focus();
-    ec.invalidate();
+    document.getElementById('editor').focus();
+    window.ec.invalidate();
   )JS"));
 
   StartSession();
@@ -760,14 +729,17 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextOnDemandBrowserTest,
 
 // Listed-host nested OOPIF local root (`a.test -> b.test -> a.test`) whose
 // `contextrequest` listener removes `#editor` synchronously inside
-// `DictationAgentImpl::PopulateEditContext` does not dispatch synthetic
+// `DictationAgentImpl::PopulateEditContext()` does not dispatch synthetic
 // `keydown` or crash.
 IN_PROC_BROWSER_TEST_F(
     DictationEditContextOnDemandBrowserTest,
     PopulateEditContextHandlesTargetRemovalInsideContextRequest) {
   const GURL a_url = https_server_.GetURL(kListedHost, "/simple.html");
   const GURL b_url = https_server_.GetURL(kUnlistedHost, "/simple.html");
+  const GURL inner_editor_url =
+      https_server_.GetURL(kListedHost, "/workspace_like_editcontext.html");
   AddOptimizationGuideEligibleHint(a_url);
+  AddOptimizationGuideEligibleHint(inner_editor_url);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), a_url));
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
@@ -787,23 +759,16 @@ IN_PROC_BROWSER_TEST_F(
       content::JsReplace(
           "const inner = document.createElement('iframe'); inner.src = $1; "
           "document.body.appendChild(inner);",
-          a_url)));
+          inner_editor_url)));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   content::RenderFrameHost* inner_rfh = content::ChildFrameAt(mid_rfh, 0);
   ASSERT_TRUE(inner_rfh);
 
   ASSERT_TRUE(content::ExecJs(inner_rfh, R"JS(
-    const editor = document.createElement('div');
-    editor.id = 'editor';
-    document.body.appendChild(editor);
-    window.ec = new EditContext({text: '_'});
-    editor.editContext = window.ec;
-    window.imeEvents = [];
-    editor.addEventListener('keydown', () => window.imeEvents.push('keydown'));
     window.ec.addEventListener('contextrequest', () => {
-      editor.remove();
+      document.getElementById('editor').remove();
     });
-    editor.focus();
+    document.getElementById('editor').focus();
     window.ec.invalidate();
   )JS"));
 

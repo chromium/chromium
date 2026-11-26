@@ -3682,6 +3682,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/net:interactive_ui_tests",
       "//chrome/browser/new_tab_page:interactive_ui_tests",
       "//chrome/browser/notifications:interactive_ui_tests",
+      "//chrome/browser/page_content_annotations:interactive_ui_tests",
       "//chrome/browser/password_manager:interactive_ui_tests",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/picture_in_picture:interactive_ui_tests",
