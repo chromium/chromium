@@ -65,7 +65,11 @@ class TestTabStoragePackager : public TabStoragePackager {
   }
 
   bool IsOffTheRecord(const TabCollection* collection) const override {
-    return false;
+    return is_off_the_record_;
+  }
+
+  void set_is_off_the_record(bool is_off_the_record) {
+    is_off_the_record_ = is_off_the_record;
   }
 
   std::string GetWindowTag(const TabCollection* collection) const override {
@@ -85,6 +89,7 @@ class TestTabStoragePackager : public TabStoragePackager {
 
  private:
   int package_tab_strip_count_ = 0;
+  bool is_off_the_record_ = false;
 };
 
 class TestRestoreEntityTracker : public RestoreEntityTracker {
@@ -485,6 +490,66 @@ TEST_F(TabStateStorageServiceTest, LoadAllNodes_RunsBackgroundTransform) {
 
   EXPECT_TRUE(ran_off_ui_thread);
   EXPECT_TRUE(ui_closure_executed);
+}
+
+TEST_F(TabStateStorageServiceTest, SaveAndLoadOffTheRecordData) {
+  base::ScopedTempDir otr_temp_dir;
+  ASSERT_TRUE(otr_temp_dir.CreateUniqueTempDir());
+  auto packager = std::make_unique<TestTabStoragePackager>();
+  packager->set_is_off_the_record(true);
+  RestoreEntityTrackerFactory tracker_factory = base::BindRepeating(
+      [](OnTabAssociation,
+         OnCollectionAssociation) -> std::unique_ptr<RestoreEntityTracker> {
+        return std::make_unique<TestRestoreEntityTracker>();
+      });
+
+  TabStateStorageService otr_service(otr_temp_dir.GetPath(),
+                                     /*support_off_the_record_data=*/true,
+                                     std::move(packager), tracker_factory);
+  otr_service.GenerateKey("test_window");
+
+  TabStripCollection tab_strip;
+  auto tab = std::make_unique<FakeTabInterface>();
+  TabInterface* tab_ptr = tab.get();
+  tab_strip.unpinned_collection()->AddTab(std::move(tab), 0);
+
+  otr_service.Save(&tab_strip);
+  otr_service.Save(tab_strip.pinned_collection());
+  otr_service.Save(tab_strip.unpinned_collection());
+  otr_service.Save(tab_ptr);
+
+  base::RunLoop flush_loop;
+  otr_service.WaitForAllPendingOperations(flush_loop.QuitClosure());
+  flush_loop.Run();
+
+  base::RunLoop count_loop;
+  int otr_tab_count = 0;
+  otr_service.CountTabsForWindow("test_window", /*is_off_the_record=*/true,
+                                 base::BindLambdaForTesting([&](int count) {
+                                   otr_tab_count = count;
+                                   count_loop.Quit();
+                                 }));
+  count_loop.Run();
+  EXPECT_EQ(1, otr_tab_count);
+
+  base::RunLoop load_loop;
+  size_t loaded_tab_count = 0;
+  bool loaded_is_off_the_record = false;
+  otr_service.LoadAllNodes(
+      "test_window", /*is_off_the_record=*/true,
+      base::BindLambdaForTesting([&](std::unique_ptr<StorageLoadedData>
+                                         loaded_data) -> base::OnceClosure {
+        EXPECT_NE(nullptr, loaded_data);
+        return base::BindLambdaForTesting([&, data = std::move(loaded_data)]() {
+          loaded_tab_count = data->GetLoadedTabs().size();
+          loaded_is_off_the_record = data->IsOffTheRecord();
+          load_loop.Quit();
+        });
+      }));
+  load_loop.Run();
+
+  EXPECT_EQ(1u, loaded_tab_count);
+  EXPECT_TRUE(loaded_is_off_the_record);
 }
 
 }  // namespace
