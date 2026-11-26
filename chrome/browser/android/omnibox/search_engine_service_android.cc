@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -52,10 +53,6 @@ SearchEngineServiceAndroid::SearchEngineServiceAndroid(
 }
 
 SearchEngineServiceAndroid::~SearchEngineServiceAndroid() = default;
-
-void SearchEngineServiceAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void SearchEngineServiceAndroid::OnEligibilityChanged() {
   auto* ai_mode_button_service =
@@ -101,12 +98,11 @@ void SearchEngineServiceAndroid::OnAiModeButtonConfigChanged(
                                                          java_config);
 }
 
-static int64_t JNI_SearchEngineService_Init(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& caller,
-    Profile* profile) {
-  return reinterpret_cast<intptr_t>(
-      new SearchEngineServiceAndroid(env, caller, profile));
+static jni_zero::JniUniquePtr<SearchEngineServiceAndroid>
+JNI_SearchEngineService_Init(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& caller,
+                             Profile* profile) {
+  return jni_zero::MakeUnique<SearchEngineServiceAndroid>(env, caller, profile);
 }
 
 DEFINE_JNI(SearchEngineService)

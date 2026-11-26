@@ -16,6 +16,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -175,7 +177,8 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             ObservableSuppliers.createNonNull(
                     new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
 
-    private long mNativeSearchEngineServiceAndroid;
+    private @Nullable JniUniquePtr<NativeSearchEngineServiceAndroid>
+            mNativeSearchEngineServiceAndroid;
 
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
@@ -184,6 +187,9 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     private @Nullable DseIconKey mDseIconKey;
     private boolean mIsDseIconFetchInProgress;
     private boolean mIsDestroyed;
+
+    @JniType("::SearchEngineServiceAndroid")
+    interface NativeSearchEngineServiceAndroid extends JniTypeToken {}
 
     @FunctionalInterface
     public interface SearchEngineNameObserver {
@@ -261,9 +267,9 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     @Override
     public void destroy() {
         mIsDestroyed = true;
-        if (mNativeSearchEngineServiceAndroid != 0) {
-            SearchEngineServiceJni.get().destroy(mNativeSearchEngineServiceAndroid);
-            mNativeSearchEngineServiceAndroid = 0;
+        if (mNativeSearchEngineServiceAndroid != null) {
+            mNativeSearchEngineServiceAndroid.destroy();
+            mNativeSearchEngineServiceAndroid = null;
         }
         mTemplateUrlService.removeObserver(this);
         mFaviconHelper.destroy();
@@ -685,8 +691,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     @NativeMethods
     public interface Natives {
-        long init(SearchEngineService caller, @JniType("Profile*") Profile profile);
-
-        void destroy(long nativeSearchEngineServiceAndroid);
+        JniUniquePtr<NativeSearchEngineServiceAndroid> init(
+                SearchEngineService caller, @JniType("Profile*") Profile profile);
     }
 }

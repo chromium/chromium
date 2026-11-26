@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /** junit tests for {@link LifetimeAssert}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LifetimeAssertUnitTest {
@@ -154,6 +156,68 @@ public class LifetimeAssertUnitTest {
         LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
         LifetimeAssert.registerSafePointersTrackerFactory();
         JniUniquePtr.createForTesting(0x1234L);
+        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+    }
+
+    @Test
+    public void testScopedDisable_returnsNullNestedAndRestoresAfterScope() {
+        LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
+
+        try (var outer = LifetimeAssert.scopedDisable("outer")) {
+            Assert.assertNull(LifetimeAssert.create(new Object()));
+            Assert.assertNull(LifetimeAssert.create(new Object(), "context"));
+            Assert.assertNull(LifetimeAssert.create(new Object(), /* safeToGc= */ false));
+            try (var inner = LifetimeAssert.scopedDisable("inner")) {
+                Assert.assertNull(LifetimeAssert.create(new Object()));
+            }
+            // Still disabled until outer scope closes.
+            Assert.assertNull(LifetimeAssert.create(new Object()));
+        }
+
+        // Operations on null LifetimeAsserts returned from scopedDisable are safe no-ops.
+        LifetimeAssert.assertNotDestroyed(null);
+        LifetimeAssert.setSafeToGc(null, true);
+        LifetimeAssert.destroy(null);
+
+        // Assertions are re-enabled after exiting the scope.
+        LifetimeAssert createdAfterScope = LifetimeAssert.create(new Object());
+        Assert.assertNotNull(createdAfterScope);
+        LifetimeAssert.destroy(createdAfterScope);
+        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+    }
+
+    @Test
+    public void testScopedDisable_safePointersNotTracked() {
+        LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
+        LifetimeAssert.registerSafePointersTrackerFactory();
+
+        JniUniquePtr<?> uniquePtr;
+        JniRawPtr<?> rawPtr;
+        try (var ignored = LifetimeAssert.scopedDisable("long-lived owner")) {
+            uniquePtr = JniUniquePtr.createForTesting(0x1234L);
+            rawPtr = JniRawPtr.createForTesting(0x5678L);
+        }
+
+        // Neither pointer is tracked, so assertAllInstancesDestroyedForTesting() succeeds.
+        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+        uniquePtr.destroy();
+        rawPtr.release();
+    }
+
+    @Test
+    public void testScopedDisable_appliesAcrossThreads() throws InterruptedException {
+        LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
+        AtomicReference<LifetimeAssert> otherThreadAssert =
+                new AtomicReference<>(mTestClass.mLifetimeAssert);
+
+        try (var ignored = LifetimeAssert.scopedDisable("applies across threads")) {
+            Thread other =
+                    new Thread(() -> otherThreadAssert.set(LifetimeAssert.create(new Object())));
+            other.start();
+            other.join();
+        }
+
+        Assert.assertNull(otherThreadAssert.get());
         LifetimeAssert.assertAllInstancesDestroyedForTesting();
     }
 }

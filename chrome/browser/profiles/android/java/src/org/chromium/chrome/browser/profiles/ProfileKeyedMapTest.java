@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.profiles.ProfileKeyedMap.noRequiredCle
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +20,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -176,5 +179,36 @@ public class ProfileKeyedMapTest {
         Object removed = map.removeForProfile(mIncognitoProfile1);
         Assert.assertEquals(originalObj1, removed);
         Assert.assertEquals(0, map.size());
+    }
+
+    @Test
+    public void testDestroyableMap_disablesLifetimeAssertDuringFactory() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        ProfileKeyedMap<Destroyable> map = ProfileKeyedMap.createMapOfDestroyables();
+        Destroyable entry = () -> {};
+
+        Assert.assertSame(
+                entry,
+                map.getForProfile(
+                        mProfile1,
+                        profile -> {
+                            Assert.assertNull(LifetimeAssert.create(new Object()));
+                            return entry;
+                        }));
+        LifetimeAssert createdAfter = LifetimeAssert.create(new Object());
+        Assert.assertNotNull(createdAfter);
+        LifetimeAssert.destroy(createdAfter);
+    }
+
+    @Test
+    public void testNoCleanupMap_keepsLifetimeAssertEnabled() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        ProfileKeyedMap<LifetimeAssert> map = new ProfileKeyedMap<>(noRequiredCleanupAction());
+
+        LifetimeAssert createdInFactory =
+                map.getForProfile(mProfile1, profile -> LifetimeAssert.create(new Object()));
+
+        Assert.assertNotNull(createdInFactory);
+        LifetimeAssert.destroy(createdInFactory);
     }
 }

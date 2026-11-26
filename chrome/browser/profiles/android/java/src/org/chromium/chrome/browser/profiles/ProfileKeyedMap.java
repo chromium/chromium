@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -121,6 +122,10 @@ public class ProfileKeyedMap<T> {
     /**
      * Gets (and lazily constructs if needed) the mapped object for a given Profile.
      *
+     * <p>When a destroy action is configured, {@link LifetimeAssert} creation is disabled for the
+     * duration of {@code factory}, so factories should only construct objects owned and cleaned up
+     * by the returned entry.
+     *
      * @param profile The Profile the object is associated with.
      * @param factory The factory that will construct the object if it does not already exist.
      * @return The object associated with the passed in Profile.
@@ -134,7 +139,14 @@ public class ProfileKeyedMap<T> {
 
         T obj = mData.get(profile);
         if (obj == null) {
-            obj = factory.apply(profile);
+            try (var ignored =
+                    mDestroyAction != null
+                            ? LifetimeAssert.scopedDisable(
+                                    "ProfileKeyedMap entries live until Profile destruction, which"
+                                            + " does not happen between batched tests.")
+                            : null) {
+                obj = factory.apply(profile);
+            }
             mData.put(profile, obj);
         }
         if (mProfileManagerObserver == null) {

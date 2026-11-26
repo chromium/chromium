@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.DrawableRes;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineService.NativeSearchEngineServiceAndroid;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -87,6 +89,8 @@ public class SearchEngineServiceUnitTest {
     @Mock private SearchEngineNameObserver mHintTextObserver;
     @Mock private SearchEngineIconObserver mEngineIconObserver;
     @Mock private SearchEngineService.Natives mSearchEngineServiceNatives;
+    @Mock private JniUniquePtr<NativeSearchEngineServiceAndroid> mNativeSearchEngineServiceAndroid;
+
     private Context mContext;
     private Bitmap mBitmap;
 
@@ -98,7 +102,10 @@ public class SearchEngineServiceUnitTest {
 
         lenient().doReturn(true).when(mProfile).isNativeInitialized();
         SearchEngineServiceJni.setInstanceForTesting(mSearchEngineServiceNatives);
-        lenient().doReturn(1L).when(mSearchEngineServiceNatives).init(any(), any());
+        lenient()
+                .doReturn(mNativeSearchEngineServiceAndroid)
+                .when(mSearchEngineServiceNatives)
+                .init(any(), any());
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         lenient().doReturn("keyword").when(mTemplateUrl).getKeyword();
         lenient().doReturn(TEMPLATE_URL).when(mTemplateUrl).getURL();
@@ -639,7 +646,7 @@ public class SearchEngineServiceUnitTest {
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
         searchEngineService.destroy();
 
-        verify(mSearchEngineServiceNatives).destroy(1L);
+        verify(mNativeSearchEngineServiceAndroid).destroy();
         verify(mImageFetcher).destroy();
     }
 

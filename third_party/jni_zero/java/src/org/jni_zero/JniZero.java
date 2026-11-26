@@ -19,6 +19,7 @@ public class JniZero {
         /**
          * @param creationContext Names the JNI method that handed the pointer to Java, or null.
          */
+        @Nullable
         SafePointersTracker create(Object target, @Nullable String creationContext);
     }
 

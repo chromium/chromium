@@ -29,8 +29,6 @@ class SearchEngineServiceAndroid {
   SearchEngineServiceAndroid& operator=(const SearchEngineServiceAndroid&) =
       delete;
 
-  void Destroy(JNIEnv* env);
-
  private:
   void OnAiModeButtonConfigChanged(const AiModeButtonUiConfig* config);
   void OnEligibilityChanged();

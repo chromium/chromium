@@ -4,8 +4,7 @@
 
 package org.chromium.base.lifetime;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
+import androidx.annotation.CheckResult;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniZero;
@@ -21,6 +20,7 @@ import java.lang.ref.ReferenceQueue;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Used to assert that clean-up logic has been run before an object is GC'ed.
@@ -42,15 +42,55 @@ import java.util.Set;
 @NullMarked
 @CheckDiscard("Lifetime assertions aren't used when DCHECK is off.")
 public class LifetimeAssert {
+    /** Used with try-with-resources to temporarily disable {@link LifetimeAssert} creation. */
+    @CheckDiscard("Lifetime assertions aren't used when DCHECK is off.")
+    public static final class ScopedDisable implements AutoCloseable {
+        // Keep AtomicInteger off LifetimeAssert so LifetimeAssert stays free of <clinit> and R8
+        // discards it completely when BuildConfig.ENABLE_ASSERTS is false.
+        private static final AtomicInteger sDisableCount = new AtomicInteger();
+        private boolean mClosed;
+
+        private ScopedDisable() {
+            sDisableCount.incrementAndGet();
+        }
+
+        static boolean isDisabled() {
+            return sDisableCount.get() > 0;
+        }
+
+        @Override
+        public void close() {
+            assert !mClosed;
+            mClosed = true;
+            sDisableCount.decrementAndGet();
+        }
+    }
+
+    /**
+     * Disables {@link LifetimeAssert} creation for the duration of the returned try-with-resources
+     * scope. All {@link #create} calls within the scope return {@code null}.
+     *
+     * @param reason Explanation of why lifetime assertions are disabled for this scope.
+     */
+    @CheckResult
+    public static @Nullable ScopedDisable scopedDisable(String reason) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
+            return null;
+        }
+        assert !reason.isEmpty();
+        return new ScopedDisable();
+    }
+
     public static void registerSafePointersTrackerFactory() {
         if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
         JniZero.setSafePointersTrackerFactory(
                 (target, creationContext) -> {
-                    LifetimeAssert assertInstance =
-                            assumeNonNull(LifetimeAssert.create(target, creationContext));
-                    return () -> LifetimeAssert.destroy(assertInstance);
+                    LifetimeAssert assertInstance = LifetimeAssert.create(target, creationContext);
+                    return assertInstance == null
+                            ? null
+                            : () -> LifetimeAssert.destroy(assertInstance);
                 });
     }
 
@@ -151,17 +191,18 @@ public class LifetimeAssert {
         mTarget = target;
     }
 
-    public static @Nullable LifetimeAssert create(Object target) {
-        if (!BuildConfig.ENABLE_ASSERTS) {
+    private static @Nullable LifetimeAssert create(
+            Object target, boolean safeToGc, @Nullable String creationContext) {
+        if (!BuildConfig.ENABLE_ASSERTS || ScopedDisable.isDisabled()) {
             return null;
         }
         return new LifetimeAssert(
-                new WrappedReference(
-                        target,
-                        new CreationException(),
-                        /* safeToGc= */ false,
-                        /* creationContext= */ null),
+                new WrappedReference(target, new CreationException(), safeToGc, creationContext),
                 target);
+    }
+
+    public static @Nullable LifetimeAssert create(Object target) {
+        return create(target, /* safeToGc= */ false, /* creationContext= */ null);
     }
 
     /**
@@ -169,29 +210,16 @@ public class LifetimeAssert {
      * when the creation stack does not identify the code that owns {@code target}.
      */
     static @Nullable LifetimeAssert create(Object target, @Nullable String creationContext) {
-        if (!BuildConfig.ENABLE_ASSERTS) {
-            return null;
-        }
-        return new LifetimeAssert(
-                new WrappedReference(
-                        target, new CreationException(), /* safeToGc= */ false, creationContext),
-                target);
+        return create(target, /* safeToGc= */ false, creationContext);
     }
 
     public static @Nullable LifetimeAssert create(Object target, boolean safeToGc) {
-        if (!BuildConfig.ENABLE_ASSERTS) {
-            return null;
-        }
-        return new LifetimeAssert(
-                new WrappedReference(
-                        target, new CreationException(), safeToGc, /* creationContext= */ null),
-                target);
+        return create(target, safeToGc, /* creationContext= */ null);
     }
 
     /** Most clients should probably use destroy() to ensure exactly 1 call. */
     public static void setSafeToGc(@Nullable LifetimeAssert asserter, boolean value) {
-        if (BuildConfig.ENABLE_ASSERTS) {
-            assert asserter != null;
+        if (BuildConfig.ENABLE_ASSERTS && asserter != null) {
             // This guarantees that the target object is reachable until after mSafeToGc value
             // is updated here. See comment on Reference.reachabilityFence and review comments
             // on https://chromium-review.googlesource.com/c/chromium/src/+/1887151 for a
@@ -199,7 +227,6 @@ public class LifetimeAssert {
             // reachabilityFence because robolectric has problems mocking out that method,
             // and this should work for all Android versions.
             synchronized (asserter.mTarget) {
-                // asserter is never null when ENABLE_ASSERTS.
                 asserter.mWrapper.mSafeToGc = value;
             }
         }
@@ -207,8 +234,8 @@ public class LifetimeAssert {
 
     /** Asserts that mSafeToGc == false. */
     public static void assertNotDestroyed(@Nullable LifetimeAssert asserter) {
-        if (BuildConfig.ENABLE_ASSERTS) {
-            assert !assumeNonNull(asserter).mWrapper.mSafeToGc;
+        if (BuildConfig.ENABLE_ASSERTS && asserter != null) {
+            assert !asserter.mWrapper.mSafeToGc;
         }
     }
 
