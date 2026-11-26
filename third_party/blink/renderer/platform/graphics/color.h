@@ -45,13 +45,7 @@ namespace blink {
 
 typedef unsigned RGBA32;  // RGBA quadruplet
 
-struct NamedColor {
-  DISALLOW_NEW();
-  const char* name;
-  unsigned argb_value;
-};
-
-PLATFORM_EXPORT const NamedColor* FindColor(std::string_view str);
+PLATFORM_EXPORT std::optional<RGBA32> FindColor(std::string_view str);
 
 class PLATFORM_EXPORT Color {
   DISALLOW_NEW();

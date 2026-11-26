@@ -129,16 +129,17 @@ inline bool ParseHexColorInternal(base::span<const CharacterType> name,
   return true;
 }
 
-inline const NamedColor* FindNamedColor(const String& name) {
+inline std::optional<RGBA32> FindNamedColor(const String& name) {
   std::array<char, 64> buffer;  // easily big enough for the longest color name
   wtf_size_t length = name.length();
   if (length > buffer.size() - 1) {
-    return nullptr;
+    return std::nullopt;
   }
   for (wtf_size_t i = 0; i < length; ++i) {
     const UChar c = name[i];
-    if (!c || c > 0x7F)
-      return nullptr;
+    if (!c || c > 0x7F) {
+      return std::nullopt;
+    }
     buffer[i] = ToAsciiLower(static_cast<char>(c));
   }
   return FindColor(base::as_string_view(base::span(buffer).first(length)));
@@ -1250,10 +1251,9 @@ String Color::NameForLayoutTreeAsText() const {
 }
 
 bool Color::SetNamedColor(const String& name) {
-  const NamedColor* found_color = FindNamedColor(name);
-  *this =
-      found_color ? Color::FromRGBA32(found_color->argb_value) : kTransparent;
-  return found_color;
+  std::optional<RGBA32> found_color = FindNamedColor(name);
+  *this = found_color ? Color::FromRGBA32(*found_color) : kTransparent;
+  return found_color.has_value();
 }
 
 Color Color::Light() const {

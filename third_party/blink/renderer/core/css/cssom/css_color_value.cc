@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csscolorvalue_cssstylevalue.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -104,8 +106,8 @@ V8UnionCSSColorValueOrCSSStyleValue::Ret CSSColorValue::parse(
   if (const auto* css_ident = DynamicTo<CSSIdentifierValue>(*parsed_value)) {
     const CSSValueID value_id = css_ident->GetValueID();
     std::string_view value_name = GetCSSValueName(value_id);
-    if (const NamedColor* named_color = FindColor(value_name)) {
-      const Color color = Color::FromRGBA32(named_color->argb_value);
+    if (std::optional<RGBA32> named_color = FindColor(value_name)) {
+      const Color color = Color::FromRGBA32(*named_color);
       return V8UnionCSSColorValueOrCSSStyleValue::Ret(
           script_state,
           MakeGarbageCollected<CSSRGB>(color, Color::ColorSpace::kSRGBLegacy));

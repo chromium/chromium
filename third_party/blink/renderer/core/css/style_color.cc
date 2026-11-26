@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "third_party/blink/renderer/core/css/color_function.h"
 #include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
@@ -552,8 +553,8 @@ const CSSValue* StyleColor::ToCSSValue() const {
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    const ColorThemeInfo& theme_info) {
   std::string_view value_name = GetCSSValueName(keyword);
-  if (const NamedColor* named_color = FindColor(value_name)) {
-    return Color::FromRGBA32(named_color->argb_value);
+  if (std::optional<RGBA32> named_color = FindColor(value_name)) {
+    return Color::FromRGBA32(*named_color);
   }
 
   return LayoutTheme::GetTheme().SystemColor(keyword, theme_info);

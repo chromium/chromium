@@ -1,23 +1,32 @@
 %{
 #include "third_party/blink/renderer/platform/graphics/color.h"
+
 #include <string.h>
+
+#include <optional>
 
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 
 namespace blink {
 
+namespace {
+
 %}
 %struct-type
-struct NamedColor;
-%omit-struct-type
 %language=C++
 %readonly-tables
 %global-table
+%pic
 %compare-strncmp
 %define class-name ColorDataHash
 %define lookup-function-name FindColorImpl
 %define hash-function-name colordata_hash_function
+%define slot-name name_offset
 %enum
+struct NamedColor {
+  int name_offset;
+  RGBA32 argb_value;
+};
 %%
 aliceblue, 0xfff0f8ff
 antiquewhite, 0xfffaebd7
@@ -172,8 +181,14 @@ yellow, 0xffffff00
 yellowgreen, 0xff9acd32
 %%
 
-const struct NamedColor* FindColor(std::string_view str) {
-  return ColorDataHash::FindColorImpl(str.data(), str.size());
+}  // namespace
+
+std::optional<RGBA32> FindColor(std::string_view str) {
+  if (const NamedColor* color =
+          ColorDataHash::FindColorImpl(str.data(), str.size())) {
+    return color->argb_value;
+  }
+  return std::nullopt;
 }
 
-} // namespace blink
+}  // namespace blink
