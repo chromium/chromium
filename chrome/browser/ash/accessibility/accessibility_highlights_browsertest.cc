@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -190,12 +191,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
       utils_->GetBoundsForNodeInRootByClassName("OmniboxViewViews");
 
   // Jump to the omnibox.
+  // Ctrl+L is first sent to the (focused) renderer and only handled as a
+  // browser accelerator once the renderer acks it, so the caret ring appears
+  // asynchronously. Other focus ring changes (e.g. Select-to-Speak clearing
+  // its focus ring in response to the Ctrl tap) may happen before that, so
+  // wait for the caret ring itself rather than for "any" focus ring change.
   generator_->PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_L,
                                                 ui::EF_CONTROL_DOWN);
-  WaitForFocusRingsChanged();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->caret_layer_for_testing() != nullptr; }));
   AccessibilityCursorRingLayer* caret_layer =
       controller->caret_layer_for_testing();
-  ASSERT_TRUE(caret_layer);
   gfx::Rect bounds = caret_layer->layer()->GetTargetBounds();
   EXPECT_EQ(bounds.CenterPoint().y(), omnibox_bounds.CenterPoint().y());
 
@@ -205,11 +211,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
 
   // Typing something shifts the bounds to the right.
   generator_->PressAndReleaseKey(ui::KeyboardCode::VKEY_K);
-  gfx::Rect new_bounds = caret_layer->layer()->GetTargetBounds();
-  if (new_bounds == bounds) {
-    WaitForFocusRingsChanged();
-    new_bounds = caret_layer->layer()->GetTargetBounds();
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->caret_layer_for_testing() &&
+           controller->caret_layer_for_testing()->layer()->GetTargetBounds() !=
+               bounds;
+  }));
+  gfx::Rect new_bounds =
+      controller->caret_layer_for_testing()->layer()->GetTargetBounds();
   EXPECT_EQ(bounds.y(), new_bounds.y());
   EXPECT_LT(bounds.x(), new_bounds.x());
 
