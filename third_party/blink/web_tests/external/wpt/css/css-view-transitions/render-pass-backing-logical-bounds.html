@@ -7,7 +7,8 @@
 
 <!--
   Verifies that a scaled view-transition snapshot remains entirely blue. The
-  composited child forces the snapshot through an intermediate backing.
+  composited child forces the snapshot through an intermediate backing, and
+  its half-pixel translation exercises linear filtering within this test.
   Sampling outside the snapshot's logical bounds could include transparent
   allocation padding and expose the red page background.
 -->
@@ -33,7 +34,7 @@ body {
   height: 120px;
   background: blue;
   will-change: transform;
-  transform: translateZ(0);
+  transform: translate3d(0.5px, 0, 0);
 }
 
 ::view-transition-group(*) {

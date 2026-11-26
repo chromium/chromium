@@ -435,6 +435,45 @@ TEST_F(SoftwareRendererTest, RenderPassVisibleRect) {
       cc::ExactPixelComparator()));
 }
 
+// Scale a 2x2 child pass (blue left column, green right column) by 50 to fill
+// the 100x100 viewport over a fractionally translated red background. Expect
+// solid blue and green halves with a sharp boundary and no red showing through:
+// the child must use nearest sampling regardless of the previous quad.
+TEST_F(SoftwareRendererTest, RenderPassSamplingDoesNotDependOnPreviousQuad) {
+  const gfx::Rect viewport_rect(device_viewport_size_);
+  const gfx::Rect child_rect(2, 2);
+  AggregatedRenderPassList pass_list;
+
+  auto* child_pass = cc::AddRenderPass(&pass_list, AggregatedRenderPassId{1},
+                                       child_rect, gfx::Transform());
+  cc::AddQuad(child_pass, gfx::Rect(1, 2), SkColors::kBlue);
+  cc::AddQuad(child_pass, child_rect, SkColors::kGreen);
+
+  auto* root_pass = cc::AddRenderPass(&pass_list, AggregatedRenderPassId{2},
+                                      viewport_rect, gfx::Transform());
+  gfx::Transform child_to_root;
+  child_to_root.Scale(50);
+  cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                        child_to_root, SkBlendMode::kSrcOver);
+
+  // This backmost quad is drawn first. Its half-pixel translation selects
+  // linear sampling, but the render-pass quad drawn afterward must
+  // independently select nearest sampling.
+  cc::AddQuad(root_pass, viewport_rect, SkColors::kRed);
+  root_pass->shared_quad_state_list.back()->quad_to_target_transform.Translate(
+      0.5, 0);
+
+  EXPECT_TRUE(RunPixelTest(
+      &pass_list,
+      GenerateExpectedImage(
+          device_viewport_size_,
+          {
+              {.rect = viewport_rect, .color = SkColors::kGreen},
+              {.rect = gfx::Rect(50, 100), .color = SkColors::kBlue},
+          }),
+      cc::ExactPixelComparator()));
+}
+
 TEST_F(SoftwareRendererTest, ClipRoundRect) {
   gfx::Size viewport_size(100, 100);
   gfx::Rect clip_rect = gfx::Rect(1, 1, 30, 30);
