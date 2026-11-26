@@ -116,6 +116,10 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   // immediately and require an explicit flush.
   void submitAndFlushBackend(skgpu::graphite::SubmitInfo = {});
 
+  // Requests that the next submit() also flushes the backend (as if
+  // submitAndFlushBackend() were called), without forcing an immediate submit.
+  void ForceFlushBackendOnNextSubmit();
+
   bool hasUnfinishedGpuWork() const;
 
   // Runs `do_work_fn` with the context locked and then submits with
@@ -273,6 +277,9 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   // Incremented after each context submit.
   std::atomic<uint64_t> submit_generation_{0};
+
+  // If true, the next submit() will also flush the backend.
+  bool force_flush_backend_on_next_submit_ = false;
 };
 
 }  // namespace gpu

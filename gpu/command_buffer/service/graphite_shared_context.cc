@@ -546,10 +546,19 @@ bool GraphiteSharedContext::InsertRecordingImpl(
          !IsContextLost();
 }
 
+void GraphiteSharedContext::ForceFlushBackendOnNextSubmit() {
+  AutoLock auto_lock(this);
+  force_flush_backend_on_next_submit_ = true;
+}
+
 void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {
   AutoLock auto_lock(this);
   AutoReset auto_reset(locked_thread_in_submit_);
-  CHECK(SubmitImpl(submit_info));
+  if (force_flush_backend_on_next_submit_) {
+    SubmitAndFlushBackendImpl(submit_info);
+  } else {
+    CHECK(SubmitImpl(submit_info));
+  }
 }
 
 bool GraphiteSharedContext::SubmitImpl(
@@ -631,6 +640,7 @@ bool GraphiteSharedContext::SubmitImpl(
     submit_generation_.fetch_add(1, std::memory_order_relaxed);
 
     if (sync_to_cpu) {
+      force_flush_backend_on_next_submit_ = false;
       // Report progress between the submit and the wait to tell the GPU
       // watchdog that we are making progress. Otherwise, a long submit followed
       // by a long wait could be mistaken for a hang and cause the GPU process
@@ -671,10 +681,12 @@ void GraphiteSharedContext::SubmitAndFlushBackendImpl(
   // Capture this before SubmitImpl() runs, since submitting clears the
   // context's pending GPU work.
   bool had_pending_gpu_work = graphite_context_->hasPendingGPUWork();
+  bool force_flush = force_flush_backend_on_next_submit_;
+  force_flush_backend_on_next_submit_ = false;
 
   CHECK(SubmitImpl(submit_info));
 
-  if (delegate_ && had_pending_gpu_work) {
+  if (delegate_ && (had_pending_gpu_work || force_flush)) {
     delegate_->FlushBackend();
   }
 }

@@ -1711,8 +1711,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         // is destroyed so that VkSemaphores can be exported.
         gr_context()->submit();
       }
-      // The end of the function already does a graphite submit and it's not
-      // required for the error early return path.
+      // A graphite submit could be needed here if `scoped_access` required
+      // submit before ending access, but in practice that doesn't happen.
     }
   };
 
@@ -1883,11 +1883,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   std::move(end_access_cleanup).Invoke();
 
   if (graphite_shared_context() && num_readbacks_pending_ > 0) {
-    // Submit pending readback recordings and flush the backend (e.g. Dawn D3D11
-    // with `d3d11_delay_flush_to_gpu`) immediately so readback polling in
+    // Ensure the next submit flushes the backend (e.g. Dawn D3D11 with
+    // `d3d11_delay_flush_to_gpu`) so readback polling in
     // CheckReadbackCompletion() does not stall waiting for a root swap-chain
     // Present() or GraphiteSharedContext::ForceSubmit().
-    graphite_shared_context()->submitAndFlushBackend();
+    graphite_shared_context()->ForceFlushBackendOnNextSubmit();
   }
 
   ScheduleCheckReadbackCompletion();

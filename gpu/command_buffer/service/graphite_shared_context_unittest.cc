@@ -626,6 +626,66 @@ TEST_P(GraphiteSharedContextTest, CleanupCallbackChainsFinishedProc) {
   EXPECT_TRUE(state.finished_proc_ran_first);
 }
 
+TEST_P(GraphiteSharedContextTest, ForceFlushBackendOnNextSubmit) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  // Calling ForceFlushBackendOnNextSubmit() does not flush immediately, only
+  // on the next submit().
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+  InsertEmptyRecording(recorder.get());
+  graphite_shared_context_->ForceFlushBackendOnNextSubmit();
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
+  graphite_shared_context_->submit();
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Subsequent submit() should not flush again.
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+  InsertEmptyRecording(recorder.get());
+  graphite_shared_context_->submit();
+}
+
+TEST_P(GraphiteSharedContextTest,
+       ForceFlushBackendOnNextSubmitWithoutPendingWork) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+  InsertEmptyRecording(recorder.get());
+  graphite_shared_context_->submit();
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Even when there is no new pending GPU work, ForceFlushBackendOnNextSubmit()
+  // still flushes on the next submit() and then clears the flag.
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
+  graphite_shared_context_->ForceFlushBackendOnNextSubmit();
+  graphite_shared_context_->submit();
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+  graphite_shared_context_->submit();
+}
+
+TEST_P(GraphiteSharedContextTest,
+       ForceFlushBackendOnNextSubmitClearedBySubmitAndFlushBackend) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  graphite_shared_context_->ForceFlushBackendOnNextSubmit();
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
+  InsertEmptyRecording(recorder.get());
+  graphite_shared_context_->submitAndFlushBackend();
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Flag should have been cleared by submitAndFlushBackend().
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+  InsertEmptyRecording(recorder.get());
+  graphite_shared_context_->submit();
+}
+
 INSTANTIATE_TEST_SUITE_P(, GraphiteSharedContextTest, testing::Bool());
 
 }  // namespace
