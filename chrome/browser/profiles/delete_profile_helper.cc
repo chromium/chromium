@@ -45,7 +45,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/common/chrome_constants.h"
+#else
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -55,14 +57,12 @@
 namespace {
 
 void RecordDeletedProfileStateIfNeeded(ProfileAttributesStorage& storage,
-                                       ProfileAttributesEntry* entry) {
+                                       ProfileAttributesEntry& entry) {
   // TODO(crbug.com/581791485): Revisit enabling `RecordDeletedProfileState()`
   // on Android once `Profile.DeleteProfileContext` window semantics are audited
   // for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (entry) {
-    storage.RecordDeletedProfileState(entry);
-  }
+  storage.RecordDeletedProfileState(&entry);
 #endif
 }
 
@@ -105,10 +105,30 @@ bool IsValidFallbackProfilePath(const base::FilePath& candidate_path,
          !IsProfileDirectoryMarkedForDeletion(candidate_path);
 }
 
-base::FilePath FindFallbackProfileInStorage(
-    const ProfileAttributesStorage& storage,
+bool IsProtectedProfilePath(const base::FilePath& profile_path) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the initial ('Default') profile cannot be deleted.
+  return profile_path.BaseName().value() == chrome::kInitialProfile;
+#else
+  return false;
+#endif
+}
+
+base::FilePath FindFallbackProfilePath(
+    ProfileManager& profile_manager,
     const base::FilePath& profile_to_delete_dir) {
-  for (ProfileAttributesEntry* entry : storage.GetAllProfilesAttributes()) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the initial ('Default') profile is never deleted. When no
+  // other regular profile has an open window, always fall back to 'Default'
+  // rather than cold-loading an idle secondary profile from storage.
+  const base::FilePath default_profile_dir =
+      profiles::GetDefaultProfileDir(profile_manager.user_data_dir());
+  CHECK(IsValidFallbackProfilePath(default_profile_dir, profile_to_delete_dir));
+  return default_profile_dir;
+#else
+  for (ProfileAttributesEntry* entry :
+       profile_manager.GetProfileAttributesStorage()
+           .GetAllProfilesAttributes()) {
     base::FilePath cur_path = entry->GetPath();
     // Make sure that this profile is not pending deletion.
     if (IsValidFallbackProfilePath(cur_path, profile_to_delete_dir)) {
@@ -116,6 +136,7 @@ base::FilePath FindFallbackProfileInStorage(
     }
   }
   return base::FilePath();
+#endif
 }
 
 // Called after a deleted profile was checked and cleaned up.
@@ -229,16 +250,28 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     const base::FilePath& profile_dir,
     ProfileLoadedCallback callback,
     ProfileMetrics::ProfileDelete deletion_source) {
-  if (!ScheduleProfileDirectoryForDeletion(profile_dir))
-    return;
+  CHECK(profiles::IsMultipleProfilesEnabled());
+  CHECK(!IsProtectedProfilePath(profile_dir));
 
+  // Only profiles known to `ProfileAttributesStorage` can be deleted. Without
+  // an entry, `LoadProfileByPath()` would fail and the directory of a possibly
+  // live profile (e.g. Guest or System) would be nuked before crashing in
+  // `RemoveProfile()`.
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  RecordDeletedProfileStateIfNeeded(
-      storage, storage.GetProfileAttributesWithPath(profile_dir));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_dir);
+  if (!entry) {
+    return;
+  }
+
+  if (!ScheduleProfileDirectoryForDeletion(profile_dir)) {
+    return;
+  }
+
+  RecordDeletedProfileStateIfNeeded(storage, *entry);
   ProfileMetrics::LogProfileDeleteUser(deletion_source);
 
-  CHECK(profiles::IsMultipleProfilesEnabled(), base::NotFatalUntil::M162);
   CHECK(!IsProfileDirectoryMarkedForDeletion(profile_dir),
         base::NotFatalUntil::M162);
 
@@ -397,9 +430,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
       profile_manager_->GetLastUsedProfileDir();
   Profile* last_used_profile =
       profile_manager_->GetProfileByPath(last_used_profile_path);
-  if (last_used_profile_path != context.profile_dir &&
-      last_used_profile_path != ProfileManager::GetGuestProfilePath() &&
-      last_used_profile) {
+  if (last_used_profile &&
+      IsValidFallbackProfilePath(last_used_profile_path, context.profile_dir)) {
     FinishDeletingProfile(context.profile_dir, last_used_profile_path,
                           std::move(context.profile_keep_alive));
     return;
@@ -422,8 +454,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
   }
 
   // There no valid browsers to fallback, search for any existing valid profile.
-  base::FilePath fallback_profile_path = FindFallbackProfileInStorage(
-      profile_manager_->GetProfileAttributesStorage(), context.profile_dir);
+  base::FilePath fallback_profile_path =
+      FindFallbackProfilePath(*profile_manager_, context.profile_dir);
 
   // If we're deleting the last profile, then create a new profile in its place.
   // Load existing profile otherwise.

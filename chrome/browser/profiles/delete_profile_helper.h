@@ -66,10 +66,20 @@ class DeleteProfileHelper {
   DeleteProfileHelper(const DeleteProfileHelper&) = delete;
   DeleteProfileHelper& operator=(const DeleteProfileHelper&) = delete;
 
-  // Schedules the profile at `profile_dir` to be deleted. If deleting the last
-  // profile, a new one is created and `callback` is called upon completion.
-  // Silently exits if deletion is already in progress. May trigger a profile
-  // load to ensure polite cleanup of profile-specific data (e.g., Sync).
+  // Schedules the profile at `profile_dir` to be deleted. Multiple profiles
+  // must be enabled, and on Android `profile_dir` must not be the initial
+  // ('Default') profile. Silently exits without invoking `callback` if the
+  // profile is not registered in `ProfileAttributesStorage`, deletion is
+  // already in progress, or deletion is cancelled via `OnBeforeUnload`.
+  //
+  // If the current last-used profile cannot remain active (e.g., it is the
+  // profile being deleted, unloaded, or already marked for deletion), selects
+  // or loads a fallback active profile (creating a new profile on desktop if
+  // deleting the last profile, or falling back to the initial ('Default')
+  // profile on Android when no other open window remains) and invokes
+  // `callback` with it. Otherwise `callback` is not invoked. May trigger a
+  // profile load to ensure polite cleanup of profile-specific data (e.g.,
+  // Sync).
   void MaybeScheduleProfileForDeletion(
       const base::FilePath& profile_dir,
       ProfileLoadedCallback callback,

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -907,8 +909,8 @@ TEST_F(ProfileManagerTest, ConcurrentCreationAsyncAndSync) {
   EXPECT_EQ(profile, profile_created);
 }
 
-// Fixture for tests that call `ProfileManager::CreateMultiProfileAsync()`,
-// which requires `kAndroidMultiprofile` on Android.
+// Fixture for multi-profile tests (creation and deletion), which require
+// `kAndroidMultiprofile` on Android.
 // TODO(crbug.com/546299633): Remove this fixture and move these tests back to
 // `ProfileManagerTest` after `kAndroidMultiprofile` is launched.
 class ProfileManagerMultiProfileTest : public ProfileManagerTest {
@@ -1870,7 +1872,207 @@ void ProfileManagerAndroidStartupDataTest::TestCreateInitialProfileImpl(
             profile->GetPath());
   EXPECT_EQ(profile, ProfileManager::GetActiveUserProfile());
 }
+
+namespace {
+
+class TestProfileDeletionObserver : public ProfileManagerObserver {
+ public:
+  explicit TestProfileDeletionObserver(ProfileManager* manager) {
+    observation_.Observe(manager);
+  }
+
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override {
+    marked_for_deletion_profiles_.push_back(profile);
+  }
+
+  const std::vector<raw_ptr<Profile>>& marked_for_deletion_profiles() const {
+    return marked_for_deletion_profiles_;
+  }
+
+ private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver> observation_{
+      this};
+  std::vector<raw_ptr<Profile>> marked_for_deletion_profiles_;
+};
+
+}  // namespace
+
+TEST_F(ProfileManagerMultiProfileTest, DeleteLoadedSecondaryProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  Profile* default_profile = profile_manager->GetProfile(
+      temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile));
+  const base::FilePath secondary_path =
+      temp_dir_.GetPath().AppendASCII("Profile 1");
+  Profile* secondary_profile = profile_manager->GetProfile(secondary_path);
+  ASSERT_TRUE(default_profile);
+  ASSERT_TRUE(secondary_profile);
+
+  profile_manager->SetProfileAsLastUsed(secondary_profile);
+  TestProfileDeletionObserver deletion_observer(profile_manager);
+  base::MockCallback<DeleteProfileHelper::ProfileLoadedCallback> callback;
+  EXPECT_CALL(callback, Run(default_profile));
+
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      secondary_path, callback.Get(), ProfileMetrics::DELETE_PROFILE_SETTINGS);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_THAT(deletion_observer.marked_for_deletion_profiles(),
+              testing::ElementsAre(secondary_profile));
+  EXPECT_EQ(nullptr, storage.GetProfileAttributesWithPath(secondary_path));
+  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(secondary_path));
+  EXPECT_EQ(chrome::kInitialProfile,
+            local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ(chrome::kInitialProfile,
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
+  EXPECT_TRUE(
+      std::ranges::contains(local_state->GetList(prefs::kProfilesDeleted),
+                            base::FilePathToValue(secondary_path.BaseName())));
+}
+
+TEST_F(ProfileManagerMultiProfileTest,
+       DeleteInactiveSecondaryProfileKeepsActiveProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  // Keep a non-Default secondary profile active so we distinguish preserving
+  // the current active profile from falling back to 'Default'.
+  const base::FilePath active_path =
+      temp_dir_.GetPath().AppendASCII("Profile 2");
+  const base::FilePath inactive_path =
+      temp_dir_.GetPath().AppendASCII("Profile 1");
+  Profile* active_profile = profile_manager->GetProfile(active_path);
+  ASSERT_TRUE(active_profile);
+  ASSERT_TRUE(profile_manager->GetProfile(inactive_path));
+  profile_manager->SetProfileAsLastUsed(active_profile);
+
+  base::MockCallback<DeleteProfileHelper::ProfileLoadedCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      inactive_path, callback.Get(), ProfileMetrics::DELETE_PROFILE_SETTINGS);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(nullptr, storage.GetProfileAttributesWithPath(inactive_path));
+  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(inactive_path));
+  EXPECT_EQ("Profile 2", local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ("Profile 2",
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
+}
+
+TEST_F(ProfileManagerMultiProfileTest, DeleteActiveProfileFallsBackToDefault) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Register an unloaded secondary profile in storage without registering
+  // 'Default' so only Android's explicit 'Default' fallback can choose it.
+  const base::FilePath default_path =
+      temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile);
+  const base::FilePath secondary_path =
+      temp_dir_.GetPath().AppendASCII("Profile 2");
+  ProfileAttributesInitParams secondary_params;
+  secondary_params.profile_path = secondary_path;
+  secondary_params.profile_name = u"Profile 2";
+  storage.AddProfile(std::move(secondary_params));
+
+  const base::FilePath active_path =
+      temp_dir_.GetPath().AppendASCII("Profile 1");
+  Profile* active_profile = profile_manager->GetProfile(active_path);
+  ASSERT_TRUE(active_profile);
+  profile_manager->SetProfileAsLastUsed(active_profile);
+
+  base::MockCallback<DeleteProfileHelper::ProfileLoadedCallback> callback;
+  EXPECT_CALL(callback,
+              Run(testing::Property(&Profile::GetPath, default_path)));
+
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      active_path, callback.Get(), ProfileMetrics::DELETE_PROFILE_SETTINGS);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(nullptr, storage.GetProfileAttributesWithPath(active_path));
+  EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(secondary_path));
+}
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(ProfileManagerMultiProfileTest, RejectDeletingGuestOrUnstoredProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::HistogramTester histogram_tester;
+  auto expect_rejected = [&](const base::FilePath& path) {
+    base::MockCallback<DeleteProfileHelper::ProfileLoadedCallback> callback;
+    EXPECT_CALL(callback, Run).Times(0);
+    profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+        path, callback.Get(), ProfileMetrics::DELETE_PROFILE_SETTINGS);
+    content::RunAllTasksUntilIdle();
+    EXPECT_FALSE(IsProfileDirectoryMarkedForDeletion(path));
+    EXPECT_TRUE(base::DirectoryExists(path));
+  };
+
+  // Reject deleting the Guest profile path.
+  const base::FilePath guest_path = ProfileManager::GetGuestProfilePath();
+  ASSERT_TRUE(base::CreateDirectory(guest_path));
+  expect_rejected(guest_path);
+
+  // Reject deleting a loaded profile without a storage entry.
+  const base::FilePath unstored_path =
+      temp_dir_.GetPath().AppendASCII("Profile 3");
+  ASSERT_TRUE(base::CreateDirectory(unstored_path));
+  TestingProfile::Builder builder;
+  builder.SetPath(unstored_path);
+  profile_manager->RegisterTestingProfile(builder.Build(),
+                                          /*add_to_storage=*/false);
+  expect_rejected(unstored_path);
+  histogram_tester.ExpectTotalCount("Profile.DeleteProfileAction", 0);
+
+  // Rejection must not leave a stale SCHEDULING entry that blocks later
+  // deletion once the profile is registered in storage.
+  ProfileAttributesInitParams params;
+  params.profile_path = unstored_path;
+  params.profile_name = u"Profile 3";
+  profile_manager->GetProfileAttributesStorage().AddProfile(std::move(params));
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      unstored_path, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_SETTINGS);
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(unstored_path));
+}
+
+TEST_F(ProfileManagerMultiProfileTest,
+       EnsureActiveProfileSkipsLastUsedProfileMarkedForDeletion) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  Profile* default_profile = profile_manager->GetProfile(
+      temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile));
+  const base::FilePath path_1 = temp_dir_.GetPath().AppendASCII("Profile 1");
+  const base::FilePath path_2 = temp_dir_.GetPath().AppendASCII("Profile 2");
+  Profile* profile_1 = profile_manager->GetProfile(path_1);
+  ASSERT_TRUE(default_profile);
+  ASSERT_TRUE(profile_1);
+  ASSERT_TRUE(profile_manager->GetProfile(path_2));
+
+  profile_manager->SetProfileAsLastUsed(profile_1);
+  MarkProfileDirectoryForDeletion(path_1);
+
+  base::MockCallback<DeleteProfileHelper::ProfileLoadedCallback> callback;
+  EXPECT_CALL(callback, Run(default_profile));
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      path_2, callback.Get(), ProfileMetrics::DELETE_PROFILE_SETTINGS);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(chrome::kInitialProfile,
+            local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(path_2));
+}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // There's no Browser object on Android and there's no multi-profiles on Chrome.
@@ -2699,7 +2901,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(params),
                          &ParamsToTestSuffix);
 
-TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
+TEST_F(ProfileManagerMultiProfileTest, ProfileCountRecordedAtProfileInit) {
   using base::Bucket;
   using base::BucketsAre;
 
@@ -2715,6 +2917,9 @@ TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
 
   Profile* profile_2 = profile_manager->GetProfile(
       dest_path.Append(FILE_PATH_LITERAL("Profile 2")));
+  // Make `profile_2` last-used so deleting `path_1` keeps `profile_2` active
+  // instead of falling back to creating 'Default' on Android.
+  profile_manager->SetProfileAsLastUsed(profile_2);
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
               BucketsAre(Bucket(1, 1), Bucket(2, 1)));
@@ -2724,7 +2929,6 @@ TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
               BucketsAre(Bucket(1, 1), Bucket(2, 1)));
 
-#if !BUILDFLAG(IS_ANDROID)
   // Delete one profile to decrement the count.
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
       path_1, base::DoNothing(), ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
@@ -2733,7 +2937,6 @@ TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   profile_manager->GetProfile(dest_path.Append(FILE_PATH_LITERAL("Profile 3")));
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
               BucketsAre(Bucket(1, 1), Bucket(2, 2)));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
