@@ -22,6 +22,11 @@
 
 // Constraint for the top of the location bar.
 @property(nonatomic, strong) NSLayoutConstraint* locationBarTopConstraint;
+// Whether the control buttons are hidden, e.g. during omnibox focus.
+@property(nonatomic, assign) BOOL controlButtonsHidden;
+// Whether the button row is hidden and takes no height, e.g. while the vertical
+// sidebar (iPhone Duo folded) shows the buttons.
+@property(nonatomic, assign) BOOL buttonRowHidden;
 
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(LegacyToolbarButtonFactory*)factory

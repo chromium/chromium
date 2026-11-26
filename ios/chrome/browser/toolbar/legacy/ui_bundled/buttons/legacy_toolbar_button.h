@@ -29,6 +29,10 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // Returns true if the LegacyToolbarButton should be hidden due to a current UI
 // state or WebState.
 @property(nonatomic, assign) BOOL hiddenInCurrentState;
+// Whether the LegacyToolbarButton is hidden regardless of its state and size
+// class, e.g. while the vertical sidebar shows its buttons. A force-hidden
+// button doesn't take its layout guide, and releases it if it had it.
+@property(nonatomic, assign) BOOL forceHidden;
 // Name of the layout guide this button should be constrained to, if not nil.
 // The constraints to the layout guide are only valid when the button is
 // displayed. Also, they can be dropped/changed upon size class changes or

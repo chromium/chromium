@@ -136,6 +136,23 @@ UIView* SecondaryToolbarLocationBarContainerView(
   _contentView.backgroundColor = nil;
 }
 
+- (void)setControlButtonsHidden:(BOOL)controlButtonsHidden {
+  if (_controlButtonsHidden == controlButtonsHidden) {
+    return;
+  }
+  _controlButtonsHidden = controlButtonsHidden;
+  [self updateButtonStackViewVisibility];
+}
+
+- (void)setButtonRowHidden:(BOOL)buttonRowHidden {
+  if (_buttonRowHidden == buttonRowHidden) {
+    return;
+  }
+  _buttonRowHidden = buttonRowHidden;
+  [self updateButtonStackViewVisibility];
+  [self invalidateIntrinsicContentSize];
+}
+
 - (void)makeOpaque {
   _visualEffectView.hidden = YES;
   _contentView.backgroundColor =
@@ -145,8 +162,9 @@ UIView* SecondaryToolbarLocationBarContainerView(
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
-  return CGSizeMake(UIViewNoIntrinsicMetric,
-                    kSecondaryToolbarWithoutOmniboxHeight);
+  return CGSizeMake(
+      UIViewNoIntrinsicMetric,
+      _buttonRowHidden ? 0 : kSecondaryToolbarWithoutOmniboxHeight);
 }
 
 #pragma mark - Setup
@@ -367,6 +385,12 @@ UIView* SecondaryToolbarLocationBarContainerView(
 }
 
 #pragma mark - Private
+
+// Hides `buttonStackView` when either the control buttons or the whole button
+// row are hidden.
+- (void)updateButtonStackViewVisibility {
+  self.buttonStackView.hidden = _controlButtonsHidden || _buttonRowHidden;
+}
 
 /// Updates `buttonStackView.topAnchor` constraints when adding/removing the
 /// location bar.

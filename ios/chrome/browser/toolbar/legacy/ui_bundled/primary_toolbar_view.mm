@@ -329,6 +329,14 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   [self setNeedsUpdateConstraints];
 }
 
+- (void)setLocationBarSpansFullWidth:(BOOL)locationBarSpansFullWidth {
+  if (_locationBarSpansFullWidth == locationBarSpansFullWidth) {
+    return;
+  }
+  _locationBarSpansFullWidth = locationBarSpansFullWidth;
+  [self setNeedsUpdateConstraints];
+}
+
 #pragma mark - Properties
 
 - (void)updateConstraints {
@@ -339,7 +347,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   if (_expanded) {
     [NSLayoutConstraint activateConstraints:self.expandedConstraints];
   } else {
-    if (_splitToolbarMode) {
+    if (_splitToolbarMode || _locationBarSpansFullWidth) {
       [NSLayoutConstraint
           activateConstraints:self.contractedNoMarginConstraints];
     } else {

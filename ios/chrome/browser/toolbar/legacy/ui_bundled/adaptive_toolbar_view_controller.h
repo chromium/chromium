@@ -83,6 +83,12 @@
 // Highlights the tab grid button if `highlight` is YES, resets to original
 // color if NO.
 - (void)IPHHighlightTabGridButton:(BOOL)highlight;
+// Hides the control buttons while the vertical sidebar (iPhone Duo folded)
+// shows them, or lets them follow their usual visibility rules again. Hidden
+// buttons release their named layout guides and don't take them back, so that
+// the sidebar's buttons can own them. The view must be loaded: the toolbars are
+// in the browser view by the time the sidebar shows.
+- (void)setControlButtonsHiddenForVerticalSidebar:(BOOL)hidden;
 // Used for any additional clean up on shutdown.
 - (void)disconnect;
 

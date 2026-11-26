@@ -115,6 +115,21 @@ const CGFloat kButtonImageInset = 3;
   [self setHiddenForCurrentStateAndSizeClass];
 }
 
+- (void)setForceHidden:(BOOL)forceHidden {
+  if (_forceHidden == forceHidden) {
+    return;
+  }
+  _forceHidden = forceHidden;
+  [self setHiddenForCurrentStateAndSizeClass];
+  // A force-hidden button may have taken its layout guide while it was shown
+  // (e.g. the toolbar's share button, shown in compact height before the
+  // vertical sidebar appears). Don't leave the guide on a hidden button.
+  if (forceHidden && self.guideName &&
+      [self.layoutGuideCenter referencedViewUnderName:self.guideName] == self) {
+    [self.layoutGuideCenter referenceView:nil underName:self.guideName];
+  }
+}
+
 - (void)setIphHighlighted:(BOOL)iphHighlighted {
   if (iphHighlighted == _iphHighlighted) {
     return;
@@ -225,10 +240,12 @@ const CGFloat kButtonImageInset = 3;
   _spotlightView = spotlightView;
 }
 
-// Checks if the button should be visible based on its hiddenInCurrentSizeClass
-// and hiddenInCurrentState properties, then updates its visibility accordingly.
+// Checks if the button should be visible based on its `forceHidden`,
+// `hiddenInCurrentState` and `hiddenInCurrentSizeClass` properties, then
+// updates its visibility accordingly.
 - (void)setHiddenForCurrentStateAndSizeClass {
-  self.hidden = self.hiddenInCurrentState || self.hiddenInCurrentSizeClass;
+  self.hidden = self.forceHidden || self.hiddenInCurrentState ||
+                self.hiddenInCurrentSizeClass;
 
   [self checkNamedGuide];
   [self checkImageVisibility];

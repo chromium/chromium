@@ -69,6 +69,8 @@ source_set("unit_tests") {
     ":buttons",
     ":constants",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/buttons_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
@@ -218,4 +220,45 @@ TEST_F(ToolbarButtonTest,
   UIColor* resolved_dark =
       [full_visibility_first resolvedColorWithTraitCollection:dark_traits];
   EXPECT_FALSE([resolved_light isEqual:resolved_dark]);
+}
+
+// Tests that force-hiding a button doesn't release its layout guide when
+// another view owns it.
+TEST_F(ToolbarButtonTest, ForceHiddenKeepsOtherViewsGuide) {
+  LayoutGuideCenter* layout_guide_center = [[LayoutGuideCenter alloc] init];
+  toolbar_button_.layoutGuideCenter = layout_guide_center;
+  toolbar_button_.guideName = kToolsMenuGuide;
+  // Shown, the button takes its guide, then another view takes it.
+  toolbar_button_.hiddenInCurrentSizeClass = NO;
+  toolbar_button_.hiddenInCurrentState = NO;
+  ASSERT_EQ(toolbar_button_,
+            [layout_guide_center referencedViewUnderName:kToolsMenuGuide]);
+  UIView* other_view = [[UIView alloc] init];
+  [layout_guide_center referenceView:other_view underName:kToolsMenuGuide];
+
+  toolbar_button_.forceHidden = YES;
+  EXPECT_TRUE(toolbar_button_.hidden);
+  EXPECT_EQ(other_view,
+            [layout_guide_center referencedViewUnderName:kToolsMenuGuide]);
+}
+
+// Tests that a button stays hidden, without taking its layout guide, when it's
+// no longer force-hidden but still hidden for its state or size class.
+TEST_F(ToolbarButtonTest, UnforcedButtonStaysHiddenForStateOrSizeClass) {
+  LayoutGuideCenter* layout_guide_center = [[LayoutGuideCenter alloc] init];
+  toolbar_button_.layoutGuideCenter = layout_guide_center;
+  toolbar_button_.guideName = kToolsMenuGuide;
+
+  toolbar_button_.forceHidden = YES;
+  toolbar_button_.hiddenInCurrentState = YES;
+  toolbar_button_.forceHidden = NO;
+  EXPECT_TRUE(toolbar_button_.hidden);
+  EXPECT_FALSE([layout_guide_center referencedViewUnderName:kToolsMenuGuide]);
+
+  toolbar_button_.forceHidden = YES;
+  toolbar_button_.hiddenInCurrentState = NO;
+  toolbar_button_.hiddenInCurrentSizeClass = YES;
+  toolbar_button_.forceHidden = NO;
+  EXPECT_TRUE(toolbar_button_.hidden);
+  EXPECT_FALSE([layout_guide_center referencedViewUnderName:kToolsMenuGuide]);
 }

@@ -204,6 +204,12 @@ const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
   return self.view.shareButton;
 }
 
+- (void)setControlButtonsHiddenForVerticalSidebar:(BOOL)hidden {
+  [super setControlButtonsHiddenForVerticalSidebar:hidden];
+  // The location bar is left on its own when the toolbar isn't split.
+  self.view.locationBarSpansFullWidth = hidden;
+}
+
 #pragma mark - Property accessors
 
 - (void)setIsNTP:(BOOL)isNTP {

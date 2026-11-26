@@ -38,6 +38,11 @@ enum class ToolbarCancelButtonStyle;
 // Whether the expanded version is in place.
 @property(nonatomic, assign) BOOL expanded;
 @property(nonatomic, assign) BOOL splitToolbarMode;
+// Whether the location bar spans the toolbar's width, as in split toolbar
+// mode, rather than sitting between the button stacks. Set while a vertical
+// sidebar (iPhone Duo folded) shows the control buttons, whose stacks are
+// then empty.
+@property(nonatomic, assign) BOOL locationBarSpansFullWidth;
 
 // StackView containing the leading buttons (relative to the location bar).
 // It should only contain ToolbarButtons.

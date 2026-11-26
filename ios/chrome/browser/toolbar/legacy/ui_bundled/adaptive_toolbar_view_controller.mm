@@ -142,6 +142,15 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self.view.tabGridButton layoutIfNeeded];
 }
 
+- (void)setControlButtonsHiddenForVerticalSidebar:(BOOL)hidden {
+  // Loading the view here would make the new buttons take the named layout
+  // guides from the sidebar's buttons, then drop them.
+  CHECK(self.isViewLoaded);
+  for (LegacyToolbarButton* button in self.view.allButtons) {
+    button.forceHidden = hidden;
+  }
+}
+
 - (void)disconnect {
   for (LegacyToolbarButton* button in self.view.allButtons) {
     // Ensures that unrecognized command selectors aren't called and context

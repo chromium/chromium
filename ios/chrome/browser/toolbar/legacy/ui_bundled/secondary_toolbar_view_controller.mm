@@ -67,6 +67,17 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)setControlButtonsHiddenForVerticalSidebar:(BOOL)hidden {
+  [super setControlButtonsHiddenForVerticalSidebar:hidden];
+  if (self.view.buttonRowHidden == hidden) {
+    return;
+  }
+  // The whole button row goes away, so that the toolbar takes no height
+  // without the omnibox.
+  self.view.buttonRowHidden = hidden;
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
 #pragma mark - Setters
 
 - (void)setLocationIndicatorActive:(BOOL)locationIndicatorActive {
@@ -331,12 +342,12 @@
 
 - (void)showControlButtons {
   self.view.progressBar.alpha = 1;
-  self.view.buttonStackView.hidden = NO;
+  self.view.controlButtonsHidden = NO;
 }
 
 - (void)hideControlButtons {
   self.view.progressBar.alpha = 0;
-  self.view.buttonStackView.hidden = YES;
+  self.view.controlButtonsHidden = YES;
 }
 
 - (void)setLocationBarHeightToMatchFakeOmnibox {
