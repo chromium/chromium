@@ -19689,7 +19689,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Popup.Page" singular="True">
-  <owner>justinmiron@google.com</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>avi@chromium.org</owner>
   <summary>
     Page level pop-up statistics.
   </summary>
