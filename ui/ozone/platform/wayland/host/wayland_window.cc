@@ -242,7 +242,7 @@ void WaylandWindow::ActivateBubble(WaylandBubble* window) {
   CHECK(!window || std::ranges::contains(child_bubbles_, window));
   CHECK(!window || (window->AsWaylandBubble() &&
                     window->AsWaylandBubble()->activatable()));
-  if (active_bubble_ == window) {
+  if (active_bubble_ == window || (window && !CanActivateBubble())) {
     return;
   }
 
@@ -272,10 +272,14 @@ void WaylandWindow::ActivateBubble(WaylandBubble* window) {
     if (active_bubble_) {
       active_bubble_->delegate()->OnActivationChanged(true);
     }
-  } else {
+  } else if (CanActivateBubble()) {
     auto weak_this = AsWeakPtr();
     delegate()->OnActivationChanged(IsActive());
   }
+}
+
+bool WaylandWindow::CanActivateBubble() const {
+  return true;
 }
 
 void WaylandWindow::SetWindowScale(float new_scale) {

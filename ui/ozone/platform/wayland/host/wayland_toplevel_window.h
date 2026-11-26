@@ -181,6 +181,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                              const PlatformWindowDelegate::State& new_state,
                              int64_t viz_seq,
                              bool from_client) override;
+  bool CanActivateBubble() const override;
 
   void UpdateSystemModal();
 
@@ -297,6 +298,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
   bool is_xdg_active_ = false;
   bool is_suspended_ = false;
+
+  // Set while Hide() hides children; rejects bubble activation meanwhile.
+  bool hiding_ = false;
 
   // Id of the chromium app passed through
   // PlatformWindowInitProperties::wm_class_name. This is used by Wayland

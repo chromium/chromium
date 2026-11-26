@@ -180,14 +180,35 @@ void WaylandToplevelWindow::Hide() {
   }
 
   auto weak_this = AsWeakPtr();
+  // Reject bubble activation while hiding so that hiding children doesn't
+  // reactivate a bubble or this toplevel. Cleared right before `xdg_toplevel_`
+  // is reset, which every early return below with `this` alive implies.
+  hiding_ = true;
+  ActivateBubble(nullptr);
+  if (!weak_this || !xdg_toplevel_) {
+    return;
+  }
   HideChildPopups();
   if (!weak_this || !xdg_toplevel_) {
     return;
   }
   set_child_popup(nullptr);
-  for (auto bubble : child_bubbles()) {
-    bubble->Hide();
+  // Bubbles may have active bubbles of their own, so hiding one may still run
+  // delegate code that adds or removes bubbles.
+  std::vector<base::WeakPtr<WaylandWindow>> bubbles;
+  bubbles.reserve(child_bubbles().size());
+  for (WaylandBubble* bubble : child_bubbles()) {
+    bubbles.push_back(bubble->AsWeakPtr());
   }
+  for (const auto& bubble : bubbles) {
+    if (bubble) {
+      bubble->Hide();
+    }
+    if (!weak_this || !xdg_toplevel_) {
+      return;
+    }
+  }
+  hiding_ = false;
 
   // Note that the xdg_toplevel object should be destroyed before we touch
   // anything else in order to provide the compositor a good reference point
@@ -1294,6 +1315,10 @@ void WaylandToplevelWindow::OnDecorationModeChanged() {
   } else {
     xdg_toplevel_->SetDecoration(XdgToplevel::DecorationMode::kClientSide);
   }
+}
+
+bool WaylandToplevelWindow::CanActivateBubble() const {
+  return !hiding_;
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {
