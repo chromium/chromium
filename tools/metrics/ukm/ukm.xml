@@ -1046,7 +1046,6 @@ be describing additional metrics about the same event.
 
 <event name="AdPageLoadCustomSampling3" singular="True">
   <owner>yaoxia@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Recorded when the page is being destroyed/navigated away or when the app
@@ -1098,7 +1097,6 @@ be describing additional metrics about the same event.
 
 <event name="AdPageLoadCustomSampling4" singular="True">
   <owner>yaoxia@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Recorded when the page is being destroyed/navigated away or when the app
@@ -3144,7 +3142,6 @@ be describing additional metrics about the same event.
 
 <event name="Autofill.KeyMetrics">
   <owner>battre@chromium.org</owner>
-  <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
   <summary>
     These metrics are a clone of Autofill's UMA key metrics to measure Autofill
@@ -4336,7 +4333,6 @@ be describing additional metrics about the same event.
 
 <event name="BackgroundFetch">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     A BackgroundFetch event is logged before a background fetch is started from
@@ -4385,7 +4381,6 @@ be describing additional metrics about the same event.
 
 <event name="BackgroundFetchDeletingRegistration">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     A BackgroundFetchDeletingRegistration event is logged when a background
@@ -4400,7 +4395,6 @@ be describing additional metrics about the same event.
 
 <event name="BackgroundSyncCompleted">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Logged when a Background Sync one-shot registration is completed.
@@ -4425,7 +4419,6 @@ be describing additional metrics about the same event.
 
 <event name="BackgroundSyncRegistered">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Logged when a one-shot Background Sync registration is created.
@@ -7004,11 +6997,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ClientRenderingAPI">
-  <owner>aaronhk@chromium.org</owner>
   <owner>cwallez@chromium.org</owner>
-  <owner>enga@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <owner>jdarpinian@chromium.org</owner>
   <owner>kainino@chromium.org</owner>
   <owner>kbr@chromium.org</owner>
   <owner>shrekshao@google.com</owner>
@@ -7465,7 +7454,6 @@ be describing additional metrics about the same event.
 
 <event name="Compose.SessionProgress">
   <owner>chrome-compose-frontend@google.com</owner>
-  <owner>petewil@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
   <summary>
     Reported at the end of every compose session. There may be more than one
@@ -15327,7 +15315,6 @@ be describing additional metrics about the same event.
 
 <event name="NavigationPredictorPreloadOnHover">
   <owner>ryansturm@chromium.org</owner>
-  <owner>domenic@chromium.org</owner>
   <owner>isaboori@google.com</owner>
   <summary>
     This event records required data to assess and fine-tune the preloading
@@ -16440,7 +16427,6 @@ be describing additional metrics about the same event.
 
 <event name="OptimizationGuide.AnnotatedPageContent">
   <owner>chrome-intelligence-core@google.com</owner>
-  <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>
@@ -16485,7 +16471,6 @@ be describing additional metrics about the same event.
 
 <event name="OptimizationGuide.AnnotatedPdfContent">
   <owner>chrome-intelligence-core@google.com</owner>
-  <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Metrics on the PDF pages. Recorded only for PDF pages, if a PDF renderer is
@@ -17930,7 +17915,6 @@ be describing additional metrics about the same event.
 <event name="PaintPreviewCapture" singular="True">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
   <owner>vollick@chromium.org</owner>
   <summary>
     Metrics related to the performance of capturing Paint Previews.
@@ -18782,7 +18766,6 @@ be describing additional metrics about the same event.
 <event name="PerformanceAPI.LongTask">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
   <summary>
     This event is associated with the LongTask Web Platform API. The metrics are
     recorded when a long task is detected and reported to the page. For more
@@ -18884,7 +18867,6 @@ be describing additional metrics about the same event.
 <event name="PerformanceAPI.Memory">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
   <summary>
     This event is associated with the performance.measureUserAgentSpecificMemory
     API. The metrics are recorded when the memory measurement is reported to the
@@ -18943,7 +18925,6 @@ be describing additional metrics about the same event.
 <event name="PerformanceAPI.Memory.Legacy">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
   <summary>
     This event is associated with the performance.memory API. The metrics are
     recorded when the memory measurement is reported to the page. All values
@@ -19123,7 +19104,6 @@ be describing additional metrics about the same event.
 
 <event name="PeriodicBackgroundSyncEventCompleted">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     A website can register to periodically update itself in the background using
@@ -19165,7 +19145,6 @@ be describing additional metrics about the same event.
 
 <event name="PeriodicBackgroundSyncRegistered">
   <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     A website can register to periodically update itself in the background using
@@ -19517,7 +19496,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Permissions.EmbeddedPromptAction">
-  <owner>hkamila@chromium.org</owner>
   <owner>andypaicu@chromium.org</owner>
   <owner>permissions-dev@chromium.org</owner>
   <summary>
@@ -21146,7 +21124,6 @@ be describing additional metrics about the same event.
 <event name="Security.SafetyTip">
   <owner>jdeblasio@chromium.org</owner>
   <owner>enamelites@google.com</owner>
-  <owner>beggs@google.com</owner>
   <summary>
     Collected when any safety tip heuristic triggers, regardless of whether the
     Safety Tip UI is shown.
@@ -22785,7 +22762,6 @@ be describing additional metrics about the same event.
 <event name="SMSReceiver">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <summary>
     Records performance metrics for SMSReceiver API.
@@ -23415,7 +23391,6 @@ be describing additional metrics about the same event.
 <event name="TouchToFill.Shown">
   <owner>kazinova@google.com</owner>
   <owner>friedrichh@chromium.org</owner>
-  <owner>kolos@chromium.org</owner>
   <summary>
     Recorded when a user takes an action on the Touch To Fill sheet.
   </summary>
