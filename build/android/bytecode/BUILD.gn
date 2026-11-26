@@ -20,7 +20,6 @@ java_library("bytecode_rewriter_java") {
     "java/org/chromium/bytecode/EmptyOverrideGeneratorClassAdapter.java",
     "java/org/chromium/bytecode/MethodCheckerClassAdapter.java",
     "java/org/chromium/bytecode/MethodDescription.java",
-    "java/org/chromium/bytecode/ParentMethodCheckerClassAdapter.java",
     "java/org/chromium/bytecode/SystemLoadLibraryRemover.java",
     "java/org/chromium/bytecode/TraceEventAdder.java",
     "java/org/chromium/bytecode/TraceEventAdderClassAdapter.java",

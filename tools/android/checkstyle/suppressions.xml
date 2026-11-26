@@ -23,6 +23,8 @@
   <!-- Third-party libraries, test infrastructure, build, and tooling can use
        System#exit freely. Feel free to add other test directories here. -->
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
+  <!-- Host-only bytecode rewriter tools do not run on Android. -->
+  <suppress id="ConcurrentHashMapCheck" files="src/build/android/bytecode/"/>
   <!-- Generated file has consecutive underscores in constant names. -->
   <suppress id="ConstantNameCheck" files="CronetStatsLog.java"/>
   <suppress id="FullscreenDialogs" files="Test(Utils?)?\.java"/>

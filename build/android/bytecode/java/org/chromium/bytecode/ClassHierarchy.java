@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -55,6 +57,8 @@ public class ClassHierarchy implements AutoCloseable {
             new ClassInfo(/* isInterface= */ false, null, null);
 
     private final List<File> mJarFiles = new ArrayList<>();
+    // Guarded by synchronized (mOpenZips), including reads from returned ZipFiles so LRU eviction
+    // cannot close a ZipFile while another worker thread reads from it.
     private final Map<Integer, ZipFile> mOpenZips =
             new LinkedHashMap<>(
                     /* initialCapacity= */ 32, /* loadFactor= */ 0.75f, /* accessOrder= */ true) {
@@ -67,12 +71,15 @@ public class ClassHierarchy implements AutoCloseable {
                     return false;
                 }
             };
-    private final Map<String, ClassInfo> mClassInfoCache = new HashMap<>();
+    private final Map<String, ClassInfo> mClassInfoCache = new ConcurrentHashMap<>();
+    // Tracks unindexed lookups across worker threads until mEntryToIndex is built.
+    private final AtomicInteger mLookupCount = new AtomicInteger();
 
-    private Map<String, Integer> mEntryToIndex;
-    private int mLookupCount;
+    // Read lock-free by worker threads; populated and published once under the `this` monitor.
+    private volatile Map<String, Integer> mEntryToIndex;
+    // Read lock-free by worker threads; populated and published once under the `this` monitor.
     // Null until initialized; empty if jrt:/ is unavailable; otherwise [java.base, ...others].
-    private List<Path> mJrtModules;
+    private volatile List<Path> mJrtModules;
 
     /** Parsed CLI arguments separating --classpath entries from positional arguments. */
     public static final class ParsedArgs {
@@ -165,15 +172,15 @@ public class ClassHierarchy implements AutoCloseable {
     public byte[] getClassBytes(String internalName) {
         String entryName = internalName + CLASS_SUFFIX;
         // Index before a second linear scan when jars exceed MAX_OPEN_ZIPS to avoid LRU thrashing.
-        if (mEntryToIndex == null
-                && mJarFiles.size() > MIN_JARS_TO_INDEX
-                && (mLookupCount >= INDEX_THRESHOLD
-                        || (mLookupCount >= 1 && mJarFiles.size() > MAX_OPEN_ZIPS))) {
-            buildIndex();
+        Map<String, Integer> entryToIndex = mEntryToIndex;
+        if (entryToIndex == null && mJarFiles.size() > MIN_JARS_TO_INDEX) {
+            int lookups = mLookupCount.getAndIncrement();
+            if (lookups >= INDEX_THRESHOLD || (lookups >= 1 && mJarFiles.size() > MAX_OPEN_ZIPS)) {
+                entryToIndex = getOrBuildIndex();
+            }
         }
-        mLookupCount++;
 
-        if (mEntryToIndex == null) {
+        if (entryToIndex == null) {
             for (int i = 0; i < mJarFiles.size(); i++) {
                 byte[] bytes = readFromJar(i, entryName);
                 if (bytes != null) {
@@ -181,7 +188,7 @@ public class ClassHierarchy implements AutoCloseable {
                 }
             }
         } else {
-            Integer idx = mEntryToIndex.get(entryName);
+            Integer idx = entryToIndex.get(entryName);
             if (idx != null) {
                 byte[] bytes = readFromJar(idx, entryName);
                 if (bytes != null) {
@@ -200,7 +207,7 @@ public class ClassHierarchy implements AutoCloseable {
         }
         byte[] bytes = getClassBytes(internalName);
         if (bytes == null) {
-            mClassInfoCache.put(internalName, NOT_FOUND);
+            mClassInfoCache.putIfAbsent(internalName, NOT_FOUND);
             return null;
         }
         ClassInfo info = classInfoFromReader(new ClassReader(bytes));
@@ -238,7 +245,7 @@ public class ClassHierarchy implements AutoCloseable {
                 return false;
             }
             String cur = subInfo.superName;
-            while (cur != null) {
+            while (cur != null && !OBJECT_INTERNAL_NAME.equals(cur)) {
                 if (cur.equals(superType)) {
                     return true;
                 }
@@ -277,7 +284,9 @@ public class ClassHierarchy implements AutoCloseable {
                 }
             }
             String superName = current.superName;
-            if (superName != null && visited.add(superName)) {
+            if (superName != null
+                    && !OBJECT_INTERNAL_NAME.equals(superName)
+                    && visited.add(superName)) {
                 ClassInfo parentInfo = getClassInfo(superName);
                 if (parentInfo != null) {
                     queue.add(parentInfo);
@@ -367,10 +376,12 @@ public class ClassHierarchy implements AutoCloseable {
 
     @Override
     public void close() {
-        for (ZipFile zipFile : mOpenZips.values()) {
-            closeQuietly(zipFile);
+        synchronized (mOpenZips) {
+            for (ZipFile zipFile : mOpenZips.values()) {
+                closeQuietly(zipFile);
+            }
+            mOpenZips.clear();
         }
-        mOpenZips.clear();
     }
 
     private static ClassInfo classInfoFromReader(ClassReader reader) {
@@ -380,20 +391,14 @@ public class ClassHierarchy implements AutoCloseable {
                 reader.getInterfaces());
     }
 
-    private void buildIndex() {
-        Map<String, Integer> index = new HashMap<>();
+    private synchronized Map<String, Integer> getOrBuildIndex() {
+        Map<String, Integer> index = mEntryToIndex;
+        if (index != null) {
+            return index;
+        }
+        index = new HashMap<>();
         for (int i = 0; i < mJarFiles.size(); i++) {
-            ZipFile zf = mOpenZips.get(i);
-            boolean openedHere = false;
-            if (zf == null) {
-                try {
-                    zf = new ZipFile(mJarFiles.get(i));
-                    openedHere = true;
-                } catch (IOException e) {
-                    continue;
-                }
-            }
-            try {
+            try (ZipFile zf = new ZipFile(mJarFiles.get(i))) {
                 Enumeration<? extends ZipEntry> entries = zf.entries();
                 while (entries.hasMoreElements()) {
                     String name = entries.nextElement().getName();
@@ -401,28 +406,29 @@ public class ClassHierarchy implements AutoCloseable {
                         index.putIfAbsent(name, i);
                     }
                 }
-            } finally {
-                if (openedHere) {
-                    closeQuietly(zf);
-                }
+            } catch (IOException e) {
+                // Ignore unreadable jars.
             }
         }
         mEntryToIndex = index;
+        return index;
     }
 
     private byte[] readFromJar(int index, String entryName) {
-        ZipFile zf = getZipFile(index, mJarFiles.get(index));
-        if (zf == null) {
-            return null;
-        }
-        ZipEntry entry = zf.getEntry(entryName);
-        if (entry == null) {
-            return null;
-        }
-        try (InputStream is = zf.getInputStream(entry)) {
-            return is.readAllBytes();
-        } catch (IOException e) {
-            return null;
+        synchronized (mOpenZips) {
+            ZipFile zf = getZipFile(index, mJarFiles.get(index));
+            if (zf == null) {
+                return null;
+            }
+            ZipEntry entry = zf.getEntry(entryName);
+            if (entry == null) {
+                return null;
+            }
+            try (InputStream is = zf.getInputStream(entry)) {
+                return is.readAllBytes();
+            } catch (IOException e) {
+                return null;
+            }
         }
     }
 
@@ -441,10 +447,11 @@ public class ClassHierarchy implements AutoCloseable {
     }
 
     private byte[] readFromJrt(String entryName) {
-        if (mJrtModules == null) {
-            mJrtModules = initJrtModules();
+        List<Path> jrtModules = mJrtModules;
+        if (jrtModules == null) {
+            jrtModules = getOrInitJrtModules();
         }
-        for (Path moduleDir : mJrtModules) {
+        for (Path moduleDir : jrtModules) {
             Path candidate = moduleDir.resolve(entryName);
             if (Files.isRegularFile(candidate)) {
                 try {
@@ -455,6 +462,15 @@ public class ClassHierarchy implements AutoCloseable {
             }
         }
         return null;
+    }
+
+    private synchronized List<Path> getOrInitJrtModules() {
+        List<Path> jrtModules = mJrtModules;
+        if (jrtModules == null) {
+            jrtModules = initJrtModules();
+            mJrtModules = jrtModules;
+        }
+        return jrtModules;
     }
 
     private static List<Path> initJrtModules() {

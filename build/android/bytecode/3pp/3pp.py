@@ -11,6 +11,7 @@ alongside bytecode_rewriter.jar for non-linux-x64 hosts.
 
 import os
 import pathlib
+import subprocess
 import sys
 import zipfile
 
@@ -99,6 +100,14 @@ public class PostTask {
 """,
 }
 
+_MISSING_PARENT_SOURCES = {
+    'org/chromium/sample/MissingParent.java': """\
+package org.chromium.sample;
+
+public class MissingParent {}
+""",
+}
+
 _SAMPLE_APP_SOURCES = {
     'org/chromium/sample/BaseSampleView.java': """\
 package org.chromium.sample;
@@ -106,6 +115,37 @@ package org.chromium.sample;
 import android.view.View;
 
 public class BaseSampleView extends View {}
+""",
+    'org/chromium/sample/OrphanListener.java': """\
+package org.chromium.sample;
+
+import android.animation.Animator;
+
+public class OrphanListener extends MissingParent
+    implements Animator.AnimatorListener {
+  @Override
+  public void onAnimationStart(Animator a) {}
+  @Override
+  public void onAnimationEnd(Animator a) {}
+}
+""",
+    'org/chromium/sample/RestrictedParentView.java': """\
+package org.chromium.sample;
+
+import android.animation.Animator;
+import android.view.View;
+
+public class RestrictedParentView extends View {
+  @Override
+  protected final void onMeasure(int width, int height) {}
+  private void scrollStep(int dx, int dy, int[] consumed) {}
+  void onAnimationStart(Animator a) {}
+}
+""",
+    'org/chromium/sample/RestrictedParentChildView.java': """\
+package org.chromium.sample;
+
+public class RestrictedParentChildView extends RestrictedParentView {}
 """,
     'org/chromium/sample/SampleView.java': """\
 package org.chromium.sample;
@@ -229,26 +269,43 @@ def _read_jar_contents(jar_path, *, require_stored=False):
     return contents
 
 
+def _compile_sources(
+    javac, work_dir, name, sources, *, extra_args=(), jar_name=None
+):
+    src_dir = os.path.join(work_dir, f'{name}_src')
+    classes_dir = os.path.join(work_dir, f'{name}_classes')
+    paths = _write_sources(src_dir, sources)
+    common.run_cmd(
+        [javac, '--release', '17', *extra_args, '-d', classes_dir] + paths
+    )
+    if jar_name is None:
+        return classes_dir
+    jar_path = os.path.join(work_dir, jar_name)
+    _zip_dir(classes_dir, jar_path)
+    return jar_path
+
+
 def _compile_sample_jars(javac, work_dir):
     """Builds stub SDK jar and sample app jar covering all three rewriters."""
-    stub_src_dir = os.path.join(work_dir, 'stub_src')
-    stub_classes_dir = os.path.join(work_dir, 'stub_classes')
-    stub_sources = _write_sources(stub_src_dir, _STUB_SOURCES)
-    common.run_cmd(
-        [javac, '--release', '17', '-d', stub_classes_dir] + stub_sources
+    stub_jar = _compile_sources(
+        javac, work_dir, 'stub', _STUB_SOURCES, jar_name='stub_sdk.jar'
     )
-    stub_jar = os.path.join(work_dir, 'stub_sdk.jar')
-    _zip_dir(stub_classes_dir, stub_jar)
-
-    app_src_dir = os.path.join(work_dir, 'app_src')
-    app_classes_dir = os.path.join(work_dir, 'app_classes')
-    app_sources = _write_sources(app_src_dir, _SAMPLE_APP_SOURCES)
-    common.run_cmd(
-        [javac, '--release', '17', '-g', '-cp', stub_jar, '-d', app_classes_dir]
-        + app_sources
+    # Compiled only for javac so OrphanListener's superclass is absent later.
+    missing_classes_dir = _compile_sources(
+        javac, work_dir, 'missing', _MISSING_PARENT_SOURCES
     )
-    app_jar = os.path.join(work_dir, 'sample_app.jar')
-    _zip_dir(app_classes_dir, app_jar)
+    app_jar = _compile_sources(
+        javac,
+        work_dir,
+        'app',
+        _SAMPLE_APP_SOURCES,
+        extra_args=[
+            '-g',
+            '-cp',
+            os.pathsep.join([stub_jar, missing_classes_dir]),
+        ],
+        jar_name='sample_app.jar',
+    )
     return stub_jar, app_jar
 
 
@@ -258,9 +315,11 @@ def _sample_commands(stub_jar, app_jar, out_dir):
     sllr_out = os.path.join(out_dir, 'sample_app.sllr.jar')
     sllr_no_init_out = os.path.join(out_dir, 'sample_app.sllr_no_init.jar')
     trace_out = os.path.join(out_dir, 'sample_app.trace.jar')
+    trace_out2 = os.path.join(out_dir, 'sample_app.trace2.jar')
     trace_args_file = os.path.join(out_dir, 'trace_args.txt')
     pathlib.Path(trace_args_file).write_text(
-        f'{app_jar}\n{trace_out}\n', encoding='utf-8'
+        f'{app_jar}:{app_jar}\n{trace_out}:{trace_out2}\n',
+        encoding='utf-8',
     )
     return [
         (
@@ -368,21 +427,12 @@ def _build_pgo_workloads(graal_home, stub_jar, app_jar, work_dir):
             f'  }}\n'
             f'}}\n'
         )
-    syn_src_dir = os.path.join(pgo_dir, 'syn_src')
-    syn_classes_dir = os.path.join(pgo_dir, 'syn_classes')
-    syn_paths = _write_sources(syn_src_dir, syn_src)
-    common.run_cmd(
-        [
-            javac,
-            '--release',
-            '17',
-            '-g',
-            '-cp',
-            os.pathsep.join([stub_jar, app_jar]),
-            '-d',
-            syn_classes_dir,
-        ]
-        + syn_paths
+    syn_classes_dir = _compile_sources(
+        javac,
+        pgo_dir,
+        'syn',
+        syn_src,
+        extra_args=['-g', '-cp', os.pathsep.join([stub_jar, app_jar])],
     )
 
     shard_in_jars = []
@@ -438,6 +488,74 @@ def _build_pgo_workloads(graal_home, stub_jar, app_jar, work_dir):
             f'@{pgo_trace_args}',
         ],
     ]
+
+
+def _verify_trace_event_edge_cases(
+    *,
+    graal_home,
+    binary_path,
+    stub_jar,
+    app_jar,
+    orig_app_contents,
+    native_trace_dir,
+    work_dir,
+    env,
+):
+    """Checks parallel parity, ParentCache rules, and parallel failure."""
+    native_trace_out = os.path.join(native_trace_dir, 'sample_app.trace.jar')
+    native_trace_out2 = os.path.join(native_trace_dir, 'sample_app.trace2.jar')
+    native_contents = _read_jar_contents(native_trace_out, require_stored=True)
+    if _read_jar_contents(native_trace_out2, require_stored=True) != (
+        native_contents
+    ):
+        raise RuntimeError('Parallel trace_event_adder outputs differed')
+
+    orphan_class = 'org/chromium/sample/OrphanListener.class'
+    if native_contents[orphan_class] != orig_app_contents[orphan_class]:
+        raise RuntimeError(
+            'Class with missing superclass should not be modified'
+        )
+
+    javap = os.path.join(graal_home, 'bin', 'javap')
+    class_name = 'org.chromium.sample.RestrictedParentChildView'
+    disasm = common.run_cmd(
+        [javap, '-p', '-cp', native_trace_out, class_name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+    ).stdout
+    if 'draw(android.graphics.Canvas)' not in disasm:
+        raise RuntimeError(
+            f'Expected draw override on {class_name}, got:\n{disasm}'
+        )
+    for forbidden in ('onMeasure(', 'scrollStep(', 'onAnimationStart('):
+        if forbidden in disasm:
+            raise RuntimeError(
+                f'Unexpected override {forbidden} on {class_name}:\n{disasm}'
+            )
+
+    missing_jar = os.path.join(work_dir, 'does_not_exist.jar')
+    fail_out1 = os.path.join(work_dir, 'sample_app.fail.jar')
+    fail_out2 = os.path.join(work_dir, 'does_not_exist.fail.jar')
+    proc = common.run_cmd(
+        [
+            binary_path,
+            f'-Djava.home={graal_home}',
+            'trace_event_adder',
+            '--classpath',
+            stub_jar,
+            f'{app_jar}:{missing_jar}',
+            f'{fail_out1}:{fail_out2}',
+        ],
+        check=False,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if proc.returncode == 0:
+        raise RuntimeError(
+            'Expected trace_event_adder to fail on missing input jar'
+        )
 
 
 def do_latest():
@@ -511,9 +629,8 @@ def do_install(args):
 
     # Smoke-test every subcommand against the JVM outputs produced by tracing.
     orig_app_contents = _read_jar_contents(app_jar)
-    native_cmds = _sample_commands(
-        stub_jar, app_jar, os.path.join(work_dir, 'smoke_native')
-    )
+    native_trace_dir = os.path.join(work_dir, 'smoke_native')
+    native_cmds = _sample_commands(stub_jar, app_jar, native_trace_dir)
     env = dict(os.environ, JAVA_HOME='/nonexistent')
     for (name, _, jvm_out, changed_class), (
         _,
@@ -534,6 +651,17 @@ def do_install(args):
             raise RuntimeError(
                 f'Smoke test for {name} did not modify {changed_class}'
             )
+
+    _verify_trace_event_edge_cases(
+        graal_home=graal_home,
+        binary_path=binary_path,
+        stub_jar=stub_jar,
+        app_jar=app_jar,
+        orig_app_contents=orig_app_contents,
+        native_trace_dir=native_trace_dir,
+        work_dir=work_dir,
+        env=env,
+    )
 
 
 def main():

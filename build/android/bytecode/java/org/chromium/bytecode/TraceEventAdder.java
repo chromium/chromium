@@ -8,16 +8,24 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 
+import org.chromium.bytecode.MethodCheckerClassAdapter.ParentCache;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Java application that modifies all implementations of "draw", "onMeasure" and "onLayout" on all
  * {@link android.view.View} subclasses to wrap them in trace events.
  */
 public class TraceEventAdder extends ByteCodeRewriter {
+    // Cap worker threads because this runs as one build step alongside other compile/dex actions.
+    private static final int MAX_WORKER_THREADS = 4;
+
+    private final ParentCache mParentCache;
     private ArrayList<MethodDescription> mMethodsToTrace;
 
     public static void main(String[] args) throws IOException {
@@ -71,15 +79,78 @@ public class TraceEventAdder extends ByteCodeRewriter {
         classPathJarsPaths.addAll(Arrays.asList(inputJars));
 
         try (ClassHierarchy classHierarchy = new ClassHierarchy(classPathJarsPaths)) {
-            TraceEventAdder adder = new TraceEventAdder(classHierarchy);
-            for (int i = 0; i < outputJars.length; i++) {
-                adder.rewrite(new File(inputJars[i]), new File(outputJars[i]));
-            }
+            ParentCache parentCache = new ParentCache(classHierarchy);
+            rewriteAll(classHierarchy, parentCache, inputJars, outputJars);
         }
     }
 
-    TraceEventAdder(ClassHierarchy classHierarchy) {
+    private static void rewriteAll(
+            ClassHierarchy classHierarchy,
+            ParentCache parentCache,
+            String[] inputJars,
+            String[] outputJars)
+            throws IOException {
+        int numThreads =
+                Math.min(
+                        outputJars.length,
+                        Math.min(Runtime.getRuntime().availableProcessors(), MAX_WORKER_THREADS));
+        AtomicInteger nextIndex = new AtomicInteger();
+        AtomicReference<Throwable> firstError = new AtomicReference<>();
+        Runnable workerTask =
+                () -> {
+                    TraceEventAdder adder = new TraceEventAdder(classHierarchy, parentCache);
+                    while (firstError.get() == null) {
+                        int idx = nextIndex.getAndIncrement();
+                        if (idx >= outputJars.length) {
+                            break;
+                        }
+                        try {
+                            adder.rewrite(new File(inputJars[idx]), new File(outputJars[idx]));
+                        } catch (Throwable e) {
+                            firstError.compareAndSet(null, e);
+                            return;
+                        }
+                    }
+                };
+        Thread[] workers = new Thread[Math.max(0, numThreads - 1)];
+        for (int t = 0; t < workers.length; t++) {
+            workers[t] = new Thread(workerTask);
+            workers[t].start();
+        }
+        workerTask.run();
+        boolean interrupted = false;
+        for (Thread worker : workers) {
+            while (true) {
+                try {
+                    worker.join();
+                    break;
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                    firstError.compareAndSet(null, e);
+                }
+            }
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+        Throwable err = firstError.get();
+        if (err instanceof IOException) {
+            throw (IOException) err;
+        }
+        if (err instanceof RuntimeException) {
+            throw (RuntimeException) err;
+        }
+        if (err instanceof Error) {
+            throw (Error) err;
+        }
+        if (err != null) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    TraceEventAdder(ClassHierarchy classHierarchy, ParentCache parentCache) {
         super(classHierarchy);
+        mParentCache = parentCache;
     }
 
     @Override
@@ -89,6 +160,13 @@ public class TraceEventAdder extends ByteCodeRewriter {
 
     @Override
     protected boolean shouldRewriteClass(ClassReader classReader) {
+        int access = classReader.getAccess();
+        if ((access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_INTERFACE)) != 0
+                || !MethodCheckerClassAdapter.shouldTraceClass(
+                        classReader.getClassName(), getClassHierarchy())) {
+            return false;
+        }
+
         mMethodsToTrace =
                 new ArrayList<>(
                         Arrays.asList(
@@ -120,12 +198,13 @@ public class TraceEventAdder extends ByteCodeRewriter {
                                         Opcodes.ACC_PUBLIC)));
 
         // This adapter will modify mMethodsToTrace to indicate which methods already exist in the
-        // class and which ones need to be overridden. In case the class is not an Android view
-        // we'll clear the list and skip rewriting.
+        // class and which ones need to be overridden.
         MethodCheckerClassAdapter methodChecker =
-                new MethodCheckerClassAdapter(mMethodsToTrace, getClassHierarchy());
+                new MethodCheckerClassAdapter(mMethodsToTrace, mParentCache);
 
-        classReader.accept(methodChecker, ClassReader.EXPAND_FRAMES);
+        classReader.accept(
+                methodChecker,
+                ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
         return !mMethodsToTrace.isEmpty();
     }
