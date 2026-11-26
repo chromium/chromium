@@ -321,11 +321,11 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 
   std::optional<FormData> ExtractFormData(
       WebFormElement form,
+      ButtonTitlesCache* button_titles_cache = nullptr,
       base::span<const CustomFormControl> custom_controls = {}) {
     return form_util::ExtractFormData(
         GetDocument(), GetFormRendererId(form), field_data_manager(),
-        kCallTimerStateDummy,
-        /*button_titles_cache=*/nullptr, custom_controls);
+        kCallTimerStateDummy, button_titles_cache, custom_controls);
   }
 
   std::optional<FormAndField> FindFormAndFieldForFormControlElement(
@@ -461,6 +461,33 @@ TEST_F(FormAutofillUtilsTest,
       *ExtractFormData(GetFormElementById(GetDocument(), "form-id"));
   histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.InferLabelForElement", 1);
+}
+
+// Tests that form extraction measures button title inference duration.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFormDataMeasuresDurationOfButtonTitleExtraction) {
+  constexpr char kMetric[] = "Autofill.TimingPrecise.InferButtonTitlesForForm";
+  base::HistogramTester histogram_tester;
+  LoadHTML(R"(
+    <form id=form-id>
+      <input>
+    </form>
+    <input>
+  )");
+  WebFormElement form = GetFormElementById(GetDocument(), "form-id");
+  ButtonTitlesCache cache;
+
+  EXPECT_TRUE(ExtractFormData(WebFormElement()));
+  histogram_tester.ExpectTotalCount(kMetric, 0);
+
+  EXPECT_TRUE(ExtractFormData(form, &cache));
+  histogram_tester.ExpectTotalCount(kMetric, 1);
+
+  EXPECT_TRUE(ExtractFormData(form, &cache));
+  histogram_tester.ExpectTotalCount(kMetric, 1);
+
+  EXPECT_TRUE(ExtractFormData(form));
+  histogram_tester.ExpectTotalCount(kMetric, 2);
 }
 
 // Tests that large option values/contents are truncated while building the
@@ -2841,7 +2868,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_CustomFormControls) {
       </form>)");
   WebDocument doc = GetDocument();
   std::optional<FormData> form = ExtractFormData(
-      GetFormElementById(doc, "form"),
+      GetFormElementById(doc, "form"), /*button_titles_cache=*/nullptr,
       {CustomFormControl{.canonical_dom_node = GetElementById(doc, "custom2")},
        CustomFormControl{.canonical_dom_node =
                              GetElementById(doc, "custom1")}});
@@ -2875,7 +2902,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OnlyCustomFormControls) {
       </form>)");
   WebDocument doc = GetDocument();
   std::optional<FormData> form = ExtractFormData(
-      GetFormElementById(doc, "form"),
+      GetFormElementById(doc, "form"), /*button_titles_cache=*/nullptr,
       {CustomFormControl{.canonical_dom_node = GetElementById(doc, "custom")}});
   ASSERT_TRUE(form);
   EXPECT_THAT(form->fields(),
@@ -8101,9 +8128,10 @@ TEST_F(FormAutofillUtilsCrossDocumentTest, ExtractFormData) {
       kCallTimerStateDummy, /*button_titles_cache=*/nullptr,
       /*custom_controls=*/{}));
 
-  std::optional<FormData> extracted_main = ExtractFormData(
-      main_form, {CustomFormControl{.canonical_dom_node = GetElementById(
-                                        iframe_doc, "iframe_custom")}});
+  std::optional<FormData> extracted_main =
+      ExtractFormData(main_form, /*button_titles_cache=*/nullptr,
+                      {CustomFormControl{.canonical_dom_node = GetElementById(
+                                             iframe_doc, "iframe_custom")}});
   ASSERT_TRUE(extracted_main);
   EXPECT_THAT(extracted_main->fields(),
               ElementsAre(Property(&FormFieldData::renderer_id,

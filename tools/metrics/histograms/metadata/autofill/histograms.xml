@@ -10422,6 +10422,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.TimingPrecise.InferButtonTitlesForForm"
+    units="microseconds" expires_after="2027-04-25">
+  <owner>kazinova@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of microseconds passed between the start and end of
+    InferButtonTitlesForForm during &lt;form&gt; extraction on ButtonTitlesCache
+    misses or without a cache. Recorded on all platforms except iOS and only for
+    clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TimingPrecise.{Callee}" units="microseconds"
     expires_after="2027-04-25">
   <owner>schwering@google.com</owner>

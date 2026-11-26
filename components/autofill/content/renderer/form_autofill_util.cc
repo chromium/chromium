@@ -1130,6 +1130,8 @@ ButtonTitleList InferButtonTitlesForForm(
     const WebFormElement& web_form,
     base::span<const WebFormControlElement> owned_controls) {
   CHECK(web_form);
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.TimingPrecise.InferButtonTitlesForForm");
   // Different button types have different credibility of being the main button.
   // Highest - <input type='submit'>, <button type='submit'>, <button>.
   // Moderate - <input type='button'> <button type='button'>.
