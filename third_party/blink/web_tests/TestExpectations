@@ -8816,8 +8816,5 @@ crbug.com/584728940 [ Linux Release ] http/tests/inspector-protocol/cpu-profiler
 crbug.com/339680580 [ Mac ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
 crbug.com/339680580 [ Win10.20h2 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Failure Pass ]
 
-# Gardener 2026-11-25
-crbug.com/590394906 [ Linux ] external/wpt/svg/animations/set-target-inserted-after-animation.html [ Failure Pass ]
-
 # Gardener 2026-11-26
 crbug.com/590639898 [ Debug Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/window-stop-cross-origin-pipe-near-stack-limit.sub.html [ Crash ]
