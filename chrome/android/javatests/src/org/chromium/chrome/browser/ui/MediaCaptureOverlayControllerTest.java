@@ -22,7 +22,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -102,7 +101,7 @@ public class MediaCaptureOverlayControllerTest {
         waitForOverlayVisibility(true);
 
         // Summon the overview, and assert that the overlay is no longer visible.
-        TabUiTestHelper.enterTabSwitcher(mActivity);
+        mPage.openRegularTabSwitcher();
         waitForOverlayVisibility(false);
 
         // Now hide the overview and assert that it becomes visible again.

@@ -30,7 +30,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -49,6 +48,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -91,12 +92,13 @@ public class ArchivedTabsTest {
     private TabModel mRegularTabModel;
     private TabCreator mRegularTabCreator;
     private TabArchiveSettings mTabArchiveSettings;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
         mDeferredStartupHandler = new FakeDeferredStartupHandler();
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         runOnUiThreadBlocking(
                 () -> {
@@ -144,10 +146,10 @@ public class ArchivedTabsTest {
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
     }
 
-    private void closeAllTabsFromTabSwitcher(ChromeTabbedActivity cta) {
+    private void closeAllTabsFromTabSwitcher(RegularTabSwitcherStation tabSwitcher) {
         runOnUiThreadBlocking(
                 () -> {
-                    TabModelSelector selector = cta.getTabModelSelectorSupplier().get();
+                    TabModelSelector selector = tabSwitcher.getTabModelSelector();
                     CloseAllTabsHelper.closeAllTabsHidingTabGroups(
                             selector,
                             ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(selector),
@@ -160,10 +162,9 @@ public class ArchivedTabsTest {
     @Test
     @MediumTest
     public void testCloseAllTabsAndClickUndo() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createArchivedTab();
-        TabUiTestHelper.enterTabSwitcher(cta);
-        closeAllTabsFromTabSwitcher(cta);
+        RegularTabSwitcherStation tabSwitcher = mPage.openRegularTabSwitcher();
+        closeAllTabsFromTabSwitcher(tabSwitcher);
 
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
         CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
@@ -183,9 +184,8 @@ public class ArchivedTabsTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testCloseAllTabsAndClickUndo_AfterTeardown() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createArchivedTab();
-        TabUiTestHelper.enterTabSwitcher(cta);
+        RegularTabSwitcherStation tabSwitcher = mPage.openRegularTabSwitcher();
 
         // Tear down before closing all tabs to exercise resurrection during close-all preparation.
         runOnUiThreadBlocking(() -> mOrchestrator.performTeardownForTesting());
@@ -193,7 +193,7 @@ public class ArchivedTabsTest {
                 runOnUiThreadBlocking(
                         () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile)));
 
-        closeAllTabsFromTabSwitcher(cta);
+        closeAllTabsFromTabSwitcher(tabSwitcher);
         CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
         CriteriaHelper.pollUiThread(
                 () -> 0 == mTabArchiveSettings.getArchivedTabCountSupplier().get());

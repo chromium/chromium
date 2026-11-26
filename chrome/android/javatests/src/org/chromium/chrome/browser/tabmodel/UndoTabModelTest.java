@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.os.Build.VERSION_CODES;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -74,30 +74,13 @@ public class UndoTabModelTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startOnBlankPage();
-        CriteriaHelper.pollUiThread(
-                () ->
-                        mActivityTestRule
-                                .getActivity()
-                                .getTabModelSelector()
-                                .isTabStateInitialized());
         // When closing the last tab we enter the tab switcher. Just start there to ensure
         // determinism.
-        enterTabSwitcher(mActivityTestRule.getActivity());
-
-        // Ensure the 0th tab in the regular tab model is selected.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelSelector selector =
-                            mActivityTestRule.getActivity().getTabModelSelector();
-                    selector.selectModel(false);
-                    selector.getModel(false).setIndex(0, TabSelectionType.FROM_USER);
-                    assertEquals(1, selector.getModel(false).getCount());
-                    assertTrue(selector.getModel(false).isActiveModel());
-                });
+        RegularTabSwitcherStation tabSwitcher =
+                mActivityTestRule.startOnBlankPage().openRegularTabSwitcher();
 
         // Disable snackbars from the {@link UndoBarController} which can break this test.
-        mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
+        tabSwitcher.getActivity().getSnackbarManager().disableForTesting();
     }
 
     @After

@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -100,7 +99,7 @@ public class TabObserverTest {
         int interactableCallCount = interactabilityHelper.getCallCount();
 
         // Enter tab switcher mode and make sure the event is triggered.
-        TabUiTestHelper.enterTabSwitcher(mActivity);
+        mPage.openRegularTabSwitcher();
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         interactableCallCount = interactabilityHelper.getCallCount();

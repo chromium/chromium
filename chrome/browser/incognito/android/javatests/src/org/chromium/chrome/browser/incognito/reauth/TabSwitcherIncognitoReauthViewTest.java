@@ -15,7 +15,6 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -123,7 +122,7 @@ public class TabSwitcherIncognitoReauthViewTest {
         var incognitoActivity = incognitoPage.getActivity();
 
         // Enter tab switcher in incognito mode.
-        enterTabSwitcher(incognitoActivity);
+        incognitoPage.openIncognitoTabSwitcher();
         assertTrue(incognitoActivity.getTabModelSelector().isIncognitoSelected());
 
         // Reload chrome to trigger incognito reauth screen.
