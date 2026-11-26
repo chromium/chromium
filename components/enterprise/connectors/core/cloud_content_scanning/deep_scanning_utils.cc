@@ -302,6 +302,16 @@ bool IsResumableUpload(const BinaryUploadRequest& request) {
          request.image_paste();
 }
 
+bool ShouldForceSyncUpload(const BinaryUploadRequest& request,
+                           bool is_obfuscated) {
+  // An obfuscated download is deobfuscated in place as soon as a verdict
+  // allows it, which would replace the file while its content is still being
+  // uploaded. Downloads that are not obfuscated (e.g. files too large to be
+  // obfuscated) are not rewritten after the verdict, so they can use it early.
+  return request.analysis_connector() == AnalysisConnector::FILE_DOWNLOADED &&
+         is_obfuscated;
+}
+
 bool CloudMultipartResultIsFailure(ScanRequestUploadResult result) {
   return result != ScanRequestUploadResult::kSuccess;
 }

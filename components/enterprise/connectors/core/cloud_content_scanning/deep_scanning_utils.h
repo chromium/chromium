@@ -60,6 +60,13 @@ bool IsConsumerScanRequest(const BinaryUploadRequest& request);
 // protocol for sending scans to the server.
 bool IsResumableUpload(const BinaryUploadRequest& request);
 
+// Returns true if the resumable uploader must wait for the content of
+// `request` to be fully uploaded before using a verdict, i.e. it must ignore a
+// verdict the server sends ahead of the content upload. `is_obfuscated`
+// indicates whether the file to upload is obfuscated on disk.
+bool ShouldForceSyncUpload(const BinaryUploadRequest& request,
+                           bool is_obfuscated);
+
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a cloud-based multipart content analysis.
 bool CloudMultipartResultIsFailure(ScanRequestUploadResult result);

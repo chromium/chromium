@@ -1039,11 +1039,9 @@ void CloudBinaryUploadServiceBase::OnGetRequestData(
   std::string histogram_suffix =
       IsConsumerScanRequest(*request) ? "ConsumerUpload" : "EnterpriseUpload";
 
-  // The downloaded file will not be available for deep scan upload due to the
-  // newly introduced download obfuscation step. We must wait for deobfuscation
-  // to complete before uploading, which is guaranteed under the pre-async
-  // upload behaviour.
-  bool force_sync_upload = request->analysis_connector() == FILE_DOWNLOADED;
+  // An obfuscated download must finish uploading before its verdict is used,
+  // because the file is deobfuscated in place once the verdict allows it.
+  bool force_sync_upload = ShouldForceSyncUpload(*request, data.is_obfuscated);
 
   std::unique_ptr<ConnectorUploadRequest> upload_request = CreateUploadRequest(
       request, request_id, url, metadata, histogram_suffix, force_sync_upload,

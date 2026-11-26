@@ -4,14 +4,33 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.h"
 
+#include <memory>
+#include <optional>
+#include <string_view>
+
+#include "base/base64.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -53,7 +72,25 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
   TestCloudBinaryUploadServiceBase()
       : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr,
                                      std::make_unique<FakeDelegate>()) {}
+  explicit TestCloudBinaryUploadServiceBase(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : CloudBinaryUploadServiceBase(std::move(url_loader_factory),
+                                     std::make_unique<FakeDelegate>()) {}
+
+  using CloudBinaryUploadServiceBase::OnGetRequestData;
 };
+
+constexpr char kContentUploadUrl[] =
+    "https://uploads.google.com/?upload_id=ABC&upload_protocol=resumable";
+
+// Returns a response holding a successful DLP result.
+ContentAnalysisResponse GetDlpResponse() {
+  ContentAnalysisResponse response;
+  auto* result = response.add_results();
+  result->set_tag("dlp");
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  return response;
+}
 
 }  // namespace
 
@@ -314,6 +351,120 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ShouldTerminateRequestEarly) {
   BinaryUploadRequest* req3 = make_request(BinaryUploadRequest::Id(3));
   EXPECT_TRUE(CallShouldTerminateRequestEarly(
       service, req3, ScanRequestUploadResult::kSuccess, /*data_size=*/0));
+}
+
+// Drives a resumable upload of a downloaded file through the service, with a
+// server that sends a verdict ahead of the content upload.
+class CloudBinaryUploadServiceBaseDownloadTest
+    : public CloudBinaryUploadServiceBaseTest {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    file_path_ = temp_dir_.GetPath().AppendASCII("download.txt");
+    ASSERT_TRUE(base::WriteFile(file_path_, kFileContent));
+  }
+
+  // Starts the upload of the downloaded file. The metadata request is answered
+  // with an early verdict and a request for the file content. Returns once the
+  // content request has been sent, leaving it pending.
+  void StartDownloadUpload(bool is_obfuscated) {
+    auto request = std::make_unique<FakeBinaryUploadRequest>(
+        base::BindLambdaForTesting([this](ScanRequestUploadResult result,
+                                          ContentAnalysisResponse response) {
+          ++verdict_count_;
+          verdict_result_ = result;
+        }));
+    request->set_id(id_);
+    request->set_device_token("dm_token");
+    request->set_analysis_connector(AnalysisConnector::FILE_DOWNLOADED);
+    request->add_tag("dlp");
+    GetActiveRequest(service_, id_).request = std::move(request);
+    GetActiveRequest(service_, id_).start_time = base::TimeTicks::Now();
+
+    base::RunLoop content_request_sent;
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& resource_request) {
+          if (resource_request.url == GURL(kContentUploadUrl)) {
+            content_request_sent.Quit();
+            return;
+          }
+          auto head = network::CreateURLResponseHead(net::HTTP_OK);
+          head->headers->AddHeader("X-Goog-Upload-Status", "active");
+          head->headers->AddHeader("X-Goog-Upload-URL", kContentUploadUrl);
+          head->headers->AddHeader(
+              "X-Goog-Upload-Header-Cep-Response",
+              base::Base64Encode(GetDlpResponse().SerializeAsString()));
+          test_url_loader_factory_.AddResponse(
+              resource_request.url, std::move(head), "",
+              network::URLLoaderCompletionStatus(net::OK));
+        }));
+
+    BinaryUploadRequest::Data data;
+    data.path = file_path_;
+    data.size = std::string_view(kFileContent).size();
+    data.is_obfuscated = is_obfuscated;
+    service_.OnGetRequestData(id_, ScanRequestUploadResult::kSuccess,
+                              std::move(data));
+    content_request_sent.Run();
+    test_url_loader_factory_.SetInterceptor(base::NullCallback());
+  }
+
+  // Answers the pending content request with a verdict and waits for the
+  // service to clean up the request.
+  void FinishContentUpload() {
+    auto head = network::CreateURLResponseHead(net::HTTP_OK);
+    head->headers->AddHeader("X-Goog-Upload-Status", "final");
+    test_url_loader_factory_.AddResponse(
+        GURL(kContentUploadUrl), std::move(head),
+        GetDlpResponse().SerializeAsString(),
+        network::URLLoaderCompletionStatus(net::OK));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return service_.GetRequest(id_) == nullptr; }));
+  }
+
+  static constexpr char kFileContent[] = "downloaded file content";
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath file_path_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  TestCloudBinaryUploadServiceBase service_{
+      test_url_loader_factory_.GetSafeWeakWrapper()};
+  BinaryUploadRequest::Id id_{1};
+  int verdict_count_ = 0;
+  std::optional<ScanRequestUploadResult> verdict_result_;
+};
+
+// A download that is not obfuscated uses the verdict sent ahead of the content
+// upload, so the user isn't blocked while the content is uploaded.
+TEST_F(CloudBinaryUploadServiceBaseDownloadTest,
+       NonObfuscatedDownloadUsesEarlyVerdict) {
+  StartDownloadUpload(/*is_obfuscated=*/false);
+
+  // The verdict is delivered while the content upload is still in progress.
+  EXPECT_EQ(verdict_count_, 1);
+  EXPECT_EQ(verdict_result_, ScanRequestUploadResult::kSuccess);
+  EXPECT_NE(service_.GetRequest(id_), nullptr);
+
+  FinishContentUpload();
+
+  // The response to the content upload doesn't deliver a second verdict.
+  EXPECT_EQ(verdict_count_, 1);
+}
+
+// An obfuscated download ignores the verdict sent ahead of the content upload,
+// since the file is deobfuscated in place once a verdict allows it.
+TEST_F(CloudBinaryUploadServiceBaseDownloadTest,
+       ObfuscatedDownloadWaitsForContentUpload) {
+  StartDownloadUpload(/*is_obfuscated=*/true);
+
+  // No verdict is delivered until the content upload completes.
+  EXPECT_EQ(verdict_count_, 0);
+  EXPECT_NE(service_.GetRequest(id_), nullptr);
+
+  FinishContentUpload();
+
+  EXPECT_EQ(verdict_count_, 1);
+  EXPECT_EQ(verdict_result_, ScanRequestUploadResult::kSuccess);
 }
 
 }  // namespace enterprise_connectors

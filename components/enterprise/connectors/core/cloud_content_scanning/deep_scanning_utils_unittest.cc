@@ -419,6 +419,27 @@ class FakeBinaryUploadRequest : public BinaryUploadRequest {
   }
 };
 
+TEST(DeepScanningUtilsTest, ShouldForceSyncUpload) {
+  // Only downloads that are obfuscated on disk must finish uploading before
+  // their verdict is used.
+  FakeBinaryUploadRequest download_request;
+  download_request.set_analysis_connector(AnalysisConnector::FILE_DOWNLOADED);
+  EXPECT_TRUE(ShouldForceSyncUpload(download_request, /*is_obfuscated=*/true));
+  EXPECT_FALSE(
+      ShouldForceSyncUpload(download_request, /*is_obfuscated=*/false));
+
+  for (AnalysisConnector connector :
+       {AnalysisConnector::FILE_ATTACHED, AnalysisConnector::FILE_TRANSFER,
+        AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT,
+        AnalysisConnector::DATA_COPIED, AnalysisConnector::NETWORK_REQUEST}) {
+    SCOPED_TRACE(connector);
+    FakeBinaryUploadRequest request;
+    request.set_analysis_connector(connector);
+    EXPECT_FALSE(ShouldForceSyncUpload(request, /*is_obfuscated=*/true));
+    EXPECT_FALSE(ShouldForceSyncUpload(request, /*is_obfuscated=*/false));
+  }
+}
+
 TEST(DeepScanningUtilsTest, InitializeBinaryUploadRequest_IsMobile) {
   FakeBinaryUploadRequest request;
   testing::NiceMock<MockContentAnalysisInfoBase> info;
