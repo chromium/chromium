@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkFourByteTag.h"
@@ -457,11 +456,10 @@ String FontCustomPlatformData::GetPostScriptNameOrFamilyNameForInspector()
 }
 
 FontCustomPlatformData* FontCustomPlatformData::Create(
-    SharedBuffer* buffer,
+    base::span<const uint8_t> data,
     String& ots_parse_message) {
-  DCHECK(buffer);
   // TODO(wmedrano): Avoid creating unused `IftPatcher` within `DecodedWebFont`.
-  base::expected<DecodedWebFont, String> decode_result = DecodeWebFont(buffer);
+  base::expected<DecodedWebFont, String> decode_result = DecodeWebFont(data);
   if (!decode_result.has_value()) {
     ots_parse_message = std::move(decode_result).error();
     return nullptr;

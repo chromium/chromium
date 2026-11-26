@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BINARY_DATA_FONT_FACE_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BINARY_DATA_FONT_FACE_SOURCE_H_
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 
 namespace blink {
@@ -14,7 +17,7 @@ class FontCustomPlatformData;
 
 class BinaryDataFontFaceSource final : public CSSFontFaceSource {
  public:
-  BinaryDataFontFaceSource(CSSFontFace*, SharedBuffer*, String&);
+  BinaryDataFontFaceSource(CSSFontFace*, base::span<const uint8_t>, String&);
   void Trace(Visitor*) const override;
   bool IsValid() const override;
 

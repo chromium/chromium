@@ -6,8 +6,8 @@
 
 #include <initializer_list>
 #include <optional>
-#include <utility>
 
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkFourByteTag.h"
@@ -36,11 +35,9 @@ FontCustomPlatformData* LoadCustomPlatformData(const String& path) {
   std::optional<Vector<char>> font_data =
       test::ReadFromFile(test::PlatformTestDataPath(path));
   CHECK(font_data.has_value());
-  scoped_refptr<SharedBuffer> buffer =
-      SharedBuffer::Create(std::move(*font_data));
   String ots_parse_message;
-  FontCustomPlatformData* result =
-      FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+  FontCustomPlatformData* result = FontCustomPlatformData::Create(
+      base::as_byte_span(*font_data), ots_parse_message);
   CHECK(result) << ots_parse_message;
   return result;
 }

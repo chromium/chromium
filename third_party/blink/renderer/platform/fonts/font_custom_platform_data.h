@@ -32,6 +32,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
@@ -45,8 +49,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -74,7 +76,7 @@ class PLATFORM_EXPORT FontCustomPlatformData
     kIgnoreTypefaceAxes,
   };
 
-  static FontCustomPlatformData* Create(SharedBuffer*,
+  static FontCustomPlatformData* Create(base::span<const uint8_t> data,
                                         String& ots_parse_message);
   static FontCustomPlatformData* Create(sk_sp<SkTypeface>, size_t data_size);
 

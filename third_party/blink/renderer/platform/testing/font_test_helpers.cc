@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 
-#include "base/memory/scoped_refptr.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 namespace test {
@@ -23,22 +22,19 @@ class TestFontSelector : public FontSelector {
   static TestFontSelector* Create(const String& path) {
     std::optional<Vector<char>> data = test::ReadFromFile(path);
     CHECK(data);
-    scoped_refptr<SharedBuffer> font_buffer =
-        SharedBuffer::Create(std::move(*data));
     String ots_parse_message;
     return MakeGarbageCollected<TestFontSelector>(
-        FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message));
+        FontCustomPlatformData::Create(base::as_byte_span(*data),
+                                       ots_parse_message));
   }
 
   static TestFontSelector* Create(base::span<const uint8_t> data) {
-    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data);
     String ots_parse_message;
     FontCustomPlatformData* font_custom_platform_data =
-        FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message);
+        FontCustomPlatformData::Create(data, ots_parse_message);
     if (!font_custom_platform_data)
       return nullptr;
-    return MakeGarbageCollected<TestFontSelector>(
-        std::move(font_custom_platform_data));
+    return MakeGarbageCollected<TestFontSelector>(font_custom_platform_data);
   }
 
   TestFontSelector(FontCustomPlatformData* custom_platform_data)

@@ -9,6 +9,7 @@
 #include <array>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -2505,10 +2505,10 @@ class IftTestFontSelector final : public FontSelector {
                           CustomFontData* custom_font_data) {
     std::optional<Vector<char>> data = test::ReadFromFile(font_path);
     CHECK(data);
-    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     String ots_parse_message;
     FontCustomPlatformData* custom_platform_data =
-        FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+        FontCustomPlatformData::Create(base::as_byte_span(*data),
+                                       ots_parse_message);
     CHECK(custom_platform_data) << ots_parse_message;
     FontSelectionCapabilities normal_capabilities(
         {kNormalWidthValue, kNormalWidthValue},

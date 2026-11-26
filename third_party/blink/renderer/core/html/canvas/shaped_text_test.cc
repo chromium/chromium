@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
@@ -28,7 +29,6 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -53,10 +53,10 @@ class FallbackTestFontSelector final : public FontSelector {
                                 const String& font_path) {
     std::optional<Vector<char>> data = test::ReadFromFile(font_path);
     CHECK(data);
-    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     String ots_parse_message;
     FontCustomPlatformData* custom_platform_data =
-        FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+        FontCustomPlatformData::Create(base::as_byte_span(*data),
+                                       ots_parse_message);
     CHECK(custom_platform_data) << ots_parse_message;
     FontSelectionCapabilities normal_capabilities(
         {kNormalWidthValue, kNormalWidthValue},

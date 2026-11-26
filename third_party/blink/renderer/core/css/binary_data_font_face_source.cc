@@ -4,18 +4,21 @@
 
 #include "third_party/blink/renderer/core/css/binary_data_font_face_source.h"
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
-BinaryDataFontFaceSource::BinaryDataFontFaceSource(CSSFontFace* css_font_face,
-                                                   SharedBuffer* data,
-                                                   String& ots_parse_message)
+BinaryDataFontFaceSource::BinaryDataFontFaceSource(
+    CSSFontFace* css_font_face,
+    base::span<const uint8_t> data,
+    String& ots_parse_message)
     : custom_platform_data_(
           FontCustomPlatformData::Create(data, ots_parse_message)) {
   if (!css_font_face || !css_font_face->GetFontFace()) {

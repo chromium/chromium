@@ -159,11 +159,9 @@ void IftFont::BeginIdle() const {
   if (!patcher_->HasUnrenderedChanges()) {
     return;
   }
-  scoped_refptr<SharedBuffer> buffer =
-      SharedBuffer::Create(patcher_->GetFontData());
   String ots_parse_message;
-  FontCustomPlatformData* custom_font_data =
-      FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+  FontCustomPlatformData* custom_font_data = FontCustomPlatformData::Create(
+      patcher_->GetFontData(), ots_parse_message);
   if (!custom_font_data) {
     BeginFailed();
     return;

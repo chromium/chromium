@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -1064,9 +1063,8 @@ void FontFace::InitCSSFontFace(ExecutionContext* context,
     return;
   }
 
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(data);
   auto* source = MakeGarbageCollected<BinaryDataFontFaceSource>(
-      css_font_face_, buffer.get(), ots_parse_message_);
+      css_font_face_, data, ots_parse_message_);
   if (source->IsValid()) {
     SetLoadStatus(kLoaded);
   } else {
