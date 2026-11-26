@@ -190,3 +190,61 @@ TEST_F(EnterpriseProxyServiceIOSTest, CredentialsEmbedMobileUserAgent) {
   EXPECT_EQ(web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE),
             user_agent);
 }
+
+// Tests that 407 proxy challenges for destination URLs ending with a trailing
+// FQDN dot (e.g. `https://example.com.` and `https://app.example.com.`) are
+// classified as `kNeedsCredentials` (or `kDisguisedError` for disguised error
+// realms) and authenticated on iOS, matching WebKit's proxy routing behavior
+// (crbug.com/587911253).
+TEST_F(EnterpriseProxyServiceIOSTest, AuthenticatesTrailingDotDestinationUrl) {
+  EnterpriseProxyService* service =
+      EnterpriseProxyServiceFactoryIOS::GetForProfile(profile_);
+  ASSERT_TRUE(service);
+
+  test_url_loader_factory_.AddResponse(kPvdUrl, kPvdConfigJson);
+  profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                CreateProxyProvisioningDomainsPolicy());
+  ASSERT_TRUE(base::test::RunUntil([service] {
+    std::vector<ProvisioningDomainProxyConfig> configs =
+        service->GetProvisioningDomainConfigs();
+    return !configs.empty() &&
+           configs[0].state == ProvisioningDomainProxyConfig::State::kValid;
+  }));
+
+  net::AuthChallengeInfo auth_info;
+  auth_info.is_proxy = true;
+  auth_info.challenger =
+      url::SchemeHostPort(url::kHttpsScheme, kProxyHost, kProxyPort);
+
+  for (const char* url_spec :
+       {"https://example.com./", "https://app.example.com./path"}) {
+    EnterpriseProxyService::ProxyAuthChallengeMatch match =
+        service->ClassifyProxyAuthChallenge(auth_info, GURL(url_spec),
+                                            /*response_headers=*/nullptr);
+    ASSERT_EQ(EnterpriseProxyService::ProxyAuthChallengeMatch::Decision::
+                  kNeedsCredentials,
+              match.decision)
+        << "URL: " << url_spec;
+
+    base::test::TestFuture<EnterpriseProxyService::CredentialFetchOutcome,
+                           const std::optional<net::AuthCredentials>&,
+                           const net::NetLogWithSource&>
+        future;
+    service->FetchProxyAuthCredentials(std::move(match), future.GetCallback());
+    EXPECT_EQ(EnterpriseProxyService::CredentialFetchOutcome::kSuccess,
+              future.Get<0>())
+        << "URL: " << url_spec;
+    EXPECT_TRUE(future.Get<1>().has_value()) << "URL: " << url_spec;
+  }
+
+  net::AuthChallengeInfo disguised_error_auth_info = auth_info;
+  disguised_error_auth_info.scheme = "Basic";
+  disguised_error_auth_info.realm = "403";
+  EnterpriseProxyService::ProxyAuthChallengeMatch disguised_error_match =
+      service->ClassifyProxyAuthChallenge(disguised_error_auth_info,
+                                          GURL("https://example.com./"),
+                                          /*response_headers=*/nullptr);
+  EXPECT_EQ(EnterpriseProxyService::ProxyAuthChallengeMatch::Decision::
+                kDisguisedError,
+            disguised_error_match.decision);
+}

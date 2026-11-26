@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -361,6 +363,31 @@ void WidenDomainsToSubdomains(std::vector<std::string>& domains) {
   }
   domains = std::move(widened_domains);
 }
+
+// Returns `destination_url` with a single trailing FQDN dot stripped from its
+// hostname when doing so yields a valid non-IP hostname URL, or `std::nullopt`
+// if no normalization applies. WebKit's proxy configuration routes trailing-dot
+// FQDNs (e.g. `https://example.com.`) through the same proxy as the bare
+// domain, while `NSURLResponse.URL` preserves the trailing dot on the
+// challenged URL (crbug.com/587911253).
+std::optional<GURL> StripTrailingDotFromHost(const GURL& destination_url) {
+  const std::string_view host = destination_url.host();
+  if (host.size() <= 1 || !host.ends_with('.') ||
+      destination_url.HostIsIPAddress()) {
+    return std::nullopt;
+  }
+  const std::string_view trimmed_host = host.substr(0, host.size() - 1);
+  if (trimmed_host.ends_with('.')) {
+    return std::nullopt;
+  }
+  GURL::Replacements replacements;
+  replacements.SetHostStr(trimmed_host);
+  GURL normalized_url = destination_url.ReplaceComponents(replacements);
+  if (!normalized_url.is_valid() || normalized_url.HostIsIPAddress()) {
+    return std::nullopt;
+  }
+  return normalized_url;
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -678,8 +705,19 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_IOS)
+  const std::optional<GURL> stripped_destination_url =
+      StripTrailingDotFromHost(destination_url);
+#endif  // BUILDFLAG(IS_IOS)
+
   for (const auto& rule : config.routing_rules) {
-    if (!rule.destination_matchers.Matches(destination_url)) {
+    bool matches = rule.destination_matchers.Matches(destination_url);
+#if BUILDFLAG(IS_IOS)
+    if (!matches && stripped_destination_url.has_value()) {
+      matches = rule.destination_matchers.Matches(*stripped_destination_url);
+    }
+#endif  // BUILDFLAG(IS_IOS)
+    if (!matches) {
       continue;
     }
     for (const std::string& proxy_id : rule.proxies) {

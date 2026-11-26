@@ -1130,6 +1130,74 @@ TEST(FindMatchingProxyEndpointTest, MatchesSubdomainOfPlainDomain) {
   EXPECT_EQ(AuthType::kProfileBearerToken, endpoint->auth->type);
 }
 
+// Test that an auth challenge for a hostname with a single trailing FQDN dot
+// resolves to the endpoint of the bare domain's rule on iOS, since WebKit
+// routes trailing-dot hostnames through the same proxy.
+TEST(FindMatchingProxyEndpointTest, MatchesTrailingDotHostname) {
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(GetValidPvdJsonResponse());
+  ASSERT_TRUE(config.has_value());
+
+  const net::ProxyChain expected_chain = MakeHttpsProxyChain(kTestProxyHost1);
+
+  // Exact domain with a trailing dot (`test.domain.com.`) matches `proxy1`.
+  const ProvisioningDomainProxyConfig::ProxyEndpoint* exact_endpoint =
+      FindMatchingProxyEndpoint(*config, GURL("https://test.domain.com./path"),
+                                expected_chain);
+  ASSERT_NE(nullptr, exact_endpoint);
+  EXPECT_EQ(expected_chain, exact_endpoint->proxy_chain);
+
+  // Subdomain with a trailing dot (`sub.test.domain.com.`) also matches
+  // `proxy1` after subdomain widening.
+  const ProvisioningDomainProxyConfig::ProxyEndpoint* subdomain_endpoint =
+      FindMatchingProxyEndpoint(
+          *config, GURL("https://sub.test.domain.com.:8443/path?query=1"),
+          expected_chain);
+  ASSERT_NE(nullptr, subdomain_endpoint);
+  EXPECT_EQ(expected_chain, subdomain_endpoint->proxy_chain);
+
+  // Unrelated trailing-dot hostnames, bare-dot hostnames, and malformed
+  // double-trailing-dot hostnames do not match `proxy1`'s domain rule.
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("https://other.domain.com./path"),
+                         expected_chain));
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(*config, GURL("https://./path"),
+                                               expected_chain));
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("https://test.domain.com../path"),
+                         expected_chain));
+
+  // Even if a PvD rule itself lists a trailing-dot domain (`example.com.`),
+  // a double-dot URL (`https://example.com../`) must not strip one dot and
+  // match it.
+  constexpr char kTrailingDotRuleJson[] = R"({
+    "identifier": "api.example.com",
+    "proxies": [{
+      "protocol": "https-connect",
+      "proxy": "proxy1.example.com:443",
+      "identifier": "test-proxy-1"
+    }],
+    "proxy-match": [{
+      "domains": ["example.com."],
+      "proxies": ["test-proxy-1"]
+    }]
+  })";
+  std::optional<ProvisioningDomainProxyConfig> trailing_dot_rule_config =
+      ParseProvisioningDomainConfig(kTrailingDotRuleJson);
+  ASSERT_TRUE(trailing_dot_rule_config.has_value());
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *trailing_dot_rule_config,
+                         GURL("https://example.com../path"), expected_chain));
+
+  // Stripping one dot from a double-dot numeric host (`10.0.0.1..`) must not
+  // turn it into `10.0.0.1.` (which GURL canonicalizes to IPv4 `10.0.0.1`) and
+  // match the `10.0.0.0/8` subnet rule on `proxy1`.
+  ASSERT_NE(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("https://10.0.0.1/"), expected_chain));
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("https://10.0.0.1../"), expected_chain));
+}
+
 #else
 
 TEST(ParseRoutingRuleTest, SinglePortParsingAndIgnoredPortRanges) {
@@ -1180,6 +1248,18 @@ TEST(ParseRoutingRuleTest, PlainDomainDoesNotMatchSubdomains) {
   EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://example.com/")));
   EXPECT_FALSE(
       rule->destination_matchers.Matches(GURL("https://sub.example.com/")));
+}
+
+// Test that on non-iOS platforms, a trailing FQDN dot is neither routed nor
+// matched for proxy authentication against a dot-less PvD domain rule.
+TEST(FindMatchingProxyEndpointTest, DoesNotMatchTrailingDotHostname) {
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(GetValidPvdJsonResponse());
+  ASSERT_TRUE(config.has_value());
+
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("https://test.domain.com./path"),
+                         MakeHttpsProxyChain(kTestProxyHost1)));
 }
 
 #endif  // BUILDFLAG(IS_IOS)

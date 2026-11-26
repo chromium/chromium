@@ -75,6 +75,10 @@ std::optional<ProvisioningDomainProxyConfig> ParseProvisioningDomainConfig(
 // `destination_url` and `proxy_chain`. This is used during 407 Proxy
 // Authentication handling to look up the authentication configuration
 // (`ProxyAuthConfig`) and extra headers for a request.
+// On iOS, a single trailing FQDN dot on `destination_url`'s hostname (e.g.
+// `https://example.com.`) is stripped when matching so auth classification
+// agrees with WebKit's proxy routing (crbug.com/587911253; see
+// crbug.com/590523095 for the cross-platform discrepancy).
 // Returns nullptr if no matching route or endpoint is found.
 const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     const ProvisioningDomainProxyConfig& config,
