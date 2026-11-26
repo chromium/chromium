@@ -407,18 +407,26 @@ async def test_add_intercept_blocks(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("noopener", [False, True])
 async def test_add_intercept_no_contexts_intercepts_popup(
     websocket,
     context_id,
     html,
+    noopener,
 ):
     # Create opener and popup test URLs.
     url = html()
     popup_url = html()
 
-    # Subscribe to both request and completion events so unblocked requests fail fast.
+    # Subscribe to contextCreated as well as network events so the
+    # strict-FIFO message queue deadlock is exercised end-to-end.
     await subscribe(
-        websocket, ["network.beforeRequestSent", "network.responseCompleted"]
+        websocket,
+        [
+            "browsingContext.contextCreated",
+            "network.beforeRequestSent",
+            "network.responseCompleted",
+        ],
     )
 
     # Register a global intercept with no contexts specified.
@@ -457,12 +465,17 @@ async def test_add_intercept_no_contexts_intercepts_popup(
     )
 
     # Open the popup via window.open to trigger its initial navigation request.
+    expression = (
+        f"window.open('{popup_url}', '_blank', 'noopener')"
+        if noopener
+        else f"window.open('{popup_url}')"
+    )
     await send_JSON_command(
         websocket,
         {
             "method": "script.evaluate",
             "params": {
-                "expression": f"window.open('{popup_url}')",
+                "expression": expression,
                 "target": {"context": context_id},
                 "awaitPromise": False,
                 "userActivation": True,

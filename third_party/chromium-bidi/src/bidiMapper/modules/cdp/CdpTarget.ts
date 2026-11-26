@@ -69,6 +69,7 @@ export class CdpTarget {
   readonly contextConfigStorage: ContextConfigStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
+  readonly #resumed = new Deferred<void>();
   // Default user agent for the target. Required, as emulating client hints without user
   // agent is not possible. Cache it to avoid round trips to the browser for every target override.
   readonly #defaultUserAgent: string;
@@ -77,7 +78,7 @@ export class CdpTarget {
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
    * moving targets from one window to another. The actual values
-   * will be set during `#unblock`.
+   * will be set during `unblock`.
    * */
   #windowId?: number;
 
@@ -128,10 +129,6 @@ export class CdpTarget {
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
 
     cdpTarget.#setEventListeners();
-
-    // No need to await.
-    // Deferred will be resolved when the target is unblocked.
-    void cdpTarget.#unblock();
 
     return cdpTarget;
   }
@@ -201,6 +198,11 @@ export class CdpTarget {
     return this.#unblocked;
   }
 
+  /** Resolves once browser-side configuration finishes and debugger resume is sent. */
+  get resumed(): Promise<void> {
+    return this.#resumed;
+  }
+
   get id(): Protocol.Target.TargetID {
     return this.#id;
   }
@@ -238,23 +240,51 @@ export class CdpTarget {
   /**
    * Enables all the required CDP domains and unblocks the target.
    */
-  async #unblock() {
+  async unblock(): Promise<void> {
     const config = this.contextConfigStorage.getActiveConfig(
       this.topLevelId,
       this.userContext,
     );
 
-    const promises: Promise<unknown>[] = [];
+    const logRejectedResults = (results: PromiseSettledResult<unknown>[]) => {
+      for (const result of results) {
+        if (
+          result.status === 'rejected' &&
+          !this.#isExpectedError(result.reason)
+        ) {
+          // Ignore errors during configuring targets, just log them.
+          this.#logger?.(LogType.debugError)?.(
+            'Error happened when configuring a new target',
+            result.reason,
+          );
+        }
+      }
+    };
+
+    const browserStageSettled = Promise.allSettled([
+      this.toggleFetchIfNeeded(),
+      this.#cdpClient.sendCommand('Target.setAutoAttach', {
+        autoAttach: true,
+        waitForDebuggerOnStart: true,
+        flatten: true,
+      }),
+      this.#updateWindowId(),
+    ]);
+
+    // Enqueue renderer-routed commands synchronously before resuming so browser-side
+    // handlers (such as Emulation.setUserAgentOverride and preload scripts) apply
+    // in FIFO order ahead of `Runtime.runIfWaitingForDebugger`.
+    const rendererStagePromises: Promise<unknown>[] = [];
 
     if (CdpTarget.isFrameTarget(this.#targetType)) {
       // Page domain is only supported on frame targets.
-      promises.push(
+      rendererStagePromises.push(
         this.#cdpClient.sendCommand('Page.enable', {
           enableFileChooserOpenedEvent: true,
         }),
       );
       if (!this.#ignoreFileDialog()) {
-        promises.push(
+        rendererStagePromises.push(
           this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
             enabled: true,
             // The intercepted dialog should be canceled.
@@ -270,7 +300,7 @@ export class CdpTarget {
       // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
       // coming.
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
-      promises.push(
+      rendererStagePromises.push(
         this.#cdpClient
           .sendCommand('Page.getFrameTree')
           .then((frameTree) =>
@@ -282,7 +312,7 @@ export class CdpTarget {
       );
     }
 
-    promises.push(
+    rendererStagePromises.push(
       this.#cdpClient.sendCommand('Runtime.enable'),
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
@@ -292,38 +322,69 @@ export class CdpTarget {
         enableDurableMessages: config.disableNetworkDurableMessages !== true,
         maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
       }),
-      // Schedule network and Fetch configuration before unpausing the target so initial popup requests are intercepted.
-      this.toggleNetworkIfNeeded(),
-      this.#cdpClient.sendCommand('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: true,
-        flatten: true,
-      }),
-      this.#updateWindowId(),
+      this.toggleSetCacheDisabled(),
       this.#setUserContextConfig(config),
       this.#initAndEvaluatePreloadScripts(),
       this.toggleDeviceAccessIfNeeded(),
       this.togglePreloadIfNeeded(),
-      this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
     );
 
-    if (this.#isPageTarget) {
-      // For top-level page targets, `#parentCdpClient` is the `tab` target session,
-      // which was left paused in `CdpTargetManager` to be resumed by the page target.
-      promises.push(
-        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-      );
-    }
+    // Attach settlement handlers in the same turn so a target detach while
+    // awaiting cross-session commands cannot trigger UnhandledPromiseRejection.
+    const rendererStageSettled = Promise.allSettled(rendererStagePromises);
 
-    const results = await Promise.allSettled(promises);
-    for (const result of results) {
-      if (result instanceof Error) {
-        // Ignore errors during configuring targets, just log them.
-        this.#logger?.(LogType.debugError)?.(
-          'Error happened when configuring a new target',
-          result,
+    let onPausedInFetch!: (
+      event:
+        Protocol.Fetch.RequestPausedEvent | Protocol.Fetch.AuthRequiredEvent,
+    ) => void;
+    const pausedInFetchPromise = new Promise<void>((resolve) => {
+      onPausedInFetch = (event) => {
+        if (
+          this.#networkStorage.getRequestByFetchId(event.requestId)
+            ?.interceptPhase !== undefined
+        ) {
+          resolve();
+        }
+      };
+      this.#cdpClient.on('Fetch.requestPaused', onPausedInFetch);
+      this.#cdpClient.on('Fetch.authRequired', onPausedInFetch);
+    });
+
+    try {
+      logRejectedResults(await browserStageSettled);
+
+      const pageResumeSettled = Promise.allSettled([
+        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      ]);
+      if (this.#isPageTarget) {
+        // For top-level page targets, `#parentCdpClient` is the `tab` target session,
+        // which was left paused in `CdpTargetManager` to be resumed by the page target.
+        logRejectedResults(
+          await Promise.allSettled([
+            this.#parentCdpClient.sendCommand(
+              'Runtime.runIfWaitingForDebugger',
+            ),
+          ]),
         );
       }
+
+      this.#resumed.resolve();
+
+      const allRendererSettled = (async () => {
+        const [rendererResults, pageResumeResults] = await Promise.all([
+          rendererStageSettled,
+          pageResumeSettled,
+        ]);
+        logRejectedResults([...rendererResults, ...pageResumeResults]);
+      })();
+
+      // Under `noopener`, renderer-routed commands remain suspended until navigation
+      // commits; unblock once either renderer configuration finishes or Fetch pauses.
+      await Promise.race([allRendererSettled, pausedInFetchPromise]);
+    } finally {
+      this.#cdpClient.off('Fetch.requestPaused', onPausedInFetch);
+      this.#cdpClient.off('Fetch.authRequired', onPausedInFetch);
+      this.#resumed.resolve();
     }
 
     this.#unblocked.resolve({
@@ -678,7 +739,7 @@ export class CdpTarget {
     // const networkEnable = this.#networkStorage.getCollectorsForBrowsingContext(this.topLevelId).length > 0;
 
     if (!this.#isFetchSupported) {
-      // Currently `Network.enable` is called unconditionally in `#unblock`, and
+      // Currently `Network.enable` is called unconditionally in `unblock`, and
       // this method only toggles the `Fetch` domain.
       return;
     }

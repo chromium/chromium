@@ -28,6 +28,8 @@ import {
   type CdpEvents,
 } from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
+import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
@@ -35,6 +37,7 @@ import {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {UserContextStorage} from '../browser/UserContextStorage.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {NetworkStorage} from '../network/NetworkStorage.js';
+import {PreloadScript} from '../script/PreloadScript.js';
 import {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import {RealmStorage} from '../script/RealmStorage.js';
 import {AclManager} from '../session/AclManager.js';
@@ -144,6 +147,8 @@ class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
       };
     } else if (method === 'Browser.getWindowForTarget') {
       result = {windowId: 1, bounds: {}};
+    } else if (method === 'Target.getBrowserContexts') {
+      result = {browserContextIds: []};
     }
     return Promise.resolve(
       result as ProtocolMapping.Commands[CdpMethod]['returnType'],
@@ -203,6 +208,9 @@ describe('CdpTargetManager', () => {
   let otherPageClient: FakeCdpClient;
   let browsingContextStorage: BrowsingContextStorage;
   let realmStorage: RealmStorage;
+  let networkStorage: NetworkStorage;
+  let configStorage: ContextConfigStorage;
+  let preloadScriptStorage: PreloadScriptStorage;
   let debugErrorLog: sinon.SinonSpy;
   let eventManager: EventManager;
 
@@ -220,6 +228,16 @@ describe('CdpTargetManager', () => {
       userContextStorage,
       new AclManager(browsingContextStorage),
     );
+    networkStorage = new NetworkStorage(
+      eventManager,
+      browsingContextStorage,
+      browserClient,
+    );
+    configStorage = new ContextConfigStorage(
+      browsingContextStorage,
+      userContextStorage,
+    );
+    preloadScriptStorage = new PreloadScriptStorage();
     new CdpTargetManager(
       connection,
       browserClient,
@@ -227,11 +245,11 @@ describe('CdpTargetManager', () => {
       eventManager,
       browsingContextStorage,
       realmStorage,
-      new NetworkStorage(eventManager, browsingContextStorage, browserClient),
-      new ContextConfigStorage(browsingContextStorage, userContextStorage),
+      networkStorage,
+      configStorage,
       targetCreatedObserverStub as unknown as BluetoothProcessor,
       targetCreatedObserverStub as unknown as SpeculationProcessor,
-      new PreloadScriptStorage(),
+      preloadScriptStorage,
       DEFAULT_BROWSER_CONTEXT_ID,
       'Fake User Agent',
       logger,
@@ -1294,6 +1312,398 @@ describe('CdpTargetManager', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       sinon.assert.calledOnceWithExactly(debugErrorLog, unexpectedError);
+    });
+  });
+
+  describe('popup configuration before resume', () => {
+    it('applies user-agent override and Fetch.enable before resuming popup and detaching opener session', async () => {
+      await configStorage.updateConfig(
+        {userAgent: 'custom-popup-ua'},
+        undefined,
+        ['default'],
+        false,
+      );
+      await eventManager.subscribe(
+        [ChromiumBidi.Network.EventNames.BeforeRequestSent],
+        [],
+        [],
+        null,
+      );
+      networkStorage.addIntercept({
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+        urlPatterns: [
+          {
+            protocol: 'http',
+            hostname: 'example.com',
+            pathname: '/popup.html',
+          },
+        ],
+      });
+
+      const popupTabClient = connection.getCdpClient('POPUP_TAB_SESSION');
+      const popupPageClient = connection.getCdpClient('POPUP_PAGE_SESSION');
+      const openerPopupClient = connection.getCdpClient('OPENER_POPUP_SESSION');
+
+      const uaDeferred = new Deferred<object>();
+      const fetchDeferred = new Deferred<object>();
+      const popupCommands: string[] = [];
+      const tabCommands: string[] = [];
+      const openerCommands: string[] = [];
+      const parentPageCommands: string[] = [];
+
+      const origPopupSend = popupPageClient.sendCommand.bind(popupPageClient);
+      sinon.stub(popupPageClient, 'sendCommand').callsFake((method) => {
+        popupCommands.push(method);
+        if (method === 'Emulation.setUserAgentOverride') {
+          return uaDeferred as unknown as Promise<never>;
+        }
+        if (method === 'Fetch.enable') {
+          return fetchDeferred as unknown as Promise<never>;
+        }
+        return origPopupSend(method);
+      });
+
+      const origTabSend = popupTabClient.sendCommand.bind(popupTabClient);
+      sinon.stub(popupTabClient, 'sendCommand').callsFake((method) => {
+        tabCommands.push(method);
+        return origTabSend(method);
+      });
+
+      const origOpenerSend =
+        openerPopupClient.sendCommand.bind(openerPopupClient);
+      sinon.stub(openerPopupClient, 'sendCommand').callsFake((method) => {
+        openerCommands.push(method);
+        return origOpenerSend(method);
+      });
+
+      const origPageSend = pageClient.sendCommand.bind(pageClient);
+      sinon.stub(pageClient, 'sendCommand').callsFake((method) => {
+        parentPageCommands.push(method);
+        return origPageSend(method);
+      });
+
+      // Opener attaches popup page session first while paused for debugger.
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('OPENER_POPUP_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.notInclude(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(parentPageCommands, 'Target.detachFromTarget');
+
+      // Browser attaches tab and page sessions for the popup.
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      popupTabClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.include(popupCommands, 'Emulation.setUserAgentOverride');
+      assert.include(popupCommands, 'Fetch.enable');
+      assert.notInclude(popupCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(tabCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(parentPageCommands, 'Target.detachFromTarget');
+
+      // Resolving Fetch.enable resumes the target and detaches the opener session
+      // even while renderer-routed commands remain suspended during navigation.
+      fetchDeferred.resolve({});
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.include(popupCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.include(tabCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.include(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.include(parentPageCommands, 'Target.detachFromTarget');
+
+      const popupTarget =
+        browsingContextStorage.getContext('POPUP_TARGET').cdpTarget;
+      assert.isFalse(popupTarget.unblocked.isFinished);
+
+      // A non-matching Fetch.requestPaused is auto-continued and does not unblock early.
+      popupPageClient.receive('Fetch.requestPaused', {
+        requestId: 'FETCH_NON_MATCHING',
+        networkId: 'NET_NON_MATCHING',
+        request: {
+          url: 'http://example.com/other.html',
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: 'POPUP_TARGET',
+        resourceType: 'Document',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.isFalse(popupTarget.unblocked.isFinished);
+
+      // Pausing a matching request in Fetch unblocks the target before renderer responses settle.
+      popupPageClient.receive('Fetch.requestPaused', {
+        requestId: 'FETCH_1',
+        networkId: 'NET_1',
+        request: {
+          url: 'http://example.com/popup.html',
+          method: 'GET',
+          headers: {},
+          initialPriority: 'VeryHigh',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        },
+        frameId: 'POPUP_TARGET',
+        resourceType: 'Document',
+      });
+      await browsingContextStorage
+        .getContext('POPUP_TARGET')
+        .targetUnblockedOrThrow();
+
+      uaDeferred.resolve({});
+    });
+
+    it('waits for popup resume before detaching opener session when browser attaches first', async () => {
+      networkStorage.addIntercept({
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+        urlPatterns: [],
+      });
+
+      const popupTabClient = connection.getCdpClient('POPUP_TAB_SESSION');
+      const popupPageClient = connection.getCdpClient('POPUP_PAGE_SESSION');
+      const openerPopupClient = connection.getCdpClient('OPENER_POPUP_SESSION');
+
+      const fetchDeferred = new Deferred<object>();
+      const openerCommands: string[] = [];
+      const parentPageCommands: string[] = [];
+
+      const origPopupSend = popupPageClient.sendCommand.bind(popupPageClient);
+      sinon.stub(popupPageClient, 'sendCommand').callsFake((method) => {
+        if (method === 'Fetch.enable') {
+          return fetchDeferred as unknown as Promise<never>;
+        }
+        return origPopupSend(method);
+      });
+      const origOpenerSend =
+        openerPopupClient.sendCommand.bind(openerPopupClient);
+      sinon.stub(openerPopupClient, 'sendCommand').callsFake((method) => {
+        openerCommands.push(method);
+        return origOpenerSend(method);
+      });
+      const origPageSend = pageClient.sendCommand.bind(pageClient);
+      sinon.stub(pageClient, 'sendCommand').callsFake((method) => {
+        parentPageCommands.push(method);
+        return origPageSend(method);
+      });
+
+      // Browser attaches popup first while Fetch.enable is still pending.
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      popupTabClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      // Opener attaches popup page session while browser target has not resumed yet.
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('OPENER_POPUP_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.notInclude(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(parentPageCommands, 'Target.detachFromTarget');
+
+      fetchDeferred.resolve({});
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.include(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.include(parentPageCommands, 'Target.detachFromTarget');
+    });
+
+    it('does not let a forged iframe attach drain deferred opener detach', async () => {
+      const openerPopupClient = connection.getCdpClient('OPENER_POPUP_SESSION');
+      const openerCommands: string[] = [];
+      const parentPageCommands: string[] = [];
+
+      const origOpenerSend =
+        openerPopupClient.sendCommand.bind(openerPopupClient);
+      sinon.stub(openerPopupClient, 'sendCommand').callsFake((method) => {
+        openerCommands.push(method);
+        return origOpenerSend(method);
+      });
+      const origPageSend = pageClient.sendCommand.bind(pageClient);
+      sinon.stub(pageClient, 'sendCommand').callsFake((method) => {
+        parentPageCommands.push(method);
+        return origPageSend(method);
+      });
+
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('OPENER_POPUP_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FORGED_IFRAME_SESSION', 'POPUP_TARGET', 'iframe'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.notInclude(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(parentPageCommands, 'Target.detachFromTarget');
+
+      // Browser-only page attach drains the deferred detach once resumed.
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_TARGET', 'page'),
+        );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.include(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.include(parentPageCommands, 'Target.detachFromTarget');
+    });
+
+    it('cleans up deferred opener detach if opener session detaches before browser attach', async () => {
+      const openerPopupClient = connection.getCdpClient('OPENER_POPUP_SESSION');
+      const openerCommands: string[] = [];
+      const parentPageCommands: string[] = [];
+
+      const origOpenerSend =
+        openerPopupClient.sendCommand.bind(openerPopupClient);
+      sinon.stub(openerPopupClient, 'sendCommand').callsFake((method) => {
+        openerCommands.push(method);
+        return origOpenerSend(method);
+      });
+      const origPageSend = pageClient.sendCommand.bind(pageClient);
+      sinon.stub(pageClient, 'sendCommand').callsFake((method) => {
+        parentPageCommands.push(method);
+        return origPageSend(method);
+      });
+
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('OPENER_POPUP_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: 'OPENER_POPUP_SESSION',
+        targetId: 'POPUP_TARGET',
+      });
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_TARGET', 'page'),
+        );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.notInclude(openerCommands, 'Runtime.runIfWaitingForDebugger');
+      assert.notInclude(parentPageCommands, 'Target.detachFromTarget');
+    });
+
+    it('does not dispose popup preload scripts when opener popup session detaches', async () => {
+      const preloadScript = new PreloadScript({
+        functionDeclaration: '() => {}',
+      });
+      preloadScriptStorage.add(preloadScript);
+
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('OPENER_POPUP_SESSION', 'POPUP_TARGET', 'page'),
+      );
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_TARGET', 'page'),
+        );
+      await browsingContextStorage
+        .getContext('POPUP_TARGET')
+        .targetUnblockedOrThrow();
+
+      assert.isTrue(preloadScript.targetIds.has('POPUP_TARGET'));
+
+      // Chromium emits detachedFromTarget for the detached opener session while
+      // POPUP_PAGE_SESSION remains alive.
+      pageClient.receive('Target.detachedFromTarget', {
+        sessionId: 'OPENER_POPUP_SESSION',
+        targetId: 'POPUP_TARGET',
+      });
+
+      assert.isTrue(preloadScript.targetIds.has('POPUP_TARGET'));
+      assert.isTrue(browsingContextStorage.hasContext('POPUP_TARGET'));
+    });
+
+    it('suppresses CloseError and logs unexpected errors during CdpTarget.unblock', async () => {
+      const closingPageClient = connection.getCdpClient('CLOSING_PAGE_SESSION');
+      sinon
+        .stub(closingPageClient, 'sendCommand')
+        .rejects(new CloseError('Target closed'));
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('CLOSING_TAB_SESSION', 'CLOSING_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('CLOSING_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget(
+            'CLOSING_PAGE_SESSION',
+            'CLOSING_PAGE_TARGET',
+            'page',
+          ),
+        );
+      await browsingContextStorage
+        .getContext('CLOSING_PAGE_TARGET')
+        .targetUnblockedOrThrow();
+      sinon.assert.notCalled(debugErrorLog);
+
+      const unexpectedError = new Error('Unexpected CDP failure');
+      const failingPageClient = connection.getCdpClient('FAILING_PAGE_SESSION');
+      const origFailingSend =
+        failingPageClient.sendCommand.bind(failingPageClient);
+      sinon.stub(failingPageClient, 'sendCommand').callsFake((method) => {
+        if (method === 'Runtime.enable') {
+          return Promise.reject(unexpectedError);
+        }
+        return origFailingSend(method);
+      });
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FAILING_TAB_SESSION', 'FAILING_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('FAILING_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget(
+            'FAILING_PAGE_SESSION',
+            'FAILING_PAGE_TARGET',
+            'page',
+          ),
+        );
+      await browsingContextStorage
+        .getContext('FAILING_PAGE_TARGET')
+        .targetUnblockedOrThrow();
+      sinon.assert.calledWith(
+        debugErrorLog,
+        'Error happened when configuring a new target',
+        unexpectedError,
+      );
     });
   });
 });

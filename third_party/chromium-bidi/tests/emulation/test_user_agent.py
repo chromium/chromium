@@ -16,7 +16,13 @@ from json import JSONDecoder
 
 import pytest
 import pytest_asyncio
-from test_helpers import execute_command, goto_url
+from test_helpers import (
+    execute_command,
+    goto_url,
+    read_JSON_message,
+    send_JSON_command,
+    subscribe,
+)
 
 USER_AGENT_HEADER_NAME = "User-Agent"
 SOME_USER_AGENT = "some user agent"
@@ -290,3 +296,84 @@ async def test_user_agent_invalid_value(websocket, context_id):
                 "params": {"contexts": [context_id], "userAgent": invalid_user_agent},
             },
         )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("noopener", [False, True])
+async def test_user_agent_popup_initial_navigation(
+    websocket,
+    user_context_id,
+    create_context,
+    html,
+    get_url_echo,
+    get_navigator_user_agent,
+    noopener,
+):
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setUserAgentOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "userAgent": SOME_USER_AGENT,
+            },
+        },
+    )
+
+    opener_context_id = await create_context(user_context_id)
+    opener_url = html("<p>opener</p>")
+    popup_url = get_url_echo()
+    await goto_url(websocket, opener_context_id, opener_url)
+
+    await subscribe(
+        websocket, ["browsingContext.contextCreated", "browsingContext.load"]
+    )
+    features = "'noopener'" if noopener else "''"
+    # Do not use `execute_command` here. It drops the events that arrive before
+    # the command response.
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.open('{popup_url}', '_blank', {features})",
+                "target": {"context": opener_context_id},
+                "awaitPromise": False,
+                "userActivation": True,
+            },
+        },
+    )
+
+    popup_context_id = None
+    popup_loaded = False
+    command_completed = False
+    while popup_context_id is None or not popup_loaded or not command_completed:
+        message = await read_JSON_message(websocket)
+        if message.get("id") == command_id:
+            assert message["type"] == "success"
+            command_completed = True
+        elif message.get("method") == "browsingContext.contextCreated":
+            if (
+                message["params"]["userContext"] == user_context_id
+                and message["params"]["context"] != opener_context_id
+            ):
+                popup_context_id = message["params"]["context"]
+        elif message.get("method") == "browsingContext.load":
+            if message["params"]["url"] == popup_url:
+                popup_loaded = True
+
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.document.body.textContent",
+                "target": {"context": popup_context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
+    headers = JSONDecoder().decode(resp["result"]["value"])["headers"]
+    assert USER_AGENT_HEADER_NAME in headers
+    assert headers[USER_AGENT_HEADER_NAME] == SOME_USER_AGENT
+    assert await get_navigator_user_agent(popup_context_id) == SOME_USER_AGENT

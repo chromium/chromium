@@ -49,6 +49,16 @@ export class CdpTargetManager {
   readonly #browserOnlyTargetKeys = new Set<string>();
   readonly #rendererTargetKeys = new Set<string>();
   readonly #tabSessionIds = new Set<Protocol.Target.SessionID>();
+  readonly #deferredRendererPageDetaches = new Map<
+    Protocol.Target.TargetID,
+    Map<
+      Protocol.Target.SessionID,
+      {
+        parentSessionId: Protocol.Target.SessionID | undefined;
+        detach: () => void;
+      }
+    >
+  >();
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
@@ -235,7 +245,7 @@ export class CdpTargetManager {
       await Promise.allSettled([
         targetCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         // `tab` targets are left paused to be resumed by their child target
-        // (`CdpTarget.#unblock`). When a `tab`'s child is detached instead
+        // (`CdpTarget.unblock`). When a `tab`'s child is detached instead
         // (e.g. a non-DevTools `other` target), resume the parent `tab` too.
         ...(parentSessionCdpClient.sessionId !== undefined &&
         this.#tabSessionIds.has(parentSessionCdpClient.sessionId)
@@ -277,6 +287,38 @@ export class CdpTargetManager {
       this.#logger?.(LogType.debugError)?.(
         `Ignoring ${targetInfo.type} attach for ${targetInfo.targetId} on non-browser session ${parentSessionCdpClient.sessionId}`,
       );
+      if (targetInfo.type === 'page' && params.waitingForDebugger) {
+        const existingContext = this.#browsingContextStorage.findContext(
+          targetInfo.targetId,
+        );
+        if (
+          existingContext !== undefined &&
+          this.#browserOnlyTargetKeys.has(targetInfo.targetId) &&
+          existingContext.cdpTarget.id === targetInfo.targetId
+        ) {
+          void (async () => {
+            await existingContext.cdpTarget.resumed;
+            void detach();
+          })();
+        } else {
+          let deferred = this.#deferredRendererPageDetaches.get(
+            targetInfo.targetId,
+          );
+          if (deferred === undefined) {
+            deferred = new Map();
+            this.#deferredRendererPageDetaches.set(
+              targetInfo.targetId,
+              deferred,
+            );
+          }
+          deferred.set(sessionId, {
+            parentSessionId: parentSessionCdpClient.sessionId,
+            detach: () => {
+              void detach();
+            },
+          });
+        }
+      }
       return;
     }
 
@@ -380,6 +422,7 @@ export class CdpTargetManager {
             );
             // OOPiF.
             maybeContext.updateCdpTarget(cdpTarget);
+            void cdpTarget.unblock();
             return;
           }
           // A `page` or `other` target is attached on a browser-only session.
@@ -421,6 +464,23 @@ export class CdpTargetManager {
           targetInfo.openerFrameId ?? targetInfo.openerId,
           this.#logger,
         );
+        void cdpTarget.unblock();
+        if (targetInfo.type === 'page') {
+          const deferredDetaches = this.#deferredRendererPageDetaches.get(
+            targetInfo.targetId,
+          );
+          if (deferredDetaches !== undefined) {
+            this.#deferredRendererPageDetaches.delete(targetInfo.targetId);
+            void (async () => {
+              await cdpTarget.resumed;
+              for (const {
+                detach: deferredDetach,
+              } of deferredDetaches.values()) {
+                deferredDetach();
+              }
+            })();
+          }
+        }
         return;
       }
       case 'worker': {
@@ -459,6 +519,7 @@ export class CdpTargetManager {
           realm,
           browsingContext,
         );
+        void cdpTarget.unblock();
         return;
       }
       case 'service_worker': {
@@ -483,6 +544,7 @@ export class CdpTargetManager {
           cdpTarget,
           realm,
         );
+        void cdpTarget.unblock();
         return;
       }
       // In CDP, we only emit shared workers on the browser and not the set of
@@ -500,6 +562,7 @@ export class CdpTargetManager {
           cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget,
         );
+        void cdpTarget.unblock();
         return;
       }
     }
@@ -644,13 +707,37 @@ export class CdpTargetManager {
     targetId,
   }: Protocol.Target.DetachedFromTargetEvent) {
     this.#tabSessionIds.delete(sessionId);
-    if (targetId) {
-      this.#preloadScriptStorage.find({targetId}).map((preloadScript) => {
-        preloadScript.dispose(targetId);
-      });
+    for (const [
+      deferredTargetId,
+      sessions,
+    ] of this.#deferredRendererPageDetaches.entries()) {
+      for (const [deferredSessionId, entry] of sessions.entries()) {
+        if (
+          deferredSessionId === sessionId ||
+          entry.parentSessionId === sessionId
+        ) {
+          sessions.delete(deferredSessionId);
+        }
+      }
+      if (sessions.size === 0) {
+        this.#deferredRendererPageDetaches.delete(deferredTargetId);
+      }
     }
+
     const context =
       this.#browsingContextStorage.findContextBySession(sessionId);
+    const preloadTargetId =
+      context?.id ??
+      (targetId && !this.#browsingContextStorage.hasContext(targetId)
+        ? targetId
+        : undefined);
+    if (preloadTargetId) {
+      this.#preloadScriptStorage
+        .find({targetId: preloadTargetId})
+        .map((preloadScript) => {
+          preloadScript.dispose(preloadTargetId);
+        });
+    }
     if (context) {
       this.#rendererTargetKeys.delete(context.id);
       this.#browserOnlyTargetKeys.delete(context.id);
