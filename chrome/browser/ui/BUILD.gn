@@ -777,6 +777,7 @@ if (!is_android) {
     deps = [
       ":accelerator_utils_headers",
       ":browser_command_controller",
+      ":browser_element_identifiers",
       ":browser_init_state",
       ":browser_live_tab_context",
       ":browser_tabstrip",
@@ -846,6 +847,7 @@ if (!is_android) {
       "//chrome/browser/ui/focus",
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",

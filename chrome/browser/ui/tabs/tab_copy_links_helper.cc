@@ -14,7 +14,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -69,6 +71,12 @@ size_t CopyLinks(BrowserWindowInterface* browser,
     // `Clipboard::WriteURLs()` implementation.
     if (links.size() == 1) {
       scw.WriteText(base::UTF8ToUTF16(links[0].url.spec()));
+    }
+  }
+
+  if (browser) {
+    if (auto* browser_elements = BrowserElements::From(browser)) {
+      browser_elements->NotifyEvent(kBrowserViewElementId, kUrlCopiedEventId);
     }
   }
 

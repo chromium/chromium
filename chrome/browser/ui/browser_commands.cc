@@ -277,6 +277,8 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -3004,6 +3006,11 @@ void CopyURL(BrowserWindowInterface* browser,
   scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (browser) {
+    if (auto* browser_elements = BrowserElements::From(browser)) {
+      browser_elements->NotifyEvent(kBrowserViewElementId, kUrlCopiedEventId);
+    }
+  }
   if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
     ToastController* const toast_controller = ToastController::From(browser);
     if (toast_controller) {

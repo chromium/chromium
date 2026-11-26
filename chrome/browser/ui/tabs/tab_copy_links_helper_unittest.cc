@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -26,6 +28,8 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 
@@ -241,6 +245,70 @@ TEST_F(TabCopyLinksHelperTest, CopyLinks_ToastNotifications) {
     std::vector<content::WebContents*> one_tab = {tab1.get()};
     EXPECT_EQ(CopyLinks(&mock_browser, one_tab), 1u);
   }
+}
+
+class TestBrowserElements : public BrowserElements {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+  TestBrowserElements(BrowserWindowInterface& browser,
+                      ui::ElementContext context)
+      : BrowserElements(browser), context_(context) {}
+  ~TestBrowserElements() override = default;
+
+  ui::ElementContext GetContext() override { return context_; }
+
+ private:
+  const ui::ElementContext context_;
+};
+
+DEFINE_SAFE_CAST_TARGET(TestBrowserElements)
+
+TEST_F(TabCopyLinksHelperTest, CopyLinks_EmitsUrlCopiedEvent) {
+  constexpr ui::ElementContext kTestContext =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  ui::UnownedUserDataHost user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser;
+  ON_CALL(std::as_const(mock_browser), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+  ON_CALL(mock_browser, GetProfile()).WillByDefault(testing::Return(profile()));
+
+  TestBrowserElements browser_elements(mock_browser, kTestContext);
+  ui::test::TestElement browser_element(kBrowserViewElementId, kTestContext);
+  browser_element.Show();
+
+  int event_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddCustomEventInAnyContextCallback(
+              kUrlCopiedEventId,
+              base::BindRepeating(
+                  [](int* count, ui::TrackedElement*) { ++(*count); },
+                  &event_count));
+
+  auto tab1 =
+      CreateTestContentsWithUrl(GURL("https://example.com/one"), u"One");
+  auto tab2 =
+      CreateTestContentsWithUrl(GURL("https://example.com/two"), u"Two");
+  auto invalid_tab = CreateTestContentsWithUrl(GURL("chrome://version"));
+
+  // Valid single tab copy emits once.
+  std::vector<content::WebContents*> one_tab = {tab1.get()};
+  EXPECT_EQ(CopyLinks(&mock_browser, one_tab), 1u);
+  EXPECT_EQ(event_count, 1);
+
+  // Valid multi-tab copy emits once (not once per tab).
+  std::vector<content::WebContents*> two_tabs = {tab1.get(), tab2.get()};
+  EXPECT_EQ(CopyLinks(&mock_browser, two_tabs), 2u);
+  EXPECT_EQ(event_count, 2);
+
+  // Zero valid URLs does not emit.
+  std::vector<content::WebContents*> zero_tabs = {invalid_tab.get()};
+  EXPECT_EQ(CopyLinks(&mock_browser, zero_tabs), 0u);
+  EXPECT_EQ(event_count, 2);
+
+  // Null browser is safe and does not emit.
+  EXPECT_EQ(CopyLinks(/*browser=*/nullptr, one_tab), 1u);
+  EXPECT_EQ(event_count, 2);
 }
 
 }  // namespace
