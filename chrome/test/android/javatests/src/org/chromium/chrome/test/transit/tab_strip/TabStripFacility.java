@@ -29,6 +29,7 @@ import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabModelSelectedCondition;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -118,6 +119,11 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
     /** Expects the host Station's tab to be clickable on the strip, see {@link #expectTab(int)}. */
     public StripTabFacility<HostStationT> expectCurrentTab() {
         return expectTab(mHostStation.getTab().getId());
+    }
+
+    /** Expects the title of the tab group {@code tabGroupId} to be clickable on the strip. */
+    public StripGroupTitleFacility<HostStationT> expectGroupTitle(TabGroupId tabGroupId) {
+        return noopTo().enterFacility(new StripGroupTitleFacility<>(this, tabGroupId));
     }
 
     public StripLayoutHelperManager getStripLayoutHelperManager() {

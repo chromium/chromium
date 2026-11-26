@@ -11,7 +11,6 @@ import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
@@ -28,20 +27,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
+import static org.chromium.base.test.transit.ViewFinder.expectNoView;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import androidx.annotation.StringRes;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,8 +54,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
@@ -67,7 +73,13 @@ import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupCol
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.tab_strip.StripGroupTitleFacility;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
+import org.chromium.chrome.test.transit.tab_strip.TabStripGroupContextMenuFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
+import org.chromium.chrome.test.transit.ui.ModalDialogFacility;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
@@ -122,8 +134,7 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testOpenNewTabInGroup() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var menu = prepareStandardState().openContextMenu();
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -137,9 +148,10 @@ public class TabStripGroupContextMenuTest {
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Verify and click "New tab in group".
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item)).perform(click());
+        mPage =
+                menu.openNewTabInGroupTo()
+                        .arriveAt(
+                                RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
 
         // Verify the grouped tab count is incremented.
         int finalTabCount =
@@ -154,8 +166,7 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testUngroup() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var menu = prepareStandardState().openContextMenu();
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -168,14 +179,8 @@ public class TabStripGroupContextMenuTest {
                                         TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
-        // Verify and click "Ungroup".
-        onView(withText(R.string.ungroup_tab_group_menu_item)).check(matches(isDisplayed()));
-        onView(withText(R.string.ungroup_tab_group_menu_item)).perform(click());
-
-        // Verify confirmation dialog is showing and tab group is ungrouped after confirming the
-        // action.
-        verifyModalDialog(/* shouldShow= */ true);
-        onView(withText(R.string.ungroup_tab_group_action)).inRoot(isDialog()).perform(click());
+        // Click "Ungroup", confirm the dialog, and wait for the group to be ungrouped.
+        confirmActionDialog(menu.ungroupTo(), R.string.ungroup_tab_group_action, tabModel);
         int finalTabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -197,11 +202,10 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testUngroup_Incognito() {
         // Prepare incognito state and show menu.
-        prepareIncognitoState();
-        showMenu();
+        var menu = prepareIncognitoState().openContextMenu();
 
-        // Verify "Delete group" option should not be showing for incognito.
-        onView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).check(doesNotExist());
+        // Verify "Delete group" is absent in incognito.
+        expectNoView(withText(R.string.tab_grid_dialog_toolbar_delete_group));
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -214,13 +218,11 @@ public class TabStripGroupContextMenuTest {
                                         TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
-        // Verify and click "Ungroup".
-        onView(withText(R.string.ungroup_tab_group_menu_item)).check(matches(isDisplayed()));
-        onView(withText(R.string.ungroup_tab_group_menu_item)).perform(click());
-
-        // Verify confirmation dialog is not showing for incognito and tab group is immediately
-        // ungrouped.
-        verifyModalDialog(/* shouldShow= */ false);
+        // Click "Ungroup" and wait for the group to be ungrouped without a confirmation dialog.
+        menu.ungroupTo().waitFor(tabGroupRemoved(tabModel));
+        assertFalse(
+                "No confirmation dialog in incognito",
+                ThreadUtils.runOnUiThreadBlocking(mModalDialogManager::isShowing));
         int finalTabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -242,8 +244,7 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testCloseGroup() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var menu = prepareStandardState().openContextMenu();
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -263,17 +264,9 @@ public class TabStripGroupContextMenuTest {
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.isTabInTabGroup(ungroupedTab)));
 
         // Verify and click "Close group".
-        onView(withText(R.string.tab_grid_dialog_toolbar_close_group))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.tab_grid_dialog_toolbar_close_group)).perform(click());
+        menu.closeGroupTo().waitFor(tabGroupRemoved(tabModel));
 
         // Assert tab group is closed and undo option showed.
-        assertFalse(
-                "Tab group should be closed",
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                tabModel.containsTabGroup(
-                                        TabGroupId.fromOptionalToken(mTabGroupId))));
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(
@@ -287,11 +280,10 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testCloseGroup_Incognito() {
         // Prepare incognito state and show menu.
-        prepareIncognitoState();
-        showMenu();
+        var menu = prepareIncognitoState().openContextMenu();
 
-        // Verify "Delete group" option should not be showing for incognito.
-        onView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).check(doesNotExist());
+        // Verify "Delete group" is absent in incognito.
+        expectNoView(withText(R.string.tab_grid_dialog_toolbar_delete_group));
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -311,17 +303,9 @@ public class TabStripGroupContextMenuTest {
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.isTabInTabGroup(ungroupedTab)));
 
         // Verify and click "Close group".
-        onView(withText(R.string.tab_grid_dialog_toolbar_close_group))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.tab_grid_dialog_toolbar_close_group)).perform(click());
+        menu.closeGroupTo().waitFor(tabGroupRemoved(tabModel));
 
         // Assert tab group is closed and undo option not showed.
-        assertFalse(
-                "Tab group should be closed",
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                tabModel.containsTabGroup(
-                                        TabGroupId.fromOptionalToken(mTabGroupId))));
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(
@@ -335,8 +319,7 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testDeleteGroup() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var menu = prepareStandardState().openContextMenu();
 
         // Assert there are 2 grouped tabs.
         TabModel tabModel =
@@ -355,21 +338,8 @@ public class TabStripGroupContextMenuTest {
                 "Last tab should not be grouped",
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.isTabInTabGroup(ungroupedTab)));
 
-        // Verify and click "Delete group".
-        onView(withText(R.string.tab_grid_dialog_toolbar_delete_group))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).perform(click());
-
-        // Verify confirmation dialog is showing and tab group is deleted after confirming the
-        // action.
-        verifyModalDialog(/* shouldShow= */ true);
-        onView(withText(R.string.delete_tab_group_action)).inRoot(isDialog()).perform(click());
-        assertFalse(
-                "Tab group should be deleted",
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                tabModel.containsTabGroup(
-                                        TabGroupId.fromOptionalToken(mTabGroupId))));
+        // Click "Delete group", confirm the dialog, and wait for the group to be deleted.
+        confirmActionDialog(menu.deleteGroupTo(), R.string.delete_tab_group_action, tabModel);
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(
@@ -382,8 +352,8 @@ public class TabStripGroupContextMenuTest {
     @SmallTest
     public void testUpdateAndDeleteGroupTitle() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var groupTitle = prepareStandardState();
+        var menu = groupTitle.openContextMenu();
 
         // Verify default group title.
         String title = "2 tabs";
@@ -391,14 +361,14 @@ public class TabStripGroupContextMenuTest {
 
         // Update tab group title and verify.
         title = "newTitle";
-        updateGroupTitle(title);
-        showMenu();
+        updateGroupTitle(groupTitle, menu, title);
+        menu = groupTitle.openContextMenu();
         onView(withText(title)).check(matches(isDisplayed()));
 
         // Delete the group title by clearing the edit box and verify its default to "N tabs".
         title = "";
-        updateGroupTitle(title);
-        showMenu();
+        updateGroupTitle(groupTitle, menu, title);
+        groupTitle.openContextMenu();
         onView(withText("2 tabs")).check(matches(isDisplayed()));
     }
 
@@ -407,57 +377,62 @@ public class TabStripGroupContextMenuTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE)
     public void testLiveUpdateGroupTitle() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        var menu = prepareStandardState().openContextMenu();
 
         // Verify default group title in the menu.
         onView(withText("2 tabs")).check(matches(isDisplayed()));
 
         // Focus title edit box and replace text with rapid typing to verify debouncing.
-        onView(withId(R.id.tab_group_title)).perform(click());
-        waitForView(withId(R.id.tab_group_title), isFocused());
-        onView(withId(R.id.tab_group_title)).perform(replaceText("live"));
-        onView(withId(R.id.tab_group_title)).perform(replaceText("liveTitle"));
+        EditText titleEditText = focusTitleEditText(menu);
 
         // While the menu is STILL SHOWING (no enter pressed, no dismissal), verify the TabModel
         // updates live after the debounce period.
         TabModel tabModel =
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
-        CriteriaHelper.pollUiThread(
-                () ->
-                        "liveTitle"
-                                .equals(
-                                        tabModel.getTabGroupTitle(
-                                                TabGroupId.fromRawToken(mTabGroupId))),
-                "Tab group title should be updated live while menu is open");
+        menu.runOnUiThreadTo(
+                        () -> {
+                            titleEditText.setText("live");
+                            titleEditText.setText("liveTitle");
+                        })
+                .waitFor(
+                        uiThreadCondition(
+                                "Tab group title should be updated live while menu is open",
+                                () ->
+                                        whether(
+                                                "liveTitle"
+                                                        .equals(
+                                                                tabModel.getTabGroupTitle(
+                                                                        TabGroupId.fromRawToken(
+                                                                                mTabGroupId))))));
 
         // Verify the menu is still open and displaying the new title.
-        onView(allOf(withId(R.id.tab_group_title), withText("liveTitle")))
-                .check(matches(isDisplayed()));
+        menu.titleElement.check(matches(withText("liveTitle")));
 
         // Clear the title in the edit box.
-        onView(withId(R.id.tab_group_title)).perform(replaceText(""));
-
         // While still showing, verify that deleting the text clears the title in TabModel.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    String currentTitle =
-                            tabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTabGroupId));
-                    return currentTitle == null || currentTitle.isEmpty();
-                },
-                "Tab group title in TabModel should be cleared while edit text is empty");
+        menu.titleElement
+                .performViewActionTo(replaceText(""))
+                .waitFor(
+                        uiThreadCondition(
+                                "Tab group title in TabModel should be cleared while edit text is"
+                                        + " empty",
+                                () -> {
+                                    String currentTitle =
+                                            tabModel.getTabGroupTitle(
+                                                    TabGroupId.fromRawToken(mTabGroupId));
+                                    return whether(currentTitle == null || currentTitle.isEmpty());
+                                }));
 
         // Verify that the EditText itself remains empty while the user is actively typing.
-        onView(allOf(withId(R.id.tab_group_title), withText(""))).check(matches(isDisplayed()));
+        menu.titleElement.check(matches(withText("")));
     }
 
     @Test
     @SmallTest
     public void testUpdateGroupColor() {
         // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+        prepareStandardState().openContextMenu();
         TabModel tabModel =
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
@@ -494,10 +469,10 @@ public class TabStripGroupContextMenuTest {
     @Feature("KeyboardA11y")
     public void testKeyboardFocusAndActivation() {
         // Prepare standard state and show menu.
-        prepareStandardState();
+        var groupTitle = prepareStandardState();
         int numTabsBeforeClick =
                 getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel());
-        showMenu();
+        groupTitle.openContextMenu();
 
         // Start with the edit text box. Click to focus, then hit down arrow.
         onView(withId(R.id.tab_group_title)).perform(click());
@@ -652,11 +627,9 @@ public class TabStripGroupContextMenuTest {
                     }
                 };
 
-        // Set up the test as usual.
-        prepareStandardState();
-
-        // Show the menu on the tab group now that it is in a new window.
-        showMenu();
+        // Set up the test as usual and show the menu on the tab group now that it is in a new
+        // window.
+        prepareStandardState().openContextMenu();
 
         // Get the ListView of the context menu.
         onView(withId(R.id.tab_group_action_menu_list))
@@ -684,31 +657,22 @@ public class TabStripGroupContextMenuTest {
                 .check(matches(not(isScrollContainerMatcher)));
     }
 
-    private void prepareStandardState() {
+    private StripGroupTitleFacility<CtaPageStation> prepareStandardState() {
         // mPage is initialized in setUp() or updated by the test.
         mPage = mPage.openNewTabFast().loadAboutBlank();
         mPage = mPage.openNewTabFast().loadAboutBlank();
 
         ChromeTabbedActivity activity = (ChromeTabbedActivity) mPage.getActivity();
-        // Wait for the activity to be fully initialized before accessing TabModelSelector.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    try {
-                        return activity.getTabModelSelector() != null;
-                    } catch (IllegalStateException e) {
-                        return false;
-                    }
-                });
-
-        TabStripTestUtils.createTabGroup(
-                activity, /* isIncognito= */ false, /* firstIndex= */ 0, /* secondIndex= */ 1);
+        StripGroupTitleFacility<CtaPageStation> groupTitle =
+                createTabGroup(activity, /* isIncognito= */ false);
 
         // Re-initialize helper and manager for the current activity.
         mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
         mModalDialogManager = activity.getModalDialogManager();
+        return groupTitle;
     }
 
-    private void prepareIncognitoState() {
+    private StripGroupTitleFacility<CtaPageStation> prepareIncognitoState() {
         // Transition to incognito from the current regular page.
         mPage = mPage.openNewIncognitoTabOrWindowFast();
         mPage = mPage.openNewIncognitoTabFast();
@@ -718,68 +682,90 @@ public class TabStripGroupContextMenuTest {
         // If we opened a new window, ensure the rule tracks it for cleanup.
         mActivityTestRule.getActivityTestRule().setActivity(activity);
 
-        TabStripTestUtils.createTabGroup(
-                activity, /* isIncognito= */ true, /* firstIndex= */ 0, /* secondIndex= */ 1);
+        StripGroupTitleFacility<CtaPageStation> groupTitle =
+                createTabGroup(activity, /* isIncognito= */ true);
 
         mStripLayoutHelper = TabStripTestUtils.getActiveStripLayoutHelper(activity);
         mModalDialogManager = activity.getModalDialogManager();
+        return groupTitle;
     }
 
-    private void verifyModalDialog(boolean shouldShow) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(shouldShow));
-                });
+    private StripGroupTitleFacility<CtaPageStation> createTabGroup(
+            ChromeTabbedActivity activity, boolean isIncognito) {
+        TabStripFacility<CtaPageStation> tabStrip = mPage.expectTabStrip();
+        TabGroupCreatedCondition groupCreated = new TabGroupCreatedCondition(mPage.tabModelElement);
+        mPage.runTo(
+                        () ->
+                                TabStripTestUtils.createTabGroup(
+                                        activity,
+                                        isIncognito,
+                                        /* firstIndex= */ 0,
+                                        /* secondIndex= */ 1))
+                .waitForAnd(groupCreated)
+                .reach(tabStrip.settled());
+        mTabGroupId = TabGroupId.toOptionalToken(groupCreated.getFromPast());
+        return tabStrip.expectGroupTitle(groupCreated.getFromPast());
     }
 
-    private void showMenu() {
-        mStripLayoutHelper =
-                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        final StripLayoutHelperManager manager =
-                mActivityTestRule.getActivity().getLayoutManager().getStripLayoutHelperManager();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mStripLayoutHelper.updateLayout(0);
-                    mStripLayoutHelper.finishAnimations();
-                    mStripLayoutHelper.updateLayout(0);
-                    StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-                    assertTrue(
-                            "First view should be a group title.",
-                            views[0] instanceof StripLayoutGroupTitle);
-                    StripLayoutGroupTitle stripLayoutGroupTitle =
-                            ((StripLayoutGroupTitle) views[0]);
-                    float x =
-                            stripLayoutGroupTitle.getPaddedX()
-                                    + stripLayoutGroupTitle.getPaddedWidth() / 2f;
-                    float y =
-                            stripLayoutGroupTitle.getPaddedY()
-                                    + stripLayoutGroupTitle.getPaddedHeight() / 2f;
-                    mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
-                    manager.simulateLongPress(x, y);
-                });
-        waitForView(withId(R.id.tab_group_action_menu_list));
+    private void confirmActionDialog(
+            TripBuilder openDialogTrigger, @StringRes int buttonTextRes, TabModel tabModel) {
+        // ActionConfirmationDialog sets CUSTOM_BUTTON_BAR_VIEW with DualControlLayout
+        // (R.id.button_primary), leaving ModalDialogView's standard R.id.positive_button GONE.
+        ModalDialogFacility dialog = new ModalDialogFacility();
+        ViewElement<Button> confirmButton =
+                dialog.declareView(
+                        dialog.dialogElement.descendant(
+                                Button.class,
+                                allOf(withId(R.id.button_primary), withText(buttonTextRes))));
+        openDialogTrigger.enterFacility(dialog);
+        confirmButton.clickTo().exitFacilityAnd().waitFor(tabGroupRemoved(tabModel));
     }
 
-    private void updateGroupTitle(String title) {
-        KeyboardVisibilityDelegate delegate =
-                mActivityTestRule.getActivity().getWindowAndroid().getKeyboardDelegate();
+    private Condition tabGroupRemoved(TabModel tabModel) {
+        return uiThreadCondition(
+                "Tab group removed",
+                () ->
+                        whether(
+                                !tabModel.containsTabGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId))));
+    }
+
+    private static EditText focusTitleEditText(
+            TabStripGroupContextMenuFacility<CtaPageStation> menu) {
+        TripBuilder clickTrigger = menu.titleElement.clickTo();
+        EditText titleEditText = menu.titleElement.value();
+        clickTrigger.waitFor(
+                uiThreadCondition(
+                        "Title edit text focused", () -> whether(titleEditText.isFocused())));
+        return titleEditText;
+    }
+
+    private void updateGroupTitle(
+            StripGroupTitleFacility<CtaPageStation> groupTitle,
+            TabStripGroupContextMenuFacility<CtaPageStation> menu,
+            String title) {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        KeyboardVisibilityDelegate delegate = activity.getWindowAndroid().getKeyboardDelegate();
+        View compositorView = activity.getCompositorViewHolderForTesting();
 
         // Click group title text box to focus it for editing.
-        onView(withId(R.id.tab_group_title)).perform(click());
-        waitForView(withId(R.id.tab_group_title), isFocused());
+        focusTitleEditText(menu);
 
         // Enter new title in text box and press "enter" to dismiss menu and update group title.
-        onView(withId(R.id.tab_group_title))
-                .perform(replaceText(title))
-                .perform(pressImeActionButton());
+        menu.titleElement.performViewAction(replaceText(title));
 
         // Verify keyboard and context menu are dismissed.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        mActivityTestRule.getActivity().hasWindowFocus()
-                                && !delegate.isKeyboardObscuring(
-                                        mActivityTestRule
-                                                .getActivity()
-                                                .getCompositorViewHolderForTesting()));
+        menu.titleElement
+                .performViewActionTo(pressImeActionButton())
+                .exitFacilityAnd()
+                .waitForAnd(
+                        uiThreadCondition(
+                                "Window focused and keyboard hidden",
+                                () ->
+                                        whether(
+                                                activity.hasWindowFocus()
+                                                        && !delegate.isKeyboardObscuring(
+                                                                compositorView))))
+                .reach(groupTitle.getTabStrip().settled());
     }
 }

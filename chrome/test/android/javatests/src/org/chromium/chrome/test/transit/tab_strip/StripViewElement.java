@@ -26,7 +26,8 @@ import java.util.function.Supplier;
  *
  * <p>Its ENTER Condition is a {@link StripViewCondition}: the view is clickable. An optional one,
  * like {@link org.chromium.base.test.transit.OptionalViewElement}, has no ENTER Condition and is
- * only checked by {@link #checkPresent()} or right before {@link #clickTo()}.
+ * only checked by {@link #checkPresent()} or right before {@link #clickTo()} or {@link
+ * #longPressTo()}.
  *
  * <p>It has no EXIT Condition by default, since strip views usually stay on the strip when their
  * owner is exited. Call {@link #expectRemoved()} before a Transition that closes a tab.
@@ -92,20 +93,34 @@ public class StripViewElement<ViewT extends StripLayoutView> extends Element<Vie
 
     /** Starts a Trip clicking the center of the view. An optional view is checked first. */
     public TripBuilder clickTo() {
+        return gestureAtCenterTo(
+                (manager, x, y) ->
+                        manager.simulateClick(x, y, /* buttons= */ 0, /* modifiers= */ 0));
+    }
+
+    /** Starts a Trip long-pressing the center of the view. An optional view is checked first. */
+    public TripBuilder longPressTo() {
+        return gestureAtCenterTo(StripLayoutHelperManager::simulateLongPress);
+    }
+
+    private interface Gesture {
+        void perform(StripLayoutHelperManager manager, float x, float y);
+    }
+
+    private TripBuilder gestureAtCenterTo(Gesture gesture) {
         if (mOptional) {
             checkPresent();
         }
         return mOwner.runOnUiThreadTo(
                 () -> {
                     StripLayoutHelperManager manager = assumeNonNull(mManagerSupplier.get());
-                    // Read the position right before the click.
+                    // Read the position right before the gesture.
                     StripLayoutView view = mViewGetter.apply(manager);
                     assert view != null : mViewName + " is gone";
-                    manager.simulateClick(
+                    gesture.perform(
+                            manager,
                             view.getDrawX() + view.getWidth() / 2,
-                            view.getDrawY() + view.getHeight() / 2,
-                            /* buttons= */ 0,
-                            /* modifiers= */ 0);
+                            view.getDrawY() + view.getHeight() / 2);
                 });
     }
 

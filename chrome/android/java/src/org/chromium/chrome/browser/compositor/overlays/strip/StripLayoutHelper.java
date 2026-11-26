@@ -4369,7 +4369,7 @@ public class StripLayoutHelper
 
     @VisibleForTesting
     @Contract("!null -> !null")
-    @Nullable StripLayoutGroupTitle findGroupTitle(@Nullable Token tabGroupId) {
+    public @Nullable StripLayoutGroupTitle findGroupTitle(@Nullable Token tabGroupId) {
         return StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId);
     }
 
