@@ -81,7 +81,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void Recycle(PopupControllerCommon controller_common,
                int32_t form_control_ax_id) override;
   bool IsViewVisibilityAcceptingThresholdEnabled() const override;
-  bool IsSearching() const override;
 
   // AutofillPopupController:
   void SelectSuggestion(int index) override;

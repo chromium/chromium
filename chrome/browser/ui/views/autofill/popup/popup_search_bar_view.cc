@@ -24,7 +24,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -38,12 +37,8 @@ class SearchBarTextfield : public views::Textfield {
   METADATA_HEADER(SearchBarTextfield, views::Textfield)
  public:
   SearchBarTextfield(const std::u16string& placeholder,
-                     const std::u16string& initial_value,
                      views::TextfieldController* controller) {
     SetPlaceholderText(placeholder);
-    if (!initial_value.empty()) {
-      SetText(initial_value);
-    }
     SetAccessibleName(placeholder);
     SetController(controller);
     SetBorder(nullptr);
@@ -73,8 +68,7 @@ class SearchBarClearButton : public views::ImageButton {
   METADATA_HEADER(SearchBarClearButton, views::ImageButton)
  public:
   SearchBarClearButton(PressedCallback callback,
-                       PopupSearchBarView* search_bar_view,
-                       bool visible)
+                       PopupSearchBarView* search_bar_view)
       : views::ImageButton(std::move(callback)),
         search_bar_view_(*search_bar_view) {
     views::ConfigureVectorImageButton(this);
@@ -89,7 +83,7 @@ class SearchBarClearButton : public views::ImageButton {
         IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     views::InstallCircleHighlightPathGenerator(this);
-    SetVisible(visible);
+    SetVisible(false);
   }
 
   ~SearchBarClearButton() override = default;
@@ -118,7 +112,6 @@ END_METADATA
 }  // namespace
 
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
-                                       const std::u16string& initial_value,
                                        Delegate& delegate,
                                        base::TimeDelta debounce_delay)
     : delegate_(delegate), debounce_delay_(debounce_delay) {
@@ -140,13 +133,11 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                                     ? vector_icons::kSearchIcon
                                     : vector_icons::kSearchChromeRefreshOldIcon;
 
-  search_icon_ = AddChildView(std::make_unique<views::ImageView>(
+  AddChildView(std::make_unique<views::ImageView>(
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size)));
-  throbber_ = AddChildView(std::make_unique<views::Throbber>(icon_size));
-  SetLoading(false);
 
-  input_ = AddChildView(
-      std::make_unique<SearchBarTextfield>(placeholder, initial_value, this));
+  input_ =
+      AddChildView(std::make_unique<SearchBarTextfield>(placeholder, this));
 
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
@@ -158,8 +149,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   clear_ = AddChildView(std::make_unique<SearchBarClearButton>(
       base::BindRepeating(&PopupSearchBarView::OnClearPressed,
                           base::Unretained(this)),
-      this,
-      /*visible=*/!initial_value.empty()));
+      this));
 }
 
 void PopupSearchBarView::AddedToWidget() {
@@ -217,16 +207,6 @@ bool PopupSearchBarView::HandleKeyPressed(views::View* sender,
 bool PopupSearchBarView::HandleKeyEvent(views::Textfield* sender,
                                         const ui::KeyEvent& key_event) {
   return HandleKeyPressed(sender, key_event);
-}
-
-void PopupSearchBarView::SetLoading(bool is_loading) {
-  search_icon_->SetVisible(!is_loading);
-  throbber_->SetVisible(is_loading);
-  if (is_loading) {
-    throbber_->Start();
-  } else {
-    throbber_->Stop();
-  }
 }
 
 void PopupSearchBarView::Focus() {

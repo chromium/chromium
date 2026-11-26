@@ -9,9 +9,9 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -21,8 +21,6 @@
 namespace views {
 class Button;
 class Textfield;
-class Throbber;
-class ImageView;
 }  // namespace views
 
 namespace autofill {
@@ -71,7 +69,6 @@ class PopupSearchBarView : public views::View,
   // `debounce_delay`.
   PopupSearchBarView(
       const std::u16string& placeholder,
-      const std::u16string& initial_value,
       Delegate& delegate,
       base::TimeDelta debounce_delay = kInputChangeCallbackDelay);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
@@ -95,17 +92,12 @@ class PopupSearchBarView : public views::View,
   // Returns the current text in the input field.
   std::u16string GetText() const;
 
-  // Sets the loading state of the search bar, showing a throbber if loading.
-  void SetLoading(bool is_loading);
-
   // Handles key press events from child views (input field and clear button).
   bool HandleKeyPressed(views::View* sender, const ui::KeyEvent& event);
 
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
   bool IsClearButtonVisibleForTesting() const;
-  views::ImageView* GetSearchIconForTesting() const { return search_icon_; }
-  views::Throbber* GetThrobberForTesting() const { return throbber_; }
 
   // TODO(crbug.com/325246516): Add methods to support communication with its
   // hosting poopup view.
@@ -118,8 +110,6 @@ class PopupSearchBarView : public views::View,
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
-  raw_ptr<views::ImageView> search_icon_ = nullptr;
-  raw_ptr<views::Throbber> throbber_ = nullptr;
 
   base::CallbackListSubscription input_changed_subscription_;
   base::OneShotTimer input_change_notification_timer_;

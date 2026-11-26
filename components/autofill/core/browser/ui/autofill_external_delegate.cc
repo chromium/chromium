@@ -753,10 +753,6 @@ bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
   return false;
 }
 
-bool AutofillExternalDelegate::IsSearching() const {
-  return false;
-}
-
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion,
     const FormGlobalId& form_id,

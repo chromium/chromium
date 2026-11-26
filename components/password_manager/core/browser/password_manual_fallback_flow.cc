@@ -434,10 +434,6 @@ void PasswordManualFallbackFlow::OnTabSelected(
   NOTREACHED();
 }
 
-bool PasswordManualFallbackFlow::IsSearching() const {
-  return false;
-}
-
 autofill::FieldGlobalId PasswordManualFallbackFlow::GetQueriedFieldId() const {
   return field_id_;
 }

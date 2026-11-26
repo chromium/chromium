@@ -926,10 +926,6 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
 
   CreateSuggestionViews();
 
-  if (search_bar_) {
-    search_bar_->SetLoading(controller_ && controller_->IsSearching());
-  }
-
   // Updating bounds and redrawing popup can cause the popup to hide.
   if (!DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side)) {
     return;
@@ -1269,11 +1265,9 @@ void PopupViewViews::InitViews() {
 
   if (search_bar_config_) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_->placeholder, search_bar_config_->initial_value,
-        *this));
+        search_bar_config_->placeholder, *this));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
-    search_bar_->SetLoading(controller_ && controller_->IsSearching());
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
   }
 

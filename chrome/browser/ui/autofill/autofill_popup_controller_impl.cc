@@ -113,7 +113,6 @@ std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
-          .initial_value = {},
           .no_results_message = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)};
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
@@ -474,10 +473,6 @@ bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
   return !disable_threshold_for_testing_ &&
          ShouldResetIdleBarrier(trigger_source_);
-}
-
-bool AutofillPopupControllerImpl::IsSearching() const {
-  return delegate_ && delegate_->IsSearching();
 }
 
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {

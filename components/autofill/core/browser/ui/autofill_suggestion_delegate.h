@@ -92,9 +92,6 @@ class AutofillSuggestionDelegate {
   // Returns true if the delegate handles the search submission.
   virtual bool OnSearchSubmitted(const std::u16string& filter) = 0;
 
-  // Returns true if a search is currently in progress.
-  virtual bool IsSearching() const = 0;
-
   // Called when Autofill `suggestions` are shown.
   // `metadata` contains metadata about the popup container context (e.g.
   // parent anchor indices if shown in a sub-popup).

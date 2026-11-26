@@ -82,7 +82,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;
   bool OnFilterChanged(const std::u16string& filter) override;
   bool OnSearchSubmitted(const std::u16string& filter) override;
-  bool IsSearching() const override;
   void DidSelectSuggestion(const Suggestion& suggestion,
                            const FormGlobalId& form_id,
                            const FieldGlobalId& field_id) override;

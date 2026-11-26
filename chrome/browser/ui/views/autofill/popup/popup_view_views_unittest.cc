@@ -2284,8 +2284,7 @@ TEST_F(PopupViewViewsTest, SubPopupHidesWhenMouseMovesToSearchBar) {
   CreateAndShowView(
       /*widget_params=*/std::nullopt,
       /*search_bar_config=*/
-      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
-                                         .initial_value = {}},
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search"},
       /*tabbed_pane_config=*/std::nullopt,
       /*sub_popup_config=*/
       AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
@@ -3318,7 +3317,6 @@ TEST_F(PopupViewViewsTest, SearchBar_InputGetsFocusOnShow) {
   CreateAndShowView({SuggestionType::kAddressEntry}, std::move(widget_params),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Placeholder",
-                        .initial_value = {},
                         .no_results_message = u"No suggestions found"});
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
@@ -3334,7 +3332,6 @@ TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
   CreateAndShowView({SuggestionType::kAddressEntry}, std::move(widget_params),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Placeholder",
-                        .initial_value = {},
                         .no_results_message = u"No suggestions found"});
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
@@ -3352,7 +3349,6 @@ TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
                     CreateParamsForTestWidget(),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Placeholder",
-                        .initial_value = {},
                         .no_results_message = u"No suggestions found"});
 
   MockFunction<void()> check;
@@ -3384,7 +3380,6 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
                     CreateParamsForTestWidget(),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Placeholder",
-                        .initial_value = {},
                         .no_results_message = u"No suggestions found"});
 
   EXPECT_CALL(controller(),
@@ -3684,7 +3679,6 @@ TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
   CreateAndShowView(
       /*ids=*/{}, CreateParamsForTestWidget(),
       AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
-                                         .initial_value = {},
                                          .no_results_message = u""});
 
   // The popup should not be hidden due to no suggestions.

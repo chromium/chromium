@@ -595,10 +595,6 @@ void PasswordAutofillManager::OnTabSelected(
   NOTREACHED();
 }
 
-bool PasswordAutofillManager::IsSearching() const {
-  return false;
-}
-
 autofill::FieldGlobalId PasswordAutofillManager::GetQueriedFieldId() const {
   return last_field_id_;
 }

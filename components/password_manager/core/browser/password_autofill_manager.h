@@ -97,7 +97,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
-  bool IsSearching() const override;
   autofill::FieldGlobalId GetQueriedFieldId() const override;
 
   // PasswordAutofillManager ignores the `form_id` and `field_id` in

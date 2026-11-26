@@ -54,7 +54,6 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // AutofillSuggestionDelegate:
   bool OnFilterChanged(const std::u16string& filter) override;
   bool OnSearchSubmitted(const std::u16string& filter) override;
-  bool IsSearching() const override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions,
                           const SuggestionUiMetadata& metadata) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;

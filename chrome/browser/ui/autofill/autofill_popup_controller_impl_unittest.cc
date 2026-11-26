@@ -1091,11 +1091,9 @@ TEST_F(AutofillPopupControllerImplTest,
                   AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 
   const AutofillPopupView::SearchBarConfig config_with_message{
-      .placeholder = u"Search",
-      .initial_value = {},
-      .no_results_message = u"No results"};
+      .placeholder = u"Search", .no_results_message = u"No results"};
   const AutofillPopupView::SearchBarConfig config_without_message{
-      .placeholder = u"Search", .initial_value = {}, .no_results_message = u""};
+      .placeholder = u"Search", .no_results_message = u""};
 
   // No filter applied yet.
   EXPECT_FALSE(controller.ShouldShowNoSuggestionsMessage(config_with_message));

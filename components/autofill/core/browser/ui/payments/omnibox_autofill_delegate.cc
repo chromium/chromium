@@ -338,10 +338,6 @@ bool OmniboxAutofillDelegate::OnSearchSubmitted(const std::u16string& filter) {
   return false;
 }
 
-bool OmniboxAutofillDelegate::IsSearching() const {
-  return false;
-}
-
 void OmniboxAutofillDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     const SuggestionUiMetadata& metadata) {

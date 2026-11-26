@@ -488,7 +488,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
-                                         .initial_value = {},
                                          .no_results_message = u""});
 }
 
@@ -498,7 +497,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
-                                         .initial_value = {},
                                          .no_results_message = u""});
 }
 
@@ -511,7 +509,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi(
       /*popup_has_parent=*/false, AutofillPopupView::SearchBarConfig{
                                       .placeholder = u"Search",
-                                      .initial_value = {},
                                       .no_results_message = u"No suggestions"});
 }
 
