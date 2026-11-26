@@ -2123,7 +2123,26 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's account-management link in
-    the FedCM prompt is clicked.
+    the FedCM prompt is clicked. For a click rate (clicks per showing), divide
+    this histogram by Blink.FedCm.SignUp.IdpAccountManagementShown.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.SignUp.IdpAccountManagementShown"
+    enum="BooleanHit" expires_after="2027-11-01">
+  <owner>abhmadan@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded each time that the FedCM disclosure dialog is built with the
+    identity provider's account-management link on desktop, e.g. again if the
+    user goes back and selects an account again. Not recorded when the same
+    dialog is hidden and shown again, such as after switching tabs or returning
+    from one of its links. For a click rate, divide
+    Blink.FedCm.SignUp.IdpAccountManagementClicked by this histogram. A link can
+    be clicked more than once per showing, e.g. again after the user returns
+    from it, so that ratio is clicks per showing rather than the share of
+    dialogs with a click.
   </summary>
 </histogram>
 
@@ -2134,7 +2153,26 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's privacy-policy link in the
-    FedCM prompt is clicked.
+    FedCM prompt is clicked. For a click rate (clicks per showing), divide this
+    histogram by Blink.FedCm.SignUp.IdpPrivacyPolicyShown.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.SignUp.IdpPrivacyPolicyShown" enum="BooleanHit"
+    expires_after="2027-11-01">
+  <owner>abhmadan@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded each time that the FedCM disclosure dialog is built with the
+    identity provider's privacy-policy link on desktop, e.g. again if the user
+    goes back and selects an account again. Not recorded when the same dialog is
+    hidden and shown again, such as after switching tabs or returning from one
+    of its links. For a click rate, divide
+    Blink.FedCm.SignUp.IdpPrivacyPolicyClicked by this histogram. A link can be
+    clicked more than once per showing, e.g. again after the user returns from
+    it, so that ratio is clicks per showing rather than the share of dialogs
+    with a click.
   </summary>
 </histogram>
 
@@ -2145,7 +2183,26 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's terms-of-service link in the
-    FedCM prompt is clicked.
+    FedCM prompt is clicked. For a click rate (clicks per showing), divide this
+    histogram by Blink.FedCm.SignUp.IdpTermsOfServiceShown.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.SignUp.IdpTermsOfServiceShown" enum="BooleanHit"
+    expires_after="2027-11-01">
+  <owner>abhmadan@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded each time that the FedCM disclosure dialog is built with the
+    identity provider's terms-of-service link on desktop, e.g. again if the user
+    goes back and selects an account again. Not recorded when the same dialog is
+    hidden and shown again, such as after switching tabs or returning from one
+    of its links. For a click rate, divide
+    Blink.FedCm.SignUp.IdpTermsOfServiceClicked by this histogram. A link can be
+    clicked more than once per showing, e.g. again after the user returns from
+    it, so that ratio is clicks per showing rather than the share of dialogs
+    with a click.
   </summary>
 </histogram>
 

@@ -73,6 +73,18 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
+
+// Expects the `Blink.FedCm.SignUp.*` histograms to have exactly
+// `expected_counts` samples, all `true`.
+void ExpectIdpLinksShown(
+    const base::HistogramTester& histogram_tester,
+    const base::HistogramTester::CountsMap& expected_counts) {
+  EXPECT_EQ(histogram_tester.GetTotalCountsForPrefix("Blink.FedCm.SignUp."),
+            expected_counts);
+  for (const auto& [name, count] : expected_counts) {
+    histogram_tester.ExpectUniqueSample(name, true, count);
+  }
+}
 }  // namespace
 
 // Parameterized on whether `kFedCmPermissionUiWithContainer` and
@@ -1426,16 +1438,21 @@ IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewTest,
   TestIdpRowCanBeClickedMoreThanOnce();
 }
 
-// Tests that the identity provider's links are only shown with
-// `kFedCmIdpLinks`, even if the identity provider has them.
+// Tests that the identity provider's links are only shown, and recorded as
+// shown, with `kFedCmIdpLinks`, even if the identity provider has them.
 IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewTest,
                        RequestPermissionIdpLinksOnlyWithFlag) {
+  base::HistogramTester histogram_tester;
   views::View* disclosure_view = ShowRequestPermissionWithIdpLinks(
       kIdpAccountManagementUrl, kIdpPrivacyPolicyUrl, kIdpTermsOfServiceUrl);
+  base::HistogramTester::CountsMap expected_counts;
   if (IsIdpLinksFlagEnabled()) {
     // Order: Disclosure row, identity provider links row
     EXPECT_THAT(GetChildClassNames(disclosure_view),
                 testing::ElementsAre("BoxLayoutView", "BoxLayoutView"));
+    expected_counts = {{"Blink.FedCm.SignUp.IdpAccountManagementShown", 1},
+                       {"Blink.FedCm.SignUp.IdpPrivacyPolicyShown", 1},
+                       {"Blink.FedCm.SignUp.IdpTermsOfServiceShown", 1}};
   } else if (IsContainerFlagEnabled()) {
     // Order: Disclosure row
     EXPECT_THAT(GetChildClassNames(disclosure_view),
@@ -1443,6 +1460,7 @@ IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewTest,
   } else {
     EXPECT_EQ(disclosure_view->GetClassName(), "StyledLabel");
   }
+  ExpectIdpLinksShown(histogram_tester, expected_counts);
 }
 
 // Runs the request permission sheet with `kFedCmIdpLinks` enabled, with
@@ -1661,6 +1679,30 @@ IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewIdpLinksTest, ClickIdpLinks) {
   // The RP's tab, plus one tab per link.
   EXPECT_EQ(static_cast<size_t>(tab_strip_model->count()),
             expected_links.size() + 1);
+}
+
+// Tests that each time the request permission dialog is shown, whichever of
+// the identity provider's links it shows are recorded as shown.
+IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewIdpLinksTest,
+                       RequestPermissionRecordsIdpLinksShown) {
+  base::HistogramTester histogram_tester;
+  ShowRequestPermissionWithIdpLinks(kIdpAccountManagementUrl,
+                                    /*privacy_policy_url=*/"",
+                                    kIdpTermsOfServiceUrl);
+  ShowRequestPermissionWithIdpLinks(/*account_management_url=*/"",
+                                    kIdpPrivacyPolicyUrl,
+                                    kIdpTermsOfServiceUrl);
+  ShowRequestPermissionWithIdpLinks(/*account_management_url=*/"",
+                                    kIdpPrivacyPolicyUrl,
+                                    /*terms_of_service_url=*/"");
+  // Without any links, nothing is recorded.
+  ShowRequestPermissionWithIdpLinks(/*account_management_url=*/"",
+                                    /*privacy_policy_url=*/"",
+                                    /*terms_of_service_url=*/"");
+  ExpectIdpLinksShown(histogram_tester,
+                      {{"Blink.FedCm.SignUp.IdpAccountManagementShown", 1},
+                       {"Blink.FedCm.SignUp.IdpPrivacyPolicyShown", 2},
+                       {"Blink.FedCm.SignUp.IdpTermsOfServiceShown", 2}});
 }
 
 }  //  namespace webid

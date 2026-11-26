@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -221,7 +222,7 @@ std::unique_ptr<views::View> CreateDisclosureContainer(
 
 // Returns a label with links to whichever of the identity provider's account
 // management page, privacy policy and terms of service it has, or nullptr if it
-// has none.
+// has none. Also records each of those links as shown.
 std::unique_ptr<views::StyledLabel> CreateIdpLinksLabel(
     const content::IdentityProviderData& idp_data,
     FedCmAccountSelectionView* owner) {
@@ -265,12 +266,15 @@ std::unique_ptr<views::StyledLabel> CreateIdpLinksLabel(
   };
   if (has_account_management) {
     add_link(LinkType::IDP_ACCOUNT_MANAGEMENT, metadata.account_management_url);
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpAccountManagementShown", true);
   }
   if (has_privacy_policy) {
     add_link(LinkType::IDP_PRIVACY_POLICY, metadata.privacy_policy_url);
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpPrivacyPolicyShown", true);
   }
   if (has_terms_of_service) {
     add_link(LinkType::IDP_TERMS_OF_SERVICE, metadata.terms_of_service_url);
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpTermsOfServiceShown", true);
   }
 
   auto label = std::make_unique<views::StyledLabel>();

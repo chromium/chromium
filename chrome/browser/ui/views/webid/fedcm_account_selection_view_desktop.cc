@@ -741,8 +741,6 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
       UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
       break;
 
-    // TODO(crbug.com/581372729): Record how often the identity provider's
-    // links are shown, so that these clicks can be turned into click rates.
     case LinkType::IDP_ACCOUNT_MANAGEMENT:
       UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpAccountManagementClicked",
                             true);
