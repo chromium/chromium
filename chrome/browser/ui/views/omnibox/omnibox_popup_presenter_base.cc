@@ -45,6 +45,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_native_widget_mac.h"
@@ -985,6 +986,19 @@ void OmniboxPopupPresenterBase::OnFileSelectionClosed() {}
 std::optional<OmniboxPopupHost::FocusStateToRestore>
 OmniboxPopupPresenterBase::TakeFocusStateToRestoreAfterModalDialog() {
   return std::nullopt;
+}
+
+views::Widget* OmniboxPopupPresenterBase::GetBrowserWidget() {
+  views::Widget* widget = delegate().GetLocationBarWidget();
+  return widget ? widget->GetTopLevelWidget() : nullptr;
+}
+
+bool OmniboxPopupPresenterBase::IsBrowserOrPopupActive() {
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (!browser_widget) {
+    return false;
+  }
+  return browser_widget->IsActive() || (GetWidget() && GetWidget()->IsActive());
 }
 
 void OmniboxPopupPresenterBase::SetPermissionPromptShowing(bool showing) {

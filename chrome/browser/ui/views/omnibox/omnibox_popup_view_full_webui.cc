@@ -434,6 +434,20 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // Any state recorded for a modal dialog belongs to the previous tab.
   popup_host()->OnTabChanged();
 
+  const bool was_browser_or_popup_active =
+      popup_host()->IsBrowserOrPopupActive();
+  auto restore_tab_focus_if_active = [&]() {
+    // Focusing a view in an inactive window activates it, which would pull this
+    // window in front of the one the user switched to. `BrowserView` restores
+    // this tab's focus when the window is next activated.
+    if (contents && was_browser_or_popup_active) {
+      if (auto* focus_helper =
+              ChromeWebContentsViewFocusHelper::FromWebContents(contents)) {
+        focus_helper->RestoreFocus();
+      }
+    }
+  };
+
   // Request focus before pushing content state so our `SetInputState` IPC
   // overrides any OS-default focus selection (such as macOS Select-All).
   if (target_popup_state == OmniboxPopupState::kFull) {
@@ -451,19 +465,13 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
         }
       }
       popup_host()->RequestFocus();
-    } else if (contents) {
-      if (auto* focus_helper =
-              ChromeWebContentsViewFocusHelper::FromWebContents(contents)) {
-        focus_helper->RestoreFocus();
-      }
+    } else {
+      restore_tab_focus_if_active();
     }
   } else {
     popup_host()->Hide();
-    if (!should_focus_popup && contents) {
-      if (auto* focus_helper =
-              ChromeWebContentsViewFocusHelper::FromWebContents(contents)) {
-        focus_helper->RestoreFocus();
-      }
+    if (!should_focus_popup) {
+      restore_tab_focus_if_active();
     }
   }
 
