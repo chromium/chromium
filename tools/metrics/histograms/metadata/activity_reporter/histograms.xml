@@ -1,0 +1,92 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of ActivityReporter
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ActivityReporter.IncompleteReports" units="reports"
+    expires_after="2027-05-23">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the number of activity report update checks still in progress when
+    the activity reporter is destroyed during a clean shutdown. Such reports may
+    have reached the server, but their responses were not processed. Emitted
+    once per session that reports activity; not emitted on Android or after
+    crashes, and rarely on iOS. Typically uploaded on the next browser launch.
+  </summary>
+</histogram>
+
+<histogram name="ActivityReporter.InitialDateLastActiveState"
+    enum="InitialDateLastActiveState" expires_after="2027-05-02">
+  <owner>noahrose@google.com</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the persisted DateLastActive state of the Chrome activity app id in
+    Local State for the Chrome Activity Reporter on the first ReportActive()
+    call in a session. Emitted at most once per browser session, and only in
+    sessions that report activity. Used to diagnose whether prior sessions
+    failed to persist DateLastActive data (e.g., due to a race during browser
+    shutdown).
+  </summary>
+</histogram>
+
+<histogram name="ActivityReporter.PingFreshnessAge" units="hours"
+    expires_after="2027-05-12">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records how long ago the ping freshness value was written, when the Chrome
+    Activity Reporter starts an update check for an activity report.
+    update_client writes a new value after each successful update check. When
+    the ActivityReporterPingFreshnessRotation feature is enabled, the reporter
+    also writes a new value right after it records this histogram, if the value
+    has reached the max age (the feature's PingFreshnessRotationMaxAge
+    parameter: 53 hours by default, clamped to between 24 hours and 28 days), or
+    if the time it was written is unknown or in the future. Recorded before that
+    replacement, so samples can exceed the max age. Not recorded when there is
+    no value yet, or when the time the value was written is unknown or in the
+    future (see ActivityReporter.PingFreshnessState). Samples are truncated to
+    whole hours: ages under 1 hour fall in the underflow bucket, and ages of 28
+    days or more in the overflow bucket. Emitted at most once every 5 hours in a
+    browser session.
+  </summary>
+</histogram>
+
+<histogram name="ActivityReporter.PingFreshnessState" enum="PingFreshnessState"
+    expires_after="2027-05-12">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the state of the ping freshness value when the Chrome Activity
+    Reporter starts an update check for an activity report. A value expires when
+    it reaches the max age, which the PingFreshnessRotationMaxAge parameter of
+    the ActivityReporterPingFreshnessRotation feature sets: 53 hours by default,
+    clamped to between 24 hours and 28 days. When the feature is enabled, the
+    reporter then replaces values that are expired, or whose write time is
+    unknown or in the future. Emitted at most once every 5 hours in a browser
+    session.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

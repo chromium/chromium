@@ -40,7 +40,7 @@ enum class InitialDateLastActiveState {
   kInvalid = 3,
   kMaxValue = kInvalid,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:InitialDateLastActiveState)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/activity_reporter/enums.xml:InitialDateLastActiveState)
 
 // An ActivityReporter is capable of reporting that Chrome was actively used by
 // the user in a privacy-preserving manner.

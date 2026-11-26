@@ -203,7 +203,7 @@ enum class PingFreshnessState {
 
   kMaxValue = kFutureWriteTime,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:PingFreshnessState)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/activity_reporter/enums.xml:PingFreshnessState)
 
 // Returns the state of the PingFreshness for `id` in `persisted_data` at `now`.
 // A PingFreshness expires once it is `max_age` old. `max_age` must be positive.

@@ -28,8 +28,9 @@ constexpr base::TimeDelta kMaxPingFreshnessRotationMaxAge = base::Days(28);
 // Enables replacing the ping freshness before each report's update check if it
 // is `GetPingFreshnessRotationMaxAge()` old or older, or if its write time is
 // unknown or in the future.
-// TODO(b/577188262): Remove the feature and its param, and their mentions in
-// README.md and histograms.xml, once the rotation launches.
+// TODO(b/577188262): Once the rotation launches, remove the feature, its
+// param, and their mentions in README.md and in
+// tools/metrics/histograms/metadata/activity_reporter/histograms.xml.
 BASE_FEATURE(kActivityReporterPingFreshnessRotation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

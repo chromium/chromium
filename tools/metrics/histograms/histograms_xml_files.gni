@@ -4,6 +4,7 @@
 common_enums_xml_files = [
   "//tools/metrics/histograms/enums.xml",
   "//tools/metrics/histograms/metadata/accessibility/enums.xml",
+  "//tools/metrics/histograms/metadata/activity_reporter/enums.xml",
   "//tools/metrics/histograms/metadata/actor/enums.xml",
   "//tools/metrics/histograms/metadata/ai/enums.xml",
   "//tools/metrics/histograms/metadata/apps/enums.xml",
@@ -158,6 +159,7 @@ common_enums_xml_files = [
 histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/accessibility/histograms.xml",
   "//tools/metrics/histograms/metadata/account_manager/histograms.xml",
+  "//tools/metrics/histograms/metadata/activity_reporter/histograms.xml",
   "//tools/metrics/histograms/metadata/actor/histograms.xml",
   "//tools/metrics/histograms/metadata/ai/histograms.xml",
   "//tools/metrics/histograms/metadata/apps/histograms.xml",
