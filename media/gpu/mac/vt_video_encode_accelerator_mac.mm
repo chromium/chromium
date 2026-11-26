@@ -2064,16 +2064,18 @@ bool VTVideoEncodeAccelerator::CanEncodeOpaqueSharedImage(
           kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
     return false;
   }
-  // SharedImages must have SCANOUT (e.g. WebGL, WebGPU) or
-  // MACOS_VIDEO_TOOLBOX (e.g. canvas, camera capture, video decoders) usage so
-  // that they are IOSurface-backed and ProduceVideo succeeds on the GPU thread.
+  // SharedImages must have SCANOUT (e.g. WebGL, WebGPU), VIDEO_DECODE (video
+  // decoders) or VIDEO_ENCODE_ACCELERATOR (e.g. canvas, camera capture) usage
+  // so that they are IOSurface-backed and ProduceVideo succeeds on the GPU
+  // thread.
   //
   // Note: For CPU memory sessions (such as I420),
   // `gpu_supported_pixel_formats_` is left empty in `Initialize()`, ensuring
   // this always returns false.
   return frame.shared_image()->usage().HasAny(
              gpu::SHARED_IMAGE_USAGE_SCANOUT |
-             gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) &&
+             gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
+             gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR) &&
          std::ranges::contains(gpu_supported_pixel_formats_, frame.format());
 }
 

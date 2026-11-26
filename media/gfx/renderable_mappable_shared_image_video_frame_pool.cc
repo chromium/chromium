@@ -225,7 +225,7 @@ bool FrameResources::Initialize(VideoPixelFormat format,
 
   gpu::SharedImageUsageSet usage =
 #if BUILDFLAG(IS_MAC)
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+      gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR |
 #endif
       // These SharedImages, like most/all SharedImages created to back
       // VideoFrames, can be read both via the raster interface for import into

@@ -16,6 +16,7 @@ namespace gpu {
 
 // Please update the function, CreateLabelForSharedImageUsage, when adding a new
 // enum value.
+// 1 << 9 and 1 << 10 are unused and available.
 enum SharedImageUsage : uint32_t {
   // Image will be read via GLES2Interface
   SHARED_IMAGE_USAGE_GLES2_READ = 1 << 0,
@@ -34,15 +35,11 @@ enum SharedImageUsage : uint32_t {
   // GL/Vulkan
   // interop cases.
   SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 6,
-  // Image will be used for video decode acceleration on Chrome OS.
+  // Image will be used for hardware video decode acceleration.
   SHARED_IMAGE_USAGE_VIDEO_DECODE = 1 << 7,
   // Image will be used as a WebGPU swapbuffer
   SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE = 1 << 8,
-  // The image was created by VideoToolbox on macOS, and is backed by a
-  // CVPixelBuffer's IOSurface. Because of this backing, IOSurfaceIsInUse will
-  // always return true.
-  SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 9,
-  // 1 << 10 is unused and available.
+  // 1 << 9 and 1 << 10 are unused and available.
   // Image will be used for CPU Writes by client. Normally write usage also
   // implies read. Hence adding ONLY tag to clarify that its write only in this
   // case.

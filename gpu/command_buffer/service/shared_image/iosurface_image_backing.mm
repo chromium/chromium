@@ -673,8 +673,10 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
     const {
   // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
   // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the
-  // ones output by hardware video decode and video capture).
-  if (backing()->usage().Has(SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)) {
+  // ones output by hardware video decode and video capture, and the ones
+  // handed to the hardware video encoder).
+  if (backing()->usage().HasAny(SHARED_IMAGE_USAGE_VIDEO_DECODE |
+                                SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR)) {
     return false;
   }
 

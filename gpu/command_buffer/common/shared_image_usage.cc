@@ -40,7 +40,6 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE, "ConcurrentReadWrite"},
       {SHARED_IMAGE_USAGE_VIDEO_DECODE, "VideoDecode"},
       {SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE, "WebgpuSwapChainTexture"},
-      {SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, "MacosVideoToolbox"},
       {SHARED_IMAGE_USAGE_MIPMAP, "Mipmap"},
       {SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "CpuWriteOnly"},
       {SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU, "HighPerformanceGpu"},

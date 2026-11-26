@@ -1396,10 +1396,10 @@ TEST_F(RTCVideoEncoderEncodeTest,
   // Matches DrawingBuffer (WebGL), WebGPUSwapBufferProvider (WebGPU), and
   // CanvasResourceProvider SharedImage usage flags wrapped by
   // blink::VideoFrame and pushed into MediaStreamTrackGenerator on macOS.
-  // Notably omits SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, verifying that
+  // Notably omits SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR, verifying that
   // kWebRtcMacSharedImageEncode allows encoding opaque SharedImages produced
   // by general rendering pipelines that were not specifically tagged for
-  // VideoToolbox at allocation time.
+  // video encode at allocation time.
   const gfx::Size frame_size(kInputFrameWidth, kInputFrameHeight);
   gpu::SharedImageMetadata metadata;
   metadata.format = viz::SinglePlaneFormat::kBGRA_8888;
@@ -1472,13 +1472,14 @@ TEST_F(RTCVideoEncoderEncodeTest,
 
   // Matches VideoCaptureImpl::OnBufferReady on macOS: Mappable NV12
   // SharedImage created with SCANOUT_VEA_CPU_READ buffer usage and
-  // RASTER_READ | DISPLAY_READ | SCANOUT | MACOS_VIDEO_TOOLBOX usage flags.
+  // RASTER_READ | DISPLAY_READ | SCANOUT | VIDEO_ENCODE_ACCELERATOR usage
+  // flags.
   const gfx::Size frame_size(kInputFrameWidth, kInputFrameHeight);
   auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   const gpu::SharedImageUsageSet si_usage =
       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+      gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
   auto shared_image = test_sii->CreateSharedImage(
       {viz::MultiPlaneFormat::kNV12, frame_size,
        gfx::ColorSpace::CreateREC709(), si_usage, "VideoCaptureFrameBuffer"},

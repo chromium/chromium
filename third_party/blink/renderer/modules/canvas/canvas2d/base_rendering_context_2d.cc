@@ -525,18 +525,18 @@ void BaseRenderingContext2D::CreateSharedImagePool(
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Under kWebRtcMacSharedImageEncode, MACOS_VIDEO_TOOLBOX implies an IOSurface
-  // backing just like SCANOUT does. It is intentionally not subject to the
-  // !is_overlay_supported stripping above, since it implies an IOSurface on
-  // Mac regardless of overlay support.
-  const bool is_video_toolbox_io_surface =
+  // Under kWebRtcMacSharedImageEncode, VIDEO_ENCODE_ACCELERATOR implies an
+  // IOSurface backing just like SCANOUT does. It is intentionally not subject
+  // to the !is_overlay_supported stripping above, since it implies an
+  // IOSurface on Mac regardless of overlay support.
+  const bool is_video_encode_io_surface =
       shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) &&
+          gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR) &&
       base::FeatureList::IsEnabled(features::kWebRtcMacSharedImageEncode);
   if ((shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) ||
-       is_video_toolbox_io_surface) &&
+       is_video_encode_io_surface) &&
       is_accelerated && format == viz::SinglePlaneFormat::kRGBA_8888) {
-    // GPU-accelerated SCANOUT or MACOS_VIDEO_TOOLBOX usage on Mac uses
+    // GPU-accelerated SCANOUT or VIDEO_ENCODE_ACCELERATOR usage on Mac uses
     // IOSurface. Must switch from RGBA_8888 to BGRA_8888 in that case:
     // RGBA_8888 IOSurfaces cannot be imported by ANGLE's Vulkan backend and
     // are not accepted by the VideoToolbox encoder.

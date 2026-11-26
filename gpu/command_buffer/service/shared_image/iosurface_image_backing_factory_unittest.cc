@@ -930,9 +930,10 @@ class IOSurfaceImageBackingFactoryVideoTest
       public testing::WithParamInterface<VideoUsageParam> {};
 
 // Test that the video representation exposes the backing IOSurface for a
-// MACOS_VIDEO_TOOLBOX-only image (e.g. a 2D OffscreenCanvas handed to the
-// VideoToolbox encoder) and for a SCANOUT | MACOS_VIDEO_TOOLBOX image (e.g.
-// camera capture or video decoder output).
+// VIDEO_ENCODE_ACCELERATOR-only image (e.g. a 2D OffscreenCanvas handed to the
+// VideoToolbox encoder), for a SCANOUT | VIDEO_ENCODE_ACCELERATOR image (e.g.
+// camera capture) and for a SCANOUT | VIDEO_DECODE image (video decoder
+// output).
 TEST_P(IOSurfaceImageBackingFactoryVideoTest, ProduceVideo) {
   const SharedImageUsageSet usage = GetParam().usage;
   auto mailbox = Mailbox::Generate();
@@ -981,16 +982,72 @@ TEST_P(IOSurfaceImageBackingFactoryVideoTest, ProduceVideo) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryVideoTest,
-    testing::Values(VideoUsageParam{"VideoToolbox",
-                                    {SHARED_IMAGE_USAGE_DISPLAY_READ,
-                                     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX}},
-                    VideoUsageParam{"ScanoutVideoToolbox",
-                                    {SHARED_IMAGE_USAGE_DISPLAY_READ,
-                                     SHARED_IMAGE_USAGE_SCANOUT,
-                                     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX}}),
+    testing::Values(
+        VideoUsageParam{"VideoEncodeAccelerator",
+                        {SHARED_IMAGE_USAGE_DISPLAY_READ,
+                         SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR}},
+        VideoUsageParam{
+            "ScanoutVideoEncodeAccelerator",
+            {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT,
+             SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR}},
+        VideoUsageParam{
+            "ScanoutVideoDecode",
+            {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT,
+             SHARED_IMAGE_USAGE_VIDEO_DECODE}}),
     [](const testing::TestParamInfo<VideoUsageParam>& info) {
       return std::string(info.param.name);
     });
+
+// Test that the overlay representation honors IOSurfaceIsInUse() for a plain
+// scanout image, and ignores it for video decode and video encode images.
+// IOSurfaces of the latter are reported as in use for reasons unrelated to the
+// WindowServer (e.g. because they are wrapped in a CVPixelBuffer).
+TEST_F(IOSurfaceImageBackingFactoryTest, OverlayIsInUseByWindowServer) {
+  const struct {
+    SharedImageUsageSet usage;
+    bool expect_in_use;
+  } kTestCases[] = {
+      {{SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT}, true},
+      {{SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT,
+        SHARED_IMAGE_USAGE_VIDEO_DECODE},
+       false},
+      {{SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT,
+        SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR},
+       false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.usage.ToString());
+    auto mailbox = Mailbox::Generate();
+    const auto format = viz::SinglePlaneFormat::kBGRA_8888;
+    const gfx::Size size(4, 4);
+    auto backing = backing_factory_->CreateSharedImage(
+        mailbox,
+        {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+         kOpaque_SkAlphaType, test_case.usage, "TestLabel"},
+        gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+    ASSERT_NE(backing, nullptr);
+    backing->SetCleared();
+
+    // Mark the IOSurface as in use for the rest of this iteration.
+    const gfx::ScopedInUseIOSurface in_use_io_surface(
+        backing->GetGpuMemoryBufferHandle().io_surface().get(),
+        base::scoped_policy::RETAIN);
+    ASSERT_TRUE(IOSurfaceIsInUse(in_use_io_surface.get()));
+
+    std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+        shared_image_manager_.Register(std::move(backing),
+                                       &memory_type_tracker_);
+
+    auto overlay_representation =
+        shared_image_manager_.ProduceOverlay(mailbox, &memory_type_tracker_);
+    ASSERT_NE(overlay_representation, nullptr);
+    auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
+    ASSERT_NE(scoped_read_access, nullptr);
+    EXPECT_EQ(scoped_read_access->IsInUseByWindowServer(),
+              test_case.expect_in_use);
+  }
+}
 
 class MockProgressReporter : public gl::ProgressReporter {
  public:

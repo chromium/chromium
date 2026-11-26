@@ -619,7 +619,7 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
     // Matches VideoCaptureImpl::OnBufferReady in
     // third_party/blink/renderer/platform/video_capture/video_capture_impl.cc:
     // Camera capture SharedImages on macOS are created with GLES2_READ |
-    // RASTER_READ | DISPLAY_READ | SCANOUT | MACOS_VIDEO_TOOLBOX.
+    // RASTER_READ | DISPLAY_READ | SCANOUT | VIDEO_ENCODE_ACCELERATOR.
     auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     gpu::SharedImageInfo si_info(
         viz::MultiPlaneFormat::kNV12, frame_size,
@@ -628,7 +628,7 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_SCANOUT |
-            gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX,
+            gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR,
         "CameraCaptureFrame");
     auto shared_image = test_sii->CreateSharedImage(
         si_info, gpu::kNullSurfaceHandle,
@@ -679,18 +679,23 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
 
   // Matches DrawingBuffer (WebGL) and WebGPUSwapBufferProvider (WebGPU)
   // SharedImage usage flags. Notably omits
-  // SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, verifying that SCANOUT
+  // SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR, verifying that SCANOUT
   // allows encoding opaque SharedImages produced by general rendering
-  // pipelines that were not specifically tagged for VideoToolbox at
+  // pipelines that were not specifically tagged for video encode at
   // allocation time.
   const gpu::SharedImageUsageSet kScanoutUsage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   // Matches a standalone 2D OffscreenCanvas under
-  // kWebRtcMacSharedImageEncode: MACOS_VIDEO_TOOLBOX without SCANOUT.
-  const gpu::SharedImageUsageSet kVideoToolboxUsage =
+  // kWebRtcMacSharedImageEncode: VIDEO_ENCODE_ACCELERATOR without SCANOUT.
+  const gpu::SharedImageUsageSet kVideoEncodeUsage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+      gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
+  // Matches video decoder output whose SCANOUT usage was removed: VIDEO_DECODE
+  // without SCANOUT.
+  const gpu::SharedImageUsageSet kVideoDecodeUsage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
   struct FrameCase {
     VideoPixelFormat rgb_format;
     gpu::SharedImageUsageSet usage;
@@ -698,8 +703,10 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
   const std::vector<FrameCase> frame_cases = {
       {PIXEL_FORMAT_ARGB, kScanoutUsage},
       {PIXEL_FORMAT_XRGB, kScanoutUsage},
-      {PIXEL_FORMAT_ARGB, kVideoToolboxUsage},
-      {PIXEL_FORMAT_XRGB, kVideoToolboxUsage},
+      {PIXEL_FORMAT_ARGB, kVideoEncodeUsage},
+      {PIXEL_FORMAT_XRGB, kVideoEncodeUsage},
+      {PIXEL_FORMAT_ARGB, kVideoDecodeUsage},
+      {PIXEL_FORMAT_XRGB, kVideoDecodeUsage},
   };
 
   for (VideoCodecProfile profile : profiles) {
@@ -980,7 +987,7 @@ TEST(VTVideoEncodeAcceleratorTest, RejectsOpaqueSharedImagesInI420Session) {
       metadata.alpha_type = kOpaque_SkAlphaType;
       metadata.usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                        gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+                       gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
       auto shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
 
       auto frame = VideoFrame::WrapSharedImage(

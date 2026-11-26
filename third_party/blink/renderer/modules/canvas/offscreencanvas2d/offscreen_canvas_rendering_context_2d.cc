@@ -209,21 +209,19 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     }
 #if BUILDFLAG(IS_MAC)
     // VTVideoEncodeAccelerator encodes an opaque SharedImage without readback
-    // only if it carries SCANOUT or MACOS_VIDEO_TOOLBOX usage, and reaches its
-    // IOSurface via ProduceVideo(). A standalone OffscreenCanvas has no
-    // SCANOUT, so MACOS_VIDEO_TOOLBOX marks it as eligible. The usage must be
-    // decided at allocation time, and it is not allocation-neutral:
+    // only if it carries SCANOUT, VIDEO_DECODE or VIDEO_ENCODE_ACCELERATOR
+    // usage, and reaches its IOSurface via ProduceVideo(). A standalone
+    // OffscreenCanvas has no SCANOUT, so VIDEO_ENCODE_ACCELERATOR marks it as
+    // eligible. The usage must be decided at allocation time, and it is not
+    // allocation-neutral:
     // BaseRenderingContext2D::CreateSharedImagePool() allocates BGRA_8888
     // instead of RGBA_8888 when it is present, which ANGLE and
     // VTVideoEncodeAccelerator require for an IOSurface, and on
     // Graphite-Dawn-Vulkan it forces an IOSurface backing instead of
     // WrappedSkImage.
-    // TODO(crbug.com/576960275): Use
-    // SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR once
-    // IOSurfaceImageBackingFactory supports it. MACOS_VIDEO_TOOLBOX is
-    // documented as marking CVPixelBuffer-backed IOSurfaces from VideoToolbox.
     if (base::FeatureList::IsEnabled(features::kWebRtcMacSharedImageEncode)) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+      shared_image_usage_flags |=
+          gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
     }
 #endif
 

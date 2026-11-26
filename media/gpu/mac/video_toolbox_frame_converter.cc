@@ -41,7 +41,8 @@ namespace {
 // to being sent to the display compositor and/or used as overlays.
 constexpr gpu::SharedImageUsageSet kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-    gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+    gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR |
     gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
