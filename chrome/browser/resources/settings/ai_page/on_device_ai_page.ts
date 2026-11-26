@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_toggle_button.js';
@@ -12,6 +14,8 @@ import '../simple_confirmation_dialog.js';
 import './on_device_ai_page_entry.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -34,6 +38,8 @@ const ON_DEVICE_AI_PREF_KEY = 'synthetic.settings.on_device_ai_enabled';
 
 export interface SettingsOnDeviceAiPageElement {
   $: {
+    infoCollapse: CrCollapseElement,
+    infoExpand: CrExpandButtonElement,
     onDeviceAiToggle: SettingsToggleButtonElement,
     toast: CrToastElement,
   };
@@ -59,6 +65,7 @@ export class SettingsOnDeviceAiPageElement extends
   static override get properties() {
     return {
       capabilities_: {type: Array},
+      infoExpanded_: {type: Boolean},
       matchingCapabilities_: {type: Array},
       searchTerm_: {type: String},
       showTurnOffDialog_: {type: Boolean},
@@ -67,6 +74,7 @@ export class SettingsOnDeviceAiPageElement extends
   }
 
   protected accessor capabilities_: OnDeviceAiCapability[] = [];
+  protected accessor infoExpanded_: boolean = true;
   // The models in `capabilities_` that match `searchTerm_`.
   protected accessor matchingCapabilities_: OnDeviceAiCapability[] = [];
   private accessor searchTerm_: string = '';
@@ -112,6 +120,14 @@ export class SettingsOnDeviceAiPageElement extends
 
   protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
     this.searchTerm_ = e.detail.value;
+  }
+
+  protected onInfoExpandClick_() {
+    this.infoExpanded_ = !this.infoExpanded_;
+  }
+
+  protected onInfoExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.infoExpanded_ = e.detail.value;
   }
 
   protected onOnDeviceAiSubLabelLinkClicked_() {

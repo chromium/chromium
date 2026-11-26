@@ -9,6 +9,16 @@
  * #include=settings-shared-lit settings-columned-section-lit
  * #css_wrapper_metadata_end */
 
+#toggleActions {
+  align-items: center;
+  display: flex;
+
+  & .separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
+}
+
 /* No top padding, since <h2> has its own (see settings_shared_lit.css). */
 .models-section {
   border-top: var(--cr-separator-line);

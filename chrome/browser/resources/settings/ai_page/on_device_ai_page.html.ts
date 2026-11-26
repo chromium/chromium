@@ -15,9 +15,18 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
       pref-key="synthetic.settings.on_device_ai_enabled"
       label="$i18n{onDeviceAiCapabilitiesLabel}"
       sub-label-with-link="$i18n{onDeviceAiCapabilitiesSubLabel}" no-set-pref
+      no-toggle-on-host-click @click="${this.onInfoExpandClick_}"
       @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
       @settings-boolean-control-change="${
           this.onOnDeviceAiSettingsBooleanControlChange_}">
+    <div id="toggleActions" slot="more-actions">
+      <cr-expand-button id="infoExpand" no-hover
+          ?expanded="${this.infoExpanded_}"
+          @expanded-changed="${this.onInfoExpandedChanged_}"
+          aria-label="$i18n{onDeviceAiCapabilitiesLabel}">
+      </cr-expand-button>
+      <div class="separator"></div>
+    </div>
   </settings-toggle-button>
   ${this.showTurnOffDialog_ ? html`
     <settings-simple-confirmation-dialog id="turnOffDialog"
@@ -27,35 +36,37 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
         @close="${this.onTurnOffDialogClose_}">
     </settings-simple-confirmation-dialog>
   ` : ''}
-  <div class="settings-columned-section">
-    <div class="column">
-      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:chrome-product" aria-hidden="true">
-          </cr-icon>
-          <div class="secondary">$i18n{onDeviceAiWhenOnFeatures}</div>
-        </li>
-        <li>
-          <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{onDeviceAiWhenOnAutoUpdates}</div>
-        </li>
-      </ul>
+  <cr-collapse id="infoCollapse" ?opened="${this.infoExpanded_}">
+    <div class="settings-columned-section">
+      <div class="column">
+        <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:chrome-product" aria-hidden="true">
+            </cr-icon>
+            <div class="secondary">$i18n{onDeviceAiWhenOnFeatures}</div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
+            <div class="secondary">$i18n{onDeviceAiWhenOnAutoUpdates}</div>
+          </li>
+        </ul>
+      </div>
+      <div class="column">
+        <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
+            <div class="secondary">$i18n{onDeviceAiConsiderWhenOff}</div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:download" aria-hidden="true"></cr-icon>
+            <div class="secondary">$i18n{onDeviceAiConsiderStorage}</div>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="column">
-      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{onDeviceAiConsiderWhenOff}</div>
-        </li>
-        <li>
-          <cr-icon icon="settings20:download" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{onDeviceAiConsiderStorage}</div>
-        </li>
-      </ul>
-    </div>
-  </div>
+  </cr-collapse>
 
   <div class="models-section">
     <h2 id="modelsHeader" class="cr-title-text">

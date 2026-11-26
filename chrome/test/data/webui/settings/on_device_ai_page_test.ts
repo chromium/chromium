@@ -85,7 +85,7 @@ suite('OnDeviceAiPage', function() {
 
     // Turning off requires confirmation: the toggle flips visually, but
     // nothing is committed until the dialog is confirmed.
-    page.$.onDeviceAiToggle.click();
+    page.$.onDeviceAiToggle.$.control.click();
     await microtasksFinished();
     assertFalse(page.$.onDeviceAiToggle.checked);
     assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
@@ -112,7 +112,7 @@ suite('OnDeviceAiPage', function() {
 
     // Turning back on does not need confirmation.
     testBrowserProxy.resetResolver('setOnDeviceAiEnabled');
-    page.$.onDeviceAiToggle.click();
+    page.$.onDeviceAiToggle.$.control.click();
     await microtasksFinished();
     assertTrue(page.$.onDeviceAiToggle.checked);
     assertNull(
@@ -123,8 +123,48 @@ suite('OnDeviceAiPage', function() {
                    .value);
   });
 
-  test('turnOffDialogCancelKeepsOnDeviceAiOn', async function() {
+  test('infoSectionAccordion', async function() {
+    assertTrue(page.$.infoCollapse.opened);
+    assertTrue(page.$.infoExpand.expanded);
+
+    // Clicking the expand button collapses and expands without toggling.
+    page.$.infoExpand.click();
+    await microtasksFinished();
+    assertFalse(page.$.infoCollapse.opened);
+    assertFalse(page.$.infoExpand.expanded);
+    assertTrue(page.$.onDeviceAiToggle.checked);
+    assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
+
+    page.$.infoExpand.click();
+    await microtasksFinished();
+    assertTrue(page.$.infoCollapse.opened);
+    assertTrue(page.$.infoExpand.expanded);
+
+    // Clicking the toggle row outside the switch collapses and expands without
+    // toggling.
     page.$.onDeviceAiToggle.click();
+    await microtasksFinished();
+    assertFalse(page.$.infoCollapse.opened);
+    assertFalse(page.$.infoExpand.expanded);
+    assertTrue(page.$.onDeviceAiToggle.checked);
+    assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
+
+    page.$.onDeviceAiToggle.click();
+    await microtasksFinished();
+    assertTrue(page.$.infoCollapse.opened);
+    assertTrue(page.$.infoExpand.expanded);
+    assertTrue(page.$.onDeviceAiToggle.checked);
+
+    // Clicking the switch itself does not collapse the info section.
+    page.$.onDeviceAiToggle.$.control.click();
+    await microtasksFinished();
+    assertTrue(page.$.infoCollapse.opened);
+    assertTrue(page.$.infoExpand.expanded);
+    assertFalse(page.$.onDeviceAiToggle.checked);
+  });
+
+  test('turnOffDialogCancelKeepsOnDeviceAiOn', async function() {
+    page.$.onDeviceAiToggle.$.control.click();
     await microtasksFinished();
     assertFalse(page.$.onDeviceAiToggle.checked);
     const dialog =
@@ -145,7 +185,7 @@ suite('OnDeviceAiPage', function() {
   });
 
   test('turnOffDialogEscapeKeepsOnDeviceAiOn', async function() {
-    page.$.onDeviceAiToggle.click();
+    page.$.onDeviceAiToggle.$.control.click();
     await microtasksFinished();
     const dialog =
         page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
