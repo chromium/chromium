@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,10 +15,12 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map_base.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion_win.h"
 
 namespace ui {
 
@@ -101,10 +104,10 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
   // ToUnicodeEx() return value indicates the category for the scan code
   // passed in for the keyboard layout provided.
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646322(v=vs.85).aspx
-  wchar_t char_buffer[1] = {0};
-  int key_type =
-      ::ToUnicodeEx(virtual_key_code, scan_code, keyboard_state, char_buffer,
-                    std::size(char_buffer), /*wFlags=*/0, keyboard_layout);
+  wchar_t char_buffer[5] = {};
+  int key_type = ::ToUnicodeEx(virtual_key_code, scan_code, keyboard_state,
+                               char_buffer, std::size(char_buffer),
+                               kDoNotChangeKeyboardState, keyboard_layout);
 
   // Handle special cases for Japanese keyboard layout.
   if (0x04110411 == reinterpret_cast<uintptr_t>(keyboard_layout)) {
@@ -134,19 +137,14 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
   }
 
   ui::DomKey key = ui::DomKey::NONE;
-  if (key_type == 1)
-    key = ui::DomKey::FromCharacter(char_buffer[0]);
-  else if (key_type == -1) {
-    key = ui::DomKey::DeadKeyFromCombiningCharacter(char_buffer[0]);
-
-    // When we query info about dead keys, the system is left in a state
-    // such that the next key queried is in the context of that dead key.
-    // This causes ToUnicodeEx to return an incorrect result for the second
-    // key. To fix this we query a Space key after any dead key to clear out
-    // the dead key state. See crbug/977609 for details on how this problem
-    // exhibits itself to users.
-    ::ToUnicodeEx(0x0020, 0x0039, keyboard_state, char_buffer,
-                  std::size(char_buffer), /*wFlags=*/0, keyboard_layout);
+  if (key_type == 1) {
+    if (char_buffer[0] >= 0x20 && base::IsValidCodepoint(char_buffer[0])) {
+      key = ui::DomKey::FromCharacter(char_buffer[0]);
+    }
+  } else if (key_type == -1) {
+    if (char_buffer[0] >= 0x20 && base::IsValidCodepoint(char_buffer[0])) {
+      key = ui::DomKey::DeadKeyFromCombiningCharacter(char_buffer[0]);
+    }
   }
   return key;
 }

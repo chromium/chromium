@@ -4,12 +4,15 @@
 
 #include "ui/events/keycodes/platform_key_map_win.h"
 
+#include <iterator>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/test/keyboard_layout.h"
@@ -201,6 +204,57 @@ TEST_F(PlatformKeyMapTest, FRLayout) {
   for (const auto& test_case : kFRLayoutTestCases) {
     CheckKeyboardCodeToKeyString("FRLayout", keymap, test_case);
   }
+}
+
+TEST_F(PlatformKeyMapTest, DoesNotMutateKernelDeadKeyState) {
+  ScopedKeyboardLayout scoped_layout(KEYBOARD_LAYOUT_FRENCH);
+  HKL fr_layout = GetPlatformKeyboardLayout(KEYBOARD_LAYOUT_FRENCH);
+  ASSERT_NE(nullptr, fr_layout);
+
+  // Flush any pending dead-key state left in win32k by earlier tests and verify
+  // a clean baseline before exercising the functions under test.
+  BYTE keyboard_state[256] = {};
+  wchar_t translated_chars[5] = {};
+  ::ToUnicodeEx(VK_SPACE, 0, keyboard_state, translated_chars,
+                std::size(translated_chars), /*wFlags=*/0, fr_layout);
+  translated_chars[0] = 0;
+  ASSERT_EQ(
+      1, ::ToUnicodeEx(VKEY_E, 0, keyboard_state, translated_chars,
+                       std::size(translated_chars), /*wFlags=*/0, fr_layout));
+  ASSERT_EQ(L'e', translated_chars[0]);
+
+  // On the French AZERTY layout, VKEY_OEM_6 (DomCode::BRACKET_LEFT) is the
+  // circumflex ('^') dead key, followed immediately by VKEY_OEM_7 ('²') in
+  // virtual-key order and by DomCode::BRACKET_RIGHT ('$') in
+  // kWritingSystemKeyDomCodes. Querying dead keys via PlatformKeyMap or
+  // GenerateDomKeyboardLayoutMap() must not mutate win32k's dead-key state.
+  PlatformKeyMap keymap(fr_layout);
+  EXPECT_EQ(DomKey::DeadKeyFromCombiningCharacter('^'),
+            DomKeyFromKeyboardCodeImpl(keymap, VKEY_OEM_6, EF_NONE));
+  EXPECT_EQ(DomKey::FromCharacter(0x00b2),
+            DomKeyFromKeyboardCodeImpl(keymap, VKEY_OEM_7, EF_NONE));
+
+  int flags = EF_NONE;
+  EXPECT_EQ(DomKey::DeadKeyFromCombiningCharacter('^'),
+            PlatformKeyMap::DomKeyFromKeyboardCode(VKEY_OEM_6, &flags));
+
+  base::flat_map<std::string, std::string> layout_map =
+      GenerateDomKeyboardLayoutMap();
+  auto bracket_left = layout_map.find("BracketLeft");
+  ASSERT_NE(bracket_left, layout_map.end());
+  EXPECT_EQ("^", bracket_left->second);
+  auto bracket_right = layout_map.find("BracketRight");
+  ASSERT_NE(bracket_right, layout_map.end());
+  EXPECT_EQ("$", bracket_right->second);
+
+  // Immediately translating VKEY_E without kDoNotChangeKeyboardState must
+  // produce 'e' rather than 'ê' (U+00EA), confirming win32k has no pending
+  // dead-key state.
+  translated_chars[0] = 0;
+  int rv = ::ToUnicodeEx(VKEY_E, 0, keyboard_state, translated_chars,
+                         std::size(translated_chars), /*wFlags=*/0, fr_layout);
+  EXPECT_EQ(1, rv);
+  EXPECT_EQ(L'e', translated_chars[0]);
 }
 
 TEST_F(PlatformKeyMapTest, NumPad) {

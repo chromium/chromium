@@ -5,6 +5,7 @@
 #include "ui/events/keycodes/platform_key_map_win.h"
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/check_op.h"
@@ -12,11 +13,13 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/threading/thread_local.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_code_conversion_win.h"
 
 namespace ui {
 
@@ -390,27 +393,21 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
     SetModifierState(keyboard_state, flags);
 
     for (int key_code = 0; key_code <= 0xFF; ++key_code) {
-      wchar_t translated_chars[5];
+      wchar_t translated_chars[5] = {};
       int rv = ::ToUnicodeEx(key_code, 0, keyboard_state, translated_chars,
-                             std::size(translated_chars), 0, keyboard_layout_);
+                             std::size(translated_chars),
+                             kDoNotChangeKeyboardState, keyboard_layout_);
 
       if (rv == -1) {
-        // Dead key, injecting VK_SPACE to get character representation.
-        BYTE empty_state[kKeyboardSize] = {};
-        rv = ::ToUnicodeEx(VK_SPACE, 0, empty_state, translated_chars,
-                           std::size(translated_chars), 0, keyboard_layout_);
-        // Expecting a dead key character (not followed by a space).
-        if (rv == 1) {
-          printable_keycode_to_key_[std::make_pair(static_cast<int>(key_code),
-                                                   flags)] =
+        if (translated_chars[0] >= 0x20 &&
+            base::IsValidCodepoint(translated_chars[0])) {
+          printable_keycode_to_key_[{key_code, flags}] =
               DomKey::DeadKeyFromCombiningCharacter(translated_chars[0]);
-        } else {
-          // TODO(input-dev): Check if this will actually happen.
         }
       } else if (rv == 1) {
-        if (translated_chars[0] >= 0x20) {
-          printable_keycode_to_key_[std::make_pair(static_cast<int>(key_code),
-                                                   flags)] =
+        if (translated_chars[0] >= 0x20 &&
+            base::IsValidCodepoint(translated_chars[0])) {
+          printable_keycode_to_key_[{key_code, flags}] =
               DomKey::FromCharacter(translated_chars[0]);
 
           // Detect whether the layout makes use of AltGraph.
