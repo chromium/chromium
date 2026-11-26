@@ -105,16 +105,24 @@ PaintRecord CSSPaintDefinition::Paint(
     float zoom,
     StylePropertyMapReadOnly* style_map,
     const GCedCSSStyleValueVector* paint_arguments) {
+  if (!script_state_->ContextIsValid()) {
+    return PaintRecord();
+  }
   const gfx::SizeF specified_size = GetSpecifiedSize(container_size, zoom);
   ScriptState::Scope scope(script_state_);
+  v8::Isolate* isolate = script_state_->GetIsolate();
+
+  // Catch and report exceptions from both constructing the paint class and
+  // invoking paint() within the worklet scope so they never remain pending on
+  // the isolate and leak into synchronous callers.
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
 
   MaybeCreatePaintInstance();
   // We may have failed to create an instance, in which case produce an
   // invalid image.
   if (instance_.IsEmpty())
     return PaintRecord();
-
-  v8::Isolate* isolate = script_state_->GetIsolate();
 
   // Do subpixel snapping for the |container_size|.
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -133,9 +141,6 @@ PaintRecord CSSPaintDefinition::Paint(
     }
     paint_arguments = empty_arguments.Get();
   }
-
-  v8::TryCatch try_catch(isolate);
-  try_catch.SetVerbose(true);
 
   // The paint function may have produced an error, in which case produce an
   // invalid image.
