@@ -1,0 +1,14 @@
+Tests event listener breakpoint to break on the first statement of new scripts.
+
+Set timer for test function.
+
+Paused on instrumentation:scriptFirstStatement
+Call stack:
+    0)  (inline_callback1.js:1)
+
+Paused on instrumentation:scriptFirstStatement
+Call stack:
+    0)  (script-first-stmt.js:2)
+
+Subsequent script completed without pausing: true
+
