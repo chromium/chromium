@@ -7,6 +7,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/sessions/core",
+  "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_device_info",
   "+components/sync_user_events",

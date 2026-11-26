@@ -4,6 +4,10 @@
 
 static_library("sync_sessions") {
   sources = [
+    "cross_device_tabs_service.cc",
+    "cross_device_tabs_service.h",
+    "cross_device_tabs_service_impl.cc",
+    "cross_device_tabs_service_impl.h",
     "features.cc",
     "features.h",
     "local_session_event_handler_impl.cc",
@@ -45,6 +49,7 @@ static_library("sync_sessions") {
 
   public_deps = [
     "//components/sessions",
+    "//components/signin/public/identity_manager",
     "//components/sync",
 
     # TODO(crbug.com/525218330): Remove this dependency by moving DeviceType and
