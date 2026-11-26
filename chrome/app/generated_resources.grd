@@ -1351,10 +1351,6 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <if expr="not use_titlecase">
-        <!-- TODO(481979475): remove non translateable flag  -->
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY" desc="Main action pattern for enhanced autofill. It functions as a concise command in the content area context menu explaining that Chrome will locate relevant information and insert it into a form." translateable="false">
-          Find and fill
-        </message>
         <message name="IDS_CONTENT_CONTEXT_PLUGIN_RUN" desc="The name of the Run command on the blocked plugin context menu">
           Run this plugin
         </message>
@@ -1363,10 +1359,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
       <if expr="use_titlecase">
-        <!-- TODO(481979475): remove non translateable flag  -->
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY" desc="In Title Case: Main action pattern for enhanced autofill. It functions as a concise command in the content area context menu explaining that Chrome will locate relevant information and insert it into a form." translateable="false">
-          Find and Fill
-        </message>
         <message name="IDS_CONTENT_CONTEXT_PLUGIN_RUN" desc="In Title Case: The name of the Run command on the blocked plugin context menu">
           Run This Plugin
         </message>
