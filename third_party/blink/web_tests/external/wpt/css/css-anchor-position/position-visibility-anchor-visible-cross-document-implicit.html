@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>CSS Anchor Positioning: cross-document implicit anchor is ignored for position-visibility: anchor-visible</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-visibility">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#target-anchor-element">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square.xht">
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/rendering-utils.js"></script>
+<style>
+  #container {
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+  #anchor {
+    position: fixed;
+    anchor-name: --a;
+    width: 100px;
+    height: 100px;
+  }
+  #popover {
+    position: fixed;
+    position-anchor: auto;
+    position-visibility: anchor-visible;
+    inset: auto;
+    top: anchor(--a top);
+    left: anchor(--a left);
+    width: 100px;
+    height: 100px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: green;
+  }
+  iframe {
+    position: fixed;
+    visibility: hidden;
+    width: 100px;
+    height: 100px;
+    border: 0;
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="container">
+  <div id="anchor"></div>
+</div>
+<div id="popover" popover="manual"></div>
+<iframe id="iframe" srcdoc="
+  <div style='overflow: hidden; width: 50px; height: 50px;'>
+    <div style='height: 100px;'></div>
+    <div id='foreign_anchor' style='width: 50px; height: 50px;'></div>
+  </div>
+"></iframe>
+<script>
+  window.addEventListener('load', async () => {
+    const iframe = document.getElementById('iframe');
+    const popover = document.getElementById('popover');
+    const foreignAnchor = iframe.contentDocument.getElementById('foreign_anchor');
+    popover.showPopover({ source: foreignAnchor });
+    await waitForAtLeastOneFrame();
+    await waitForAtLeastOneFrame();
+    takeScreenshot();
+  });
+</script>
+</html>

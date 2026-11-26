@@ -451,41 +451,45 @@ const Element* GetPositionAnchorElement(const BlockNode& node,
     return nullptr;
   }
 
+  const LayoutBox& anchored_box = *node.GetLayoutBox();
   const DefaultAnchorData default_anchor_data = style.GetDefaultAnchorData();
+  AnchorKey key;
   using Type = StylePositionAnchor::Type;
   switch (default_anchor_data.GetType()) {
     case Type::kNone:
       return nullptr;
-    case Type::kAuto:
-      if (const auto* element = DynamicTo<Element>(node.GetDOMNode())) {
-        return element->ImplicitAnchorElement();
+    case Type::kAuto: {
+      const auto* element = DynamicTo<Element>(node.GetDOMNode());
+      const Element* implicit_anchor =
+          element ? element->ImplicitAnchorElement() : nullptr;
+      if (!implicit_anchor) {
+        return nullptr;
       }
-      return nullptr;
-    case Type::kName: {
-      const LayoutBox& anchored_box = *node.GetLayoutBox();
-
-      // OOFs in fragmentation do not follow the actual containing block
-      // structure (instead they become direct children of a fragmentainer). We
-      // need to pass the actual (CSS) containing block in such cases, in order
-      // to determine which anchors in the list are acceptable.
-      const LayoutObject* actual_containing_block = nullptr;
-      if (anchored_box.MightBeInsideFragmentationContext()) {
-        actual_containing_block = anchored_box.Container();
-      }
-
-      if (const PhysicalAnchorReference* reference =
-              anchor_map->AnchorReference(
-                  anchored_box, actual_containing_block,
-                  ToAnchorScopedName(default_anchor_data.GetName(),
-                                     anchored_box))) {
-        DCHECK(reference->GetLayoutObject());
-        return &reference->GetElement();
-      }
-      return nullptr;
+      key = implicit_anchor;
+      break;
     }
+    case Type::kName:
+      key = ToAnchorScopedName(default_anchor_data.GetName(), anchored_box);
+      break;
     case Type::kNormal:
       NOTREACHED();
   }
+
+  // OOFs in fragmentation do not follow the actual containing block
+  // structure (instead they become direct children of a fragmentainer). We
+  // need to pass the actual (CSS) containing block in such cases, in order
+  // to determine which anchors in the list are acceptable.
+  const LayoutObject* actual_containing_block = nullptr;
+  if (anchored_box.MightBeInsideFragmentationContext()) {
+    actual_containing_block = anchored_box.Container();
+  }
+
+  if (const PhysicalAnchorReference* reference = anchor_map->AnchorReference(
+          anchored_box, actual_containing_block, key)) {
+    DCHECK(reference->GetLayoutObject());
+    return &reference->GetElement();
+  }
+  return nullptr;
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
