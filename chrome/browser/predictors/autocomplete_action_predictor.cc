@@ -361,8 +361,9 @@ void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatchesInternal(
   for (const TransitionalMatch& transitional_match : transitional_matches) {
     CHECK_GE(transitional_match.user_text.length(), kMinimumUserTextLength,
              base::NotFatalUntil::M162);
-    CHECK_LE(transitional_match.user_text.length(), kMaximumStringLength,
-             base::NotFatalUntil::M162);
+    // TODO(crbug.com/590304032): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(transitional_match.user_text.length(), kMaximumStringLength);
     // Add entries to the database for those matches.
     for (const GURL& url : transitional_match.urls) {
       CHECK_LE(url.spec().length(), kMaximumStringLength,
