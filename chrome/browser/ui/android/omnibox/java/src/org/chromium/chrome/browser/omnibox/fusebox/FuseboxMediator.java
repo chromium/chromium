@@ -111,6 +111,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
@@ -151,6 +152,7 @@ class FuseboxMediator implements BackPressHandler {
 
     private final NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
     private final Callback<Boolean> mOnTextWrappingChanged = _ -> updateFuseboxState();
+    private final BooleanSupplier mIsFuseboxGuidedTourModeActiveSupplier;
     private final Callback<Boolean> mOnInteractionCompletedCallback;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable Profile mProfile;
@@ -192,7 +194,8 @@ class FuseboxMediator implements BackPressHandler {
             BackPressManager backPressManager,
             Callback<Boolean> onInteractionCompletedCallback,
             SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier,
-            NonNullObservableSupplier<Boolean> urlTextWrappingSupplier) {
+            NonNullObservableSupplier<Boolean> urlTextWrappingSupplier,
+            BooleanSupplier isFuseboxGuidedTourModeActiveSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -210,6 +213,7 @@ class FuseboxMediator implements BackPressHandler {
         mHasAttachmentsSupplier = hasAttachmentsSupplier;
         mUrlTextWrappingSupplier = urlTextWrappingSupplier;
         mUrlTextWrappingSupplier.addSyncObserver(mOnTextWrappingChanged);
+        mIsFuseboxGuidedTourModeActiveSupplier = isFuseboxGuidedTourModeActiveSupplier;
 
         mAttachmentLimitSnackbar =
                 Snackbar.make(
@@ -714,6 +718,13 @@ class FuseboxMediator implements BackPressHandler {
         mInput.setFuseboxPopupUsed();
 
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
+        // Auto-expand "More options" when AI Mode is hidden inside the collapsed accordion
+        // (rather than pinned above it).
+        if (mIsFuseboxGuidedTourModeActiveSupplier.getAsBoolean()
+                && OmniboxFeatures.hasAccordion()
+                && !shouldPinToolButton(ToolMode.TOOL_MODE_UNSPECIFIED)) {
+            mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, true);
+        }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
         InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
@@ -1203,6 +1214,7 @@ class FuseboxMediator implements BackPressHandler {
                 .setIconId(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
                 .setEnabled(true)
                 .setSelected(selected)
+                .setHighlighted(mIsFuseboxGuidedTourModeActiveSupplier.getAsBoolean())
                 .setProtoId(ToolMode.TOOL_MODE_UNSPECIFIED)
                 .build();
     }

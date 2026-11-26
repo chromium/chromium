@@ -336,6 +336,7 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier =
             ObservableSuppliers.createNonNull(false);
+    private boolean mIsFuseboxGuidedTourModeActive;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
@@ -459,7 +460,30 @@ public class FuseboxMediatorUnitTest {
                         mBackPressManager,
                         mOnInteractionCompletedCallback,
                         mHasAttachmentsSupplier,
-                        mUrlTextWrappingSupplier);
+                        mUrlTextWrappingSupplier,
+                        () -> mIsFuseboxGuidedTourModeActive);
+    }
+
+    /**
+     * Configures the popup to use a collapsible "More options" accordion, placing AI Mode either
+     * outside (pinned above) or inside the accordion section (via scrollable carousel).
+     */
+    private void setUpAccordionPopup(boolean aiModePinnedAbove) {
+        OmniboxFeatures.setUseScrollableCarouselForTesting(!aiModePinnedAbove);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseAccordionForTesting(true);
+        recreateMediator();
+    }
+
+    private boolean isAiModeHighlighted() {
+        for (PopupButtonData data :
+                mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST)) {
+            if (data.protoId == ToolMode.TOOL_MODE_UNSPECIFIED) return data.highlighted;
+        }
+        for (PopupButtonData data : mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST)) {
+            if (data.protoId == ToolMode.TOOL_MODE_UNSPECIFIED) return data.highlighted;
+        }
+        throw new IllegalArgumentException("AI Mode tool button not found");
     }
 
     private static HistogramWatcher expectTabPickerOutcome(
@@ -4417,5 +4441,62 @@ public class FuseboxMediatorUnitTest {
 
         verify(mPrefService, never())
                 .setBoolean(eq(Pref.FUSEBOX_AIM_QUERY_SUBMITTED), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void fuseboxGuidedTourMode_unpinnedAccordion_highlightsAiModeAndExpandsAccordion() {
+        mIsFuseboxGuidedTourModeActive = true;
+        setUpAccordionPopup(/* aiModePinnedAbove= */ false);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+        assertTrue(isAiModeHighlighted());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void fuseboxGuidedTourMode_pinnedAccordion_highlightsAiModeWithoutExpandingAccordion() {
+        mIsFuseboxGuidedTourModeActive = true;
+        setUpAccordionPopup(/* aiModePinnedAbove= */ true);
+
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+        assertTrue(isAiModeHighlighted());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void fuseboxGuidedTourMode_inactive_doesNotHighlightAiModeOrExpandAccordion() {
+        setUpAccordionPopup(/* aiModePinnedAbove= */ false);
+
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+        assertFalse(isAiModeHighlighted());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void fuseboxGuidedTourMode_variationsDisabled_highlightsUnpinnedAiMode() {
+        mIsFuseboxGuidedTourModeActive = true;
+        recreateMediator();
+
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(isAiModeHighlighted());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void fuseboxGuidedTourMode_variationsDisabled_inactive_doesNotHighlightAiMode() {
+        recreateMediator();
+
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(isAiModeHighlighted());
     }
 }

@@ -204,6 +204,7 @@ public class FuseboxCoordinatorUnitTest {
                         mBackPressManager,
                         isForcedPhoneStyleOmnibox);
         coordinator.setUrlTextWrappingSupplier(mUrlTextWrappingSupplier);
+        coordinator.setIsFuseboxGuidedTourModeActiveSupplier(() -> false);
         coordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
         return coordinator;
     }

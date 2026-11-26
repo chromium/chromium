@@ -751,6 +751,7 @@ robolectric_library("junit") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/contextual_search:components_contextual_search_java",
     "//components/contextual_search:test_support_java",

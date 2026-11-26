@@ -63,6 +63,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Coordinator for the Fusebox component. */
@@ -103,6 +104,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
     private @Nullable NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
+    private @Nullable BooleanSupplier mIsFuseboxGuidedTourModeActiveSupplier;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
     private boolean mDestroyed;
     private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
@@ -278,7 +280,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mBackPressManager,
                         assertNonNull(mOnInteractionCompletedCallback),
                         mHasAttachmentsSupplier,
-                        assertNonNull(mUrlTextWrappingSupplier));
+                        assertNonNull(mUrlTextWrappingSupplier),
+                        assertNonNull(mIsFuseboxGuidedTourModeActiveSupplier));
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -502,6 +505,20 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     @Initializer
     public void setUrlTextWrappingSupplier(NonNullObservableSupplier<Boolean> supplier) {
         mUrlTextWrappingSupplier = supplier;
+    }
+
+    /**
+     * Sets the supplier indicating whether fusebox guided tour mode is active.
+     *
+     * <p>Set post-construction because the guided tour controller depends on {@link
+     * #getPopupStateSupplier()} and is constructed after {@link FuseboxCoordinator}. {@link
+     * FuseboxMediator} is created lazily after this setter has been called, allowing the supplier
+     * to be passed directly into the mediator's constructor.
+     *
+     * @param supplier Supplies whether fusebox guided tour mode is active.
+     */
+    public void setIsFuseboxGuidedTourModeActiveSupplier(BooleanSupplier supplier) {
+        mIsFuseboxGuidedTourModeActiveSupplier = supplier;
     }
 
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {

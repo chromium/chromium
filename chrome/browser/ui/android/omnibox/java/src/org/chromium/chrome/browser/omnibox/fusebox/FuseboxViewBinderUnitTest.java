@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonTy
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -896,6 +897,22 @@ public class FuseboxViewBinderUnitTest {
         View buttonView = getDynamicToolButton(0);
         TextView textView = buttonView.findViewById(R.id.action_text);
         assertEquals("custom tool text", textView.getText());
+    }
+
+    @Test
+    public void toolButtonHighlighted_togglesHighlight() {
+        PopupButtonData.Builder builder =
+                new PopupButtonData.Builder().setType(PopupButtonType.TOOL);
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(builder.setHighlighted(true).build()));
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOn(getDynamicToolButton(0)));
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(builder.setHighlighted(false).build()));
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOff(getDynamicToolButton(0)));
     }
 
     @Test

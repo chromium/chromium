@@ -39,6 +39,9 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundS
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -517,6 +520,13 @@ class FuseboxViewBinder {
             popup.mDynamicThemedButtons.remove(buttonView);
         } else {
             popup.mDynamicThemedButtons.add(buttonView);
+        }
+
+        if (data.highlighted) {
+            ViewHighlighter.turnOnHighlight(
+                    buttonView, new HighlightParams(HighlightShape.RECTANGLE));
+        } else {
+            ViewHighlighter.turnOffHighlight(buttonView);
         }
     }
 

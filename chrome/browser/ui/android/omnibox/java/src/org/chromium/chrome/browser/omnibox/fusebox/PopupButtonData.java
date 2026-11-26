@@ -38,6 +38,7 @@ public class PopupButtonData {
     public final @PopupButtonType int type;
     public final int protoId;
     public final boolean hasColor;
+    public final boolean highlighted;
     public final String tooltip;
 
     private PopupButtonData(Builder builder) {
@@ -51,6 +52,7 @@ public class PopupButtonData {
         this.type = builder.mType;
         this.protoId = builder.mProtoId;
         this.hasColor = builder.mHasColor;
+        this.highlighted = builder.mHighlighted;
         this.tooltip = builder.mTooltip;
     }
 
@@ -66,6 +68,7 @@ public class PopupButtonData {
         private @PopupButtonType int mType;
         private int mProtoId;
         private boolean mHasColor;
+        private boolean mHighlighted;
         private String mTooltip = "";
 
         public Builder setOnClicked(Callback<PopupButtonData> onClicked) {
@@ -117,6 +120,11 @@ public class PopupButtonData {
 
         public Builder setHasColor(boolean hasColor) {
             mHasColor = hasColor;
+            return this;
+        }
+
+        public Builder setHighlighted(boolean highlighted) {
+            mHighlighted = highlighted;
             return this;
         }
 

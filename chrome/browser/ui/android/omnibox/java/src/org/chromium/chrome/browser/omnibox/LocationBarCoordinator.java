@@ -441,6 +441,8 @@ public class LocationBarCoordinator
 
         mFuseboxCoordinator.setUrlTextWrappingSupplier(
                 mUrlCoordinator.getUrlTextWrappingSupplier());
+        mFuseboxCoordinator.setIsFuseboxGuidedTourModeActiveSupplier(
+                mFuseboxGuidedTourController::isGuidedTourModeActive);
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
