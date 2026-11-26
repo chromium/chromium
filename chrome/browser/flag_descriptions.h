@@ -6982,6 +6982,14 @@ inline constexpr char kLensOverlayVirtualFocusNavigationDescription[] =
     "Enables virtual focus keyboard navigation within the Lens Overlay "
     "searchbox.";
 
+inline constexpr char kOmniboxEverywhereNewWindowForAllQueriesName[] =
+    "Omnibox Everywhere New Window For All Queries";
+inline constexpr char kOmniboxEverywhereNewWindowForAllQueriesDescription[] =
+    "When enabled, every search or navigation submitted from the Omnibox "
+    "Everywhere searchbox opens in a new browser window, whether or not "
+    "context was attached. Explicit new tab requests (e.g. Ctrl+Enter on "
+    "Windows or Cmd+Enter on Mac) still open a tab.";
+
 inline constexpr char kOmniboxEverywhereScreenshotNewWindowName[] =
     "Omnibox Everywhere Screenshot New Window";
 inline constexpr char kOmniboxEverywhereScreenshotNewWindowDescription[] =

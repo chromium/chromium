@@ -12731,6 +12731,8 @@ from previous Chrome versions.
       label="OmniboxTabSwitchSuggestionsDedicatedRow:enabled"/>
   <int value="-684336980" label="IsolatedWebAppDevMode:enabled"/>
   <int value="-684223908" label="enable-android-wallpapers-app"/>
+  <int value="-683423387"
+      label="OmniboxEverywhereNewWindowForAllQueries:disabled"/>
   <int value="-683370370" label="EnableAppDataSearch:enabled"/>
   <int value="-683306022" label="OverscrollHistoryNavigation:enabled"/>
   <int value="-683146171" label="MediaAppPdfMahi:enabled"/>
@@ -18797,6 +18799,8 @@ from previous Chrome versions.
   <int value="1116018547" label="ThreeButtonPasswordSaveDialog:disabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
+  <int value="1116606263"
+      label="OmniboxEverywhereNewWindowForAllQueries:enabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
   <int value="1117037298" label="MediaAppPdfMahi:disabled"/>
   <int value="1117045914" label="ExperimentalOmniboxLabs:enabled"/>

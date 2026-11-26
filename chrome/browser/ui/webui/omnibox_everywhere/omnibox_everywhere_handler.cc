@@ -107,8 +107,8 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
   // web_contents_->OpenURL(...) directly on the WebContents, which for
   // Omnibox Everywhere is the standalone popup widget. Omnibox Everywhere
   // routes all navigations to the browser window and dismisses the popup via
-  // OmniboxEverywhereService::OpenUrl, so we intentionally override and bypass
-  // the base class navigation.
+  // OmniboxEverywhereService::OpenQueryUrl, so we intentionally override and
+  // bypass the base class navigation.
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -122,14 +122,14 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override {
     if (service_) {
-      service_->OpenUrl(destination_url, disposition, transition);
+      service_->OpenQueryUrl(destination_url, disposition, transition);
     }
   }
 
   void OpenUrl(GURL gurl,
                ui::mojom::WindowOpenDisposition disposition) override {
     if (service_) {
-      service_->OpenUrl(gurl, disposition, ui::PAGE_TRANSITION_GENERATED);
+      service_->OpenQueryUrl(gurl, disposition, ui::PAGE_TRANSITION_GENERATED);
     }
   }
 
@@ -344,14 +344,24 @@ void OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged() {
   }
 }
 
+void OmniboxEverywhereHandler::ProcessContextAndOpenUrl(
+    GURL url,
+    const ui::mojom::WindowOpenDisposition disposition) {
+  ContextualSearchboxHandler::ProcessContextAndOpenUrl(
+      std::move(url),
+      OmniboxEverywhereService::ShouldOpenQueryInNewWindow(disposition)
+          ? ui::mojom::WindowOpenDisposition::kNewWindow
+          : disposition);
+}
+
 void OmniboxEverywhereHandler::OpenUrl(
     GURL url,
     const ui::mojom::WindowOpenDisposition disposition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (service_) {
-    service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
-                      std::move(navigation_handle_callback));
+    service_->OpenQueryUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
+                           std::move(navigation_handle_callback));
   }
 }
 

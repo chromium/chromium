@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 class OmniboxEverywhereServiceTest : public testing::Test {
@@ -161,6 +162,23 @@ TEST_F(OmniboxEverywhereServiceTest, CalculateInPlaceWindowBounds) {
   EXPECT_EQ(gfx::Rect(1120, 280, 800, 800),
             OmniboxEverywhereService::CalculateInPlaceWindowBounds(corner_popup,
                                                                    work_area));
+}
+
+TEST_F(OmniboxEverywhereServiceTest, ShouldOpenQueryInNewWindow) {
+  using ui::mojom::WindowOpenDisposition;
+  EXPECT_FALSE(OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+      WindowOpenDisposition::kCurrentTab));
+
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kOmniboxEverywhereNewWindowForAllQueries);
+  EXPECT_TRUE(OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+      WindowOpenDisposition::kCurrentTab));
+  EXPECT_TRUE(OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+      WindowOpenDisposition::kNewWindow));
+  EXPECT_FALSE(OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+      WindowOpenDisposition::kNewForegroundTab));
+  EXPECT_FALSE(OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+      WindowOpenDisposition::kNewBackgroundTab));
 }
 
 TEST_F(OmniboxEverywhereServiceTest,

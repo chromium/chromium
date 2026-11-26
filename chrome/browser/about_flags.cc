@@ -9569,6 +9569,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kOmniboxLoomChoices)},
 
+    {"omnibox-everywhere-new-window-for-all-queries",
+     flag_descriptions::kOmniboxEverywhereNewWindowForAllQueriesName,
+     flag_descriptions::kOmniboxEverywhereNewWindowForAllQueriesDescription,
+     kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxEverywhereNewWindowForAllQueries)},
+
     {"omnibox-everywhere-screenshot-new-window",
      flag_descriptions::kOmniboxEverywhereScreenshotNewWindowName,
      flag_descriptions::kOmniboxEverywhereScreenshotNewWindowDescription,

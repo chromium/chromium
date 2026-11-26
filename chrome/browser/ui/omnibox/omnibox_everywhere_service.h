@@ -106,11 +106,27 @@ class OmniboxEverywhereService : public KeyedService {
                        base::OnceCallback<void(content::NavigationHandle&)>
                            navigation_handle_callback);
   // Opens `url` in a new browser window aligned with the popup widget.
-  virtual void OpenUrlWithInPlaceWindow(
+  virtual void OpenUrlInNewWindow(
       const GURL& url,
       ui::PageTransition transition,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback);
+  // Opens the result of a submitted query, in a new window if
+  // `ShouldOpenQueryInNewWindow()` is true.
+  void OpenQueryUrl(const GURL& url,
+                    ui::mojom::WindowOpenDisposition disposition,
+                    ui::PageTransition transition,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback = {});
+
+  // Returns false if `disposition` explicitly asks for a tab (e.g. Ctrl+Enter),
+  // which always wins over opening a new window.
+  static bool CanOpenInNewWindow(ui::mojom::WindowOpenDisposition disposition);
+
+  // Returns true if a query submitted with `disposition` should open in a new
+  // window.
+  static bool ShouldOpenQueryInNewWindow(
+      ui::mojom::WindowOpenDisposition disposition);
 
   static gfx::Rect CalculateInPlaceWindowBounds(const gfx::Rect& popup_bounds,
                                                 const gfx::Rect& work_area);

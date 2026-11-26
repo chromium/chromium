@@ -146,7 +146,7 @@ void ComposeboxEverywhereHandler::ProcessContextAndOpenUrl(
     GURL url,
     const ui::mojom::WindowOpenDisposition disposition) {
   const ui::mojom::WindowOpenDisposition effective_disposition =
-      ShouldOpenWithInPlaceWindow()
+      ShouldOpenInNewWindow(disposition)
           ? ui::mojom::WindowOpenDisposition::kNewWindow
           : disposition;
   ComposeboxHandler::ProcessContextAndOpenUrl(std::move(url),
@@ -161,9 +161,9 @@ void ComposeboxEverywhereHandler::OpenUrl(
   if (!service_) {
     return;
   }
-  if (ShouldOpenWithInPlaceWindow()) {
-    service_->OpenUrlWithInPlaceWindow(url, ui::PAGE_TRANSITION_GENERATED,
-                                       std::move(navigation_handle_callback));
+  if (ShouldOpenInNewWindow(disposition)) {
+    service_->OpenUrlInNewWindow(url, ui::PAGE_TRANSITION_GENERATED,
+                                 std::move(navigation_handle_callback));
     return;
   }
   service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
@@ -178,7 +178,14 @@ void ComposeboxEverywhereHandler::OnEscapePressed() {
   }
 }
 
-bool ComposeboxEverywhereHandler::ShouldOpenWithInPlaceWindow() {
+bool ComposeboxEverywhereHandler::ShouldOpenInNewWindow(
+    ui::mojom::WindowOpenDisposition disposition) {
+  if (!OmniboxEverywhereService::CanOpenInNewWindow(disposition)) {
+    return false;
+  }
+  if (OmniboxEverywhereService::ShouldOpenQueryInNewWindow(disposition)) {
+    return true;
+  }
   if (!base::FeatureList::IsEnabled(
           omnibox::kOmniboxEverywhereScreenshotNewWindow)) {
     return false;

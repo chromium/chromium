@@ -144,7 +144,7 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
                    navigation_handle_callback),
               (override));
   MOCK_METHOD(void,
-              OpenUrlWithInPlaceWindow,
+              OpenUrlInNewWindow,
               (const GURL& url,
                ui::PageTransition transition,
                base::OnceCallback<void(content::NavigationHandle&)>
@@ -491,6 +491,29 @@ TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
           });
 
   handler_->OpenUrl(test_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+                    base::NullCallback());
+}
+
+TEST_F(OmniboxEverywhereHandlerTest, OpenUrlOpensNewWindowForAllQueries) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kOmniboxEverywhereNewWindowForAllQueries);
+  const GURL test_url("https://www.google.com");
+
+  EXPECT_CALL(*mock_service_, OpenUrl).Times(0);
+  EXPECT_CALL(*mock_service_,
+              OpenUrlInNewWindow(test_url, testing::_, testing::_));
+  handler_->OpenUrl(test_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+                    base::NullCallback());
+  testing::Mock::VerifyAndClearExpectations(mock_service_.get());
+
+  // An explicit new tab disposition still opens a tab.
+  EXPECT_CALL(*mock_service_, OpenUrlInNewWindow).Times(0);
+  EXPECT_CALL(
+      *mock_service_,
+      OpenUrl(test_url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+              testing::_, testing::_));
+  handler_->OpenUrl(test_url,
+                    ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
                     base::NullCallback());
 }
 
@@ -1028,7 +1051,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
       base::DoNothing(), /*screenshare_delegate=*/nullptr);
 
   // Regular uploaded images (not added via AddFileContextToPage) should open
-  // via OpenUrl, not OpenUrlWithInPlaceWindow.
+  // via OpenUrl, not OpenUrlInNewWindow.
   const base::UnguessableToken uploaded_image_token =
       contextual_session_handle_->CreateContextToken();
   query_controller_->AddFileInfoForTesting(uploaded_image_token,
@@ -1037,7 +1060,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
   const GURL kUploadedImageUrl(
       "https://www.google.com/search?q=uploaded+image+query&udm=50");
   EXPECT_CALL(*factory_service,
-              OpenUrlWithInPlaceWindow(testing::_, testing::_, testing::_))
+              OpenUrlInNewWindow(testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(
       *factory_service,
@@ -1059,13 +1082,25 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   const GURL kScreenshotUrl(
       "https://www.google.com/search?q=screenshot+query&udm=50");
+
+  // An explicit new tab request still opens a tab.
+  EXPECT_CALL(*factory_service, OpenUrlInNewWindow).Times(0);
+  EXPECT_CALL(*factory_service,
+              OpenUrl(kScreenshotUrl,
+                      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+                      testing::_, testing::_));
+  composebox_handler.OpenUrl(
+      kScreenshotUrl, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      base::NullCallback());
+  testing::Mock::VerifyAndClearExpectations(factory_service);
+
   GURL captured_url;
   ui::PageTransition captured_transition;
   EXPECT_CALL(*factory_service,
               OpenUrl(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*factory_service,
-              OpenUrlWithInPlaceWindow(testing::_, testing::_, testing::_))
+              OpenUrlInNewWindow(testing::_, testing::_, testing::_))
       .WillOnce(
           [&](const GURL& url, ui::PageTransition transition,
               base::OnceCallback<void(content::NavigationHandle&)> callback) {

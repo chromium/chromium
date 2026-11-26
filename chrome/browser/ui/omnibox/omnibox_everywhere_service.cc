@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -399,7 +400,7 @@ gfx::Rect OmniboxEverywhereService::GetInPlaceWindowBounds() const {
   return CalculateInPlaceWindowBounds(popup_bounds, work_area);
 }
 
-void OmniboxEverywhereService::OpenUrlWithInPlaceWindow(
+void OmniboxEverywhereService::OpenUrlInNewWindow(
     const GURL& url,
     ui::PageTransition transition,
     base::OnceCallback<void(content::NavigationHandle&)>
@@ -420,4 +421,32 @@ void OmniboxEverywhereService::OpenUrlWithInPlaceWindow(
   NavigateInBrowserWindow(bwi, url,
                           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                           transition, std::move(navigation_handle_callback));
+}
+
+void OmniboxEverywhereService::OpenQueryUrl(
+    const GURL& url,
+    ui::mojom::WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (ShouldOpenQueryInNewWindow(disposition)) {
+    OpenUrlInNewWindow(url, transition, std::move(navigation_handle_callback));
+    return;
+  }
+  OpenUrl(url, disposition, transition, std::move(navigation_handle_callback));
+}
+
+// static
+bool OmniboxEverywhereService::CanOpenInNewWindow(
+    ui::mojom::WindowOpenDisposition disposition) {
+  return disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+         disposition == ui::mojom::WindowOpenDisposition::kNewWindow;
+}
+
+// static
+bool OmniboxEverywhereService::ShouldOpenQueryInNewWindow(
+    ui::mojom::WindowOpenDisposition disposition) {
+  return CanOpenInNewWindow(disposition) &&
+         base::FeatureList::IsEnabled(
+             omnibox::kOmniboxEverywhereNewWindowForAllQueries);
 }

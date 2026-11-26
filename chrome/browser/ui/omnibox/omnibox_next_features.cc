@@ -159,6 +159,9 @@ const base::FeatureParam<int> kOmniboxEverywhereScreenshotNewWindowHeightParam{
 const base::FeatureParam<int>
     kOmniboxEverywhereScreenshotNewWindowVerticalOffsetParam{
         &kOmniboxEverywhereScreenshotNewWindow, "VerticalOffset", 200};
+// If enabled, every query submitted from Omnibox Everywhere opens its result
+// in a new browser window, not just queries with screenshots attached.
+BASE_FEATURE(kOmniboxEverywhereNewWindowForAllQueries, DISABLED);
 // Controls multiline searchbox support in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMultilineParam{
     &kOmniboxEverywhere, "Multiline", true};

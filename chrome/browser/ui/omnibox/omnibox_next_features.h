@@ -87,6 +87,7 @@ BASE_DECLARE_FEATURE(kOmniboxEverywhere);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereDeferStatusIcon);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereDogfoodFeedback);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereScreenshotNewWindow);
+BASE_DECLARE_FEATURE(kOmniboxEverywhereNewWindowForAllQueries);
 extern const base::FeatureParam<int>
     kOmniboxEverywhereScreenshotNewWindowWidthParam;
 extern const base::FeatureParam<int>

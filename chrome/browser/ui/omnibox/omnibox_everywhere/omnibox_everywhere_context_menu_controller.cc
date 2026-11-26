@@ -537,9 +537,9 @@ void OmniboxEverywhereContextMenuController::ExecuteCommand(int command_id,
                   if (auto* service =
                           OmniboxEverywhereServiceFactory::GetForProfile(
                               profile)) {
-                    service->OpenUrl(
+                    service->OpenQueryUrl(
                         match.destination_url,
-                        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                        ui::mojom::WindowOpenDisposition::kCurrentTab,
                         ui::PAGE_TRANSITION_GENERATED);
                   }
                 }

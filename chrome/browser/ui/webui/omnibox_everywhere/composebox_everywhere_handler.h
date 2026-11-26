@@ -66,7 +66,11 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
   void ClearScreenshotContextTokens();
 
  private:
-  bool ShouldOpenWithInPlaceWindow();
+  // Returns false for explicit new tab requests. Otherwise, returns true if
+  // the query has screenshots attached (with
+  // kOmniboxEverywhereScreenshotNewWindow enabled), or if
+  // `OmniboxEverywhereService::ShouldOpenQueryInNewWindow()` is true.
+  bool ShouldOpenInNewWindow(ui::mojom::WindowOpenDisposition disposition);
 
   raw_ptr<OmniboxEverywhereService> service_;
   base::flat_set<base::UnguessableToken> screenshot_context_tokens_;
