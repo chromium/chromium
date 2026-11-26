@@ -2887,4 +2887,85 @@ TEST_F(ComputedStyleTest, MaxContentSizingInheritance) {
   EXPECT_FALSE(grandchild2->IsInShrinkToFitSubtree());
 }
 
+TEST_F(ComputedStyleTest, OutlineVisuallyEqualIndependentOfVisitedState) {
+  const Color unvisited_color = Color::FromRGB(255, 0, 0);
+  const Color visited_color = Color::FromRGB(0, 0, 255);
+
+  auto make_style = [&](EInsideLink inside_link, const StyleColor& outline) {
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    builder.SetInsideLink(inside_link);
+    builder.SetColor(StyleColor(unvisited_color));
+    builder.SetInternalVisitedColor(StyleColor(visited_color));
+    builder.SetOutlineStyle(EBorderStyle::kSolid);
+    builder.SetOutlineWidth(2);
+    builder.SetOutlineColor(outline);
+    builder.SetInternalVisitedOutlineColor(StyleColor(visited_color));
+    return builder.TakeStyle();
+  };
+
+  // Toggling unvisited outline-color between currentcolor and visited_color
+  // must produce identical OutlineVisuallyEqual() and StyleDifference for
+  // visited and unvisited links.
+  const ComputedStyle* unvisited_current = make_style(
+      EInsideLink::kInsideUnvisitedLink, StyleColor::CurrentColor());
+  const ComputedStyle* unvisited_explicit = make_style(
+      EInsideLink::kInsideUnvisitedLink, StyleColor(visited_color));
+  const ComputedStyle* visited_current =
+      make_style(EInsideLink::kInsideVisitedLink, StyleColor::CurrentColor());
+  const ComputedStyle* visited_explicit =
+      make_style(EInsideLink::kInsideVisitedLink, StyleColor(visited_color));
+
+  EXPECT_FALSE(unvisited_current->OutlineVisuallyEqual(*unvisited_explicit));
+  EXPECT_FALSE(visited_current->OutlineVisuallyEqual(*visited_explicit));
+
+  StyleDifference unvisited_diff = unvisited_current->VisualInvalidationDiff(
+      GetDocument(), *unvisited_explicit);
+  StyleDifference visited_diff =
+      visited_current->VisualInvalidationDiff(GetDocument(), *visited_explicit);
+  EXPECT_TRUE(unvisited_diff.NeedsNormalPaintInvalidation());
+  EXPECT_TRUE(visited_diff.NeedsNormalPaintInvalidation());
+  EXPECT_EQ(unvisited_diff.needs_recompute_visual_overflow,
+            visited_diff.needs_recompute_visual_overflow);
+  EXPECT_TRUE(visited_diff.needs_recompute_visual_overflow);
+}
+
+TEST_F(ComputedStyleTest, BorderVisuallyEqualIndependentOfVisitedState) {
+  const Color unvisited_color = Color::FromRGB(255, 0, 0);
+  const Color visited_color = Color::FromRGB(0, 0, 255);
+
+  auto make_style = [&](EInsideLink inside_link, const StyleColor& border) {
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    builder.SetInsideLink(inside_link);
+    builder.SetColor(StyleColor(unvisited_color));
+    builder.SetInternalVisitedColor(StyleColor(visited_color));
+    builder.SetBorderTopStyle(EBorderStyle::kSolid);
+    builder.SetBorderTopWidth(2);
+    builder.SetBorderTopColor(border);
+    builder.SetInternalVisitedBorderTopColor(StyleColor(visited_color));
+    return builder.TakeStyle();
+  };
+
+  // Toggling unvisited border-top-color between currentcolor and visited_color
+  // must produce identical BorderVisuallyEqual() and paint invalidation for
+  // visited and unvisited links.
+  const ComputedStyle* unvisited_current = make_style(
+      EInsideLink::kInsideUnvisitedLink, StyleColor::CurrentColor());
+  const ComputedStyle* unvisited_explicit = make_style(
+      EInsideLink::kInsideUnvisitedLink, StyleColor(visited_color));
+  const ComputedStyle* visited_current =
+      make_style(EInsideLink::kInsideVisitedLink, StyleColor::CurrentColor());
+  const ComputedStyle* visited_explicit =
+      make_style(EInsideLink::kInsideVisitedLink, StyleColor(visited_color));
+
+  EXPECT_FALSE(unvisited_current->BorderVisuallyEqual(*unvisited_explicit));
+  EXPECT_FALSE(visited_current->BorderVisuallyEqual(*visited_explicit));
+
+  StyleDifference unvisited_diff = unvisited_current->VisualInvalidationDiff(
+      GetDocument(), *unvisited_explicit);
+  StyleDifference visited_diff =
+      visited_current->VisualInvalidationDiff(GetDocument(), *visited_explicit);
+  EXPECT_TRUE(unvisited_diff.NeedsNormalPaintInvalidation());
+  EXPECT_TRUE(visited_diff.NeedsNormalPaintInvalidation());
+}
+
 }  // namespace blink

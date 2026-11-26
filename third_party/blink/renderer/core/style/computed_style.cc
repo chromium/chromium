@@ -2707,14 +2707,6 @@ blink::Color ComputedStyle::VisitedDependentContextPaint(
                                unvisited_color.Alpha());
 }
 
-blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
-                                          bool* is_current_color) const {
-  bool visited_link = (InsideLink() == EInsideLink::kInsideVisitedLink);
-  blink::Color current_color =
-      visited_link ? GetInternalVisitedCurrentColor() : GetCurrentColor();
-  return color.Resolve(current_color, UsedColorScheme(), is_current_color);
-}
-
 TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {
   TextEmphasisMark mark = TextEmphasisMarkInternal();
   if (mark != TextEmphasisMark::kAuto) {

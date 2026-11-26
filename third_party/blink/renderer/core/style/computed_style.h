@@ -670,8 +670,9 @@ class ComputedStyle final : public ComputedStyleBase {
       return true;
     }
     return OutlineWidth() == other.OutlineWidth() &&
-           ResolvedColor(OutlineColor()) ==
-               other.ResolvedColor(other.OutlineColor()) &&
+           OutlineColor().Resolve(GetCurrentColor(), UsedColorScheme()) ==
+               other.OutlineColor().Resolve(other.GetCurrentColor(),
+                                            other.UsedColorScheme()) &&
            OutlineStyle() == other.OutlineStyle() &&
            OutlineOffset() == other.OutlineOffset() &&
            OutlineStyleIsAuto() == other.OutlineStyleIsAuto();
@@ -1465,7 +1466,8 @@ class ComputedStyle final : public ComputedStyleBase {
         return true;
       }
       return width == other_width && style == other_style &&
-             ResolvedColor(color) == o.ResolvedColor(other_color);
+             color.Resolve(GetCurrentColor(), UsedColorScheme()) ==
+                 other_color.Resolve(o.GetCurrentColor(), o.UsedColorScheme());
     };
 
     return BorderSideVisuallyEqual(BorderTopColor(), o.BorderTopColor(),
@@ -2898,14 +2900,6 @@ class ComputedStyle final : public ComputedStyleBase {
   blink::Color VisitedDependentContextPaint(
       const SVGPaint& context_paint,
       const SVGPaint& context_visited_paint) const;
-
-  // Helper for resolving a StyleColor which may contain currentColor or a
-  // system color keyword. This is intended for cases where a given property
-  // consists of a StyleColor plus additional information. For <color>
-  // properties, prefer VisitedDependentColor() or
-  // Longhand::ColorIncludingFallback() instead.
-  blink::Color ResolvedColor(const StyleColor& color,
-                             bool* is_current_color = nullptr) const;
 
   static bool ShadowListHasCurrentColor(const ShadowList*);
 
