@@ -1,8 +1,6 @@
-Test frontend's timeout support.
-
+Tests timeout support for Runtime.evaluate and Debugger.evaluateOnCallFrame.
 
 Testing expression while (1){} with timeout: 0
-error: Execution was terminated
 Error: Execution was terminated
 
 Testing expression 1 + 1 with timeout: undefined
