@@ -31,6 +31,7 @@ android_library("gcm_driver_java") {
 
 robolectric_library("components_gcm_driver_junit_tests") {
   sources = [
+    "//components/gcm_driver/instance_id/android/junit/src/org/chromium/components/gcm_driver/instance_id/InstanceIDBridgeTest.java",
     "junit/src/org/chromium/components/gcm_driver/GCMMessageTest.java",
     "junit/src/org/chromium/components/gcm_driver/LazySubscriptionsManagerTest.java",
   ]
@@ -39,6 +40,9 @@ robolectric_library("components_gcm_driver_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/gcm_driver/instance_id/android:instance_id_driver_java",
+    "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

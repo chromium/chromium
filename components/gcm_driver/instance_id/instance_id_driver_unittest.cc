@@ -417,4 +417,23 @@ TEST_F(InstanceIDDriverTest, DeleteToken) {
   EXPECT_EQ(token2, GetToken(instance_id, kAuthorizedEntity2, kScope1));
 }
 
+TEST_F(InstanceIDDriverTest, GetTokenAfterDeleteID) {
+  InstanceID* instance_id = driver()->GetInstanceID(kTestAppID1);
+  std::string token1 = GetToken(instance_id, kAuthorizedEntity1, kScope1);
+  ASSERT_FALSE(token1.empty());
+
+  EXPECT_EQ(InstanceID::SUCCESS, DeleteID(instance_id));
+
+  std::string token2 = GetToken(instance_id, kAuthorizedEntity1, kScope1);
+  EXPECT_FALSE(token2.empty());
+  EXPECT_NE(token1, token2);
+  EXPECT_EQ(token2, GetToken(instance_id, kAuthorizedEntity1, kScope1));
+
+  // Simulate a restart to verify the recreated driver resolves the same
+  // underlying InstanceID instance and returns `token2`.
+  RecreateInstanceIDDriver();
+  instance_id = driver()->GetInstanceID(kTestAppID1);
+  EXPECT_EQ(token2, GetToken(instance_id, kAuthorizedEntity1, kScope1));
+}
+
 }  // namespace instance_id

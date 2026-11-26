@@ -4,12 +4,17 @@
 
 package org.chromium.components.gcm_driver.instance_id;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.gcm_driver.InstanceIDFlags;
 import org.chromium.components.gcm_driver.LazySubscriptionsManager;
@@ -18,21 +23,16 @@ import org.chromium.components.gcm_driver.SubscriptionFlagManager;
 import java.io.IOException;
 
 /**
- * Wraps InstanceIDWithSubtype so it can be used over JNI.
- * Performs disk/network operations on a background thread and replies asynchronously.
+ * Wraps InstanceIDWithSubtype so it can be used over JNI. Performs disk/network operations on a
+ * background thread and replies asynchronously.
  */
 @JNINamespace("instance_id")
 @NullMarked
 public class InstanceIDBridge {
     private final String mSubtype;
+    private final SequencedTaskRunner mTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
     private long mNativeInstanceIDAndroid;
-
-    /**
-     * Underlying InstanceIDWithSubtype. May be shared by multiple InstanceIDBridges. Must be
-     * initialized on a background thread.
-     */
-    @SuppressWarnings("NullAway.Init")
-    private InstanceIDWithSubtype mInstanceID;
 
     private static boolean sBlockOnAsyncTasksForTesting;
 
@@ -77,8 +77,8 @@ public class InstanceIDBridge {
     public void getId(final int requestId) {
         new BridgeAsyncTask<String>() {
             @Override
-            protected String doBackgroundWork() {
-                return mInstanceID.getId();
+            protected String doBackgroundWork(InstanceIDWithSubtype instanceId) {
+                return instanceId.getId();
             }
 
             @Override
@@ -93,8 +93,8 @@ public class InstanceIDBridge {
     public void getCreationTime(final int requestId) {
         new BridgeAsyncTask<Long>() {
             @Override
-            protected Long doBackgroundWork() {
-                return mInstanceID.getCreationTime();
+            protected Long doBackgroundWork(InstanceIDWithSubtype instanceId) {
+                return instanceId.getCreationTime();
             }
 
             @Override
@@ -111,14 +111,15 @@ public class InstanceIDBridge {
      * as lazy such that incoming messages are deferred until there are visible activities.
      */
     @CalledByNative
-    private void getToken(
+    @VisibleForTesting
+    void getToken(
             final int requestId,
             final @JniType("std::string") String authorizedEntity,
             final @JniType("std::string") String scope,
             int flags) {
         new BridgeAsyncTask<String>() {
             @Override
-            protected String doBackgroundWork() {
+            protected String doBackgroundWork(InstanceIDWithSubtype instanceId) {
                 try {
                     // TODO(crbug.com/40789764): Migrate stored LazySubscriptionsManager data to
                     // SubscriptionFlagManager.
@@ -130,7 +131,7 @@ public class InstanceIDBridge {
                             SubscriptionFlagManager.buildSubscriptionUniqueId(
                                     mSubtype, authorizedEntity),
                             flags);
-                    return mInstanceID.getToken(authorizedEntity, scope);
+                    return instanceId.getToken(authorizedEntity, scope);
                 } catch (IOException ex) {
                     return "";
                 }
@@ -151,9 +152,9 @@ public class InstanceIDBridge {
             final @JniType("std::string") String scope) {
         new BridgeAsyncTask<Boolean>() {
             @Override
-            protected Boolean doBackgroundWork() {
+            protected Boolean doBackgroundWork(InstanceIDWithSubtype instanceId) {
                 try {
-                    mInstanceID.deleteToken(authorizedEntity, scope);
+                    instanceId.deleteToken(authorizedEntity, scope);
                     String subscriptionId =
                             LazySubscriptionsManager.buildSubscriptionUniqueId(
                                     mSubtype, authorizedEntity);
@@ -180,12 +181,13 @@ public class InstanceIDBridge {
 
     /** Async wrapper for {@link InstanceID#deleteInstanceID}. */
     @CalledByNative
-    private void deleteInstanceID(final int requestId) {
+    @VisibleForTesting
+    void deleteInstanceID(final int requestId) {
         new BridgeAsyncTask<Boolean>() {
             @Override
-            protected Boolean doBackgroundWork() {
+            protected Boolean doBackgroundWork(InstanceIDWithSubtype instanceId) {
                 try {
-                    mInstanceID.deleteInstanceID();
+                    instanceId.deleteInstanceID();
                     return true;
                 } catch (IOException ex) {
                     return false;
@@ -203,42 +205,34 @@ public class InstanceIDBridge {
      * Custom {@link AsyncTask} wrapper. As usual, this performs work on a background thread, then
      * sends the result back on the UI thread. Key differences:
      *
-     * <p>1. Lazily initializes mInstanceID before running doBackgroundWork.
+     * <p>1. Resolves {@link InstanceIDWithSubtype} on the background thread before running
+     * doBackgroundWork, so a fresh instance is created after {@link #deleteInstanceID}.
      *
      * <p>2. sendResultToNative will be skipped if the C++ counterpart has been destroyed.
      *
-     * <p>3. Tasks run in parallel (using THREAD_POOL_EXECUTOR) to avoid blocking other Chrome
-     * tasks.
+     * <p>3. Tasks for the same {@link InstanceIDBridge} run sequentially on {@link #mTaskRunner} to
+     * preserve call order (e.g. {@link #deleteInstanceID} followed by {@link #getToken}) without
+     * blocking other Chrome tasks.
      *
-     * <p>4. If setBlockOnAsyncTasksForTesting has been enabled, the work will skip the thread pool
-     * executor and run directly on the main thread. This is necessary because there are some
-     * complex behaviors around executor lifecycle in unit tests.
+     * <p>4. If setBlockOnAsyncTasksForTesting has been enabled, the work will skip the task runner
+     * and run directly on the main thread. This is necessary because there are some complex
+     * behaviors around executor lifecycle in unit tests.
      */
     private abstract class BridgeAsyncTask<Result> {
-        protected abstract Result doBackgroundWork();
+        protected abstract Result doBackgroundWork(InstanceIDWithSubtype instanceId);
 
         protected abstract void sendResultToNative(Result result);
 
         public void execute() {
             if (sBlockOnAsyncTasksForTesting) {
-                if (mInstanceID == null) {
-                    mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
-                }
-                sendResultToNative(doBackgroundWork());
+                sendResultToNative(doBackgroundWork(InstanceIDWithSubtype.getInstance(mSubtype)));
                 return;
             }
             AsyncTask<Result> task =
                     new AsyncTask<>() {
                         @Override
-                        @SuppressWarnings(
-                                "NoSynchronizedThisCheck") // Only used/accessible by native.
                         protected Result doInBackground() {
-                            synchronized (InstanceIDBridge.this) {
-                                if (mInstanceID == null) {
-                                    mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
-                                }
-                            }
-                            return doBackgroundWork();
+                            return doBackgroundWork(InstanceIDWithSubtype.getInstance(mSubtype));
                         }
 
                         @Override
@@ -248,7 +242,7 @@ public class InstanceIDBridge {
                             }
                         }
                     };
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            task.executeOnTaskRunner(mTaskRunner);
         }
     }
 
