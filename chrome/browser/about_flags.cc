@@ -14119,6 +14119,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFixVcnStrikeDatabaseFallback)},
 
+    {"customize-chrome-refresh", flag_descriptions::kCustomizeChromeRefreshName,
+     flag_descriptions::kCustomizeChromeRefreshDescription, kOsAll,
+     FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeRefresh)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

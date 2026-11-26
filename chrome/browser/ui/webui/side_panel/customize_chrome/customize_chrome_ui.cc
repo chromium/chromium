@@ -306,6 +306,13 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeSidePanelExtensionsCard));
 
+  // Inserted into <html> in customize_chrome.html as a boolean attribute.
+  source->AddString(
+      "customizeChromeRefresh",
+      base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeRefresh)
+          ? "customize-chrome-refresh"
+          : "");
+
   bool ntp_next_features_enabled =
       ntp_realbox::IsNtpRealboxNextEnabled(profile_) &&
       base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures);

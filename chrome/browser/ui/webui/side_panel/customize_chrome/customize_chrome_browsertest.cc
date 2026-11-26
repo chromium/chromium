@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -16,10 +17,13 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class CustomizeChromeSidePanelBrowserTest : public PlatformBrowserTest {
@@ -242,3 +246,37 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   ActivateTabAt(2);
   EXPECT_EQ(0, closed_count);
 }
+
+class CustomizeChromeRefreshBrowserTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CustomizeChromeRefreshBrowserTest() {
+    feature_list_.InitWithFeatureState(ntp_features::kCustomizeChromeRefresh,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Refresh CSS will key off :host-context([customize-chrome-refresh]), so the
+// attribute must track the feature state.
+IN_PROC_BROWSER_TEST_P(CustomizeChromeRefreshBrowserTest,
+                       HtmlElementReflectsFeatureState) {
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, GURL(chrome::kChromeUICustomizeChromeSidePanelURL)));
+
+  EXPECT_EQ(GetParam(), content::EvalJs(web_contents,
+                                        "document.documentElement.hasAttribute("
+                                        "'customize-chrome-refresh')"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CustomizeChromeRefreshBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Enabled" : "Disabled";
+                         });

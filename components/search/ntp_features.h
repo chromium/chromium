@@ -20,6 +20,7 @@ namespace ntp_features {
 // The features should be documented alongside the definition of their values in
 // the .cc file.
 
+BASE_DECLARE_FEATURE(kCustomizeChromeRefresh);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);

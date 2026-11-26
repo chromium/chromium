@@ -16,6 +16,11 @@
 
 namespace ntp_features {
 
+// If enabled, applies the Customize Chrome side panel UI refresh on Desktop
+// and Android desktop. Exposed to WebUI as the `customize-chrome-refresh`
+// attribute on <html> in customize_chrome.html.
+BASE_FEATURE(kCustomizeChromeRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, shows an extension card within the Customize Chrome Side
 // Panel for access to the Chrome Web Store extensions.
 BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,

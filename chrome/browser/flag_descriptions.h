@@ -473,6 +473,12 @@ inline constexpr char kCSSGridLanesLayoutDescription[] =
     "etc.). More details on grid-lanes syntax can be found at "
     "https://www.w3.org/TR/css-grid-3/#masonry-model.";
 
+inline constexpr char kCustomizeChromeRefreshName[] =
+    "Customize Chrome UI Refresh";
+inline constexpr char kCustomizeChromeRefreshDescription[] =
+    "Enables the updated design of the Customize Chrome side panel on Desktop "
+    "and Android desktop.";
+
 inline constexpr char kCustomizeChromeSidePanelExtensionsCardName[] =
     "Customize Chrome Side Panel Extension Card";
 inline constexpr char kCustomizeChromeSidePanelExtensionsCardDescription[] =
