@@ -894,14 +894,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
-        try {
-            PackageManager packageManager = mActivity.getPackageManager();
-            ApplicationInfo applicationInfo =
-                    packageManager.getApplicationInfo(mActivity.getPackageName(), 0);
-            mApplicationLabel = packageManager.getApplicationLabel(applicationInfo);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "Error getting application info", e);
-            mApplicationLabel = mActivity.getResources().getString(R.string.app_name);
+        if (ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+            mApplicationLabel =
+                    mActivity
+                            .getPackageManager()
+                            .getApplicationLabel(mActivity.getApplicationInfo());
+        } else {
+            try {
+                PackageManager packageManager = mActivity.getPackageManager();
+                ApplicationInfo applicationInfo =
+                        packageManager.getApplicationInfo(mActivity.getPackageName(), 0);
+                mApplicationLabel = packageManager.getApplicationLabel(applicationInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.w(TAG, "Error getting application info", e);
+                mApplicationLabel = mActivity.getResources().getString(R.string.app_name);
+            }
         }
 
         initInAppUpdateObservers();
@@ -3659,6 +3666,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /** Returns the {@link TabSearchOverlayCoordinator} for testing. */
     public @Nullable TabSearchOverlayCoordinator getTabSearchOverlayCoordinatorForTesting() {
         return mTabSearchOverlayCoordinator;
+    }
+
+    CharSequence getApplicationLabelForTesting() {
+        return mApplicationLabel;
     }
 
     @Nullable InAppUpdateController getInAppUpdateControllerForTesting() {

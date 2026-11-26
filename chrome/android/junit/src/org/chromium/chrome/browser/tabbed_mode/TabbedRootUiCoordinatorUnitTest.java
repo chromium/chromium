@@ -21,6 +21,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.os.Looper;
 import android.view.ViewStub;
@@ -711,6 +713,44 @@ public class TabbedRootUiCoordinatorUnitTest {
         verify(mFullscreenManager, never()).clearPendingBrowserImmersiveExitReason();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testApplicationLabel_usesCachedApplicationInfoWhenFlagEnabled() {
+        setUpDistinctApplicationLabels("Cached Label", "Queried Label");
+
+        mCoordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null, ObservableSuppliers.alwaysNull());
+
+        assertEquals("Cached Label", mCoordinator.getApplicationLabelForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testApplicationLabel_queriesPackageManagerWhenFlagDisabled() {
+        setUpDistinctApplicationLabels("Cached Label", "Queried Label");
+
+        mCoordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null, ObservableSuppliers.alwaysNull());
+
+        assertEquals("Queried Label", mCoordinator.getApplicationLabelForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testApplicationLabel_fallsBackToAppNameOnNameNotFoundWhenFlagDisabled() {
+        Shadows.shadowOf(mActivity.getPackageManager()).removePackage(mActivity.getPackageName());
+
+        mCoordinator =
+                createCoordinator(
+                        /* bottomBarHostManager= */ null, ObservableSuppliers.alwaysNull());
+
+        assertEquals(
+                mActivity.getResources().getString(R.string.app_name),
+                mCoordinator.getApplicationLabelForTesting());
+    }
+
     private AtomicInteger attachLoadingStub() {
         FrameLayout root = new FrameLayout(mActivity);
         ViewStub loadingStub = new ViewStub(mActivity);
@@ -720,5 +760,16 @@ public class TabbedRootUiCoordinatorUnitTest {
         root.addView(loadingStub);
         mActivity.setContentView(root);
         return inflateCount;
+    }
+
+    private void setUpDistinctApplicationLabels(String cachedLabel, String queriedLabel) {
+        mActivity.getApplicationInfo().nonLocalizedLabel = cachedLabel;
+
+        ApplicationInfo queriedAppInfo = new ApplicationInfo(mActivity.getApplicationInfo());
+        queriedAppInfo.nonLocalizedLabel = queriedLabel;
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = mActivity.getPackageName();
+        packageInfo.applicationInfo = queriedAppInfo;
+        Shadows.shadowOf(mActivity.getPackageManager()).installPackage(packageInfo);
     }
 }
