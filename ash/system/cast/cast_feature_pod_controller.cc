@@ -58,9 +58,6 @@ CastFeaturePodController::CastFeaturePodController(
     : tray_controller_(tray_controller) {}
 
 CastFeaturePodController::~CastFeaturePodController() {
-  if (CastConfigController::Get() && tile_) {
-    CastConfigController::Get()->RemoveObserver(this);
-  }
 }
 
 // static
@@ -78,7 +75,7 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
       /*is_togglable=*/true,
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
-  tile_ = tile.get();
+  tile_ = tile->GetWeakPtr();
 
   bool target_visibility = CalculateButtonVisibility();
   if (target_visibility) {
@@ -91,7 +88,7 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
 
   auto* cast_config = CastConfigController::Get();
   if (cast_config) {
-    cast_config->AddObserver(this);
+    scoped_observer_.Observe(cast_config);
     cast_config->RequestDeviceRefresh();
   }
 

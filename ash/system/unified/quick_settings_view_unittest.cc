@@ -28,16 +28,6 @@ class QuickSettingsViewTest : public AshTestBase {
   QuickSettingsViewTest& operator=(const QuickSettingsViewTest&) = delete;
   ~QuickSettingsViewTest() override = default;
 
-  void SetUp() override {
-    AshTestBase::SetUp();
-    cast_config_ = std::make_unique<TestCastConfigController>();
-  }
-
-  void TearDown() override {
-    cast_config_.reset();
-    AshTestBase::TearDown();
-  }
-
   FeatureTilesContainerView* GetFeatureTilesContainer() {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
@@ -74,7 +64,7 @@ class QuickSettingsViewTest : public AshTestBase {
  private:
   // This is required to make the cast tile visible in the
   // `CastAndAutoRotateCompactTiles` unit test. Cast features will not be used.
-  std::unique_ptr<TestCastConfigController> cast_config_;
+  TestCastConfigController cast_config_;
 };
 
 // Tests that the cast and auto-rotate tiles are presented in their compact

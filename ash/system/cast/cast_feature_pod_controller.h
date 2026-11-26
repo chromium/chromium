@@ -11,6 +11,7 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -46,11 +47,13 @@ class ASH_EXPORT CastFeaturePodController
   // Updates the feature tile.
   void UpdateFeatureTile();
 
-  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
-      tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
+  base::WeakPtr<FeatureTile> tile_;
+
+  base::ScopedObservation<CastConfigController, CastFeaturePodController>
+      scoped_observer_{this};
 
   base::WeakPtrFactory<CastFeaturePodController> weak_factory_{this};
 };

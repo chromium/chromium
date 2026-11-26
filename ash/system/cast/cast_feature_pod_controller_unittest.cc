@@ -37,6 +37,11 @@ class CastFeaturePodControllerTest : public AshTestBase {
             ->unified_system_tray_controller());
   }
 
+  void TearDown() override {
+    controller_.reset();
+    AshTestBase::TearDown();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   TestCastConfigController cast_config_;
   std::unique_ptr<CastFeaturePodController> controller_;
