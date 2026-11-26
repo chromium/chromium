@@ -213,7 +213,7 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
       std::vector<base::test::FeatureRefAndParams> additional_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {}) {
     std::vector<base::test::FeatureRefAndParams> base_features = {
-        {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kInitialWebUI, {}},
         {features::kWebUIReloadButton, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
@@ -350,9 +350,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                             "'toolbar-app')).display"));
 }
 
-// Initial WebUI process should not be shared with non-Initial WebUI per
-// https://crrev.com/c/7508984.
-// However, both should have the TopChrome WebUI flag set.
+// Initial WebUI shares its process with other TopChrome WebUIs, and all of them
+// have the TopChrome WebUI flag set.
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                        InitialWebUIProcessSharing) {
   // 1) Navigate to initial WebUI in a new WebContents.
@@ -378,9 +377,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(non_initial_webui_web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
                   ->IsForTopChromeWebUI());
-  // Initial WebUI and other TopChrome WebUI should use different processes
-  // because Initial WebUI is explicitly isolated.
-  EXPECT_NE(
+  // Initial WebUI and the other TopChrome WebUI should share a process.
+  EXPECT_EQ(
       initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
       non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
 
@@ -388,13 +386,10 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   std::unique_ptr<content::WebContents> initial_webui_web_contents2 =
       CreateAndNavigateWebContents(url, &initializer);
 
-  // Initial WebUI should share process with the other Initial WebUI
-  // WebContents, but not the non-Initial TopChrome WebUI one.
+  // Initial WebUI should share a process with the other Initial WebUI
+  // WebContents.
   EXPECT_EQ(initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
             initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
-  EXPECT_NE(
-      initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
-      non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
 
   // 4) Navigate to another non-Initial TopChrome WebUI in a new WebContents.
   GURL url3(chrome::kChromeUIReadLaterURL);
@@ -402,14 +397,11 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents2 =
       CreateAndNavigateWebContents(url3, nullptr);
 
-  // Non-Initial TopChrome WebUIs share a process with EACH OTHER,
-  // but not with the Initial WebUI.
+  // Non-Initial TopChrome WebUIs should share a process with each other and
+  // with the Initial WebUI.
   EXPECT_EQ(
       non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
       non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
-  EXPECT_NE(
-      non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
-      initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 // Verifies that UKM PageLoad metrics are correctly recorded for an Initial
@@ -449,7 +441,7 @@ class InitialWebUINavigationTimelineBrowserTest : public InProcessBrowserTest {
  public:
   InitialWebUINavigationTimelineBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> features = {
-        {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kInitialWebUI, {}},
         {features::kWebUIReloadButton, {{"prewarm_webui", "false"}}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
@@ -552,7 +544,7 @@ class PrewarmedWebUINavigationTimelineBrowserTest
  public:
   PrewarmedWebUINavigationTimelineBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> features = {
-        {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kInitialWebUI, {}},
         {features::kWebUIReloadButton, {{"prewarm_webui", "true"}}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};

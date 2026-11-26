@@ -69,14 +69,6 @@ std::optional<GURL> GetWebUIProcessLockURL(const GURL& url) {
     return std::nullopt;
   }
 
-  if (features::kInitialWebUIUseSeparateProcess.Get() &&
-      GetContentClient()->browser()->IsInitialWebUIURL(url)) {
-    // If initial WebUIs need to use a different process separate from other
-    // WebUIs, use their own site URL for the process lock instead of the
-    // shared host.
-    return std::nullopt;
-  }
-
   std::optional<std::string_view> lock_host =
       WebUIConfigMap::GetInstance().GetProcessLockHost(url);
   if (!lock_host.has_value()) {

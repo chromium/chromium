@@ -1932,22 +1932,10 @@ bool RenderProcessHostImpl::Init() {
       std::move(*renderer_process_security_state);
 
 #if !BUILDFLAG(IS_ANDROID)
-  bool is_initial_web_ui = false;
-  // If `use_separate_process` is true, the initial WebUI has its own process
-  // lock URL (e.g. chrome://webui-toolbar.top-chrome/), which can be uniquely
-  // identified using `IsInitialWebUIURL`.
-  // If `use_separate_process` is false, it shares the generic process lock
-  // `chrome://top-chrome/` with other Top Chrome WebUIs. In this case, we
-  // cannot distinguish it by lock URL and must fallback to checking if it is a
-  // Top Chrome WebUI process in general.
-  if (features::kInitialWebUIUseSeparateProcess.Get()) {
-    is_initial_web_ui = GetContentClient()->browser()->IsInitialWebUIURL(
-        GetProcessLock().GetProcessLockURL());
-  } else {
-    is_initial_web_ui = IsForTopChromeWebUI();
-  }
-
-  if (is_initial_web_ui) {
+  // The initial WebUI shares the process lock (e.g. `chrome://top-chrome/`)
+  // with other Top Chrome WebUIs, so its process cannot be distinguished by
+  // lock URL. Check if this is a Top Chrome WebUI process in general instead.
+  if (IsForTopChromeWebUI()) {
     bool existing_found = false;
     auto* browser_context = GetBrowserContext();
     for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();

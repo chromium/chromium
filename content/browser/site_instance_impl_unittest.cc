@@ -2313,38 +2313,6 @@ TEST_F(SiteInstanceTest, WebUIConfigProcessLockHost) {
   EXPECT_EQ(webui_standalone_url,
             webui_standalone_site_info.GetProcessLockURL());
   EXPECT_EQ(untrusted_url, untrusted_site_info.GetProcessLockURL());
-
-#if !BUILDFLAG(IS_ANDROID)
-  // When `kInitialWebUIUseSeparateProcess` is enabled and `IsInitialWebUIURL()`
-  // returns true, the initial WebUI should lock to its own site URL instead of
-  // the shared `process_lock_host()`.
-  class InitialWebUIBrowserClient : public TestContentBrowserClient {
-   public:
-    explicit InitialWebUIBrowserClient(const GURL& initial_webui_url)
-        : initial_webui_url_(initial_webui_url) {}
-    bool IsInitialWebUIURL(const GURL& url) override {
-      return url == initial_webui_url_;
-    }
-
-   private:
-    GURL initial_webui_url_;
-  };
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kInitialWebUI,
-      {{features::kInitialWebUIUseSeparateProcess.name, "true"}});
-  InitialWebUIBrowserClient initial_webui_client(webui_host_bar_url);
-  ScopedContentBrowserClientSetting browser_client_setting(
-      &initial_webui_client);
-
-  const SiteInfo initial_webui_site_info =
-      GetSiteInfoForURL(webui_host_bar_url);
-  EXPECT_EQ(webui_host_bar_url, initial_webui_site_info.site_url());
-  EXPECT_EQ(webui_host_bar_url, initial_webui_site_info.GetProcessLockURL());
-  EXPECT_EQ(webui_shared_lock_url,
-            GetSiteInfoForURL(webui_host_baz_url).GetProcessLockURL());
-#endif
 }
 
 TEST_F(SiteInstanceTest, ErrorPage) {
