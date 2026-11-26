@@ -5,6 +5,7 @@
 #include "components/prefs/pref_member.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
@@ -13,6 +14,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_member_language_tag.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -349,6 +351,43 @@ TEST_F(PrefMemberTest, MoveToSequence) {
 
   helper->FetchValue();
   EXPECT_TRUE(helper->value());
+}
+
+// Tests that PrefMemberBase observer callbacks copy the changed pref's name.
+TEST_F(PrefMemberTest, MoveToSequenceWithObserverCopiesPrefName) {
+  constexpr char kPrefName[] = "pref_name_for_testing";
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(kPrefName, false);
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::WithBaseSyncPrimitives()});
+  base::WaitableEvent observer_called;
+  std::string observed_pref_name;
+  BooleanPrefMember pref;
+  pref.Init(kPrefName, &prefs,
+            base::BindLambdaForTesting([&](const std::string& pref_name) {
+              observed_pref_name = pref_name;
+              observer_called.Signal();
+            }));
+  pref.MoveToSequence(task_runner);
+
+  // Hold `task_runner` until the caller's temporary pref name is overwritten so
+  // the posted observer callback runs afterwards.
+  base::WaitableEvent unblock_runner;
+  ASSERT_TRUE(task_runner->PostTask(
+      FROM_HERE, unblock_runner.GetWaitCallbackForTesting()));
+
+  std::string temp_pref_name = kPrefName;
+  // Trigger callback creation.
+  prefs.SetBoolean(temp_pref_name, true);
+  // Overwrite the backing storage before the callback is run.
+  temp_pref_name = "x";
+
+  unblock_runner.Signal();
+  observer_called.Wait();
+  EXPECT_EQ(observed_pref_name, kPrefName);
+  pref.Destroy();
 }
 
 TEST_F(PrefMemberTest, InitGetAndSetLanguageTagPrefMember) {

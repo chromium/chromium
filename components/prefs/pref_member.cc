@@ -4,6 +4,7 @@
 
 #include "components/prefs/pref_member.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -89,7 +90,7 @@ void PrefMemberBase::OnPreferenceChanged(PrefService* service,
                                          std::string_view pref_name) {
   VerifyValuePrefName();
   UpdateValueFromPref((!setting_value_ && !observer_.is_null())
-                          ? base::BindOnce(observer_, pref_name)
+                          ? base::BindOnce(observer_, std::string(pref_name))
                           : base::OnceClosure());
 }
 
