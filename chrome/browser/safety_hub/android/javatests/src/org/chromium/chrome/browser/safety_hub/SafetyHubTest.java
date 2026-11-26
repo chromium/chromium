@@ -355,13 +355,10 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubPermissions"})
-    // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
-    // settings is shown in a tab.
-    @Features.DisableFeatures({
-        ChromeFeatureList.SETTINGS_IN_TAB,
-        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
-    })
     public void testClearPermissionsReviewList() {
+        // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
+        // settings is shown in a tab.
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -2017,13 +2014,10 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubPermissions"})
-    // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
-    // settings is shown in a tab.
-    @Features.DisableFeatures({
-        ChromeFeatureList.SETTINGS_IN_TAB,
-        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
-    })
     public void testClearAbusiveNotificationPermissionsReviewList() {
+        // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
+        // settings is shown in a tab.
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_3});
         mSafetyHubFragmentTestRule.startSettingsActivity();
