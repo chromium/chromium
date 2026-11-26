@@ -64,9 +64,12 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
       std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries)
       override;
 
+  // Records a pre-header navigation failure entry for `handle`'s origin into
+  // `partition`'s persistent store when that origin has opted in to early
+  // failure capture. No-ops when `handle` or `partition` is null or when the
+  // origin has no opt-in policy.
   static void RecordEarlyNavigationFailure(NavigationHandle* handle,
-                                           StoragePartition* partition,
-                                           int net_error);
+                                           StoragePartition* partition);
 
   // Queues and dispatches a single-session report using a transient reporting
   // source when a primary main-frame navigation with cryptographic non-opaque

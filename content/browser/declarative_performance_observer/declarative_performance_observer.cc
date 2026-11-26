@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
-#include "net/base/net_errors.h"
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -450,8 +449,7 @@ void DeclarativePerformanceObserver::DidObservePerformanceEntries(
 
 void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
     NavigationHandle* handle,
-    StoragePartition* partition,
-    int net_error) {
+    StoragePartition* partition) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kDeclarativePerformanceObserver) ||
       !blink::features::
@@ -480,64 +478,31 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
     nav_start = now;
   }
 
-  const NavigationHandleTiming& timing = handle->GetNavigationHandleTiming();
-
   base::DictValue entry;
   entry.Set("name", origin.GetURL().spec());
   entry.Set("entryType", "navigation");
   entry.Set("startTime", 0.0);
+  // TODO(crbug.com/587822046): Failure time is carried in `duration` until the
+  // explainer settles where pre-header failure timestamps belong
+  // (https://github.com/explainers-by-googlers/declarative-performance-observer/issues/6).
   entry.Set("duration", (now - nav_start).InMillisecondsF());
   entry.Set("deliveryType", "");
 
+  // NavigationRequest only populates NavigationHandleTiming's DNS, connect, and
+  // SSL fields when a response head arrives
+  // (UpdateNavigationHandleTimingsOnResponseReceived()), whereas this path runs
+  // before any response head is received (when `!response()`). Leave network
+  // stage timestamps at 0 rather than reading NavigationHandleTiming (which
+  // would either be null or, if a post-redirect failure ever reaches here,
+  // carry the prior redirect hop's timings instead of the failed request's).
   entry.Set("responseStart", 0.0);
   entry.Set("requestStart", 0.0);
-
-  if (!timing.first_request_domain_lookup_start_time.is_null() &&
-      timing.first_request_domain_lookup_start_time >= nav_start) {
-    entry.Set("domainLookupStart",
-              (timing.first_request_domain_lookup_start_time - nav_start)
-                  .InMillisecondsF());
-    base::TimeTicks dns_end = timing.first_request_domain_lookup_end_time;
-    if (dns_end.is_null() ||
-        dns_end < timing.first_request_domain_lookup_start_time) {
-      dns_end = now;
-    }
-    entry.Set("domainLookupEnd", (dns_end - nav_start).InMillisecondsF());
-  } else {
-    entry.Set("domainLookupStart", 0.0);
-    entry.Set("domainLookupEnd", 0.0);
-  }
-
-  if (!timing.first_request_connect_start_time.is_null() &&
-      timing.first_request_connect_start_time >= nav_start) {
-    entry.Set("connectStart",
-              (timing.first_request_connect_start_time - nav_start)
-                  .InMillisecondsF());
-    base::TimeTicks connect_end = timing.first_request_connect_end_time;
-    if (connect_end.is_null() ||
-        connect_end < timing.first_request_connect_start_time) {
-      connect_end = now;
-    }
-    entry.Set("connectEnd", (connect_end - nav_start).InMillisecondsF());
-  } else {
-    entry.Set("connectStart", 0.0);
-    entry.Set("connectEnd", 0.0);
-  }
-
-  if (!timing.first_request_ssl_start_time.is_null() &&
-      timing.first_request_ssl_start_time >= nav_start) {
-    entry.Set(
-        "secureConnectionStart",
-        (timing.first_request_ssl_start_time - nav_start).InMillisecondsF());
-  } else {
-    entry.Set("secureConnectionStart", 0.0);
-  }
-
+  entry.Set("domainLookupStart", 0.0);
+  entry.Set("domainLookupEnd", 0.0);
+  entry.Set("connectStart", 0.0);
+  entry.Set("connectEnd", 0.0);
+  entry.Set("secureConnectionStart", 0.0);
   entry.Set("activationStart", 0.0);
-
-  base::DictValue error_detail;
-  error_detail.Set("netError", net::ErrorToShortString(net_error));
-  entry.Set("error", std::move(error_detail));
 
   store->StoreEarlyFailureReport(origin, std::move(entry));
 }

@@ -432,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), observer_url));
   WaitForReportCount(2u);
 
+  const GURL expected_origin_url = url::Origin::Create(fail_url_1).GetURL();
   std::vector<std::string> early_reports = GetReceivedReports();
   ASSERT_EQ(early_reports.size(), 2u);
   for (const std::string& raw_post : early_reports) {
@@ -439,8 +440,18 @@ IN_PROC_BROWSER_TEST_F(
         base::JSONReader::Read(raw_post, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed.has_value());
     ASSERT_TRUE(parsed->is_list());
-    EXPECT_EQ(parsed->GetList().size(), 1u);
-    EXPECT_TRUE(raw_post.contains("ERR_EMPTY_RESPONSE"));
+    ASSERT_EQ(parsed->GetList().size(), 1u);
+    const base::DictValue* report = parsed->GetList()[0].GetIfDict();
+    ASSERT_TRUE(report);
+    const base::ListValue* entries =
+        report->FindListByDottedPath("body.entries");
+    ASSERT_TRUE(entries);
+    ASSERT_EQ(entries->size(), 1u);
+    const base::DictValue* entry = (*entries)[0].GetIfDict();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(*(entry->FindString("entryType")), "navigation");
+    EXPECT_EQ(*(entry->FindString("name")), expected_origin_url.spec());
+    EXPECT_EQ(entry->Find("error"), nullptr);
     EXPECT_FALSE(raw_post.contains("session-end"));
   }
 
@@ -457,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(session_post->is_list());
   EXPECT_EQ(session_post->GetList().size(), 1u);
   EXPECT_TRUE(all_reports[2].contains("session-end"));
-  EXPECT_FALSE(all_reports[2].contains("ERR_EMPTY_RESPONSE"));
+  EXPECT_FALSE(all_reports[2].contains("\"error\""));
 }
 
 // Verifies end-to-end that hiding an active WebContents dispatches the session

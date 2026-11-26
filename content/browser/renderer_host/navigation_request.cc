@@ -2389,7 +2389,7 @@ NavigationRequest::~NavigationRequest() {
       net_error_ == net::ERR_ABORTED && CanRecordEarlyNavigationFailure()) {
     if (!response()) {
       DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-          this, GetStoragePartitionWithCurrentSiteInfo(), net::ERR_ABORTED);
+          this, GetStoragePartitionWithCurrentSiteInfo());
     } else if (declarative_performance_observer_origin_ &&
                // Only flush navigations directly aborted while waiting to
                // process the response or commit; navigations cancelled or
@@ -6113,7 +6113,7 @@ void NavigationRequest::OnRequestFailedInternal(
   if (!response() && IsInPrimaryMainFrame() && status.error_code != net::OK &&
       CanRecordEarlyNavigationFailure()) {
     DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-        this, GetStoragePartitionWithCurrentSiteInfo(), status.error_code);
+        this, GetStoragePartitionWithCurrentSiteInfo());
     early_navigation_failure_recorded_ = true;
   }
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -924,8 +925,8 @@ class DeclarativePerformanceObserverPrerenderTest
     testing::NiceMock<MockNavigationHandle> failed_handle(url, main_rfh());
     ON_CALL(failed_handle, GetNavigationHandleTiming())
         .WillByDefault(testing::ReturnRef(failure_timing));
-    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-        &failed_handle, partition, net::ERR_CONNECTION_REFUSED);
+    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(&failed_handle,
+                                                                 partition);
     FlushStore(store, origin);
 
     return WebContentsTester::For(web_contents())
@@ -1061,9 +1062,9 @@ TEST_F(DeclarativePerformanceObserverPrerenderTest,
   ASSERT_EQ(entries->size(), 1u);
   const base::DictValue* entry = (*entries)[0].GetIfDict();
   ASSERT_TRUE(entry);
-  const base::DictValue* error = entry->FindDict("error");
-  ASSERT_TRUE(error);
-  EXPECT_EQ(*(error->FindString("netError")), "ERR_CONNECTION_REFUSED");
+  EXPECT_EQ(*(entry->FindString("entryType")), "navigation");
+  EXPECT_EQ(*(entry->FindString("name")), kPrerenderOrigin.GetURL().spec());
+  EXPECT_EQ(entry->Find("error"), nullptr);
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
@@ -1081,8 +1082,8 @@ TEST_F(DeclarativePerformanceObserverTest,
   testing::NiceMock<MockNavigationHandle> failed_handle(kPageURL, main_rfh());
   ON_CALL(failed_handle, GetNavigationHandleTiming())
       .WillByDefault(testing::ReturnRef(default_timing));
-  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-      &failed_handle, partition, net::ERR_CONNECTION_REFUSED);
+  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(&failed_handle,
+                                                               partition);
 
   base::RunLoop barrier;
   partition->GetDeclarativePerformanceObserverStore()->SetEarlyFailurePolicy(
@@ -1136,9 +1137,8 @@ TEST_F(DeclarativePerformanceObserverTest,
   const base::DictValue* failure_nav_entry = failure_entry_val.GetIfDict();
   ASSERT_TRUE(failure_nav_entry);
   EXPECT_EQ(*(failure_nav_entry->FindString("entryType")), "navigation");
-  const base::DictValue* error_dict = failure_nav_entry->FindDict("error");
-  ASSERT_TRUE(error_dict);
-  EXPECT_EQ(*(error_dict->FindString("netError")), "ERR_CONNECTION_REFUSED");
+  EXPECT_EQ(*(failure_nav_entry->FindString("name")), kOrigin.GetURL().spec());
+  EXPECT_EQ(failure_nav_entry->Find("error"), nullptr);
 
   // Second report: Main document session timing (visibility-state and
   // session-end)
@@ -1148,6 +1148,81 @@ TEST_F(DeclarativePerformanceObserverTest,
   const base::ListValue* main_entries = main_report.body.FindList("entries");
   ASSERT_TRUE(main_entries);
   ASSERT_EQ(main_entries->size(), 2u);
+}
+
+// Verifies that pre-header early failure entries omit the non-standard `error`
+// key and leave DNS/connect/SSL milestones at 0 even if
+// `NavigationHandleTiming` holds timestamps (for example from a prior redirect
+// hop).
+TEST_F(DeclarativePerformanceObserverTest,
+       RecordsEarlyFailureWithZeroNetworkTimingsAndNoErrorKey) {
+  const GURL kPageURL("https://example.com/path?q=1");
+  const url::Origin kOrigin = url::Origin::Create(kPageURL);
+  auto* partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  ASSERT_TRUE(partition);
+  auto* store = partition->GetDeclarativePerformanceObserverStore();
+  store->SetEarlyFailurePolicy(kOrigin, true);
+
+  const base::TimeTicks nav_start =
+      base::TimeTicks::Now() - base::Milliseconds(100);
+
+  // Populate complete DNS/connect/SSL timings on the handle to confirm
+  // `RecordEarlyNavigationFailure` ignores them rather than reporting a prior
+  // hop's timings for a failed request.
+  NavigationHandleTiming prior_hop_timing;
+  prior_hop_timing.first_request_domain_lookup_start_time =
+      nav_start + base::Milliseconds(1);
+  prior_hop_timing.first_request_domain_lookup_end_time =
+      nav_start + base::Milliseconds(2);
+  prior_hop_timing.final_request_domain_lookup_start_time =
+      nav_start + base::Milliseconds(10);
+  prior_hop_timing.final_request_domain_lookup_end_time =
+      nav_start + base::Milliseconds(25);
+  prior_hop_timing.final_request_connect_start_time =
+      nav_start + base::Milliseconds(30);
+  prior_hop_timing.final_request_connect_end_time =
+      nav_start + base::Milliseconds(40);
+  prior_hop_timing.final_request_ssl_start_time =
+      nav_start + base::Milliseconds(35);
+
+  testing::NiceMock<MockNavigationHandle> handle(kPageURL, main_rfh());
+  ON_CALL(handle, NavigationStart()).WillByDefault(testing::Return(nav_start));
+  ON_CALL(handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(prior_hop_timing));
+  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(&handle,
+                                                               partition);
+
+  FlushStore(store, kOrigin);
+
+  base::ListValue reports;
+  base::RunLoop take_loop;
+  store->TakeEarlyFailureReports(
+      kOrigin, base::BindOnce(
+                   [](base::ListValue* out, base::OnceClosure quit,
+                      base::ListValue res) {
+                     *out = std::move(res);
+                     std::move(quit).Run();
+                   },
+                   &reports, take_loop.QuitClosure()));
+  take_loop.Run();
+
+  ASSERT_EQ(reports.size(), 1u);
+
+  const base::DictValue* entry = reports[0].GetIfDict();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(*(entry->FindString("name")), kOrigin.GetURL().spec());
+  EXPECT_EQ(*(entry->FindString("entryType")), "navigation");
+  EXPECT_EQ(entry->Find("error"), nullptr);
+  EXPECT_GE(*(entry->FindDouble("duration")), 100.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("requestStart")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("responseStart")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("domainLookupStart")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("domainLookupEnd")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("connectStart")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("connectEnd")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("secureConnectionStart")), 0.0);
+  EXPECT_DOUBLE_EQ(*(entry->FindDouble("activationStart")), 0.0);
 }
 
 TEST_F(DeclarativePerformanceObserverTest, Enforces640KBFIFOQuota) {
@@ -1171,8 +1246,8 @@ TEST_F(DeclarativePerformanceObserverTest, Enforces640KBFIFOQuota) {
   ON_CALL(sample_handle, GetNavigationHandleTiming())
       .WillByDefault(testing::ReturnRef(default_timing));
   for (int i = 0; i < 20; ++i) {
-    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-        &sample_handle, partition, net::ERR_CONNECTION_REFUSED);
+    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(&sample_handle,
+                                                                 partition);
   }
 
   base::RunLoop barrier;
@@ -1191,8 +1266,17 @@ TEST_F(DeclarativePerformanceObserverTest, Enforces640KBFIFOQuota) {
                    },
                    &reports, run_loop2.QuitClosure()));
   run_loop2.Run();
-  EXPECT_GE(reports.size(), 10u);
-  EXPECT_LE(reports.size(), 13u);
+  // The 4096-byte quota must retain recent entries without exceeding the cap
+  // while evicting older entries from the 20 recorded failures.
+  EXPECT_GT(reports.size(), 0u);
+  EXPECT_LT(reports.size(), 20u);
+  size_t total_bytes = 0;
+  for (const base::Value& report : reports) {
+    std::optional<std::string> json = base::WriteJson(report);
+    ASSERT_TRUE(json.has_value());
+    total_bytes += json->size();
+  }
+  EXPECT_LE(total_bytes, 4096u);
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
@@ -1532,8 +1616,8 @@ TEST_F(DeclarativePerformanceObserverTest,
       .WillByDefault(testing::ReturnRef(default_timing));
 
   // Try to record early failure.
-  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-      &failed_handle, partition, net::ERR_CONNECTION_REFUSED);
+  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(&failed_handle,
+                                                               partition);
 
   // Take reports to verify no reports were saved.
   base::RunLoop run_loop;

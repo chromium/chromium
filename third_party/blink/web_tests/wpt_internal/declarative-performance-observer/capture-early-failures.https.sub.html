@@ -22,8 +22,10 @@ promise_test(async t => {
     window.addEventListener("message", listener);
   });
 
-  // 1. Opt-in Window
-  const optInURL = `${base_url}/wpt_internal/declarative-performance-observer/resources/capture-early-failures-opt-in.https.sub.html?reportID=${reportID}`;
+  // 1. Opt-in Window (use a separate reportID so its normal session report
+  // does not race with the early failure report delivered by collectURL).
+  const optInReportID = crypto.randomUUID();
+  const optInURL = `${base_url}/wpt_internal/declarative-performance-observer/resources/capture-early-failures-opt-in.https.sub.html?reportID=${optInReportID}`;
   const popup = window.open(optInURL);
   assert_not_equals(popup, null, "Opt-in popup should be opened");
   t.add_cleanup(() => { popup.close(); });
@@ -60,10 +62,18 @@ promise_test(async t => {
   assert_greater_than_equal(reports.length, 1, "Should receive early failure report");
   const report = reports[0];
   assert_equals(report.type, "performance-observer");
+  assert_equals(report.url, `${base_url}/`);
   const entries = report.body.entries;
   assert_true(!!entries && entries.length >= 1, "Report should have navigation failure entries");
   const entry = entries[0];
   assert_equals(entry.entryType, "navigation");
+  assert_equals(entry.name, `${base_url}/`);
+  assert_false(Object.hasOwn(entry, "error"),
+      "Early failure navigation entry should not have an error property");
+  assert_equals(entry.domainLookupEnd, 0,
+      "Unfinished domainLookupEnd should be 0");
+  assert_equals(entry.connectEnd, 0,
+      "Unfinished connectEnd should be 0");
 }, "Early navigation failure reports are successfully buffered and flushed to the reporting endpoint");
 </script>
 </body>
