@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1013,6 +1014,207 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     @Test
+    public void testPostLoginAccountSelectedSyncDismissDoesNotShowVerifySheet() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount));
+        completeIdpPickerLogin(/* itemIndex= */ 1);
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.close();
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mDanAccount);
+
+        assertFalse(
+                mMediator.showAccounts(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        Arrays.asList(mAnaAccount, mDanAccount),
+                        Arrays.asList(mIdpData, mIdpData2),
+                        /* newAccounts= */ Arrays.asList(mDanAccount)));
+
+        assertTrue(mMediator.wasDismissed());
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testPostLoginAccountSelectedSyncErrorDialogDoesNotShowVerifySheet() {
+        showMultiIdpAccountChooser(Arrays.asList(mAnaAccount));
+        completeIdpPickerLogin(/* itemIndex= */ 1);
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.showErrorDialog(
+                                    new RelyingPartyData(
+                                            mTestEtldPlusOne,
+                                            /* iframeForDisplay= */ "",
+                                            /* rpIcon= */ null),
+                                    mIdpData2.getIdpForDisplay(),
+                                    mIdpData2.getIdpMetadata(),
+                                    RpContext.SIGN_IN,
+                                    mTokenError);
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mDanAccount);
+
+        assertTrue(
+                mMediator.showAccounts(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        Arrays.asList(mAnaAccount, mDanAccount),
+                        Arrays.asList(mIdpData, mIdpData2),
+                        /* newAccounts= */ Arrays.asList(mDanAccount)));
+
+        assertEquals(HeaderType.SIGN_IN_ERROR, mMediator.getHeaderType());
+        assertNotNull(mMockModalDialogManager.getDialogModel());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testDisclosureContinueSyncCloseRecordsContinueHistogram() {
+        showRequestPermissionDialog();
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.close();
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mNewUserAccount);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.DisclosureDialogResult",
+                        DisclosureDialogResult.CONTINUE);
+
+        clickContinueButton();
+
+        watcher.assertExpected();
+        assertTrue(mMediator.wasDismissed());
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, mMediator.getHeaderType());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testDisclosureContinueSyncDismissRecordsContinueHistogram() {
+        showRequestPermissionDialog();
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mNewUserAccount);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.DisclosureDialogResult",
+                        DisclosureDialogResult.CONTINUE);
+
+        clickContinueButton();
+
+        watcher.assertExpected();
+        assertTrue(mMediator.wasDismissed());
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, mMediator.getHeaderType());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testDisclosureContinueSyncErrorDialogRecordsContinueHistogram() {
+        showRequestPermissionDialog();
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.showErrorDialog(
+                                    new RelyingPartyData(
+                                            mTestEtldPlusOne,
+                                            /* iframeForDisplay= */ "",
+                                            /* rpIcon= */ null),
+                                    mIdpData.getIdpForDisplay(),
+                                    mIdpData.getIdpMetadata(),
+                                    RpContext.SIGN_IN,
+                                    mTokenError);
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mNewUserAccount);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.DisclosureDialogResult",
+                        DisclosureDialogResult.CONTINUE);
+
+        clickContinueButton();
+
+        watcher.assertExpected();
+        assertEquals(HeaderType.SIGN_IN_ERROR, mMediator.getHeaderType());
+        assertNotNull(mMockModalDialogManager.getDialogModel());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testShowAccountsRecordsLoadingDialogResultOnlyFromLoading() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                /* idpForDisplay= */ "",
+                RpContext.SIGN_IN);
+
+        HistogramWatcher firstWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.PROCEED);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Collections.emptyList());
+        firstWatcher.assertExpected();
+
+        completeIdpPickerLogin(/* itemIndex= */ 1);
+        HistogramWatcher secondWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.Button.LoadingDialogResult")
+                        .build();
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mDanAccount),
+                Arrays.asList(mIdpData, mIdpData2),
+                /* newAccounts= */ Arrays.asList(mDanAccount));
+        secondWatcher.assertExpected();
+    }
+
+    @Test
+    public void testShowLoadingDialogAfterDismissalNotifiesDelegateAndReturnsFalse() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                mIdpData.getIdpForDisplay(),
+                RpContext.SIGN_IN);
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        clearInvocations(mMockBottomSheetController, mTab, mMockDelegate);
+
+        assertFalse(
+                mMediator.showLoadingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mIdpData2.getIdpForDisplay(),
+                        RpContext.SIGN_IN));
+
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mTab, never()).addObserver(any());
+        assertEquals(HeaderType.LOADING, mMediator.getHeaderType());
+        assertEquals(
+                mIdpData.getIdpForDisplay(),
+                mModel.get(ItemProperties.HEADER).get(IDP_FOR_DISPLAY));
+    }
+
+    @Test
     public void testIdpPickerClosedSheetTypeRecordsAccountSelection() {
         showMultiIdpAccountChooser(Collections.emptyList());
         assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -1080,6 +1282,13 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         showMultiIdpAccountChooser(Arrays.asList(mAnaAccount, mDanAccount));
         clickUseDifferentAccountRow();
         assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    private void completeIdpPickerLogin(int itemIndex) {
+        clickUseDifferentAccountRow();
+        clickIdpRow(itemIndex);
+        mMediator.onModalDialogOpened();
+        mMediator.onModalDialogClosed();
     }
 
     /** Clicks the "Use a different account" row on a multi-IDP chooser. */

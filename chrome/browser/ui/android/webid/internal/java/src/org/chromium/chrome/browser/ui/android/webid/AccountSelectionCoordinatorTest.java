@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
@@ -264,6 +265,26 @@ public class AccountSelectionCoordinatorTest {
 
         assertTrue(activeMediator.wasDismissed());
         verify(mBottomSheetController).hideContent(activeSheet, /* animate= */ true);
+    }
+
+    /**
+     * Tests that showing the failure dialog after a switched active-mode sheet was dismissed
+     * notifies the delegate and returns false instead of replacing the sheet with a fresh mediator.
+     */
+    @Test
+    public void testFailureDialogAfterSwitchAndDismissalDoesNotReplaceSheet() {
+        switchToActiveSheet();
+        AccountSelectionMediator activeMediator = mCoordinator.getMediator();
+        activeMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        clearInvocations(mBottomSheetController, mMockDelegate);
+
+        assertFalse(
+                mCoordinator.showFailureDialog(
+                        mRpData, IDP_FOR_DISPLAY, mIdpMetadata, RpContext.SIGN_IN));
+
+        assertSame(activeMediator, mCoordinator.getMediator());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
     @Test

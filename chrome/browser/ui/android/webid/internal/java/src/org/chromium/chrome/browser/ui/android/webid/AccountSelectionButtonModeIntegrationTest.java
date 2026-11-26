@@ -925,6 +925,10 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         runOnUiThreadBlocking(
                 () -> {
+                    mAccountSelection.showLoadingDialog(
+                            new RelyingPartyData(EXAMPLE_ETLD_PLUS_ONE, "", null),
+                            TEST_ETLD_PLUS_ONE_2,
+                            RpContext.SIGN_IN);
                     mAccountSelection.showAccounts(
                             new RelyingPartyData(EXAMPLE_ETLD_PLUS_ONE, "", null),
                             Arrays.asList(mReturningAnaWithAddAccount),

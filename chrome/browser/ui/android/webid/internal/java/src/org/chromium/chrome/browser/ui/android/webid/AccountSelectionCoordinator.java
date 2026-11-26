@@ -316,7 +316,7 @@ public class AccountSelectionCoordinator
         // Only passive mode shows the failure dialog, so if the active mode sheet replaced the
         // passive mode one, show it in a new passive mode sheet, like desktop shows it in a new
         // bubble.
-        if (mMediator.wasSwitchedFromPassiveSheet()) {
+        if (!mMediator.wasDismissed() && mMediator.wasSwitchedFromPassiveSheet()) {
             replaceSheet(RpMode.PASSIVE);
         }
         return mMediator.showFailureDialog(rpData, idpForDisplay, idpMetadata, rpContext);

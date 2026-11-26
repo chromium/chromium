@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,6 +60,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
@@ -1503,6 +1505,208 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         // Calling onModalDialogClosedByUser() again after dismissal is a no-op.
         mMediator.onModalDialogClosedByUser();
         verify(mMockDelegate, times(1)).onDismissed(anyInt());
+    }
+
+    @Test
+    public void testOnAccountSelectedSyncDismissDoesNotShowVerifySheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.close();
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mAnaAccount);
+
+        mMediator.setComponentShowTime(-1000);
+        HistogramWatcher disclosureWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.Button.DisclosureDialogResult")
+                        .build();
+        mSheetAccountItems
+                .get(0)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
+
+        disclosureWatcher.assertExpected();
+        assertTrue(mMediator.wasDismissed());
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testOnAccountSelectedSyncErrorDialogDoesNotShowVerifySheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount, mBobAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        clearInvocations(mMockBottomSheetController);
+        doAnswer(
+                        invocation -> {
+                            mMediator.showErrorDialog(
+                                    new RelyingPartyData(
+                                            mTestEtldPlusOne,
+                                            /* iframeForDisplay= */ "",
+                                            /* rpIcon= */ null),
+                                    mIdpData.getIdpForDisplay(),
+                                    mIdpData.getIdpMetadata(),
+                                    RpContext.SIGN_IN,
+                                    mTokenError);
+                            return null;
+                        })
+                .when(mMockDelegate)
+                .onAccountSelected(mAnaAccount);
+
+        mMediator.setComponentShowTime(-1000);
+        mSheetAccountItems
+                .get(0)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
+
+        assertEquals(HeaderType.SIGN_IN_ERROR, mMediator.getHeaderType());
+        if (mRpMode == RpMode.ACTIVE) {
+            assertNotNull(mMockModalDialogManager.getDialogModel());
+            verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        } else {
+            assertNull(mMockModalDialogManager.getDialogModel());
+            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+            verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        }
+    }
+
+    @Test
+    public void testShowAccountsAfterDismissalNotifiesDelegateAndReturnsFalse() {
+        showAccountsAndDismiss();
+
+        assertFalse(
+                mMediator.showAccounts(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        Arrays.asList(mAnaAccount, mBobAccount),
+                        Arrays.asList(mIdpData),
+                        /* newAccounts= */ Collections.emptyList()));
+
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mTab, never()).addObserver(any());
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        assertEquals(1, mSheetAccountItems.size());
+    }
+
+    @Test
+    public void testShowFailureDialogAfterDismissalNotifiesDelegateAndReturnsFalse() {
+        showAccountsAndDismiss();
+
+        assertFalse(
+                mMediator.showFailureDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mIdpData.getIdpForDisplay(),
+                        mIdpData.getIdpMetadata(),
+                        RpContext.SIGN_IN));
+
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mTab, never()).addObserver(any());
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(1, mSheetAccountItems.size());
+    }
+
+    @Test
+    public void testShowErrorDialogAfterDismissalNotifiesDelegateAndReturnsFalse() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        // Select the account to enter the verifying sheet, then swipe it away (e.g. in passive
+        // mode where IdentityDialogController::OnAccountSelected() resets on_dismiss_, so a later
+        // token error still reaches showErrorDialog()).
+        mMediator.onAccountSelected(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
+        assertEquals(HeaderType.VERIFY, mMediator.getHeaderType());
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        mBottomSheetObserverCaptor.getValue().onSheetContentChanged(mBottomSheetContent);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(
+                        BottomSheetController.SheetState.HIDDEN,
+                        BottomSheetController.StateChangeReason.SWIPE);
+        assertTrue(mMediator.wasDismissed());
+        clearInvocations(mMockBottomSheetController, mTab, mMockDelegate);
+
+        assertFalse(
+                mMediator.showErrorDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mIdpData.getIdpForDisplay(),
+                        mIdpData.getIdpMetadata(),
+                        RpContext.SIGN_IN,
+                        mTokenError));
+
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean());
+        verify(mTab, never()).addObserver(any());
+        assertNull(mMockModalDialogManager.getDialogModel());
+        assertEquals(HeaderType.VERIFY, mMediator.getHeaderType());
+    }
+
+    @Test
+    public void testShowVerifyingDialogAfterDismissalReturnsFalseWithoutMutatingSheet() {
+        showAccountsAndDismiss();
+
+        assertFalse(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mAnaAccount,
+                        /* isAutoReauthn= */ true));
+
+        verifyNoMoreInteractions(mMockBottomSheetController, mTab, mMockDelegate);
+        assertEquals(HeaderType.SIGN_IN, mMediator.getHeaderType());
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(1, mSheetAccountItems.size());
+        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+    }
+
+    @Test
+    public void testUpdateSheetAfterDismissalReturnsFalseWithoutMutatingSheet() {
+        showAccountsAndDismiss();
+
+        assertFalse(mMediator.showVerifySheet(mAnaAccount));
+
+        verifyNoMoreInteractions(mMockBottomSheetController, mTab, mMockDelegate);
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(1, mSheetAccountItems.size());
+        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+    }
+
+    private void showAccountsAndDismiss() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        clearInvocations(mMockBottomSheetController, mTab, mMockDelegate);
     }
 
     private void pressBack() {

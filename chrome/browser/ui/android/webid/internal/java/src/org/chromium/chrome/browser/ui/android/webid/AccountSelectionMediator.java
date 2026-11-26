@@ -685,10 +685,6 @@ class AccountSelectionMediator {
     boolean showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN
                 || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
-            if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
-                mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
-                maybeRecordDisclosureDialogResult();
-            }
             mHeaderType = HeaderType.VERIFY;
             if (!updateSheet(
                     Arrays.asList(account),
@@ -780,12 +776,29 @@ class AccountSelectionMediator {
         if (!mWasDismissed) dismissContent(/* animate= */ false);
     }
 
+    // Returns whether mDelegate.onAccountSelected() synchronously dismissed the mediator or
+    // switched to another dialog (e.g. an error dialog), so showVerifySheet() must not overwrite
+    // it.
+    private boolean didAccountSelectionChangeUi(@HeaderType int headerTypeBeforeSelection) {
+        return mWasDismissed || mHeaderType != headerTypeBeforeSelection;
+    }
+
+    private boolean notifyDismissedIfAlreadyDismissed() {
+        if (!mWasDismissed) {
+            return false;
+        }
+        // IdentityDialogController replaces its dismiss callback before calling into the sheet
+        // and expects it to run whenever showing the dialog returns false.
+        mDelegate.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        return true;
+    }
+
     boolean showAccounts(
             RelyingPartyData rpData,
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             List<Account> newAccounts) {
-        if (mWasDismissed) {
+        if (notifyDismissedIfAlreadyDismissed()) {
             return false;
         }
         mRpData = rpData;
@@ -796,11 +809,13 @@ class AccountSelectionMediator {
         mIsMultiIdpRequest = mIdpDataListForShowAccounts.size() > 1;
         mRpContext = mIdpDataListForShowAccounts.get(0).getRpContext();
         mSelectedAccount = null;
-        mLoadingDialogState =
-                mIsLoadingDialogLoginToIdpClosed
-                        ? LoadingDialogResult.PROCEED_THROUGH_POPUP
-                        : LoadingDialogResult.PROCEED;
-        maybeRecordLoadingDialogResult();
+        if (mHeaderType == HeaderType.LOADING) {
+            mLoadingDialogState =
+                    mIsLoadingDialogLoginToIdpClosed
+                            ? LoadingDialogResult.PROCEED_THROUGH_POPUP
+                            : LoadingDialogResult.PROCEED;
+            maybeRecordLoadingDialogResult();
+        }
 
         // In passive mode, an account is automatically 'selected' if that is the only option.
         // Active mode first shows the single-account chooser without disclosure text, and
@@ -827,6 +842,9 @@ class AccountSelectionMediator {
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
+        if (notifyDismissedIfAlreadyDismissed()) {
+            return false;
+        }
         mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadataForLoginOrError = idpMetadata;
@@ -855,6 +873,9 @@ class AccountSelectionMediator {
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
+        if (notifyDismissedIfAlreadyDismissed()) {
+            return false;
+        }
         mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadataForLoginOrError = idpMetadata;
@@ -931,6 +952,9 @@ class AccountSelectionMediator {
 
     boolean showLoadingDialog(
             RelyingPartyData rpData, String idpForDisplay, @RpContext.EnumType int rpContext) {
+        if (notifyDismissedIfAlreadyDismissed()) {
+            return false;
+        }
         mRpData = rpData;
         mIdpForDisplay = idpForDisplay;
         // Content passes an empty IDP when the request has multiple IDPs.
@@ -948,6 +972,9 @@ class AccountSelectionMediator {
     }
 
     boolean showVerifyingDialog(RelyingPartyData rpData, Account account, boolean isAutoReauthn) {
+        if (mWasDismissed) {
+            return false;
+        }
         mRpData = rpData;
         mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.VERIFY;
         mSelectedAccount = account;
@@ -957,8 +984,7 @@ class AccountSelectionMediator {
             return true;
         }
 
-        showVerifySheet(mSelectedAccount);
-        return true;
+        return showVerifySheet(mSelectedAccount);
     }
 
     public void setCanShowUi(boolean canShowUi) {
@@ -1124,6 +1150,9 @@ class AccountSelectionMediator {
                 }
                 mSelectedAccount = newlySignedInAccount;
                 mDelegate.onAccountSelected(mSelectedAccount);
+                if (didAccountSelectionChangeUi(HeaderType.SIGN_IN)) {
+                    return !mWasDismissed;
+                }
                 return showVerifySheet(mSelectedAccount);
             }
 
@@ -1184,6 +1213,9 @@ class AccountSelectionMediator {
             List<Account> accounts,
             List<IdentityProviderData> identityProviders,
             boolean areAccountsClickable) {
+        if (mWasDismissed) {
+            return false;
+        }
         IdentityProviderData firstAccountIdp =
                 !accounts.isEmpty() ? accounts.get(0).getIdentityProviderData() : null;
 
@@ -1556,7 +1588,17 @@ class AccountSelectionMediator {
         if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null && !switchToActiveSheet)
                 || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                 || mSelectedAccount.getFields().length == 0) {
+            if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
+                mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
+            }
+            int headerTypeBeforeSelection = mHeaderType;
             mDelegate.onAccountSelected(mSelectedAccount);
+            if (mDisclosureDialogState != null) {
+                maybeRecordDisclosureDialogResult();
+            }
+            if (didAccountSelectionChangeUi(headerTypeBeforeSelection)) {
+                return;
+            }
             showVerifySheet(mSelectedAccount);
             return;
         }
