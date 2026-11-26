@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import android.text.TextUtils;
 import android.util.ArrayMap;
+import android.util.SparseBooleanArray;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -199,17 +200,18 @@ public class ActorBackgroundActuationManager {
             return;
         }
 
-        Set<Integer> fcmTaskIds = new HashSet<>();
+        SparseBooleanArray fcmTaskIds = new SparseBooleanArray();
         for (BackgroundSession session : detachedSessions) {
-            if (session.getTaskId() != null && isFcmInitiatedSession(session)) {
-                fcmTaskIds.add(session.getTaskId());
+            Integer taskId = session.getTaskId();
+            if (taskId != null && isFcmInitiatedSession(session)) {
+                fcmTaskIds.put(taskId, true);
             }
         }
 
         for (BackgroundSession session : detachedSessions) {
             Integer taskId = session.getTaskId();
             if (taskId != null) {
-                if (fcmTaskIds.contains(taskId)) {
+                if (fcmTaskIds.get(taskId)) {
                     ActorMetrics.markBackgroundActuationTriggerRecorded(taskId);
                     for (Tab tab : session.getTabs()) {
                         if (tab != null) {

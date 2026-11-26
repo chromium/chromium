@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabmodel.TabPersistenceUtils.shouldSkipTab;
 
+import android.util.SparseBooleanArray;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -39,7 +41,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -135,7 +136,7 @@ class TabRestorer {
     private final TabCreator mTabCreator;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private final TabModelSelector mTabModelSelector;
-    private final Set<@TabId Integer> mTabIdsToIgnore = new HashSet<>();
+    private final SparseBooleanArray mTabIdsToIgnore = new SparseBooleanArray();
     private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
     private Set<@TabId Integer> mRemainingBackgroundTabIds = Collections.emptySet();
     private final boolean mIsFromRecreating;
@@ -197,7 +198,7 @@ class TabRestorer {
             mState = State.ACTIVE_TAB_RESTORED;
         }
 
-        mTabIdsToIgnore.add(loadedTabState.tabId);
+        mTabIdsToIgnore.put(loadedTabState.tabId, true);
 
         int tabCount = mTabModelSelector.getModel(mIncognito).getCount();
         maybeRestoreTab(
@@ -379,7 +380,7 @@ class TabRestorer {
 
         if (mState != State.CANCELLED) {
             for (LoadedTabState loadedTabState : mData.getLoadedTabStates()) {
-                assert mTabIdsToIgnore.contains(loadedTabState.tabId)
+                assert mTabIdsToIgnore.get(loadedTabState.tabId)
                         : "Not all tabs were restored or ignored";
             }
         }
@@ -399,7 +400,7 @@ class TabRestorer {
         LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
         for (int i = mIndex; i < loadedTabStates.length; i++) {
             LoadedTabState loadedTabState = loadedTabStates[i];
-            if (!mTabIdsToIgnore.contains(loadedTabState.tabId) && predicate.test(loadedTabState)) {
+            if (!mTabIdsToIgnore.get(loadedTabState.tabId) && predicate.test(loadedTabState)) {
                 restoreTab(loadedTabState, i, /* isActive= */ false);
                 return true;
             }
@@ -446,10 +447,10 @@ class TabRestorer {
         assert mState == State.RESTORING;
 
         @TabId int tabId = loadedTabState.tabId;
-        if (mTabIdsToIgnore.contains(tabId)) return;
+        if (mTabIdsToIgnore.get(tabId)) return;
 
         assert mData != null;
-        mTabIdsToIgnore.add(tabId);
+        mTabIdsToIgnore.put(tabId, true);
         assert mCachedRestoredActiveTabId == null || tabId != mCachedRestoredActiveTabId;
 
         Tab tab =
@@ -486,7 +487,7 @@ class TabRestorer {
         try (ScopedStorageBatch batch = mBatchFactory.get()) {
             while (batchSize > 0 && mIndex < finalIndex) {
                 LoadedTabState loadedTabState = loadedTabStates[mIndex];
-                if (!mTabIdsToIgnore.contains(loadedTabState.tabId)) {
+                if (!mTabIdsToIgnore.get(loadedTabState.tabId)) {
                     restoreTab(loadedTabState, mIndex, /* isActive= */ false);
                 }
 
