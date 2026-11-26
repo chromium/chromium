@@ -166,7 +166,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
-           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::PASSWORD_PROTECTION, "password-protection",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,

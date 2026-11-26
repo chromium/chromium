@@ -495,9 +495,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       base::Value(std::move(dict)));
 
-  // Only report the removal if the embargo is actually gone, e.g. it may still
-  // apply through data inherited from another profile.
-  if (was_embargoed && !IsEmbargoed(url, permission)) {
+  if (was_embargoed) {
     NotifyEmbargoRemoved(url, permission);
   }
 }
@@ -533,12 +531,8 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
         origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
         base::Value());
 
-    // In an off-the-record map, clearing only removes the off-the-record data,
-    // so an embargo inherited from the regular profile may still apply.
     for (ContentSettingsType permission : embargoed_permissions) {
-      if (!IsEmbargoed(origin, permission)) {
-        NotifyEmbargoRemoved(origin, permission);
-      }
+      NotifyEmbargoRemoved(origin, permission);
     }
   }
 }

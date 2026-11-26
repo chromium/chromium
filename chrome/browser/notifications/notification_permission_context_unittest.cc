@@ -15,12 +15,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
@@ -529,6 +531,41 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
+}
+
+// Tests that an embargo recorded in the regular profile does not apply in
+// incognito, where it would skip the delayed auto-denial and let a site link
+// the two profiles.
+TEST_F(NotificationPermissionContextTest, EmbargoNotInheritedInIncognito) {
+  GURL url("https://www.example.com");
+  permissions::PermissionDecisionAutoBlocker* autoblocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
+  for (int i = 0; i < 4; ++i) {
+    autoblocker->RecordIgnoreAndEmbargo(url, ContentSettingsType::NOTIFICATIONS,
+                                        /*ignored_prompt_was_quiet=*/false);
+  }
+
+  NotificationPermissionContext context(profile());
+  content::PermissionResult result = context.GetPermissionStatus(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::NOTIFICATIONS),
+      /*render_frame_host=*/nullptr, url, url);
+  ASSERT_EQ(PermissionStatus::DENIED, result.status);
+  ASSERT_EQ(content::PermissionStatusSource::MULTIPLE_IGNORES, result.source);
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  NotificationPermissionContext otr_context(otr_profile);
+  result = otr_context.GetPermissionStatus(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::NOTIFICATIONS),
+      /*render_frame_host=*/nullptr, url, url);
+  EXPECT_EQ(PermissionStatus::ASK, result.status);
+  EXPECT_EQ(content::PermissionStatusSource::UNSPECIFIED, result.source);
+  EXPECT_EQ(0, PermissionDecisionAutoBlockerFactory::GetForProfile(otr_profile)
+                   ->GetIgnoreCount(url, ContentSettingsType::NOTIFICATIONS));
 }
 
 TEST_F(NotificationPermissionContextTest, GetNotificationsSettings) {

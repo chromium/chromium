@@ -4145,11 +4145,9 @@ TEST_F(SiteSettingsHandlerTest,
 
   // Verify that group exception with an embargoed origin in two profiles is
   // correct. Expected calls: 1 for the regular profile embargo, 1 for the
-  // incognito profile creation, 3 for the incognito dismissals (incognito
-  // inherits PERMISSION_AUTOBLOCKER_DATA, so the dismiss count is already at
-  // the embargo threshold and each dismissal re-embargoes), and 1 for the
+  // incognito profile creation, 1 for the incognito embargo, and 1 for the
   // exception list response.
-  ValidateStorageAccessList(/*expected_total_calls=*/6U,
+  ValidateStorageAccessList(/*expected_total_calls=*/4U,
                             /*expected_num_groups=*/1U);
   ValidateStorageAccessException(kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
                                  {{std::string(), "*", /*incognito=*/false,
@@ -7385,10 +7383,10 @@ class EmbargoRemovedCounter
 
 }  // namespace
 
-// The origin is embargoed in the regular profile, and the embargo is then
-// reset through the incognito profile's auto blocker. The reset should lift
-// the embargo for the incognito profile only.
-TEST_F(SiteSettingsHandlerTest, IncognitoResetLiftsInheritedEmbargo) {
+// The origin is embargoed in both profiles, and the embargo is then reset
+// through the incognito profile's auto blocker. The reset should lift the
+// embargo for the incognito profile only.
+TEST_F(SiteSettingsHandlerTest, IncognitoResetLiftsEmbargo) {
   const GURL url("https://embargoed.co.uk");
   auto* regular_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
@@ -7402,7 +7400,10 @@ TEST_F(SiteSettingsHandlerTest, IncognitoResetLiftsInheritedEmbargo) {
   auto* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   ASSERT_NE(regular_auto_blocker, incognito_auto_blocker);
-  // The incognito profile inherits the embargo from the regular profile.
+  for (int i = 0; i < 3; ++i) {
+    incognito_auto_blocker->RecordDismissAndEmbargo(
+        url, kPermissionNotifications, false);
+  }
   ASSERT_TRUE(
       incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
 
@@ -7421,40 +7422,9 @@ TEST_F(SiteSettingsHandlerTest, IncognitoResetLiftsInheritedEmbargo) {
   EXPECT_TRUE(regular_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
 }
 
-// The regular profile is one dismissal short of an embargo. The incognito
-// profile reaches the threshold and is then reset. The reset should lift the
-// embargo and clear the inherited dismiss count for the incognito profile.
-TEST_F(SiteSettingsHandlerTest, IncognitoResetClearsInheritedDismissCount) {
-  const GURL url("https://embargoed.co.uk");
-  auto* regular_auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
-  for (int i = 0; i < 2; ++i) {
-    regular_auto_blocker->RecordDismissAndEmbargo(url, kPermissionNotifications,
-                                                  false);
-  }
-  ASSERT_FALSE(
-      regular_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-
-  CreateIncognitoProfile();
-  auto* incognito_auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
-  incognito_auto_blocker->RecordDismissAndEmbargo(url, kPermissionNotifications,
-                                                  false);
-  ASSERT_TRUE(
-      incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-
-  incognito_auto_blocker->RemoveEmbargoAndResetCounts(url,
-                                                      kPermissionNotifications);
-
-  EXPECT_FALSE(
-      incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-  EXPECT_EQ(0, incognito_auto_blocker->GetDismissCount(
-                   url, kPermissionNotifications));
-}
-
-// Same scenario as IncognitoResetLiftsInheritedEmbargo, driven through the
-// handler the way the incognito exception list resets an entry.
-TEST_F(SiteSettingsHandlerTest, IncognitoResetViaHandlerLiftsInheritedEmbargo) {
+// Same scenario as IncognitoResetLiftsEmbargo, driven through the handler the
+// way the incognito exception list resets an entry.
+TEST_F(SiteSettingsHandlerTest, IncognitoResetViaHandlerLiftsEmbargo) {
   constexpr char kOrigin[] = "https://embargoed.co.uk";
   const GURL url(kOrigin);
   auto* regular_auto_blocker =
@@ -7468,10 +7438,10 @@ TEST_F(SiteSettingsHandlerTest, IncognitoResetViaHandlerLiftsInheritedEmbargo) {
   CreateIncognitoProfile();
   auto* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
-  // One more dismissal in incognito gives the incognito profile its own
-  // record, so the origin is listed as an incognito exception.
-  incognito_auto_blocker->RecordDismissAndEmbargo(url, kPermissionNotifications,
-                                                  false);
+  for (int i = 0; i < 3; ++i) {
+    incognito_auto_blocker->RecordDismissAndEmbargo(
+        url, kPermissionNotifications, false);
+  }
   ASSERT_TRUE(
       incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
 
@@ -7495,37 +7465,6 @@ TEST_F(SiteSettingsHandlerTest, IncognitoResetViaHandlerLiftsInheritedEmbargo) {
       kPermissionNotifications, incognito_profile(), web_ui(),
       /*incognito=*/true, &exceptions_after_reset);
   EXPECT_TRUE(exceptions_after_reset.empty());
-}
-
-// The origin is embargoed in the regular profile, and the filter overload
-// (used when clearing browsing data) runs on the incognito profile's auto
-// blocker. A removal should only be announced if the embargo is gone.
-TEST_F(SiteSettingsHandlerTest,
-       IncognitoFilterRemovalOnlyNotifiesWhenEmbargoIsLifted) {
-  const GURL url("https://embargoed.co.uk");
-  auto* regular_auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
-  for (int i = 0; i < 3; ++i) {
-    regular_auto_blocker->RecordDismissAndEmbargo(url, kPermissionNotifications,
-                                                  false);
-  }
-  ASSERT_TRUE(regular_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-
-  CreateIncognitoProfile();
-  auto* incognito_auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
-  ASSERT_TRUE(
-      incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-
-  EmbargoRemovedCounter counter;
-  incognito_auto_blocker->AddObserver(&counter);
-  incognito_auto_blocker->RemoveEmbargoAndResetCounts(
-      base::BindRepeating([](const GURL& url) { return true; }));
-  incognito_auto_blocker->RemoveObserver(&counter);
-
-  EXPECT_TRUE(
-      incognito_auto_blocker->IsEmbargoed(url, kPermissionNotifications));
-  EXPECT_EQ(0, counter.removed_count);
 }
 
 }  // namespace settings
