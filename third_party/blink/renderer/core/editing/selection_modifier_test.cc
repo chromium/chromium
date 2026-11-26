@@ -558,4 +558,62 @@ TEST_F(SelectionModifierTest, EditableVideo) {
   }
 }
 
+// Regression test for crbug.com/589812279: vertical line navigation should not
+// anchor the caret at a pseudo-element (e.g. ::before/::after with
+// display:inline-block) when the line also contains real DOM content.
+TEST_F(SelectionModifierTest, MoveByLineSkipsInlineBlockPseudoElement) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/20px Ahem; }"
+      ".before::before { content: ''; display: inline-block; width: 60px; "
+      "height: 10px; }"
+      ".after::after { content: ''; display: inline-block; width: 60px; "
+      "height: 10px; }");
+
+  // Forward line move into a line starting with ::before.
+  {
+    const SelectionInDomTree selection = SetSelectionTextToBody(
+        "<div>|aaa</div>"
+        "<div class='before'>bbb</div>");
+    SelectionModifier modifier(GetFrame(), selection);
+    EXPECT_TRUE(modifier.Modify(SelectionModifyAlteration::kMove,
+                                SelectionModifyDirection::kForward,
+                                TextGranularity::kLine));
+    const SelectionInDomTree result = modifier.Selection().AsSelection();
+    EXPECT_FALSE(result.Anchor().AnchorNode()->IsPseudoElement());
+    EXPECT_EQ("<div>aaa</div><div class=\"before\">|bbb</div>",
+              GetSelectionTextFromBody(result));
+  }
+
+  // Backward line move into a line starting with ::before.
+  {
+    const SelectionInDomTree selection = SetSelectionTextToBody(
+        "<div class='before'>aaa</div>"
+        "<div>|bbb</div>");
+    SelectionModifier modifier(GetFrame(), selection);
+    EXPECT_TRUE(modifier.Modify(SelectionModifyAlteration::kMove,
+                                SelectionModifyDirection::kBackward,
+                                TextGranularity::kLine));
+    const SelectionInDomTree result = modifier.Selection().AsSelection();
+    EXPECT_FALSE(result.Anchor().AnchorNode()->IsPseudoElement());
+    EXPECT_EQ("<div class=\"before\">|aaa</div><div>bbb</div>",
+              GetSelectionTextFromBody(result));
+  }
+
+  // Forward line move into a line ending with ::after.
+  {
+    const SelectionInDomTree selection = SetSelectionTextToBody(
+        "<div>aaaaaaa|a</div>"
+        "<div class='after'>b</div>");
+    SelectionModifier modifier(GetFrame(), selection);
+    EXPECT_TRUE(modifier.Modify(SelectionModifyAlteration::kMove,
+                                SelectionModifyDirection::kForward,
+                                TextGranularity::kLine));
+    const SelectionInDomTree result = modifier.Selection().AsSelection();
+    EXPECT_FALSE(result.Anchor().AnchorNode()->IsPseudoElement());
+    EXPECT_EQ("<div>aaaaaaaa</div><div class=\"after\">b|</div>",
+              GetSelectionTextFromBody(result));
+  }
+}
+
 }  // namespace blink

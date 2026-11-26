@@ -178,6 +178,12 @@ class AbstractLineBox {
         continue;
       if (!cursor.Current().IsInlineLeaf())
         continue;
+      if (RuntimeEnabledFeatures::SelectionLineSkipPseudoElementEnabled() &&
+          !cursor.Current().GetLayoutObject()->NonPseudoNode()) {
+        // Pseudo-elements (like ::before/::after) don't have DOM nodes that
+        // can be used for caret positioning.
+        continue;
+      }
       if (only_editable_leaves && !IsEditable(cursor)) {
         // This condition allows us to move editable to editable with skipping
         // non-editable element.
@@ -207,7 +213,10 @@ class AbstractLineBox {
     }
     if (!closest_leaf_child)
       return PositionInFlatTreeWithAffinity();
-    const Node* const node = closest_leaf_child.Current().GetNode();
+    const Node* const node =
+        RuntimeEnabledFeatures::SelectionLineSkipPseudoElementEnabled()
+            ? closest_leaf_child.Current().GetLayoutObject()->NonPseudoNode()
+            : closest_leaf_child.Current().GetNode();
     if (!node)
       return PositionInFlatTreeWithAffinity();
     if (EditingIgnoresContent(*node)) {
