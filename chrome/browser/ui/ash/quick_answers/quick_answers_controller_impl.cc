@@ -20,13 +20,15 @@
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_ash.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/resources/grit/chromeos_strings.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -205,7 +207,7 @@ QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
 void QuickAnswersControllerImpl::OnContextMenuShown(Profile* profile) {
   menu_shown_time_ = base::TimeTicks::Now();
   visibility_ = QuickAnswersVisibility::kPending;
-  profile_ = profile;
+  user_ = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
 }
 
 void QuickAnswersControllerImpl::OnTextAvailable(
@@ -229,12 +231,8 @@ void QuickAnswersControllerImpl::OnTextAvailable(
 
   Context context;
   context.surrounding_text = surrounding_text;
-  // The context menu may be in an incognito window, so read the account from
-  // the original profile, which holds the annotation.
   context.device_properties.is_internal = gaia::IsGoogleInternalAccountEmail(
-      CHECK_DEREF(ash::AnnotatedAccountId::Get(
-                      CHECK_DEREF(profile_.get()).GetOriginalProfile()))
-          .GetUserEmail());
+      CHECK_DEREF(user_.get()).GetAccountId().GetUserEmail());
 
   // Cache anchor-bounds and query.
   anchor_bounds_ = anchor_bounds;
@@ -280,7 +278,7 @@ void QuickAnswersControllerImpl::OnDismiss(bool is_other_command_executed) {
                                 : QuickAnswersExitPoint::kContextMenuDismiss;
   DismissQuickAnswers(exit_point);
 
-  profile_ = nullptr;
+  user_ = nullptr;
 }
 
 void QuickAnswersControllerImpl::SetClient(
@@ -359,7 +357,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
       visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
       // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
       quick_answers_ui_controller_->CreateQuickAnswersView(
-          profile_, title_, query_,
+          user_, title_, query_,
           ToIntent(request.preprocessed_output.intent_info.intent_type),
           quick_answers_state_->GetFeatureType(),
           request.context.device_properties.is_internal);
@@ -401,7 +399,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
   if (IsNoResult(quick_answers_session_.get())) {
     // Fallback query to title if no result is available.
     query_ = title_;
-    quick_answers_ui_controller_->SetActiveQuery(profile_, query_);
+    quick_answers_ui_controller_->SetActiveQuery(user_, query_);
 
     // `quick_answers_session_` can be nullptr. Create an empty result session
     // for the case if nullptr.
@@ -577,7 +575,7 @@ bool QuickAnswersControllerImpl::MaybeShowUserConsent(
     return false;
   }
 
-  quick_answers_ui_controller_->CreateUserConsentView(profile_, anchor_bounds_,
+  quick_answers_ui_controller_->CreateUserConsentView(user_, anchor_bounds_,
                                                       intent_type, intent_text);
 
   consent_ui_shown_ = GetTimeTicksNow();

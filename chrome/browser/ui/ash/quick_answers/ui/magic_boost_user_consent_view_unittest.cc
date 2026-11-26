@@ -102,7 +102,7 @@ class MagicBoostUserConsentViewTest : public ChromeQuickAnswersTestBase {
     static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
         ->SetVisibility(QuickAnswersVisibility::kPending);
     GetUiController()->CreateUserConsentView(
-        GetProfile(), kDefaultAnchorBoundsInScreen,
+        GetUser(), kDefaultAnchorBoundsInScreen,
         quick_answers::IntentType::kUnit, u"Text");
   }
 

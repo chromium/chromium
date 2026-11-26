@@ -23,8 +23,11 @@
 #include "ui/views/widget/widget.h"
 
 class ApplicationLocaleStorage;
-class Profile;
 class QuickAnswersControllerImpl;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace chromeos {
 class ReadWriteCardsUiController;
@@ -55,7 +58,7 @@ class QuickAnswersUiController {
   QuickAnswersUiController& operator=(const QuickAnswersUiController&) = delete;
 
   // Constructs/resets the Quick Answers card view.
-  void CreateQuickAnswersView(Profile* profile,
+  void CreateQuickAnswersView(user_manager::User* user,
                               const std::string& title,
                               const std::string& query,
                               std::optional<quick_answers::Intent> intent,
@@ -63,7 +66,7 @@ class QuickAnswersUiController {
                               bool is_internal);
 
   void CreateQuickAnswersViewForPixelTest(
-      Profile* profile,
+      user_manager::User* user,
       const std::string& query,
       std::optional<quick_answers::Intent> intent,
       quick_answers::QuickAnswersView::Params params);
@@ -82,7 +85,7 @@ class QuickAnswersUiController {
   void RenderQuickAnswersViewWithResult(
       const quick_answers::StructuredResult& structured_result);
 
-  void SetActiveQuery(Profile* profile, const std::string& query);
+  void SetActiveQuery(user_manager::User* user, const std::string& query);
 
   // Show retry option in the quick answers view.
   void ShowRetry();
@@ -91,11 +94,12 @@ class QuickAnswersUiController {
   // feature vertically aligned to the anchor. Note that user consent is handled
   // by Quick Answers code only if `QuickAnswersState::FeatureType` is
   // `kQuickAnswers`.
-  void CreateUserConsentView(Profile* profile,
+  void CreateUserConsentView(user_manager::User* user,
                              const gfx::Rect& anchor_bounds,
                              quick_answers::IntentType intent_type,
                              const std::u16string& intent_text);
-  void CreateUserConsentViewForPixelTest(const gfx::Rect& anchor_bounds,
+  void CreateUserConsentViewForPixelTest(user_manager::User* user,
+                                         const gfx::Rect& anchor_bounds,
                                          quick_answers::IntentType intent_type,
                                          const std::u16string& intent_text);
 
@@ -150,7 +154,7 @@ class QuickAnswersUiController {
   void OnMagicBoostUserConsentIntentButtonPressed();
 
   void CreateQuickAnswersViewInternal(
-      Profile* profile,
+      user_manager::User* user,
       const std::string& query,
       std::optional<quick_answers::Intent> intent,
       quick_answers::QuickAnswersView::Params params);
@@ -162,7 +166,7 @@ class QuickAnswersUiController {
   views::ViewTracker user_consent_view_;
   views::ViewTracker quick_answers_view_;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<user_manager::User> user_ = nullptr;
   std::string query_;
 
   FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback_;

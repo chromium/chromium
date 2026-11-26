@@ -58,6 +58,7 @@ void ChromeQuickAnswersTestBase::SetUp() {
 
   auto* user = StartUserSession();
   ASSERT_TRUE(user);
+  user_ = user;
   // The delegate creates a TestingProfile on LogIn().
   profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
@@ -99,6 +100,7 @@ void ChromeQuickAnswersTestBase::TearDown() {
   ChromeAshTestBase::TearDown();
 
   profile_ = nullptr;
+  user_ = nullptr;
   user_session_test_environment_.reset();
 }
 

@@ -149,7 +149,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
         ->SetVisibility(QuickAnswersVisibility::kQuickAnswersVisible);
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     GetUiController()->CreateQuickAnswersView(
-        GetProfile(), "title", kTestQuery, intent, feature_type, is_internal);
+        GetUser(), "title", kTestQuery, intent, feature_type, is_internal);
   }
 
   void SendResult(const DefinitionResult& definition_result) {

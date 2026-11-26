@@ -149,7 +149,7 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
   GetQuickAnswersController()->SetVisibility(
       QuickAnswersVisibility::kQuickAnswersVisible);
   ui_controller()->CreateQuickAnswersView(
-      GetProfile(), "default_title", "default_query",
+      GetUser(), "default_title", "default_query",
       quick_answers::Intent::kDefinition,
       QuickAnswersState::FeatureType::kQuickAnswers,
       /*is_internal=*/false);
@@ -161,7 +161,7 @@ TEST_F(QuickAnswersUiControllerTest, ShowAndHideConsentView) {
 
   // Set up a companion menu before creating the QuickAnswersView.
   CreateAndShowBasicMenu();
-  GetQuickAnswersController()->OnContextMenuShown(/*profile=*/nullptr);
+  GetQuickAnswersController()->OnContextMenuShown(GetProfile());
 
   auto* quick_answers_controller = GetQuickAnswersController();
 
@@ -202,7 +202,7 @@ TEST_F(QuickAnswersUiControllerTest, QuickAnswersViewAccessibleProperties) {
   GetQuickAnswersController()->SetVisibility(
       QuickAnswersVisibility::kQuickAnswersVisible);
   ui_controller()->CreateQuickAnswersView(
-      GetProfile(), "default_title", "default_query",
+      GetUser(), "default_title", "default_query",
       quick_answers::Intent::kDefinition,
       QuickAnswersState::FeatureType::kQuickAnswers,
       /*is_internal=*/false);
@@ -233,7 +233,7 @@ TEST_F(QuickAnswersUiControllerTest, OpenSettingsQuickAnswers) {
   ui_controller()->GetReadWriteCardsUiController().SetContextMenuBounds(
       kContextMenuBounds);
   ui_controller()->CreateQuickAnswersView(
-      GetProfile(), kTitle, kQuery, quick_answers::Intent::kDefinition,
+      GetUser(), kTitle, kQuery, quick_answers::Intent::kDefinition,
       QuickAnswersState::FeatureType::kQuickAnswers,
       /*is_internal=*/false);
   quick_answers::QuickAnswersView* quick_answers_view =
@@ -260,7 +260,7 @@ TEST_F(QuickAnswersUiControllerTest, OpenSettingsHmr) {
   ui_controller()->GetReadWriteCardsUiController().SetContextMenuBounds(
       kContextMenuBounds);
   ui_controller()->CreateQuickAnswersView(
-      GetProfile(), kTitle, kQuery, quick_answers::Intent::kDefinition,
+      GetUser(), kTitle, kQuery, quick_answers::Intent::kDefinition,
       QuickAnswersState::FeatureType::kQuickAnswers,
       /*is_internal=*/false);
   quick_answers::QuickAnswersView* quick_answers_view =

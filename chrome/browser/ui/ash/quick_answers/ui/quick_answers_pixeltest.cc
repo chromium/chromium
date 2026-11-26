@@ -10,11 +10,13 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -191,7 +193,9 @@ class QuickAnswersPixelTestBase
         quick_answers_ui_controller->GetReadWriteCardsUiController();
 
     quick_answers_ui_controller->CreateQuickAnswersViewForPixelTest(
-        browser()->GetProfile(), kTestQuery, intent,
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            browser()->GetProfile()),
+        kTestQuery, intent,
         {
             .title = kTestTitle,
             .is_magic_boost = IsMagicBoost(GetParam()),
@@ -221,6 +225,8 @@ class QuickAnswersPixelTestBase
     ASSERT_TRUE(quick_answers_controller);
     quick_answers_controller->SetVisibility(QuickAnswersVisibility::kPending);
     quick_answers_ui_controller->CreateUserConsentViewForPixelTest(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            browser()->GetProfile()),
         GetContextMenuRect(), intent_type, intent_text);
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
     ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())

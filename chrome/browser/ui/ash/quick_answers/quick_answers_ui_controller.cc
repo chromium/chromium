@@ -16,14 +16,12 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
@@ -31,6 +29,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/resources/grit/chromeos_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/user_manager/user.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,8 +44,8 @@ using quick_answers::QuickAnswersExitPoint;
 
 constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 
-// Open the specified URL in a new tab with the specified profile
-void OpenUrl(Profile* profile, const GURL& url) {
+// Open the specified URL in a new tab.
+void OpenUrl(const GURL& url) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -71,14 +70,14 @@ QuickAnswersUiController::~QuickAnswersUiController() {
 }
 
 void QuickAnswersUiController::CreateQuickAnswersView(
-    Profile* profile,
+    user_manager::User* user,
     const std::string& title,
     const std::string& query,
     std::optional<quick_answers::Intent> intent,
     QuickAnswersState::FeatureType feature_type,
     bool is_internal) {
   CreateQuickAnswersViewInternal(
-      profile, query, intent,
+      user, query, intent,
       {
           .title = title,
           .is_magic_boost =
@@ -88,19 +87,21 @@ void QuickAnswersUiController::CreateQuickAnswersView(
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
-    Profile* profile,
+    user_manager::User* user,
     const std::string& query,
     std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
   CHECK_IS_TEST();
-  CreateQuickAnswersViewInternal(profile, query, intent, params);
+  CreateQuickAnswersViewInternal(user, query, intent, params);
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewInternal(
-    Profile* profile,
+    user_manager::User* user,
     const std::string& query,
     std::optional<quick_answers::Intent> intent,
     quick_answers::QuickAnswersView::Params params) {
+  CHECK(user);
+
   // Currently there are timing issues that causes the quick answers view is not
   // dismissed. TODO(updowndota): Remove the special handling after the root
   // cause is found.
@@ -110,7 +111,7 @@ void QuickAnswersUiController::CreateQuickAnswersViewInternal(
   }
 
   CHECK(!IsShowingUserConsentView(), base::NotFatalUntil::M162);
-  SetActiveQuery(profile, query);
+  SetActiveQuery(user, query);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
       views::Builder<quick_answers::QuickAnswersView>(
@@ -188,9 +189,9 @@ void QuickAnswersUiController::RenderQuickAnswersViewWithResult(
                                   application_locale_storage_->GetTag());
 }
 
-void QuickAnswersUiController::SetActiveQuery(Profile* profile,
+void QuickAnswersUiController::SetActiveQuery(user_manager::User* user,
                                               const std::string& query) {
-  profile_ = profile;
+  user_ = user;
   query_ = query;
 }
 
@@ -203,17 +204,18 @@ void QuickAnswersUiController::ShowRetry() {
 }
 
 void QuickAnswersUiController::CreateUserConsentView(
-    Profile* profile,
+    user_manager::User* user,
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
+  CHECK(user);
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
   if (QuickAnswersState::GetFeatureType() ==
       QuickAnswersState::FeatureType::kHmr) {
-    // Directing to the right settings toggle requires an active profile.
-    profile_ = profile;
+    // Directing to the right settings toggle requires knowing the user.
+    user_ = user;
     user_consent_view_.SetView(
         GetReadWriteCardsUiController().SetQuickAnswersUi(
             views::Builder<quick_answers::MagicBoostUserConsentView>(
@@ -258,12 +260,12 @@ void QuickAnswersUiController::CreateUserConsentView(
 }
 
 void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
+    user_manager::User* user,
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
   CHECK_IS_TEST();
-  CreateUserConsentView(/*profile=*/nullptr, anchor_bounds, intent_type,
-                        intent_text);
+  CreateUserConsentView(user, anchor_bounds, intent_type, intent_text);
 }
 
 void QuickAnswersUiController::CloseUserConsentView() {
@@ -276,23 +278,17 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
-  auto* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
-  if (!user) {
-    // TODO(crbug.com/447287122): Revisit here to see if the profile is always
-    // a user profile.
-    return;
-  }
+  CHECK(user_);
   switch (QuickAnswersState::GetFeatureType()) {
     case QuickAnswersState::FeatureType::kQuickAnswers:
       ash::SettingsAppManager::Get()->Open(
-          *user, {.sub_page = chromeos::settings::mojom::kSearchSubpagePath,
-                  .setting_id =
-                      chromeos::settings::mojom::Setting::kQuickAnswersOnOff});
+          *user_, {.sub_page = chromeos::settings::mojom::kSearchSubpagePath,
+                   .setting_id =
+                       chromeos::settings::mojom::Setting::kQuickAnswersOnOff});
       return;
     case QuickAnswersState::FeatureType::kHmr:
       ash::SettingsAppManager::Get()->Open(
-          *user,
+          *user_,
           {.sub_page = chromeos::settings::mojom::kSystemPreferencesSectionPath,
            .setting_id = chromeos::settings::mojom::Setting::kMahiOnOff});
       return;
@@ -349,7 +345,7 @@ void QuickAnswersUiController::OpenWebUrl(const GURL& url) {
     return;
   }
 
-  OpenUrl(profile_, url);
+  OpenUrl(url);
 }
 
 void QuickAnswersUiController::OnUserConsentNoThanksPressed() {

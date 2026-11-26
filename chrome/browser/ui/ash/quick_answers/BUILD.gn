@@ -45,6 +45,7 @@ source_set("quick_answers") {
     "//components/language/core/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
+    "//components/user_manager",
     "//content/public/browser",
     "//ui/views/controls/webview",
     "//ui/wm",

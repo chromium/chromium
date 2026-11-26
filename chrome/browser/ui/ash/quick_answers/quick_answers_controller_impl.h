@@ -24,6 +24,10 @@ class ApplicationLocaleStorage;
 class Profile;
 class QuickAnswersUiController;
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 // Implementation of QuickAnswerController. It fetches quick answers
 // result via QuickAnswersClient and manages quick answers UI.
 class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
@@ -135,8 +139,9 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   quick_answers::QuickAnswersRequest BuildRequest();
 
-  // Profile that initiated the current query.
-  raw_ptr<Profile> profile_ = nullptr;
+  // The user whose context menu started the current query, or null when
+  // there is no query in flight or the menu was not in a user profile.
+  raw_ptr<user_manager::User> user_ = nullptr;
 
   // Bounds of the anchor view.
   gfx::Rect anchor_bounds_;

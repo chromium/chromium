@@ -65,6 +65,7 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   void CreateAndShowBasicMenu();
   void ResetMenuParent();
   TestingProfile* GetProfile() { return profile_; }
+  user_manager::User* GetUser() { return user_; }
   ash::test::UserSessionTestEnvironment* user_session_test_environment() {
     return user_session_test_environment_.get();
   }
@@ -72,6 +73,7 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
  private:
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  raw_ptr<user_manager::User> user_ = nullptr;
   raw_ptr<TestingProfile> profile_ = nullptr;
 
   // Menu.
