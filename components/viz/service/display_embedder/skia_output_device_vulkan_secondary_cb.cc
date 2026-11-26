@@ -81,9 +81,11 @@ void SkiaOutputDeviceVulkanSecondaryCB::Present(
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   CHECK(!update_rect);
-  StartSwapBuffers(std::move(feedback));
+  StartSwapBuffers({});
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK), size_,
                     std::move(frame));
+  context_provider_->EnqueueSecondaryCBPresentationCallback(
+      std::move(feedback));
 }
 
 SkSurface* SkiaOutputDeviceVulkanSecondaryCB::BeginPaint(

@@ -77,6 +77,9 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void DestroyHardwareRendererOnRT();
   void RemoveOverlaysOnRT(OverlaysParams::MergeTransactionFn merge_transaction);
   void CrashOnContextLossOnRT();
+  void PostFrameTimingDetailsToChildCompositorOnViz(
+      const viz::FrameSinkId& frame_sink_id,
+      viz::FrameTimingDetailsMap timing_details);
 
   // May be created on either thread.
   class InsideHardwareReleaseReset {

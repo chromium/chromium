@@ -45,6 +45,9 @@ class AwGLSurface : public gl::GLSurfaceEGL {
 
   void SetSize(const gfx::Size& size);
   void MaybeDidPresent(const gfx::PresentationFeedback& feedback);
+  PresentationCallback TakePresentationCallback() {
+    return std::move(pending_presentation_callback_);
+  }
 
   virtual void RecalculateClipAndTransform(gfx::Size* viewport,
                                            gfx::Rect* clip_rect,

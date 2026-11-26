@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <variant>
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
+#include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/display_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
@@ -24,16 +26,21 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
+#include "base/android/android_info.h"
+#include "base/cancelable_callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -57,6 +64,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
@@ -156,8 +164,13 @@ WebViewDrawAndSubmissionType GetDrawAndSubmissionType(bool invalidated,
 
 class HardwareRenderer::OnViz : public viz::DisplayClient {
  public:
+  using PendingPresentation = base::RefCountedData<
+      std::pair<gl::GLSurface::PresentationCallback,
+                std::optional<gfx::SurfaceControl::TransactionStats>>>;
+
   OnViz(OutputSurfaceProviderWebView* output_surface_provider,
-        const scoped_refptr<RootFrameSink>& root_frame_sink);
+        const scoped_refptr<RootFrameSink>& root_frame_sink,
+        RenderThreadManager* render_thread_manager);
 
   OnViz(const OnViz&) = delete;
   OnViz& operator=(const OnViz&) = delete;
@@ -176,6 +189,26 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                      std::vector<pid_t>* rendering_thread_ids,
                      base::TimeDelta* preferred_frame_interval);
   void RemoveOverlaysOnViz();
+  void EnqueuePendingPresentationOnViz(
+      scoped_refptr<PendingPresentation> pending) {
+    DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+    pending_presentations_.push_back(std::move(pending));
+  }
+  void OnPresentationCallbackOnViz(scoped_refptr<PendingPresentation> pending,
+                                   gl::GLSurface::PresentationCallback cb) {
+    DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+    pending->data.first = std::move(cb);
+    pending.reset();
+    CheckPendingPresentationsOnViz();
+  }
+  void OnTransactionCompleteOnViz(scoped_refptr<PendingPresentation> pending,
+                                  gfx::SurfaceControl::TransactionStats stats) {
+    DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+    pending->data.second = std::move(stats);
+    pending.reset();
+    CheckPendingPresentationsOnViz();
+  }
+  base::WeakPtr<OnViz> GetWeakPtr() const { return weak_ptr_; }
 
   OverlayProcessorWebView* overlay_processor() {
     return overlay_processor_webview_;
@@ -199,9 +232,17 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   void SetWideColorEnabled(bool enabled) override {}
 
  private:
+  void CheckPendingPresentationsOnViz();
+  void SendFrameTimingDetailsOnViz() {
+    DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+    render_thread_manager_->PostFrameTimingDetailsToChildCompositorOnViz(
+        child_surface_id_.frame_sink_id(),
+        without_gpu_->TakeChildFrameTimingDetailsMap());
+  }
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
   scoped_refptr<RootFrameSink> without_gpu_;
+  const raw_ptr<RenderThreadManager> render_thread_manager_;
 
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId root_local_surface_id_;
@@ -220,16 +261,24 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
 
   base::TimeDelta preferred_frame_interval_;
 
+  base::circular_deque<scoped_refptr<PendingPresentation>>
+      pending_presentations_;
+  base::CancelableOnceClosure check_pending_presentations_task_;
   THREAD_CHECKER(viz_thread_checker_);
+  base::WeakPtr<OnViz> weak_ptr_;
+  base::WeakPtrFactory<OnViz> weak_factory_{this};
 };
 
 HardwareRenderer::OnViz::OnViz(
     OutputSurfaceProviderWebView* output_surface_provider,
-    const scoped_refptr<RootFrameSink>& root_frame_sink)
+    const scoped_refptr<RootFrameSink>& root_frame_sink,
+    RenderThreadManager* render_thread_manager)
     : without_gpu_(root_frame_sink),
+      render_thread_manager_(render_thread_manager),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
       viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  weak_ptr_ = weak_factory_.GetWeakPtr();
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller = output_surface_provider->CreateDisplayController();
@@ -472,6 +521,62 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   without_gpu_->SetContainedSurfaces(display_->GetContainedSurfaceIds());
 }
 
+void HardwareRenderer::OnViz::CheckPendingPresentationsOnViz() {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  check_pending_presentations_task_.Cancel();
+  bool processed_any = false;
+  while (!pending_presentations_.empty()) {
+    auto& [callback, stats] = pending_presentations_.front()->data;
+    if (!callback) {
+      if (!pending_presentations_.front()->HasOneRef()) {
+        break;
+      }
+      pending_presentations_.pop_front();
+      continue;
+    }
+    if (!stats.has_value()) {
+      break;
+    }
+    base::TimeTicks signal_time;
+    auto status = stats->present_fence.is_valid()
+                      ? gfx::GpuFence::GetStatusChangeTime(
+                            stats->present_fence.get(), &signal_time)
+                      : gfx::GpuFence::kInvalid;
+    if (status == gfx::GpuFence::kNotSignaled) {
+      break;
+    }
+    const bool valid = status != gfx::GpuFence::kInvalid;
+    if (!valid) {
+      signal_time = stats->latch_time.is_null() ? base::TimeTicks::Now()
+                                                : stats->latch_time;
+    }
+    gfx::PresentationFeedback feedback(
+        signal_time, base::TimeDelta(),
+        valid ? (gfx::PresentationFeedback::kHWCompletion |
+                 gfx::PresentationFeedback::kVSync)
+              : 0u);
+    feedback.latch_timestamp = stats->latch_time;
+    std::move(callback).Run(feedback);
+    pending_presentations_.pop_front();
+    processed_any = true;
+  }
+  auto* task_runner =
+      VizCompositorThreadRunnerWebView::GetInstance()->task_runner();
+  if (processed_any) {
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&OnViz::SendFrameTimingDetailsOnViz,
+                                         weak_factory_.GetWeakPtr()));
+  }
+  if (!pending_presentations_.empty() &&
+      pending_presentations_.front()->data.second.has_value()) {
+    check_pending_presentations_task_.Reset(base::BindOnce(
+        &OnViz::CheckPendingPresentationsOnViz, weak_factory_.GetWeakPtr()));
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 check_pending_presentations_task_.callback(),
+                                 base::Seconds(1) / 60);
+  }
+}
+
 void HardwareRenderer::OnViz::PostDrawOnViz(
     viz::FrameTimingDetailsMap* timing_details,
     std::vector<pid_t>* rendering_thread_ids,
@@ -604,7 +709,8 @@ void HardwareRenderer::InitializeOnViz(
       std::move(root_frame_sink_getter).Run();
   if (root_frame_sink) {
     on_viz_ = std::make_unique<OnViz>(&output_surface_provider_,
-                                      std::move(root_frame_sink));
+                                      std::move(root_frame_sink),
+                                      render_thread_manager_);
   }
 }
 
@@ -741,7 +847,40 @@ void HardwareRenderer::DrawAndSwap(
 
   MergeTransactionIfNeeded(overlays_params.merge_transaction);
 
-  if (output_surface_provider_.gl_surface()) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSurfaceControlPresentationTimestamps) &&
+      overlays_params.merge_transaction && gfx::SurfaceControl::IsSupported() &&
+      base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_Sv2) {
+    scoped_refptr<OnViz::PendingPresentation> pending;
+    auto* task_runner =
+        VizCompositorThreadRunnerWebView::GetInstance()->task_runner();
+    if (auto* vk = output_surface_provider_.vulkan_context_provider()) {
+      if (auto* state = vk->active_draw_state();
+          state && !state->post_submit_tasks.empty()) {
+        pending = base::MakeRefCounted<OnViz::PendingPresentation>();
+        state->presentation_receiver = base::BindPostTask(
+            task_runner, base::BindOnce(&OnViz::OnPresentationCallbackOnViz,
+                                        on_viz_->GetWeakPtr(), pending));
+      }
+    } else if (auto* gl = output_surface_provider_.gl_surface().get()) {
+      if (auto cb = gl->TakePresentationCallback()) {
+        pending = base::MakeRefCounted<OnViz::PendingPresentation>();
+        pending->data.first = std::move(cb);
+      }
+    }
+    if (pending) {
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&OnViz::EnqueuePendingPresentationOnViz,
+                                    on_viz_->GetWeakPtr(), pending));
+      gfx::SurfaceControl::Transaction transaction;
+      transaction.SetOnCompleteCb(
+          base::BindOnce(&OnViz::OnTransactionCompleteOnViz,
+                         on_viz_->GetWeakPtr(), std::move(pending)),
+          task_runner);
+      overlays_params.merge_transaction(transaction.GetTransaction());
+    }
+  } else if (output_surface_provider_.gl_surface()) {
     output_surface_provider_.gl_surface()->MaybeDidPresent(
         gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
                                   0 /* flags */));

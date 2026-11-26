@@ -117,7 +117,9 @@ void RenderThreadManager::PostParentDrawDataToChildCompositorOnRT(
     base::AutoLock lock(lock_);
     parent_draw_constraints_ = parent_draw_constraints;
     timing_details_.insert(timing_details.begin(), timing_details.end());
-    frame_sink_id_for_presentation_feedbacks_ = frame_sink_id;
+    if (frame_sink_id.is_valid()) {
+      frame_sink_id_for_presentation_feedbacks_ = frame_sink_id;
+    }
     preferred_frame_interval_ = preferred_frame_interval;
   }
 
@@ -261,6 +263,22 @@ void RenderThreadManager::RemoveFromCompositorFrameProducerOnUI() {
 #if DCHECK_IS_ON()
   ui_calls_allowed_ = false;
 #endif  // DCHECK_IS_ON()
+}
+
+void RenderThreadManager::PostFrameTimingDetailsToChildCompositorOnViz(
+    const viz::FrameSinkId& frame_sink_id,
+    viz::FrameTimingDetailsMap timing_details) {
+  if (timing_details.empty() || !frame_sink_id.is_valid()) {
+    return;
+  }
+  {
+    base::AutoLock lock(lock_);
+    timing_details_.insert(timing_details.begin(), timing_details.end());
+    frame_sink_id_for_presentation_feedbacks_ = frame_sink_id;
+  }
+  ui_loop_->PostTask(
+      FROM_HERE, base::BindOnce(&RenderThreadManager::UpdateParentDrawDataOnUI,
+                                ui_thread_weak_ptr_));
 }
 
 void RenderThreadManager::SetCompositorFrameProducer(

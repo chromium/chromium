@@ -459,6 +459,11 @@ BASE_FEATURE(kWebViewStaticMethodsNotTriggerStartup,
 BASE_FEATURE(kWebViewSubFrameCreatedDoNotUpdateClientMap,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Uses SurfaceControl transaction completion callbacks and present fences to
+// compute accurate presentation timestamps in WebView.
+BASE_FEATURE(kWebViewSurfaceControlPresentationTimestamps,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
 // around for testing purposes.

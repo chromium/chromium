@@ -48,7 +48,7 @@ class OverlaysManager::ScopedCurrentFunctorCall {
 
   static void MergeTransactionFn(ASurfaceTransaction* transaction) {
     DCHECK(g_current_functor_call);
-    DCHECK(AreOverlaysSupported());
+    DCHECK(gfx::SurfaceControl::IsSupported());
     return g_current_functor_call->MergeTransaction(transaction);
   }
 

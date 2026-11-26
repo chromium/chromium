@@ -1636,6 +1636,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_RESTRICT_CLIPBOARD_PASTE,
                 "Restricts clipboard paste to focused frames."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SURFACE_CONTROL_PRESENTATION_TIMESTAMPS,
+                "When enabled, changes the way that presentation timestamps are recorded"
+                        + " in WebView for more accurate ScrollJank metrics."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

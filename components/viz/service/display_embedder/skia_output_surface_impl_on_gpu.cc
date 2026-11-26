@@ -342,8 +342,8 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-  buffer_presented_callback_ = CreateSafeRepeatingCallback(
-      weak_ptr_, std::move(buffer_presented_callback));
+  buffer_presented_callback_ = base::BindPostTask(
+      dependency_->GetClientTaskRunner(), std::move(buffer_presented_callback));
 }
 
 void SkiaOutputSurfaceImplOnGpu::ReleaseAsyncReadResultHelpers() {

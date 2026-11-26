@@ -49,6 +49,9 @@ class OutputSurfaceProviderWebView {
     return &debug_settings_;
   }
   scoped_refptr<AwGLSurface> gl_surface() const { return gl_surface_; }
+  AwVulkanContextProvider* vulkan_context_provider() const {
+    return vulkan_context_provider_;
+  }
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     return shared_context_state_;
   }

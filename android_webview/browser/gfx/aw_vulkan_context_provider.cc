@@ -10,6 +10,7 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "android_webview/public/browser/draw_fn.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -33,6 +34,7 @@
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
 #include "third_party/skia/include/gpu/vk/VulkanTypes.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace android_webview {
 
@@ -297,6 +299,17 @@ void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(
   active_draw_state_->post_submit_tasks.push_back(std::move(closure));
 }
 
+void AwVulkanContextProvider::EnqueueSecondaryCBPresentationCallback(
+    SecondaryCBDrawState::PresentationCallback callback) {
+  CHECK(active_draw_state_);
+  if (active_draw_state_->presentation_receiver) {
+    std::move(active_draw_state_->presentation_receiver)
+        .Run(std::move(callback));
+  } else {
+    std::move(callback).Run({base::TimeTicks::Now(), {}, /*flags=*/0});
+  }
+}
+
 std::optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit() const {
   return std::optional<uint32_t>();
 }
@@ -353,6 +366,8 @@ void AwVulkanContextProvider::SecondaryCBDrawSubmitted(
         context = nullptr;
       },
       std::move(state.draw_context)));
+  base::AutoReset<raw_ptr<SecondaryCBDrawState>> reset(&active_draw_state_,
+                                                       &state);
   for (auto& closure : state.post_submit_tasks) {
     std::move(closure).Run();
   }

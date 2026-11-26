@@ -29,9 +29,12 @@ namespace android_webview {
 // pass. This state is owned by ScopedSecondaryCBDraw during recording and held
 // until PostDrawVk() is invoked by Android HWUI.
 struct SecondaryCBDrawState {
+  using PresentationCallback =
+      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   sk_sp<GrVkSecondaryCBDrawContext> draw_context;
   std::vector<VkSemaphore> post_submit_semaphores;
   std::vector<base::OnceClosure> post_submit_tasks;
+  base::OnceCallback<void(PresentationCallback)> presentation_receiver;
 };
 
 // Lifetime: WebView
@@ -88,7 +91,11 @@ class AwVulkanContextProvider final : public gpu::VulkanContextProvider {
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
+  void EnqueueSecondaryCBPresentationCallback(
+      SecondaryCBDrawState::PresentationCallback callback) override;
   std::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
+
+  SecondaryCBDrawState* active_draw_state() { return active_draw_state_; }
 
   VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
   VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }

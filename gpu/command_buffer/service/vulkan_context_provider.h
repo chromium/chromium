@@ -26,6 +26,10 @@ struct GrContextOptions;
 class GrDirectContext;
 class GrVkSecondaryCBDrawContext;
 
+namespace gfx {
+struct PresentationFeedback;
+}  // namespace gfx
+
 namespace skgpu::graphite {
 struct ContextOptions;
 }  // namespace skgpu::graphite
@@ -59,6 +63,9 @@ class GPU_GLES2_EXPORT VulkanContextProvider
   // Enqueue task which will be executed after the GrSecondaryCB and post submit
   // semphores are submitted.
   virtual void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) = 0;
+
+  virtual void EnqueueSecondaryCBPresentationCallback(
+      base::OnceCallback<void(const gfx::PresentationFeedback&)> callback) {}
 
   // Returns a valid limit in MB if there is a memory limit where GPU work
   // should be synchronized with the CPU in order to free previously released
