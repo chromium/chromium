@@ -54,7 +54,8 @@ enum class DefaultBrowserInteractionType {
   kAccepted = 0,
   kIgnored = 1,
   kDismissed = 2,
-  kMaxValue = kDismissed
+  kClosedOnDefaultRestored = 3,
+  kMaxValue = kClosedOnDefaultRestored
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserUserInteraction)
 
@@ -84,6 +85,7 @@ class DefaultBrowserController {
       const DefaultBrowserSetter::ExecuteParams& params = {});
   void OnIgnored();
   void OnDismissed();
+  void OnClosedOnDefaultRestored();
 
   static void RecordRetryCount(DefaultBrowserEntrypointType ui_entrypoint,
                                int retry_count);

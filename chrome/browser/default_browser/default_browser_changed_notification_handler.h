@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_CHANGED_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_CHANGED_NOTIFICATION_HANDLER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -31,6 +32,13 @@ class DefaultBrowserChangedNotificationHandler : public NotificationHandler {
       const DefaultBrowserChangedNotificationHandler&) = delete;
 
   ~DefaultBrowserChangedNotificationHandler() override;
+
+  // Records `DefaultBrowserInteractionType::kClosedOnDefaultRestored` on the
+  // active notification controller and closes the OS notification for
+  // `profile`. Returns true if an active notification controller was closed, or
+  // false if the notification had already been handled or the display service
+  // is unavailable.
+  static bool CloseNotification(Profile* profile);
 
  private:
   void OnShow(Profile* profile, const std::string& notification_id) override;

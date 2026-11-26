@@ -354,6 +354,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="DefaultBrowser.ChangeDetectedNotification.TimeUntilDefaultWithoutClick"
+    units="ms" expires_after="2027-08-06">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Duration between displaying the default-browser-changed OS notification and
+    Chrome becoming the default browser again without the user clicking or
+    dismissing the notification (at which point Chrome closes the notification).
+    Recorded once per closed notification if it is still displayed when the
+    return to default is detected.
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.InfoBar.TimesShownBeforeAccept" units="count"
     expires_after="2027-04-11">
   <owner>agale@chromium.org</owner>

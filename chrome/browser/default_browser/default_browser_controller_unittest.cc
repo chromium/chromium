@@ -88,6 +88,15 @@ TEST_F(DefaultBrowserControllerTest, OnDismissed) {
       DefaultBrowserInteractionType::kDismissed, 1);
 }
 
+TEST_F(DefaultBrowserControllerTest, OnClosedOnDefaultRestored) {
+  base::HistogramTester histogram_tester;
+  controller_->OnClosedOnDefaultRestored();
+
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
+      DefaultBrowserInteractionType::kClosedOnDefaultRestored, 1);
+}
+
 TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<DefaultBrowserState> future;

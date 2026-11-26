@@ -4,12 +4,15 @@
 
 #include "chrome/browser/default_browser/default_browser_changed_notification_handler.h"
 
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_display_service_impl.h"
 
 namespace default_browser {
 
@@ -18,6 +21,32 @@ DefaultBrowserChangedNotificationHandler::
 
 DefaultBrowserChangedNotificationHandler::
     ~DefaultBrowserChangedNotificationHandler() = default;
+
+// static
+bool DefaultBrowserChangedNotificationHandler::CloseNotification(
+    Profile* profile) {
+  auto* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(profile);
+  if (!display_service) {
+    return false;
+  }
+  auto* handler = static_cast<DefaultBrowserChangedNotificationHandler*>(
+      display_service->GetNotificationHandler(
+          NotificationHandler::Type::DEFAULT_BROWSER_CHANGED));
+  if (!handler) {
+    return false;
+  }
+  // Take `controller_` before calling `Close()`, as the message-center
+  // fallback dispatches `OnClose()` synchronously inside `Close()`.
+  auto controller = std::exchange(handler->controller_, nullptr);
+  if (!controller) {
+    return false;
+  }
+  controller->OnClosedOnDefaultRestored();
+  display_service->Close(NotificationHandler::Type::DEFAULT_BROWSER_CHANGED,
+                         DefaultBrowserManager::kNotificationId);
+  return true;
+}
 
 void DefaultBrowserChangedNotificationHandler::OnShow(
     Profile* profile,

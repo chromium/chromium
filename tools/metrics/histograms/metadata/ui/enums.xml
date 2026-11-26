@@ -187,6 +187,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Accepted"/>
   <int value="1" label="Ignored"/>
   <int value="2" label="Dismissed"/>
+  <int value="3" label="ClosedOnDefaultRestored"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->

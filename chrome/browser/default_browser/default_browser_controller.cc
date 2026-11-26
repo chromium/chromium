@@ -63,6 +63,11 @@ void DefaultBrowserController::OnDismissed() {
   RecordInteractionMetric(DefaultBrowserInteractionType::kDismissed);
 }
 
+void DefaultBrowserController::OnClosedOnDefaultRestored() {
+  RecordInteractionMetric(
+      DefaultBrowserInteractionType::kClosedOnDefaultRestored);
+}
+
 // static
 void DefaultBrowserController::RecordRetryCount(
     DefaultBrowserEntrypointType ui_entrypoint,
