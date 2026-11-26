@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
-#include "content/browser/font_service.h"  // nogncheck
+#include "content/browser/font_service.h"
 #endif
 
 namespace content {

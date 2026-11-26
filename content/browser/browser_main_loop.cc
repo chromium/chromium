@@ -181,7 +181,7 @@
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
-#include "components/vrp_flags/vrp_flags.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags.h"
 #endif
 
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)

@@ -40,8 +40,8 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
-#include "components/vrp_flags/vrp_flags.h"                     // nogncheck
-#include "content/browser/vrp_flags/vrp_navigation_throttle.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags.h"
+#include "content/browser/vrp_flags/vrp_navigation_throttle.h"
 #endif
 
 namespace content {

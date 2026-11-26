@@ -240,11 +240,10 @@
 #include <sys/resource.h>
 
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
-#include "content/browser/font_service.h"  // nogncheck
-#include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
-
 #include "content/browser/child_thread_type_switcher_linux.h"
+#include "content/browser/font_service.h"
 #include "content/common/thread_type_switcher.mojom.h"
+#include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
@@ -298,7 +297,7 @@
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
-#include "components/vrp_flags/vrp_flags.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags.h"
 #endif
 
 // VLOG additional statements in Fuchsia release builds.

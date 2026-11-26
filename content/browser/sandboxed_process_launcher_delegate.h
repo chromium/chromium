@@ -16,7 +16,7 @@
 #include "sandbox/policy/sandbox_delegate.h"
 
 #if BUILDFLAG(USE_ZYGOTE)
-#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
+#include "content/public/common/zygote/zygote_handle.h"
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_MAC)

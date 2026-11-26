@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/navigation_simulator.h"
@@ -19,8 +19,6 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -231,5 +229,3 @@ TEST_F(DevToolsFrontendHostImplJsErrorReportingEnabledTest,
 }
 
 }  // namespace content
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

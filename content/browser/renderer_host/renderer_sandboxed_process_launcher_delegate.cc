@@ -29,7 +29,7 @@
 
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/content_switches.h"
-#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
+#include "content/public/common/zygote/zygote_handle.h"
 #endif
 
 namespace content {

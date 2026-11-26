@@ -11,9 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/build_config.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -24,8 +23,6 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -363,5 +360,3 @@ TEST_F(WebUIMainFrameObserverTest, SuppressedDuringTeardown) {
 }
 
 }  // namespace content
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -50,7 +50,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "content/browser/direct_sockets/firewall_hole_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

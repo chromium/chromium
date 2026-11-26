@@ -93,7 +93,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
-#include "components/vrp_flags/vrp_flags.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags.h"
 #endif
 
 namespace content {

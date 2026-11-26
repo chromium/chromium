@@ -2686,7 +2686,6 @@ test("content_unittests") {
     "../browser/device_posture/device_posture_provider_impl_unittest.cc",
     "../browser/devtools/devtools_agent_host_impl_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
-    "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
     "../browser/devtools/devtools_http_handler_unittest.cc",
     "../browser/devtools/devtools_session_unittest.cc",
     "../browser/devtools/devtools_url_loader_interceptor_unittest.cc",
@@ -3065,7 +3064,6 @@ test("content_unittests") {
     "../browser/webui/url_data_manager_backend_unittest.cc",
     "../browser/webui/web_ui_data_source_unittest.cc",
     "../browser/webui/web_ui_impl_unittest.cc",
-    "../browser/webui/web_ui_main_frame_observer_unittest.cc",
     "../browser/webui/web_ui_message_handler_unittest.cc",
     "../browser/webui/web_ui_unittest.cc",
     "../browser/webui/web_ui_url_loader_factory_unittest.cc",
@@ -3542,6 +3540,10 @@ test("content_unittests") {
   }
 
   if (is_linux || is_chromeos) {
+    sources += [
+      "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
+      "../browser/webui/web_ui_main_frame_observer_unittest.cc",
+    ]
     deps += [
       "//components/crash/content/browser/error_reporting",
       "//content/app:locale",

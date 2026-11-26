@@ -279,9 +279,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
-#include "components/vrp_flags/vrp_flags.h"                    // nogncheck
-#include "components/vrp_flags/vrp_flags_impl.h"               // nogncheck
-#include "content/browser/vrp_flags/vrp_flags_factory_impl.h"  // nogncheck
+#include "components/vrp_flags/vrp_flags.h"
+#include "components/vrp_flags/vrp_flags_impl.h"
+#include "content/browser/vrp_flags/vrp_flags_factory_impl.h"
 #endif
 
 namespace blink {
