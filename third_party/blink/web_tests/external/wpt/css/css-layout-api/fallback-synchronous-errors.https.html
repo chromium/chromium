@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Layout API: Synchronous layout worklet exceptions fall back without propagating</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-layout-api-1/#get-a-layout-class-instance">
+<link rel="help" href="https://drafts.css-houdini.org/css-layout-api-1/#invoke-an-intrinsic-sizes-callback">
+<link rel="help" href="https://drafts.css-houdini.org/css-layout-api-1/#invoke-a-layout-callback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/worklet-reftest.js"></script>
+<style>
+.box {
+  width: 100px;
+}
+.box > div {
+  height: 80px;
+}
+</style>
+<body>
+<div id="container"></div>
+
+<script id="code" type="text/worklet">
+registerLayout('throwing-ctor', class {
+  constructor() {
+    throw { source: 'layout-ctor' };
+  }
+  async intrinsicSizes() {}
+  async layout() {}
+});
+
+registerLayout('throwing-layout', class {
+  async intrinsicSizes() {
+    return { minContentSize: 10, maxContentSize: 20 };
+  }
+  layout() {
+    throw { source: 'layout-callback' };
+  }
+});
+
+registerLayout('throwing-intrinsic-sizes', class {
+  intrinsicSizes() {
+    throw { source: 'intrinsic-sizes-callback' };
+  }
+  async layout([child]) {
+    const fragment = await child.layoutNextFragment();
+    return { autoBlockSize: 40, childFragments: [fragment] };
+  }
+});
+
+registerLayout('valid-layout', class {
+  constructor() { this.ready = true; }
+  async intrinsicSizes() {
+    return { minContentSize: 35, maxContentSize: 70 };
+  }
+  async layout([child]) {
+    const fragment = await child.layoutNextFragment();
+    return {
+      autoBlockSize: this.ready ? 50 : 0,
+      childFragments: [fragment],
+    };
+  }
+});
+</script>
+
+<script>
+promise_test(async t => {
+  assert_implements('layoutWorklet' in CSS, 'CSS Layout API is not supported');
+
+  await importWorklet(CSS.layoutWorklet, document.getElementById('code').textContent);
+
+  const container = document.getElementById('container');
+
+  // CSS Layout API 1 #get-a-layout-class-instance step 2.3: throwing
+  // constructor falls back to flow layout without propagating to page script.
+  container.innerHTML =
+      '<div id="ctor-error" class="box" style="display: layout(throwing-ctor)"><div></div></div>';
+  assert_equals(document.getElementById('ctor-error').clientHeight, 80,
+      'throwing constructor falls back to block layout');
+
+  // Repeat with a fresh box to exercise constructor valid flag = false path.
+  container.innerHTML =
+      '<div id="ctor-error-retry" class="box" style="display: layout(throwing-ctor)"><div></div></div>';
+  assert_equals(document.getElementById('ctor-error-retry').clientHeight, 80,
+      'subsequent layout after throwing constructor falls back cleanly');
+
+  // CSS Layout API 1 #invoke-a-layout-callback step 14: synchronous throw in
+  // layout() falls back to flow layout without propagating to page script.
+  container.innerHTML =
+      '<div id="layout-error" class="box" style="display: layout(throwing-layout)"><div></div></div>';
+  assert_equals(document.getElementById('layout-error').clientHeight, 80,
+      'throwing layout() falls back to block layout');
+
+  // CSS Layout API 1 #invoke-an-intrinsic-sizes-callback step 11: synchronous
+  // throw in intrinsicSizes() falls back to flow layout without propagating.
+  container.innerHTML =
+      '<div id="sizes-wrap" style="width: min-content">' +
+        '<div style="display: layout(throwing-intrinsic-sizes)">' +
+          '<div style="width: 60px; height: 80px"></div>' +
+        '</div>' +
+      '</div>';
+  assert_equals(document.getElementById('sizes-wrap').offsetWidth, 60,
+      'throwing intrinsicSizes() falls back to block intrinsic sizes');
+
+  // Contrast check: valid layout class still runs after prior worklet errors.
+  container.innerHTML =
+      '<div id="valid-box" class="box" style="display: layout(valid-layout); width: min-content"><div></div></div>';
+  const validBox = document.getElementById('valid-box');
+  assert_equals(validBox.offsetWidth, 35, 'valid intrinsicSizes() succeeds');
+  assert_equals(validBox.clientHeight, 50, 'valid layout() succeeds');
+}, 'Synchronous exceptions in layout worklet constructors and callbacks fall back without propagating');
+</script>
+</body>

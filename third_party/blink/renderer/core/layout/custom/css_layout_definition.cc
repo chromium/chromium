@@ -120,6 +120,8 @@ bool CSSLayoutDefinition::Instance::Layout(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   ScriptValue return_value;
   {
+    v8::TryCatch try_catch(isolate);
+    try_catch.SetVerbose(true);
     V8RunMicrotasksScope microtasks_scope(script_state);
     if (!definition_->layout_
              ->Invoke(instance_.Get(isolate), children, edges, constraints,
@@ -247,6 +249,8 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
 
   ScriptValue return_value;
   {
+    v8::TryCatch try_catch(isolate);
+    try_catch.SetVerbose(true);
     V8RunMicrotasksScope microtasks_scope(script_state);
     if (!definition_->intrinsic_sizes_
              ->Invoke(instance_.Get(isolate), children, edges, style_map)
@@ -318,10 +322,14 @@ CSSLayoutDefinition::Instance* CSSLayoutDefinition::CreateInstance() {
     return nullptr;
 
   // Ensure that we don't create an instance on a detached context.
-  if (!GetScriptState()->ContextIsValid())
+  ScriptState* script_state = GetScriptState();
+  if (!script_state->ContextIsValid()) {
     return nullptr;
+  }
 
-  ScriptState::Scope scope(GetScriptState());
+  ScriptState::Scope scope(script_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  try_catch.SetVerbose(true);
 
   ScriptValue instance;
   if (!constructor_->Construct().To(&instance)) {

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Painting API: Paint class constructor and paint exceptions do not propagate synchronously</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-paint-api-1/#invoke-a-paint-callback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/worklet-reftest.js"></script>
+<body style="margin: 0">
+<div id="host"></div>
+
+<script id="code" type="text/worklet">
+registerPaint('throwing-ctor', class {
+  static get inputProperties() { return ['transform']; }
+  constructor() {
+    throw { source: 'paint-ctor' };
+  }
+  paint() {}
+});
+
+registerPaint('throwing-ctor-tostring', class {
+  static get inputProperties() { return ['transform']; }
+  constructor() {
+    throw {
+      toString() {
+        return 'paint-ctor-stringified';
+      }
+    };
+  }
+  paint() {}
+});
+
+registerPaint('throwing-ctor-secondary-tostring', class {
+  static get inputProperties() { return ['transform']; }
+  constructor() {
+    throw {
+      toString() {
+        throw { source: 'secondary-tostring-error' };
+      }
+    };
+  }
+  paint() {}
+});
+
+registerPaint('throwing-paint', class {
+  static get inputProperties() { return ['transform']; }
+  paint() {
+    throw { source: 'paint-callback' };
+  }
+});
+
+registerPaint('valid-painter', class {
+  static get inputProperties() { return ['transform']; }
+  paint(ctx, size) {
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, size.width, size.height);
+  }
+});
+</script>
+
+<script>
+promise_test(async t => {
+  assert_implements('paintWorklet' in CSS, 'CSS Paint API is not supported');
+
+  await importWorklet(CSS.paintWorklet, document.getElementById('code').textContent);
+
+  // Pre-create an SVGRectElement wrapper so elementFromPoint() returns directly
+  // without initializing the SVGRectElement wrapper constructor during the
+  // first hit-test.
+  document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+  const host = document.getElementById('host');
+  function triggerSynchronousPaint(name) {
+    host.innerHTML = `
+      <svg width="200" height="200">
+        <defs>
+          <rect id="masked" width="50" height="50"
+                style="mask-image: paint(${name}); transform: translate(1px, 1px)"/>
+          <filter id="flt"><feImage href="#masked"/></filter>
+        </defs>
+        <rect id="target" width="100" height="100" filter="url(#flt)"/>
+      </svg>`;
+    return document.elementFromPoint(5, 5);
+  }
+
+  // Per CSS Painting API 1 #invoke-a-paint-callback steps 5.3 and 13,
+  // exceptions thrown by the paint class constructor or paint() callback
+  // must produce an invalid image and never propagate to calling page script.
+  // Repeat 'throwing-ctor' three times to exercise the cached invalid
+  // constructor path across implementations with two global scopes.
+  for (const name of [
+    'throwing-ctor',
+    'throwing-ctor',
+    'throwing-ctor',
+    'throwing-ctor-tostring',
+    'throwing-ctor-secondary-tostring',
+    'throwing-paint',
+    'valid-painter',
+  ]) {
+    const hit = triggerSynchronousPaint(name);
+    assert_equals(hit, document.getElementById('target'), name);
+  }
+}, 'Paint worklet constructor and paint exceptions do not propagate out of synchronous hit-testing');
+</script>
+</body>
