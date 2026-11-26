@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/gpu_gles2_export.h"
 
 class SkImage;
@@ -28,28 +29,34 @@ GPU_GLES2_EXPORT
 bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder);
 
-// Synchronously read pixels from a graphite image.
+// Synchronously read pixels from a graphite image. If `scoped_access` is not
+// null it will have ApplyBackendSurfaceEndState() called on it after readback
+// but before submitting work.
 // Note this is for single plane image.
 // TODO(crbug.com/40924444): Add a function to read multiplanar image.
 GPU_GLES2_EXPORT
-bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
-                            skgpu::graphite::Recorder* recorder,
-                            SkImage* image,
-                            const SkImageInfo& dst_info,
-                            void* dst_pointer,
-                            size_t dst_bytes_per_row,
-                            int src_x,
-                            int src_y);
+bool GraphiteReadPixelsSync(
+    GraphiteSharedContext* context,
+    skgpu::graphite::Recorder* recorder,
+    SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+    SkImage* image,
+    const SkImageInfo& dst_info,
+    void* dst_pointer,
+    size_t dst_bytes_per_row,
+    int src_x,
+    int src_y);
 
 GPU_GLES2_EXPORT
-bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
-                            skgpu::graphite::Recorder* recorder,
-                            SkSurface* surface,
-                            const SkImageInfo& dst_info,
-                            void* dst_pointer,
-                            size_t dst_bytes_per_row,
-                            int src_x,
-                            int src_y);
+bool GraphiteReadPixelsSync(
+    GraphiteSharedContext* context,
+    skgpu::graphite::Recorder* recorder,
+    SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+    SkSurface* surface,
+    const SkImageInfo& dst_info,
+    void* dst_pointer,
+    size_t dst_bytes_per_row,
+    int src_x,
+    int src_y);
 
 }  // namespace gpu
 

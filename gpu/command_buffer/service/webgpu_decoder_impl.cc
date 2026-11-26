@@ -707,11 +707,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       } else {
         DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-        if (success && !GraphiteReadPixelsSync(
-                           shared_context_state_->graphite_shared_context(),
-                           shared_context_state_->gpu_main_graphite_recorder(),
-                           sk_image.get(), sk_image->imageInfo(), dst_pointer,
-                           bytes_per_row, 0, 0)) {
+        if (success &&
+            !GraphiteReadPixelsSync(
+                shared_context_state_->graphite_shared_context(),
+                shared_context_state_->gpu_main_graphite_recorder(),
+                scoped_read_access.get(), sk_image.get(), sk_image->imageInfo(),
+                dst_pointer, bytes_per_row, 0, 0)) {
           DLOG(ERROR) << "Failed to read from SkImage";
           success = false;
         }

@@ -773,11 +773,11 @@ bool OzoneImageBacking::ReadbackToMemoryGraphite(
       break;
     }
 
-    if (!GraphiteReadPixelsSync(context_state_->graphite_shared_context(),
-                                context_state_->gpu_main_graphite_recorder(),
-                                sk_image.get(), pixmaps[plane].info(),
-                                pixmaps[plane].writable_addr(),
-                                pixmaps[plane].rowBytes(), 0, 0)) {
+    if (!GraphiteReadPixelsSync(
+            context_state_->graphite_shared_context(),
+            context_state_->gpu_main_graphite_recorder(),
+            src_scoped_access.get(), sk_image.get(), pixmaps[plane].info(),
+            pixmaps[plane].writable_addr(), pixmaps[plane].rowBytes(), 0, 0)) {
       LOG(ERROR) << "GraphiteReadPixelsSync failed for plane: " << plane;
       success = false;
       break;

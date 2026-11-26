@@ -31,14 +31,16 @@ void OnReadPixelsDone(
 
 // Synchronously read pixels from a graphite image.
 template <typename T>
-bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
-                                skgpu::graphite::Recorder* recorder,
-                                T* imageOrSurface,
-                                const SkImageInfo& dst_info,
-                                void* dst_pointer,
-                                size_t dst_bytes_per_row,
-                                int src_x,
-                                int src_y) {
+bool GraphiteReadPixelsSyncImpl(
+    GraphiteSharedContext* context,
+    skgpu::graphite::Recorder* recorder,
+    SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+    T* imageOrSurface,
+    const SkImageInfo& dst_info,
+    void* dst_pointer,
+    size_t dst_bytes_per_row,
+    int src_x,
+    int src_y) {
   if (!GraphiteFlush(context, recorder)) {
     return false;
   }
@@ -52,6 +54,9 @@ bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
         imageOrSurface, dst_info, src_rect, SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedLinear,
         base::BindOnce(&OnReadPixelsDone), &read_context);
+    if (scoped_access) {
+      scoped_access->ApplyBackendSurfaceEndState();
+    }
   });
 
   CHECK(read_context.finished);
@@ -87,30 +92,34 @@ bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
   return success;
 }
 
-bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
-                            skgpu::graphite::Recorder* recorder,
-                            SkImage* image,
-                            const SkImageInfo& dst_info,
-                            void* dst_pointer,
-                            size_t dst_bytes_per_row,
-                            int src_x,
-                            int src_y) {
-  return GraphiteReadPixelsSyncImpl(context, recorder, image, dst_info,
-                                    dst_pointer, dst_bytes_per_row, src_x,
-                                    src_y);
+bool GraphiteReadPixelsSync(
+    GraphiteSharedContext* context,
+    skgpu::graphite::Recorder* recorder,
+    SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+    SkImage* image,
+    const SkImageInfo& dst_info,
+    void* dst_pointer,
+    size_t dst_bytes_per_row,
+    int src_x,
+    int src_y) {
+  return GraphiteReadPixelsSyncImpl(context, recorder, scoped_access, image,
+                                    dst_info, dst_pointer, dst_bytes_per_row,
+                                    src_x, src_y);
 }
 
-bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
-                            skgpu::graphite::Recorder* recorder,
-                            SkSurface* surface,
-                            const SkImageInfo& dst_info,
-                            void* dst_pointer,
-                            size_t dst_bytes_per_row,
-                            int src_x,
-                            int src_y) {
-  return GraphiteReadPixelsSyncImpl(context, recorder, surface, dst_info,
-                                    dst_pointer, dst_bytes_per_row, src_x,
-                                    src_y);
+bool GraphiteReadPixelsSync(
+    GraphiteSharedContext* context,
+    skgpu::graphite::Recorder* recorder,
+    SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+    SkSurface* surface,
+    const SkImageInfo& dst_info,
+    void* dst_pointer,
+    size_t dst_bytes_per_row,
+    int src_x,
+    int src_y) {
+  return GraphiteReadPixelsSyncImpl(context, recorder, scoped_access, surface,
+                                    dst_info, dst_pointer, dst_bytes_per_row,
+                                    src_x, src_y);
 }
 
 }  // namespace gpu

@@ -2370,9 +2370,10 @@ class GpuRasterTextBlobPixelTest
     } else if (context_state->graphite_shared_context()) {
       success = gpu::GraphiteReadPixelsSync(
           context_state->graphite_shared_context(),
-          context_state->gpu_main_graphite_recorder(), surface.get(),
-          image_info, expected.pixmap().writable_addr(),
-          expected.pixmap().rowBytes(), 0, 0);
+          context_state->gpu_main_graphite_recorder(),
+          /*scoped_access=*/nullptr, surface.get(), image_info,
+          expected.pixmap().writable_addr(), expected.pixmap().rowBytes(), 0,
+          0);
     }
 
     ASSERT_TRUE(success);

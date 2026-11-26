@@ -664,13 +664,15 @@ namespace {
 
 // Graphite only supports asynchronous reads, and the asynchronous reads require
 // that the src rect is contained within the image.
-bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
-                             sk_sp<SkImage> sk_image,
-                             int src_x,
-                             int src_y,
-                             const SkImageInfo& dst_info,
-                             void* pixel_address,
-                             size_t row_bytes) {
+bool GraphiteImageReadPixels(
+    GraphiteSharedContext* graphite_shared_context,
+    SkiaImageRepresentation::ScopedReadAccess& scoped_access,
+    sk_sp<SkImage> sk_image,
+    int src_x,
+    int src_y,
+    const SkImageInfo& dst_info,
+    void* pixel_address,
+    size_t row_bytes) {
   gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
   gfx::Rect src_image_bounds(sk_image->width(), sk_image->height());
   CHECK(!src_rect.IsEmpty() && src_image_bounds.Contains(src_rect));
@@ -685,6 +687,7 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
         sk_image.get(), dst_info, RectToSkIRect(src_rect),
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
         base::BindOnce(&OnReadPixelsDone), &context);
+    scoped_access.ApplyBackendSurfaceEndState();
   });
   if (!submitted) {
     return false;
@@ -796,8 +799,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
     auto* graphite_shared_context =
         shared_context_state_->graphite_shared_context();
     success = GraphiteImageReadPixels(
-        graphite_shared_context, std::move(sk_image), src_x, src_y, dst_info,
-        pixel_address, effective_row_bytes);
+        graphite_shared_context, *source_scoped_access, std::move(sk_image),
+        src_x, src_y, dst_info, pixel_address, effective_row_bytes);
   }
   if (!success) {
     return base::unexpected(GLError(GL_INVALID_OPERATION, "ReadPixels",
@@ -990,6 +993,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixelsYUVInternalNV12(
           sk_uv_image.get(), uv_info, uv_src_rect, SkImage::RescaleGamma::kSrc,
           SkImage::RescaleMode::kRepeatedLinear,
           base::BindOnce(&OnReadPixelsDone), &uv_result);
+      source_scoped_access->ApplyBackendSurfaceEndState();
     });
     finished = submitted && y_result.finished && uv_result.finished;
     is_context_lost = !finished && graphite_shared_context->IsContextLost();
@@ -1094,6 +1098,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixelsYUVInternalRGB(
           sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
           SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
           base::BindOnce(&OnReadPixelsDone), &yuv_result);
+      source_scoped_access->ApplyBackendSurfaceEndState();
     });
     finished = submitted && yuv_result.finished;
     is_context_lost = !finished && graphite_shared_context->IsContextLost();

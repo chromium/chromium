@@ -256,7 +256,8 @@ class D3DImageBackingFactoryTest
                                                   : SharedImageUsageSet());
   }
 
-  bool ReadPixels(const sk_sp<SkImage>& sk_image,
+  bool ReadPixels(SkiaImageRepresentation::ScopedReadAccess* scoped_access,
+                  const sk_sp<SkImage>& sk_image,
                   const SkImageInfo& dst_info,
                   void* dst_pointer,
                   size_t dst_bytes_per_row,
@@ -270,8 +271,8 @@ class D3DImageBackingFactoryTest
     DCHECK(context_state_->gpu_main_graphite_recorder());
     return GraphiteReadPixelsSync(context_state_->graphite_shared_context(),
                                   context_state_->gpu_main_graphite_recorder(),
-                                  sk_image.get(), dst_info, dst_pointer,
-                                  dst_bytes_per_row, 0, 0);
+                                  scoped_access, sk_image.get(), dst_info,
+                                  dst_pointer, dst_bytes_per_row, 0, 0);
   }
 
   void CheckSkiaPixels(
@@ -292,8 +293,8 @@ class D3DImageBackingFactoryTest
     std::vector<uint8_t> dst_pixels(num_pixels * 4);
 
     // Read back pixels from Sk Image.
-    EXPECT_TRUE(ReadPixels(sk_image, dst_info, dst_pixels.data(),
-                           dst_info.minRowBytes(), 0, 0));
+    EXPECT_TRUE(ReadPixels(scoped_read_access, sk_image, dst_info,
+                           dst_pixels.data(), dst_info.minRowBytes(), 0, 0));
 
     auto dst_pixels_span = base::span(dst_pixels);
     for (size_t i = 0; i < num_pixels; i++) {
@@ -2672,7 +2673,8 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback() {
     }
     ASSERT_TRUE(dst_image);
 
-    EXPECT_TRUE(ReadPixels(dst_image, rgba_image_info, dst_bitmap.getPixels(),
+    EXPECT_TRUE(ReadPixels(scoped_read_access.get(), dst_image, rgba_image_info,
+                           dst_bitmap.getPixels(),
                            rgba_image_info.minRowBytes(), 0, 0));
   }
 
@@ -3050,8 +3052,8 @@ TEST_P(D3DImageBackingFactoryTest, Y210CreateSkImage) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::Make(
       gfx::SizeToSkISize(size), kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
-  ASSERT_TRUE(ReadPixels(sk_image, bitmap.info(), bitmap.getPixels(),
-                         bitmap.rowBytes(), 0, 0));
+  ASSERT_TRUE(ReadPixels(scoped_read_access.get(), sk_image, bitmap.info(),
+                         bitmap.getPixels(), bitmap.rowBytes(), 0, 0));
 
   // YUV(1023, 1023, 0) and YUV(64, 1023, 0) with the default BT.601 matrix.
   SkBitmap expected_bitmap;
