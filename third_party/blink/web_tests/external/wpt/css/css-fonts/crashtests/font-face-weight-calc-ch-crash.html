@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Fonts: @font-face weight calc(1ch) and NaN must not UAF or crash</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-prop-desc">
+<style>
+  @font-face {
+    font-family: serif;
+    src: url('/fonts/Lato-Medium.ttf') format('truetype');
+  }
+</style>
+<script>
+  for (const weight of [
+    'calc(1ch / 1px) calc(1ch / 1px)',
+    'calc(0 / 0) calc(0 / 0)',
+    'calc(0 / 0)',
+    'calc(2000) calc(0)',
+  ]) {
+    const f1 = new FontFace('TestFamily', 'local("Arial")', {
+      stretch: '0%',
+      style: 'normal',
+      weight,
+    });
+    document.fonts.add(f1);
+    const f2 = new FontFace('TestFamily', 'local("Arial")', {
+      stretch: '0%',
+      style: 'normal',
+      weight,
+    });
+    document.fonts.add(f2);
+    document.fonts.delete(f1);
+    document.fonts.delete(f2);
+  }
+</script>
