@@ -1832,6 +1832,68 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 }
 
+// With a non-Latin layout (e.g. Russian), the access key falls back to the
+// US layout character of the pressed physical key (DomCode).
+TEST_F(EventHandlerTest, AccessKeyNonLatinLayoutFallsBackToDomCode) {
+  SetHtmlInnerHTML(
+      "<input id='f' accesskey='f'>"
+      "<input id='cyr' accesskey='&#x430;'>"
+      "<input id='d3' accesskey='3'>"
+      "<input id='d0' accesskey='0'>"
+      "<input id='q' accesskey='q'>");
+  EventHandler& handler = GetDocument().GetFrame()->GetEventHandler();
+
+  // Shift+Alt+KeyF on a Russian layout produces a kChar event with U+0430
+  // (and Aura overwrites windows_key_code with the character), matching the
+  // Cyrillic access key first.
+  WebKeyboardEvent e{
+      WebInputEvent::Type::kChar,
+      KeyboardEventManager::kAccessKeyModifiers | WebInputEvent::kShiftKey,
+      WebInputEvent::GetStaticTimeStampForTests()};
+  e.unmodified_text[0] = 0x0430;
+  e.windows_key_code = 0x0430;
+  e.dom_code = static_cast<int>(ui::DomCode::US_F);
+  EXPECT_TRUE(handler.HandleAccessKey(e));
+  EXPECT_EQ(GetElementById("cyr"), GetDocument().FocusedElement());
+
+  // Without a Cyrillic access key, the US layout character of KeyF is used.
+  GetElementById("cyr")->remove();
+  EXPECT_TRUE(handler.HandleAccessKey(e));
+  EXPECT_EQ(GetElementById("f"), GetDocument().FocusedElement());
+
+  // Digit keys (including DIGIT0, which follows DIGIT9 in USB HID).
+  e.unmodified_text[0] = 0x2116;
+  e.windows_key_code = 0x2116;
+  e.dom_code = static_cast<int>(ui::DomCode::DIGIT3);
+  EXPECT_TRUE(handler.HandleAccessKey(e));
+  EXPECT_EQ(GetElementById("d3"), GetDocument().FocusedElement());
+
+  e.unmodified_text[0] = 0x0660;
+  e.windows_key_code = 0x0660;
+  e.dom_code = static_cast<int>(ui::DomCode::DIGIT0);
+  EXPECT_TRUE(handler.HandleAccessKey(e));
+  EXPECT_EQ(GetElementById("d0"), GetDocument().FocusedElement());
+
+  // KeyA (U+0444) and punctuation keys (U+0436 on Semicolon) match nothing.
+  e.unmodified_text[0] = 0x0444;
+  e.windows_key_code = 0x0444;
+  e.dom_code = static_cast<int>(ui::DomCode::US_A);
+  EXPECT_FALSE(handler.HandleAccessKey(e));
+
+  e.unmodified_text[0] = 0x0436;
+  e.windows_key_code = 0x0436;
+  e.dom_code = static_cast<int>(ui::DomCode::SEMICOLON);
+  EXPECT_FALSE(handler.HandleAccessKey(e));
+
+  // Non-QWERTY ASCII layouts (e.g. AZERTY KeyQ producing 'a') must not fall
+  // back to the US physical key's accesskey='q'.
+  e.unmodified_text[0] = 'a';
+  e.windows_key_code = 'a';
+  e.dom_code = static_cast<int>(ui::DomCode::US_Q);
+  EXPECT_FALSE(handler.HandleAccessKey(e));
+  EXPECT_NE(GetElementById("q"), GetDocument().FocusedElement());
+}
+
 // macOS doesn't have keyboard-triggered tooltips.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromMouseDoesntUpdateTooltip \

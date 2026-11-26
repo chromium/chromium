@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/windows_keyboard_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -188,6 +190,22 @@ bool MapKeyCodeForScroll(int key_code,
   return true;
 }
 
+char FallbackLatinAccessKeyForDomCode(ui::DomCode dom_code) {
+  if (dom_code >= ui::DomCode::US_A && dom_code <= ui::DomCode::US_Z) {
+    return static_cast<char>('a' + (static_cast<uint32_t>(dom_code) -
+                                    static_cast<uint32_t>(ui::DomCode::US_A)));
+  }
+  if (dom_code >= ui::DomCode::DIGIT1 && dom_code <= ui::DomCode::DIGIT9) {
+    return static_cast<char>('1' +
+                             (static_cast<uint32_t>(dom_code) -
+                              static_cast<uint32_t>(ui::DomCode::DIGIT1)));
+  }
+  if (dom_code == ui::DomCode::DIGIT0) {
+    return '0';
+  }
+  return '\0';
+}
+
 }  // namespace
 
 KeyboardEventManager::KeyboardEventManager(LocalFrame& frame,
@@ -214,6 +232,16 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
   String key = String(evt.unmodified_text.data());
   Element* elem =
       frame_->GetDocument()->GetElementByAccessKey(key.DeprecatedLower());
+  // Keys on non-Latin layouts (e.g. Russian) produce non-ASCII characters.
+  // Fall back to the US layout Latin letter or digit for the physical key, as
+  // browser shortcuts and Firefox do.
+  if (!elem && evt.unmodified_text[0] > 0x7F) {
+    if (const char latin_key = FallbackLatinAccessKeyForDomCode(
+            static_cast<ui::DomCode>(evt.dom_code))) {
+      elem = frame_->GetDocument()->GetElementByAccessKey(
+          String(base::span_from_ref(latin_key)));
+    }
+  }
   if (!elem)
     return false;
   elem->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
