@@ -369,10 +369,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (TableViewItem*)itemForCreditCard:(const autofill::CreditCard&)creditCard {
   std::string guid(creditCard.guid());
   NSString* creditCardName = autofill::GetCreditCardName(
-      creditCard, std::string(GetApplicationContext()
-                                  ->GetApplicationLocaleStorage()
-                                  ->GetTag()
-                                  .tag_string()));
+      creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
 
   AutofillCardItem* item = [[AutofillCardItem alloc] initWithType:ItemTypeCard];
   item.text = creditCardName;

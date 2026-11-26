@@ -7,7 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <string>
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace autofill {
 
@@ -15,7 +17,7 @@ class CreditCard;
 
 // Returns |credit_card| name in |locale| as an autoreleased NSString.
 NSString* GetCreditCardName(const CreditCard& credit_card,
-                            const std::string& locale);
+                            const base::i18n::LanguageTag& locale);
 
 // Returns |credit_card| card identifier string as an autoreleased NSString.
 NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card);

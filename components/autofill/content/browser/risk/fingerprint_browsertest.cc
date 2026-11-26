@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
@@ -41,7 +42,7 @@ void GetFingerprintInternal(
     const std::string& charset,
     const std::string& accept_languages,
     base::Time install_time,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& user_agent,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
@@ -54,7 +55,8 @@ const uint64_t kObfuscatedGaiaId = UINT64_C(16571487432910023183);
 const char kCharset[] = "UTF-8";
 const char kAcceptLanguages[] = "en-US,en";
 const int kScreenColorDepth = 53;
-const char kLocale[] = "en-GB";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-GB");
 const char kUserAgent[] = "TestUserAgent";
 
 // Geolocation constants that are passed verbatim to the fingerprinter code and
@@ -154,7 +156,7 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
 
     // Some values have exact known (mocked out) values:
     EXPECT_THAT(machine.requested_language(), ElementsAre("en-US", "en"));
-    EXPECT_EQ(kLocale, machine.browser_language());
+    EXPECT_EQ(kLocale.tag_string(), machine.browser_language());
     EXPECT_EQ(kUserAgent, machine.user_agent());
     EXPECT_EQ(kCharset, machine.charset());
     EXPECT_EQ(kScreenColorDepth, machine.screen_color_depth());

@@ -24,10 +24,8 @@
   NSString* bankName =
       base::SysUTF16ToNSString(base::ASCIIToUTF16(creditCard.bank_name()));
   NSString* cardHolder = autofill::GetCreditCardName(
-      creditCard, std::string(GetApplicationContext()
-                                  ->GetApplicationLocaleStorage()
-                                  ->GetTag()
-                                  .tag_string()));
+      creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   NSString* number = nil;
   if (creditCard.record_type() !=
       autofill::CreditCard::RecordType::kMaskedServerCard) {

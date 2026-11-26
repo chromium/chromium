@@ -49,6 +49,7 @@ static_library("browser") {
   ]
   deps = [
     "//base:i18n",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser/integrators/password_manager",
     "//components/credential_management:browser",
     "//components/page_load_metrics/browser",
@@ -179,6 +180,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//base/i18n:language_tag",
     "//content/public/browser",
     "//content/test:browsertest_support",
     "//content/test:test_support",

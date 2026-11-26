@@ -22,7 +22,10 @@
 
 namespace base {
 class Time;
-}
+namespace i18n {
+class LanguageTag;
+}  // namespace i18n
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -53,7 +56,7 @@ void GetFingerprint(
     const std::string& charset,
     const std::string& accept_languages,
     base::Time install_time,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& user_agent,
     const base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
 

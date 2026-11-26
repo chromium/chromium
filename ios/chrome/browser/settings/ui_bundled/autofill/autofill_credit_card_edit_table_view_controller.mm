@@ -384,10 +384,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardholderNameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER);
   cardholderNameItem.textFieldValue = autofill::GetCreditCardName(
-      _creditCard, std::string(GetApplicationContext()
-                                   ->GetApplicationLocaleStorage()
-                                   ->GetTag()
-                                   .tag_string()));
+      _creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   cardholderNameItem.textFieldEnabled = isEditing;
   cardholderNameItem.autofillCreditCardUIType =
       AutofillCreditCardUIType::kFullName;

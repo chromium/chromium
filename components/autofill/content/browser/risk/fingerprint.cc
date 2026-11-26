@@ -19,6 +19,7 @@
 #include "base/cpu.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -166,7 +167,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
       const std::string& charset,
       const std::string& accept_languages,
       base::Time install_time,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       const std::string& user_agent,
       base::TimeDelta timeout,
       base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
@@ -209,7 +210,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   const std::string version_;
   const std::string charset_;
   const std::string accept_languages_;
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
   const std::string user_agent_;
   const base::Time install_time_;
 
@@ -237,7 +238,7 @@ FingerprintDataLoader::FingerprintDataLoader(
     const std::string& charset,
     const std::string& accept_languages,
     base::Time install_time,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& user_agent,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback)
@@ -309,7 +310,7 @@ void FingerprintDataLoader::FillFingerprint() {
   machine->set_browser_install_time_hours(
       (install_time_ - base::Time::UnixEpoch()).InHours());
   machine->set_utc_offset_ms(GetTimezoneOffset().InMilliseconds());
-  machine->set_browser_language(app_locale_);
+  machine->set_browser_language(std::string(app_locale_.tag_string()));
   machine->set_charset(charset_);
   machine->set_user_agent(user_agent_);
   machine->set_ram(base::SysInfo::AmountOfTotalPhysicalMemory().InBytes());
@@ -363,7 +364,7 @@ void GetFingerprintInternal(
     const std::string& charset,
     const std::string& accept_languages,
     base::Time install_time,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& user_agent,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback) {
@@ -385,7 +386,7 @@ void GetFingerprint(
     const std::string& charset,
     const std::string& accept_languages,
     base::Time install_time,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::string& user_agent,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback) {
   gfx::Rect content_bounds;
