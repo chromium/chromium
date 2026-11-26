@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/rand_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -119,17 +118,12 @@ END_METADATA
 
 }  // namespace
 
-PopupSearchBarView::PopupSearchBarView(
-    const std::u16string& placeholder,
-    const std::u16string& initial_value,
-    std::vector<std::u16string> rotating_placeholders,
-    Delegate& delegate,
-    bool show_search_icon_sparkle,
-    base::TimeDelta debounce_delay)
-    : delegate_(delegate),
-      debounce_delay_(debounce_delay),
-      placeholder_(placeholder),
-      rotating_placeholders_(std::move(rotating_placeholders)) {
+PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
+                                       const std::u16string& initial_value,
+                                       Delegate& delegate,
+                                       bool show_search_icon_sparkle,
+                                       base::TimeDelta debounce_delay)
+    : delegate_(delegate), debounce_delay_(debounce_delay) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -173,10 +167,6 @@ PopupSearchBarView::PopupSearchBarView(
                           base::Unretained(this)),
       this,
       /*visible=*/!initial_value.empty()));
-
-  if (initial_value.empty()) {
-    StartPlaceholderRotation();
-  }
 }
 
 void PopupSearchBarView::AddedToWidget() {
@@ -258,10 +248,6 @@ void PopupSearchBarView::SetInputTextForTesting(const std::u16string& text) {
   input_->SetText(text);
 }
 
-std::u16string_view PopupSearchBarView::GetPlaceholderTextForTesting() const {
-  return input_->GetPlaceholderText();
-}
-
 gfx::Point PopupSearchBarView::GetClearButtonScreenCenterPointForTesting()
     const {
   return clear_->GetBoundsInScreen().CenterPoint();
@@ -279,11 +265,6 @@ void PopupSearchBarView::OnInputChanged() {
   if (empty && clear_->HasFocus()) {
     input_->RequestFocus();
   }
-  if (empty) {
-    StartPlaceholderRotation();
-  } else {
-    StopPlaceholderRotation();
-  }
   input_change_notification_timer_.Start(
       FROM_HERE, debounce_delay_,
       // `delegate_` is expected to outlive `this`, the timer will either be
@@ -295,37 +276,6 @@ void PopupSearchBarView::OnInputChanged() {
 void PopupSearchBarView::OnClearPressed() {
   input_->SetText({});
   input_->RequestFocus();
-}
-
-void PopupSearchBarView::StartPlaceholderRotation() {
-  if (rotating_placeholders_.empty() ||
-      placeholder_rotation_timer_.IsRunning()) {
-    return;
-  }
-  next_rotating_placeholder_index_ =
-      base::RandGenerator(rotating_placeholders_.size());
-  placeholder_rotation_timer_.Start(
-      FROM_HERE, kPlaceholderRotationInterval,
-      // `this` owns the timer, so the callback never runs after `this` is
-      // destroyed.
-      base::BindRepeating(
-          [](PopupSearchBarView* self) {
-            self->input_->SetPlaceholderText(
-                self->rotating_placeholders_
-                    [self->next_rotating_placeholder_index_]);
-            self->next_rotating_placeholder_index_ =
-                (self->next_rotating_placeholder_index_ + 1) %
-                self->rotating_placeholders_.size();
-          },
-          base::Unretained(this)));
-}
-
-void PopupSearchBarView::StopPlaceholderRotation() {
-  if (!placeholder_rotation_timer_.IsRunning()) {
-    return;
-  }
-  input_->SetPlaceholderText(placeholder_);
-  placeholder_rotation_timer_.Stop();
 }
 
 BEGIN_METADATA(PopupSearchBarView)

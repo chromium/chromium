@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
   controller().set_suggestions({SuggestionType::kAddressEntry});
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
-      AutofillPopupView::SearchBarConfig{.placeholders = {u"Search"},
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
                                          .initial_value = {},
                                          .no_results_message = u""});
 }
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   controller().set_suggestions({100, SuggestionType::kAddressEntry});
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
-      AutofillPopupView::SearchBarConfig{.placeholders = {u"Search"},
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
                                          .initial_value = {},
                                          .no_results_message = u""});
 }
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ON_CALL(controller(), HasFilteredOutSuggestions).WillByDefault(Return(true));
   ShowAndVerifyUi(
       /*popup_has_parent=*/false, AutofillPopupView::SearchBarConfig{
-                                      .placeholders = {u"Search"},
+                                      .placeholder = u"Search",
                                       .initial_value = {},
                                       .no_results_message = u"No suggestions"});
 }

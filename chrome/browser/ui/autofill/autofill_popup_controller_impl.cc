@@ -111,8 +111,8 @@ std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
       return AutofillPopupView::SearchBarConfig{
-          .placeholders = {l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER)},
+          .placeholder = l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
           .initial_value = {},
           .no_results_message = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)};

@@ -1316,12 +1316,8 @@ void PopupViewViews::InitViews() {
     const bool is_at_memory =
         controller_ &&
         controller_->GetMainFillingProduct() == FillingProduct::kAtMemory;
-    base::span<const std::u16string> placeholders =
-        search_bar_config_->placeholders;
-    CHECK(!placeholders.empty());
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        placeholders.front(), search_bar_config_->initial_value,
-        /*rotating_placeholders=*/base::ToVector(placeholders.subspan(1u)),
+        search_bar_config_->placeholder, search_bar_config_->initial_value,
         *this,
         /*show_search_icon_sparkle=*/is_at_memory,
         /*debounce_delay=*/
