@@ -6,12 +6,10 @@ import 'chrome://settings/lazy_load.js';
 
 // clang-format off
 // <if expr="is_win or is_linux or is_macosx">
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
 import {PageColors} from 'chrome://settings/lazy_load.js';
 import type {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import { assertFalse, assertTrue, assertEquals } from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
 
@@ -66,11 +64,6 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
     },
     {
       key: 'settings.a11y.enable_accessibility_image_labels',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: false,
-    },
-    {
-      key: 'settings.a11y.enable_main_node_annotations',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     },
@@ -130,7 +123,6 @@ suite('A11yPage', () => {
 
   setup(async function() {
     loadTimeData.overrideValues({
-      mainNodeAnnotationsEnabled: true,
       pageColorsSettingsEnabled: true,
     });
 
@@ -159,31 +151,6 @@ suite('A11yPage', () => {
   });
 
   // <if expr="is_win or is_linux or is_macosx">
-  test('check ax annotations subpage visibility', async () => {
-    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-
-    // Simulate disabling a screen reader to exclude the ax annotations subpage
-    // in a DOM.
-    webUIListenerCallback('screen-reader-state-changed', false);
-
-    await microtasksFinished();
-    let axAnnotationsSection =
-        a11yPage.shadowRoot.querySelector<SettingsAxAnnotationsSectionElement>(
-            '#AxAnnotationsSection');
-    assertFalse(!!axAnnotationsSection);
-
-    // Simulate enabling a screen reader to include the ax annotations subpage
-    // in a DOM.
-    webUIListenerCallback('screen-reader-state-changed', true);
-
-    await microtasksFinished();
-    axAnnotationsSection =
-        a11yPage.shadowRoot.querySelector<SettingsAxAnnotationsSectionElement>(
-            '#AxAnnotationsSection');
-    assertTrue(!!axAnnotationsSection);
-    assertTrue(isVisible(axAnnotationsSection));
-  });
-
   test('toast metrics bounds check', async () => {
     const toastToggle = a11yPage.$.toastToggle;
 

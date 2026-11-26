@@ -651,8 +651,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kLiveTranslateTargetLanguageCode] =
       settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kAccessibilityMainNodeAnnotationsEnabled] =
-      settings_api::PrefType::kBoolean;
 #endif
 #if defined(USE_AURA)
   (*s_allowlist)[::prefs::kOverscrollHistoryNavigationEnabled] =

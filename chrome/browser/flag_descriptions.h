@@ -7187,11 +7187,6 @@ inline constexpr char kHappinessTrackingSurveysForDesktopDemoName[] =
 inline constexpr char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
-inline constexpr char kMainNodeAnnotationsName[] = "Main Node Annotations";
-inline constexpr char kMainNodeAnnotationsDescription[] =
-    "Uses Screen2x main content extractor to annotate the accessibility tree "
-    "with the main landmark on the node identified as main.";
-
 inline constexpr char kTabCopyLinksName[] = "Copy link(s)";
 inline constexpr char kTabCopyLinksDescription[] =
     "Enables 'Copy link(s)' in the tab and tab group context menus.";

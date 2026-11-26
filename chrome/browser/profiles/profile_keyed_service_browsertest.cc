@@ -46,7 +46,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -218,7 +217,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(IS_WIN)
           network::features::kBrowsingTopics,
           extensions_features::kForceWebRequestProxyForTest,
-          features::kMainNodeAnnotations,
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
           switches::kSyncEnableBookmarksInTransportMode,
@@ -442,7 +440,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   // clang-format off
   std::set<std::string> guest_otr_active_services {
     "AlarmManager",
-    "AXMainNodeAnnotatorController",
     "AutocompleteActionPredictor",
     "AutocompleteClassifier",
     "AutocompleteControllerEmitter",

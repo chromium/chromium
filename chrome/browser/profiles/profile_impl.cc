@@ -227,11 +227,9 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #else
-#include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/startup/features.h"
 #include "content/public/common/page_zoom.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -950,11 +948,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // The password settings service needs to start listening to settings
   // changes from Google Mobile Services, as early as possible.
   PasswordManagerSettingsServiceFactory::GetForProfile(this);
-#else
-
-  if (features::IsMainNodeAnnotationsEnabled()) {
-    screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // The announcement notification  service might not be available for some

@@ -23,9 +23,6 @@ import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js
 import {PageColors} from '../page_colors.mojom-webui.js';
 
 // </if>
-// <if expr="is_win or is_linux or is_macosx">
-import './ax_annotations_section.js';
-// </if>
 // <if expr="is_win or is_macosx">
 import './live_caption.js';
 
@@ -37,7 +34,6 @@ import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -116,13 +112,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
        * to show accessibility labels settings.
        */
       hasScreenReader_: {type: Boolean},
-
-      // <if expr="is_win or is_linux or is_macosx">
-      /**
-       * Whether to show the AxAnnotations subpage.
-       */
-      showAxAnnotationsSection_: {type: Boolean},
-      // </if>
     };
   }
 
@@ -173,9 +162,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   protected accessor hasScreenReader_: boolean = false;
-  // <if expr="is_win or is_linux or is_macosx">
-  protected accessor showAxAnnotationsSection_: boolean = false;
-  // </if>
 
   override connectedCallback() {
     super.connectedCallback();
@@ -195,18 +181,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     }
     // </if>
   }
-
-  // <if expr="is_win or is_linux or is_macosx">
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('hasScreenReader_')) {
-      this.showAxAnnotationsSection_ = this.computeShowAxAnnotationsSection_();
-    }
-  }
-  // </if>
 
   // <if expr="not is_chromeos">
   protected onA11yCaretBrowsingChange_(event: Event) {
@@ -229,19 +203,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   }
 
   // <if expr="is_win or is_linux or is_macosx">
-  /**
-   * Return whether to show the AxAnnotations subpage based on:
-   *    1. If any annotation's feature flag is enabled.
-   *    2. Whether a screen reader is enabled.
-   * Note: on ChromeOS, the AxAnnotations subpage is shown on a different
-   * settings page; i.e. Settings > Accessibility > Text-to-Speech.
-   */
-  private computeShowAxAnnotationsSection_(): boolean {
-    const anyAxAnnotationsFeatureEnabled =
-        loadTimeData.getBoolean('mainNodeAnnotationsEnabled');
-    return anyAxAnnotationsFeatureEnabled && this.hasScreenReader_;
-  }
-
   protected onCaptionsClick_() {
     // <if expr="is_win or is_macosx">
     CaptionsBrowserProxyImpl.getInstance().openSystemCaptionsDialog();

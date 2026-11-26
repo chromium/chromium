@@ -27,7 +27,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -46,30 +45,6 @@ std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
 }
 }  // namespace
 #endif
-
-void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"mainNodeAnnotationsDownloadErrorLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR},
-      {"mainNodeAnnotationsDownloadProgressLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_PROGRESS},
-      {"mainNodeAnnotationsDownloadingLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOADING},
-      {"mainNodeAnnotationsTitle", IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE},
-      {"mainNodeAnnotationsSubtitle",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean(
-      "mainNodeAnnotationsEnabled",
-      base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
-#if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean(
-      "japaneseBrailleEnabled",
-      base::FeatureList::IsEnabled(
-          features::kAccessibilityChromeVoxJapaneseBraille));
-#endif
-}
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

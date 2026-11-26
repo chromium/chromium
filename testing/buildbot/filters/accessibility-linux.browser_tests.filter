@@ -217,7 +217,6 @@
 # is some other AXMode during the test, which will not be the case when
 # --force-renderer-accessibility is used.
 -AccessibilityLabelsBrowserTest.NotEnabledWithoutScreenReader
--AXMainNodeAnnotatorControllerBrowserTest.NotEnabledWithoutScreenReader
 -DownloadToolbarUIControllerBrowserTest.AutoCloseDelayDefaultAndAccessibility
 -PersistentBackground/AutomationApiTestWithContextType.ImageLabels/0
 -PersistentBackground/AutomationApiTestWithContextType.TestRendererAccessibilityEnabled/0

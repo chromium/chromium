@@ -142,12 +142,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, WebUiListenerMixin) {
   RunTest("settings/web_ui_listener_mixin_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSection) {
-  RunTest("settings/ax_annotations_section_test.js", "mocha.run()");
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, BatteryPage) {
   RunTest("settings/battery_page_test.js", "mocha.run()");
 }

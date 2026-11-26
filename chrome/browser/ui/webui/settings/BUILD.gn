@@ -79,7 +79,6 @@ source_set("settings") {
     "//chrome/browser/profile_resetter",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/speech",
     "//chrome/browser/themes",
     "//chrome/browser/ui/safety_hub",
@@ -756,15 +755,8 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [
-        "accessibility_main_handler_unittest.cc",
-        "settings_manage_profile_handler_unittest.cc",
-      ]
-      deps += [
-        "//chrome/browser/profiles",
-        "//chrome/browser/screen_ai:screen_ai_install_state",
-        "//ui/accessibility",
-      ]
+      sources += [ "settings_manage_profile_handler_unittest.cc" ]
+      deps += [ "//chrome/browser/profiles" ]
     }
 
     if (is_chrome_branded) {

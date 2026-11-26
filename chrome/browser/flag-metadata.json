@@ -6913,11 +6913,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "main-node-annotations",
-    "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "make-identity-manager-source-of-accounts",
     "owners": ["lbarczynski@google.com", "chrome-signin-mobile-team@google.com"],
     "expiry_milestone": 162

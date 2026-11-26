@@ -16,7 +16,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
 namespace settings {
@@ -35,11 +34,6 @@ void AccessibilityMainHandler::RegisterMessages() {
       base::BindRepeating(
           &AccessibilityMainHandler::HandleCheckAccessibilityImageLabels,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getScreenAiInstallState",
-      base::BindRepeating(
-          &AccessibilityMainHandler::HandleGetScreenAIInstallState,
-          base::Unretained(this)));
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
@@ -49,52 +43,12 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
           &AccessibilityMainHandler::OnAccessibilityStatusChanged,
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (features::IsMainNodeAnnotationsEnabled()) {
-    CHECK(!component_ready_observer_.IsObserving());
-    component_ready_observer_.Observe(
-        screen_ai::ScreenAIInstallState::GetInstance());
-  }
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
 #if BUILDFLAG(IS_CHROMEOS)
   accessibility_subscription_ = {};
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (features::IsMainNodeAnnotationsEnabled()) {
-    component_ready_observer_.Reset();
-  }
-}
-
-void AccessibilityMainHandler::DownloadProgressChanged(double progress) {
-  CHECK_GE(progress, 0.0);
-  CHECK_LE(progress, 1.0);
-  const int progress_num = progress * 100;
-  FireWebUIListener("screen-ai-downloading-progress-changed",
-                    base::Value(progress_num));
-}
-
-void AccessibilityMainHandler::StateChanged(
-    screen_ai::ScreenAIInstallState::State state) {
-  base::Value state_value = base::Value(static_cast<int>(state));
-  FireWebUIListener("screen-ai-state-changed", state_value);
-}
-
-void AccessibilityMainHandler::OnScreenAIInstallStateDestroying() {
-  component_ready_observer_.Reset();
-}
-
-void AccessibilityMainHandler::HandleGetScreenAIInstallState(
-    const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
-  const base::Value& callback_id = args[0];
-  AllowJavascript();
-  // Get the current install state and send it back to a UI callback.
-  screen_ai::ScreenAIInstallState::State current_install_state =
-      screen_ai::ScreenAIInstallState::GetInstance()->get_state();
-  ResolveJavascriptCallback(
-      callback_id, base::Value(static_cast<int>(current_install_state)));
 }
 
 void AccessibilityMainHandler::HandleGetScreenReaderState(

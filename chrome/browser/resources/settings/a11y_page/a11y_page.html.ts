@@ -75,12 +75,6 @@ export function getHtml(this: SettingsA11yPageElement) {
         label="$i18n{accessibleImageLabelsTitle}"
         sub-label="$i18n{accessibleImageLabelsSubtitle}">
     </settings-toggle-button>
-<if expr="is_win or is_linux or is_macosx">
-    ${this.showAxAnnotationsSection_ ? html`
-      <settings-ax-annotations-section id="AxAnnotationsSection">
-      </settings-ax-annotations-section>
-    ` : ''}
-</if>
 <if expr="is_win or is_linux">
     <settings-toggle-button class="hr"
         pref-key="settings.a11y.overscroll_history_navigation"

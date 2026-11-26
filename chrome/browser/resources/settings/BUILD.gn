@@ -601,13 +601,6 @@ build_webui("build") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    ts_files += [
-      "a11y_page/ax_annotations_section.html.ts",
-      "a11y_page/ax_annotations_section.ts",
-    ]
-  }
-
   if (is_mac) {
     ts_files += [
       "autofill_page/passwords/passkey_edit_dialog.html.ts",

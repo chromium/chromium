@@ -308,7 +308,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
                           features::IsPageColorsSettingsEnabled());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  AddAxAnnotationsSectionStrings(html_source);
   AddCaptionSubpageStrings(html_source);
 }
 

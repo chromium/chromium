@@ -373,7 +373,6 @@
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #endif
 #else  // !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
@@ -425,7 +424,6 @@
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
-#include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
@@ -1428,9 +1426,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   SafetyHubMenuNotificationServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   SafetyHubHatsServiceFactory::GetInstance();
-  if (features::IsMainNodeAnnotationsEnabled()) {
-    screen_ai::AXMainNodeAnnotatorControllerFactory::GetInstance();
-  }
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)

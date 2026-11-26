@@ -9364,12 +9364,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAnimatedImageDragShadow)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"main-node-annotations", flag_descriptions::kMainNodeAnnotationsName,
-     flag_descriptions::kMainNodeAnnotationsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMainNodeAnnotations)},
-#endif
-
     {"origin-agent-cluster-default",
      flag_descriptions::kOriginAgentClusterDefaultName,
      flag_descriptions::kOriginAgentClusterDefaultDescription, kOsAll,
