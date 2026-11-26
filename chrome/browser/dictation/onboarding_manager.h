@@ -8,11 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/metrics.h"
-#include "chrome/browser/dictation/target.h"
 
 class PrefService;
 
@@ -24,8 +22,9 @@ namespace dictation {
 
 class DictationKeyedService;
 class OnboardingDialogController;
+class Target;
 
-// Managers the first-run onboarding experience for a user the first time
+// Manages the first-run onboarding experience for a user the first time
 // dictation is triggered.
 class OnboardingManager {
  public:
@@ -35,29 +34,36 @@ class OnboardingManager {
   OnboardingManager(const OnboardingManager&) = delete;
   OnboardingManager& operator=(const OnboardingManager&) = delete;
 
-  // Returns true if onboarding is needed and the caller must not
-  // proceed, in which case OnboardingManager will start a session when the user
-  // completes onboarding. Returns false if onboarding is not needed.
-  // TODO(b/527240600): This returns true in cases of failure which has correct
-  // behavior in terms of preventing a session start but should return an error
-  // state.
-  bool ShowOnboardingIfNeeded(tabs::TabInterface& tab,
-                              const TargetDetails& target_details,
-                              DictationSessionEntryPoint entry_point);
+  // Returns true if first-run onboarding has not yet been completed.
+  bool NeedsOnboarding() const;
+
+  // Shows the onboarding dialog on `tab`, storing `target` and `entry_point` to
+  // start the session once onboarding completes.
+  // TODO(b/527240600): Consider returning an error state when failing closed.
+  void ShowOnboarding(tabs::TabInterface& tab,
+                      std::unique_ptr<Target> target,
+                      DictationSessionEntryPoint entry_point);
 
  private:
   void OnOnboardingCompleted();
   void OnDialogClosed();
 
-  // Owns `this`
+  // Owns `this`.
   raw_ref<DictationKeyedService> service_;
   raw_ref<PrefService> pref_service_;
 
   std::unique_ptr<OnboardingDialogController> dialog_controller_;
 
   struct PendingSession {
+    PendingSession(base::WeakPtr<tabs::TabInterface> tab,
+                   std::unique_ptr<Target> target,
+                   DictationSessionEntryPoint entry_point);
+    PendingSession(PendingSession&&);
+    PendingSession& operator=(PendingSession&&);
+    ~PendingSession();
+
     base::WeakPtr<tabs::TabInterface> tab;
-    TargetDetails target_details;
+    std::unique_ptr<Target> target;
     DictationSessionEntryPoint entry_point;
   };
   std::optional<PendingSession> pending_session_;

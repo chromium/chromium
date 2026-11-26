@@ -10,6 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/dictation/dictation_context_fetcher.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/editable_level.h"
@@ -24,9 +26,9 @@ namespace dictation {
 
 namespace {
 
-class TestTarget : public Target {
+class TestTarget : public DomTarget {
  public:
-  using Target::Target;
+  using DomTarget::DomTarget;
 
   const std::u16string& last_sent_composition() const {
     return last_sent_composition_;
@@ -513,6 +515,18 @@ TEST_F(DictationTargetTest,
   target.SetComposition(u"THIS IS A TEST.", true);
   target.CommitComposition(u"THIS IS A TEST.", base::NullCallback());
   EXPECT_EQ(target.last_sent_commit(), u"THIS IS A TEST");
+}
+
+TEST_F(DictationTargetTest, DomTargetReturnsSelfMetadataAndContextFetcher) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  DomTarget target{TargetDetails(target_id)};
+  Target& base_target = target;
+  EXPECT_EQ(base_target.AsDomTarget(), &target);
+  EXPECT_EQ(static_cast<const Target&>(base_target).AsDomTarget(), &target);
+  EXPECT_NE(base_target.CreateContextFetcher(), nullptr);
+  ASSERT_TRUE(base_target.GetGlobalDOMNodeId().has_value());
+  EXPECT_EQ(base_target.GetGlobalDOMNodeId()->target_element_dom_id,
+            target_id.target_element_dom_id);
 }
 
 }  // namespace

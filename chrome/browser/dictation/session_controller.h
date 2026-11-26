@@ -84,9 +84,9 @@ class SessionController : public SessionUiDelegate,
       content::RenderWidgetHost* widget_host) override;
 
   // Starts a new dictation stream by creating and attaching a new stream
-  // provider. An existing stream must have been detached before calling this
-  // method.
-  void StartDictationStream(const TargetDetails& target_details,
+  // provider bound to `target`. An existing stream must have been detached
+  // before calling this method.
+  void StartDictationStream(std::unique_ptr<Target> target,
                             DictationStreamStartTrigger trigger,
                             base::TimeTicks trigger_time);
 
@@ -104,9 +104,10 @@ class SessionController : public SessionUiDelegate,
     return attached_stream_provider_.get();
   }
 
-  // The target the latest stream was started on, if any.
-  const std::optional<TargetDetails>& last_used_target_details() const {
-    return last_used_target_details_;
+  // The DOM node ID the latest stream was started on, or nullopt for non-DOM
+  // targets or before any stream has started.
+  const std::optional<content::GlobalDOMNodeId>& last_used_target_id() const {
+    return last_used_target_id_;
   }
 
   SessionUi* ui_for_testing() { return ui_.get(); }
@@ -155,7 +156,7 @@ class SessionController : public SessionUiDelegate,
   base::RepeatingCallbackList<void(SessionState)>
       session_state_changed_callback_list_;
 
-  std::optional<TargetDetails> last_used_target_details_;
+  std::optional<content::GlobalDOMNodeId> last_used_target_id_;
 
   // When the user action that started the current stream happened. Used to
   // record VoiceTyping.StreamStartLatency and

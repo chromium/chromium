@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/stream_provider_delegate.h"
 #include "chrome/browser/dictation/target.h"
@@ -134,7 +135,7 @@ class ListenerStreamProviderTest : public testing::Test {
 
   void StartAndStopStream() {
     ListenerStreamProvider provider(&profile_, delegate_);
-    provider.BindToTargetAndConnect(std::make_unique<Target>(EmptyTarget()));
+    provider.BindToTargetAndConnect(std::make_unique<DomTarget>(EmptyTarget()));
     provider.Stop(DictationStreamEndTrigger::kTest);
   }
 

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
@@ -87,7 +88,7 @@ class DictationKeyedService : public KeyedService,
   // target. It's the caller's responsibility to ensure this is never called
   // while an existing session is in progress.
   void DidCompleteOnboarding(tabs::TabInterface& tab,
-                             const TargetDetails& target_details,
+                             std::unique_ptr<Target> target,
                              DictationSessionEntryPoint entry_point);
 
   // Called when the Dictation Connector component extension finishes
@@ -178,7 +179,7 @@ class DictationKeyedService : public KeyedService,
   // responsibility to ensure this never called while an existing session in
   // progress.
   void StartSession(tabs::TabInterface& tab,
-                    const TargetDetails& target_details,
+                    std::unique_ptr<Target> target,
                     DictationSessionEntryPoint entry_point,
                     base::TimeTicks trigger_time);
 
@@ -207,7 +208,7 @@ class DictationKeyedService : public KeyedService,
   // Handles triggering a session, either starting a new one
   // or updating an existing session to start a new stream, possibly in a new
   // tab.
-  void TriggerSession(const TargetDetails& target_details,
+  void TriggerSession(std::unique_ptr<Target> target,
                       DictationSessionEntryPoint entry_point);
 
   // Toggles dictation on the active browser's focused editable field (or stops

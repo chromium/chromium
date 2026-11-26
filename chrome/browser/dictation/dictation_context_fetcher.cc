@@ -13,10 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
-#include "chrome/browser/dictation/target.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/search/search.h"
@@ -135,12 +135,12 @@ bool ShouldPopulateEditContext(const url::Origin& origin) {
 
 }  // namespace
 
-DictationContextFetcher::DictationContextFetcher() = default;
+DictationContextFetcher::DictationContextFetcher(DomTarget& target)
+    : target_(target) {}
 DictationContextFetcher::~DictationContextFetcher() = default;
 
-void DictationContextFetcher::Fetch(Target& target,
-                                    GetContextCallback callback) {
-  content::RenderFrameHost* rfh = target.GetRenderFrameHost();
+void DictationContextFetcher::Fetch(GetContextCallback callback) {
+  content::RenderFrameHost* rfh = target_->GetRenderFrameHost();
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
@@ -204,13 +204,13 @@ void DictationContextFetcher::Fetch(Target& target,
   // TODO(b/568411900): Only do this if the target has an EditContext,
   // e.g. via a new bit in FocusedNodeDetails stored on Target.
   const blink::DOMNodeIdType node_id =
-      target.global_dom_node_id().target_element_dom_id;
+      target_->global_dom_node_id().target_element_dom_id;
   if (node_id.is_null() ||
       !ShouldPopulateEditContext(rfh->GetLastCommittedOrigin())) {
     FetchPageContext(web_contents->GetWeakPtr(), std::move(callback));
     return;
   }
-  blink::mojom::DictationAgent* agent = target.GetDictationAgent();
+  blink::mojom::DictationAgent* agent = target_->GetDictationAgent();
   if (!agent) {
     // The target's frame is gone.
     std::move(callback).Run(DictationContext());

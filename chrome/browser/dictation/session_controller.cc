@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
@@ -91,11 +92,10 @@ void SessionController::ResetUi() {
 }
 
 void SessionController::StartDictationStream(
-    const TargetDetails& target_details,
+    std::unique_ptr<Target> target,
     DictationStreamStartTrigger trigger,
     base::TimeTicks trigger_time) {
-  VT_LOG(GetBrowserContext())
-      << "Starting DictationStream on target " << target_details.target_id;
+  CHECK(target);
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
@@ -109,8 +109,18 @@ void SessionController::StartDictationStream(
     auto_session_end_timer_.Stop();
   }
 
+  last_used_target_id_ = target->GetGlobalDOMNodeId();
+  if (last_used_target_id_) {
+    VT_LOG(GetBrowserContext())
+        << "Starting DictationStream on target " << *last_used_target_id_;
+  } else {
+    VT_LOG(GetBrowserContext()) << "Starting DictationStream on custom target";
+  }
+
   content::RenderFrameHost* target_rfh =
-      target_details.target_id.document.AsRenderFrameHostIfValid();
+      last_used_target_id_
+          ? last_used_target_id_->document.AsRenderFrameHostIfValid()
+          : nullptr;
   Observe(content::WebContents::FromRenderFrameHost(target_rfh));
 
   RecordDictationStreamStartTrigger(trigger);
@@ -118,20 +128,18 @@ void SessionController::StartDictationStream(
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
-  stream_provider->BindToTargetAndConnect(
-      std::make_unique<Target>(target_details));
+  stream_provider->BindToTargetAndConnect(std::move(target));
   attached_stream_provider_ = std::move(stream_provider);
 
   if (target_rfh) {
     RegisterKeyPressCallback(target_rfh->GetRenderWidgetHost());
   }
 
-  last_used_target_details_ = target_details;
-
   MoveToState(SessionState::kStreamInitializing);
 
   if (ui_) {
-    ui_->OnStartedStream(target_details.target_id);
+    ui_->OnStartedStream(
+        last_used_target_id_.value_or(content::GlobalDOMNodeId()));
   }
 }
 
@@ -202,11 +210,16 @@ void SessionController::DidGetUserInteraction(
 void SessionController::OnFocusChangedInPage(
     const content::FocusedNodeDetails& details) {
   if (attached_stream_provider_ && attached_stream_provider_->GetTarget()) {
-    attached_stream_provider_->GetTarget()->OnFocusChanged(details);
+    if (DomTarget* dom_target =
+            attached_stream_provider_->GetTarget()->AsDomTarget()) {
+      dom_target->OnFocusChanged(details);
+    }
   }
   for (auto& provider : finalizing_stream_providers_) {
     if (provider->GetTarget()) {
-      provider->GetTarget()->OnFocusChanged(details);
+      if (DomTarget* dom_target = provider->GetTarget()->AsDomTarget()) {
+        dom_target->OnFocusChanged(details);
+      }
     }
   }
 

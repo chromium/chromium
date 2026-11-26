@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DICTATION_DICTATION_CONTEXT_FETCHER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/dictation/dictation_context.h"
@@ -17,18 +18,19 @@ class WebContents;
 
 namespace dictation {
 
-class Target;
+class DomTarget;
 
 class DictationContextFetcher {
  public:
-  DictationContextFetcher();
+  // `target` must outlive `this`.
+  explicit DictationContextFetcher(DomTarget& target);
   ~DictationContextFetcher();
 
   DictationContextFetcher(const DictationContextFetcher&) = delete;
   DictationContextFetcher& operator=(const DictationContextFetcher&) = delete;
 
   using GetContextCallback = base::OnceCallback<void(DictationContext)>;
-  void Fetch(Target& target, GetContextCallback callback);
+  void Fetch(GetContextCallback callback);
 
  private:
   // Fetches APC and innerText and runs `callback` with them. Runs it with an
@@ -40,6 +42,8 @@ class DictationContextFetcher {
       base::WeakPtr<content::WebContents> web_contents,
       GetContextCallback callback,
       page_content_annotations::FetchPageContextResultCallbackArg result);
+
+  const raw_ref<DomTarget> target_;
 
   base::WeakPtrFactory<DictationContextFetcher> weak_ptr_factory_{this};
 };

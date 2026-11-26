@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/dictation/target.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/global_dom_node_id.h"
 

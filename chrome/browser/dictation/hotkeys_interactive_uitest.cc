@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
@@ -188,12 +189,14 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeysInteractiveUiTest,
       ASSERT_NE(stream_provider, nullptr);
       auto* target = stream_provider->GetTarget();
       ASSERT_NE(target, nullptr);
+      ASSERT_NE(target->AsDomTarget(), nullptr);
 
       std::optional<int> expected_node_id = content::GetDOMNodeId(
           *web_contents()->GetPrimaryMainFrame(), "#text_id");
       ASSERT_TRUE(expected_node_id.has_value());
-      EXPECT_EQ(target->global_dom_node_id().target_element_dom_id,
-                blink::DOMNodeIdType(*expected_node_id));
+      EXPECT_EQ(
+          target->AsDomTarget()->global_dom_node_id().target_element_dom_id,
+          blink::DOMNodeIdType(*expected_node_id));
     }),
 
     hotkeys.SendToggle(),

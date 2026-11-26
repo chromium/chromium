@@ -4,15 +4,17 @@
 
 #include "chrome/browser/dictation/session_ui_impl.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
-#include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -163,7 +165,8 @@ class DictationSessionUiImplBrowserTest
   auto StartDictationStream(DictationStreamStartTrigger trigger) {
     return Do([this, trigger]() {
       dictation_service().session_controller()->StartDictationStream(
-          DefaultInPageTarget(web_contents()), trigger, base::TimeTicks::Now());
+          std::make_unique<DomTarget>(DefaultInPageTarget(web_contents())),
+          trigger, base::TimeTicks::Now());
     });
   }
 

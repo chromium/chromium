@@ -174,16 +174,19 @@ void ListenerStreamProvider::BindToTargetAndConnect(
 
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__;
 
-  context_fetcher_ = std::make_unique<DictationContextFetcher>();
+  context_fetcher_ = target_->CreateContextFetcher();
+  if (!context_fetcher_) {
+    StartStream(std::nullopt);
+    return;
+  }
+
   if (kSendContextAsync.Get()) {
     StartStream(std::nullopt);
     context_fetcher_->Fetch(
-        *target_,
         base::BindOnce(&ListenerStreamProvider::OnAsyncContextCaptured,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     context_fetcher_->Fetch(
-        *target_,
         base::BindOnce(&ListenerStreamProvider::OnStartContextCaptured,
                        weak_ptr_factory_.GetWeakPtr()));
   }

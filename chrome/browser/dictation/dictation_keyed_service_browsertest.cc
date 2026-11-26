@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -15,11 +16,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/stream_provider.h"
-#include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
@@ -191,9 +192,13 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   StreamProvider* provider = session_controller()->attached_stream_provider();
   ASSERT_NE(provider, nullptr);
   ASSERT_NE(provider->GetTarget(), nullptr);
-  EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+  ASSERT_NE(provider->GetTarget()->AsDomTarget(), nullptr);
+  EXPECT_EQ(provider->GetTarget()
+                ->AsDomTarget()
+                ->global_dom_node_id()
+                .target_element_dom_id,
             blink::DOMNodeIdType(123));
-  EXPECT_FALSE(provider->GetTarget()->richly_editable());
+  EXPECT_FALSE(provider->GetTarget()->AsDomTarget()->richly_editable());
 }
 
 // Ensure the context menu item can be used to start a new stream in the same
@@ -222,8 +227,11 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   ASSERT_NE(attached_stream(), nullptr);
   auto stream2_id = attached_stream()->stream_id_for_testing();
   EXPECT_NE(stream1_id, stream2_id);
+  ASSERT_NE(attached_stream()->GetTarget(), nullptr);
+  ASSERT_NE(attached_stream()->GetTarget()->AsDomTarget(), nullptr);
   EXPECT_EQ(attached_stream()
                 ->GetTarget()
+                ->AsDomTarget()
                 ->global_dom_node_id()
                 .target_element_dom_id,
             blink::DOMNodeIdType(456));
@@ -266,16 +274,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(attached_stream(), nullptr);
   auto stream2_id = attached_stream()->stream_id_for_testing();
   EXPECT_NE(stream1_id, stream2_id);
-  EXPECT_EQ(attached_stream()
-                ->GetTarget()
-                ->global_dom_node_id()
-                .target_element_dom_id,
+  ASSERT_NE(attached_stream()->GetTarget(), nullptr);
+  DomTarget* dom_target = attached_stream()->GetTarget()->AsDomTarget();
+  ASSERT_NE(dom_target, nullptr);
+  EXPECT_EQ(dom_target->global_dom_node_id().target_element_dom_id,
             blink::DOMNodeIdType(456));
-  EXPECT_EQ(attached_stream()
-                ->GetTarget()
-                ->global_dom_node_id()
-                .document.AsRenderFrameHostIfValid(),
-            window2_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(
+      dom_target->global_dom_node_id().document.AsRenderFrameHostIfValid(),
+      window2_contents->GetPrimaryMainFrame());
 
   // Ensure final transcript can be sent for stream 1 after stream 2 started.
   ExtensionSendTranscriptUpdate(
@@ -305,9 +311,13 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   StreamProvider* provider = session_controller()->attached_stream_provider();
   ASSERT_NE(provider, nullptr);
   ASSERT_NE(provider->GetTarget(), nullptr);
-  EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+  ASSERT_NE(provider->GetTarget()->AsDomTarget(), nullptr);
+  EXPECT_EQ(provider->GetTarget()
+                ->AsDomTarget()
+                ->global_dom_node_id()
+                .target_element_dom_id,
             blink::DOMNodeIdType(123));
-  EXPECT_TRUE(provider->GetTarget()->richly_editable());
+  EXPECT_TRUE(provider->GetTarget()->AsDomTarget()->richly_editable());
 }
 
 class DictationPasswordLikeFieldBrowserTest
@@ -638,9 +648,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a second stream while the first is finalizing. The controller should
   // immediately enter kStreamInitializing.
-  controller->StartDictationStream(DefaultInPageTarget(web_contents()),
-                                   DictationStreamStartTrigger::kSessionStart,
-                                   base::TimeTicks::Now());
+  controller->StartDictationStream(
+      std::make_unique<DomTarget>(DefaultInPageTarget(web_contents())),
+      DictationStreamStartTrigger::kSessionStart, base::TimeTicks::Now());
   EXPECT_EQ(controller->GetState(), SessionState::kStreamInitializing);
 
   // Wait for the stream to enter transcribing state.
@@ -1002,11 +1012,16 @@ class DictationGlicBrowserTest : public glic::GlicBrowserTest,
     StreamProvider* provider = controller->attached_stream_provider();
     ASSERT_NE(provider, nullptr);
     ASSERT_NE(provider->GetTarget(), nullptr);
+    ASSERT_NE(provider->GetTarget()->AsDomTarget(), nullptr);
     EXPECT_EQ(provider->GetTarget()
+                  ->AsDomTarget()
                   ->global_dom_node_id()
                   .document.AsRenderFrameHostIfValid(),
               rfh);
-    EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+    EXPECT_EQ(provider->GetTarget()
+                  ->AsDomTarget()
+                  ->global_dom_node_id()
+                  .target_element_dom_id,
               blink::DOMNodeIdType(*expected_node_id));
   }
 

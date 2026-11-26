@@ -5,12 +5,14 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/logging.h"
@@ -115,79 +117,6 @@ std::optional<TargetDetails> GetFocusedEditableTarget(
       global_id, editable_level == content::EditableLevel::kRichlyEditable);
 }
 
-tabs::TabInterface* GetActiveTabFromGlic(content::WebContents* web_contents) {
-  if (!glic::IsGlicGuest(web_contents)) {
-    return nullptr;
-  }
-
-  content::WebContents* outermost_web_contents =
-      web_contents->GetOutermostWebContents();
-  gfx::NativeWindow native_window =
-      outermost_web_contents->GetTopLevelNativeWindow();
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
-          native_window);
-  return browser ? browser->GetActiveTabInterface() : nullptr;
-}
-
-tabs::TabInterface* GetTabFromTargetId(
-    const content::GlobalDOMNodeId& target_id) {
-  content::RenderFrameHost* rfh = target_id.document.AsRenderFrameHostIfValid();
-  if (!rfh) {
-    return nullptr;
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  // Use normal tab lookup first
-  if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-    return tab;
-  }
-
-  // Check if `web_contents` is a WebUI embedded in a tab (e.g. Glic selection
-  // overlay).
-  if (tabs::TabInterface* embedding_tab =
-          webui::GetTabInterface(web_contents)) {
-    return embedding_tab;
-  }
-
-  // If the Glic side panel is being targeted, then associate the session with
-  // the active tab of the window.
-  if (tabs::TabInterface* tab = GetActiveTabFromGlic(web_contents)) {
-    return tab;
-  }
-
-  return nullptr;
-}
-
-std::optional<DictationUrlCategory> GetUrlCategoryFromTargetId(
-    const content::GlobalDOMNodeId& target_id) {
-  content::RenderFrameHost* rfh = target_id.document.AsRenderFrameHostIfValid();
-  if (!rfh) {
-    return std::nullopt;
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    return std::nullopt;
-  }
-
-  if (glic::IsGlicGuest(web_contents) || glic::IsGlicWebUI(web_contents)) {
-    return DictationUrlCategory::kGlic;
-  }
-
-  if (content::HasWebUIScheme(rfh->GetLastCommittedURL())) {
-    return DictationUrlCategory::kWebUI;
-  }
-
-  return DictationUrlCategory::kWeb;
-}
-
 }  // namespace
 
 // static
@@ -288,21 +217,22 @@ base::CallbackListSubscription DictationKeyedService::AddSessionEndedCallback(
 }
 
 void DictationKeyedService::StartSession(tabs::TabInterface& tab,
-                                         const TargetDetails& target_details,
+                                         std::unique_ptr<Target> target,
                                          DictationSessionEntryPoint entry_point,
                                          base::TimeTicks trigger_time) {
   CHECK(IsEnabledAndReady());
   CHECK(!session_);
+  CHECK(target);
 
-  if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_details,
-                                                 entry_point)) {
-    // If onboarding is shown, it will call DidCompleteOnboarding if needed.
+  if (onboarding_manager_.NeedsOnboarding()) {
+    onboarding_manager_.ShowOnboarding(tab, std::move(target), entry_point);
+    // If onboarding is shown, it will call DidCompleteOnboarding if completed.
     return;
   }
 
   RecordDictationSessionStartSource(entry_point);
   if (std::optional<DictationUrlCategory> url_category =
-          GetUrlCategoryFromTargetId(target_details.target_id)) {
+          target->GetUrlCategory()) {
     RecordDictationSessionUrlCategory(*url_category);
   }
 
@@ -319,25 +249,30 @@ void DictationKeyedService::StartSession(tabs::TabInterface& tab,
   session_->controller_.ResetUi();
 
   session_->controller_.StartDictationStream(
-      target_details, DictationStreamStartTrigger::kSessionStart, trigger_time);
+      std::move(target), DictationStreamStartTrigger::kSessionStart,
+      trigger_time);
 }
 
 void DictationKeyedService::DidCompleteOnboarding(
     tabs::TabInterface& tab,
-    const TargetDetails& target_details,
+    std::unique_ptr<Target> target,
     DictationSessionEntryPoint entry_point) {
-  if (!IsEnabledAndReady()) {
+  if (!IsEnabledAndReady() || !target) {
     return;
   }
   UpdateHotkeyManager();
-  StartSession(tab, target_details, entry_point, base::TimeTicks::Now());
+  StartSession(tab, std::move(target), entry_point, base::TimeTicks::Now());
 }
 
 void DictationKeyedService::StartSessionForTesting(  // IN-TEST
     tabs::TabInterface& tab,
     const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
-  StartSession(tab, target_details, entry_point, base::TimeTicks::Now());
+  auto target = std::make_unique<DomTarget>(target_details);
+  if (tabs::TabInterface* host_tab = target->GetHostTab()) {
+    CHECK_EQ(host_tab, &tab);
+  }
+  StartSession(tab, std::move(target), entry_point, base::TimeTicks::Now());
 }
 
 void DictationKeyedService::EndSession() {
@@ -387,18 +322,19 @@ bool DictationKeyedService::ShouldShowSettingsPage() const {
 }
 
 void DictationKeyedService::TriggerSession(
-    const TargetDetails& target_details,
+    std::unique_ptr<Target> target,
     DictationSessionEntryPoint entry_point) {
+  CHECK(target);
   const base::TimeTicks trigger_time = base::TimeTicks::Now();
 
-  tabs::TabInterface* tab = GetTabFromTargetId(target_details.target_id);
+  tabs::TabInterface* tab = target->GetHostTab();
   if (!tab) {
     return;
   }
 
   if (!session_) {
     VT_LOG(profile_) << "Starting new session";
-    StartSession(*tab, target_details, entry_point, trigger_time);
+    StartSession(*tab, std::move(target), entry_point, trigger_time);
   } else {
     // Always stop existing stream before starting a new one.
     if (session_->controller_.attached_stream_provider()) {
@@ -426,7 +362,7 @@ void DictationKeyedService::TriggerSession(
         trigger = DictationStreamStartTrigger::kHotkeyToggleExistingSession;
         break;
     }
-    session_->controller_.StartDictationStream(target_details, trigger,
+    session_->controller_.StartDictationStream(std::move(target), trigger,
                                                trigger_time);
   }
 }
@@ -438,7 +374,8 @@ void DictationKeyedService::ContextMenuHandler(
     return;
   }
 
-  TriggerSession(target_details, DictationSessionEntryPoint::kContextMenu);
+  TriggerSession(std::make_unique<DomTarget>(target_details),
+                 DictationSessionEntryPoint::kContextMenu);
 }
 
 void DictationKeyedService::ToggleHotkeyHandler() {
@@ -486,7 +423,8 @@ bool DictationKeyedService::HandleHotkeyPressed() {
     return false;
   }
 
-  TriggerSession(*target_details, DictationSessionEntryPoint::kHotkeyToggle);
+  TriggerSession(std::make_unique<DomTarget>(*target_details),
+                 DictationSessionEntryPoint::kHotkeyToggle);
   return true;
 }
 
@@ -584,11 +522,10 @@ void DictationKeyedService::OnSessionStateChanged(
     hotkey_manager_->OnSessionStateChanged(state);
   }
   if (state == dictation::SessionState::kEnded) {
-    // The session is still alive, so its target is available.
-    const std::optional<TargetDetails>& target_details =
-        session_->controller_.last_used_target_details();
-    if (target_details) {
-      session_ended_callbacks_.Notify(target_details->target_id);
+    // The session is still alive, so its target ID is available.
+    if (const std::optional<content::GlobalDOMNodeId>& target_id =
+            session_->controller_.last_used_target_id()) {
+      session_ended_callbacks_.Notify(*target_id);
     }
   }
 }
