@@ -1487,3 +1487,85 @@ TEST_F(TemplateURLServiceSetDseByPrepopulateIdShadowVariantsTest,
                 TemplateURLPrepopulateData::yahoo_jp.keyword),
             next);
 }
+
+// -- RemoveUserAddedTemplateURLs ----------------------------------------------
+
+// Reuses the regional setup and helpers from the fixture above. Prepopulated
+// engines from other regions are added to the model when the user selects them
+// as default, e.g. from the "More search engines" dialog in settings.
+using TemplateURLServiceRemoveUserAddedTest =
+    TemplateURLServiceSetDseByPrepopulateIdTest;
+
+TEST_F(TemplateURLServiceRemoveUserAddedTest,
+       RemovesEditedEnginesFromOtherRegions) {
+  Load();
+  ASSERT_TRUE(service().GetDefaultSearchProvider());
+  const int regional_dse_id =
+      service().GetDefaultSearchProvider()->prepopulate_id();
+  ASSERT_NE(regional_dse_id, 0);
+
+  // Edited regional engines are kept.
+  TemplateURL* regional = AddRegionalEngine(GetNonDefaultRegionalEngineId());
+  ASSERT_TRUE(regional);
+  const int regional_id = regional->prepopulate_id();
+  service().ResetTemplateURL(regional, u"Edited regional", u"edited_regional",
+                             regional->url());
+
+  // Edited engines from other regions are removed, even though
+  // `RepairPrepopulatedSearchEngines()` keeps them.
+  const int other_region_id = TemplateURLPrepopulateData::naver.id;
+  ASSERT_FALSE(resolver().GetPrepopulatedEngine(other_region_id));
+  SetDse(other_region_id);
+  TemplateURL* other_region = service().GetTemplateURLForKeyword(
+      TemplateURLPrepopulateData::naver.keyword);
+  ASSERT_TRUE(other_region);
+  service().ResetTemplateURL(other_region, u"Edited", u"edited",
+                             other_region->url());
+  ASSERT_FALSE(other_region->safe_for_autoreplace());
+  SetDse(regional_dse_id);
+
+  service().RemoveUserAddedTemplateURLs();
+
+  EXPECT_THAT(GetEnginesWithPrepopulateId(other_region_id), testing::IsEmpty());
+  EXPECT_THAT(GetEnginesWithPrepopulateId(regional_id),
+              testing::ElementsAre(regional));
+  EXPECT_EQ(service().GetDefaultSearchProvider()->prepopulate_id(),
+            regional_dse_id);
+}
+
+// Covers engines whose `prepopulate_id` matches no known prepopulated engine,
+// e.g. because it was tampered with in the database.
+TEST_F(TemplateURLServiceRemoveUserAddedTest,
+       RemovesEnginesWithUnknownPrepopulateId) {
+  Load();
+  TemplateURLData data;
+  data.SetShortName(u"Unknown");
+  data.SetKeyword(u"unknown");
+  data.SetURL("https://unknown.com/search?q={searchTerms}");
+  data.prepopulate_id = 999999;
+  data.safe_for_autoreplace = false;
+  ASSERT_FALSE(resolver().GetEngineFromFullList(data.prepopulate_id));
+  ASSERT_TRUE(service().Add(std::make_unique<TemplateURL>(data)));
+
+  service().RemoveUserAddedTemplateURLs();
+
+  EXPECT_FALSE(service().GetTemplateURLForKeyword(u"unknown"));
+}
+
+// The default search engine is never removed, even if it is from another
+// region. During a profile reset, `RepairPrepopulatedSearchEngines()` makes a
+// regional engine the default beforehand.
+TEST_F(TemplateURLServiceRemoveUserAddedTest, KeepsDefaultFromOtherRegion) {
+  Load();
+  const int other_region_id = TemplateURLPrepopulateData::naver.id;
+  SetDse(other_region_id);
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  ASSERT_EQ(dse->prepopulate_id(), other_region_id);
+
+  service().RemoveUserAddedTemplateURLs();
+
+  EXPECT_EQ(service().GetDefaultSearchProvider(), dse);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(other_region_id),
+              testing::ElementsAre(dse));
+}

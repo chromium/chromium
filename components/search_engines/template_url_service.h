@@ -524,8 +524,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void RepairStarterPackEngines();
 
   // Removes all user-added and auto-generated search engines from the model and
-  // database. Does not remove prepopulated engines, starter pack engines,
-  // policy engines, or extension-controlled engines.
+  // database, including prepopulated engines that are not in the profile's
+  // regional list (e.g. selected from the "More search engines" dialog in
+  // settings). Does not remove the default search engine, regional prepopulated
+  // engines, starter pack engines, policy engines, or extension-controlled
+  // engines.
   void RemoveUserAddedTemplateURLs();
 
   // Observers used to listen for changes to the model.
@@ -886,6 +889,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // not previously set (currently kUnspecified) and has been interacted with
   // by the user.
   void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
+
+  // Returns whether `template_url` is a prepopulated engine from the profile's
+  // regional list. Prepopulated engines from other regions (e.g. selected from
+  // the "More search engines" dialog in settings) are not.
+  bool IsRegionalPrepopulatedEngine(const TemplateURL& template_url) const;
 
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   // TODO(crbug.com/570940695): When several engines share `prepopulated_id`,

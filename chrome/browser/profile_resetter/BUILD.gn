@@ -219,6 +219,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/content_settings/core/browser",
       "//components/prefs",
+      "//components/regional_capabilities",
       "//components/search_engines",
       "//content/test:test_support",
       "//extensions/browser",

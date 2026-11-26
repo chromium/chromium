@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
@@ -51,6 +52,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
@@ -70,6 +72,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -426,6 +429,40 @@ TEST_F(ProfileResetterTest, ResetDefaultSearchEngineRemovesCustomKeywords) {
   ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE);
 
   EXPECT_FALSE(model->GetTemplateURLForKeyword(u"custom"));
+}
+
+TEST_F(ProfileResetterTest,
+       ResetDefaultSearchEngineRemovesEditedEnginesFromOtherRegions) {
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          /*regional_engines=*/{&TemplateURLPrepopulateData::google,
+                                &TemplateURLPrepopulateData::bing},
+          /*other_known_engines=*/{&TemplateURLPrepopulateData::brave});
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(model);
+  // Make sure TemplateURLService has loaded.
+  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE);
+
+  // Select an engine from another region as default, like from the "More search
+  // engines" dialog in settings, then edit it so that
+  // `RepairPrepopulatedSearchEngines()` keeps it.
+  const int other_region_id = TemplateURLPrepopulateData::brave.id;
+  model->SetUserSelectedDefaultSearchProviderByPrepopulateId(other_region_id);
+  {
+    TemplateURL* engine = model->GetTemplateURLForKeyword(
+        TemplateURLPrepopulateData::brave.keyword);
+    ASSERT_TRUE(engine);
+    ASSERT_EQ(engine, model->GetDefaultSearchProvider());
+    model->ResetTemplateURL(engine, u"Edited", u"edited", engine->url());
+  }
+
+  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE);
+
+  EXPECT_FALSE(std::ranges::contains(model->GetTemplateURLs(), other_region_id,
+                                     &TemplateURL::prepopulate_id));
+  EXPECT_EQ(model->GetDefaultSearchProvider()->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
 }
 
 TEST_F(ProfileResetterTest,

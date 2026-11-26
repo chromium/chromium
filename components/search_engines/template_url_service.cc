@@ -715,9 +715,7 @@ bool TemplateURLService::ShowInDsePickerList(const TemplateURL* t_url) const {
   if (t_url->CreatedByRegulatoryProgram()) {
     return true;
   }
-  return t_url->prepopulate_id() > 0 &&
-         prepopulate_data_resolver_->GetPrepopulatedEngine(
-             t_url->prepopulate_id()) != nullptr;
+  return IsRegionalPrepopulatedEngine(*t_url);
 }
 
 bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
@@ -1641,14 +1639,20 @@ void TemplateURLService::RemoveUserAddedTemplateURLs() {
     if (turl.get() == default_provider) {
       continue;
     }
-    if (turl->prepopulate_id() == 0 &&
-        turl->starter_pack_id() ==
-            template_url_starter_pack_data::StarterPackId::kNone &&
-        turl->policy_origin() == TemplateURLData::PolicyOrigin::kNoPolicy &&
-        turl->type() != TemplateURL::Type::OMNIBOX_API_EXTENSION &&
-        turl->type() != TemplateURL::Type::NORMAL_CONTROLLED_BY_EXTENSION) {
-      to_remove.push_back(turl.get());
+    // Keep built-in engines. Prepopulated engines from other regions (e.g.
+    // selected from the "More search engines" dialog in settings) are not
+    // built in: they were added by the user, and
+    // `RepairPrepopulatedSearchEngines()` keeps them once edited.
+    if (IsRegionalPrepopulatedEngine(*turl) ||
+        turl->starter_pack_id() !=
+            template_url_starter_pack_data::StarterPackId::kNone) {
+      continue;
     }
+    // Keep engines managed by enterprise policies or extensions.
+    if (turl->CreatedByPolicy() || IsCreatedByExtension(*turl)) {
+      continue;
+    }
+    to_remove.push_back(turl.get());
   }
 
   for (const auto* turl : to_remove) {
@@ -3558,6 +3562,13 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
       }
     }
   }
+}
+
+bool TemplateURLService::IsRegionalPrepopulatedEngine(
+    const TemplateURL& template_url) const {
+  return template_url.prepopulate_id() > 0 &&
+         prepopulate_data_resolver_->GetPrepopulatedEngine(
+             template_url.prepopulate_id()) != nullptr;
 }
 
 TemplateURL* TemplateURLService::FindPrepopulatedTemplateURL(
