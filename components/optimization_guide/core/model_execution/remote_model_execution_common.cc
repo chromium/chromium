@@ -589,6 +589,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           trigger:
             "User interacts with the TTC interface."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "User query and session interaction context."
           internal {
