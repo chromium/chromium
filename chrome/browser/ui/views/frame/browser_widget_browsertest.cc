@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 
+#include <cmath>
 #include <string_view>
+#include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -28,10 +32,13 @@
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -40,21 +47,38 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
+#include "ui/compositor/canvas_painter.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_delegate.h"
 
 namespace {
 
+constexpr SkColor kToolbarImageColor = SK_ColorGREEN;
+
 class MockCustomThemeSupplier : public CustomThemeSupplier {
  public:
-  MockCustomThemeSupplier() : CustomThemeSupplier(ThemeType::kExtension) {}
+  MockCustomThemeSupplier() : CustomThemeSupplier(ThemeType::kExtension) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(16, 16);
+    bitmap.eraseColor(kToolbarImageColor);
+    toolbar_image_ = gfx::Image::CreateFrom1xBitmap(bitmap);
+  }
   std::string_view extension_id() const override { return "mock_extension_id"; }
   bool HasCustomImage(int id) const override { return id == IDR_THEME_TOOLBAR; }
+  gfx::Image GetImageNamed(int id) const override {
+    return id == IDR_THEME_TOOLBAR ? toolbar_image_ : gfx::Image();
+  }
 
  protected:
   ~MockCustomThemeSupplier() override = default;
+
+ private:
+  gfx::Image toolbar_image_;
 };
 
 ui::mojom::BrowserColorVariant GetColorVariant(
@@ -71,6 +95,44 @@ ui::mojom::BrowserColorVariant GetColorVariant(
                                        {SV::kVibrant, BCV::kVibrant},
                                        {SV::kExpressive, BCV::kExpressive}});
   return kColorMap.at(scheme_variant.value());
+}
+
+// Paints `browser`'s window at a fractional scale (~1.3x) that puts the
+// toolbar's bottom edge at fractional pixel 0.625, and returns the colors of
+// the toolbar's last two pixel rows at its horizontal center.
+std::pair<SkColor, SkColor> PaintToolbarBottomRowsAtFractionalScale(
+    BrowserWindowInterface* browser) {
+  browser->GetProfile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowBookmarkBar, false);
+  CHECK(ui_test_utils::NavigateToURL(browser, GURL("about:blank")));
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  views::test::RunScheduledLayout(browser_view);
+  CHECK(browser_view->toolbar()->GetVisible());
+
+  views::View* const root_view = browser_view->GetWidget()->GetRootView();
+  const gfx::Rect toolbar_in_root = views::View::ConvertRectToTarget(
+      browser_view->toolbar(), root_view,
+      browser_view->toolbar()->GetLocalBounds());
+  const float target_bottom_px =
+      std::floor(toolbar_in_root.bottom() * 1.3f) + 0.625f;
+  const float scale = target_bottom_px / toolbar_in_root.bottom();
+  const int boundary_px = base::ClampRound(target_bottom_px);
+
+  SkBitmap bitmap;
+  {
+    ui::CanvasPainter painter(&bitmap, root_view->size(), scale,
+                              SK_ColorTRANSPARENT, /*is_pixel_canvas=*/false);
+    browser_view->GetWidget()->OnNativeWidgetPaint(painter.context());
+  }
+
+  const int sample_x =
+      base::ClampRound(toolbar_in_root.CenterPoint().x() * scale);
+  CHECK_GT(boundary_px, 1);
+  CHECK_LT(boundary_px, bitmap.height());
+  CHECK_LT(sample_x, bitmap.width());
+  return {bitmap.getColor(sample_x, boundary_px - 2),
+          bitmap.getColor(sample_x, boundary_px - 1)};
 }
 
 }  // namespace
@@ -580,4 +642,35 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
   GetBrowserWidget(browser())->SetUserColorOverride(std::nullopt);
   EXPECT_TRUE(GetBrowserWidget(browser())->GetThemeProvider()->HasCustomImage(
       IDR_THEME_TOOLBAR));
+}
+
+// Regression test for https://crbug.com/503507695: the toolbar's straight
+// bottom edge must snap to the same pixel boundary as adjacent views rather
+// than leaving a semi-transparent anti-aliased pixel row.
+IN_PROC_BROWSER_TEST_F(BrowserWidgetTest,
+                       ToolbarBottomEdgeOpaqueAtFractionalScale) {
+  if (features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "The glass frame view paints to its own layer, so "
+                    "OnNativeWidgetPaint() does not paint the toolbar.";
+  }
+  const auto [interior, bottom_row] =
+      PaintToolbarBottomRowsAtFractionalScale(browser());
+  EXPECT_EQ(SK_AlphaOPAQUE, SkColorGetA(interior));
+  EXPECT_EQ(interior, bottom_row);
+}
+
+// Regression test for https://crbug.com/590497358: at fractional scale
+// factors, a theme's toolbar image must cover the whole toolbar, including
+// its bottom pixel row.
+IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
+                       ToolbarThemeImageFillsToolbarAtFractionalScale) {
+  if (features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "The glass frame view paints to its own layer, so "
+                    "OnNativeWidgetPaint() does not paint the toolbar.";
+  }
+  SwapThemeSupplier(profile(), base::MakeRefCounted<MockCustomThemeSupplier>());
+  const auto [interior, bottom_row] =
+      PaintToolbarBottomRowsAtFractionalScale(browser());
+  EXPECT_EQ(kToolbarImageColor, interior);
+  EXPECT_EQ(kToolbarImageColor, bottom_row);
 }
