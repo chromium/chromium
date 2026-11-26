@@ -121,7 +121,7 @@ suite('SettingsCheckbox', function() {
   });
 
   test('sub label should be able to have an aria-label', async () => {
-    testElement.subLabelHtml = '<a aria-label="Label"></a>';
+    testElement.subLabelHtml = '<a href="#" aria-label="Label"></a>';
     await microtasksFinished();
 
     const actionLink = testElement.$.subLabel.querySelector('a');

@@ -822,7 +822,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     const localDataCount = 5;
     await setupPrefs();
 
-    pluralStringProxy.text += ' <a id="openBatchUploadLink">link</a>';
+    pluralStringProxy.text += ' <a href="#" id="openBatchUploadLink">link</a>';
 
     // Notify the UI that there are multiple items to be uploaded and wait for
     // the batch upload promo to show.
