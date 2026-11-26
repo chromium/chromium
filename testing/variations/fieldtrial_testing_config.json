@@ -20733,6 +20733,26 @@
             ]
         }
     ],
+    "V8FastNullProtoLiterals": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261125",
+                    "enable_features": [
+                        "V8Flag_fast_null_proto_literals"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8HomomorphicIC": [
         {
             "platforms": [
