@@ -1,6 +1,0 @@
-Tests that ParsedScriptSource event is raised after compile script with syntax error.
-
-
-Running: testScriptParsedEvent
-Event with script-failed-to-parse.js received
-

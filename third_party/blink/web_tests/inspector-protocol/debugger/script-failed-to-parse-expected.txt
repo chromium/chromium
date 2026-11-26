@@ -1,0 +1,3 @@
+Tests that Debugger.scriptFailedToParse event is raised after compiling a script with syntax error.
+Event with script-failed-to-parse.js received
+
