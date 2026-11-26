@@ -6114,7 +6114,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick">
-  <owner>rainhard@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     (Obsolete) Renamed to Autofill.Settings.PersonalContextSettingsLinkRowClick.
@@ -6124,7 +6124,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill.Settings.PersonalContextSettingsLinkRowClick">
-  <owner>rainhard@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     (Obsolete) This link row did not launch.
