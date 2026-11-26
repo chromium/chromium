@@ -101,6 +101,10 @@ password store.  \fIgnome\fR selects Gnome keyring.  \fIkwallet\fR selects
 \fB\-\-version\fR
 Show version information.
 
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show this manual page instead of starting the browser.
+
 .PP
 As a GTK+ app, @@MENUNAME also obeys GTK+ command-line flags, such
 as

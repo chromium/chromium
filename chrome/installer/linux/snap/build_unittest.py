@@ -218,6 +218,7 @@ class SnapBuildTest(unittest.TestCase):
                 staging_dir / "usr/share/doc/chromium-browser/help.txt"
             ).read_text(encoding="utf-8")
             self.assertIn("--user-data-dir", help_txt)
+            self.assertIn("-h, --help", help_txt)
             self.assertNotIn(r"\fB", help_txt)
 
             for mount_dir in (
