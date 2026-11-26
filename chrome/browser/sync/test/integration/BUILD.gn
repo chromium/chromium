@@ -544,8 +544,6 @@ source_set("sync_integration_test_support") {
 
   if (is_android) {
     sources += [
-      "fake_sync_gcm_driver_for_instance_id.cc",
-      "fake_sync_gcm_driver_for_instance_id.h",
       "fake_sync_signin_delegate_android.cc",
       "fake_sync_signin_delegate_android.h",
       "live_sync_signin_delegate_android.cc",
@@ -557,7 +555,6 @@ source_set("sync_integration_test_support") {
     deps += [
       "//chrome/browser/android",
       "//chrome/browser/android:tabs_public",
-      "//chrome/browser/gcm",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/test:sync_integration_test_support_jni_headers",

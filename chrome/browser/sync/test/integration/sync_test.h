@@ -39,9 +39,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/install_verifier.h"
 #endif
 
@@ -444,11 +442,6 @@ class SyncTest : public PlatformBrowserTest,
   std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
 
   bool use_primary_user_profile_ = false;
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  instance_id::ScopedUseFakeInstanceIDAndroid
-      scoped_use_fake_instance_id_android_;
 #endif
 
   std::unique_ptr<fake_server::FakeSyncInvalidationSender>

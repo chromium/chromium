@@ -114,15 +114,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/gcm/gcm_profile_service_factory.h"  // nogncheck
-#include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
-#include "components/gcm_driver/fake_gcm_profile_service.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/test/fake_gcm_driver_sync_invalidation_sender.h"
+#include "components/sync/test/fake_sync_invalidation_sender_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -168,41 +161,6 @@ int GetNumClients(SyncTest::TestType test_type) {
   }
   NOTREACHED();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Creates a fake GCMProfileService to simulate sync invalidations.
-// TODO(crbug.com/582626795): Exercise the production GCMDriverAndroid / Java
-// GCMDriver layer on Android.
-std::unique_ptr<KeyedService> CreateGCMProfileService(
-    base::WeakPtr<fake_server::FakeGCMDriverSyncInvalidationSender>
-        invalidation_sender,
-    content::BrowserContext* context) {
-  // Use `USER_VISIBLE` so `GCMKeyStore` initialization is not blocked by
-  // `BEST_EFFORT` execution fences while tests await device info or sharing
-  // registration.
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  auto fake_gcm_driver =
-      std::make_unique<FakeSyncGCMDriver>(profile, blocking_task_runner);
-
-  CHECK(invalidation_sender);
-  invalidation_sender->AddFakeGCMDriver(fake_gcm_driver.get());
-  // `FakeSyncGCMDriver` may outlive `invalidation_sender`, as `SyncTest`
-  // destroys `fake_sync_invalidation_sender_` in
-  // `TearDownOnMainThread()` before `ProfileManager` destroys profiles and
-  // their `KeyedService`s.
-  fake_gcm_driver->SetOnDestroyedCallback(base::BindOnce(
-      &fake_server::FakeGCMDriverSyncInvalidationSender::RemoveFakeGCMDriver,
-      invalidation_sender, fake_gcm_driver.get()));
-
-  return std::make_unique<gcm::FakeGCMProfileService>(
-      std::move(fake_gcm_driver));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr auto kAccountId1 =
@@ -282,7 +240,7 @@ void SyncTest::SetUp() {
       ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 #if BUILDFLAG(IS_ANDROID)
       fake_sync_invalidation_sender_ =
-          std::make_unique<fake_server::FakeGCMDriverSyncInvalidationSender>();
+          std::make_unique<fake_server::FakeSyncInvalidationSenderAndroid>();
       sync_test_utils_android::SetUpFakeAuthForTesting();
 #else
       fake_sync_invalidation_sender_ =
@@ -1108,15 +1066,6 @@ void SyncTest::OnProfileCreationStarted(Profile* profile) {
   CHECK(GetFakeServer());
   CHECK(fake_sync_invalidation_sender_);
 
-#if BUILDFLAG(IS_ANDROID)
-  gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-      profile,
-      base::BindRepeating(
-          &CreateGCMProfileService,
-          static_cast<fake_server::FakeGCMDriverSyncInvalidationSender*>(
-              fake_sync_invalidation_sender_.get())
-              ->GetWeakPtr()));
-#endif  // BUILDFLAG(IS_ANDROID)
   ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                    &test_url_loader_factory_));

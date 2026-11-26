@@ -51,6 +51,11 @@ public class GCMDriver {
         ResettersForTesting.register(() -> sInstance = previous);
     }
 
+    public static boolean hasInstanceForTesting() {
+        ThreadUtils.assertOnUiThread();
+        return sInstance != null;
+    }
+
     /**
      * Create a GCMDriver object, which is owned by GCMDriverAndroid on the C++ side.
      *

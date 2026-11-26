@@ -4,7 +4,12 @@
 
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/gcm_driver/instance_id/android/test_support_jni_headers/FakeInstanceIDWithSubtype_jni.h"
@@ -22,6 +27,14 @@ ScopedUseFakeInstanceIDAndroid::ScopedUseFakeInstanceIDAndroid() {
 ScopedUseFakeInstanceIDAndroid::~ScopedUseFakeInstanceIDAndroid() {
   JNIEnv* env = AttachCurrentThread();
   Java_FakeInstanceIDWithSubtype_clearDataAndSetEnabled(env, previous_value_);
+}
+
+bool ScopedUseFakeInstanceIDAndroid::DispatchMessageForToken(
+    const std::string& token,
+    std::string_view raw_data) {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_FakeInstanceIDWithSubtype_dispatchMessageForToken(
+      env, token, base::android::ToJavaByteArray(env, raw_data));
 }
 
 }  // namespace instance_id

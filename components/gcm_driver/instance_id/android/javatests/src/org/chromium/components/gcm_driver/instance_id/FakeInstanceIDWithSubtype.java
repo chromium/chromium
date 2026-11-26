@@ -4,10 +4,16 @@
 
 package org.chromium.components.gcm_driver.instance_id;
 
+import android.os.Bundle;
 import android.util.Pair;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+
+import org.chromium.base.ThreadUtils;
+import org.chromium.components.gcm_driver.GCMDriver;
+import org.chromium.components.gcm_driver.GCMMessage;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -89,6 +95,49 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
         }
     }
 
+    /**
+     * Looks up the (subtype, authorizedEntity) registration matching {@code token} and dispatches a
+     * {@link GCMMessage} with {@code rawData} to {@link GCMDriver}. Returns true if a matching
+     * registration was found and {@link GCMDriver} is initialized.
+     */
+    @CalledByNative
+    public static boolean dispatchMessageForToken(
+            @JniType("std::string") String token, byte[] rawData) {
+        ThreadUtils.assertOnUiThread();
+        if (!GCMDriver.hasInstanceForTesting()) {
+            return false;
+        }
+        String subtype = null;
+        String authorizedEntity = null;
+        synchronized (sSubtypeInstancesLock) {
+            for (InstanceIDWithSubtype instance : sSubtypeInstances.values()) {
+                if (!(instance instanceof FakeInstanceIDWithSubtype)) {
+                    continue;
+                }
+                FakeInstanceIDWithSubtype fake = (FakeInstanceIDWithSubtype) instance;
+                for (Map.Entry<String, String> entry : fake.mTokens.entrySet()) {
+                    if (token.equals(entry.getValue())) {
+                        String[] parts = entry.getKey().split(",", 3);
+                        subtype = parts[0];
+                        authorizedEntity = parts[1];
+                        break;
+                    }
+                }
+                if (subtype != null) {
+                    break;
+                }
+            }
+        }
+        if (subtype == null || authorizedEntity == null) {
+            return false;
+        }
+        Bundle extras = new Bundle();
+        extras.putString("subtype", subtype);
+        extras.putByteArray("rawData", rawData);
+        GCMDriver.dispatchMessage(new GCMMessage(authorizedEntity, extras));
+        return true;
+    }
+
     // The real InstanceID function calls should not be made from the main thread
     // due to strict mode violations. However, we don't enforce that in this fake.
     private FakeInstanceIDWithSubtype(String subtype) {
@@ -103,36 +152,45 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
 
     @Override
     public String getId() {
-        if (mId == null) {
-            mCreationTime = System.currentTimeMillis();
-            mId = randomBase64(/* encodedLength= */ 11);
+        synchronized (sSubtypeInstancesLock) {
+            if (mId == null) {
+                mCreationTime = System.currentTimeMillis();
+                mId = randomBase64(/* encodedLength= */ 11);
+            }
+            return mId;
         }
-        return mId;
     }
 
     @Override
     public long getCreationTime() {
-        return mCreationTime;
+        synchronized (sSubtypeInstancesLock) {
+            return mCreationTime;
+        }
     }
 
     @Override
     public String getToken(String authorizedEntity, String scope) throws IOException {
-        String key = getSubtype() + ',' + authorizedEntity + ',' + scope;
-        String token = mTokens.get(key);
-        if (token == null) {
-            getId();
-            token = mId + ':' + randomBase64(/* encodedLength= */ 140);
-            mTokens.put(key, token);
+        synchronized (sSubtypeInstancesLock) {
+            String key = getSubtype() + ',' + authorizedEntity + ',' + scope;
+            String token = mTokens.get(key);
+            if (token == null) {
+                getId();
+                token = mId + ':' + randomBase64(/* encodedLength= */ 140);
+                mTokens.put(key, token);
+            }
+            return token;
         }
-        return token;
     }
 
     @Override
     public void deleteToken(String authorizedEntity, String scope) throws IOException {
-        String key = getSubtype() + ',' + authorizedEntity + ',' + scope;
-        mTokens.remove(key);
-        // Calling deleteToken causes ID to be generated; can be observed though getCreationTime.
-        getId();
+        synchronized (sSubtypeInstancesLock) {
+            String key = getSubtype() + ',' + authorizedEntity + ',' + scope;
+            mTokens.remove(key);
+            // Calling deleteToken causes ID to be generated; can be observed though
+            // getCreationTime.
+            getId();
+        }
     }
 
     @Override

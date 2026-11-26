@@ -7,6 +7,9 @@
 
 #include <jni.h>
 
+#include <string>
+#include <string_view>
+
 namespace instance_id {
 
 // Tests depending on InstanceID must use this, to avoid hitting the
@@ -21,6 +24,12 @@ class ScopedUseFakeInstanceIDAndroid {
       const ScopedUseFakeInstanceIDAndroid&) = delete;
 
   ~ScopedUseFakeInstanceIDAndroid();
+
+  // Dispatches a GCM message with `raw_data` to `GCMDriver` for the
+  // `(subtype, authorized_entity)` registration matching `token`. Returns true
+  // if a matching registration was found and the message was dispatched.
+  bool DispatchMessageForToken(const std::string& token,
+                               std::string_view raw_data);
 
  private:
   bool previous_value_;
