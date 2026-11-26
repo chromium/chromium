@@ -409,6 +409,35 @@ TEST_F(SearchJourneyTrackerTest, IntermediateTabKeepsJourneyWhenAllowed) {
   EXPECT_TRUE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
 }
 
+TEST_F(SearchJourneyTrackerTest, IntermediateTabKeepsJourneyAfterCueShown) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  StartEligibleJourney(u"quantum computing");
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
+
+  // Switching to another tab after the cue has already shown doesn't drop the
+  // journey.
+  EXPECT_FALSE(tracker_.OnTabActivated(kOtherTab, kNavEntryId));
+  ASSERT_TRUE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+  histogram_tester.ExpectTotalCount("ContextualTasks.SearchJourney.EndReason",
+                                    0);
+
+  // Returning to Tab A keeps the journey restorable without double-recording
+  // the return.
+  EXPECT_FALSE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.ReturnedToSourceTab"),
+            1);
+  ASSERT_TRUE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+
+  tracker_.OnJourneyRestored(kSourceTab1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kRestored, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kAnchoredMessageClicked, 1);
+}
+
 TEST_F(SearchJourneyTrackerTest, ClosingSearchTabCountsAsReturn) {
   StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
   tracker_.OnTabDestroyed(kSearchTab1);

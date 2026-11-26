@@ -957,6 +957,53 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, ShowsCueOncePerJourney) {
                   ->CanRestoreJourneyInSidePanel());
 }
 
+// Tests that switching to a different tab after the cue is showing and then
+// returning to Tab A keeps the journey alive so clicking the cue still opens
+// the side panel.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       ClickingCueAfterSwitchingToAnotherTabRestoresJourney) {
+  base::HistogramTester histogram_tester;
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Switch to an unrelated third tab, then return to Tab A.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example.org/other"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(observer.GetCurrentPageActionState().showing);
+
+  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action);
+  if (!observer.GetCurrentPageActionState().anchored_message_showing) {
+    action->InvokeAction();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return observer.GetCurrentPageActionState().anchored_message_showing;
+    }));
+  }
+
+  EXPECT_CALL(*ui_service(),
+              StartTaskUiInSidePanelImpl(testing::_, source_tab, testing::_,
+                                         testing::_, testing::_));
+  action->InvokeAction();
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kRestored, 1);
+}
+
 class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {
  public:
   SearchJourneyTabFeatureDisabledBrowserTest() {
