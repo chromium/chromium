@@ -415,6 +415,12 @@ public class TabbedAppMenuTest {
 
     private View getMenuItemView(@IdRes int itemId) {
         CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
+        // Settle AppMenu enter animations before checking layout and syncing idle so ending
+        // animations cannot leave a relayout pending.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AppMenuTestSupport.finishAnimationsForTests(
+                                mActivityTestRule.getAppMenuCoordinator()));
 
         AtomicReference<View> targetView = new AtomicReference<>();
         CriteriaHelper.pollUiThread(
@@ -439,9 +445,18 @@ public class TabbedAppMenuTest {
                             "Menu item view is not laid out.",
                             view.getWidth() > 0 && view.getHeight() > 0,
                             Matchers.is(true));
+                    Criteria.checkThat(
+                            "ListView layout is still pending.",
+                            listView.isLayoutRequested(),
+                            Matchers.is(false));
                     targetView.set(view);
                 });
 
-        return targetView.get();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        View view = targetView.get();
+        // Settle RippleDrawable focus highlight transitions triggered by ListView#setSelection()
+        // before RenderTestRule captures the view bitmap.
+        ThreadUtils.runOnUiThreadBlocking(view::jumpDrawablesToCurrentState);
+        return view;
     }
 }
