@@ -488,6 +488,15 @@
     "expiry_milestone": 165
   },
   {
+    "name": "android-devtools-inspect",
+    "owners": [
+      "massan@google.com",
+      "lokeric@google.com",
+      "dsv@chromium.org"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 137

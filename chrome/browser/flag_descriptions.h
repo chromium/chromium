@@ -5488,6 +5488,12 @@ inline constexpr char kAndroidDeviceSignalsDisclaimerDescription[] =
     "shown to managed users missing the device signals permission on chrome "
     "startup.";
 
+inline constexpr char kAndroidDevToolsInspectName[] =
+    "Enable chrome://inspect on Android";
+inline constexpr char kAndroidDevToolsInspectDescription[] =
+    "Enables the chrome://inspect page and its DevTools target discovery and "
+    "debugging features on Android.";
+
 inline constexpr char kAndroidDocumentPictureInPictureName[] =
     "Enable Document Picture-In-Picture in desktop windowing on Android.";
 inline constexpr char kAndroidDocumentPictureInPictureDescription[] =

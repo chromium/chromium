@@ -273,4 +273,10 @@ BASE_FEATURE(kDevToolsAiNaturalLanguageInterface,
 // to extension storage via CDP.
 BASE_FEATURE(kDevToolsExtensionStorageInspectionCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables chrome://inspect and its DevTools target discovery/debugging
+// backends on Android.
+BASE_FEATURE(kAndroidDevToolsInspect, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features

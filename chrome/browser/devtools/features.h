@@ -157,6 +157,10 @@ BASE_DECLARE_FEATURE(kDevToolsNetworkBackendLinking);
 BASE_DECLARE_FEATURE(kDevToolsAiNaturalLanguageInterface);
 
 BASE_DECLARE_FEATURE(kDevToolsExtensionStorageInspectionCheck);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAndroidDevToolsInspect);
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

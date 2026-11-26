@@ -11943,6 +11943,7 @@ from previous Chrome versions.
   <int value="-913629421" label="CastStreamingVp8:enabled"/>
   <int value="-913571703" label="TabAndLinkDragDropAndroid:enabled"/>
   <int value="-913294939" label="DriveFS:enabled"/>
+  <int value="-913045980" label="AndroidDevToolsInspect:enabled"/>
   <int value="-912946915" label="LauncherSearchControl:disabled"/>
   <int value="-912585719" label="AppManagementIntentSettings:disabled"/>
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
@@ -16212,6 +16213,7 @@ from previous Chrome versions.
   <int value="354466842" label="UachOverrideBlank:enabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
   <int value="354662118" label="RemoveCanceledTasksInTaskQueue2:enabled"/>
+  <int value="355031410" label="AndroidDevToolsInspect:disabled"/>
   <int value="355367368" label="SharesheetCopyToClipboard:disabled"/>
   <int value="355970257" label="MediaRouterOTRInstance:disabled"/>
   <int value="356453693" label="SystemNudgeV2:disabled"/>

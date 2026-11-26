@@ -11596,6 +11596,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopWebPrefsLargeDisplays)},
 
+    {"android-devtools-inspect", flag_descriptions::kAndroidDevToolsInspectName,
+     flag_descriptions::kAndroidDevToolsInspectDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidDevToolsInspect)},
+
     {"android-multiprofile", flag_descriptions::kAndroidMultiprofileName,
      flag_descriptions::kAndroidMultiprofileDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidMultiprofile)},
