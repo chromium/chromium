@@ -1479,13 +1479,15 @@ public class SideUiCoordinatorImplTest {
         doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
         mCoordinator.onEnterFullscreen(/* tab= */ null, /* options= */ null);
 
-        // Container determineShowableSize received isFullscreen = true.
+        // Container determineMinWidth and determineShowableSize received isFullscreen = true.
+        assertTrue(sideUiContainer.mLastDetermineMinWidthIsFullscreen);
         assertTrue(sideUiContainer.mLastIsFullscreen);
 
         // When exiting fullscreen, getPersistentFullscreenMode returns false.
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mCoordinator.onExitFullscreen(/* tab= */ null);
 
+        assertFalse(sideUiContainer.mLastDetermineMinWidthIsFullscreen);
         assertFalse(sideUiContainer.mLastIsFullscreen);
     }
 
@@ -1832,6 +1834,7 @@ public class SideUiCoordinatorImplTest {
         @Px int pausedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
         sideUiContainer.mLastAvailableWidth = null;
+        sideUiContainer.mNumDetermineMinWidthCalls = 0;
         sideUiContainer.mNumHasContentToShowCalls = 0;
 
         // Act: Run UI updates, and query the showability and the expected specs.
@@ -1840,9 +1843,10 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
         SideUiSpecs expectedSpecs = mCoordinator.getExpectedSideUiSpecsForTab(mTab);
 
-        // Assert: The paused container isn't asked for its showable size or whether it has content
-        // to show, and the expected specs have its paused size.
+        // Assert: The paused container isn't asked for its min width, showable size, or whether it
+        // has content to show, and the expected specs have its paused size.
         assertNull(sideUiContainer.mLastAvailableWidth);
+        assertEquals(0, sideUiContainer.mNumDetermineMinWidthCalls);
         assertEquals(0, sideUiContainer.mNumHasContentToShowCalls);
         assertEquals(pausedWidth, expectedSpecs.getReservedWidth(AnchorSide.LEFT));
         assertEquals(pausedWidth, expectedSpecs.getRenderedWidth(AnchorSide.LEFT));
@@ -1851,7 +1855,8 @@ public class SideUiCoordinatorImplTest {
         // Act: Resume UI updates.
         mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
 
-        // Assert: The resumed container is asked for its showable size again.
+        // Assert: The resumed container is asked for its min width and showable size again.
+        assertTrue(sideUiContainer.mNumDetermineMinWidthCalls > 0);
         assertNotNull(sideUiContainer.mLastAvailableWidth);
     }
 
@@ -2143,6 +2148,171 @@ public class SideUiCoordinatorImplTest {
         assertEquals(1, sideUiContainer.mNumOnWillAutoRestoreReceived);
         assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
         assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+    }
+
+    @Test
+    public void testUpdateUi_TwoPassWidthConsumption_ShrinkAndHideOrder() {
+        var leftContainer =
+                createAndRegisterContainer(
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT,
+                        /* minWidthDp= */ 76,
+                        /* maxWidthDp= */ 240);
+        var rightContainer =
+                createAndRegisterContainer(
+                        new FrameLayout(mTestActivity),
+                        SideUiId.SIDE_PANEL,
+                        AnchorSide.RIGHT,
+                        /* minWidthDp= */ 212,
+                        /* maxWidthDp= */ 360);
+        rightContainer.mHasContentForTabMap.put(mTab, false);
+        requestUiUpdate(leftContainer, /* suppressAnimations= */ true);
+        rightContainer.mHasContentForTabMap.put(mTab, true);
+        requestUiUpdate(rightContainer, /* suppressAnimations= */ true);
+        assertEquals(0, leftContainer.mNumOnWillAutoRestoreReceived);
+        assertEquals(0, rightContainer.mNumOnWillAutoRestoreReceived);
+
+        // 1. Wide window: WebContents absorbs excess; both containers get preferred width.
+        setWindowWidthDp(1200);
+        assertEquals(new SideUiSpecs(240, 360), mCoordinator.getCurrentSideUiSpecs());
+
+        // 2. Shrink low-priority container down to its minimum width first.
+        setWindowWidthDp(950);
+        assertEquals(new SideUiSpecs(240, 298), mCoordinator.getCurrentSideUiSpecs());
+        setWindowWidthDp(864);
+        assertEquals(new SideUiSpecs(240, 212), mCoordinator.getCurrentSideUiSpecs());
+
+        // 3. Shrink high-priority container down to its minimum width before hiding low-priority.
+        setWindowWidthDp(800);
+        assertEquals(new SideUiSpecs(176, 212), mCoordinator.getCurrentSideUiSpecs());
+        assertEquals(0, rightContainer.mNumOnWillAutoCloseReceived);
+        setWindowWidthDp(700);
+        assertEquals(new SideUiSpecs(76, 212), mCoordinator.getCurrentSideUiSpecs());
+        assertEquals(0, rightContainer.mNumOnWillAutoCloseReceived);
+
+        // 4. Auto-close low-priority container once both minWidths no longer fit; high-priority
+        // re-expands into the freed space.
+        setWindowWidthDp(699);
+        assertEquals(new SideUiSpecs(240, 0), mCoordinator.getCurrentSideUiSpecs());
+        assertEquals(Integer.valueOf(0), rightContainer.mLastAvailableWidth);
+        assertEquals(1, rightContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(false, rightContainer.mLastIsShowableOnWillAutoClose);
+        assertEquals(0, leftContainer.mNumOnWillAutoCloseReceived);
+
+        // 5. Shrink and then auto-close high-priority container.
+        setWindowWidthDp(550);
+        assertEquals(new SideUiSpecs(138, 0), mCoordinator.getCurrentSideUiSpecs());
+        setWindowWidthDp(487);
+        assertEquals(new SideUiSpecs(0, 0), mCoordinator.getCurrentSideUiSpecs());
+        assertEquals(1, leftContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(false, leftContainer.mLastIsShowableOnWillAutoClose);
+
+        // 6. Widening back auto-restores both at minWidth, then full preferred width.
+        setWindowWidthDp(700);
+        assertEquals(new SideUiSpecs(76, 212), mCoordinator.getCurrentSideUiSpecs());
+        assertEquals(1, leftContainer.mNumOnWillAutoRestoreReceived);
+        assertEquals(1, rightContainer.mNumOnWillAutoRestoreReceived);
+        setWindowWidthDp(1200);
+        assertEquals(new SideUiSpecs(240, 360), mCoordinator.getCurrentSideUiSpecs());
+    }
+
+    @Test
+    public void testUpdateUi_TwoPassWidthConsumption_OverlayDoesNotConsumeExtraFromLowPriority() {
+        var leftContainer =
+                createAndRegisterContainer(
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT,
+                        /* minWidthDp= */ 76,
+                        /* maxWidthDp= */ 76);
+        leftContainer.mOverlayWidth = 164;
+        createAndRegisterContainer(
+                new FrameLayout(mTestActivity),
+                SideUiId.SIDE_PANEL,
+                AnchorSide.RIGHT,
+                /* minWidthDp= */ 212,
+                /* maxWidthDp= */ 360);
+
+        setWindowWidthDp(800);
+        SideUiSpecs specs = mCoordinator.getCurrentSideUiSpecs();
+        assertEquals(76, specs.getReservedWidth(AnchorSide.LEFT));
+        assertEquals(240, specs.getRenderedWidth(AnchorSide.LEFT));
+        assertEquals(312, specs.getReservedWidth(AnchorSide.RIGHT));
+    }
+
+    @Test
+    public void testCanShowSideUi_LowPriorityShowableWhenHighPriorityCanShrinkToMinWidth() {
+        var leftContainer =
+                createAndRegisterContainer(
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT,
+                        /* minWidthDp= */ 76,
+                        /* maxWidthDp= */ 240);
+        var rightContainer =
+                createAndRegisterContainer(
+                        new FrameLayout(mTestActivity),
+                        SideUiId.SIDE_PANEL,
+                        AnchorSide.RIGHT,
+                        /* minWidthDp= */ 212,
+                        /* maxWidthDp= */ 360);
+        rightContainer.mHasContentForTabMap.put(mTab, false);
+
+        setWindowWidthDp(800);
+        assertEquals(new SideUiSpecs(240, 0), mCoordinator.getCurrentSideUiSpecs());
+        assertTrue(mCoordinator.canShowSideUi(SideUiId.SIDE_PANEL));
+
+        setWindowWidthDp(699);
+        assertFalse(mCoordinator.canShowSideUi(SideUiId.SIDE_PANEL));
+
+        leftContainer.mHasContentForTabMap.put(mTab, false);
+        assertTrue(mCoordinator.canShowSideUi(SideUiId.SIDE_PANEL));
+    }
+
+    @Test
+    public void testUpdateUi_NullVsZeroMinWidth() {
+        var leftContainer =
+                createAndRegisterContainer(
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT,
+                        /* minWidthDp= */ 0,
+                        /* maxWidthDp= */ 240);
+        createAndRegisterContainer(
+                new FrameLayout(mTestActivity),
+                SideUiId.SIDE_PANEL,
+                AnchorSide.RIGHT,
+                /* minWidthDp= */ 212,
+                /* maxWidthDp= */ 360);
+
+        // Zero minWidth is showable and reserves no minimum width, so lower-priority minWidth still
+        // fits.
+        setWindowWidthDp(800);
+        assertTrue(mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS));
+        assertTrue(mCoordinator.canShowSideUi(SideUiId.SIDE_PANEL));
+        assertEquals(new SideUiSpecs(176, 212), mCoordinator.getCurrentSideUiSpecs());
+
+        // Null minWidth marks the container unshowable even in a wide window, notifies it with 0
+        // available width, and leaves all space to lower-priority containers.
+        leftContainer.mIsUnshowable = true;
+        setWindowWidthDp(800);
+        assertFalse(mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS));
+        assertEquals(Integer.valueOf(0), leftContainer.mLastAvailableWidth);
+        assertEquals(new SideUiSpecs(0, 360), mCoordinator.getCurrentSideUiSpecs());
+    }
+
+    private TestSideUiContainer createAndRegisterContainer(
+            View view,
+            @SideUiId int sideUiId,
+            @AnchorSide int anchorSide,
+            int minWidthDp,
+            int maxWidthDp) {
+        var container = new TestSideUiContainer(mCoordinator, view, sideUiId, anchorSide);
+        container.mMinWidthDp = minWidthDp;
+        container.mMaxWidthDp = maxWidthDp;
+        mCoordinator.registerSideUiContainer(container);
+        return container;
     }
 
     private void requestUiUpdate(SideUiContainer sideUiContainer, boolean suppressAnimations) {

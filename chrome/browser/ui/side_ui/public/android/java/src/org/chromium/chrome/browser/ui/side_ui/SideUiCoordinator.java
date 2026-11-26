@@ -517,11 +517,11 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * "freezes" that container.
      *
      * <p>While paused, the container keeps the {@link SideUiSpecs.SideUiSize} it had when it was
-     * paused, though its top margin still follows the top controls. It isn't asked for its showable
-     * size or whether it has content to show, and is reported showable iff it's showing. Manual
-     * resizing of the container is also disabled. Everything else keeps updating around it as if it
-     * had the highest priority: other containers may be auto-closed to make room for it, and the
-     * web contents may get narrower than their minimum width.
+     * paused, though its top margin still follows the top controls. It isn't asked for its minimum
+     * width, showable size, or whether it has content to show, and is reported showable iff it's
+     * showing. Manual resizing of the container is also disabled. Everything else keeps updating
+     * around it as if it had the highest priority: other containers may be auto-closed to make room
+     * for it, and the web contents may get narrower than their minimum width.
      *
      * <p>Since its size doesn't change, it receives no {@link SideUiContainer#onUiUpdateStarting},
      * {@link SideUiContainer#onUiUpdateCompleted}, {@link SideUiContainer#onWillAutoClose} or

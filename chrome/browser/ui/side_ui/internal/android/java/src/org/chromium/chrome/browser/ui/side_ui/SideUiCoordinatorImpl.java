@@ -741,40 +741,48 @@ final class SideUiCoordinatorImpl
      */
     private SideUiShowability determineSideUiShowability(
             @Px int windowWidth, @Px int minWebContentsWidth, boolean isFullscreen) {
-        int availableWidth = windowWidth - minWebContentsWidth;
+        @Px int availableWidth = Math.max(windowWidth - minWebContentsWidth, 0);
         Set<@SideUiId Integer> showableSideUiIds = new ArraySet<>();
         Set<@SideUiId Integer> unShowableSideUiIds = new ArraySet<>();
 
         @Nullable Tab currentTab = mTabModelSelector.getCurrentTab();
 
         for (var container : getSideUiContainersInLayoutOrder()) {
+            @SideUiId int id = container.getSideUiId();
             // A paused container keeps the size it had when it was paused, so it's showable iff it
             // is showing, even without a tab.
-            @Nullable SideUiSize pausedSize = mPausedSideUiSizes.get(container.getSideUiId());
-            int showableReservedWidth;
+            @Nullable SideUiSize pausedSize = mPausedSideUiSizes.get(id);
+
+            // Paused container
             if (pausedSize != null) {
-                showableReservedWidth = pausedSize.mReservedWidth;
-            } else {
-                showableReservedWidth =
-                        currentTab != null
-                                ? container.determineShowableSize(
-                                                availableWidth, windowWidth, isFullscreen)
-                                        .mReservedWidth
-                                : 0;
-            }
-            if (showableReservedWidth > 0) {
-                showableSideUiIds.add(container.getSideUiId());
-            } else {
-                unShowableSideUiIds.add(container.getSideUiId());
+                if (pausedSize.mReservedWidth > 0) {
+                    showableSideUiIds.add(id);
+                    availableWidth = Math.max(availableWidth - pausedSize.mReservedWidth, 0);
+                } else {
+                    unShowableSideUiIds.add(id);
+                }
+                continue;
             }
 
-            // If a SideUiContainer is showable and has content to show, or is paused while showing,
-            // it will be shown. Therefore, we should subtract the showable width from the available
-            // width.
-            if (showableReservedWidth > 0
-                    && (pausedSize != null
-                            || (currentTab != null && container.hasContentToShow(currentTab)))) {
-                availableWidth = Math.max(availableWidth - showableReservedWidth, 0);
+            if (currentTab == null) {
+                unShowableSideUiIds.add(id);
+                continue;
+            }
+
+            // "Normal" (not paused) container
+            @Px
+            @Nullable Integer minWidth = container.determineMinWidth(isFullscreen);
+            assert minWidth == null || minWidth >= 0;
+            if (minWidth != null && minWidth <= availableWidth) {
+                showableSideUiIds.add(id);
+
+                // Subtract only minimum width so lower-priority containers stay showable when
+                // higher-priority ones can shrink.
+                if (container.hasContentToShow(currentTab)) {
+                    availableWidth -= minWidth;
+                }
+            } else {
+                unShowableSideUiIds.add(id);
             }
         }
 
@@ -810,7 +818,7 @@ final class SideUiCoordinatorImpl
             @Px int minWebContentsWidth,
             boolean isFullscreen,
             @Nullable Tab tab) {
-        int availableWidth = windowWidth - minWebContentsWidth;
+        @Px int availableWidth = Math.max(windowWidth - minWebContentsWidth, 0);
         Map<@AnchorSide Integer, SideUiSize> sideUiSpecs = new ArrayMap<>(); // anchorSide -> spec
 
         // Initialize the specs from the current anchorContainers.
@@ -818,18 +826,47 @@ final class SideUiCoordinatorImpl
             sideUiSpecs.put(side, new SideUiSize(0, HeightType.NOT_APPLICABLE));
         }
 
-        for (var container : getSideUiContainersInLayoutOrder()) {
+        List<SideUiContainer> containers = getSideUiContainersInLayoutOrder();
+        Map<@SideUiId Integer, Integer> allocatedMinWidths = new ArrayMap<>();
+
+        // Pass 1: Reserve minimum (or paused) widths in layout order.
+        for (var container : containers) {
+            @SideUiId int id = container.getSideUiId();
             // A paused container keeps the size it had when it was paused, even without a tab.
-            @Nullable SideUiSize newSideUiSize = mPausedSideUiSizes.get(container.getSideUiId());
-            if (newSideUiSize == null) {
-                newSideUiSize =
-                        tab != null && container.hasContentToShow(tab)
-                                ? container.determineShowableSize(
-                                        availableWidth, windowWidth, isFullscreen)
-                                : new SideUiSize(0, HeightType.NOT_APPLICABLE);
+            @Nullable SideUiSize pausedSize = mPausedSideUiSizes.get(id);
+            if (pausedSize != null) {
+                sideUiSpecs.put(container.getAnchorSide(), pausedSize);
+                availableWidth = Math.max(availableWidth - pausedSize.mReservedWidth, 0);
+                continue;
             }
+            if (tab == null || !container.hasContentToShow(tab)) {
+                continue;
+            }
+            @Px
+            @Nullable Integer minWidth = container.determineMinWidth(isFullscreen);
+            assert minWidth == null || minWidth >= 0;
+            if (minWidth == null || minWidth > availableWidth) {
+                // TODO(crbug.com/559336138): Move Vertical Tabs' auto-hidden/collapse state updates
+                // out of determineShowableSize() and remove this call.
+                container.determineShowableSize(/* availableWidth= */ 0, windowWidth, isFullscreen);
+                continue;
+            }
+            allocatedMinWidths.put(id, minWidth);
+            availableWidth -= minWidth;
+        }
+
+        // Pass 2: Allocate preferred sizes from reserved minimum plus remaining width.
+        for (var container : containers) {
+            @Px Integer minWidth = allocatedMinWidths.get(container.getSideUiId());
+            if (minWidth == null) {
+                continue;
+            }
+            SideUiSize newSideUiSize =
+                    container.determineShowableSize(
+                            minWidth + availableWidth, windowWidth, isFullscreen);
             sideUiSpecs.put(container.getAnchorSide(), newSideUiSize);
-            availableWidth = Math.max(availableWidth - newSideUiSize.mReservedWidth, 0);
+            availableWidth =
+                    Math.max(availableWidth - (newSideUiSize.mReservedWidth - minWidth), 0);
         }
         return new SideUiSpecs(sideUiSpecs);
     }
