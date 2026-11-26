@@ -10,6 +10,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -93,9 +94,11 @@ class MCSClientIntegrationTest : public testing::Test,
 
   void StartNewServer() {
     fake_mcs_server_ = std::make_unique<FakeMCSServer>();
-    fake_mcs_server_->InitializeAndListen();
+    CHECK(fake_mcs_server_->InitializeAndListen());
     fake_mcs_server_->Start(server_store_dir_.GetPath());
   }
+
+  void DestroyServer() { fake_mcs_server_.reset(); }
 
   // Initializes `GCMStoreImpl`, `ConnectionFactoryImpl`, and `MCSClient` and
   // logs in with `kAndroidId` and `kSecurityToken`, waiting for the server's
@@ -103,13 +106,19 @@ class MCSClientIntegrationTest : public testing::Test,
   // `wait_for_initial_connection_ready` is true).
   void InitializeAndLoginClient(
       bool wait_for_initial_connection_ready = false) {
+    InitializeAndLoginClient(fake_mcs_server_->GetEndpointURL(),
+                             wait_for_initial_connection_ready);
+  }
+
+  void InitializeAndLoginClient(
+      const GURL& endpoint_url,
+      bool wait_for_initial_connection_ready = false) {
     gcm_store_ = std::make_unique<GCMStoreImpl>(
         client_store_dir_.GetPath(),
         task_environment_.GetMainThreadTaskRunner(),
         std::make_unique<FakeEncryptor>());
     connection_factory_ = std::make_unique<ConnectionFactoryImpl>(
-        std::vector<GURL>{fake_mcs_server_->GetEndpointURL()},
-        kFastBackoffPolicy,
+        std::vector<GURL>{endpoint_url}, kFastBackoffPolicy,
         base::BindRepeating(
             &MCSClientIntegrationTest::CreateProxyResolvingSocketFactory,
             base::Unretained(this)),
@@ -430,6 +439,51 @@ TEST_F(MCSClientIntegrationTest,
   ASSERT_EQ(received_data_messages().size(), 2u);
   EXPECT_EQ(received_data_messages()[0].from(), "sender-1");
   EXPECT_EQ(received_data_messages()[1].from(), "sender-2");
+}
+
+TEST_F(MCSClientIntegrationTest, FixedPortBindAndConflict) {
+  const uint16_t port = base::checked_cast<uint16_t>(
+      fake_mcs_server().GetEndpointURL().IntPort());
+  ASSERT_GT(port, 0u);
+
+  FakeMCSServer conflicting_server;
+  EXPECT_FALSE(conflicting_server.InitializeAndListen(port));
+
+  // Releasing the port allows another server to bind to the same fixed port.
+  DestroyServer();
+  FakeMCSServer fixed_port_server;
+  ASSERT_TRUE(fixed_port_server.InitializeAndListen(port));
+  EXPECT_EQ(fixed_port_server.GetEndpointURL().IntPort(), port);
+
+  fixed_port_server.Start();
+  InitializeAndLoginClient(fixed_port_server.GetEndpointURL());
+  EXPECT_TRUE(fixed_port_server.HasLoggedInClients());
+  DestroyClient();
+}
+
+TEST_F(MCSClientIntegrationTest, HasLoggedInClientsTracksConnectionLifecycle) {
+  EXPECT_FALSE(fake_mcs_server().HasLoggedInClients());
+
+  InitializeAndLoginClient();
+  EXPECT_TRUE(fake_mcs_server().HasLoggedInClients());
+
+  // Server-side disconnect synchronously clears connections on `io_thread_`.
+  fake_mcs_server().DisconnectAllClients();
+  EXPECT_FALSE(fake_mcs_server().HasLoggedInClients());
+  DestroyClient();
+
+  // Client-side disconnect decrements asynchronously when `io_thread_` reads
+  // EOF; wait via the server's change callback instead of polling.
+  InitializeAndLoginClient();
+  EXPECT_TRUE(fake_mcs_server().HasLoggedInClients());
+
+  base::RunLoop disconnect_loop;
+  fake_mcs_server().SetLoggedInClientsChangedCallback(
+      disconnect_loop.QuitClosure());
+  DestroyClient();
+  disconnect_loop.Run();
+  EXPECT_FALSE(fake_mcs_server().HasLoggedInClients());
+  fake_mcs_server().SetLoggedInClientsChangedCallback(base::RepeatingClosure());
 }
 
 }  // namespace

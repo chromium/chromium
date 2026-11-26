@@ -39,9 +39,10 @@ class FakeMCSServer {
   FakeMCSServer& operator=(const FakeMCSServer&) = delete;
   ~FakeMCSServer();
 
-  // Binds the local TCP listening socket so `GetEndpointURL()` can be queried
-  // before `Start()` is called.
-  void InitializeAndListen();
+  // Binds the local TCP listening socket on `port` (or an OS-assigned port
+  // when `port` is 0) so `GetEndpointURL()` can be queried before `Start()` is
+  // called. Returns false if binding fails.
+  [[nodiscard]] bool InitializeAndListen(uint16_t port = 0);
 
   // Loads any persisted state from `storage_dir` (if non-empty) and starts the
   // background IO thread to accept client connections. `InitializeAndListen()`
@@ -62,6 +63,10 @@ class FakeMCSServer {
   // sends an upstream `DataMessageStanza` to the server.
   void SetDataMessageReceivedCallback(DataMessageReceivedCallback callback);
 
+  // Registers a callback invoked (on the calling sequence) whenever the number
+  // of logged-in clients changes.
+  void SetLoggedInClientsChangedCallback(base::RepeatingClosure callback);
+
   // Closes all active client TCP connections, simulating a server-side
   // disconnect.
   void DisconnectAllClients();
@@ -69,6 +74,10 @@ class FakeMCSServer {
   // Returns true if `android_id` currently has unacknowledged server-to-client
   // messages in the server's RMQ queue.
   bool HasUnacknowledgedMessages(uint64_t android_id) const;
+
+  // Returns true if at least one client has completed the MCS login handshake
+  // and is still connected.
+  bool HasLoggedInClients() const;
 
  private:
   class StateCore;

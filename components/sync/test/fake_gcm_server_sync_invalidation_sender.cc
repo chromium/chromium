@@ -25,7 +25,7 @@ void FakeGCMServerSyncInvalidationSender::InitializeAndListen(
     net::test_server::EmbeddedTestServer& embedded_test_server) {
   CHECK(!initialized_);
   initialized_ = true;
-  fake_gcm_server_.InitializeAndListen();
+  CHECK(fake_gcm_server_.InitializeAndListen());
   fake_gcm_server_.RegisterRequestHandler(embedded_test_server);
 }
 

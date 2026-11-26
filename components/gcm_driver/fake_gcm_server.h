@@ -5,15 +5,19 @@
 #ifndef COMPONENTS_GCM_DRIVER_FAKE_GCM_SERVER_H_
 #define COMPONENTS_GCM_DRIVER_FAKE_GCM_SERVER_H_
 
+#include <cstdint>
+#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "google_apis/gcm/engine/fake_mcs_server.h"
 #include "url/gurl.h"
 
 namespace base {
 class CommandLine;
-class FilePath;
 }  // namespace base
 
 namespace net::test_server {
@@ -26,9 +30,13 @@ namespace gcm {
 // 1. HTTP check-in and registration endpoints, hookable into
 //    `net::test_server::EmbeddedTestServer` via `RegisterRequestHandler()`.
 // 2. Binary MCS streaming message delivery via `FakeMCSServer`.
-// 3. Disk persistence (`fake_gcm_server_state.json`) across `PRE_` restarts.
+// 3. Optional disk persistence (`fake_gcm_server_state.json`) across `PRE_`
+//    restarts.
 class FakeGCMServer {
  public:
+  // Message data consisting of key-value pairs.
+  using AppData = base::flat_map<std::string, std::string>;
+
   static constexpr char kCheckinPath[] = "/gcm/checkin";
   static constexpr char kRegisterPath[] = "/gcm/register";
 
@@ -37,14 +45,15 @@ class FakeGCMServer {
   FakeGCMServer& operator=(const FakeGCMServer&) = delete;
   ~FakeGCMServer();
 
-  // Binds the local TCP listening socket for the underlying `FakeMCSServer` so
-  // `GetMCSEndpointURL()` can be queried before `Start()` is called.
-  void InitializeAndListen();
+  // Binds the local TCP listening socket for the underlying `FakeMCSServer` on
+  // `port` (or an OS-assigned port when `port` is 0) so `GetMCSEndpointURL()`
+  // can be queried before `Start()` is called. Returns false if binding fails.
+  [[nodiscard]] bool InitializeAndListen(uint16_t port = 0);
 
   // Loads persisted device credentials, token registrations, and unacknowledged
-  // MCS messages from `storage_dir` and starts the background MCS IO thread.
-  // `InitializeAndListen()` must be called before `Start()`.
-  void Start(const base::FilePath& storage_dir);
+  // MCS messages from `storage_dir` (if non-empty) and starts the background
+  // MCS IO thread. `InitializeAndListen()` must be called before `Start()`.
+  void Start(const base::FilePath& storage_dir = base::FilePath());
 
   // Registers HTTP request handlers for check-in and registration on
   // `embedded_test_server`.
@@ -64,12 +73,25 @@ class FakeGCMServer {
   // server is listening. `InitializeAndListen()` must be called first.
   GURL GetMCSEndpointURL() const;
 
-  // Sends a push message with `raw_data` to the device/application registered
-  // with `registration_token`. If the token is registered, queues an MCS
-  // `DataMessageStanza` for its device via `FakeMCSServer` and returns true.
+  // Sends a push message with `raw_data` and optional `app_data` key-value
+  // pairs to the device/application registered with `registration_token`.
+  // - Reserved key `"subtype"` is populated automatically from the registration
+  //   and must not be present in `app_data`.
+  // - Reserved key `"message_type"` must not be present in `app_data`.
+  // - If the token is registered, queues an MCS `DataMessageStanza` for its
+  //   device via `FakeMCSServer` and returns true.
   // Returns false if `registration_token` is not registered.
   bool SendMessage(std::string_view registration_token,
-                   std::string_view raw_data);
+                   std::string_view raw_data,
+                   const AppData& app_data = {});
+
+  // Returns all currently registered tokens associated with `sender_id`.
+  std::vector<std::string> GetRegistrationTokens(
+      std::string_view sender_id) const;
+
+  // Returns true if at least one client has completed the MCS login handshake
+  // and is still connected.
+  bool HasLoggedInClients() const;
 
   // Closes all active client MCS TCP connections.
   void DisconnectAllClients();

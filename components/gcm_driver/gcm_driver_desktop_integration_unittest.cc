@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -29,6 +30,7 @@
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gcm {
@@ -66,23 +68,30 @@ class GCMDriverDesktopIntegrationTest : public testing::Test {
 
   ~GCMDriverDesktopIntegrationTest() override { DestroyClient(); }
 
-  void StartNewServer() {
+  void StartNewServer(const base::FilePath& storage_dir) {
     embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
     CHECK(embedded_test_server_->InitializeAndListen());
 
     fake_gcm_server_ = std::make_unique<FakeGCMServer>();
-    fake_gcm_server_->InitializeAndListen();
+    CHECK(fake_gcm_server_->InitializeAndListen());
     fake_gcm_server_->RegisterRequestHandler(*embedded_test_server_);
     fake_gcm_server_->AppendCommandLineSwitches(
         scoped_command_line_.GetProcessCommandLine(), *embedded_test_server_);
-    fake_gcm_server_->Start(server_store_dir_.GetPath());
+    fake_gcm_server_->Start(storage_dir);
 
     embedded_test_server_->StartAcceptingConnections();
   }
 
+  void StartNewServer() { StartNewServer(server_store_dir_.GetPath()); }
+
   void DestroyServer() {
     embedded_test_server_.reset();
     fake_gcm_server_.reset();
+  }
+
+  void ResetClientStore() {
+    CHECK(client_store_dir_.Delete());
+    CHECK(client_store_dir_.CreateUniqueTempDir());
   }
 
   void CreateClient() {
@@ -168,6 +177,9 @@ class GCMDriverDesktopIntegrationTest : public testing::Test {
   GCMDriverDesktop* driver() { return driver_.get(); }
   FakeGCMAppHandler* app_handler1() { return app_handler1_.get(); }
   FakeGCMAppHandler* app_handler2() { return app_handler2_.get(); }
+  const base::FilePath& server_store_dir() const {
+    return server_store_dir_.GetPath();
+  }
 
  private:
   void CreateProxyResolvingSocketFactory(
@@ -443,6 +455,50 @@ TEST_F(GCMDriverDesktopIntegrationTest,
 
   ASSERT_EQ(app_handler1()->received_messages().size(), 2u);
   EXPECT_EQ(app_handler1()->message().raw_data, "queued_while_stopped");
+}
+
+TEST_F(GCMDriverDesktopIntegrationTest,
+       SendMessageWithAppDataAndQueryTokensBySender) {
+  constexpr char kOtherSender[] = "111222333";
+  auto [token1, result1] = GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(result1, instance_id::InstanceID::SUCCESS);
+  auto [token2, result2] = GetToken(kTestAppId2, kOtherSender, kScope);
+  ASSERT_EQ(result2, instance_id::InstanceID::SUCCESS);
+
+  EXPECT_THAT(fake_gcm_server()->GetRegistrationTokens(kAuthorizedEntity),
+              testing::UnorderedElementsAre(token1));
+  EXPECT_THAT(fake_gcm_server()->GetRegistrationTokens(kOtherSender),
+              testing::UnorderedElementsAre(token2));
+  EXPECT_TRUE(fake_gcm_server()->GetRegistrationTokens("unknown").empty());
+
+  ASSERT_TRUE(fake_gcm_server()->SendMessage(
+      token1, /*raw_data=*/"",
+      {{"type", "BROWSER_POLICY_FETCH"}, {"payload", "v1"}}));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_handler1()->received_messages().size() == 1u; }));
+
+  EXPECT_EQ(app_handler1()->app_id(), kTestAppId1);
+  EXPECT_THAT(app_handler1()->message().data,
+              testing::UnorderedElementsAre(
+                  testing::Pair("type", "BROWSER_POLICY_FETCH"),
+                  testing::Pair("payload", "v1")));
+}
+
+TEST_F(GCMDriverDesktopIntegrationTest, InMemoryStartWithoutStorageDir) {
+  DestroyClient();
+  DestroyServer();
+  ResetClientStore();
+
+  StartNewServer(base::FilePath());
+  CreateClient();
+
+  auto [token, result] = GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(result, instance_id::InstanceID::SUCCESS);
+  ASSERT_TRUE(fake_gcm_server()->SendMessage(token, "in_memory_payload"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_handler1()->received_messages().size() == 1u; }));
+  EXPECT_EQ(app_handler1()->message().raw_data, "in_memory_payload");
+  EXPECT_TRUE(base::IsDirectoryEmpty(server_store_dir()));
 }
 
 }  // namespace

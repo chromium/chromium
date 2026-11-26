@@ -5,6 +5,7 @@
 #include "google_apis/gcm/engine/fake_mcs_server.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <deque>
@@ -216,6 +217,11 @@ class FakeMCSServer::StateCore
     data_message_received_callback_ = std::move(callback);
   }
 
+  void SetLoggedInClientsChangedCallback(base::RepeatingClosure callback) {
+    base::AutoLock auto_lock(lock_);
+    logged_in_clients_changed_callback_ = std::move(callback);
+  }
+
   void OnClientDataMessageReceived(uint64_t android_id,
                                    const mcs_proto::DataMessageStanza& stanza) {
     DataMessageReceivedCallback callback;
@@ -252,6 +258,18 @@ class FakeMCSServer::StateCore
     return pending && !pending->empty();
   }
 
+  void IncrementLoggedInClients() {
+    logged_in_client_count_.fetch_add(1);
+    NotifyLoggedInClientsChanged();
+  }
+
+  void DecrementLoggedInClients() {
+    logged_in_client_count_.fetch_sub(1);
+    NotifyLoggedInClientsChanged();
+  }
+
+  bool HasLoggedInClients() const { return logged_in_client_count_.load() > 0; }
+
   mcs_proto::DataMessageStanza EnqueueDataMessage(
       uint64_t android_id,
       mcs_proto::DataMessageStanza stanza) {
@@ -272,6 +290,17 @@ class FakeMCSServer::StateCore
   friend class base::RefCountedThreadSafe<StateCore>;
 
   ~StateCore() = default;
+
+  void NotifyLoggedInClientsChanged() {
+    base::RepeatingClosure callback;
+    {
+      base::AutoLock auto_lock(lock_);
+      callback = logged_in_clients_changed_callback_;
+    }
+    if (callback) {
+      callback.Run();
+    }
+  }
 
   void OnMessagesAcknowledgedLocked(
       uint64_t android_id,
@@ -365,6 +394,8 @@ class FakeMCSServer::StateCore
   base::flat_map<uint64_t, std::vector<mcs_proto::DataMessageStanza>>
       pending_messages_ GUARDED_BY(lock_);
   DataMessageReceivedCallback data_message_received_callback_ GUARDED_BY(lock_);
+  base::RepeatingClosure logged_in_clients_changed_callback_ GUARDED_BY(lock_);
+  std::atomic<int> logged_in_client_count_ = 0;
 };
 
 // Runs on `io_thread_` to accept TCP connections and speak the binary MCS
@@ -378,26 +409,38 @@ class FakeMCSServer::ServerCore {
   ServerCore& operator=(const ServerCore&) = delete;
   ~ServerCore() = default;
 
-  net::IPEndPoint InitializeAndListen() {
-    constexpr int kMaxTries = 5;
+  std::optional<net::IPEndPoint> InitializeAndListen(uint16_t port) {
+    const int max_tries = port == 0 ? 5 : 1;
     net::IPEndPoint endpoint;
-    for (int num_tries = 1; num_tries <= kMaxTries; ++num_tries) {
+    for (int num_tries = 1; num_tries <= max_tries; ++num_tries) {
       listen_socket_ =
           std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
       int rv = listen_socket_->Listen(
-          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0),
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), port),
           /*backlog=*/10, /*ipv6_only=*/std::nullopt);
-      CHECK_EQ(rv, net::OK) << "Listen failed: " << net::ErrorToString(rv);
+      if (rv != net::OK) {
+        DVLOG(1) << "FakeMCSServer failed to listen on port " << port << ": "
+                 << net::ErrorToString(rv);
+        listen_socket_.reset();
+        return std::nullopt;
+      }
       rv = listen_socket_->GetLocalAddress(&endpoint);
-      CHECK_EQ(rv, net::OK)
-          << "GetLocalAddress failed: " << net::ErrorToString(rv);
-      if (net::IsPortAllowedForScheme(endpoint.port(), url::kHttpScheme)) {
+      if (rv != net::OK) {
+        DVLOG(1) << "FakeMCSServer GetLocalAddress failed: "
+                 << net::ErrorToString(rv);
+        listen_socket_.reset();
+        return std::nullopt;
+      }
+      if (port != 0 ||
+          net::IsPortAllowedForScheme(endpoint.port(), url::kHttpScheme)) {
         listen_socket_->DetachFromThread();
         return endpoint;
       }
     }
-    LOG(FATAL) << "Failed to listen on a valid port after " << kMaxTries
-               << " attempts.";
+    DVLOG(1) << "FakeMCSServer failed to listen on a valid port after "
+             << max_tries << " attempts.";
+    listen_socket_.reset();
+    return std::nullopt;
   }
 
   void StartAcceptingConnections() { DoAcceptLoop(); }
@@ -422,7 +465,13 @@ class FakeMCSServer::ServerCore {
           read_io_buf_(
               base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize)) {}
 
-    ~Connection() = default;
+    ~Connection() {
+      if (std::exchange(logged_in_, false)) {
+        // This is safe because `state_core_` tears down after `connections_`.
+        // Changing the declaration order in `ServerCore` would cause a UAF.
+        owner_->state_core_->DecrementLoggedInClients();
+      }
+    }
 
     uint64_t android_id() const { return android_id_; }
     bool logged_in() const { return logged_in_; }
@@ -509,7 +558,9 @@ class FakeMCSServer::ServerCore {
         return false;
       }
 
-      logged_in_ = true;
+      if (!std::exchange(logged_in_, true)) {
+        owner_->state_core_->IncrementLoggedInClients();
+      }
       std::vector<mcs_proto::DataMessageStanza> pending_stanzas =
           owner_->state_core_->OnClientLoggedIn(
               android_id_, base::ToVector(login_req.received_persistent_id()));
@@ -618,7 +669,9 @@ class FakeMCSServer::ServerCore {
       if (!socket_) {
         return;
       }
-      logged_in_ = false;
+      if (std::exchange(logged_in_, false)) {
+        owner_->state_core_->DecrementLoggedInClients();
+      }
       socket_.reset();
       write_queue_.clear();
       weak_ptr_factory_.InvalidateWeakPtrs();
@@ -701,10 +754,15 @@ FakeMCSServer::~FakeMCSServer() {
   }
 }
 
-void FakeMCSServer::InitializeAndListen() {
+bool FakeMCSServer::InitializeAndListen(uint16_t port) {
   CHECK(!endpoint_url_.is_valid());
-  const net::IPEndPoint listen_endpoint = server_core_->InitializeAndListen();
-  endpoint_url_ = GURL(base::StrCat({"http://", listen_endpoint.ToString()}));
+  std::optional<net::IPEndPoint> listen_endpoint =
+      server_core_->InitializeAndListen(port);
+  if (!listen_endpoint.has_value()) {
+    return false;
+  }
+  endpoint_url_ = GURL(base::StrCat({"http://", listen_endpoint->ToString()}));
+  return true;
 }
 
 void FakeMCSServer::Start(const base::FilePath& storage_dir) {
@@ -743,6 +801,13 @@ void FakeMCSServer::SetDataMessageReceivedCallback(
                : DataMessageReceivedCallback());
 }
 
+void FakeMCSServer::SetLoggedInClientsChangedCallback(
+    base::RepeatingClosure callback) {
+  state_core_->SetLoggedInClientsChangedCallback(
+      callback ? base::BindPostTaskToCurrentDefault(std::move(callback))
+               : base::RepeatingClosure());
+}
+
 void FakeMCSServer::DisconnectAllClients() {
   CHECK(io_thread_.IsRunning());
   base::WaitableEvent done_event;
@@ -757,6 +822,10 @@ void FakeMCSServer::DisconnectAllClients() {
 
 bool FakeMCSServer::HasUnacknowledgedMessages(uint64_t android_id) const {
   return state_core_->HasUnacknowledgedMessages(android_id);
+}
+
+bool FakeMCSServer::HasLoggedInClients() const {
+  return state_core_->HasLoggedInClients();
 }
 
 }  // namespace gcm

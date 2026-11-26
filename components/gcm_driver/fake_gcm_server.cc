@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
@@ -112,9 +113,11 @@ class FakeGCMServer::StateCore
   StateCore() = default;
 
   void InitializeStorageDir(const base::FilePath& storage_dir) {
-    CHECK(!storage_dir.empty());
     base::AutoLock auto_lock(lock_);
-    state_file_path_ = storage_dir.AppendASCII("fake_gcm_server_state.json");
+    state_file_path_ =
+        storage_dir.empty()
+            ? base::FilePath()
+            : storage_dir.AppendASCII("fake_gcm_server_state.json");
     LoadStateFromDiskLocked();
   }
 
@@ -185,7 +188,8 @@ class FakeGCMServer::StateCore
   // if registered.
   std::optional<ResolvedDataMessage> BuildDataMessageForToken(
       std::string_view registration_token,
-      std::string_view raw_data) {
+      std::string_view raw_data,
+      const AppData& app_data) {
     base::AutoLock auto_lock(lock_);
     const RegistrationRecord* record =
         base::FindOrNull(registrations_, registration_token);
@@ -201,10 +205,29 @@ class FakeGCMServer::StateCore
     result.stanza.set_immediate_ack(true);
     result.stanza.set_sent(base::Time::Now().InMillisecondsSinceUnixEpoch());
     CHECK(!record->subtype.empty());
-    mcs_proto::AppData* app_data = result.stanza.add_app_data();
-    app_data->set_key("subtype");
-    app_data->set_value(record->subtype);
+    mcs_proto::AppData* subtype_data = result.stanza.add_app_data();
+    subtype_data->set_key("subtype");
+    subtype_data->set_value(record->subtype);
+    for (const auto& [key, value] : app_data) {
+      CHECK_NE(key, "subtype");
+      CHECK_NE(key, "message_type");
+      mcs_proto::AppData* entry = result.stanza.add_app_data();
+      entry->set_key(key);
+      entry->set_value(value);
+    }
     return result;
+  }
+
+  std::vector<std::string> GetRegistrationTokens(
+      std::string_view sender_id) const {
+    base::AutoLock auto_lock(lock_);
+    std::vector<std::string> tokens;
+    for (const auto& [token, record] : registrations_) {
+      if (record.sender_id == sender_id) {
+        tokens.push_back(token);
+      }
+    }
+    return tokens;
   }
 
  private:
@@ -416,6 +439,10 @@ class FakeGCMServer::StateCore
   }
 
   void LoadStateFromDiskLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    if (state_file_path_.empty()) {
+      return;
+    }
+
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string json_string;
     // The state file does not exist on the first run before any state has been
@@ -481,7 +508,10 @@ class FakeGCMServer::StateCore
   }
 
   void WriteStateToDiskLocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    CHECK(!state_file_path_.empty());
+    if (state_file_path_.empty()) {
+      return;
+    }
+
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::DictValue root;
     root.Set("next_android_id", base::NumberToString(next_android_id_));
@@ -530,8 +560,8 @@ FakeGCMServer::FakeGCMServer()
 
 FakeGCMServer::~FakeGCMServer() = default;
 
-void FakeGCMServer::InitializeAndListen() {
-  mcs_server_.InitializeAndListen();
+bool FakeGCMServer::InitializeAndListen(uint16_t port) {
+  return mcs_server_.InitializeAndListen(port);
 }
 
 void FakeGCMServer::Start(const base::FilePath& storage_dir) {
@@ -563,15 +593,26 @@ GURL FakeGCMServer::GetMCSEndpointURL() const {
 }
 
 bool FakeGCMServer::SendMessage(std::string_view registration_token,
-                                std::string_view raw_data) {
+                                std::string_view raw_data,
+                                const AppData& app_data) {
   std::optional<StateCore::ResolvedDataMessage> resolved =
-      state_core_->BuildDataMessageForToken(registration_token, raw_data);
+      state_core_->BuildDataMessageForToken(registration_token, raw_data,
+                                            app_data);
   if (!resolved.has_value()) {
     return false;
   }
   mcs_server_.SendDataMessage(resolved->android_id,
                               std::move(resolved->stanza));
   return true;
+}
+
+std::vector<std::string> FakeGCMServer::GetRegistrationTokens(
+    std::string_view sender_id) const {
+  return state_core_->GetRegistrationTokens(sender_id);
+}
+
+bool FakeGCMServer::HasLoggedInClients() const {
+  return mcs_server_.HasLoggedInClients();
 }
 
 void FakeGCMServer::DisconnectAllClients() {
