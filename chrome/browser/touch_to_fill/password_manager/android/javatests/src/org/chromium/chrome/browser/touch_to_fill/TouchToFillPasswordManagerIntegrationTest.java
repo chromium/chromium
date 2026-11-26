@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -141,6 +142,11 @@ public class TouchToFillPasswordManagerIntegrationTest {
                             mMockBridge,
                             mMockFocusHelper);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        runOnUiThreadBlocking(() -> mTouchToFill.cleanUp());
     }
 
     @Test

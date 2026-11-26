@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
@@ -34,6 +35,7 @@ public class TouchToFillPasswordManagerCoordinator implements TouchToFillCompone
     private final PropertyModel mModel =
             TouchToFillPasswordManagerProperties.createDefaultModel(mMediator::onDismissed);
     private @MonotonicNonNull TouchToFillPasswordManagerView mView;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     @Override
     public void initialize(
@@ -42,6 +44,8 @@ public class TouchToFillPasswordManagerCoordinator implements TouchToFillCompone
             BottomSheetController sheetController,
             TouchToFillComponent.Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
+        assert mLargeIconBridge == null;
+        mLargeIconBridge = new LargeIconBridge(profile);
         // TODO(crbug.com/40278589): The touch_to_fill_list_item layout only supports
         // favicons of size touch_to_fill_favicon_size, which is smaller than
         // touch_to_fill_favicon_size_modern. Figure out which size the layout should use.
@@ -51,7 +55,7 @@ public class TouchToFillPasswordManagerCoordinator implements TouchToFillCompone
                 mModel,
                 ImageFetcherFactory.createImageFetcher(
                         ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
-                new LargeIconBridge(profile),
+                mLargeIconBridge,
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size_modern),
                 bottomSheetFocusHelper);
@@ -80,6 +84,10 @@ public class TouchToFillPasswordManagerCoordinator implements TouchToFillCompone
 
     @Override
     public void cleanUp() {
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
         TouchToFillPasswordManagerView view = mView;
         if (view == null) return;
         view.destroy();
