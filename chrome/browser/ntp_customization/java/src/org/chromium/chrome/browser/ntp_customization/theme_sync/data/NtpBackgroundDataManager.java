@@ -90,8 +90,11 @@ public class NtpBackgroundDataManager {
                 // changes. So the old entry may use another image file than the new one. Record
                 // it, so that its file is checked after the new list is saved.
                 removedItems.add(existingData);
+                // Keep the old color and crop matrices only when both entries show the same image.
+                // On a remote daily refresh rotation, replace the old entry with the new image.
                 if (existingData instanceof NtpBackgroundDataImageBase existingImage
-                        && backgroundData instanceof NtpBackgroundDataImageBase newData) {
+                        && backgroundData instanceof NtpBackgroundDataImageBase newData
+                        && existingImage.hasSameImage(newData)) {
                     @Nullable
                     @ColorInt
                     Integer resolvedColor =
@@ -133,9 +136,10 @@ public class NtpBackgroundDataManager {
     }
 
     /**
-     * Saves a single NTP's background type from cross device sync to the shared preference.
+     * Updates a synced theme collection entry in place after its image is fetched. Skips the update
+     * if the saved entry has moved on to a different image.
      *
-     * @param themeCollectionData The background data to save.
+     * @param themeCollectionData The updated theme collection entry.
      */
     public void updateRemoteSyncDataToSharedPreference(
             NtpBackgroundDataThemeCollection themeCollectionData) {
@@ -143,22 +147,27 @@ public class NtpBackgroundDataManager {
                 TaskTraits.USER_VISIBLE_MAY_BLOCK,
                 () ->
                         replaceBackgroundDataInPlace(
-                                themeCollectionData, themeCollectionData.getPlatformType()));
+                                themeCollectionData,
+                                themeCollectionData.getPlatformType(),
+                                /* shouldRequireSameImage= */ true));
     }
 
     /**
-     * Replaces the entry of the {@code groupPlatformTypeToUpdate} list that is the same theme as
-     * {@code backgroundData} (see {@link NtpBackgroundDataBase#equals}) with {@code
-     * backgroundData}, at the same index and with the platform type of the replaced entry. Nothing
-     * is written if there is no such entry.
+     * Replaces the matching theme entry in the {@code groupPlatformTypeToUpdate} history list at
+     * the same index, keeping the replaced entry's platform type. Does nothing if no matching entry
+     * exists, or if {@code shouldRequireSameImage} is true and the entry shows a different image.
      *
-     * @param backgroundData The background data to store in place of the existing entry.
-     * @param groupPlatformTypeToUpdate The platform type of the group list to update. It may differ
-     *     from the platform type of {@code backgroundData}, e.g. the local list is updated with a
-     *     rotated background whatever platform it carries.
+     * @param backgroundData The new background data to store.
+     * @param groupPlatformTypeToUpdate The history list to update. This can differ from {@code
+     *     backgroundData}'s platform type when a local daily refresh updates an entry selected from
+     *     another device.
+     * @param shouldRequireSameImage True to update only when the saved entry shows the same image.
+     *     False to allow replacing a daily refresh collection with its rotated image.
      */
     private void replaceBackgroundDataInPlace(
-            NtpBackgroundDataBase backgroundData, @PlatformType int groupPlatformTypeToUpdate) {
+            NtpBackgroundDataBase backgroundData,
+            @PlatformType int groupPlatformTypeToUpdate,
+            boolean shouldRequireSameImage) {
         try {
             NtpBackgroundDataGroup currentGroup =
                     getBackgroundDataGroupFromSharedPreference(groupPlatformTypeToUpdate);
@@ -167,13 +176,18 @@ public class NtpBackgroundDataManager {
             int index = currentGroup.indexOf(backgroundData);
             if (index == -1) return;
 
+            NtpBackgroundDataBase existingData = currentGroup.get(index);
+            if (shouldRequireSameImage
+                    && existingData instanceof NtpBackgroundDataImageBase existingImage
+                    && !existingImage.hasSameImage(backgroundData)) {
+                return;
+            }
+
             // The entry keeps the platform it was selected from, which equals() doesn't compare:
             // an entry of the local list selected from the history of another device carries that
             // device's platform type, and must keep counting as the latest selection from it.
             JSONObject json = backgroundData.toJson();
-            json.put(
-                    NtpBackgroundDataBase.PLATFORM_TYPE_KEY,
-                    currentGroup.get(index).getPlatformType());
+            json.put(NtpBackgroundDataBase.PLATFORM_TYPE_KEY, existingData.getPlatformType());
             JSONArray jsonArray = currentGroup.toJsonArray();
             jsonArray.put(index, json);
             writeToSharedPreference(jsonArray, groupPlatformTypeToUpdate);
@@ -182,7 +196,7 @@ public class NtpBackgroundDataManager {
             // rotation. Delete that file if nothing uses it anymore. This runs after the new
             // list is saved. Before that, the old entry is still in the saved list, and its
             // file would be kept.
-            if (currentGroup.get(index) instanceof NtpBackgroundDataImageBase replacedImage
+            if (existingData instanceof NtpBackgroundDataImageBase replacedImage
                     && !replacedImage.hasSameImage(backgroundData)) {
                 maybeDeleteUnusedImageFilesImpl(List.of(replacedImage));
             }
@@ -205,7 +219,8 @@ public class NtpBackgroundDataManager {
      * @param backgroundData The rotated background. Its platform type is ignored.
      */
     public void maybeReplaceUserSelectedBackgroundInPlace(NtpBackgroundDataBase backgroundData) {
-        replaceBackgroundDataInPlace(backgroundData, PlatformType.ANDROID);
+        replaceBackgroundDataInPlace(
+                backgroundData, PlatformType.ANDROID, /* shouldRequireSameImage= */ false);
     }
 
     /**

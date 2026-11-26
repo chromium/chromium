@@ -780,6 +780,63 @@ public class NtpBackgroundDataManagerUnitTest {
                 ((NtpBackgroundDataThemeCollection) group.get(0)).getPrimaryColor());
     }
 
+    @Test
+    public void
+            testSaveRemoteSyncDataToSharedPreference_dailyRefreshRotated_replacesEntryAndDeletesFile() {
+        NtpBackgroundDataThemeCollection firstImage =
+                createAndSaveThemeCollectionData(
+                        PlatformType.DESKTOP,
+                        JUnitTestGURLs.URL_1,
+                        /* isDailyRefreshEnabled= */ true,
+                        HISTORY_FILE_HASH);
+        firstImage.setPrimaryColor(Color.BLUE);
+        // Populate image info like a fetched remote entry.
+        completeEntry(firstImage);
+        File firstFile = new File(firstImage.getLastUploadImageFilePath());
+        mManager.saveRemoteSyncDataToSharedPreference(firstImage);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Desktop rotates to a new image without a color.
+        mManager.saveRemoteSyncDataToSharedPreference(
+                createDesktopDailyRefreshThemeCollection(
+                        JUnitTestGURLs.URL_2, /* primaryColor= */ null));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The new entry replaces the old one without keeping its color, image info, or file.
+        NtpBackgroundDataThemeCollection entry = getOnlyThemeCollectionEntry(PlatformType.DESKTOP);
+        assertEquals(JUnitTestGURLs.URL_2, entry.getCustomBackgroundInfo().backgroundUrl);
+        assertNull(entry.getPrimaryColor());
+        assertNull(entry.getBackgroundImageInfo());
+        assertNull(entry.getFileIdHash());
+        assertFalse(firstFile.exists());
+    }
+
+    @Test
+    public void
+            testUpdateRemoteSyncDataToSharedPreference_staleDailyRefreshImage_doesNotOverwriteNewImage() {
+        // Desktop syncs the first image before the theme history finishes fetching it.
+        NtpBackgroundDataThemeCollection firstImage =
+                createDesktopDailyRefreshThemeCollection(JUnitTestGURLs.URL_1, Color.BLUE);
+        mManager.saveRemoteSyncDataToSharedPreference(firstImage);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Desktop rotates to a new image while the first fetch is still in flight.
+        mManager.saveRemoteSyncDataToSharedPreference(
+                createDesktopDailyRefreshThemeCollection(JUnitTestGURLs.URL_2, Color.BLUE));
+        RobolectricUtil.runAllBackgroundAndUi();
+        String savedHistory =
+                mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.DESKTOP).toString();
+
+        // Finishing the first image's fetch must not overwrite the new image.
+        completeEntry(firstImage);
+        mManager.updateRemoteSyncDataToSharedPreference(firstImage);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(
+                savedHistory,
+                mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.DESKTOP).toString());
+    }
+
     private NtpBackgroundDataThemeCollection createDesktopThemeCollection(
             @Nullable @ColorInt Integer primaryColor) {
         CustomBackgroundInfo customBgInfo =
@@ -1211,8 +1268,46 @@ public class NtpBackgroundDataManagerUnitTest {
 
         mManager.maybeReplaceUserSelectedBackgroundInPlace(rotatedEntry);
 
+        NtpBackgroundDataThemeCollection entry = getOnlyThemeCollectionEntry(PlatformType.ANDROID);
+        assertEquals(JUnitTestGURLs.URL_2, entry.getCustomBackgroundInfo().backgroundUrl);
         assertTrue(rotatedFile.exists());
         assertFalse(previousFile.exists());
+    }
+
+    /** Creates a desktop daily refresh theme collection entry for {@link #TEST_COLLECTION_ID}. */
+    private static NtpBackgroundDataThemeCollection createDesktopDailyRefreshThemeCollection(
+            GURL url, @Nullable @ColorInt Integer primaryColor) {
+        return new NtpBackgroundDataThemeCollection(
+                PlatformType.DESKTOP,
+                new CustomBackgroundInfo(
+                        url,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true),
+                /* backgroundImageInfo= */ null,
+                /* bitmap= */ null,
+                primaryColor,
+                /* fileIdHash= */ null);
+    }
+
+    /** Populates {@code entry}'s file hash and image info as if its image had been fetched. */
+    private static void completeEntry(NtpBackgroundDataThemeCollection entry) {
+        entry.setFileIdHash(HISTORY_FILE_HASH);
+        entry.setBackgroundImageInfo(
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null));
+    }
+
+    /** Asserts {@code platformType} has one history entry and returns it as a theme collection. */
+    private NtpBackgroundDataThemeCollection getOnlyThemeCollectionEntry(
+            @PlatformType int platformType) {
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(platformType);
+        assertEquals(1, group.size());
+        return (NtpBackgroundDataThemeCollection) group.get(0);
     }
 
     /** Creates an Android Chrome color with the given color ID and daily refresh setting. */
