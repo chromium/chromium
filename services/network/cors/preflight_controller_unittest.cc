@@ -35,7 +35,6 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -906,32 +905,6 @@ TEST_F(PreflightControllerTest,
   EXPECT_EQ(mojom::CorsError::kPreflightAllowOriginMismatch,
             status()->cors_error);
   EXPECT_EQ(2u, access_count());
-}
-
-TEST_F(PreflightControllerTest,
-       TaintedPreflightDoesNotSatisfyUntaintedRequest_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kCorsPreflightCacheKeyTaintedOrigin);
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.url = GetURL("/tainted");
-  request.request_initiator = test_initiator_origin();
-
-  // Tainted preflight check succeeds.
-  PerformPreflightCheck(request, /*tainted=*/true);
-  EXPECT_EQ(net::OK, net_error());
-  ASSERT_FALSE(status());
-  EXPECT_EQ(1u, access_count());
-
-  // With the feature disabled, the tainted preflight is incorrectly cached
-  // under request_initiator, allowing the untainted request to skip preflight.
-  PerformPreflightCheck(request, /*tainted=*/false);
-  EXPECT_EQ(net::OK, net_error());
-  ASSERT_FALSE(status());
-  EXPECT_EQ(1u, access_count());
 }
 
 TEST_F(PreflightControllerTest,

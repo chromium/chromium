@@ -62,9 +62,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAcceptCHOffloadForSubframe);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCorsNonWildcardRequestHeadersSupport);
 
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kCorsPreflightCacheKeyTaintedOrigin);
-
 // When enabled, disallows treating 'Intervention' as a CORS-safelisted header
 // in network/CORS checks (aligning with WHATWG Fetch) and stops attaching the
 // outgoing 'Intervention' HTTP request header to document.write intervention

@@ -38,7 +38,6 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -485,13 +484,11 @@ class PreflightController::PreflightLoader final {
         result->HasAuthorizationCoveredByWildcard(original_request_.headers);
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
-        net_error == net::OK && !net::IsCertStatusError(head.cert_status)) {
-      if (!tainted_ || !base::FeatureList::IsEnabled(
-                           features::kCorsPreflightCacheKeyTaintedOrigin)) {
-        controller_->AppendToCache(*original_request_.request_initiator,
-                                   original_request_.url,
-                                   network_isolation_key_, std::move(result));
-      }
+        net_error == net::OK && !net::IsCertStatusError(head.cert_status) &&
+        !tainted_) {
+      controller_->AppendToCache(*original_request_.request_initiator,
+                                 original_request_.url, network_isolation_key_,
+                                 std::move(result));
     }
 
     weak_factory_.InvalidateWeakPtrs();
@@ -632,9 +629,7 @@ PreflightController::PerformPreflightCheck(
                 ? request.trusted_params->isolation_info.network_isolation_key()
                 : net::NetworkIsolationKey();
 
-  if (!RetrieveCacheFlags(request.load_flags) &&
-      (!tainted || !base::FeatureList::IsEnabled(
-                       features::kCorsPreflightCacheKeyTaintedOrigin)) &&
+  if (!RetrieveCacheFlags(request.load_flags) && !tainted &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers, net_log,

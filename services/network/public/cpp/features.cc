@@ -163,12 +163,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, CORS preflight cache keys take the tainted origin flag into
-// account (using an opaque / null origin), preventing tainted preflight
-// results from satisfying untainted requests.
-BASE_FEATURE(kCorsPreflightCacheKeyTaintedOrigin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the network service will disallow treating 'Intervention' as a
 // CORS-safelisted header, aligning with the WHATWG Fetch specification.
 BASE_FEATURE(kDisallowInterventionInCorsSafelistedHeaders,

@@ -31,6 +31,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
+#include "services/network/cors/preflight_cache.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/features.h"
@@ -237,25 +238,6 @@ TEST_P(ParameterizedCorsURLLoaderUserAgentCorsExemptTest,
   CompleteWithCorsResponse();
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
-
-class CorsURLLoaderTestWithTaintedOriginCacheKey
-    : public CorsURLLoaderTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  CorsURLLoaderTestWithTaintedOriginCacheKey() {
-    feature_list_.InitWithFeatureState(
-        features::kCorsPreflightCacheKeyTaintedOrigin, GetParam());
-  }
-
-  bool IsTaintedOriginCacheKeyEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CorsURLLoaderTestWithTaintedOriginCacheKey,
-                         testing::Bool());
 
 class BadMessageTestHelper {
  public:
@@ -3364,7 +3346,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   EXPECT_TRUE(GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
-TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
+TEST_P(ParameterizedCorsURLLoaderTest,
        RestrictedPrefetchRedirectUpdatesIsolationInfo) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
   const GURL url("https://other.example.com/foo.png");
@@ -3426,183 +3408,51 @@ TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
   EXPECT_EQ(GetRequest().method, "OPTIONS");
 
   // The preflight check should have used the updated, correct
-  // NetworkIsolationKey: net::NetworkIsolationKey(other2.example.com,
-  // other2.example.com) instead of the stale:
-  // net::NetworkIsolationKey(other.example.com, other.example.com)
+  // NetworkIsolationKey: net::NetworkIsolationKey(other.example.org,
+  // other.example.org) instead of the stale:
+  // net::NetworkIsolationKey(other.example.com, other.example.com).
   net::SchemefulSite expected_site(new_url);
   net::NetworkIsolationKey expected_nik(expected_site, expected_site);
   net::SchemefulSite stale_site(url);
   net::NetworkIsolationKey stale_nik(stale_site, stale_site);
+
+  ASSERT_TRUE(GetRequest().trusted_params.has_value());
+  EXPECT_EQ(GetRequest().trusted_params->isolation_info.network_isolation_key(),
+            expected_nik);
 
   // The browser nulls out the Origin header after a cross-origin redirect, so
   // Access-Control-Allow-Origin: null is required here and below.
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"},
        {"Access-Control-Allow-Headers", "x-custom"}});
-  NotifyLoaderClientOnComplete(net::OK);
-  if (IsTaintedOriginCacheKeyEnabled()) {
-    // When kCorsPreflightCacheKeyTaintedOrigin is enabled, tainted preflights
-    // are not cached, so no entry is added for new_url.
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
-    EXPECT_EQ(1u, network_context()
-                      ->cors_preflight_controller()
-                      ->GetPreflightCacheForTesting()
-                      .CountEntriesForTesting());
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    NotifyLoaderClientOnComplete(net::OK);
+    // Wait for the second preflight to complete and trigger FollowRedirect() on
+    // the existing network loader.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return loader(1) && loader(1)->follow_redirect_called(); }));
+    EXPECT_EQ(3, num_created_loaders());
   } else {
-    // When kCorsPreflightCacheKeyTaintedOrigin is disabled, the tainted
-    // preflight is keyed under `initiator`. Verify that the preflight cache
-    // contains the entry for other.example.org under expected_nik and NOT under
-    // the stale NIK.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return network_context()
-          ->cors_preflight_controller()
-          ->GetPreflightCacheForTesting()
-          .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik);
-    }));
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
-    EXPECT_EQ(2u, network_context()
-                      ->cors_preflight_controller()
-                      ->GetPreflightCacheForTesting()
-                      .CountEntriesForTesting());
+    RunUntilCreateLoaderAndStartCalled();
+    // The actual redirected request (GET) to `new_url`.
+    EXPECT_EQ(4, num_created_loaders());
+    EXPECT_EQ(GetRequest().url, new_url);
+    EXPECT_EQ(GetRequest().method, "GET");
+    ASSERT_TRUE(GetRequest().trusted_params.has_value());
+    EXPECT_EQ(
+        GetRequest().trusted_params->isolation_info.network_isolation_key(),
+        expected_nik);
   }
 
-  // When the second preflight completes, network_loader_->FollowRedirect() is
-  // called on the existing loader, so no fourth loader is created.
-  EXPECT_EQ(3, num_created_loaders());
-
-  NotifyLoaderClientOnReceiveResponse(
-      {{"Access-Control-Allow-Origin", "null"}});
-  NotifyLoaderClientOnComplete(net::OK);
-  RunUntilComplete();
-
-  EXPECT_TRUE(client().has_received_response());
-  EXPECT_TRUE(client().has_received_completion());
-  EXPECT_EQ(net::OK, client().completion_status().error_code);
-}
-
-TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
-       RestrictedPrefetchRedirectUpdatesIsolationInfo_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAvoidCorsURLLoaderRestartOnRedirect);
-
-  url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
-  const GURL url("https://other.example.com/foo.png");
-  const GURL new_url("https://other.example.org/bar.png");
-
-  ResetFactoryParams factory_params;
-  factory_params.is_trusted = true;
-  ResetFactory(initiator, kRendererProcessId, factory_params);
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.method = "GET";
-  request.url = url;
-  request.request_initiator = initiator;
-  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
-  request.headers.SetHeader("x-custom", "value");
-  request.trusted_params = ResourceRequest::TrustedParams();
-
-  url::Origin request_origin = url::Origin::Create(request.url);
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kMainFrame, request_origin,
-      request_origin, net::SiteForCookies());
-
-  CreateLoaderAndStart(request);
-  RunUntilCreateLoaderAndStartCalled();
-
-  // First preflight request (OPTIONS) to `url`
-  EXPECT_EQ(1, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, url);
-  EXPECT_EQ(GetRequest().method, "OPTIONS");
-
-  NotifyLoaderClientOnReceiveResponse(
-      {{"Access-Control-Allow-Origin", "https://example.com"},
-       {"Access-Control-Allow-Headers", "x-custom"}});
-  RunUntilCreateLoaderAndStartCalled();
-
-  // The actual prefetch request (GET) to `url`
-  EXPECT_EQ(2, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, url);
-  EXPECT_EQ(GetRequest().method, "GET");
-
-  // Redirect actual request to `new_url`
-  net::RedirectInfo redirect_info = CreateRedirectInfo(301, "GET", new_url);
-  NotifyLoaderClientOnReceiveRedirect(
-      redirect_info, {{"Access-Control-Allow-Origin", "https://example.com"}});
-  RunUntilRedirectReceived();
-  EXPECT_TRUE(client().has_received_redirect());
-
-  ClearHasReceivedRedirect();
-  FollowRedirect();
-  RunUntilCreateLoaderAndStartCalled();
-
-  // The second preflight request (OPTIONS) to `new_url` because of the redirect
-  EXPECT_EQ(3, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, new_url);
-  EXPECT_EQ(GetRequest().method, "OPTIONS");
-
-  net::SchemefulSite expected_site(new_url);
-  net::NetworkIsolationKey expected_nik(expected_site, expected_site);
-  net::SchemefulSite stale_site(url);
-  net::NetworkIsolationKey stale_nik(stale_site, stale_site);
-
-  NotifyLoaderClientOnReceiveResponse(
-      {{"Access-Control-Allow-Origin", "null"},
-       {"Access-Control-Allow-Headers", "x-custom"}});
-
-  RunUntilCreateLoaderAndStartCalled();
-
-  if (IsTaintedOriginCacheKeyEnabled()) {
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
-    EXPECT_EQ(1u, network_context()
-                      ->cors_preflight_controller()
-                      ->GetPreflightCacheForTesting()
-                      .CountEntriesForTesting());
-  } else {
-    EXPECT_TRUE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
-    EXPECT_FALSE(
-        network_context()
-            ->cors_preflight_controller()
-            ->GetPreflightCacheForTesting()
-            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
-    EXPECT_EQ(2u, network_context()
-                      ->cors_preflight_controller()
-                      ->GetPreflightCacheForTesting()
-                      .CountEntriesForTesting());
-  }
-
-  // The actual redirected request (GET) to `new_url`
-  EXPECT_EQ(4, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, new_url);
-  EXPECT_EQ(GetRequest().method, "GET");
+  // Tainted preflights are not cached, so no entry is added for new_url.
+  const PreflightCache& cache = network_context()
+                                    ->cors_preflight_controller()
+                                    ->GetPreflightCacheForTesting();
+  EXPECT_FALSE(
+      cache.DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
+  EXPECT_FALSE(
+      cache.DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+  EXPECT_EQ(1u, cache.CountEntriesForTesting());
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"}});
