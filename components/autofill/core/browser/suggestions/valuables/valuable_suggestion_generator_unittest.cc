@@ -798,6 +798,20 @@ TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
               testing::IsEmpty());
 }
 
+TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
+       OriginMismatch) {
+  set_last_committed_primary_main_frame_url(
+      GURL("https://domain2.example/test"));
+  field().set_origin(url::Origin::Create(GURL("https://cross-origin.example")));
+  EXPECT_THAT(
+      GetSuggestionsForLoyaltyCards(
+          form().ToFormData(), &form(), field(), &field(),
+          PasswordFormClassification{
+              .type = PasswordFormClassification::Type::kNoPasswordForm},
+          client()),
+      testing::IsEmpty());
+}
+
 // Tests that no loyalty card suggestions are shown when no data is available.
 TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
        LoyaltyCardsEmpty) {

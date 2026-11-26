@@ -285,6 +285,12 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     return;
   }
 
+  if (client.GetLastCommittedPrimaryMainFrameOrigin() !=
+      trigger_field.origin()) {
+    callback({SuggestionDataSource::kLoyaltyCard, {}});
+    return;
+  }
+
   std::vector<LoyaltyCard> all_loyalty_cards =
       client.GetValuablesDataManager()->GetLoyaltyCardsToSuggest();
 
@@ -297,9 +303,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
         return card.GetAffiliationCategory(
                    client.GetLastCommittedPrimaryMainFrameURL()) ==
-                   LoyaltyCard::AffiliationCategory::kAffiliated &&
-               client.GetLastCommittedPrimaryMainFrameOrigin() ==
-                   trigger_field.origin();
+               LoyaltyCard::AffiliationCategory::kAffiliated;
       });
 
   base::span<const LoyaltyCard> affiliated_cards =
