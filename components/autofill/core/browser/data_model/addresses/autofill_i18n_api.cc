@@ -489,6 +489,11 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
+  if (country_code == AddressCountryCode("CO") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    return false;
+  }
+
   if (country_code == AddressCountryCode("IN") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     return false;

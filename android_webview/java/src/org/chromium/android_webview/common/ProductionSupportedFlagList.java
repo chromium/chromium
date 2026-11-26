@@ -338,6 +338,9 @@ public final class ProductionSupportedFlagList {
                 "Controls whether iframe subqueries use their host form's structural signature and"
                         + " omit main-form-only metadata."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_CO_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Colombia."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
         Flag.baseFeature(

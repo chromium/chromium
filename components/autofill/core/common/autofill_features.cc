@@ -1199,6 +1199,9 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAutofillUploadPerIframeStructuralSignatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a custom address model for Colombia, overriding the legacy one.
+BASE_FEATURE(kAutofillUseCOAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
 
