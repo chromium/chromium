@@ -1,0 +1,3 @@
+Tests that Runtime.consoleAPICalled formats ES6 Symbol descriptions without invoking an overridden Symbol.prototype.toString.
+runtime-console-format-es6-symbols-error.js:5 symbol Symbol()
+
