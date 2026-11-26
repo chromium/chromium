@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -16,7 +15,6 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -24,22 +22,11 @@
 
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {
-#if !BUILDFLAG(IS_CHROMEOS)
-            syncer::kUnoPhase2FollowUp
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-        },
-        {});
-    InitPedals();
-  }
+  void SetUp() override { InitPedals(); }
 
   void InitPedals(
       OmniboxPedalProfileType profile_type = OmniboxPedalProfileType::kRegular,
       OmniboxPedalOtrType otr_type = OmniboxPedalOtrType::kIncognito) {
-    // Note, pedals initialization must happen after features are initialized so
-    // that field trial checks will allow instantiation of all pedals.
     autocomplete_provider_client_.set_pedal_provider(
         std::make_unique<OmniboxPedalProvider>(
             autocomplete_provider_client_,
@@ -17979,7 +17966,6 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     }
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   MockAutocompleteProviderClient autocomplete_provider_client_;
 
