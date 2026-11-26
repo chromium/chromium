@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
@@ -55,6 +56,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ViewportTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.ContextualSearchImageControl;
@@ -86,11 +88,13 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.test.transit.SoftKeyboardCondition;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -138,7 +142,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void tearDown() throws Exception {
         super.tearDown();
         if (mActionTester != null) mActionTester.tearDown();
-        mPanel.setEdgeToEdgeControllerSupplierForTesting(ObservableSuppliers.alwaysNull());
+        if (mPanel != null) {
+            mPanel.setEdgeToEdgeControllerSupplierForTesting(ObservableSuppliers.alwaysNull());
+        }
     }
 
     // ============================================================================================
@@ -942,7 +948,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     // Previously flaky and disabled 4/2021.  https://crbug.com/40750236
-    public void testTriggeringContextualSearchHidesFindInPageOverlay() throws Exception {
+    public void testTriggeringContextualSearchHidesFindInPageOverlay() throws Throwable {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
@@ -963,6 +969,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         View findToolbar = mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
         Assert.assertTrue(findToolbar.isShown());
+
+        // Wait for the soft keyboard opened by FindToolbar to settle and commit any viewport
+        // resize before scrolling/clicking the target node; otherwise an in-flight resize or
+        // scrollIntoView() commit shifts the tap coordinates onto a neighboring line.
+        noopTo().waitFor(
+                        new SoftKeyboardCondition(
+                                mActivityTestRule::getActivity, /* expectShowing= */ true));
+        ViewportTestUtils viewportTestUtils = new ViewportTestUtils(mActivityTestRule);
+        viewportTestUtils.waitForFramePresented();
+        DOMUtils.scrollNodeIntoView(mActivityTestRule.getWebContents(), "search");
+        viewportTestUtils.waitForFramePresented();
 
         simulateResolveSearch("search");
 
