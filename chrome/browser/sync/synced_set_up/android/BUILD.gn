@@ -27,12 +27,14 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/sync/synced_set_up/SyncedSetUpUtilsBridge.java" ]
+  deps = [ "//components/sync_preferences/synced_set_up/android:jni_headers" ]
 }
 
 source_set("android") {
   sources = [ "synced_set_up_utils_bridge.cc" ]
   deps = [
     ":jni_headers",
+    "//base",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
     "//components/sync_device_info",
@@ -40,24 +42,23 @@ source_set("android") {
     "//components/sync_preferences/synced_set_up:utils",
     "//components/sync_preferences/synced_set_up/android",
     "//components/sync_preferences/synced_set_up/android:jni_headers",
+    "//third_party/jni_zero",
   ]
 }
-#robolectric_library("junit") {
-#  testonly = true
-#  sources = [ "javatests/src/org/chromium/chrome/browser/sync/synced_set_up/CrossDeviceSettingImporterUnitTest.java" ]
-#  deps = [
-#    ":java",
-#    "//base:base_java",
-#    "//base:base_java_test_support",
-#    "//base:base_junit_test_support",
-#    "//chrome/browser/profiles/android:java",
-#    "//components/sync/android:sync_java",
-#    "//components/sync_preferences/synced_set_up/android:java",
-#    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
-#    "//third_party/androidx:androidx_test_core_java",
-#    "//third_party/androidx:androidx_test_ext_junit_java",
-#    "//third_party/junit",
-#    "//third_party/mockito:mockito_java",
-#  ]
-#  resources_package = "org.chromium.chrome.browser.sync"
-#}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [ "junit/src/org/chromium/chrome/browser/sync/synced_set_up/SyncedSetUpUtilsBridgeUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//components/sync_preferences/cross_device_pref_tracker/android:java",
+    "//components/sync_preferences/synced_set_up/android:java",
+    "//components/sync_preferences/synced_set_up/android:test_support_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

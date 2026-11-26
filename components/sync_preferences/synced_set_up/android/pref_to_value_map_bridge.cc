@@ -6,43 +6,51 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sync_preferences/synced_set_up/android/jni_headers/PrefToValueMapBridge_jni.h"
 
 namespace sync_preferences::synced_set_up {
 
-static int64_t JNI_PrefToValueMapBridge_Init(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_caller) {
-  return reinterpret_cast<intptr_t>(new PrefToValueMapBridge(j_caller));
+static jni_zero::JniUniquePtr<PrefToValueMapBridge>
+JNI_PrefToValueMapBridge_Init(JNIEnv* env,
+                              const base::android::JavaRef<jobject>& j_caller) {
+  return jni_zero::MakeUnique<PrefToValueMapBridge>(env, j_caller);
 }
 
 PrefToValueMapBridge::PrefToValueMapBridge(
+    JNIEnv* env,
     const base::android::JavaRef<jobject>& j_obj)
-    : jobj_(j_obj) {}
+    : jobj_(env, j_obj) {}
 
 PrefToValueMapBridge::~PrefToValueMapBridge() = default;
 
 void PrefToValueMapBridge::PutStringValue(JNIEnv* env,
-                                          const std::string_view& key,
-                                          const std::string_view& value) {
-  Java_PrefToValueMapBridge_putStringValue(env, jobj_, key.data(),
-                                           value.data());
+                                          std::string_view key,
+                                          std::string_view value) {
+  Java_PrefToValueMapBridge_putStringValue(env, GetJavaObject(env), key, value);
 }
 
 void PrefToValueMapBridge::PutIntValue(JNIEnv* env,
-                                       const std::string_view& key,
+                                       std::string_view key,
                                        int value) {
-  Java_PrefToValueMapBridge_putIntValue(env, jobj_, key.data(), value);
+  Java_PrefToValueMapBridge_putIntValue(env, GetJavaObject(env), key, value);
 }
 
 void PrefToValueMapBridge::PutBooleanValue(JNIEnv* env,
-                                           const std::string_view& key,
+                                           std::string_view key,
                                            bool value) {
-  Java_PrefToValueMapBridge_putBooleanValue(env, jobj_, key.data(), value);
+  Java_PrefToValueMapBridge_putBooleanValue(env, GetJavaObject(env), key,
+                                            value);
 }
 
-void PrefToValueMapBridge::Destroy(JNIEnv* env) {
-  delete this;
+base::android::ScopedJavaLocalRef<jobject> PrefToValueMapBridge::GetJavaObject(
+    JNIEnv* env) const {
+  base::android::ScopedJavaLocalRef<jobject> obj = jobj_.get(env);
+  CHECK(obj);
+  return obj;
 }
 
 }  // namespace sync_preferences::synced_set_up

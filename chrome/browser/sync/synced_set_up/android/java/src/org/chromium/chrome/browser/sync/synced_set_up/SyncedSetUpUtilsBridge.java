@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -51,15 +52,16 @@ public class SyncedSetUpUtilsBridge {
         long prefTrackerPtr = prefTracker.getNativePtr();
         if (prefTrackerPtr == 0) return Map.of();
 
+        long profilePtr = profile.getNativeBrowserContextPointer();
         PrefToValueMapBridge mapBridge = new PrefToValueMapBridge();
-        SyncedSetUpUtilsBridgeJni.get()
-                .getCrossDevicePrefsFromRemoteDevice(
-                        profile.getNativeBrowserContextPointer(),
-                        prefTrackerPtr,
-                        mapBridge.getNativeBridgePtr());
-        Map<String, Object> result = mapBridge.getPrefValueMap();
-        mapBridge.destroy();
-        return result;
+        try {
+            SyncedSetUpUtilsBridgeJni.get()
+                    .getCrossDevicePrefsFromRemoteDevice(
+                            profilePtr, prefTrackerPtr, mapBridge.getNativeBridgePtr());
+            return mapBridge.getPrefValueMap();
+        } finally {
+            mapBridge.destroy();
+        }
     }
 
     /**
@@ -139,7 +141,9 @@ public class SyncedSetUpUtilsBridge {
     @NativeMethods
     public interface Natives {
         void getCrossDevicePrefsFromRemoteDevice(
-                long profile, long crossDevicePrefTracker, long mapBridge);
+                long profile,
+                long crossDevicePrefTracker,
+                JniPtr<PrefToValueMapBridge.NativePrefToValueMapBridge> mapBridge);
 
         @JniType("std::vector<int32_t>")
         int[] getBestMatchDeviceOsTypeAndFormFactor(long profile, long crossDevicePrefTracker);

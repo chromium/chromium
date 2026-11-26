@@ -4,12 +4,18 @@
 
 package org.chromium.components.sync_preferences.synced_set_up;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +27,10 @@ import java.util.Map;
 @NullMarked
 @JNINamespace("sync_preferences::synced_set_up")
 public class PrefToValueMapBridge {
+    @JniType("::sync_preferences::synced_set_up::PrefToValueMapBridge")
+    public interface NativePrefToValueMapBridge extends JniTypeToken {}
 
-    private long mNativePrefToValueMapBridge;
+    private @Nullable JniUniquePtr<NativePrefToValueMapBridge> mNativePrefToValueMapBridge;
     private final Map<String, Object> mPrefsToValues = new HashMap<>();
 
     /** Creates a new PrefToValueMapBridge and its native counterpart. */
@@ -30,31 +38,37 @@ public class PrefToValueMapBridge {
         mNativePrefToValueMapBridge = PrefToValueMapBridgeJni.get().init(this);
     }
 
-    public long getNativeBridgePtr() {
+    public JniPtr<NativePrefToValueMapBridge> getNativeBridgePtr() {
+        if (mNativePrefToValueMapBridge == null) {
+            throw new IllegalStateException("PrefToValueMapBridge has already been destroyed.");
+        }
         return mNativePrefToValueMapBridge;
     }
 
     /** Destroys the native counterpart. */
     public void destroy() {
-        if (mNativePrefToValueMapBridge != 0) {
-            PrefToValueMapBridgeJni.get().destroy(mNativePrefToValueMapBridge);
-            mNativePrefToValueMapBridge = 0;
+        if (mNativePrefToValueMapBridge != null) {
+            mNativePrefToValueMapBridge.destroy();
+            mNativePrefToValueMapBridge = null;
         }
     }
 
     @CalledByNative
-    private void putStringValue(
-            @JniType("std::string") String key, @JniType("std::string") String value) {
+    @VisibleForTesting
+    void putStringValue(
+            @JniType("std::string_view") String key, @JniType("std::string_view") String value) {
         mPrefsToValues.put(key, value);
     }
 
     @CalledByNative
-    private void putIntValue(@JniType("std::string") String key, int value) {
+    @VisibleForTesting
+    void putIntValue(@JniType("std::string_view") String key, int value) {
         mPrefsToValues.put(key, value);
     }
 
     @CalledByNative
-    private void putBooleanValue(@JniType("std::string") String key, boolean value) {
+    @VisibleForTesting
+    void putBooleanValue(@JniType("std::string_view") String key, boolean value) {
         mPrefsToValues.put(key, value);
     }
 
@@ -67,8 +81,6 @@ public class PrefToValueMapBridge {
 
     @NativeMethods
     interface Natives {
-        long init(PrefToValueMapBridge caller);
-
-        void destroy(long nativePrefToValueMapBridge);
+        JniUniquePtr<NativePrefToValueMapBridge> init(PrefToValueMapBridge caller);
     }
 }

@@ -1262,6 +1262,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/single_tab/android:junit",
       "//chrome/browser/supervised_user:junit",
       "//chrome/browser/sync/android:junit",
+      "//chrome/browser/sync/synced_set_up/android:junit",
       "//chrome/browser/tab:junit",
       "//chrome/browser/tab_group_suggestion:junit",
       "//chrome/browser/tab_group_sync:junit",

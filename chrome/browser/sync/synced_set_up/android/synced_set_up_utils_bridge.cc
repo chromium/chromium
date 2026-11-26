@@ -4,6 +4,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -14,6 +15,7 @@
 #include "components/sync_preferences/synced_set_up/android/pref_to_value_map_bridge.h"
 #include "components/sync_preferences/synced_set_up/utils.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType, and must have no
 // namespace.
@@ -36,7 +38,8 @@ static void JNI_SyncedSetUpUtilsBridge_GetCrossDevicePrefsFromRemoteDevice(
     JNIEnv* env,
     int64_t profile,
     int64_t cross_device_pref_tracker,
-    int64_t map_bridge) {
+    sync_preferences::synced_set_up::PrefToValueMapBridge* map_bridge) {
+  CHECK(map_bridge);
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(
           reinterpret_cast<Profile*>(profile));
@@ -52,19 +55,16 @@ static void JNI_SyncedSetUpUtilsBridge_GetCrossDevicePrefsFromRemoteDevice(
               cross_device_pref_tracker),
           device_info_tracker, local_device);
 
-  sync_preferences::synced_set_up::PrefToValueMapBridge* pref_map =
-      reinterpret_cast<sync_preferences::synced_set_up::PrefToValueMapBridge*>(
-          map_bridge);
   for (auto const& [key, val] : cross_device_prefs_map) {
     switch (val.type()) {
       case base::Value::Type::BOOLEAN:
-        pref_map->PutBooleanValue(env, std::string(key), val.GetBool());
+        map_bridge->PutBooleanValue(env, key, val.GetBool());
         break;
       case base::Value::Type::INTEGER:
-        pref_map->PutIntValue(env, std::string(key), val.GetInt());
+        map_bridge->PutIntValue(env, key, val.GetInt());
         break;
       case base::Value::Type::STRING:
-        pref_map->PutStringValue(env, std::string(key), val.GetString());
+        map_bridge->PutStringValue(env, key, val.GetString());
         break;
       default:
         // Other types not supported by PrefToValueMapBridge.
