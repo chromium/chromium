@@ -27,7 +27,7 @@ class FilePath;
 namespace actor {
 class AggregatedJournalFileSerializer;
 class AggregatedJournalInMemorySerializer;
-}
+}  // namespace actor
 
 namespace ttc {
 
@@ -41,10 +41,6 @@ struct ServerJournalEvent;
 // own, updated whenever the active page changes (e.g. from ActiveTabTracker).
 class SessionJournalImpl : public SessionJournal {
  public:
-  // An async event that ends when EndEntry() is called on it or when it's
-  // destroyed.
-  using PendingAsyncEvent = actor::AggregatedJournal::PendingAsyncEntry;
-
   // Whether a session's actor journal should be serialized in memory. On
   // desktop platforms, enabled when `kTtcInMemoryJournal` is enabled, or by
   // default on dogfood clients when `kTtcInMemoryJournal` is not explicitly
@@ -77,11 +73,9 @@ class SessionJournalImpl : public SessionJournal {
   void HandleServerJournalEvent(const ServerJournalEvent& event) override;
   void LogAudio(std::string_view mime_type,
                 base::span<const uint8_t> data) override;
-
-  // Begins an async event, which lasts until the returned object ends it.
   [[nodiscard]] std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
       std::string_view event_name,
-      std::vector<actor::mojom::JournalDetailsPtr> details);
+      std::vector<actor::mojom::JournalDetailsPtr> details) override;
 
   actor::TaskId task_id() const { return task_id_; }
   base::TimeDelta server_clock_delta() const { return server_clock_delta_; }

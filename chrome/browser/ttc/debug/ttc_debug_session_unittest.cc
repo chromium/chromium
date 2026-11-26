@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -50,6 +51,11 @@ class RecordingJournal : public SessionJournal {
   void HandleServerJournalEvent(const ServerJournalEvent& event) override {}
   void LogAudio(std::string_view mime_type,
                 base::span<const uint8_t> data) override {}
+  std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
+      std::string_view event_name,
+      std::vector<actor::mojom::JournalDetailsPtr> details) override {
+    NOTREACHED();
+  }
 
   std::vector<std::string> names;
 };

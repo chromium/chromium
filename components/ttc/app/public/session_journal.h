@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 
 namespace ttc {
@@ -21,6 +23,10 @@ struct ServerJournalEvent;
 // Interface for recording TTC session events in the actor journal.
 class SessionJournal {
  public:
+  // An async event that ends when EndEntry() is called on it or when it's
+  // destroyed.
+  using PendingAsyncEvent = actor::AggregatedJournal::PendingAsyncEntry;
+
   enum class Track {
     kFrontEnd,
     kMesClientRecv,
@@ -45,6 +51,12 @@ class SessionJournal {
   // journal's screenshot slot since that's the only binary blob it supports.
   virtual void LogAudio(std::string_view mime_type,
                         base::span<const uint8_t> data) = 0;
+
+  // Begins an async event, which lasts until the returned non-null object ends
+  // it.
+  [[nodiscard]] virtual std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
+      std::string_view event_name,
+      std::vector<actor::mojom::JournalDetailsPtr> details) = 0;
 };
 
 }  // namespace ttc

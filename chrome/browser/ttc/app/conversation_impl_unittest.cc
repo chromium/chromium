@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -51,6 +52,11 @@ class FakeSessionJournal : public SessionJournal {
   void HandleServerJournalEvent(const ServerJournalEvent& event) override {}
   void LogAudio(std::string_view mime_type,
                 base::span<const uint8_t> data) override {}
+  std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
+      std::string_view event_name,
+      std::vector<actor::mojom::JournalDetailsPtr> details) override {
+    NOTREACHED();
+  }
 };
 
 class FakeSessionController : public SessionController {
