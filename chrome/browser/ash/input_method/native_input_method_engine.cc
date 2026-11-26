@@ -101,16 +101,11 @@ void NativeInputMethodEngine::Initialize(
                                 profile);
 }
 
-bool NativeInputMethodEngine::ShouldRouteToNativeMojoEngine(
-    const std::string& engine_id) const {
-  return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
-}
-
 void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
   // The parent implementation will try to convert `index` into a candidate ID.
   // The native Mojo engine doesn't use candidate IDs, so we just treat `index`
   // as the ID, without doing a mapping.
-  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, GetActiveComponentId())) {
     GetNativeObserver()->OnCandidateClicked(GetActiveComponentId(), index,
                                             MOUSE_BUTTON_LEFT);
   } else {
@@ -119,7 +114,7 @@ void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
 }
 
 bool NativeInputMethodEngine::IsReadyForTesting() {
-  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, GetActiveComponentId())) {
     return GetNativeObserver()->IsReadyForTesting();  // IN-TEST
   }
   return InputMethodEngine::IsReadyForTesting();
@@ -167,7 +162,7 @@ bool NativeInputMethodEngine::UpdateMenuItems(
   // wants to update the menu items.
   // Ignore this if the native Mojo engine is active to prevent the extension
   // from overriding the menu items set by the native Mojo engine.
-  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, GetActiveComponentId())) {
     return true;
   }
 
@@ -175,7 +170,7 @@ bool NativeInputMethodEngine::UpdateMenuItems(
 }
 
 void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
-  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId()) ||
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, GetActiveComponentId()) ||
       IsFirstPartyVietnameseEngine(GetActiveComponentId())) {
     Enable(GetActiveComponentId());
   } else {

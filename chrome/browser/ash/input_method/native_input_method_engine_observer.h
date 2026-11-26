@@ -40,7 +40,8 @@ namespace input_method {
 
 class EditorMediator;
 
-bool CanRouteToNativeMojoEngine(std::string_view engine_id);
+bool ShouldRouteToNativeMojoEngine(bool use_ime_service,
+                                   std::string_view engine_id);
 
 class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                                         public ime::mojom::InputMethodHost {
@@ -166,8 +167,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   void SendSurroundingTextToNativeMojoEngine(
       const SurroundingText& surrounding_text);
-
-  bool ShouldRouteToNativeMojoEngine(std::string_view engine_id) const;
 
   void OnConnectionFactoryBound(bool bound);
 

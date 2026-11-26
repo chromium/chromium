@@ -688,7 +688,12 @@ ime::mojom::InputMethodSettingsPtr WithAutocorrectOverride(
 
 }  // namespace
 
-bool CanRouteToNativeMojoEngine(std::string_view engine_id) {
+bool ShouldRouteToNativeMojoEngine(bool use_ime_service,
+                                   std::string_view engine_id) {
+  if (!use_ime_service) {
+    return false;
+  }
+
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
   // keyboard is disabled. Otherwise, just let the extension handle any physical
@@ -724,11 +729,6 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
       use_ime_service_(use_ime_service) {}
 
 NativeInputMethodEngineObserver::~NativeInputMethodEngineObserver() = default;
-
-bool NativeInputMethodEngineObserver::ShouldRouteToNativeMojoEngine(
-    std::string_view engine_id) const {
-  return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
-}
 
 void NativeInputMethodEngineObserver::OnConnectionFactoryBound(bool bound) {
   if (bound) {
@@ -800,7 +800,8 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
 
   // TODO(b/181077907): Always launch the IME service and let IME service
   // decide whether it should shutdown or not.
-  if (HasXkbPrefix(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
+  if (HasXkbPrefix(engine_id) &&
+      ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id) &&
       // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       // ... or if predictive writing is enabled.
@@ -823,7 +824,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ConnectToImeService(new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
-  } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
+  } else if (ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id)) {
     ConnectToImeService(engine_id);
   } else {
     // Release the IME service.
@@ -861,7 +862,7 @@ void NativeInputMethodEngineObserver::OnFocus(
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnFocus(context_id, context.spellcheck_mode);
   }
-  if (ShouldRouteToNativeMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id)) {
     if (IsInputMethodBound()) {
       if (assistive_suggester_.get()) {
         assistive_suggester_->FetchEnabledSuggestionsFromBrowserContextThen(
@@ -950,7 +951,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
   }
   autocorrect_manager_->OnBlur();
 
-  if (ShouldRouteToNativeMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id)) {
     if (IsInputMethodBound()) {
       input_method_->OnBlur();
     }
@@ -995,7 +996,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
 
   if ((use_ime_service_ && (IsRuleBasedEngine(engine_id) ||
                             IsFirstPartyVietnameseEngine(engine_id))) ||
-      ShouldRouteToNativeMojoEngine(engine_id)) {
+      ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id)) {
     if (IsInputMethodBound() && IsInputMethodConnected()) {
       // CharacterComposer only takes KEY_PRESSED events.
       const bool filtered = event.type() == ui::EventType::kKeyPressed &&
@@ -1046,7 +1047,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
 }
 
 void NativeInputMethodEngineObserver::OnReset(const std::string& engine_id) {
-  if (ShouldRouteToNativeMojoEngine(engine_id) ||
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id) ||
       (use_ime_service_ && (IsRuleBasedEngine(engine_id) ||
                             IsFirstPartyVietnameseEngine(engine_id)))) {
     if (IsInputMethodBound()) {
@@ -1086,7 +1087,7 @@ void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnSurroundingTextChanged(text, selection_range);
   }
-  if (ShouldRouteToNativeMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, engine_id)) {
     if (IsInputMethodBound()) {
       SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
     }
@@ -1103,7 +1104,7 @@ void NativeInputMethodEngineObserver::OnCandidateClicked(
     const std::string& component_id,
     int candidate_id,
     MouseButtonEvent button) {
-  if (ShouldRouteToNativeMojoEngine(component_id)) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, component_id)) {
     if (IsInputMethodBound()) {
       input_method_->OnCandidateSelected(candidate_id);
     }
@@ -1202,7 +1203,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowChanged(
 void NativeInputMethodEngineObserver::OnMenuItemActivated(
     const std::string& component_id,
     const std::string& menu_id) {
-  if (ShouldRouteToNativeMojoEngine(component_id)) {
+  if (ShouldRouteToNativeMojoEngine(use_ime_service_, component_id)) {
     if (input_method_.is_bound()) {
       mojom::InputMethodQuickSettingsPtr settings = GetQuickSettingsAfterToggle(
           ui::ime::InputMethodMenuManager::GetInstance()

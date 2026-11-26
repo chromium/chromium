@@ -110,8 +110,6 @@ class NativeInputMethodEngine
 
   void OnInputMethodOptionsChanged() override;
 
-  bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
-
   raw_ptr<AssistiveSuggester> assistive_suggester_ = nullptr;
   raw_ptr<AutocorrectManager> autocorrect_manager_ = nullptr;
   base::ScopedObservation<ChromeKeyboardControllerClient,
