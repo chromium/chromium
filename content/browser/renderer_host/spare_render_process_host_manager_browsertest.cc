@@ -1249,7 +1249,9 @@ class SpareRenderProcessHostManagerMemoryPressureParamTest
  public:
   SpareRenderProcessHostManagerMemoryPressureParamTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kKillSpareRenderOnCriticalMemoryPressure,
+    };
 
     if (GetParam().kill_spare_on_memory_pressure) {
       enabled_features.push_back(kKillSpareRenderOnMemoryPressure);
@@ -1349,6 +1351,7 @@ class SpareRenderProcessHostManagerKillDisabledTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{kKillSpareRenderOnMemoryPressure,
+                               kKillSpareRenderOnCriticalMemoryPressure,
                                kSpareRPHUseCriticalMemoryPressure});
   }
 
@@ -1402,5 +1405,149 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerKillDisabledTest,
   }
   EXPECT_TRUE(spare_rph->IsReady());
 }
+
+struct KillOnCriticalTestParams {
+  bool use_critical_creation_threshold;
+  base::MemoryLimit test_limit;
+  bool expect_evicted;
+  bool expect_creation_allowed;
+};
+
+class SpareRenderProcessHostManagerKillOnCriticalTest
+    : public SpareRenderProcessHostManagerTest,
+      public testing::WithParamInterface<KillOnCriticalTestParams> {
+ public:
+  SpareRenderProcessHostManagerKillOnCriticalTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kKillSpareRenderOnCriticalMemoryPressure,
+    };
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kKillSpareRenderOnMemoryPressure,
+    };
+    if (GetParam().use_critical_creation_threshold) {
+      enabled_features.push_back(kSpareRPHUseCriticalMemoryPressure);
+    } else {
+      disabled_features.push_back(kSpareRPHUseCriticalMemoryPressure);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void WaitForSpareReady() {
+    auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+    auto& spares = spare_manager.GetSpares();
+    ASSERT_FALSE(spares.empty());
+    RenderProcessHost* spare_rph = spares.back();
+    if (spare_rph->IsReady()) {
+      return;
+    }
+
+    RenderProcessHostWatcher watcher(
+        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+    watcher.Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that kKillSpareRenderOnCriticalMemoryPressure evicts an existing
+// spare only at critical pressure while keeping the moderate creation gate.
+IN_PROC_BROWSER_TEST_P(SpareRenderProcessHostManagerKillOnCriticalTest,
+                       CreationAndEvictionThresholds) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  ASSERT_TRUE(spare_manager.GetSpares().empty());
+
+  ASSERT_NE(spare_manager.WarmupSpare(browser_context()), nullptr);
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  WaitForSpareReady();
+
+  content::test::ScopedMemoryLimitOverride memory_override(
+      "SpareRenderProcessHostManagerImpl");
+
+  {
+    base::HistogramTester histogram_tester;
+    memory_override.SetLimit(GetParam().test_limit);
+    // OnUpdateMemoryLimit() must not evict an existing spare.
+    ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+
+    memory_override.NotifyReleaseMemory();
+
+    if (GetParam().expect_evicted) {
+      EXPECT_TRUE(spare_manager.GetSpares().empty());
+      histogram_tester.ExpectUniqueSample(
+          "BrowserRenderProcessHost.SpareRendererDispatchResult",
+          SpareRendererDispatchResult::kMemoryPressure, 1);
+    } else {
+      ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+      EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
+      histogram_tester.ExpectBucketCount(
+          "BrowserRenderProcessHost.SpareRendererDispatchResult",
+          SpareRendererDispatchResult::kMemoryPressure, 0);
+    }
+  }
+
+  // Clear any surviving spare to test creation gating at the same limit.
+  if (!spare_manager.GetSpares().empty()) {
+    spare_manager.CleanupSparesForTesting();
+    ASSERT_TRUE(spare_manager.GetSpares().empty());
+  }
+
+  if (GetParam().expect_creation_allowed) {
+    EXPECT_NE(spare_manager.WarmupSpare(browser_context()), nullptr);
+    ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+    WaitForSpareReady();
+  } else {
+    scoped_refptr<SiteInstance> test_site_instance = SiteInstance::CreateForURL(
+        browser_context(), GURL("http://example.com"));
+    base::HistogramTester histogram_tester;
+
+    EXPECT_EQ(spare_manager.WarmupSpare(browser_context()), nullptr);
+    EXPECT_TRUE(spare_manager.GetSpares().empty());
+    EXPECT_EQ(spare_manager.MaybeTakeSpare(
+                  browser_context(),
+                  static_cast<SiteInstanceImpl*>(test_site_instance.get()),
+                  ProcessAllocationContext{
+                      ProcessAllocationSource::kServiceWorkerProcessManager}),
+              nullptr);
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.NoSparePresentReason2",
+        NoSpareRendererReason::kMemoryPressure, 1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SpareRenderProcessHostManagerKillOnCriticalTest,
+    testing::Values(
+        // Above moderate (75%): existing spare kept and creation allowed.
+        KillOnCriticalTestParams{
+            /*use_critical_creation_threshold=*/false,
+            /*test_limit=*/base::MemoryLimit::FromPercent(75),
+            /*expect_evicted=*/false,
+            /*expect_creation_allowed=*/true},
+        // Moderate (50%): existing spare kept, new spare creation blocked.
+        KillOnCriticalTestParams{
+            /*use_critical_creation_threshold=*/false,
+            /*test_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
+            /*expect_evicted=*/false,
+            /*expect_creation_allowed=*/false},
+        // Critical (0%): existing spare evicted and new spare creation blocked.
+        KillOnCriticalTestParams{
+            /*use_critical_creation_threshold=*/false,
+            /*test_limit=*/base::MemoryLimit::CriticalPressureThreshold(),
+            /*expect_evicted=*/true,
+            /*expect_creation_allowed=*/false},
+        // Critical creation threshold + moderate (50%): kept and allowed.
+        KillOnCriticalTestParams{
+            /*use_critical_creation_threshold=*/true,
+            /*test_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
+            /*expect_evicted=*/false,
+            /*expect_creation_allowed=*/true},
+        // Critical creation threshold + critical (0%): evicted and blocked.
+        KillOnCriticalTestParams{
+            /*use_critical_creation_threshold=*/true,
+            /*test_limit=*/base::MemoryLimit::CriticalPressureThreshold(),
+            /*expect_evicted=*/true,
+            /*expect_creation_allowed=*/false}));
 
 }  // namespace content

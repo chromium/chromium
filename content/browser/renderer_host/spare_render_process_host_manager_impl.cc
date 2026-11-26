@@ -36,9 +36,13 @@ namespace content {
 BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, MEMORY_PRESSURE_LEVEL_CRITICAL is used as the threshold that
-// determines when a spare RPH can be created or killed. By default,
-// MEMORY_PRESSURE_LEVEL_MODERATE is used.
+// Enables killing the spare renderer only under critical memory pressure,
+// without changing the moderate threshold that blocks creating a new spare.
+BASE_FEATURE(kKillSpareRenderOnCriticalMemoryPressure,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Sets the threshold for blocking new spare creation, and for eviction under
+// kKillSpareRenderOnMemoryPressure, to CRITICAL instead of MODERATE.
 BASE_FEATURE(kSpareRPHUseCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -903,11 +907,16 @@ void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
 void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {}
 
 void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
-  if (memory_limit() > GetMemoryLimitThreshold()) {
+  if (spare_rphs_.empty()) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+  const bool should_kill =
+      (memory_limit() <= GetMemoryLimitThreshold() &&
+       base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) ||
+      (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold() &&
+       base::FeatureList::IsEnabled(kKillSpareRenderOnCriticalMemoryPressure));
+  if (!should_kill) {
     return;
   }
 

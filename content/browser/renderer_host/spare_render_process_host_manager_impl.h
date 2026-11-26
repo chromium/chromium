@@ -70,6 +70,7 @@ enum class NoSpareRendererReason {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKillSpareRenderOnMemoryPressure);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kKillSpareRenderOnCriticalMemoryPressure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRPHUseCriticalMemoryPressure);
 
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
