@@ -1,0 +1,6 @@
+Tests empty xhr content is correctly loaded in inspector.
+http://127.0.0.1:8000/inspector-protocol/network/resources/content-length-0.pl?sync
+resource.content: ""
+http://127.0.0.1:8000/inspector-protocol/network/resources/content-length-0.pl?async
+resource.content: ""
+
