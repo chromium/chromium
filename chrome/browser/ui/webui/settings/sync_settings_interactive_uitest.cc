@@ -229,11 +229,12 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                    "settings-people-page",
                                    "settings-sync-account-control",
                                    "cr-button#signIn"};
-  const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
+  const GURL kPeopleSettingsUrl =
+      chrome::GetSettingsUrl(chrome::kPeopleSubPage);
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
-      NavigateWebContents(kTabId, kAccountSettingsUrl),
+      NavigateWebContents(kTabId, kPeopleSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
       WaitForStateChange(kTabId, UiElementHasAppeared(kSignInButton)),
       PollState(kTabCountState,
@@ -295,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(
                                        "settings-people-page",
                                        "settings-sync-account-control",
                                        "cr-button#account-aware"};
-  const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
+  const GURL kPeopleSettingsUrl =
+      chrome::GetSettingsUrl(chrome::kPeopleSubPage);
 
   // Sign the user on the web only.
   AccountInfo info = signin::MakeAccountAvailable(
@@ -308,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
-      NavigateWebContents(kTabId, kAccountSettingsUrl),
+      NavigateWebContents(kTabId, kPeopleSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
       WaitForStateChange(kTabId, UiElementHasAppeared(kContinueAsButton)),
       ClickElement(kTabId, kContinueAsButton),
@@ -333,7 +335,8 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                    "settings-people-page",
                                    "settings-sync-account-control",
                                    "cr-button#signIn"};
-  const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
+  const GURL kPeopleSettingsUrl =
+      chrome::GetSettingsUrl(chrome::kPeopleSubPage);
 
   base::test::TestFuture<void> histogram_future;
   base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
@@ -343,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
-      NavigateWebContents(kTabId, kAccountSettingsUrl),
+      NavigateWebContents(kTabId, kPeopleSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
       WaitForStateChange(kTabId, UiElementHasAppeared(kSignInButton)));
 
