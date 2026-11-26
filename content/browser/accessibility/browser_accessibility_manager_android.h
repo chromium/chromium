@@ -116,8 +116,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireFocusEvent(ui::AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
-  void BeforeAccessibilityEvents() override;
-  void FinalizeAccessibilityEvents() override;
   ui::BrowserAccessibility* GetFocus() const override;
   ui::BrowserAccessibility* GetAccessibilityFocus() const override;
   void SendLocationChangeEvents(
@@ -257,23 +255,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // A set of |unique_id| values for nodes cleared from the cache
   // with each atomic update to prevent superfluous cache clear calls.
   absl::flat_hash_set<int32_t> nodes_already_cleared_;
-
-  // Set when `DOCUMENT_SELECTION_CHANGED` is deferred from Pass 1 of
-  // `OnAccessibilityEvents()` until `FinalizeAccessibilityEvents()` so
-  // `TYPE_VIEW_TEXT_CHANGED` is emitted first.
-  bool pending_document_selection_changed_ = false;
-
-  // Set when `ax::mojom::Event::kEndOfTest` arrives during `FireSourceEvent()`
-  // so `HandleEndOfTestSignal()` is dispatched in
-  // `FinalizeAccessibilityEvents()` after all deferred events have flushed.
-  bool pending_end_of_test_ = false;
-
-  // Nodes for which `ACTIVE_DESCENDANT_CHANGED` fired in the current event
-  // batch, retained until `FinalizeAccessibilityEvents()` (and cleared in
-  // `BeforeAccessibilityEvents()`) so deferred selection handling can still
-  // detect combobox active-descendant updates after
-  // `event_generator().ClearEvents()`.
-  absl::flat_hash_set<ui::AXNodeID> active_descendant_changed_node_ids_;
 };
 
 }  // namespace content

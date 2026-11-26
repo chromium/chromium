@@ -252,14 +252,6 @@ AX_BASE_EXPORT bool IsAccessibilityAndroidBackgroundThreadEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectionOffsetTypes);
 AX_BASE_EXPORT bool IsAccessibilitySelectionOffsetTypesEnabled();
 
-// Defers firing `TYPE_VIEW_TEXT_SELECTION_CHANGED` until the end of the
-// accessibility event batch on Android so `TYPE_VIEW_TEXT_CHANGED` is emitted
-// first, matching native Android `EditText` ordering.
-// TODO(crbug.com/535319660): Remove in M162 once verified on Stable.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kAccessibilityDeferDocumentSelectionChanged);
-AX_BASE_EXPORT bool IsAccessibilityDeferDocumentSelectionChangedEnabled();
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the new native C++ implementation for Read Aloud,
