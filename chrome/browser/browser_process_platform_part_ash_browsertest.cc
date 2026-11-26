@@ -13,8 +13,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -38,8 +36,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -77,7 +73,12 @@ void WaitForLoadStopForBrowserWindowInterface(
 
 }  // namespace
 
-using BrowserProcessPlatformPartAshBrowsertest = InProcessBrowserTest;
+class BrowserProcessPlatformPartAshBrowsertest : public InProcessBrowserTest {
+ public:
+  BrowserProcessPlatformPartAshBrowsertest() {
+    set_exit_when_last_browser_closes(false);
+  }
+};
 
 // We should not apply startup URLs if Chrome has previously exited from a
 // crash.
@@ -85,12 +86,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
                        UrlsNotRestoredAfterCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Keep the browser process running while browsers are closed.
   auto* profile = browser()->GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(0u, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
@@ -145,12 +141,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_EQ(original_url,
             tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
 
-  // Keep the browser process running while browsers are closed.
   auto* profile = browser()->GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
   CloseBrowserSynchronously(browser());
 
@@ -216,12 +207,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_EQ(original_url,
             tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
 
-  // Keep the browser process running while browsers are closed.
   auto* profile = browser()->GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
   CloseBrowserSynchronously(browser());
 

@@ -79,8 +79,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
@@ -118,8 +116,6 @@
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/saved_desk_builder.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -491,6 +487,7 @@ class ScopedDesksTemplatesAppLaunchHandlerSetter {
 class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
+    set_exit_when_last_browser_closes(false);
     std::vector<base::test::FeatureRef> enabled_features = {
         ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
@@ -1209,12 +1206,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchBrowserWithPinnedTabs) {
 // that contains a browser window.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
   ASSERT_TRUE(DesksClient::Get());
-
-  // Do not exit from test or delete the Profile* when last browser is closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      browser()->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
@@ -2351,12 +2342,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
 IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIPreventBrowserSessionRestoreTest) {
-  // Do not exit from test or delete the Profile* when last browser is closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
   Profile* profile = browser()->GetProfile();
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);

@@ -102,6 +102,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/scoped_browser_test_keep_alive.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bidi_mapper/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -200,6 +201,7 @@ using testing::Return;
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #endif
 
@@ -449,10 +451,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref::SetStartupPref(profile, pref);
 
   // Keep the browser process running while browsers are closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
 
   // Close the browser.
   CloseBrowserAsynchronously(browser());
@@ -1436,6 +1435,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  Profile* default_profile = browser()->GetProfile();
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   // Create a new profile.
@@ -1476,6 +1476,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   CloseBrowserSynchronously(new_browser);
 
   // Close the main browser.
+  ScopedBrowserTestKeepAlive keep_alive(*default_profile);
   CloseBrowserAsynchronously(browser());
 
   // Do a simple non-process-startup browser launch.
@@ -1483,14 +1484,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
 
   StartupBrowserCreator browser_creator;
   std::vector<Profile*> last_opened_profiles;
-  last_opened_profiles.push_back(browser()->GetProfile());
+  last_opened_profiles.push_back(default_profile);
   last_opened_profiles.push_back(&profile);
 
   base::RunLoop run_loop;
-  browser_creator.Start(
-      dummy, profile_manager->user_data_dir(),
-      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow},
-      last_opened_profiles);
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {default_profile, StartupProfileMode::kBrowserWindow},
+                        last_opened_profiles);
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   run_loop.Run();
 
@@ -1567,6 +1567,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
   DisableWhatsNewPage();
 
   // Close the browser.
+  ScopedBrowserTestKeepAlive keep_alive(*default_profile);
   CloseBrowserAsynchronously(browser());
 
   // Do a simple non-process-startup browser launch.
@@ -1770,6 +1771,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   CloseBrowserSynchronously(browser_last);
 
   // Close the main browser.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
+                             KeepAliveRestartOption::DISABLED);
   CloseBrowserAsynchronously(browser());
 
   // Do a simple non-process-startup browser launch.
@@ -1889,6 +1892,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
   // leaving the app in a half-closed state. Cancel the termination to put the
   // Mac app back into a known state.
   chrome_browser_application_mac::CancelTerminate();
+  // Model the fresh process that a real relaunch would create.
+  browser_shutdown::ResetShutdownGlobalsForTesting();
 #endif
 
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -3886,14 +3891,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   base::RunLoop().RunUntilIdle();
 
   // Close the browser.
+  Profile* profile = browser()->GetProfile();
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
   CloseBrowserAsynchronously(browser());
 
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
-  launch.Launch(browser()->GetProfile(),
-                chrome::startup::IsProcessStartup::kYes,
+  launch.Launch(profile, chrome::startup::IsProcessStartup::kYes,
                 /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
@@ -4973,7 +4979,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the picker.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ProfilePicker::Hide();
   profiles::testing::WaitForPickerClosed();

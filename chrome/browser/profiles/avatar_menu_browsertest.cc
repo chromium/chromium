@@ -9,9 +9,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -28,9 +25,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/scoped_browser_test_keep_alive.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -92,14 +88,9 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
   // Keep the browser process running while browsers are closed.
   Profile* profile = browser()->GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
 
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsersWithProfile(profile);
-  observer.Wait();
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
 
   std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
@@ -132,13 +123,8 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
   // Keep the browser process running while browsers are closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsersWithProfile(profile);
-  observer.Wait();
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
 
   std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
@@ -191,10 +177,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NotLoaded) {
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   // Keep the browser process running while browsers are closed.
   Profile* profile = browser()->GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
 
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   CloseAllBrowsers();

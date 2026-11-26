@@ -30,7 +30,7 @@ namespace ash {
 
 class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
  public:
-  BirchCoralProviderTest() = default;
+  BirchCoralProviderTest() { set_exit_when_last_browser_closes(false); }
   BirchCoralProviderTest(const BirchCoralProviderTest&) = delete;
   BirchCoralProviderTest& operator=(const BirchCoralProviderTest&) = delete;
   ~BirchCoralProviderTest() override = default;

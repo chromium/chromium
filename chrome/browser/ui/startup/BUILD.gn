@@ -537,6 +537,7 @@ if (!is_android) {
       "//chrome/common:version_header",
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_path_utils",
+      "//chrome/test/base:scoped_browser_test_keep_alive",
       "//components/bidi_mapper:buildflags",
       "//components/infobars/content",
       "//components/infobars/core",

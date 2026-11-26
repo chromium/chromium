@@ -982,6 +982,18 @@ if (!is_android) {
     }
   }
 
+  source_set("scoped_browser_test_keep_alive") {
+    testonly = true
+    sources = [
+      "scoped_browser_test_keep_alive.cc",
+      "scoped_browser_test_keep_alive.h",
+    ]
+    public_deps = [
+      "//chrome/browser/profiles/keep_alive",
+      "//components/keep_alive_registry",
+    ]
+  }
+
   source_set("ui_test_utils") {
     testonly = true
     sources = [

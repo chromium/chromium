@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/scoped_browser_test_keep_alive.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,6 +43,20 @@ class BrowserShutdownBrowserTest : public InProcessBrowserTest {
 // ChromeOS has the different shutdown flow on user initiated exit process.
 // See the comment for chrome::AttemptUserExit() function declaration.
 #if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, AllowsRelaunchAfterClose) {
+  Profile* profile = browser()->GetProfile();
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
+
+  CloseBrowserSynchronously(browser());
+
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
+  EXPECT_FALSE(browser_shutdown::HasShutdownStarted());
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+  ASSERT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(*profile));
+  EXPECT_TRUE(CreateBrowser(profile));
+}
+
 // Mac browser shutdown is flaky: https://crbug.com/40201651
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ClosingShutdownHistograms DISABLED_ClosingShutdownHistograms

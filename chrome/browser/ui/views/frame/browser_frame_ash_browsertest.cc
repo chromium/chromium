@@ -23,7 +23,7 @@ namespace {
 class BrowserTestParam : public InProcessBrowserTest,
                          public testing::WithParamInterface<bool> {
  public:
-  BrowserTestParam() = default;
+  BrowserTestParam() { set_exit_when_last_browser_closes(false); }
 
   BrowserTestParam(const BrowserTestParam&) = delete;
   BrowserTestParam& operator=(const BrowserTestParam&) = delete;
@@ -39,17 +39,18 @@ class BrowserTestParam : public InProcessBrowserTest,
 // logic is disabled while for tabbed browser windows, it is enabled.
 IN_PROC_BROWSER_TEST_P(BrowserTestParam,
                        TabbedOrAppBrowserWindowAutoManagementTest) {
+  Profile* profile = browser()->GetProfile();
   // Default |browser()| is not used by this test.
-  browser()->GetWindow()->Close();
+  CloseBrowserSynchronously(browser());
 
   // Open a new browser window (app or tabbed depending on a parameter).
   bool is_test_app = CreateV1App();
-  auto create_params = [this, is_test_app]() {
+  auto create_params = [profile, is_test_app]() {
     return is_test_app ? BrowserWindowCreateParams::CreateForApp(
                              "test_browser_app", /*trusted_source=*/true,
-                             gfx::Rect(), browser()->GetProfile(),
+                             gfx::Rect(), profile,
                              /*user_gesture=*/true)
-                       : BrowserWindowCreateParams(browser()->GetProfile(),
+                       : BrowserWindowCreateParams(profile,
                                                    /*from_user_gesture=*/true);
   };
   gfx::Rect original_bounds(gfx::Rect(150, 250, 510, 150));
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   // Close the browser and re-create the browser window with the same app name.
   // Don't provide initial bounds. The bounds should have been saved, but for
   // tabbed windows, the position should be auto-managed.
-  browser->GetWindow()->Close();
+  CloseBrowserSynchronously(browser);
   BrowserWindowCreateParams params2 = create_params();
   params2.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params2.initial_bounds = gfx::Rect();

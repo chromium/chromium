@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
@@ -133,6 +134,9 @@ KeepAliveRegistry::~KeepAliveRegistry() {
 void KeepAliveRegistry::Register(KeepAliveOrigin origin,
                                  KeepAliveRestartOption restart) {
   CHECK(!is_shutting_down_);
+  if (origin == KeepAliveOrigin::BROWSER_TEST) {
+    CHECK_IS_TEST();
+  }
 
   bool old_keeping_alive = IsKeepingAlive();
   bool old_restart_allowed = IsRestartAllowed();

@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   SessionStartupPref::SetStartupPref(profile, pref);
 
   // Keep the browser process running while browsers are closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
 
   // Close the browser.
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   // Keep the browser process running while browsers are closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
 
   // Close the browser.

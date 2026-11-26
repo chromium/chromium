@@ -314,6 +314,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
+      "//chrome/test/base:scoped_browser_test_keep_alive",
       "//chrome/test/base:testing_browser_process",
       "//components/javascript_dialogs",
       "//content/test:test_support",

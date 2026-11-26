@@ -787,7 +787,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
   service->ClearEntries();
 
-  browser()->GetWindow()->Close();
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      browser()->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserAsynchronously(browser());
 
   // Expect a window with three tabs.
   ASSERT_EQ(1U, service->entries().size());

@@ -1351,6 +1351,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/prefs",
         "//chrome/browser/profiles/keep_alive:test_support",
+        "//chrome/test/base:scoped_browser_test_keep_alive",
       ]
     }
 

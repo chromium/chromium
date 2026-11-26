@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(
       profile, ProfileKeepAliveOrigin::kBackgroundMode);
   // ScopedKeepAlive is not supported on Android as KeepAliveRegistry is not
   // used/linked there. The process lifetime is managed by the OS/test runner.
-  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED};
   CloseBrowserSynchronously(GetFirstActivatedBrowser());
   ASSERT_FALSE(extensions::browser_window_util::GetLastActiveBrowserWithProfile(
@@ -664,11 +664,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   // Simulates an extension being opened, with no active browser.
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBackgroundMode);
-  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED};
   CloseBrowserSynchronously(GetFirstActivatedBrowser());
   ASSERT_FALSE(extensions::browser_window_util::GetLastActiveBrowserWithProfile(
-      *profile, /*include_incognito_or_parent*/false));
+      *profile, /*include_incognito_or_parent*/ false));
 
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   WebAuthFlowTestNavigationObserver navigation_observer(auth_url);

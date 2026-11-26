@@ -21,7 +21,7 @@ namespace {
 
 class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
  public:
-  TabletModePageBehaviorTest() = default;
+  TabletModePageBehaviorTest() { set_exit_when_last_browser_closes(false); }
 
   TabletModePageBehaviorTest(const TabletModePageBehaviorTest&) = delete;
   TabletModePageBehaviorTest& operator=(const TabletModePageBehaviorTest&) =
@@ -106,12 +106,13 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeInternalPages) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
-  browser()->GetWindow()->Close();
+  Profile* profile = browser()->GetProfile();
+  CloseBrowserSynchronously(browser());
 
   // Open a new app window.
   BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
-      "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
-      browser()->GetProfile(), /*user_gesture=*/true);
+      "test_browser_app", /*trusted_source=*/true, gfx::Rect(), profile,
+      /*user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   AddBlankTabAndShow(browser);

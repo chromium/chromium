@@ -103,6 +103,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "FETCH_KEEPALIVE_REQUEST";
     case KeepAliveOrigin::ISOLATION_STATE_CHANGE:
       return out << "ISOLATION_STATE_CHANGE";
+    case KeepAliveOrigin::BROWSER_TEST:
+      return out << "BROWSER_TEST";
   }
 
   NOTREACHED() << static_cast<int>(origin);

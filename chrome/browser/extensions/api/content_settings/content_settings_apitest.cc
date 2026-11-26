@@ -82,7 +82,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::BROWSER_TEST, KeepAliveRestartOption::DISABLED);
 #endif
 
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(

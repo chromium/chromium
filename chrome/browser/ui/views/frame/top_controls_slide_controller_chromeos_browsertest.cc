@@ -328,7 +328,7 @@ class GestureScrollInProgressChangeWaiter : public TestControllerObserver {
 
 class TopControlsSlideControllerTest : public InProcessBrowserTest {
  public:
-  TopControlsSlideControllerTest() = default;
+  TopControlsSlideControllerTest() { set_exit_when_last_browser_closes(false); }
 
   TopControlsSlideControllerTest(const TopControlsSlideControllerTest&) =
       delete;
@@ -580,12 +580,13 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
 namespace {
 
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisabledForHostedApps) {
-  browser()->GetWindow()->Close();
+  Profile* profile = browser()->GetProfile();
+  CloseBrowserSynchronously(browser());
 
   // Open a new app window.
   BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
-      "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
-      browser()->GetProfile(), /*user_gesture=*/true);
+      "test_browser_app", /*trusted_source=*/true, gfx::Rect(), profile,
+      /*user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   AddBlankTabAndShow(browser);

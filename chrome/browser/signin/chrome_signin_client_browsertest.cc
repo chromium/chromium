@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
                        HatsSurveyLaunchedOnBrowserCreationAfterSignin) {
   Profile* profile = browser()->GetProfile();
   // Keep the browser process running while browsers are closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   // Keep the profile alive and close all existing browsers.
   ScopedProfileKeepAlive profile_keep_alive(

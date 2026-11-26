@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        LaunchHatsSurveyDeferIfNoBrowser) {
   Profile* profile = CHECK_DEREF(browser()).GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kProfilePickerView);
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        LaunchHatsSurveyDeferIfNoBrowserArbitrarySurveyData) {
   Profile* profile = CHECK_DEREF(browser()).GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kProfilePickerView);
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        DoNotLaunchHatsSurveyIfNoBrowserAndNoDefer) {
   Profile* profile = CHECK_DEREF(browser()).GetProfile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kProfilePickerView);
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        DoNotLaunchHatsSurveyWhenDeferredBrowserIsOffTheRecord) {
   Profile* profile = CHECK_DEREF(browser()).GetProfile();
   ASSERT_NE(profile, nullptr);
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kProfilePickerView);

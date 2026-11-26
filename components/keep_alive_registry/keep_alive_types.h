@@ -98,6 +98,9 @@ enum class KeepAliveOrigin {
 
   // c/b/win
   ISOLATION_STATE_CHANGE,
+
+  // chrome/test
+  BROWSER_TEST,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

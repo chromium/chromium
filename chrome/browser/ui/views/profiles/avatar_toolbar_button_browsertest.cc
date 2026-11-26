@@ -2077,7 +2077,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonProfileColorBrowserTest,
   Profile* profile = browser()->GetProfile();
   // Keeps the browser process and the profile alive while a browser window is
   // closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER_TEST,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBackgroundMode);

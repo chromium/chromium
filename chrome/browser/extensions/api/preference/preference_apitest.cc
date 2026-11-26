@@ -179,7 +179,7 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly. On Android KeepAlive is not supported nor required.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::BROWSER_TEST, KeepAliveRestartOption::DISABLED);
 #endif
   }
 
