@@ -152,6 +152,7 @@ public class AutofillSettingsSearchTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_BUY_NOW_PAY_LATER)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/581959711
     public void testSearchBuyNowPayLater_noMatchWithFlagOff() {
         mSettingsActivityTestRule.startSettingsActivity();
 
