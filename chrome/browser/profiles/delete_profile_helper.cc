@@ -5,9 +5,13 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -16,9 +20,9 @@
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -27,12 +31,12 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -40,14 +44,62 @@
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/service/sync_service.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
+
+void RecordDeletedProfileStateIfNeeded(ProfileAttributesStorage& storage,
+                                       ProfileAttributesEntry* entry) {
+  if (entry) {
+    storage.RecordDeletedProfileState(entry);
+  }
+}
+
+void CloseBrowsersBeforeDeletion(Profile* profile,
+                                 base::OnceClosure on_closed) {
+  chrome::CloseAllBrowsersWithProfile(
+      profile, /*skip_beforeunload=*/false,
+      base::BindRepeating(
+          [](base::OnceClosure& on_closed,
+             const base::FilePath& /*profile_path*/) {
+            // `CloseAllBrowsersWithProfile()` invokes `on_close_success` at
+            // most once.
+            CHECK(on_closed);
+            std::move(on_closed).Run();
+          },
+          base::OwnedRef(std::move(on_closed))),
+      base::BindRepeating(&CancelProfileDeletion));
+}
+
+void DeletePlatformShortcutsForProfile(const base::FilePath& profile_path) {
+  web_app::internals::GetShortcutIOTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&web_app::internals::DeleteAllShortcutsForProfile,
+                     profile_path));
+}
+
+bool IsValidFallbackProfilePath(const base::FilePath& candidate_path,
+                                const base::FilePath& profile_to_delete_dir) {
+  return candidate_path != profile_to_delete_dir &&
+         candidate_path != ProfileManager::GetGuestProfilePath() &&
+         !IsProfileDirectoryMarkedForDeletion(candidate_path);
+}
+
+base::FilePath FindFallbackProfileInStorage(
+    const ProfileAttributesStorage& storage,
+    const base::FilePath& profile_to_delete_dir) {
+  for (ProfileAttributesEntry* entry : storage.GetAllProfilesAttributes()) {
+    base::FilePath cur_path = entry->GetPath();
+    // Make sure that this profile is not pending deletion.
+    if (IsValidFallbackProfilePath(cur_path, profile_to_delete_dir)) {
+      return cur_path;
+    }
+  }
+  return base::FilePath();
+}
 
 // Called after a deleted profile was checked and cleaned up.
 void ProfileCleanedUp(base::Value profile_path_value) {
@@ -57,6 +109,17 @@ void ProfileCleanedUp(base::Value profile_path_value) {
   ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                         prefs::kProfilesDeleted);
   deleted_profiles->EraseValue(profile_path_value);
+}
+
+void PostNukeProfileFromDisk(const base::FilePath& profile_path) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          &NukeProfileFromDisk, profile_path,
+          base::BindOnce(&ProfileCleanedUp,
+                         base::FilePathToValue(profile_path.BaseName()))));
 }
 
 // Helper function that deletes entries from the kProfilesLastActive pref list.
@@ -101,6 +164,35 @@ void DisableSyncForProfileDeletion(Profile* profile) {
 
 }  // namespace
 
+// Holds per-deletion state threaded through the asynchronous deletion flow.
+struct DeleteProfileHelper::DeletionContext {
+  DeletionContext(const base::FilePath& profile_dir,
+                  ProfileLoadedCallback callback)
+      : profile_dir(profile_dir),
+        browser_keep_alive(std::make_unique<ScopedKeepAlive>(
+            KeepAliveOrigin::PROFILE_MANAGER,
+            KeepAliveRestartOption::DISABLED)),
+        callback(std::move(callback)) {}
+  DeletionContext(DeletionContext&&) = default;
+  DeletionContext& operator=(DeletionContext&&) = default;
+  ~DeletionContext() = default;
+
+  void CheckValid() const {
+    CHECK(browser_keep_alive, base::NotFatalUntil::M162);
+  }
+
+  base::FilePath profile_dir;
+  // Prevents browser shutdown from starting while browser windows are closing
+  // or a fallback profile is loading asynchronously. Declared before
+  // `profile_keep_alive` so the process keep-alive outlives the profile
+  // keep-alive on destruction.
+  std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
+  // Avoids unloading the profile during the deletion process; null if the
+  // profile is not loaded.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
+  ProfileLoadedCallback callback;
+};
+
 DeleteProfileHelper::DeleteProfileHelper(ProfileManager& profile_manager)
     : profile_manager_(profile_manager) {}
 
@@ -115,11 +207,8 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile_dir);
-  if (entry) {
-    storage.RecordDeletedProfileState(entry);
-  }
+  RecordDeletedProfileStateIfNeeded(
+      storage, storage.GetProfileAttributesWithPath(profile_dir));
   ProfileMetrics::LogProfileDeleteUser(deletion_source);
 
   CHECK(profiles::IsMultipleProfilesEnabled(), base::NotFatalUntil::M162);
@@ -128,11 +217,8 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 
   // When this is called all browser windows may be about to be destroyed
   // (but still exist in BrowserList), which means shutdown may be about to
-  // start. Use a KeepAlive to ensure shutdown doesn't start.
-  std::unique_ptr<ScopedKeepAlive> keep_alive =
-      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::PROFILE_MANAGER,
-                                        KeepAliveRestartOption::DISABLED);
-
+  // start. `context.browser_keep_alive` ensures shutdown doesn't start.
+  DeletionContext context(profile_dir, std::move(callback));
   Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
   if (profile) {
     // Cancel all in-progress downloads before deleting the profile to prevent a
@@ -144,29 +230,23 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
         DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion);
     CHECK_EQ(0, service->BlockingShutdownCount(), base::NotFatalUntil::M162);
 
-    // Take a ScopedProfileKeepAlive for the the deletion process to avoid the
+    // Take a `ScopedProfileKeepAlive` for the deletion process to avoid the
     // profile from being randomly unloaded.
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
-        std::make_unique<ScopedProfileKeepAlive>(
-            profile, ProfileKeepAliveOrigin::kProfileDeletionProcess);
+    context.profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kProfileDeletionProcess);
 
     // Close all browser windows before deleting the profile. If the user
     // cancels the closing of any tab in an OnBeforeUnload event, profile
     // deletion is also cancelled. (crbug.com/40332478)
-    chrome::CloseAllBrowsersWithProfile(
+    CloseBrowsersBeforeDeletion(
         profile,
-        /*skip_beforeunload=*/false,
-        base::BindRepeating(
+        base::BindOnce(
             &DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion,
-            base::Unretained(this), base::Passed(std::move(keep_alive)),
-            base::Passed(std::move(profile_keep_alive)),
-            base::Passed(std::move(callback))),
-        base::BindRepeating(&CancelProfileDeletion));
-  } else {
-    EnsureActiveProfileExistsBeforeDeletion(std::move(keep_alive),
-                                            /*profile_keep_alive=*/nullptr,
-                                            std::move(callback), profile_dir);
+            base::Unretained(this), std::move(context)));
+    return;
   }
+
+  EnsureActiveProfileExistsBeforeDeletion(std::move(context));
 }
 
 void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
@@ -231,19 +311,8 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
   for (const base::FilePath& profile_path : profiles_to_delete) {
     CHECK(!profile_manager_->GetProfileByPath(profile_path),
           base::NotFatalUntil::M162);
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(
-            &NukeProfileFromDisk, profile_path,
-            base::BindOnce(&ProfileCleanedUp,
-                           base::FilePathToValue(profile_path.BaseName()))));
-    web_app::internals::GetShortcutIOTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&web_app::internals::DeleteAllShortcutsForProfile,
-                       profile_path));
-
+    PostNukeProfileFromDisk(profile_path);
+    DeletePlatformShortcutsForProfile(profile_path);
     storage.RemoveProfile(profile_path);
   }
 }
@@ -271,12 +340,7 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
     if (is_valid_path) {
       CHECK(!profile_manager_->GetProfileByPath(*profile_path),
             base::NotFatalUntil::M162);
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::BindOnce(&NukeProfileFromDisk, *profile_path,
-                         base::BindOnce(&ProfileCleanedUp, std::move(value))));
+      PostNukeProfileFromDisk(*profile_path);
     } else {
       LOG(ERROR) << "Found invalid profile path in deleted_profiles: "
                  << (profile_path ? profile_path->AsUTF8Unsafe() : "unknown");
@@ -298,37 +362,29 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
 }
 
 void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-    ProfileLoadedCallback callback,
-    const base::FilePath& profile_dir) {
-  CHECK(keep_alive, base::NotFatalUntil::M162);
+    DeletionContext context) {
+  context.CheckValid();
   // In case we delete non-active profile and current profile is valid, proceed.
   const base::FilePath last_used_profile_path =
       profile_manager_->GetLastUsedProfileDir();
-  const base::FilePath guest_profile_path =
-      profile_manager_->GetGuestProfilePath();
   Profile* last_used_profile =
       profile_manager_->GetProfileByPath(last_used_profile_path);
-  if (last_used_profile_path != profile_dir &&
-      last_used_profile_path != guest_profile_path && last_used_profile) {
-    FinishDeletingProfile(profile_dir, last_used_profile_path,
-                          std::move(profile_keep_alive));
+  if (last_used_profile_path != context.profile_dir &&
+      last_used_profile_path != ProfileManager::GetGuestProfilePath() &&
+      last_used_profile) {
+    FinishDeletingProfile(context.profile_dir, last_used_profile_path,
+                          std::move(context.profile_keep_alive));
     return;
   }
 
   // Search for an active browser and use its profile as active if possible.
   bool found = false;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this, &profile_dir, &guest_profile_path, &callback, &keep_alive,
-       &profile_keep_alive, &found](BrowserWindowInterface* browser) {
+      [this, &context, &found](BrowserWindowInterface* browser) {
         Profile* const profile = browser->GetProfile();
         const base::FilePath cur_path = profile->GetPath();
-        if (cur_path != profile_dir && cur_path != guest_profile_path &&
-            !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-          OnNewActiveProfileInitialized(
-              profile_dir, cur_path, std::move(callback), std::move(keep_alive),
-              std::move(profile_keep_alive), profile);
+        if (IsValidFallbackProfilePath(cur_path, context.profile_dir)) {
+          OnNewActiveProfileInitialized(cur_path, std::move(context), profile);
           found = true;
         }
         return !found;
@@ -338,20 +394,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
   }
 
   // There no valid browsers to fallback, search for any existing valid profile.
-  ProfileAttributesStorage& storage =
-      profile_manager_->GetProfileAttributesStorage();
-  base::FilePath fallback_profile_path;
-  std::vector<ProfileAttributesEntry*> entries =
-      storage.GetAllProfilesAttributes();
-  for (ProfileAttributesEntry* entry : entries) {
-    base::FilePath cur_path = entry->GetPath();
-    // Make sure that this profile is not pending deletion.
-    if (cur_path != profile_dir && cur_path != guest_profile_path &&
-        !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-      fallback_profile_path = cur_path;
-      break;
-    }
-  }
+  base::FilePath fallback_profile_path = FindFallbackProfileInStorage(
+      profile_manager_->GetProfileAttributesStorage(), context.profile_dir);
 
   // If we're deleting the last profile, then create a new profile in its place.
   // Load existing profile otherwise.
@@ -367,9 +411,8 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
   profile_manager_->CreateProfileAsync(
       fallback_profile_path,
       base::BindOnce(&DeleteProfileHelper::OnNewActiveProfileInitialized,
-                     base::Unretained(this), profile_dir, fallback_profile_path,
-                     std::move(callback), std::move(keep_alive),
-                     std::move(profile_keep_alive)));
+                     base::Unretained(this), fallback_profile_path,
+                     std::move(context)));
 }
 
 void DeleteProfileHelper::FinishDeletingProfile(
@@ -430,14 +473,7 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
   } else {
     // We failed to load the profile, but it's safe to delete a not yet loaded
     // Profile from disk.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(
-            &NukeProfileFromDisk, profile_dir,
-            base::BindOnce(&ProfileCleanedUp,
-                           base::FilePathToValue(profile_dir.BaseName()))));
+    PostNukeProfileFromDisk(profile_dir);
   }
 
   storage.RemoveProfile(profile_dir);
@@ -450,13 +486,10 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
 }
 
 void DeleteProfileHelper::OnNewActiveProfileInitialized(
-    const base::FilePath& profile_to_delete_path,
     const base::FilePath& new_active_profile_path,
-    ProfileLoadedCallback callback,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    DeletionContext context,
     Profile* loaded_profile) {
-  CHECK(keep_alive, base::NotFatalUntil::M162);
+  context.CheckValid();
   // TODO(crbug.com/576495582): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(loaded_profile);
@@ -464,13 +497,11 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load
     // the next available profile.
-    EnsureActiveProfileExistsBeforeDeletion(
-        std::move(keep_alive), std::move(profile_keep_alive),
-        std::move(callback), profile_to_delete_path);
+    EnsureActiveProfileExistsBeforeDeletion(std::move(context));
     return;
   }
 
-  FinishDeletingProfile(profile_to_delete_path, new_active_profile_path,
-                        std::move(profile_keep_alive));
-  std::move(callback).Run(loaded_profile);
+  FinishDeletingProfile(context.profile_dir, new_active_profile_path,
+                        std::move(context.profile_keep_alive));
+  std::move(context.callback).Run(loaded_profile);
 }

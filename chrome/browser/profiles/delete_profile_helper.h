@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
 #define CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
 
-#include <optional>
+#include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -17,7 +17,6 @@ class FilePath;
 
 class Profile;
 class ProfileManager;
-class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
 // This class offers helper functions for profile deletion. Note that
@@ -93,16 +92,13 @@ class DeleteProfileHelper {
   void CleanUpDeletedProfiles();
 
  private:
+  // Holds per-deletion state threaded through the asynchronous deletion flow.
+  struct DeletionContext;
+
   // Continues the scheduled profile deletion after closing all the profile's
   // browsers tabs. Creates a new profile if the profile to be deleted is the
   // last non-supervised profile.
-  // `profile_keep_alive` is used to avoid unloading the profile during the
-  // deletion process and is null if the profile is not loaded.
-  void EnsureActiveProfileExistsBeforeDeletion(
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      ProfileLoadedCallback callback,
-      const base::FilePath& profile_dir);
+  void EnsureActiveProfileExistsBeforeDeletion(DeletionContext context);
 
   // Schedules the profile at the given path to be deleted on shutdown,
   // and marks the new profile as active.
@@ -116,18 +112,13 @@ class DeleteProfileHelper {
       Profile* profile);
 
   // If the `loaded_profile` has been loaded successfully and isn't already
-  // scheduled for deletion, then finishes adding `profile_to_delete_path` to
-  // the queue of profiles to be deleted, and updates the kProfileLastUsed
-  // preference based on `new_active_profile_path`. `keep_alive` may be null and
-  // is used to ensure shutdown does not start. `profile_keep_alive` is used to
-  // avoid unloading the profile during the deletion process and is null if the
-  // profile is not loaded.
+  // scheduled for deletion, then finishes adding `context.profile_dir` to
+  // the queue of profiles to be deleted, updates the `kProfileLastUsed`
+  // preference based on `new_active_profile_path`, and invokes
+  // `context.callback`.
   void OnNewActiveProfileInitialized(
-      const base::FilePath& profile_to_delete_path,
       const base::FilePath& new_active_profile_path,
-      ProfileLoadedCallback callback,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      DeletionContext context,
       Profile* loaded_profile);
 
   const raw_ref<ProfileManager>
