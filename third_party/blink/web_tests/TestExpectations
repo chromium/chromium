@@ -8762,3 +8762,6 @@ crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propa
 crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
 # Gardener 2026-11-23
 crbug.com/584920130 [ Win11-arm64 ] external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Failure Pass ]
+
+# Flaky on Mac-26 CI builders
+crbug.com/585965057 [ Mac ] http/tests/inspector-protocol/emulation/prerender-emulation-overrides-cleared.js [ Failure Pass ]
