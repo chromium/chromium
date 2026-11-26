@@ -2186,6 +2186,10 @@ chromium-metrics-reviews@google.com.
     unlock it), recorded for {WebGLState}. Used to measure how many WebGL users
     would be lost by switching to WebGL-on-WebGPU and which project would unlock
     them. Recorded during delayed Dawn GPU info collection in the GPU process.
+
+    In M160 builds before crrev.com/c/8852854, Windows devices whose active
+    adapter LUID couldn't be read were counted as None instead of Active Adapter
+    Unknown.
   </summary>
   <token key="WebGLState">
     <variant name="" summary="all devices"/>

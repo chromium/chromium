@@ -1474,6 +1474,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Hardware Blocklisted"/>
   <int value="9" label="Software WARP Available"/>
   <int value="10" label="None"/>
+  <int value="11" label="Active Adapter Unknown">
+    Windows only. The active adapter LUID couldn't be read (ANGLE isn't on
+    D3D11). WebGPU needs the same LUID to pick an adapter, so it has none.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info_collector.cc:WebGPUReachTier) -->

@@ -356,8 +356,12 @@ enum class WebGPUReachTier {
   kSoftwareWarpAvailable = 9,
   // No hardware or WARP adapter (e.g. GLES 2.0/3.0 only, or SwiftShader).
   kNone = 10,
+  // Windows only: the active adapter LUID couldn't be read. It comes from
+  // ANGLE's D3D11 device, so this happens when ANGLE isn't on D3D11. WebGPU
+  // needs the same LUID to pick an adapter, so it has none on these devices.
+  kActiveAdapterUnknown = 11,
 
-  kMaxValue = kNone,
+  kMaxValue = kActiveAdapterUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:WebGPUReachTier)
 
@@ -469,7 +473,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid = {};
   if (!gpu::GetActiveAdapterLuid(&adapter_options_luid.adapterLUID)) {
     UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", WebGPUSupport::kNone);
-    RecordWebGPUReachTier(WebGPUReachTier::kNone);
+    RecordWebGPUReachTier(WebGPUReachTier::kActiveAdapterUnknown);
     ReportWebGPUAdapterMetrics({});
     return;
   }
@@ -509,7 +513,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (!has_core_usable_adapter) {
+  if (!has_core_adapter) {
     adapter_options.backendType = wgpu::BackendType::D3D11;
     adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
     for (const dawn::native::Adapter& native_adapter :
@@ -634,11 +638,13 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
     } else {
       RecordWebGPUReachTier(WebGPUReachTier::kCompatHardwareSupported);
     }
-  } else if (has_d3d11_hw_adapter) {
-    RecordWebGPUReachTier(WebGPUReachTier::kD3D11HardwareAvailable);
   } else if (has_core_adapter) {
+    // Checked before D3D11: a non-blocklisted D3D12 adapter that lacks
+    // external texture support needs interop work, not a D3D11 backend.
     RecordWebGPUReachTier(
         WebGPUReachTier::kHardwareMissingExternalTextureSupport);
+  } else if (has_d3d11_hw_adapter) {
+    RecordWebGPUReachTier(WebGPUReachTier::kD3D11HardwareAvailable);
   } else if (has_core_blocklisted_adapter || has_compat_blocklisted_adapter ||
              has_d3d11_blocklisted_adapter) {
     RecordWebGPUReachTier(WebGPUReachTier::kHardwareBlocklisted);
