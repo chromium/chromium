@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -136,7 +137,16 @@ TEST_F(TtcKeyedServiceUnitTest, StartSession) {
   EXPECT_TRUE(service_->is_session_active());
 }
 
-TEST_F(TtcKeyedServiceUnitTest, StartSessionFailsIfAlreadyStarted) {
+// TODO(crbug.com/584598112): Death tests under threaded BrowserTaskEnvironment
+// are flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_StartSessionFailsIfAlreadyStarted \
+  DISABLED_StartSessionFailsIfAlreadyStarted
+#else
+#define MAYBE_StartSessionFailsIfAlreadyStarted \
+  StartSessionFailsIfAlreadyStarted
+#endif
+TEST_F(TtcKeyedServiceUnitTest, MAYBE_StartSessionFailsIfAlreadyStarted) {
   service_->StartSession();
   EXPECT_DEATH_IF_SUPPORTED(service_->StartSession(), "");
   EXPECT_TRUE(service_->is_session_active());
