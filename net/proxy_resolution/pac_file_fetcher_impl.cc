@@ -8,14 +8,17 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/data_url.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -23,6 +26,7 @@
 #include "net/base/request_priority.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 
@@ -197,6 +201,14 @@ int PacFileFetcherImpl::Fetch(
   cur_request_->SetLoadFlags(LOAD_BYPASS_PROXY | LOAD_DISABLE_CACHE |
                              LOAD_DISABLE_CERT_NETWORK_FETCHES |
                              LOAD_IGNORE_LIMITS);
+  if (base::FeatureList::IsEnabled(
+          features::kBlockCredentialsInPacFileFetcher)) {
+    // PAC script fetches must not send or save cookies, client certificates, or
+    // HTTP server authentication credentials (including ambient OS default
+    // NTLM/Negotiate credentials).
+    cur_request_->set_disallow_credentials();
+    cur_request_->set_send_client_certs(false);
+  }
 
   // Save the caller's info for notification on completion.
   callback_ = std::move(callback);
@@ -289,9 +301,14 @@ void PacFileFetcherImpl::OnResponseStarted(URLRequest* request, int net_error) {
 
   // Require HTTP responses to have a success status code.
   if (request->url().SchemeIsHTTPOrHTTPS()) {
+    const int response_code = request->GetResponseCode();
+    base::UmaHistogramSparse(
+        "Net.ProxyResolution.PacFileFetcher.HttpResponseCode",
+        HttpUtil::MapStatusCodeForHistogram(response_code));
+
     // NOTE about status codes: We are like Firefox 3 in this respect.
     // {IE 7, Safari 3, Opera 9.5} do not care about the status code.
-    if (request->GetResponseCode() != 200) {
+    if (response_code != 200) {
       VLOG(1) << "Fetched PAC script had (bad) status line: "
               << request->response_headers()->GetStatusLine();
       result_code_ = ERR_HTTP_RESPONSE_CODE_FAILURE;

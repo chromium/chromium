@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -17,6 +18,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
@@ -26,11 +29,18 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_store.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_auth.h"
+#include "net/http/http_auth_handler_mock.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
@@ -40,6 +50,8 @@
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/simple_connection_listener.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -104,6 +116,12 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
     EXPECT_EQ(request->device_bound_session_mode(),
               DeviceBoundSessionMode::kDisabled);
+    const bool block_credentials = base::FeatureList::IsEnabled(
+        features::kBlockCredentialsInPacFileFetcher);
+    EXPECT_EQ(!request->allow_credentials(), block_credentials);
+    EXPECT_EQ(!request->send_client_certs(), block_credentials);
+    EXPECT_EQ((request->load_flags() & LOAD_DO_NOT_SAVE_COOKIES) != 0,
+              block_credentials);
     return OK;
   }
 };
@@ -575,6 +593,180 @@ TEST_F(PacFileFetcherImplTest, OnShutdownWithNoLiveRequest) {
   EXPECT_THAT(result, IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_EQ(0u, context_->url_requests()->size());
 }
+
+class PacFileFetcherImplCredentialsTest
+    : public TestWithTaskEnvironment,
+      public testing::WithParamInterface<bool> {
+ public:
+  PacFileFetcherImplCredentialsTest() {
+    AddScopedFeatureList().InitWithFeatureState(
+        features::kBlockCredentialsInPacFileFetcher, block_credentials());
+  }
+
+ protected:
+  bool block_credentials() const { return GetParam(); }
+};
+
+TEST_P(PacFileFetcherImplCredentialsTest, AuthChallengeDefaultCredentials) {
+  int request_count = 0;
+  std::string received_authorization_header;
+  EmbeddedTestServer server;
+  server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url != "/auth.pac") {
+          return nullptr;
+        }
+        ++request_count;
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        if (auto it = request.headers.find(HttpRequestHeaders::kAuthorization);
+            it != request.headers.end()) {
+          received_authorization_header = it->second;
+          response->set_code(HTTP_OK);
+          response->set_content(
+              "function FindProxyForURL() { return 'DIRECT'; }");
+          return response;
+        }
+        response->set_code(HTTP_UNAUTHORIZED);
+        response->AddCustomHeader("WWW-Authenticate", "Mock realm=\"pac\"");
+        return response;
+      }));
+  ASSERT_TRUE(server.Start());
+
+  auto auth_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
+  auth_factory->set_do_init_from_challenge(true);
+  auto mock_handler = std::make_unique<HttpAuthHandlerMock>();
+  mock_handler->set_allows_default_credentials(true);
+  mock_handler->SetGenerateExpectation(/*async=*/false, OK);
+  auth_factory->AddMockHandler(std::move(mock_handler), HttpAuth::AUTH_SERVER);
+
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_network_delegate(std::make_unique<BasicNetworkDelegate>());
+  builder->SetHttpAuthHandlerFactory(std::move(auth_factory));
+  std::unique_ptr<URLRequestContext> context = builder->Build();
+
+  base::HistogramTester histogram_tester;
+  auto pac_fetcher = PacFileFetcherImpl::Create(context.get());
+  std::u16string text;
+  TestCompletionCallback callback;
+  int result =
+      pac_fetcher->Fetch(server.GetURL("/auth.pac"), &text, callback.callback(),
+                         TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+  const int final_result = callback.WaitForResult();
+  ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());
+
+  if (block_credentials()) {
+    EXPECT_THAT(final_result, IsError(ERR_HTTP_RESPONSE_CODE_FAILURE));
+    EXPECT_TRUE(text.empty());
+    EXPECT_EQ(request_count, 1);
+    EXPECT_TRUE(received_authorization_header.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Net.ProxyResolution.PacFileFetcher.HttpResponseCode",
+        HTTP_UNAUTHORIZED, 1);
+  } else {
+    EXPECT_THAT(final_result, IsOk());
+    EXPECT_EQ(u"function FindProxyForURL() { return 'DIRECT'; }", text);
+    EXPECT_EQ(request_count, 2);
+    EXPECT_EQ(received_authorization_header, "auth_token");
+    histogram_tester.ExpectUniqueSample(
+        "Net.ProxyResolution.PacFileFetcher.HttpResponseCode", HTTP_OK, 1);
+  }
+}
+
+TEST_P(PacFileFetcherImplCredentialsTest, Cookies) {
+  std::string received_cookie_header;
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url != "/cookie.pac") {
+          return nullptr;
+        }
+        if (auto it = request.headers.find(HttpRequestHeaders::kCookie);
+            it != request.headers.end()) {
+          received_cookie_header = it->second;
+        }
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        response->set_code(HTTP_OK);
+        response->AddCustomHeader("Set-Cookie",
+                                  "pac_saved=1; Path=/; SameSite=None; Secure");
+        response->set_content(
+            "function FindProxyForURL() { return 'DIRECT'; }");
+        return response;
+      }));
+  ASSERT_TRUE(https_server.Start());
+
+  auto mock_cert_verifier = std::make_unique<MockCertVerifier>();
+  mock_cert_verifier->set_default_result(OK);
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_network_delegate(std::make_unique<BasicNetworkDelegate>());
+  builder->SetCertVerifier(std::move(mock_cert_verifier));
+  std::unique_ptr<URLRequestContext> context = builder->Build();
+
+  GURL pac_url = https_server.GetURL("/cookie.pac");
+  {
+    auto pre_existing_cookie = CanonicalCookie::CreateForTesting(
+        pac_url, "pre_existing=1; Path=/; SameSite=None; Secure",
+        base::Time::Now(), CookieSourceType::kOther);
+    ASSERT_TRUE(pre_existing_cookie);
+    base::RunLoop run_loop;
+    context->cookie_store()->SetCanonicalCookieAsync(
+        std::move(pre_existing_cookie), pac_url,
+        CookieOptions::MakeAllInclusive(),
+        base::BindLambdaForTesting([&](CookieAccessResult result) {
+          EXPECT_TRUE(result.status.IsInclude());
+          run_loop.Quit();
+        }),
+        /*cookie_access_result=*/std::nullopt);
+    run_loop.Run();
+  }
+
+  base::HistogramTester histogram_tester;
+  auto pac_fetcher = PacFileFetcherImpl::Create(context.get());
+  std::u16string text;
+  TestCompletionCallback callback;
+  int result = pac_fetcher->Fetch(pac_url, &text, callback.callback(),
+                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  ASSERT_TRUE(https_server.ShutdownAndWaitUntilComplete());
+  EXPECT_EQ(u"function FindProxyForURL() { return 'DIRECT'; }", text);
+
+  CookieList cookies;
+  {
+    base::RunLoop run_loop;
+    context->cookie_store()->GetAllCookiesAsync(
+        base::BindLambdaForTesting([&](const CookieList& list) {
+          cookies = list;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  std::vector<std::string> cookie_names;
+  for (const auto& cookie : cookies) {
+    cookie_names.push_back(cookie.Name());
+  }
+
+  if (block_credentials()) {
+    EXPECT_TRUE(received_cookie_header.empty());
+    EXPECT_THAT(cookie_names, testing::UnorderedElementsAre("pre_existing"));
+  } else {
+    EXPECT_EQ(received_cookie_header, "pre_existing=1");
+    EXPECT_THAT(cookie_names,
+                testing::UnorderedElementsAre("pre_existing", "pac_saved"));
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Net.ProxyResolution.PacFileFetcher.HttpResponseCode", HTTP_OK, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PacFileFetcherImplCredentialsTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BlockCredentialsEnabled"
+                                             : "BlockCredentialsDisabled";
+                         });
 
 }  // namespace
 

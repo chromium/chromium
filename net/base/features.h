@@ -1245,6 +1245,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAllowInvalidCertificateSerialNumbers);
 // TODO(crbug.com/590261527): Remove this flag once it has been verified safe.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicDefaultPragueCubic);
 
+// If enabled, `PacFileFetcherImpl` blocks credentials (cookies, HTTP server
+// auth, and client certificates) when fetching PAC scripts.
+// TODO(crbug.com/588407199): Remove the `base::Feature` once it has been
+// verified safe.
+NET_EXPORT BASE_DECLARE_FEATURE(kBlockCredentialsInPacFileFetcher);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

@@ -1271,4 +1271,7 @@ BASE_FEATURE(kAllowInvalidCertificateSerialNumbers,
 
 BASE_FEATURE(kQuicDefaultPragueCubic, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBlockCredentialsInPacFileFetcher,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

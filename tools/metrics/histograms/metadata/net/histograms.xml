@@ -5507,6 +5507,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ProxyResolution.PacFileFetcher.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-06-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Records the HTTP status code received when `PacFileFetcherImpl` fetches a
+    PAC script over HTTP or HTTPS. Recorded once per HTTP/HTTPS PAC fetch
+    response in `PacFileFetcherImpl::OnResponseStarted`. Used to monitor PAC
+    fetch failures (in particular HTTP 401 responses) after disallowing
+    credentials on PAC script fetches.
+  </summary>
+</histogram>
+
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
