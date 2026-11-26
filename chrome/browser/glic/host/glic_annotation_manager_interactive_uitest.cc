@@ -9,12 +9,14 @@
 #include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
@@ -433,44 +435,46 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
   // std::nullopt to wait until no tab is in focus.
   auto WaitUntilGlicFocusedTabIs(
       std::optional<ui::ElementIdentifier> web_contents_id) {
-    return Check([&, web_contents_id]() {
-      content::WebContents* web_contents = nullptr;
-      if (web_contents_id) {
-        auto* tracked_element =
-            ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-                web_contents_id.value());
-        web_contents =
-            InteractiveBrowserTest::AsInstrumentedWebContents(tracked_element)
-                ->web_contents();
-      }
-      CHECK(GetHost());
-      GlicSharingManagerInternal* sharing_manager =
-          &GetHost()->GetSharingManagerInternal();
-      FocusedTabData focused_tab_data = sharing_manager->GetFocusedTabData();
-      content::WebContents* focused_web_contents =
-          focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
-                                   : nullptr;
-      if (focused_web_contents == web_contents) {
-        return true;
-      }
-      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      auto subscription = sharing_manager->AddFocusedTabChangedCallback(
-          base::BindLambdaForTesting([&run_loop, sharing_manager,
-                                      web_contents](const FocusedTabData&) {
-            content::WebContents* focused_web_contents =
-                sharing_manager->GetFocusedTabData().focus()
-                    ? sharing_manager->GetFocusedTabData()
-                          .focus()
-                          ->GetContents()
-                    : nullptr;
-            if (focused_web_contents == web_contents) {
-              run_loop.Quit();
-              return;
+    return WaitUntil(
+        [&, web_contents_id]() -> std::string {
+          content::WebContents* expected_web_contents = nullptr;
+          if (web_contents_id) {
+            auto* tracked_element =
+                ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                    web_contents_id.value());
+            if (!tracked_element) {
+              return "expected web_contents element not found";
             }
-          }));
-      run_loop.Run();
-      return true;
-    });
+            expected_web_contents =
+                InteractiveBrowserTest::AsInstrumentedWebContents(
+                    tracked_element)
+                    ->web_contents();
+          }
+          CHECK(GetHost());
+          GlicSharingManagerInternal* sharing_manager =
+              &GetHost()->GetSharingManagerInternal();
+          FocusedTabData focused_tab_data =
+              sharing_manager->GetFocusedTabData();
+          content::WebContents* focused_web_contents =
+              focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
+                                       : nullptr;
+          if (focused_web_contents == expected_web_contents) {
+            return "match";
+          }
+          if (focused_web_contents) {
+            return "focused tab mismatch: " +
+                   focused_web_contents->GetURL().spec();
+          }
+          return base::StrCat(
+              {"no focused tab: ", focused_tab_data.GetFocus().error(),
+               " (instance_active=",
+               GetGlicInstanceImpl() && GetGlicInstanceImpl()->IsActive()
+                   ? "true"
+                   : "false",
+               ", browser_active=",
+               browser()->GetWindow()->IsActive() ? "true" : "false", ")"});
+        },
+        "match", "WaitUntilGlicFocusedTabIs");
   }
 
   InteractiveTestApi::MultiStep ExpectErrorRecorded(
@@ -757,7 +761,15 @@ class MAYBE_GlicAnnotationManagerWithFloatingWindowInLiveModeUiTest
 
   void SetUpOnMainThread() override {
     MAYBE_GlicAnnotationManagerUiTest::SetUpOnMainThread();
+    // Ignore macOS app-active and IsVisibleOnScreen checks which can be false
+    // on Mac bots even when the Glic widget is active (b/585545082).
+    GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
     TrackFloatingGlicInstance();
+  }
+
+  void TearDownOnMainThread() override {
+    GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(false);
+    MAYBE_GlicAnnotationManagerUiTest::TearDownOnMainThread();
   }
 
   InteractiveGlicTest::MultiStep OpenGlicFloatingWindowInLiveMode(
