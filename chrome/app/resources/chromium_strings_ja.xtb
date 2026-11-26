@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">これらはいつでも削除できます。サイトや機能で必要になった場合、Chromium がこれらを自動的に再ダウンロードすることがあります。</translation>
 <translation id="1793486931176048546">Windows の通知で [<ph name="BEGIN_BOLD" />はい<ph name="END_BOLD" />] をクリックすると、Chromium がタスクバーに固定され、すばやくアクセスできるようになります。</translation>
 <translation id="1808667845054772817">Chromium を再インストール</translation>
+<translation id="1814482312667514397">スマートフォンの Chromium アプリで優れた安全機能を外出先でも</translation>
 <translation id="1820835682567584003">Chromium が <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。<ph name="DEVICE" /> の拡張機能などを使用できます。</translation>
 <translation id="183031085822326697">次回 <ph name="DEVICE_TYPE" /> で Chromium を開いたときに、Google パスワード マネージャーを使用するよう求めるメッセージが表示されます。</translation>
@@ -132,6 +133,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2403703063067034158">起動エラー: 現在、別のインスタンスのセットアップが実行中です。しばらくしてからもう一度お試しください。</translation>
+<translation id="241044568699443215"><ph name="DEVICE_TYPE" /> の Chromium アプリで安全機能を外出先でも</translation>
 <translation id="2418322681019544463">他のアプリから Chromium でリンクを開いたり、タスクバーから Chromium にアクセスしたりできます</translation>
 <translation id="2425157128016763890">[要約] ボタンをクリックしてこのドキュメントを Gemini in Chromium と共有すると、概要の確認や追加の質問ができます</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium のツール<ph name="END_LINK" />を使って、自分で管理しながら安全にブラウジングできます</translation>
@@ -749,6 +751,7 @@
 <translation id="8907580949721785412">Chromium でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8910309838319708610">これで完了です。ブラウジング中に検索 AI モードを使用して、簡単に質問できるようになりました</translation>
 <translation id="8932992523185907506">Chromium は既定のブラウザではなくなりました。Chromium を既定のブラウザにしますか？</translation>
+<translation id="8940844567350264767">Chromium の優れた安全機能を外出先でも</translation>
 <translation id="8941642502866065432">Chromium を更新できません</translation>
 <translation id="8944232836376404813">この操作を行うと、次のようになります。
           <ph name="LINE_BREAKS" />

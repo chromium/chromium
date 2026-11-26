@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Тохиргооны кэш болж байна</translation>
 <translation id="1131264053432022307">Таны хуулсан зураг</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Бүтэн дэлгэцээс гарахын тулд дээрээс чирч, буцах товчинд хүрнэ үү</translation>
+<translation id="1132789342529761192">Байршуулахыг зөвлөдөггүй</translation>
 <translation id="11370190534773372">Картын мэдээллийг бөглөсөн</translation>
 <translation id="1138458427267715730">Веб дээрх аливаа сайт дээр үнэ буурах үед дохио аваарай</translation>
 <translation id="1142713751288681188">Цаасны төрөл</translation>
@@ -604,6 +605,7 @@
 <translation id="2025891858974379949">Аюултай контент</translation>
 <translation id="2027465737841872819">Хуванцар</translation>
 <translation id="2027707238798802149">Карт боломжгүй байна</translation>
+<translation id="2028329426302356196">Татаж авахыг зөвлөдөггүй</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси болон галт ханыг шалгаж байна<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome-н энэ инстансыг гар аргаар тохируулсан тушаалын мөрийн дарцгуудаар ажиллуулж байна. Тушаалын мөрийн дарцгууд хэзээ ч өөрчлөгдөж болох бөгөөд дэмжигддэггүй болохыг анхаарна уу.</translation>
 <translation id="2033900728810589426">Товчлол нь <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-с тодорхойлсон өгөгдмөл хайлтын үйлчилгээ үзүүлэгчийн түлхүүр үгтэй ижил байх боломжгүй: <ph name="SHORTCUT_NAME" /></translation>
@@ -1458,6 +1460,7 @@
 <translation id="3443504041532578451">Оптик диск (сатин)</translation>
 <translation id="3447661539832366887">Энэ төхөөрөмжийг эзэмшигч нь үлэг гүрвэлтэй тоглоомыг унтраасан байна.</translation>
 <translation id="3447884698081792621">Гэрчилгээ харуулах (<ph name="ISSUER" />-с олгосон)</translation>
+<translation id="3449239216441121005">Хэвлэхийг зөвлөдөггүй</translation>
 <translation id="3450323514459570273">Таны MIDI төхөөрөмжүүдийг хянах болон дахин программчлахыг хүсэх боломжтой</translation>
 <translation id="3452404311384756672">Интервалыг татаж авчрах:</translation>
 <translation id="345268527248907593">Энэ сайтад холбогдож чадсангүй</translation>
@@ -2919,6 +2922,7 @@
 <translation id="5851548754964597211">Цонхны жагсаалт</translation>
 <translation id="5851868085455377790">Сертификатыг олгосон</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Хуулахыг зөвлөдөггүй</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5862579898803147654">Гарах цаасыг зэрэгцүүлэх тавцан 8</translation>
 <translation id="5863515189965725638">Олон улсын банк акаунтны дугаарыг засах</translation>

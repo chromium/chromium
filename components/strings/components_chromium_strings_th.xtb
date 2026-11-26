@@ -22,6 +22,7 @@
 <translation id="48558539577516920">อนุญาตให้ Chromium เข้าถึงเครือข่ายในการตั้งค่าไฟร์วอลล์
           หรือการป้องกันไวรัส</translation>
 <translation id="4949828774841497663">ไปที่แอปพลิเคชัน &gt; การตั้งค่าระบบ &gt; เครือข่าย เลือกเครือข่ายที่ใช้งานอยู่ คลิกปุ่ม "รายละเอียด..." แล้วยกเลิกการเลือกพร็อกซีที่อาจเลือกไว้</translation>
+<translation id="5228339820845278804">การช่วยเตือน: ฟีเจอร์ความปลอดภัยที่ดีที่สุดของ Chromium อยู่ในมือคุณแล้ว</translation>
 <translation id="6480456350195404966">ไปที่
           เมนู Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -36,6 +37,7 @@
 <translation id="6549378540556750549">Chromium ยังเกิดขึ้นได้ด้วย<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 <translation id="6613594504749178791">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณเปิด Chromium ขึ้นอีก</translation>
 <translation id="691026815377248078">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">ใช้แอป Chromium เพื่อนำความปลอดภัยของ Chromium ไปด้วยทุกที่ทุกเวลา</translation>
 <translation id="7681937895330411637">Chromium เกิดขึ้นได้ด้วยโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="7861509383340276692">ไปที่
           เมนู Chromium &gt;

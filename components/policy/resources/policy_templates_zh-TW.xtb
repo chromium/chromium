@@ -5776,7 +5776,7 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果將這項政策設為 <ph name="BR_UNDER_USER_CONTROL" />，系統會出現提示，詢問使用者是否要使用 Google 定位服務。如果使用者選擇啟用，Android 應用程式會使用定位服務搜尋裝置位置，並將去識別化的位置資料傳送給 Google。
 
 完成初始設定後，使用者可啟用或停用 Google 定位服務。</translation>
-<translation id="4669742017587504409">指定使用者安裝的擴充功能在隔離模式下的行為。這適用於非政策強制安裝的所有擴充功能，包括由政策安裝但使用者可自行停用的擴充功能。
+<translation id="4669742017587504409">指定使用者安裝的擴充功能在隔離模式下的行為，適用於：並非因政策而強制安裝的任何擴充功能，包括因政策安裝但使用者可自行停用的擴充功能。
 
 如果設為 0 或未設定，使用者安裝的擴充功能在隔離模式下會預設為啟用，且使用者可以自行停用。
 
@@ -5786,7 +5786,7 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 
 設為 0 或 1 時，如果使用者在隔離模式下明確啟用或停用擴充功能，則使用者的選擇優先於政策預設值。
 
-若擴充功能在資訊清單中將 <ph name="INCOGNITO_MANIFEST_KEY" /> 設為 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" />，無論此政策如何設定，皆無法在隔離模式下執行。
+無論此政策如何設定，使用者都無法在隔離模式下，執行在資訊清單中將 <ph name="INCOGNITO_MANIFEST_KEY" /> 設為 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> 的擴充功能。
 
 這項政策只有在 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 政策啟用時才會生效。
 

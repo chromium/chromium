@@ -1309,6 +1309,7 @@
 <translation id="244071666433939959">Аппууд цонхонд нээгддэг</translation>
 <translation id="2442916515643169563">Текстийн сүүдэр</translation>
 <translation id="2443487764245141020">Сайтууд мөн танигч ашиглан таны төхөөрөмжийг таних шаардлагатай байж магадгүй</translation>
+<translation id="2444282212665587861">шинэчлэх, шинэчлэлт, сайжруулах, хувилбар, хийц, мэдээлэл, шинэчлэлт байгаа эсэхийг шалгах</translation>
 <translation id="244475495405467108">Табуудыг зүүн тийш нь хаах</translation>
 <translation id="2444874983932528148">Зогсоосон газраасаа хялбархан үргэлжлүүлээрэй</translation>
 <translation id="2445081178310039857">Өргөтгөлийн стандарт директор шаардлагатай байна.</translation>
@@ -2146,6 +2147,7 @@
 <translation id="3321512411079201586">&amp;Тусгаарласан</translation>
 <translation id="3323288183237359315">Edge-д зориулж суулгах</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Таны нууцлалыг хамгаалахын тулд нэг сайтаас зөвшөөрлийг хассан}other{Таны нууцлалыг хамгаалахын тулд зарим сайтаас зөвшөөрлийг хассан}}</translation>
+<translation id="3325561120400598624">Чатыг хянаж, үүсгэгч ХОУ-ы загварыг сургахад ашигладаг. Gemini бол ХОУ бөгөөд алдаа гаргаж болно. Зарим контент зарим хүнд тохиромжгүй байж болно. Та <ph name="BEGIN_LINK_LOCATION_INFO" />байршлынхаа талаарх мэдээлэл<ph name="END_LINK_LOCATION_INFO" /> зэрэг <ph name="BEGIN_LINK_MANAGE_HISTORY" />түүхээ удирдах<ph name="END_LINK_MANAGE_HISTORY" /> боломжтой. <ph name="BEGIN_LINK_LEARN_MORE" />Сонголтуудынхаа талаар нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Загвар</translation>
 <translation id="3331974543021145906">Аппликейшний мэдээлэл...</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Дэлгэцэн доторх дэлгэц горимд видео тоглуулж байна</translation>
@@ -2271,6 +2273,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 .pdf файл байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэл .pdf файл байршуулна уу}}</translation>
 <translation id="3456750372063895499">Холбоосыг тусгаарласан цонхонд нээх</translation>
 <translation id="345693547134384690">Зургийг шинэ цонхонд нээ</translation>
+<translation id="3456949031754827166">Дахин эмхлэх</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Бүлгийг үлдээх}other{Бүлгүүдийг үлдээх}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 хавчуургыг устгасан}other{# хавчуургыг устгасан}}</translation>
 <translation id="3471687177769494956">Навигацын товчлолыг засах</translation>
@@ -3324,6 +3327,7 @@
 <translation id="4602776638371779614">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна</translation>
 <translation id="4605026046465576953">Танд тусгаарласан веб аппуудыг ажиллуулах зөвшөөрөл байхгүй тул энэ аппыг нээх боломжгүй</translation>
 <translation id="4606551464649945562">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг үл зөвшөөрөх</translation>
+<translation id="4606965546067937011">хурд, RAM, хоцролт, царцаах, гэмтэл, нөөц, хэрэглээ, батарей, оновчтой болгогч, удаан, санах ой, санах ой хэмнэгч</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Табын бүлгийг устгах уу?}other{Табын бүлгүүдийг устгах уу?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 файл байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэлх файл байршуулна уу}}</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
@@ -4157,6 +4161,7 @@
 <translation id="5535769176698670170">Дээд талын харагдах байдлаар солих</translation>
 <translation id="5536642445914063887">Профайл сэлгэх</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="553876896781261711">устгах, хасах, аюулгүй байдал, нууцлал, цэвэрлэх, хадгалах сан, шинэчлэх, завсрын санах ой, күүки, удаан, хурд, түүх</translation>
 <translation id="5541091577812545428">Нууц үгийг өөрчлөөгүй</translation>
 <translation id="5542132724887566711">Танилцуулга</translation>
 <translation id="5543983818738093899">Статусыг шалгаж байна...</translation>
@@ -4748,6 +4753,7 @@
 <translation id="6214157047210274853">Google Wallet-д засах</translation>
 <translation id="621470880408090483">Сайтуудад Bluetooth төхөөрөмжүүдэд холбогдохыг бүү зөвшөөр</translation>
 <translation id="6215039389782910006">{1,plural, =1{Таны нууц үгнүүдийг аюулгүй байлгахын тулд <ph name="BRAND" /> 1 минут идэвхгүй байсны дараа түгжигдэнэ}other{Таны нууц үгнүүдийг аюулгүй байлгахын тулд <ph name="BRAND" /> # минут идэвхгүй байсны дараа түгжигдэнэ}}</translation>
+<translation id="6215427500141060726">Чатыг хянаж, үүсгэгч ХОУ-ы загварыг сургахад ашигладаг. Gemini бол ХОУ бөгөөд алдаа гаргаж болно. Та <ph name="BEGIN_LINK_LOCATION_INFO" />байршлынхаа талаарх мэдээлэл<ph name="END_LINK_LOCATION_INFO" /> зэрэг <ph name="BEGIN_LINK_MANAGE_HISTORY" />түүхээ удирдах<ph name="END_LINK_MANAGE_HISTORY" /> боломжтой. <ph name="BEGIN_LINK_LEARN_MORE" />Сонголтуудынхаа талаар нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Татгалзсан сайт эсвэл апп</translation>
 <translation id="6216696360484424239">Автоматаар нэвтрэх</translation>
 <translation id="6218961554829577610">Дуу хоолой таалагдаагүй</translation>
@@ -4899,6 +4905,7 @@
 <translation id="639880411171387127">Таны Google Lens-н сонголт. Google Lens-н сонголтоо устгахын тулд enter эсвэл ухраахыг дарна уу</translation>
 <translation id="6400360390396538896">Үргэлж <ph name="ORIGIN" /> дээр</translation>
 <translation id="6400714103322134861">Табын бүлгийн сонголтыг болиулах</translation>
+<translation id="6401522392962817913">Үргэлжлүүлснээр та Google Payments-н Үйлчилгээний нөхцөлийг зөвшөөрч байна. Нууцлалын сануулга таны өгөгдлийг хэрхэн зохицуулдаг талаар тайлбарладаг. Таны картыг таны Google Бүртгэл <ph name="ACCOUNT" />-д хадгалсан.</translation>
 <translation id="6402042774506839496">Шалтгааныг мэдэж авахын тулд апп хөгжүүлэгчтэй холбогдоно уу</translation>
 <translation id="6402921224457714577">Сайтууд таны MIDI төхөөрөмжүүдийг хянах болон дахин программчлахыг хүсэх боломжтой</translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
@@ -4987,6 +4994,7 @@
 <translation id="6499143127267478107">Төлөөллийн скриптээр дамжуулан оролцогчийг тодорхойлон шийдэх ...</translation>
 <translation id="6503077044568424649">Хамгийн олон хандалт авсан</translation>
 <translation id="6504601948739128893">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрөөгүй</translation>
+<translation id="6505525633061207363">мандат үнэмлэх, нэвтрэлт, нэвтрэх түлхүүр, түгжээ, хадгалах газар, түлхүүр, нэвтрэлт, нэвтрэх</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" энэ төхөөрөмжид дараах аппыг суулгах хүсэлтэй байна:}other{"<ph name="APP_NAME" />" энэ төхөөрөмжид дараах аппуудыг суулгах хүсэлтэй байна:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />-тай холбоотой</translation>
 <translation id="6508261954199872201">Аппликейшн: <ph name="APP_NAME" /></translation>

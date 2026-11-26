@@ -908,6 +908,11 @@ URL は「http://example.com」、「https://example.com」のような標準的
       このポリシーが False に設定されている場合、ユーザーは自身のプリンタを追加し構成することはできません。また、以前に設定したプリンタを使用して印刷することもできません。
       </translation>
 <translation id="1613327425322354195">デバイスのセキュリティ ステータスを報告する</translation>
+<translation id="1613552398317518165">このポリシーは非推奨になっており、無視されます。デフォルトの検索リクエストは常に get メソッドを使用して送信されるため、このポリシーで指定されたパラメータは適用されません。代わりに <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> を使用して、<ph name="SEARCH_TERM_MARKER" /> プレースホルダを含む検索 URL を設定してください。
+
+POST パラメータは、<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> を介した画像検索でのみサポートされます。
+
+以前は、<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> が有効な場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> を設定することで、POST による URL 検索時のパラメータを、名前と値のペアとしてカンマ区切りで指定していました。</translation>
 <translation id="1615221548356595305">クライアント証明書が使用されているときでも、指定したホストで HTTP/2 接続の統合を許可する</translation>
 <translation id="1616280227447957376">特定のオリジンで SSL 警告ページのクリックスルーを許可します</translation>
 <translation id="1617235075406854669">閲覧とダウンロードの履歴を削除可能にする</translation>
@@ -5841,6 +5846,11 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
 <translation id="4725801978265372736">ローカル ユーザーの名前とリモート アクセス ホストの所有者が一致していることを要件とする</translation>
 <translation id="4726228171190098009">デバイスに Powerwash のリクエストを許可しない</translation>
 <translation id="4726895359147376813">永続 ID から VM 構成へのマッピング</translation>
+<translation id="473189306848333308">このポリシーは非推奨になっており、無視されます。検索候補リクエストは常に get メソッドを使用して送信されるため、このポリシーで指定されたパラメータは適用されません。代わりに <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> を使用して、<ph name="SEARCH_TERM_MARKER" /> プレースホルダを含む検索候補 URL を設定してください。
+
+POST パラメータは、<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> を介した画像検索でのみサポートされます。
+
+以前は、<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> が有効な場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> を設定することで、POST による検索候補の取得時のパラメータを、名前と値のペアとしてカンマ区切りで指定していました。</translation>
 <translation id="4732069502693984686">複数の画面の自動スクリーン キャプチャを有効にする</translation>
 <translation id="4733471537137819387">統合された HTTP 認証に関連するポリシーです。</translation>
 <translation id="4737832614429402441">TLS のポスト量子鍵交換でデフォルト値を使用する</translation>
@@ -7886,6 +7896,15 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="6075316301208933536"><ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> が <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> に設定されている場合、バッテリーの充電率（%）に基づいて充電を停止するタイミングを <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> の設定によってカスタマイズできます。<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> には <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> より 5% 以上低い値を指定してください。
 
       このポリシーを未設定のままにした場合、<ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> のバッテリー充電モードが適用されます。</translation>
+<translation id="6077759101739558312">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービス（iOS ではサポートされていません）では、指定ドメインでホストされるダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
+
+このポリシーを未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
+
+このポリシーでは正規表現はサポートされませんが、指定したドメインのサブドメインは許可リストに登録されます。完全修飾ドメイン名（FQDN）は必要ありません。
+
+<ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。
+
+<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。</translation>
 <translation id="6082161804984853051">このポリシーを設定した場合、<ph name="PRODUCT_NAME" /> では、ユーザーが「--disk-cache-dir」フラグを指定しているかどうかにかかわらず、キャッシュされたファイルをディスクに保存する際に、設定したディレクトリが使用されます。
 
       設定しない場合、<ph name="PRODUCT_NAME" /> ではデフォルトのキャッシュ ディレクトリが使用されますが、ユーザーは「--disk-cache-dir」コマンドライン フラグを使って設定を変更できます。

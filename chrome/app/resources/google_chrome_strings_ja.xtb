@@ -449,6 +449,7 @@
 <translation id="568656514202614970">完了しました。ブラウジング中に Google 検索サイドパネルで簡単に質問できるようになりました</translation>
 <translation id="5686916850681061684">Google Chrome をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Chrome で Google の優れた安全機能を外出先でも</translation>
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
 <translation id="5715427327524421317">Chrome でこれらの AI モデルを自動的にダウンロードして更新します</translation>
@@ -614,6 +615,7 @@
 <translation id="7099479769133613710">再起動して ChromeOS を更新</translation>
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
 <translation id="7121179479711575744">Chrome にログイン</translation>
+<translation id="7137056136322108339">スマートフォンの Chrome アプリで、Google の優れた安全機能を外出先でも</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。</translation>

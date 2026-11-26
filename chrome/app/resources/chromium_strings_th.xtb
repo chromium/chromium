@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">คุณนำโมเดลเหล่านี้ออกได้ทุกเมื่อ Chromium อาจดาวน์โหลดโมเดลอีกครั้งโดยอัตโนมัติเมื่อเว็บไซต์หรือฟีเจอร์ต้องการใช้</translation>
 <translation id="1793486931176048546">คลิก<ph name="BEGIN_BOLD" />ใช่<ph name="END_BOLD" />ในการแจ้งเตือนของ Windows เพื่อปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็ว</translation>
 <translation id="1808667845054772817">ติดตั้ง Chromium ใหม่</translation>
+<translation id="1814482312667514397">รับฟีเจอร์ความปลอดภัยที่ดีที่สุดของ Chromium ทุกที่ทุกเวลาด้วยแอป Chromium ในโทรศัพท์</translation>
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับส่วนขยายและข้อมูลอื่นๆ จาก <ph name="DEVICE" /> ได้ด้วย</translation>
 <translation id="183031085822326697">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้เครื่องมือจัดการรหัสผ่านบน Google</translation>
@@ -132,6 +133,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}=1{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}other{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID # เครื่อง}}</translation>
 <translation id="2401032172288869980">Chromium ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="2403703063067034158">ข้อผิดพลาดในการเริ่มต้น: อินสแตนซ์อื่นของการตั้งค่ากำลังทำงานอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
+<translation id="241044568699443215">นำความปลอดภัยของ Chromium ไปได้ทุกที่ทุกเวลาด้วยแอป Chromium ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">เปิดลิงก์ใน Chromium จากแอปใดก็ได้ และช่วยให้เข้าถึงเบราว์เซอร์ได้ง่ายจากในแถบงาน</translation>
 <translation id="2425157128016763890">คลิกปุ่มสรุปเพื่อแชร์เอกสารนี้กับ Gemini ใน Chromium เพื่อดูภาพรวมคร่าวๆ และถามคำถามต่อเนื่อง</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />เครื่องมือจาก Chromium<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
@@ -750,6 +752,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8907580949721785412">Chromium กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>
 <translation id="8910309838319708610">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วยโหมด AI ของ Search</translation>
 <translation id="8932992523185907506">Chromium ไม่ใช่เบราว์เซอร์เริ่มต้นของคุณอีกต่อไป ทำให้ Chromium เป็นเบราว์เซอร์เริ่มต้นไหม</translation>
+<translation id="8940844567350264767">ใช้ฟีเจอร์ความปลอดภัยที่ดีที่สุดของ Chromium ได้ทุกที่ทุกเวลาด้วย Chromium</translation>
 <translation id="8941642502866065432">อัปเดต Chromium ไม่ได้</translation>
 <translation id="8944232836376404813">การดำเนินการนี้จะทำสิ่งต่อไปนี้
           <ph name="LINE_BREAKS" />

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">നയ കാഷെ ശരി</translation>
 <translation id="1131264053432022307">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
+<translation id="1132789342529761192">അപ്‌ലോഡ് ചെയ്യുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="11370190534773372">കാർഡ് വിശദാംശങ്ങൾ പൂരിപ്പിച്ചു</translation>
 <translation id="1138458427267715730">വെബിലുടനീളമുള്ള ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ അലേർട്ടുകൾ നേടുക</translation>
 <translation id="1142713751288681188">പേപ്പർ തരം</translation>
@@ -604,6 +605,7 @@
 <translation id="2025891858974379949">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം</translation>
 <translation id="2027465737841872819">പ്ലാസ്റ്റിക്</translation>
 <translation id="2027707238798802149">കാർഡ് ലഭ്യമല്ല</translation>
+<translation id="2028329426302356196">ഡൗൺലോഡ് ചെയ്യുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">നേരിട്ട് സജ്ജീകരിച്ച കമാൻഡ് ലൈൻ ഫ്ലാഗുകൾ ഉപയോഗിച്ചാണ് Chrome-ന്റെ ഈ ഇൻസ്റ്റൻസ് റൺ ചെയ്യുന്നത്. കമാൻഡ് ലൈൻ ഫ്ലാഗുകൾ ഏതുസമയത്തും മാറിയേക്കാമെന്നതും അവയ്ക്ക് പിന്തുണയില്ലെന്നതും ശ്രദ്ധിക്കുക.</translation>
 <translation id="2033900728810589426">കുറുക്കുവഴിയും <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> നിർവചിച്ചിരിക്കുന്ന തിരയൽ ദാതാവിന്റെ ഡിഫോൾട്ട് കീവേഡും സമാനമാകരുത്: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക് (സാറ്റിൻ)</translation>
 <translation id="3447661539832366887">ഈ ഉപകരണത്തിന്റെ ഉടമ ദിനോസർ ഗെയിം ഓഫാക്കി.</translation>
 <translation id="3447884698081792621">സർട്ടിഫിക്കറ്റ് (<ph name="ISSUER" /> ഇഷ്യൂ ചെയ്‌തത്) കാണിക്കുക</translation>
+<translation id="3449239216441121005">പ്രിന്റ് ചെയ്യുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="3450323514459570273">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ നിയന്ത്രിക്കാനും റീപ്രോഗ്രാം ചെയ്യാനും ആവശ്യപ്പെടാം</translation>
 <translation id="3452404311384756672">ഇടവേള ലഭ്യമാക്കുക:</translation>
 <translation id="345268527248907593">ഈ സൈറ്റ് ലഭ്യമാക്കാനായില്ല</translation>
@@ -2917,6 +2920,7 @@
 <translation id="5851548754964597211">ടാബ് ലിസ്റ്റ്</translation>
 <translation id="5851868085455377790">നല്‍‌കിയ ആള്‍‌</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">പകർത്തുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5862579898803147654">സ്റ്റാക്കർ 8</translation>
 <translation id="5863515189965725638">IBAN എഡിറ്റ് ചെയ്യുക</translation>

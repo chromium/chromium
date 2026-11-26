@@ -1299,6 +1299,7 @@
 <translation id="244071666433939959">ଆପ୍ସ ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲେ</translation>
 <translation id="2442916515643169563">ଟେକ୍ସଟ ଶାଡୋ</translation>
 <translation id="2443487764245141020">ଏକ ଚିହ୍ନଟକାରୀ ବ୍ୟବହାର କରି ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ମଧ୍ୟ ଚିହ୍ନଟ କରିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ</translation>
+<translation id="2444282212665587861">ଅପଡେଟ, ଅପଡେଟ, ଅପଗ୍ରେଡ, ଭର୍ସନ, ବିଲ୍ଡ, ସୂଚନା, ଅପଡେଟ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="244475495405467108">ବାମପଟରେ ଥିବା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2444874983932528148">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ସହଜରେ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2445081178310039857">ଏକ୍ସଟେନ୍‍ସନ୍‍ ମୂଳ ଡିରେକ୍ଟୋରୀ ଆବଶ୍ୟକ ଅଟେ।</translation>
@@ -2136,6 +2137,7 @@
 <translation id="3321512411079201586">&amp;ଆଇସୋଲେଟେଡ</translation>
 <translation id="3323288183237359315">Edge ପାଇଁ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{ଆପଣଙ୍କ ଗୋପନୀୟତାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, ଏକ ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}other{ଆପଣଙ୍କ ଗୋପନୀୟତାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, କିଛି ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}}</translation>
+<translation id="3325561120400598624">ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ ଏବଂ ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ। ଆପଣ <ph name="BEGIN_LINK_LOCATION_INFO" />ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା<ph name="END_LINK_LOCATION_INFO" /> ସମେତ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ଆପଣଙ୍କ ଇତିହାସକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_HISTORY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">ଷ୍ଟାଇଲ</translation>
 <translation id="3331974543021145906">ଆପ୍ ସୂଚନା</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ଛବି-ଭିତରେ-ଛବି ମୋଡ୍‌ରେ ଭିଡିଓ ଚାଲୁଛି</translation>
@@ -2261,6 +2263,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 .pdf ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # .pdf ଫାଇଲ ପର୍ଯ୍ୟନ୍ତ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="3456750372063895499">ଆଇ&amp;ସୋଲେଟେଡ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="345693547134384690">ନୂତନ ଟ୍ୟାବରେ &amp;ପ୍ରତିଛବି ଖୋଲନ୍ତୁ</translation>
+<translation id="3456949031754827166">ପୁଣି ସଜାନ୍ତୁ</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{ଗ୍ରୁପ ରଖନ୍ତୁ}other{ଗ୍ରୁପ ରଖନ୍ତୁ}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1ଟି ବୁକମାର୍କ ଡିଲିଟ କରାଯାଇଛି}other{#ଟି ବୁକମାର୍କ ଡିଲିଟ କରାଯାଇଛି}}</translation>
 <translation id="3471687177769494956">ନାଭିଗେସନ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -3314,6 +3317,7 @@
 <translation id="4602776638371779614">ଏହି ଟାବଟି ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ସକ୍ରିୟ ଭାବେ ସ୍କାନ କରୁଛି</translation>
 <translation id="4605026046465576953">ଆପଣଙ୍କ ପାଖରେ Isolated Web App ରନ କରିବାକୁ ଅନୁମତି ନଥିବାରୁ ଏହି ଆପ ଖୋଲାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4606551464649945562">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
+<translation id="4606965546067937011">ସ୍ପିଡ, RAM, ଲାଗ, ଫ୍ରିଜ, କ୍ରାସ, ରିସୋର୍ସ, ବ୍ୟବହାର, ବେଟେରୀ, ଅପ୍ଟିମାଇଜର, ସ୍ଲୋ, ମେମୋରୀ, ମେମୋରୀ ସେଭର</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}other{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # ପର୍ଯ୍ୟନ୍ତ ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="4608500690299898628">&amp;ଖୋଜନ୍ତୁ...</translation>
@@ -4146,6 +4150,7 @@
 <translation id="5535769176698670170">ଟପ ଭ୍ୟୁ ସହ ସ୍ୱାପ କରନ୍ତୁ</translation>
 <translation id="5536642445914063887">ପ୍ରୋଫାଇଲ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="5537725057119320332">କାଷ୍ଟ</translation>
+<translation id="553876896781261711">ଡିଲିଟ କରନ୍ତୁ, କାଢ଼ି ଦିଅନ୍ତୁ, ସିକ୍ୟୁରିଟି, ଗୋପନୀୟତା, କ୍ଲିନଅପ, ଷ୍ଟୋରେଜ, ରିସେଟ କରନ୍ତୁ, କେଶେ, କୁକୀ, ସ୍ଲୋ, ସ୍ପିଡ, ଇତିହାସ</translation>
 <translation id="5541091577812545428">ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରାଯାଇନାହିଁ</translation>
 <translation id="5542132724887566711">ପ୍ରୋଫାଇଲ୍‌</translation>
 <translation id="5543983818738093899">ସ୍ଥିତି ପାଇଁ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
@@ -4734,6 +4739,7 @@
 <translation id="6214157047210274853">Google Walletରେ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="621470880408090483">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="6215039389782910006">{1,plural, =1{ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ 1 ମିନିଟର ନିଷ୍କ୍ରିୟତା ପରେ <ph name="BRAND" /> ଲକ ହୋଇଯାଏ}other{ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ # ମିନିଟର ନିଷ୍କ୍ରିୟତା ପରେ <ph name="BRAND" /> ଲକ ହୋଇଯାଏ}}</translation>
+<translation id="6215427500141060726">ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ ଏବଂ ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। ଆପଣ <ph name="BEGIN_LINK_LOCATION_INFO" />ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା<ph name="END_LINK_LOCATION_INFO" /> ସମେତ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ଆପଣଙ୍କ ଇତିହାସକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_HISTORY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">ଅଗ୍ରାହ୍ୟ କରାଯାଇଥିବା ସାଇଟ ଏବଂ ଆପ୍ସ</translation>
 <translation id="6216696360484424239">ସ୍ୱଚାଳିତ ଭାବେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6218961554829577610">ଭଏସକୁ ପସନ୍ଦ କରିନାହାଁନ୍ତି</translation>
@@ -4885,6 +4891,7 @@
 <translation id="639880411171387127">ଆପଣଙ୍କ Google Lens ଚୟନ। ଆପଣଙ୍କ Google Lens ଚୟନକୁ ଡିଲିଟ କରିବାକୁ ଏଣ୍ଟର କିମ୍ବା ବେକସ୍ପେସ ଦବାନ୍ତୁ</translation>
 <translation id="6400360390396538896">ସର୍ବଦା <ph name="ORIGIN" />ରେ</translation>
 <translation id="6400714103322134861">ଟାବ ଗ୍ରୁପରେ ଫୋକସ କରନ୍ତୁ ନାହିଁ</translation>
+<translation id="6401522392962817913">ଜାରି ରଖି, ଆପଣ Google Payments ସର୍ଭିସର ସର୍ତ୍ତାବଳୀରେ ସମ୍ମତ ହେଉଛନ୍ତି। ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରାଯାଏ ତାହାକୁ ଗୋପନୀୟତା ନୋଟିସ ବର୍ଣ୍ଣନା କରେ। ଆପଣଙ୍କ କାର୍ଡକୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT" />ରେ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="6402042774506839496">ଏହା କାହିଁକି କରାଯାଇଛି ତାହା ଜାଣିବା ପାଇଁ, ଆପ ଡେଭେଲପରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6402921224457714577">ଆପଣଙ୍କ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ କହିପାରିବ</translation>
 <translation id="6404511346730675251">ବୁକ୍‍ମାର୍କ ଏଡିଟ୍ କରନ୍ତୁ</translation>
@@ -4973,6 +4980,7 @@
 <translation id="6499143127267478107">ପ୍ରକ୍ସି ସ୍କ୍ରିପ୍ଟରେ ହୋଷ୍ଟର ସମାଧାନ କରଯାଉଛି...</translation>
 <translation id="6503077044568424649">ସର୍ବାଧିକ ପରିଦୃଷ୍ଟ</translation>
 <translation id="6504601948739128893">ଆପଣଙ୍କ ଡିଭାଇସରେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଫଣ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="6505525633061207363">କ୍ରେଡେନସିଆଲ, ସାଇନ-ଇନ, ପାସକୀ, ଲକ, ଭଲ୍ଟ, କୀ, ଲଗଇନ, ଲଗ ଇନ, ସାଇନ ଇନ</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ଏହି ଡିଭାଇସରେ ନିମ୍ନୋକ୍ତ ଆପ ଇନଷ୍ଟଲ କରିବାକୁ ଚାହେଁ:}other{"<ph name="APP_NAME" />" ଏହି ଡିଭାଇସରେ ନିମ୍ନୋକ୍ତ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ଚାହେଁ:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ସହିତ ସମ୍ଵନ୍ଧିତ</translation>
 <translation id="6508261954199872201">ଆପ୍: <ph name="APP_NAME" /></translation>
