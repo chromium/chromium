@@ -585,6 +585,10 @@ enum FieldType {
   SHIPMENT_TRACKING_NUMBER = 218,
   // SHIPMENT_DELIVERY_ADDRESS = 219,
 
+  // A dependent sub locality is a subunit of a dependent locality. It is
+  // roughly equivalent to a neighbourhood.
+  ADDRESS_HOME_DEPENDENT_SUB_LOCALITY = 220,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -595,7 +599,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 220,
+  MAX_VALID_FIELD_TYPE = 221,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -811,6 +815,7 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_SORTING_CODE:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
     case ADDRESS_HOME_STREET_NAME:
     case ADDRESS_HOME_HOUSE_NUMBER:
     case ADDRESS_HOME_SUBPREMISE:

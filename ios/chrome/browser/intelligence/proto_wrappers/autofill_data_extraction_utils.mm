@@ -91,6 +91,7 @@ AutofillFieldRedactionReason GetRedactionReason(
     case autofill::ADDRESS_HOME_STREET_ADDRESS:
     case autofill::ADDRESS_HOME_SORTING_CODE:
     case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case autofill::ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
     case autofill::ADDRESS_HOME_LINE3:
     case autofill::ADDRESS_HOME_STREET_NAME:
     case autofill::ADDRESS_HOME_HOUSE_NUMBER:

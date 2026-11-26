@@ -101,6 +101,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_ZIP_AND_CITY = 51,
   GROUP_ADDRESS_HOME_ZIP_PREFIX = 52,
   GROUP_ADDRESS_HOME_ZIP_SUFFIX = 53,
+  GROUP_ADDRESS_HOME_DEPENDENT_SUB_LOCALITY = 54,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -360,6 +361,9 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
           break;
         case ADDRESS_HOME_ZIP_AND_CITY:
           group = GROUP_ADDRESS_HOME_ZIP_AND_CITY;
+          break;
+        case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
+          group = GROUP_ADDRESS_HOME_DEPENDENT_SUB_LOCALITY;
           break;
         case DELIVERY_INSTRUCTIONS:
           group = GROUP_DELIVERY_INSTRUCTIONS;

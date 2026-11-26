@@ -676,6 +676,8 @@ Called by update_autofill_enums.py.-->
   <int value="857" label="ORDER_GRAND_TOTAL: Failure"/>
   <int value="860" label="SHIPMENT_TRACKING_NUMBER: Success"/>
   <int value="861" label="SHIPMENT_TRACKING_NUMBER: Failure"/>
+  <int value="880" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Success"/>
+  <int value="881" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Failure"/>
 </enum>
 
 <!-- LINT.IfChange(AutofillAiSourceType) -->
@@ -1630,6 +1632,11 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="13761"
       label="SHIPMENT_TRACKING_NUMBER: Autofilled value accepted"/>
+  <int value="14080"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Not autofilled or
+             autofilled value edited"/>
+  <int value="14081"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -1931,6 +1938,8 @@ Called by update_autofill_enums.py.-->
   <int value="3361" label="ORDER_MERCHANT_NAME: accepted"/>
   <int value="3440" label="SHIPMENT_TRACKING_NUMBER: edited"/>
   <int value="3441" label="SHIPMENT_TRACKING_NUMBER: accepted"/>
+  <int value="3520" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: edited"/>
+  <int value="3521" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2717,6 +2726,26 @@ Called by update_autofill_enums.py.-->
   <int value="13576" label="ADDRESS_HOME_ZIP_SUFFIX: False Negative (Unknown)"/>
   <int value="13577"
       label="ADDRESS_HOME_ZIP_SUFFIX: False Negative (Mismatch)"/>
+  <int value="13824"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: True Positive"/>
+  <int value="13825"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: True Negative (Ambiguous)"/>
+  <int value="13826"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: True Negative (Unknown)"/>
+  <int value="13827"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: True Negative (Empty)"/>
+  <int value="13828"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Positive (Mismatch)"/>
+  <int value="13829"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Positive (Ambiguous)"/>
+  <int value="13830"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Positive (Unknown)"/>
+  <int value="13831"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Positive (Empty)"/>
+  <int value="13832"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Negative (Unknown)"/>
+  <int value="13833"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: False Negative (Mismatch)"/>
 </enum>
 
 <enum name="AutofillFieldType">
@@ -2866,6 +2895,7 @@ Called by update_autofill_enums.py.-->
   <int value="209" label="ORDER_DATE"/>
   <int value="210" label="ORDER_MERCHANT_NAME"/>
   <int value="215" label="SHIPMENT_TRACKING_NUMBER"/>
+  <int value="220" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -4165,6 +4195,14 @@ Called by update_autofill_enums.py.-->
   <int value="3442" label="SHIPMENT_TRACKING_NUMBER: kHeuristics"/>
   <int value="3443" label="SHIPMENT_TRACKING_NUMBER: kAutocomplete"/>
   <int value="3444" label="SHIPMENT_TRACKING_NUMBER: kRationalization"/>
+  <int value="3520"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: kServerCrowdsourcing"/>
+  <int value="3521"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: kServerOverride"/>
+  <int value="3522" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: kHeuristics"/>
+  <int value="3523" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: kAutocomplete"/>
+  <int value="3524"
+      label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: kRationalization"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -5553,6 +5591,8 @@ Called by update_autofill_enums.py.-->
   <int value="841" label="ORDER_MERCHANT_NAME: Accepted"/>
   <int value="860" label="SHIPMENT_TRACKING_NUMBER: Ignored"/>
   <int value="861" label="SHIPMENT_TRACKING_NUMBER: Accepted"/>
+  <int value="880" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Ignored"/>
+  <int value="881" label="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

@@ -158,6 +158,7 @@ declare global {
         ORDER_DATE,
         ORDER_MERCHANT_NAME,
         SHIPMENT_TRACKING_NUMBER,
+        ADDRESS_HOME_DEPENDENT_SUB_LOCALITY,
       }
 
       export enum AddressRecordType {

@@ -94,6 +94,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_STREET_ADDRESS", ADDRESS_HOME_STREET_ADDRESS},
          {"ADDRESS_HOME_SORTING_CODE", ADDRESS_HOME_SORTING_CODE},
          {"ADDRESS_HOME_DEPENDENT_LOCALITY", ADDRESS_HOME_DEPENDENT_LOCALITY},
+         {"ADDRESS_HOME_DEPENDENT_SUB_LOCALITY",
+          ADDRESS_HOME_DEPENDENT_SUB_LOCALITY},
          {"ADDRESS_HOME_LINE3", ADDRESS_HOME_LINE3},
          {"NOT_ACCOUNT_CREATION_PASSWORD", NOT_ACCOUNT_CREATION_PASSWORD},
          {"USERNAME", USERNAME},
@@ -241,6 +243,7 @@ consteval bool IsFillableFieldTypeImpl(FieldType field_type) {
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_SORTING_CODE:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
     case ADDRESS_HOME_STREET_NAME:
     case ADDRESS_HOME_HOUSE_NUMBER:
     case ADDRESS_HOME_STREET_LOCATION:
@@ -571,6 +574,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Sorting code";
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
       return "Dependent locality";
+    case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
+      return "Dependent sub locality";
     case ADDRESS_HOME_APT:
       return "Apt";
     case ADDRESS_HOME_APT_NUM:

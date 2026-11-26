@@ -121,6 +121,7 @@ TEST(FieldTypesTest, IsValidFieldType) {
       ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
       ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
       ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+      ADDRESS_HOME_DEPENDENT_SUB_LOCALITY,
       SINGLE_USERNAME_FORGOT_PASSWORD,
       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
       PASSPORT_NUMBER,
@@ -162,7 +163,7 @@ TEST(FieldTypesTest, IsValidFieldType) {
       ORDER_MERCHANT_NAME,
       SHIPMENT_TRACKING_NUMBER,
   };
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 220,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 221,
                 "New field type needs to be added to kValidFieldTypes.");
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));

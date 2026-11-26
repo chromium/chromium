@@ -111,6 +111,9 @@ std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
     case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return sync_pb::
           FormField_AutofillFieldType_ADDRESS_HOME_DEPENDENT_LOCALITY;
+    case autofill::ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_DEPENDENT_SUB_LOCALITY;
     case autofill::ADDRESS_HOME_STREET_NAME:
       return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_STREET_NAME;
     case autofill::ADDRESS_HOME_HOUSE_NUMBER:

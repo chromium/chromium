@@ -165,6 +165,9 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
       return std::make_unique<BetweenStreetsOrLandmarkNode>(
           std::move(children));
+    case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
+      // TODO(crbug.com/590447702): Create a dedicated node.
+      return std::make_unique<AddressComponent>(type, std::move(children));
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:

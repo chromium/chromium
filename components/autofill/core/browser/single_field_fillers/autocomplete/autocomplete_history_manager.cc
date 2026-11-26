@@ -115,6 +115,7 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
       case ADDRESS_HOME_STREET_ADDRESS:
       case ADDRESS_HOME_SORTING_CODE:
       case ADDRESS_HOME_DEPENDENT_LOCALITY:
+      case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
       case ADDRESS_HOME_LINE3:
       case NOT_ACCOUNT_CREATION_PASSWORD:
       case USERNAME:

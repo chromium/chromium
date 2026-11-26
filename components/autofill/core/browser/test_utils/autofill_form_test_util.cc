@@ -353,6 +353,7 @@ FormFieldData CreateFieldByRole::operator()(FieldType role) const {
     case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
     case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case FieldType::ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
     case FieldType::SINGLE_USERNAME_FORGOT_PASSWORD:
     case FieldType::ADDRESS_HOME_APT_TYPE:
     case FieldType::ORDER_ID:
@@ -501,6 +502,7 @@ FormFieldData CreateFieldByRole::operator()(FieldType role) const {
     case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
     case FieldType::ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case FieldType::ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
     case FieldType::SINGLE_USERNAME_FORGOT_PASSWORD:
     case FieldType::ADDRESS_HOME_APT_TYPE:
     case FieldType::ORDER_ID:

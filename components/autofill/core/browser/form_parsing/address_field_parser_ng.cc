@@ -265,6 +265,10 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
         return Match("IN_DEPENDENT_LOCALITY", 1.0);
       }
       return Match("ADDRESS_HOME_DEPENDENT_LOCALITY", 1.0);
+    case ADDRESS_HOME_DEPENDENT_SUB_LOCALITY:
+      // TODO(crbug.com/589718241): Add a Match call once a regex is added to
+      // legacy_patterns.
+      return std::nullopt;
     case ADDRESS_HOME_STREET_NAME:
       // A bit >1.0 to prefer a street name over address line 1.
       return Match("ADDRESS_HOME_STREET_NAME", 1.1);
