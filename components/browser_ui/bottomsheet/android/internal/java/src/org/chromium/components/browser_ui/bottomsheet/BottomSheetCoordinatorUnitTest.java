@@ -1053,6 +1053,112 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testKeyboardOnPrepareDuringSettleAnimation_RestoresTargetState() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        mBottomSheet.setSheetState(SheetState.HALF, /* animate= */ true);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.HALF, mBottomSheet.getTargetSheetState());
+
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
+        assertEquals(SheetState.HALF, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertTrue(mBottomSheet.hasKeyboardTokenForTesting());
+
+        mKeyboardInsetSupplier.set(150);
+        BottomSheetCoordinator.setSmallScreenForTesting(true);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 50);
+        mBottomSheet.endAnimations();
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mKeyboardInsetSupplier.set(0);
+        listener.onEnd(imeAnimation);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        assertEquals(SheetState.HALF, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testKeyboardOnPrepareDuringUserDrag_DoesNotCacheScrolling() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        mBottomSheet.setSheetOffset(100f, /* shouldAnimate= */ false);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getTargetSheetState());
+
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+
+        mKeyboardInsetSupplier.set(150);
+        listener.onStart(imeAnimation, null);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        mKeyboardInsetSupplier.set(0);
+        listener.onEnd(imeAnimation);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testKeyboardOnPrepare_DragInterruptingSettleSkipsCaching() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        mBottomSheet.setSheetState(SheetState.HALF, /* animate= */ true);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.HALF, mBottomSheet.getTargetSheetState());
+
+        BottomSheetSwipeDetector swipeDetector = mock(BottomSheetSwipeDetector.class);
+        when(swipeDetector.isScrolling()).thenReturn(true);
+        mBottomSheet.getMediatorForTesting().setSwipeDetectorForTesting(swipeDetector);
+
+        // Interrupting the settle animation with a drag cancels the animator while leaving
+        // mTargetState as HALF.
+        mBottomSheet.setSheetOffset(100f, /* shouldAnimate= */ false);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.HALF, mBottomSheet.getTargetSheetState());
+
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+
+        mKeyboardInsetSupplier.set(150);
+        listener.onStart(imeAnimation, null);
+        when(swipeDetector.isScrolling()).thenReturn(false);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        mKeyboardInsetSupplier.set(0);
+        listener.onEnd(imeAnimation);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+    }
+
+    @Test
     public void testCancelRevertStateDueToHeightChange() {
         setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =

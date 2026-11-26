@@ -1541,13 +1541,18 @@ class BottomSheetMediator implements TouchHandler {
         // This captures the BottomSheet state prior to a layout pass, so isKeyboardShowing will
         // still return false.
         if (isKeyboardShowing) return;
+        if (isScrolling()) return;
+
+        @SheetState
+        int stateToCache = mCurrentState == SheetState.SCROLLING ? mTargetState : mCurrentState;
+        if (stateToCache == SheetState.NONE || stateToCache == SheetState.SCROLLING) return;
 
         assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
         assert !mKeyboardTokenHolder.hasTokens();
 
         // The bottom sheet state will not have been updated yet at this point, so
         // store for later use.
-        mStateBeforeKeyboardShown = mCurrentState;
+        mStateBeforeKeyboardShown = stateToCache;
         mKeyboardToken = mKeyboardTokenHolder.acquireToken();
     }
 

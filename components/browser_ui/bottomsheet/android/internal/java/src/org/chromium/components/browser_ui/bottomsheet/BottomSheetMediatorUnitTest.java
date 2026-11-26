@@ -56,6 +56,7 @@ public class BottomSheetMediatorUnitTest {
 
     private @Mock BottomSheetObserver mObserver;
     private @Mock BottomSheetContent mContent;
+    private @Mock BottomSheetSwipeDetector mSwipeDetector;
 
     private PropertyModel mModel;
     private BottomSheetMediator mMediator;
@@ -904,6 +905,82 @@ public class BottomSheetMediatorUnitTest {
                         /* currentDecorHeight= */ 1000,
                         /* previousScreenHeight= */ 1000,
                         /* isKeyboardShowing= */ false));
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testKeyboardStateCaching_ScrollingWithTargetState() {
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        mMediator.setSheetContent(mContent);
+
+        mMediator.setTargetSheetState(SheetState.HALF);
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        assertEquals(SheetState.HALF, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertTrue(mMediator.hasKeyboardTokenForTesting());
+
+        mMediator.setTargetSheetState(SheetState.NONE);
+        mMediator.setInternalCurrentState(SheetState.FULL);
+        assertEquals(
+                SheetState.HALF,
+                mMediator.maybeRevertStateOnLayoutChange(
+                        /* currentDecorHeight= */ 1000,
+                        /* previousScreenHeight= */ 1000,
+                        /* isKeyboardShowing= */ false));
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
+    }
+
+    @Test
+    public void testKeyboardStateCaching_ScrollingWithoutValidTargetSkipsCaching() {
+        mMediator.setTargetSheetState(SheetState.NONE);
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+
+        // Repeated onPrepare calls when mTargetState is SCROLLING also skip caching without
+        // asserting.
+        mMediator.setTargetSheetState(SheetState.SCROLLING);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+
+        assertEquals(
+                SheetState.NONE,
+                mMediator.maybeRevertStateOnLayoutChange(
+                        /* currentDecorHeight= */ 1000,
+                        /* previousScreenHeight= */ 1000,
+                        /* isKeyboardShowing= */ false));
+    }
+
+    @Test
+    public void testKeyboardStateCaching_ActiveDragWithStaleTargetStateSkipsCaching() {
+        when(mSwipeDetector.isScrolling()).thenReturn(true);
+        mMediator.setSwipeDetectorForTesting(mSwipeDetector);
+
+        mMediator.setTargetSheetState(SheetState.HALF);
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mMediator.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testKeyboardStateCaching_NoneStateSkipsCaching() {
+        mMediator.setSheetStateForTesting(SheetState.NONE);
+        mMediator.maybeCacheStateForImeAnimation(
+                /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
+
+        assertEquals(SheetState.NONE, mMediator.getStateBeforeKeyboardShownForTesting());
         assertFalse(mMediator.hasKeyboardTokenForTesting());
     }
 
