@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Käytännön välimuisti on OK</translation>
 <translation id="1131264053432022307">Kopioimasi kuva</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Poistu koko näytön tilasta vetämällä yläreunasta ja koskettamalla Takaisin-painiketta</translation>
+<translation id="1132789342529761192">Lataamista ei suositella</translation>
 <translation id="11370190534773372">Kortin tiedot täytetty</translation>
 <translation id="1138458427267715730">Voit saada ilmoituksen, kun hinta laskee missä tahansa verkkosivustolla</translation>
 <translation id="1142713751288681188">Paperityyppi</translation>
@@ -603,6 +604,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2025891858974379949">Suojaamaton sisältö</translation>
 <translation id="2027465737841872819">Muovi</translation>
 <translation id="2027707238798802149">Kortti ei käytettävissä</translation>
+<translation id="2028329426302356196">Lataamista ei suositella</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen ja palomuurin määritykset.<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Tämä Chrome-instanssi käyttää manuaalisesti asetettuja komentorivin merkintöjä. Huomaa, että komentorivin merkinnät voivat muuttua milloin tahansa, eikä niihin liittyen ole tarjolla tukea.</translation>
 <translation id="2033900728810589426">Pikakuvake ei voi olla sama kuin oletushakupalvelun avainsana, jonka <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> on määrittänyt: <ph name="SHORTCUT_NAME" /></translation>
@@ -1457,6 +1459,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3443504041532578451">Optinen levy (satiini)</translation>
 <translation id="3447661539832366887">Tämän laitteen omistaja on poistanut dinosauruspelin käytöstä.</translation>
 <translation id="3447884698081792621">Näytä varmenne (myöntäjä: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Tulostamista ei suositella</translation>
 <translation id="3450323514459570273">Saa pyytää lupaa ohjata ja uudelleenohjelmoida MIDI-laitteita</translation>
 <translation id="3452404311384756672">Hakuväli:</translation>
 <translation id="345268527248907593">Sivustoon ei saatu yhteyttä</translation>
@@ -2917,6 +2920,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5851548754964597211">Välilehtiluettelo</translation>
 <translation id="5851868085455377790">Myöntäjä</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopiointia ei suositella</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5862579898803147654">Pinoaja 8</translation>
 <translation id="5863515189965725638">Muokkaa IBAN-numeroa</translation>

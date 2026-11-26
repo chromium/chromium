@@ -77,6 +77,7 @@
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको फोटो</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
+<translation id="1132789342529761192">अपलोड गर्न सिफारिस गरिँदैन</translation>
 <translation id="11370190534773372">कार्डसम्बन्धी विवरण भरिएका छन्</translation>
 <translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1142713751288681188">पेपरको प्रकार</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">असुरक्षित सामग्री</translation>
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध छैन</translation>
+<translation id="2028329426302356196">डाउनलोड गर्न सिफारिस गरिँदैन</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रोक्सी र फायरवाललाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome को यो इन्स्ट्यान्स म्यानुअल रूपमा सेट गरिएका कमान्ड लाइन फ्ल्यागहरूका साथ रन भइरहेको छ। कमान्ड लाइन फ्ल्यागहरू जुनसुकै बेला परिवर्तन हुन सक्छन् र यिनलाई प्राविधिक सहायता प्राप्त हुँदैन भन्ने कुरा ख्याल गर्नुहोस्।</translation>
 <translation id="2033900728810589426">यो सर्टकट र <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ले परिभाषित गरिएको खोज प्रदायकको डिफल्ट किवर्ड एउटै हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
@@ -1453,6 +1455,7 @@
 <translation id="3443504041532578451">अप्टिकल डिस्क (स्याटिन)</translation>
 <translation id="3447661539832366887">यस यन्त्रको मालिकले डायनासोर खेल बन्द गर्‍यो।</translation>
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
+<translation id="3449239216441121005">प्रिन्ट गर्न सिफारिस गरिँदैन</translation>
 <translation id="3450323514459570273">यसले तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
 <translation id="345268527248907593">यो साइट एक्सेस गर्न सकिएन</translation>
@@ -2914,6 +2917,7 @@
 <translation id="5851548754964597211">ट्याब सूची</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">कपी गर्न सिफारिस गरिँदैन</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5862579898803147654">स्ट्याकर ८</translation>
 <translation id="5863515189965725638">IBAN परिवर्तन गर्नुहोस्</translation>

@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Beleidkas OK</translation>
 <translation id="1131264053432022307">Prent wat jy gekopieer het</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Sleep van bo af en raak die terugknoppie om uit volskerm te gaan</translation>
+<translation id="1132789342529761192">Oplaai word nie aanbeveel nie</translation>
 <translation id="11370190534773372">Kaartbesonderhede is ingevul</translation>
 <translation id="1138458427267715730">Kry opletberigte wanneer die prys op enige werf op die web daal</translation>
 <translation id="1142713751288681188">Papiersoort</translation>
@@ -603,6 +604,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2025891858974379949">Onveilige inhoud</translation>
 <translation id="2027465737841872819">Plastiek</translation>
 <translation id="2027707238798802149">Kaart is nie beskikbaar nie</translation>
+<translation id="2028329426302356196">Aflaai word nie aanbeveel nie</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Die instaanbediener en brandmuur nagaan<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Hierdie geval van Chrome loop met opdraglynvlae wat handmatig gestel is. Let daarop dat opdraglynvlae enige tyd kan verander en nie gesteun word nie.</translation>
 <translation id="2033900728810589426">Kortpad kan nie dieselfde wees as die versteksoekverskaffer-sleutelwoord wat deur <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3443504041532578451">Optiese skyf (satyn)</translation>
 <translation id="3447661539832366887">Die eienaar van hierdie toestel het die dinosaurusspeletjie afgeskakel.</translation>
 <translation id="3447884698081792621">Wys sertifikaat (uitgereik deur <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Drukwerk word nie aanbeveel nie</translation>
 <translation id="3450323514459570273">Kan vra om jou MIDI-toestelle te beheer en te herprogrammeer</translation>
 <translation id="3452404311384756672">Haal-interval:</translation>
 <translation id="345268527248907593">Hierdie werf kon nie bereik word nie</translation>
@@ -2916,6 +2919,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5851548754964597211">Oortjielys</translation>
 <translation id="5851868085455377790">Uitreiker</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopiëring word nie aanbeveel nie</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5862579898803147654">Stapelaar 8</translation>
 <translation id="5863515189965725638">Wysig IBAN</translation>

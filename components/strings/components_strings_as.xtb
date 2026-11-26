@@ -77,6 +77,7 @@
 <translation id="112840717907525620">নীতিটোৰ কেশ্ব ঠিকে আছে</translation>
 <translation id="1131264053432022307">আপুনি প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ, একেবাৰে ওপৰৰ পৰা টানি আনক আৰু উভতি যোৱাৰ বুটামটো স্পৰ্শ কৰক</translation>
+<translation id="1132789342529761192">আপল’ড কৰাটো চুপাৰিছ কৰা নহয়</translation>
 <translation id="11370190534773372">কাৰ্ডৰ সবিশেষ পূৰ কৰা হৈছে</translation>
 <translation id="1138458427267715730">সমগ্ৰ এপত কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা লাভ কৰক</translation>
 <translation id="1142713751288681188">কাগজৰ প্ৰকাৰ</translation>
@@ -583,6 +584,7 @@
 <translation id="1988881251331415125">যদি বানান ঠিকে আছে, <ph name="BEGIN_LINK" />সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স চলাই চাওক<ph name="END_LINK" />।</translation>
 <translation id="1991370806334788445">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দি চাওক, যাৰ ফলত ব্ৰাউজিং সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে আশা কৰা কাম কৰাৰ সম্ভাৱনা অধিক থাকে।</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">সমল স্কেন কৰি থকা হৈছে…</translation>
 <translation id="1996557034791506430">অনুমতি আঁতৰাওক</translation>
 <translation id="1997484222658892567">আপোনাৰ স্থানীয় কম্পিউটাৰত <ph name="URL" />এ স্থায়ীভাৱে বেছিকৈ ডেটা ষ্ট’ৰ কৰিব বিচাৰে</translation>
 <translation id="1997774360448418989">কাগজ (লাইটৱেইট)</translation>
@@ -602,6 +604,7 @@
 <translation id="2025891858974379949">অসুৰক্ষিত সমল</translation>
 <translation id="2027465737841872819">প্লাষ্টিক</translation>
 <translation id="2027707238798802149">কাৰ্ড উপলব্ধ নহয়</translation>
+<translation id="2028329426302356196">ডাউনল’ড কৰাটো চুপাৰিছ কৰা নহয়</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্ৰক্সি আৰু ফায়াৰৱাল পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chromeৰ এই উদাহৰণটো মেনুৱেলী ছেট কৰা কামাণ্ড লাইন ফ্লেগৰ সৈতে চলি আছে। মন কৰিব যে কামাণ্ড লাইন ফ্লেগ যিকোনো সময়তে সলনি হ’ব পাৰে আৰু সেইসমূহ সমৰ্থিত নহয়।</translation>
 <translation id="2033900728810589426">শ্বৰ্টকাটটো <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />এ সংজ্ঞাবদ্ধ কৰা ডিফ'ল্ট সন্ধান প্ৰদানকাৰীৰ কীৱৰ্ডটোৰ সৈতে একেই হ'ব নোৱাৰে: <ph name="SHORTCUT_NAME" /></translation>
@@ -1453,6 +1456,7 @@
 <translation id="3443504041532578451">অপ্টিকেল ডিস্ক (ৰেচমী)</translation>
 <translation id="3447661539832366887">এই ডিভাইচৰ গৰাকীয়ে ডাইন’ছৰ গে’মটো অফ কৰিছে।</translation>
 <translation id="3447884698081792621">প্ৰমাণপত্ৰ দেখুৱাওক (<ph name="ISSUER" />এ প্ৰদান কৰা)</translation>
+<translation id="3449239216441121005">প্ৰিণ্ট কৰাৰ চুপাৰিছ কৰা নহয়</translation>
 <translation id="3450323514459570273">আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰিবলৈ ক’ব পাৰে</translation>
 <translation id="3452404311384756672">অন্তৰাল বিচাৰক:</translation>
 <translation id="345268527248907593">এই ছাইটটো খুলিব পৰা নগ’ল</translation>
@@ -2911,6 +2915,7 @@
 <translation id="5851548754964597211">টেবৰ তালিকা</translation>
 <translation id="5851868085455377790">প্ৰদানকাৰী</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">প্ৰতিলিপি কৰাটো চুপাৰিছ কৰা নহয়</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
 <translation id="5862579898803147654">ষ্টেকাৰ ৮</translation>
 <translation id="5863515189965725638">IBANটো সম্পাদনা কৰক</translation>

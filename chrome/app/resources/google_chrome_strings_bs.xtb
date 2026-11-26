@@ -103,6 +103,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1896602904211344018">Preuzmite aplikaciju Chrome</translation>
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>
 <translation id="1925069572871307609">Da dobijate buduća ažuriranja za Google Chrome, trebat ćete Windows 10 verzije 1809 ili noviji. Ovaj računar koristi stariju verziju Windowsa 10.</translation>
+<translation id="1975069140856174874">Sljedeći put kad otvorite Chrome na uređaju <ph name="DEVICE_TYPE" />, prikazat će vam se upit za preuzimanje najboljih Googleovih sigurnosnih značajki.</translation>
 <translation id="1975400514743766362">Ponesite Googleovu sigurnost sa sobom u pokretu uz aplikaciju Chrome na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Budite sigurniji u pokretu uz poboljšano Sigurno pregledanje u Chromeu za iOS</translation>
 <translation id="2001586581944147178">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. Chrome koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
@@ -459,6 +460,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="568656514202614970">Uspjeli ste! Sada možete lako postavljati pitanja dok pregledate putem bočne ploče Google Pretraživanja</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Koristite Googleove najbolje sigurnosne funkcije u pokretu uz Chrome</translation>
 <translation id="569897634095159764">Nije moguće povezati se s internetom. Proksi server zahtijeva autentifikaciju.</translation>
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5715427327524421317">Chrome automatski preuzima i ažurira ove AI modele</translation>
@@ -624,6 +626,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7099479769133613710">Ponovo pokrenite da ažurirate &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Upravitelj zadataka – Google Chrome</translation>
 <translation id="7121179479711575744">Prijavite se u Chrome</translation>
+<translation id="7137056136322108339">Nabavite Googleove najbolje sigurnosne funkcije u pokretu uz aplikaciju Chrome na telefonu</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostupno je novo ažuriranje za Chrome koje će se primijeniti čim ga ponovo pokrenete.}=1{Dostupno je novo ažuriranje za Chrome koje će se primijeniti čim ga ponovo pokrenete. Vaš anonimni prozor se neće ponovo otvoriti.}one{Dostupno je novo ažuriranje za Chrome koje će se primijeniti čim ga ponovo pokrenete. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Dostupno je novo ažuriranje za Chrome koje će se primijeniti čim ga ponovo pokrenete. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Dostupno je novo ažuriranje za Chrome koje će se primijeniti čim ga ponovo pokrenete. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7193885263065350793">Vaš organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>

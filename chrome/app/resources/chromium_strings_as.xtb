@@ -72,6 +72,7 @@
 <translation id="1792680680989393197">আপুনি সেইবোৰ যিকোনো সময়তে আঁতৰাব পাৰে। কোনো ছাইট বা সুবিধাক সেইসমূহৰ প্ৰয়োজন হ’লে Chromiumএ স্বয়ংক্ৰিয়ভাৱে সেইসমূহ পুনৰ ডাউনল’ড কৰিব পাৰে।</translation>
 <translation id="1793486931176048546">দ্ৰুত এক্সেছৰ বাবে Chromiumক আপোনাৰ টাস্কবাৰত পিন কৰিবলৈ Windowsৰ জাননীত <ph name="BEGIN_BOLD" />হয়<ph name="END_BOLD" />ত ক্লিক কৰক।</translation>
 <translation id="1808667845054772817">Chromium ৰিইনষ্টল কৰক</translation>
+<translation id="1814482312667514397">আপোনাৰ ফ’নত Chromium এপ্‌টোৰ জৰিয়তে অন্য কামৰ মাজতো Chromiumৰ শ্ৰেষ্ঠ সুৰক্ষা সম্পৰ্কীয় সুবিধাসমূহ পাওক</translation>
 <translation id="1820835682567584003">Chromiumএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromiumত ছাইন ইন কৰক। আপুনি লগতে <ph name="DEVICE" />ৰ পৰা আপোনাৰ এক্সটেনশ্বন আৰু অধিক বস্তু পাব।</translation>
 <translation id="183031085822326697">পৰৱৰ্তী সময়ত আপুনি নিজৰ <ph name="DEVICE_TYPE" />ত Chromium খুলিলে, আপুনি Google Password Manager ব্যৱহাৰ কৰিবলৈ এটা প্ৰম্প্‌ট দেখা পাব।</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছিল}=1{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছে}one{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="2401032172288869980">Chromiumক এই ছাইটটোৰ বাবে মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="2403703063067034158">ষ্টাৰ্টআপৰ আসোঁৱাহ: ছেটআপৰ আন এটা উদাহৰণ বৰ্তমানে চলি আছে, অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="241044568699443215">আপোনাৰ <ph name="DEVICE_TYPE" />ত Chromium এপ্‌টোৰ জৰিয়তে অন্য কামৰ মাজতো Chromiumৰ সুৰক্ষা সম্পৰ্কীয় সুবিধাসমূহ পাওক</translation>
 <translation id="2418322681019544463">যিকোনো এপৰ পৰা Chromiumত লিংক খোলক আৰু ব্ৰাউজাৰটো আপোনাৰ টাস্কবাৰত এক্সেছ কৰিব পৰা কৰি ৰাখক</translation>
 <translation id="2425157128016763890">এটা ক্ষিপ্ৰ ৰূপৰেখা পাবলৈ আৰু ফ’ল’-আপ প্ৰশ্ন সুধিবলৈ এই নথিখন Chromiumত Geminiৰ সৈতে শ্বেয়াৰ কৰিবলৈ সাৰাংশ প্ৰস্তুত কৰক বুটামটোত ক্লিক কৰক</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumৰ সঁজুলি<ph name="END_LINK" />ৰ জৰিয়তে, আপুনি সুৰক্ষিতভাৱে ব্ৰাউজ কৰি নিয়ন্ত্ৰণত থাকিব পাৰে</translation>
@@ -519,6 +521,7 @@
 <translation id="6598877126913850652">Chromiumৰ জাননীৰ ছেটিংসমূহ-লৈ চাওক</translation>
 <translation id="6600016381025017075">এই পৃষ্ঠাখনত যিকোনো বস্তু সন্ধান কৰক</translation>
 <translation id="6613594504749178791">আপুনি পৰৱৰ্তী সময়ত Chromium পুনৰ লঞ্চ কৰিলে আপুনি কৰা সলনিসমূহ কাৰ্যকৰী হ’ব।</translation>
+<translation id="6637855549677695722">পৰৱৰ্তী সময়ত আপুনি নিজৰ <ph name="DEVICE_TYPE" />ত Chromium খুলিলে, আপুনি Chromiumৰ শ্ৰেষ্ঠ সুৰক্ষা সুবিধাসমূহ লাভ কৰিবলৈ এটা প্ৰ’ম্পট্‌ দেখা পাব।</translation>
 <translation id="6637908313088374648">Chromium এতিয়া Windows ষ্টাৰ্ট হোৱাৰ লগে লগে লঞ্চ কৰা হয় যাতে আপুনি তাৎক্ষণিকভাৱে ব্ৰাউজ কৰিবলৈ আৰম্ভ কৰিব পাৰে। আপুনি ছেটিঙত এই সুবিধাটো অফ কৰিব পাৰে।</translation>
 <translation id="6644846457769259194">আপোনাৰ ডিভাইচ আপডে'ট কৰি থকা হৈছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">আপোনাৰ ওচৰ-পাজৰৰ ঠাইসমূহৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ Chromiumক কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
@@ -752,6 +755,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8907580949721785412">Chromiumএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে। ইয়াক অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱর্ড টাইপ কৰক।</translation>
 <translation id="8910309838319708610">সফল হ’ল! আপুনি এতিয়া Searchৰ AI ম’ডৰ জৰিয়তে ব্ৰাউজ কৰাৰ সময়ত সহজে প্ৰশ্ন সুধিব পাৰে</translation>
 <translation id="8932992523185907506">Chromium আৰু আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ হৈ থকা নাই। Chromiumক ডিফ’ল্ট ব্ৰাউজাৰ বনাবনে?</translation>
+<translation id="8940844567350264767">Chromiumৰ জৰিয়তে অন্য কামৰ মাজতো Chromiumৰ শ্ৰেষ্ঠ সুৰক্ষা সম্পৰ্কীয় সুবিধাসমূহ পাওক</translation>
 <translation id="8941642502866065432">Chromium আপডে’ট কৰিব নোৱাৰি</translation>
 <translation id="8944232836376404813">এই কাৰ্যটোৱে:
           <ph name="LINE_BREAKS" />

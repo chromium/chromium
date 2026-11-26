@@ -77,6 +77,7 @@
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
+<translation id="1132789342529761192">અપલોડ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="11370190534773372">કાર્ડની વિગતો ભરી</translation>
 <translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="1142713751288681188">પેપરનો પ્રકાર</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">અસુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="2027465737841872819">પ્લાસ્ટિક</translation>
 <translation id="2027707238798802149">કાર્ડ ઉપલબ્ધ નથી</translation>
+<translation id="2028329426302356196">ડાઉનલોડ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />પ્રૉક્સી અને ફાયરવૉલ ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chromeની આ આવૃત્તિ મેન્યુઅલી સેટ કરેલી આદેશ લાઇન સ્વિચ સંબંધિત સૂચનાઓ સાથે ચાલી રહી છે. નોંધો કે આદેશ લાઇન સ્વિચ સંબંધિત સૂચનાઓ કોઈપણ સમયે બદલાઈ શકે છે અને તેને સપોર્ટ કરવામાં આવતો નથી.</translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> દ્વારા વ્યાખ્યાયિત ડિફૉલ્ટ શોધ પ્રદાતાના કીવર્ડ અને શૉર્ટકટમાંનું લખાણ, બન્ને એક સરખું ન હોઈ શકે: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">ઓપ્ટિકલ ડિસ્ક (સાટિન)</translation>
 <translation id="3447661539832366887">આ ઉપકરણના માલિકે ડાયનાસોર રમત બંધ કરી છે.</translation>
 <translation id="3447884698081792621">(<ph name="ISSUER" /> દ્વારા રજૂ થયેલ) પ્રમાણપત્ર બતાવો</translation>
+<translation id="3449239216441121005">પ્રિન્ટ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="3450323514459570273">તમારા MIDI ડિવાઇસ નિયંત્રિત કરવા અને ફરીથી પ્રોગ્રામ કરવા માટે પૂછી શકે છે</translation>
 <translation id="3452404311384756672">આનયન અંતરાલ:</translation>
 <translation id="345268527248907593">આ સાઇટ પર પહોંચી શકાયું નથી</translation>
@@ -2916,6 +2919,7 @@
 <translation id="5851548754964597211">ટેબ સૂચિ</translation>
 <translation id="5851868085455377790">રજૂકર્તા </translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">કૉપિ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5862579898803147654">સ્ટૅકર 8</translation>
 <translation id="5863515189965725638">IBANમાં ફેરફાર કરો</translation>

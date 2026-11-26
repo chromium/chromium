@@ -1308,6 +1308,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="244071666433939959">Apps maak in ’n venster oop</translation>
 <translation id="2442916515643169563">Teksskadu</translation>
 <translation id="2443487764245141020">Werwe sal dalk ook 'n identifiseerder gebruik om jou toestel te herken</translation>
+<translation id="2444282212665587861">update, updates, upgrade, version, build, info, check for updates (opdatering, opdaterings, opgradeer, weergawe, bou, inligting, kyk vir opdaterings)</translation>
 <translation id="244475495405467108">Maak oortjies aan die linkerkant toe</translation>
 <translation id="2444874983932528148">Gaan maklik aan waar jy opgehou het</translation>
 <translation id="2445081178310039857">Uitbreiding se wortelgids word vereis.</translation>
@@ -2145,6 +2146,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3321512411079201586">&amp;Geïsoleer</translation>
 <translation id="3323288183237359315">Installeer vir Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Toestemmings is van ’n webwerf verwyder om jou privaatheid te beskerm}other{Toestemmings is van sommige webwerwe verwyder om jou privaatheid te beskerm}}</translation>
+<translation id="3325561120400598624">Kletse word gekontroleer en gebruik om generatiewe-KI-modelle op te lei. Gemini is KI en kan foute maak. Sommige inhoud is dalk nie vir almal geskik nie. Jy kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />jou geskiedenis bestuur<ph name="END_LINK_MANAGE_HISTORY" />, insluitend <ph name="BEGIN_LINK_LOCATION_INFO" />inligting oor jou ligging<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Kry meer inligting oor jou keuses<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Styl</translation>
 <translation id="3331974543021145906">Programinligting</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video speel tans in prent-in-prent-modus</translation>
@@ -2270,6 +2272,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Laai 1 .pdf-lêer op om saam met jou vraag te gebruik}other{Laai tot # .pdf-lêers op om saam met jou vraag te gebruik}}</translation>
 <translation id="3456750372063895499">Maak skakel in ge&amp;soleerde venster oop</translation>
 <translation id="345693547134384690">Maak prent in nuwe oortjie oop</translation>
+<translation id="3456949031754827166">Herrangskik</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Hou Groep}other{Hou Groepe}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 boekmerk is uitgevee}other{# boekmerke is uitgevee}}</translation>
 <translation id="3471687177769494956">Wysig navigasiekortpad</translation>
@@ -3323,6 +3326,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="4602776638371779614">Hierdie oortjie soek tans aktief na Bluetooth-toestelle</translation>
 <translation id="4605026046465576953">Hierdie app kan nie oopgemaak word nie, want jy het nie toestemming om geïsoleerde webapps te laat loop nie</translation>
 <translation id="4606551464649945562">Moenie werwe toelaat om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor nie</translation>
+<translation id="4606965546067937011">speed, RAM, lag, freeze, crash, resource, usage, battery, optimizer, slow, memory, memory saver (spoed, RAM, vertraging, vries, omval, hulpbron, gebruik, battery, optimeerder, stadig, geheue, geheuebespaarder)</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vee oortjiegroep uit?}other{Vee oortjiegroepe uit?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Laai 1 lêer op om saam met jou vraag te gebruik}other{Laai tot # lêers op om saam met jou vraag te gebruik}}</translation>
 <translation id="4608500690299898628">Vind …</translation>
@@ -4155,6 +4159,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="5535769176698670170">Ruil met boaansig</translation>
 <translation id="5536642445914063887">Wissel profiel</translation>
 <translation id="5537725057119320332">Saai uit</translation>
+<translation id="553876896781261711">delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed, history (vee uit, verwyder, sekuriteit, privaatheid, opruim, berging, stel terug, kas, webkoekies, stadig, spoed, geskiedenis)</translation>
 <translation id="5541091577812545428">Wagwoord is nie verander nie</translation>
 <translation id="5542132724887566711">Profiel</translation>
 <translation id="5543983818738093899">Kontroleer tans status …</translation>
@@ -4747,6 +4752,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6214157047210274853">Wysig in Google Wallet</translation>
 <translation id="621470880408090483">Moenie werwe toelaat om aan Bluetooth-toestelle te koppel nie</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> sluit na 1 minuut van onaktiwiteit om jou wagwoorde veilig te hou}other{<ph name="BRAND" /> sluit na # minute van onaktiwiteit om jou wagwoorde veilig te hou}}</translation>
+<translation id="6215427500141060726">Kletse word gekontroleer en gebruik om generatiewe-KI-modelle op te lei. Gemini is KI en kan foute maak. Jy kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />jou geskiedenis bestuur<ph name="END_LINK_MANAGE_HISTORY" />, insluitend <ph name="BEGIN_LINK_LOCATION_INFO" />inligting oor jou ligging<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Kry meer inligting oor jou keuses<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Afgekeurde webwerwe en apps</translation>
 <translation id="6216696360484424239">Meld outomaties aan</translation>
 <translation id="6218961554829577610">Het nie van die stem gehou nie</translation>
@@ -4898,6 +4904,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="639880411171387127">Jou Google Lens-seleksie. Druk enter of backspace om jou Google Lens-seleksie uit te vee</translation>
 <translation id="6400360390396538896">Altyd aan <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ontfokus oortjiegroep</translation>
+<translation id="6401522392962817913">Deur voort te gaan, stem jy in tot Google Payments se diensbepalings. Die privaatheidkennisgewing beskryf hoe jou data hanteer word. Jou kaart is in jou Google-rekening, <ph name="ACCOUNT" />, gestoor.</translation>
 <translation id="6402042774506839496">Kontak die appontwikkelaar om uit te vind hoekom</translation>
 <translation id="6402921224457714577">Werwe kan vra om jou MIDI-toestelle te beheer en te herprogrammeer</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
@@ -4986,6 +4993,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6499143127267478107">Los gasheer in instaanbedienerskrip op …</translation>
 <translation id="6503077044568424649">Mees besoekte</translation>
 <translation id="6504601948739128893">Mag nie lettertipes wat op jou toestel geïnstalleer is, gebruik nie</translation>
+<translation id="6505525633061207363">credentials, sign-in, passkey, lock, vault, keys, login, log in, sign in (eiebewyse, aanmelding, toegangsleutel, slot, kluis, sleutels, aanmeld, meld aan)</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />” wil die volgende app op hierdie toestel installeer:}other{“<ph name="APP_NAME" />” wil die volgende apps op hierdie toestel installeer:}}</translation>
 <translation id="6508248480704296122">Soortgelyk aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>

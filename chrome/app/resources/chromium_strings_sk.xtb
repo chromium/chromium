@@ -71,6 +71,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1792680680989393197">Môžete ich kedykoľvek odstrániť. Chromium ich môže automaticky znova stiahnuť, keď ich bude potrebovať nejaký web alebo funkcia.</translation>
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chromium na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="1808667845054772817">Preinštalovať prehliadač Chromium</translation>
+<translation id="1814482312667514397">Získajte najlepšie bezpečnostné funkcie prehliadača Chromium aj na cestách vďaka aplikácii Chromium v telefóne</translation>
 <translation id="1820835682567584003">Chromium sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do prehliadača Chromium účtom <ph name="USER_EMAIL_ADDRESS" />. Získate aj rozšírenia a ďalšie položky zo zariadenia <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa zobrazí výzva na používanie Správcu hesiel Google.</translation>
@@ -134,6 +135,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{K 1 zariadeniu s ľudským rozhraním malo prístup jedno alebo viac rozšírení pre prehliadač Chromium}=1{K 1 zariadeniu s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}few{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}many{# HID devices are being accessed by one or more Chromium extensions}other{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}}</translation>
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="2403703063067034158">Chyba pri spustení: momentálne je spustená iná inštancia nastavenia. Skúste to neskôr.</translation>
+<translation id="241044568699443215">Majte bezpečnosť prehliadača Chromium so sebou aj na cestách vďaka aplikácii Chromium v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Otvárajte odkazy v prehliadači Chromium z ľubovoľnej aplikácie a majte prehliadač k dispozícii na paneli aplikácií</translation>
 <translation id="2425157128016763890">Kliknutím na tlačidlo Zhrnúť zdieľajte tento dokument s Gemini v prehliadači Chromium, získajte rýchly prehľad a položte ďalšie otázky</translation>
 <translation id="2440750600860946460">Pomocou <ph name="BEGIN_LINK" />nástrojov prehliadača Chromium<ph name="END_LINK" /> môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
@@ -751,6 +753,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8907580949721785412">Prehliadač Chromium sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="8910309838319708610">Podarilo sa. Teraz môžete pri prehliadaní v režime AI vo Vyhľadávaní jednoducho klásť otázky</translation>
 <translation id="8932992523185907506">Chromium už nie je váš predvolený prehliadač. Chcete nastaviť Chromium ako svoj predvolený prehliadač?</translation>
+<translation id="8940844567350264767">Získajte najlepšie bezpečnostné funkcie prehliadača Chromium aj na cestách vďaka aplikácii Chromium</translation>
 <translation id="8941642502866065432">Chromium sa nedá aktualizovať</translation>
 <translation id="8944232836376404813">Táto akcia:
           <ph name="LINE_BREAKS" />

@@ -72,6 +72,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1792680680989393197">Jy kan hulle enige tyd verwyder. Chromium kan hulle outomaties weer aflaai wanneer ’n werf of ’n kenmerk hulle nodig het.</translation>
 <translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in die Windows-kennisgewing om Chromium vir kitstoegang op jou taakbalk vas te speld.</translation>
 <translation id="1808667845054772817">Herinstalleer Chromium</translation>
+<translation id="1814482312667514397">Kry Chromium se beste veiligheidskenmerke terwyl jy aan die beweeg is met die Chromium-app op jou foon</translation>
 <translation id="1820835682567584003">Chromium probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> is reeds aangemeld. Meld in jou eie profiel as <ph name="USER_EMAIL_ADDRESS" /> by Chromium aan om jou blaai-aktiwiteit apart te hou. Jy sal ook jou uitbreidings en meer van <ph name="DEVICE" /> af kry.</translation>
 <translation id="183031085822326697">Jy sal ’n porboodskap sien om Google Wagwoordbestuurder te gebruik wanneer jy volgende keer Chromium op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
@@ -135,6 +136,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="2403703063067034158">Aanskakelingsfout: ’n ander geval of opstelling word tans gebruik; probeer weer later.</translation>
+<translation id="241044568699443215">Gebruik die Chromium-app op jou <ph name="DEVICE_TYPE" /> om die veiligheid van Chromium saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="2418322681019544463">Maak skakels in Chromium vanaf enige app oop en hou die blaaier toeganklik op jou taakbalk</translation>
 <translation id="2425157128016763890">Klik die Som Op-knoppie om hierdie dokument met Gemini in Chromium te deel om ’n vinnige oorsig te kry en opvolgvrae te vra</translation>
 <translation id="2440750600860946460">Met <ph name="BEGIN_LINK" />nutsgoed van Chromium<ph name="END_LINK" /> kan jy veilig blaai en in beheer bly</translation>
@@ -519,6 +521,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="6598877126913850652">Gaan na Chromium se kennisgewinginstellings</translation>
 <translation id="6600016381025017075">Soek na enigiets op hierdie bladsy</translation>
 <translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>
+<translation id="6637855549677695722">Jy sal ’n porboodskap sien om Chromium se beste veiligheidkenmerke te kry wanneer jy volgende keer Chromium op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
 <translation id="6637908313088374648">Chromium begin nou wanneer Windows begin sodat jy dadelik kan begin blaai. Jy kan dit in instellings afskakel.</translation>
 <translation id="6644846457769259194">Dateer tans jou toestel op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
@@ -752,6 +755,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8910309838319708610">Sukses! Jy kan nou maklik vrae vra terwyl jy met Search-KI-modus blaai</translation>
 <translation id="8932992523185907506">Chromium is nie meer jou verstekblaaier nie. Maak Chromium die verstekblaaier?</translation>
+<translation id="8940844567350264767">Kry Chromium se beste veiligheidkenmerke met Chromium terwyl jy aan die beweeg is</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>
 <translation id="8944232836376404813">Hierdie handeling sal:
           <ph name="LINE_BREAKS" />

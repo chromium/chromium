@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Le poți elimina oricând. Chromium le poate descărca din nou automat când un site sau o funcție are nevoie de ele.</translation>
 <translation id="1793486931176048546">Dă clic pe <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> în notificarea Windows ca să fixezi Chromium în bara de activități pentru acces rapid.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
+<translation id="1814482312667514397">Beneficiază de cele mai bune funcții de siguranță de la Chromium din mers, cu aplicația Chromium pe telefon</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa extensiile și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Data viitoare când deschizi Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Un dispozitiv HID a fost accesat de una sau mai multe extensii Chromium}=1{Un dispozitiv HID este accesat de una sau mai multe extensii Chromium}few{# dispozitive HID sunt accesate de una sau mai multe extensii Chromium}other{# de dispozitive HID sunt accesate de una sau mai multe extensii Chromium}}</translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="2403703063067034158">Eroare la pornire: se execută o altă instanță de configurare. Încearcă din nou mai târziu.</translation>
+<translation id="241044568699443215">Profită de siguranța oferită de Chromium din mers, cu aplicația Chromium pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Deschide linkuri în Chromium din orice aplicație și menține browserul accesibil în bara de activități</translation>
 <translation id="2425157128016763890">Dă clic pe butonul Rezumă pentru a trimite acest document la Gemini în Chromium pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="2440750600860946460">Cu <ph name="BEGIN_LINK" />instrumentele din Chromium<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
@@ -517,6 +519,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6598877126913850652">Accesează setările pentru notificări Chromium</translation>
 <translation id="6600016381025017075">Caută orice în această pagină</translation>
 <translation id="6613594504749178791">Modificările dvs. vor intra în vigoare următoarea dată când reporniți Chromium.</translation>
+<translation id="6637855549677695722">Când vei deschide din nou Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a obține cele mai bune funcții de siguranță din Chromium.</translation>
 <translation id="6637908313088374648">Chromium se lansează acum când pornește Windows, astfel că poți începe să navighezi instantaneu. Poți dezactiva această opțiune din setări.</translation>
 <translation id="6644846457769259194">Se actualizează dispozitivul (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
@@ -750,6 +753,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8910309838319708610">Succes! Acum poți să pui cu ușurință întrebări în timp ce navighezi cu Modul AI în Căutare</translation>
 <translation id="8932992523185907506">Chromium nu mai este browserul prestabilit. Setezi Chromium ca browser prestabilit?</translation>
+<translation id="8940844567350264767">Beneficiază de cele mai bune funcții de siguranță de la Chromium din mers cu Chromium</translation>
 <translation id="8941642502866065432">Chromium nu se poate actualiza</translation>
 <translation id="8944232836376404813">Această acțiune:
           <ph name="LINE_BREAKS" />

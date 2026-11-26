@@ -77,6 +77,7 @@
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
+<translation id="1132789342529761192">اپ لوڈ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="11370190534773372">کارڈ کی تفصیلات پُر کی گئیں</translation>
 <translation id="1138458427267715730">ویب پر کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="1142713751288681188">کاغذ کی قسم</translation>
@@ -583,6 +584,7 @@
 <translation id="1988881251331415125">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1991370806334788445">فریق ثالث کوکیز کو اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">مواد کو اسکین کیا جا رہا ہے...</translation>
 <translation id="1996557034791506430">اجازت ہٹائیں؟</translation>
 <translation id="1997484222658892567"><ph name="URL" /> آپ کے مقامی کمپیوٹر پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1997774360448418989">کاغذ (لائٹ ویٹ)</translation>
@@ -602,6 +604,7 @@
 <translation id="2025891858974379949">غیر محفوظ مواد</translation>
 <translation id="2027465737841872819">پلاسٹک</translation>
 <translation id="2027707238798802149">کارڈ دستیاب نہیں ہے</translation>
+<translation id="2028329426302356196">ڈاؤن لوڈ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />پراکسی اور فائروال چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">‏‫Chrome کا یہ نمونہ دستی طور پر سیٹ کردہ کمانڈ لائن پرچموں کے ساتھ چل رہا ہے۔ نوٹ کریں کہ کمانڈ لائن پرچم کسی بھی وقت تبدیل ہو سکتے ہیں اور تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="2033900728810589426">شارٹ کٹ ڈیفالٹ تلاش فراہم کنندہ کلیدی لفظ جیسا نہیں ہو سکتا جس کی وضاحت <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> کے ذریعے کی گئی ہے: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1459,7 @@
 <translation id="3443504041532578451">آپٹیکل ڈسک (ساٹن)</translation>
 <translation id="3447661539832366887">اس آلہ کے مالک نے ڈائناسور گیم کو آف کر دیا ہے۔</translation>
 <translation id="3447884698081792621">سرٹیفیکیٹ دکھائیں (<ph name="ISSUER" /> کی جانب سے جاری کردہ)</translation>
+<translation id="3449239216441121005">پرنٹ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="3450323514459570273">‏آپ کے MIDI آلات کنٹرول کرنے اور دوبارہ پروگرام کرنے کے لیے کہہ سکتا ہے</translation>
 <translation id="3452404311384756672">وقفہ بازیافت کریں:</translation>
 <translation id="345268527248907593">اس سائٹ تک رسائی حاصل نہیں کی جا سکی</translation>
@@ -2916,6 +2920,7 @@
 <translation id="5851548754964597211">ٹیب کی فہرست</translation>
 <translation id="5851868085455377790">جاری کنندہ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">کاپی کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="5860491529813859533">آن کریں</translation>
 <translation id="5862579898803147654">اسٹیکر 8</translation>
 <translation id="5863515189965725638">‏IBAN میں ترمیم کریں</translation>

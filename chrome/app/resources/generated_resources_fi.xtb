@@ -1307,6 +1307,7 @@
 <translation id="244071666433939959">Sovellukset avautuvat ikkunassa</translation>
 <translation id="2442916515643169563">Tekstin varjo</translation>
 <translation id="2443487764245141020">Sivustojen on ehkä voitava tunnistaa laitteesi tunnisteen avulla</translation>
+<translation id="2444282212665587861">päivitys, päivitykset, versio, koontiversio, tiedot, tarkista päivitykset</translation>
 <translation id="244475495405467108">Sulje vasemmalla olevat välilehdet</translation>
 <translation id="2444874983932528148">Jatka helposti siitä, mihin jäit</translation>
 <translation id="2445081178310039857">Laajennuksen juurihakemisto tarvitaan.</translation>
@@ -2144,6 +2145,7 @@
 <translation id="3321512411079201586">&amp;Eristetty</translation>
 <translation id="3323288183237359315">Asenna Edgeen</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Yksityisyytesi suojaamiseksi sivuston luvat on poistettu}other{Yksityisyytesi suojaamiseksi joidenkin sivustojen luvat on poistettu}}</translation>
+<translation id="3325561120400598624">Keskustelut tarkastetaan, ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien <ph name="BEGIN_LINK_LOCATION_INFO" />sijaintitietoja<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Tyyli</translation>
 <translation id="3331974543021145906">Sovelluksen tiedot</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video toistetaan kuva kuvassa ‑tilassa</translation>
@@ -2269,6 +2271,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Lataa 1 PDF-tiedosto, jota haluat käyttää kysymyksessä}other{Lataa enintään # PDF-tiedostoa, joita haluat käyttää kysymyksessä}}</translation>
 <translation id="3456750372063895499">Avaa linkki eri&amp;stetyssä ikkunassa</translation>
 <translation id="345693547134384690">Avaa &amp;kuva uudessa välilehdessä</translation>
+<translation id="3456949031754827166">Järjestä uudelleen</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Säilytä ryhmä}other{Säilytä ryhmät}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 kirjanmerkki poistettu}other{# kirjanmerkkiä poistettu}}</translation>
 <translation id="3471687177769494956">Muokkaa navigoinnin pikanäppäinyhdistelmää</translation>
@@ -3319,6 +3322,7 @@
 <translation id="4602776638371779614">Tämä välilehti hakee aktiivisesti Bluetooth-laitteita</translation>
 <translation id="4605026046465576953">Tätä sovellusta ei voi avata, koska sinulla ei ole lupaa suorittaa eristettyjä verkkosovelluksia</translation>
 <translation id="4606551464649945562">Älä salli sivustojen luoda 3D-karttaa ympäristöstäsi tai seurata kameran asentoa</translation>
+<translation id="4606965546067937011">nopeus, RAM, viive, jäätyminen, kaatuminen, resurssi, käyttö, akku, optimointi, hidas, muisti, muistinsäästö</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Poistetaanko välilehtiryhmä?}other{Poistetaanko välilehtiryhmät?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Lataa yksi tiedosto, jota haluat käyttää kysymyksessä}other{Lataa enintään # tiedostoa, joita haluat käyttää kysymyksessä}}</translation>
 <translation id="4608500690299898628">&amp;Haku...</translation>
@@ -4151,6 +4155,7 @@
 <translation id="5535769176698670170">Vaihda ylänäkymään</translation>
 <translation id="5536642445914063887">Vaihda profiilia</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
+<translation id="553876896781261711">poista, poistaminen, tietoturva, yksityisyys, puhdistus, tallennustila, nollaa, välimuisti, evästeet, hidas, nopeus, historia</translation>
 <translation id="5541091577812545428">Salasanaa ei muutettu</translation>
 <translation id="5542132724887566711">Profiili</translation>
 <translation id="5543983818738093899">Tarkistetaan tilaa…</translation>
@@ -4742,6 +4747,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6214157047210274853">Muokkaa Google Walletissa</translation>
 <translation id="621470880408090483">Älä salli sivustojen yhdistää Bluetooth-laitteisiin</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> lukittuu pitääkseen salasanat turvassa, kun sitä ei ole käytetty 1 minuuttiin}other{<ph name="BRAND" /> lukittuu pitääkseen salasanat turvassa, kun sitä ei ole käytetty # minuuttiin}}</translation>
+<translation id="6215427500141060726">Keskustelut tarkastetaan, ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien <ph name="BEGIN_LINK_LOCATION_INFO" />sijaintitietoja<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Hylätyt sivustot ja sovellukset</translation>
 <translation id="6216696360484424239">Kirjaudu sisään automaattisesti</translation>
 <translation id="6218961554829577610">En pitänyt äänestä</translation>
@@ -4893,6 +4899,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="639880411171387127">Google Lens ‐valintasi. Poista Google Lens ‑valinta painamalla Enteriä tai askelpalautinta</translation>
 <translation id="6400360390396538896">Aina: <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Lopeta välilehtiryhmän tarkennus</translation>
+<translation id="6401522392962817913">Jatkamalla hyväksyt Google Paymentsin käyttöehdot. Tietosuojailmoituksessa kerrotaan, miten dataasi käsitellään. Kortti on tallennettu Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="6402042774506839496">Jos haluat tietää syyn, ota yhteyttä sovelluskehittäjään</translation>
 <translation id="6402921224457714577">Sivustot voivat pyytää lupaa ohjata ja uudelleenohjelmoida MIDI-laitteita</translation>
 <translation id="6404511346730675251">Muokkaa kirjanmerkkiä</translation>
@@ -4981,6 +4988,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6499143127267478107">Ratkaistaan isäntää välityspalvelimen koodissa...</translation>
 <translation id="6503077044568424649">Käydyimmät</translation>
 <translation id="6504601948739128893">Laitteellesi asennettujen fonttien käyttäminen kielletty</translation>
+<translation id="6505525633061207363">kirjautumistiedot, sisäänkirjautuminen, avainkoodi, lukko, holvi, avaimet, kirjautuminen, kirjaudu sisään</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> haluaa asentaa tälle laitteelle seuraavan sovelluksen:}other{<ph name="APP_NAME" /> haluaa asentaa tälle laitteelle seuraavat sovellukset:}}</translation>
 <translation id="6508248480704296122">Liittyy kohteeseen <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Sovellus: <ph name="APP_NAME" /></translation>

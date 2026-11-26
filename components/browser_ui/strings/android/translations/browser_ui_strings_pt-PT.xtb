@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Permitida • Aproximada</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
+<translation id="1352358548984352201">Adicione separadores, imagens e muito mais como contexto para melhorar a sua pesquisa</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> adicionado</translation>
 <translation id="1371239764779356792">Permita que um site guarde dados no seu dispositivo</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Tipo de letra: Sans Serif</translation>
 <translation id="1861244985839668297">Quando esta opção está ativada, os sites podem pedir para usar dispositivos HID. Quando esta opção está desativada, os sites não podem usar dispositivos HID.</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
+<translation id="1871213582159462941">Faça perguntas sobre uma página ou foto</translation>
 <translation id="1881806992065048905">Secção inferior de aspeto da página Novo separador</translation>
 <translation id="1887786770086287077">O acesso à localização está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Normalmente, os sites acedem a ficheiros e pastas no seu dispositivo para funcionalidades como guardar automaticamente o seu trabalho.</translation>

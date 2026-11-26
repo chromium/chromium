@@ -519,6 +519,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6598877126913850652">Siirry Chromiumin ilmoitusasetuksiin</translation>
 <translation id="6600016381025017075">Hae mitä tahansa tältä sivulta</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
+<translation id="6637855549677695722">Kun seuraavan kerran avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen ottaa käyttöön Googlen parhaat suojausominaisuudet.</translation>
 <translation id="6637908313088374648">Chromium käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="6644846457769259194">Päivitetään laitetta (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>

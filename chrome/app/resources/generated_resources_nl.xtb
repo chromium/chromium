@@ -1295,6 +1295,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="244071666433939959">Apps worden geopend in een venster</translation>
 <translation id="2442916515643169563">Tekstschaduw</translation>
 <translation id="2443487764245141020">Misschien willen sites je ook herkennen via een ID</translation>
+<translation id="2444282212665587861">update, updates, upgraden, versie, build, info, checken op updates</translation>
 <translation id="244475495405467108">Tabbladen aan de linkerkant sluiten</translation>
 <translation id="2444874983932528148">Ga snel verder waar je gebleven was</translation>
 <translation id="2445081178310039857">Hoofddirectory van extensie is vereist.</translation>
@@ -2130,6 +2131,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3321512411079201586">&amp;Geïsoleerd</translation>
 <translation id="3323288183237359315">Installeren voor Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Ter bescherming van je gegevens zijn de rechten voor één site verwijderd}other{Ter bescherming van je gegevens zijn de rechten voor sommige sites verwijderd}}</translation>
+<translation id="3325561120400598624">Gesprekken worden beoordeeld en gebruikt om generatieve AI-modellen te trainen. Gemini is AI en kan fouten maken. Bepaalde content is misschien niet geschikt voor iedereen. Je kunt <ph name="BEGIN_LINK_MANAGE_HISTORY" />je geschiedenis beheren<ph name="END_LINK_MANAGE_HISTORY" />, waaronder <ph name="BEGIN_LINK_LOCATION_INFO" />informatie over je locatie<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie over je keuzes<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Stijl</translation>
 <translation id="3331974543021145906">App-informatie</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: video wordt afgespeeld in de scherm-in-scherm-modus</translation>
@@ -2255,6 +2257,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Upload 1 pdf-bestand om te gebruiken bij je vraag}other{Upload maximaal # pdf-bestanden om te gebruiken bij je vraag}}</translation>
 <translation id="3456750372063895499">Link openen in geïsoleerd venster</translation>
 <translation id="345693547134384690">&amp;Afbeelding openen in nieuw tabblad</translation>
+<translation id="3456949031754827166">Opnieuw indelen</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Groep behouden}other{Groepen behouden}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 bookmark verwijderd}other{# bookmarks verwijderd}}</translation>
 <translation id="3471687177769494956">Navigatiesnelkoppeling bewerken</translation>
@@ -3307,6 +3310,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4602776638371779614">Dit tabblad zoekt actief naar bluetooth-apparaten</translation>
 <translation id="4605026046465576953">Deze app kan niet worden geopend omdat je geen rechten hebt om geïsoleerde web-apps uit te voeren</translation>
 <translation id="4606551464649945562">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
+<translation id="4606965546067937011">snelheid, RAM, vertraging, lag, vastlopen, bevriezen, bevroren, vastgelopen, crash, bron, resource, gebruik, batterij, optimalisatie, langzaam, traag, geheugen, geheugenbesparing</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tabbladgroep verwijderen?}other{Tabbladgroepen verwijderen?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 bestand om te gebruiken bij je vraag}other{Upload maximaal # bestanden om te gebruiken bij je vraag}}</translation>
 <translation id="4608500690299898628">&amp;Zoeken...</translation>
@@ -4137,6 +4141,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5535769176698670170">Wisselen met weergave bovenaan</translation>
 <translation id="5536642445914063887">Van profiel wisselen</translation>
 <translation id="5537725057119320332">Casten</translation>
+<translation id="553876896781261711">verwijderen, weghalen, beveiliging, privacy, opschonen, opslag, resetten, cache, cookies, langzaam, snelheid, geschiedenis</translation>
 <translation id="5541091577812545428">Wachtwoord is niet gewijzigd</translation>
 <translation id="5542132724887566711">Profiel</translation>
 <translation id="5543983818738093899">Status controleren…</translation>
@@ -4725,6 +4730,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6214157047210274853">Bewerken in Google Wallet</translation>
 <translation id="621470880408090483">Niet toestaan dat sites verbinding maken met bluetooth-apparaten</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> wordt na 1 minuut inactiviteit vergrendeld om je wachtwoorden te beschermen}other{<ph name="BRAND" /> wordt na # minuten inactiviteit vergrendeld om je wachtwoorden te beschermen}}</translation>
+<translation id="6215427500141060726">Gesprekken worden beoordeeld en gebruikt om generatieve AI-modellen te trainen. Gemini is AI en kan fouten maken. Je kunt <ph name="BEGIN_LINK_MANAGE_HISTORY" />je geschiedenis beheren<ph name="END_LINK_MANAGE_HISTORY" />, waaronder <ph name="BEGIN_LINK_LOCATION_INFO" />informatie over je locatie<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie over je keuzes<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Geweigerde sites en apps</translation>
 <translation id="6216696360484424239">Automatisch inloggen</translation>
 <translation id="6218961554829577610">De stem beviel me niet</translation>
@@ -4876,6 +4882,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="639880411171387127">Je Google Lens-selectie. Druk op Enter of Backspace om je Google Lens-selectie te verwijderen</translation>
 <translation id="6400360390396538896">Altijd op <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Focus van tabbladgroep verwijderen</translation>
+<translation id="6401522392962817913">Als je verdergaat, ga je akkoord met de Servicevoorwaarden van Google Payments. In de Privacyverklaring wordt beschreven hoe we omgaan met je gegevens. Je kaart wordt opgeslagen in je Google-account, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Neem contact op met de app-ontwikkelaar voor meer informatie</translation>
 <translation id="6402921224457714577">Sites kunnen vragen om je MIDI-apparaten te bedienen en te herprogrammeren</translation>
 <translation id="6404511346730675251">Bookmark bewerken</translation>
@@ -4964,6 +4971,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6499143127267478107">Host omzetten in proxyscript...</translation>
 <translation id="6503077044568424649">Meest bezocht</translation>
 <translation id="6504601948739128893">Mogen geen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
+<translation id="6505525633061207363">inloggegevens, inloggen, toegangssleutel, vergrendeling, kluis, sleutels, inloggen, inloggen, inloggen</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> wil de volgende app installeren op dit apparaat:}other{<ph name="APP_NAME" /> wil de volgende apps installeren op dit apparaat:}}</translation>
 <translation id="6508248480704296122">Gerelateerd aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>

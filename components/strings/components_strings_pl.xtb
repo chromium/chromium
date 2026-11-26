@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Pamięć podręczna zasad: OK</translation>
 <translation id="1131264053432022307">Skopiowany obraz</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – aby zamknąć pełny ekran, przeciągnij od góry i kliknij przycisk Wstecz</translation>
+<translation id="1132789342529761192">Przesyłanie nie jest zalecane</translation>
 <translation id="11370190534773372">Wypełniono dane karty</translation>
 <translation id="1138458427267715730">Otrzymuj alerty, gdy cena spadnie w dowolnej witrynie w internecie</translation>
 <translation id="1142713751288681188">Typ papieru</translation>
@@ -603,6 +604,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2025891858974379949">Treść niezabezpieczona</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Karta jest niedostępna</translation>
+<translation id="2028329426302356196">Pobieranie nie jest zalecane</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Sprawdź serwer proxy i zaporę sieciową<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Ta instancja Chrome działa z ręcznie ustawionymi flagami wiersza poleceń. Pamiętaj, że flagi wiersza poleceń są nieobsługiwane i mogą ulec zmianie w każdej chwili.</translation>
 <translation id="2033900728810589426">Skrót nie może być taki sam jak słowo kluczowe domyślnego dostawcy wyszukiwania zdefiniowane przez zasadę <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3443504041532578451">Dysk optyczny (satyna)</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Drukowanie nie jest zalecane</translation>
 <translation id="3450323514459570273">Może prosić o uprawnienia do przeprogramowywania urządzeń MIDI i sterowania nimi</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
 <translation id="345268527248907593">Witryna jest nieosiągalna</translation>
@@ -2916,6 +2919,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5851868085455377790">Wystawca</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopiowanie nie jest zalecane</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862579898803147654">Układarka 8</translation>
 <translation id="5863515189965725638">Edytuj numer IBAN</translation>

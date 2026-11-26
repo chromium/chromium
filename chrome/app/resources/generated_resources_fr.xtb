@@ -1295,6 +1295,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="244071666433939959">Les applis s'ouvrent dans une fenêtre</translation>
 <translation id="2442916515643169563">Ombre du texte</translation>
 <translation id="2443487764245141020">Les sites peuvent aussi avoir besoin d'identifier votre appareil à l'aide d'un ID</translation>
+<translation id="2444282212665587861">mise à jour, mises à jour, mise à niveau, version, build, informations, rechercher des mises à jour</translation>
 <translation id="244475495405467108">Fermer les onglets à gauche</translation>
 <translation id="2444874983932528148">Reprenez facilement là où vous en étiez</translation>
 <translation id="2445081178310039857">Le répertoire racine de l'extension doit être indiqué.</translation>
@@ -2130,6 +2131,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="3321512411079201586">&amp;Isolé</translation>
 <translation id="3323288183237359315">Installer pour Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Pour protéger votre confidentialité, des autorisations accordées à un site ont été supprimées}one{Pour protéger votre confidentialité, des autorisations accordées à un site ont été supprimées}other{Pour protéger votre confidentialité, des autorisations accordées à certains sites ont été supprimées}}</translation>
+<translation id="3325561120400598624">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus ne sont peut-être pas adaptés à tous les publics. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les <ph name="BEGIN_LINK_LOCATION_INFO" />informations sur votre position<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les options qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3331974543021145906">Infos sur l'appli</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Vidéo diffusée en mode PIP</translation>
@@ -2255,6 +2257,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Importez 1 fichier .pdf à utiliser avec votre question}one{Importez # fichier .pdf à utiliser avec votre question}other{Importez jusqu'à # fichiers .pdf à utiliser avec votre question}}</translation>
 <translation id="3456750372063895499">Ouvrir le lien dans une fenêtre i&amp;solée</translation>
 <translation id="345693547134384690">Ouvrir l'&amp;image dans un nouvel onglet</translation>
+<translation id="3456949031754827166">Réorganiser</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 favori supprimé}one{# favori supprimé}other{# favoris supprimés}}</translation>
 <translation id="3471687177769494956">Modifier le raccourci de navigation</translation>
@@ -3308,6 +3311,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4602776638371779614">Cet onglet recherche activement des appareils Bluetooth</translation>
 <translation id="4605026046465576953">Impossible d'ouvrir cette appli, car vous n'êtes pas autorisé à exécuter des applis Web isolées</translation>
 <translation id="4606551464649945562">Interdire aux sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
+<translation id="4606965546067937011">vitesse, RAM, latence, figer, planter, ressource, utilisation, batterie, optimiseur, lent, mémoire, économiseur de mémoire</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets ?}one{Supprimer le groupe d'onglets ?}other{Supprimer les groupes d'onglets ?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Importez 1 fichier à utiliser avec votre question}one{Importez # seul fichier à utiliser avec votre question}other{Importez jusqu'à # fichiers à utiliser avec votre question}}</translation>
 <translation id="4608500690299898628">&amp;Rechercher...</translation>
@@ -4138,6 +4142,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5535769176698670170">Remplacer par la vue du haut</translation>
 <translation id="5536642445914063887">Changer de profil</translation>
 <translation id="5537725057119320332">Caster</translation>
+<translation id="553876896781261711">supprimer, retirer, sécurité, confidentialité, nettoyage, stockage, réinitialiser, cache, cookies, lent, vitesse, historique</translation>
 <translation id="5541091577812545428">Le mot de passe n'a pas été modifié</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Vérification de l'état en cours…</translation>
@@ -4730,6 +4735,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6214157047210274853">Modifier dans Google Wallet</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après 1 minute d'inactivité}one{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minute d'inactivité}other{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minutes d'inactivité}}</translation>
+<translation id="6215427500141060726">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les <ph name="BEGIN_LINK_LOCATION_INFO" />informations sur votre position<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les options qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Sites et applis refusés</translation>
 <translation id="6216696360484424239">Connexion automatique</translation>
 <translation id="6218961554829577610">La voix ne me plaît pas</translation>
@@ -4881,6 +4887,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="639880411171387127">Votre sélection Google Lens. Appuyez sur Entrée ou Retour arrière pour supprimer votre sélection Google Lens.</translation>
 <translation id="6400360390396538896">Toujours sur <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Désélectionner le groupe d'onglets</translation>
+<translation id="6401522392962817913">En continuant, vous acceptez les Conditions d'utilisation de Google Payments. L'Avis de confidentialité explique comment vos données sont traitées. Votre carte est enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6402042774506839496">Pour en savoir plus, contactez le développeur de l'appli</translation>
 <translation id="6402921224457714577">Les sites peuvent demander à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
@@ -4969,6 +4976,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6499143127267478107">Résolution de l'hôte du script de proxy…</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="6504601948739128893">Non autorisés à utiliser les polices installées sur votre appareil</translation>
+<translation id="6505525633061207363">identifiants, connexion, clé d'accès, verrouiller, coffre, clés, connecter, connexion, se connecter</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" souhaite installer l'appli suivante sur cet appareil :}one{"<ph name="APP_NAME" />" souhaite installer l'appli suivante sur cet appareil :}other{"<ph name="APP_NAME" />" souhaite installer les applis suivantes sur cet appareil :}}</translation>
 <translation id="6508248480704296122">En rapport avec <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>

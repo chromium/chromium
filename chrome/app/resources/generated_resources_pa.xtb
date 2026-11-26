@@ -1308,6 +1308,7 @@
 <translation id="244071666433939959">ਐਪਾਂ ਵਿੰਡੋ ਵਿੱਚ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ</translation>
 <translation id="2442916515643169563">ਲਿਖਤ ਸ਼ੈਡੋ</translation>
 <translation id="2443487764245141020">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਸਾਈਟਾਂ ਨੂੰ ਪਛਾਣਕਰਤਾ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਕਰਨ ਵੀ ਲੋੜ ਪਵੇ</translation>
+<translation id="2444282212665587861">ਅੱਪਡੇਟ, ਅੱਪਡੇਟਾਂ, ਅੱਪਗ੍ਰੇਡ, ਵਰਜਨ, ਬਿਲਡ, ਜਾਣਕਾਰੀ, ਅੱਪਡੇਟਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="244475495405467108">ਖੱਬੇ ਪਾਸੇ ਵਾਲੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="2444874983932528148">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਆਸਾਨੀ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2445081178310039857">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ ਲੋੜੀਂਦੀ ਹੈ।</translation>
@@ -2147,6 +2148,7 @@
 <translation id="3321512411079201586">&amp;ਆਇਸੋਲੇਟਿਡ</translation>
 <translation id="3323288183237359315">Edge ਲਈ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ, ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਲਿਆ ਗਿਆ ਸੀ}one{ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ, ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਲਿਆ ਗਿਆ ਸੀ}other{ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ, ਕੁਝ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਲਿਆ ਗਿਆ ਸੀ}}</translation>
+<translation id="3325561120400598624">ਚੈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। Gemini ਇੱਕ AI ਹੈ ਅਤੇ ਇਹ ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੁਝ ਸਮੱਗਰੀ ਹਰੇਕ ਲਈ ਢੁਕਵੀਂ ਨਾ ਹੋਵੇ। ਤੁਸੀਂ <ph name="BEGIN_LINK_LOCATION_INFO" />ਆਪਣੇ ਟਿਕਾਣੇ ਬਾਰੇ ਜਾਣਕਾਰੀ<ph name="END_LINK_LOCATION_INFO" /> ਸਮੇਤ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ਆਪਣੇ ਇਤਿਹਾਸ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK_MANAGE_HISTORY" /> ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK_LEARN_MORE" />ਆਪਣੀਆਂ ਚੋਣਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">ਸਟਾਈਲ</translation>
 <translation id="3331974543021145906">ਐਪ ਜਾਣਕਾਰੀ</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ਵੀਡੀਓ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਵਿੱਚ ਚਲਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -2272,6 +2274,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ 1 .pdf ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}one{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # .pdf ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}other{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # .pdf ਫ਼ਾਈਲਾਂ ਅੱਪਲੋਡ ਕਰੋ}}</translation>
 <translation id="3456750372063895499">ਲਿੰਕ ਅਲੱਗ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="345693547134384690">ਨਵੀਂ ਟੈਬ ਵਿੱਚ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
+<translation id="3456949031754827166">ਮੁੜ-ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{ਗਰੁੱਪ ਬਣਾਈ ਰੱਖੋ}one{ਗਰੁੱਪ ਬਣਾਈ ਰੱਖੋ}other{ਗਰੁੱਪਾਂ ਨੂੰ ਬਣਾਈ ਰੱਖੋ}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}one{# ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}other{# ਬੁੱਕਮਾਰਕ ਮਿਟਾਏ ਗਏ}}</translation>
 <translation id="3471687177769494956">ਨੈਵੀਗੇਸ਼ਨ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -3325,6 +3328,7 @@
 <translation id="4602776638371779614">ਇਹ ਟੈਬ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="4605026046465576953">ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡੋ ਕੋਲ ਆਇਸੋਲੇਟਿਡ ਵੈੱਬ ਐਪਾਂ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4606551464649945562">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="4606965546067937011">ਸਪੀਡ, RAM, ਲੈਗ, ਫ੍ਰੀਜ਼, ਕ੍ਰੈਸ਼, ਸਰੋਤ, ਵਰਤੋਂ, ਬੈਟਰੀ, ਔਪਟੀਮਾਈਜ਼ਰ, ਹੌਲੀ, ਮੈਮੋਰੀ, ਮੈਮੋਰੀ ਸੇਵਰ</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}one{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}other{ਕੀ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ 1 ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}one{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}other{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # ਫ਼ਾਈਲਾਂ ਅੱਪਲੋਡ ਕਰੋ}}</translation>
 <translation id="4608500690299898628">&amp;ਲੱਭੋ...</translation>
@@ -4156,6 +4160,7 @@
 <translation id="5535769176698670170">ਉੱਪਰਲੇ ਦ੍ਰਿਸ਼ ਨਾਲ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="5536642445914063887">ਪ੍ਰੋਫਾਈਲ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
+<translation id="553876896781261711">ਮਿਟਾਓ, ਹਟਾਓ, ਸੁਰੱਖਿਆ, ਪਰਦੇਦਾਰੀ, ਕਲੀਨਅੱਪ, ਸਟੋਰੇਜ, ਰੀਸੈੱਟ, ਕੈਸ਼ੇ, ਕੁਕੀਜ਼, ਹੌਲੀ, ਸਪੀਡ, ਇਤਿਹਾਸ</translation>
 <translation id="5541091577812545428">ਪਾਸਵਰਡ ਨਹੀਂ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="5542132724887566711">ਪ੍ਰੋਫਾਈਲ</translation>
 <translation id="5543983818738093899">ਸਥਿਤੀ ਦੀ ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -4747,6 +4752,7 @@
 <translation id="6214157047210274853">Google Wallet ਵਿੱਚ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="621470880408090483">ਸਾਈਟਾਂ ਨੂੰ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="6215039389782910006">{1,plural, =1{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, <ph name="BRAND" /> 1 ਮਿੰਟ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}one{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, <ph name="BRAND" /> # ਮਿੰਟ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}other{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, <ph name="BRAND" /> # ਮਿੰਟਾਂ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}}</translation>
+<translation id="6215427500141060726">ਚੈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। Gemini ਇੱਕ AI ਹੈ ਅਤੇ ਇਹ ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ <ph name="BEGIN_LINK_LOCATION_INFO" />ਆਪਣੇ ਟਿਕਾਣੇ ਬਾਰੇ ਜਾਣਕਾਰੀ<ph name="END_LINK_LOCATION_INFO" /> ਸਮੇਤ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ਆਪਣੇ ਇਤਿਹਾਸ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK_MANAGE_HISTORY" /> ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK_LEARN_MORE" />ਆਪਣੀਆਂ ਚੋਣਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">ਅਸਵੀਕਾਰ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ</translation>
 <translation id="6216696360484424239">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6218961554829577610">ਅਵਾਜ਼ ਪਸੰਦ ਨਹੀਂ ਆਈ</translation>
@@ -4898,6 +4904,7 @@
 <translation id="639880411171387127">ਤੁਹਾਡੀ Google Lens ਚੋਣ। ਆਪਣੀ Google Lens ਚੋਣ ਮਿਟਾਉਣ ਲਈ Enter ਜਾਂ Backspace ਦਬਾਓ</translation>
 <translation id="6400360390396538896">ਹਮੇਸ਼ਾਂ ਚਾਲੂ <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">ਟੈਬ ਗਰੁੱਪ ਤੋਂ ਫੋਕਸ ਹਟਾਓ</translation>
+<translation id="6401522392962817913">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ Google Payments ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ। ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਸੰਭਾਲੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਵਰਣਨ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੇ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ, <ph name="ACCOUNT" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6402042774506839496">ਕਾਰਨ ਜਾਣਨ ਲਈ, ਐਪ ਵਿਕਾਸਕਾਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="6402921224457714577">ਸਾਈਟਾਂ ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6404511346730675251">ਬੁੱਕਮਾਰਕ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
@@ -4986,6 +4993,7 @@
 <translation id="6499143127267478107">ਪ੍ਰੌਕਸੀ ਸਕ੍ਰਿਪਟ ਵਿੱਚ ਹੋਸਟ ਰਿਜ਼ੋਲਵ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6503077044568424649">ਸਭ ਤੋਂ ਵੱਧ ਵਿਜਿਟ ਕੀਤੇ</translation>
 <translation id="6504601948739128893">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਟਾਂ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="6505525633061207363">ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ, ਸਾਈਨ-ਇਨ, ਪਾਸਕੀ, ਲਾਕ, ਵਾਲਟ, ਕੁੰਜੀਆਂ, ਲੌਗ-ਇਨ, ਲੌਗ-ਇਨ ਕਰੋ, ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ਐਪ ਡੀਵਾਈਸ 'ਤੇ ਅੱਗੇ ਦਿੱਤੀ ਐਪ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ:}one{"<ph name="APP_NAME" />" ਐਪ ਡੀਵਾਈਸ 'ਤੇ ਅੱਗੇ ਦਿੱਤੀ ਐਪ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ:}other{"<ph name="APP_NAME" />" ਐਪ ਡੀਵਾਈਸ 'ਤੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ਨਾਲ ਸੰਬੰਧਿਤ</translation>
 <translation id="6508261954199872201">ਐਪ: <ph name="APP_NAME" /></translation>

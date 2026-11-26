@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">您可以随时移除这些模型。当网站或某项功能需要使用这些模型时，Chromium 可能会自动重新下载。</translation>
 <translation id="1793486931176048546">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chromium 固定到任务栏，以便快速访问。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
+<translation id="1814482312667514397">通过手机上的 Chromium 应用，随时随地享受其最佳安全功能</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可以获取<ph name="DEVICE" />中的扩展程序等内容。</translation>
 <translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
@@ -132,6 +133,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
+<translation id="241044568699443215">通过 <ph name="DEVICE_TYPE" /> 上的 Chromium 应用，随时随地享受其安全防护</translation>
 <translation id="2418322681019544463">在任意应用内通过 Chromium 打开链接，并让浏览器始终显示在任务栏中</translation>
 <translation id="2425157128016763890">点击“总结”按钮，即可与 Chromium 中的 Gemini 分享此文档，快速获取内容概览并进行追问</translation>
 <translation id="2440750600860946460">借助 <ph name="BEGIN_LINK" />Chromium 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
@@ -750,6 +752,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8910309838319708610">大功告成！现在，您可以在浏览时通过“搜索 AI 模式”轻松提问</translation>
 <translation id="8932992523185907506">Chromium 不再是默认浏览器。要将 Chromium 设置为默认浏览器吗？</translation>
+<translation id="8940844567350264767">通过 Chromium，随时随地享受其最佳安全功能</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="8944232836376404813">此操作将会：
           <ph name="LINE_BREAKS" />

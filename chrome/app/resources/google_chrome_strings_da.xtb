@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Hent Chrome-appen</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1925069572871307609">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 version 1809 eller nyere. Denne computer anvender en ældre version af Windows 10.</translation>
+<translation id="1975069140856174874">Næste gang du åbner Chrome på din <ph name="DEVICE_TYPE" />, får du en meddelelse, hvor du kan aktivere Chromiums bedste sikkerhedsfunktioner.</translation>
 <translation id="1975400514743766362">Tag Googles sikkerhedsfunktioner med på farten med Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Øg sikkerheden på farten med Udvidet beskyttet browsing i Chrome til iOS</translation>
 <translation id="2001586581944147178">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chrome anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
@@ -451,6 +452,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="568656514202614970">Sådan! Nu kan du nemt stille spørgsmål, mens du browser, med Google Søgning i sidepanelet</translation>
 <translation id="5686916850681061684">Tilpas og administrer Google Chrome. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Få Googles bedste sikkerhedsfunktioner på farten med Chrome</translation>
 <translation id="569897634095159764">Der kan ikke oprettes forbindelse til internettet. Proxyserveren kræver godkendelse.</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
 <translation id="5715427327524421317">Chrome downloader og opdaterer automatisk disse AI-modeller</translation>
@@ -616,6 +618,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7099479769133613710">Genstart og opdater &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Jobliste – Google Chrome</translation>
 <translation id="7121179479711575744">Log ind i Chrome</translation>
+<translation id="7137056136322108339">Få Googles bedste sikkerhedsfunktioner på farten med Chrome-appen på din telefon</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7193885263065350793">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />.</translation>

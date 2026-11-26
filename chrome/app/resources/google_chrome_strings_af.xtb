@@ -103,6 +103,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1896602904211344018">Kry die Chrome-app</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1925069572871307609">Jy het Windows 10-weergawe 1809 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik ’n ouer weergawe van Windows 10.</translation>
+<translation id="1975069140856174874">Jy sal ’n porboodskap sien om Google se beste veiligheidkenmerke te kry wanneer jy volgende keer Chrome op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
 <translation id="1975400514743766362">Gebruik die Chrome-app op jou <ph name="DEVICE_TYPE" /> om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="1979600810166324878">Bly veiliger terwyl jy aan die beweeg is met Verbeterde Veiligblaai op Chrome vir iOS</translation>
 <translation id="2001586581944147178">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. Chrome gebruik ’n veilige verbinding om ’n werf se IP-adres in die DNS (domeinnaamstelsel) op te soek.</translation>
@@ -459,6 +460,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="568656514202614970">Sukses! Jy kan nou maklik vrae vra terwyl jy met Google Search-kantpaneel blaai</translation>
 <translation id="5686916850681061684">Pasmaak en beheer Google Chrome. Iets verg jou aandag – klik vir besonderhede.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Kry Google se beste veiligheidkenmerke met Chrome terwyl jy aan die beweeg is</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
 <translation id="5709557627224531708">Stel Chrome as jou verstekblaaier</translation>
 <translation id="5715427327524421317">Chrome laai hierdie KI-modelle outomaties af en dateer hulle op</translation>
@@ -624,6 +626,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7099479769133613710">Herbegin om &amp;Chrome-bedryfstelsel op te dateer</translation>
 <translation id="7106741999175697885">Taakbestuurder – Google Chrome</translation>
 <translation id="7121179479711575744">Meld aan by Chrome</translation>
+<translation id="7137056136322108339">Kry Google se beste veiligheidkenmerke terwyl jy aan die beweeg is met die Chrome-app op jou foon</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="7161904924553537242">Welkom by Google Chrome</translation>
 <translation id="7193885263065350793">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>

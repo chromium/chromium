@@ -71,6 +71,7 @@
 <translation id="1792680680989393197">ඔබට ඕනෑම වේලාවක ඒවා ඉවත් කළ හැකි ය. වෙබ් අඩවියකට හෝ විශේෂාංගයකට ඒවා අවශ්‍ය වූ විට Chromium ඒවා ස්වයංක්‍රීයව නැවත බාගැනීමට හැකි ය.</translation>
 <translation id="1793486931176048546">ඉක්මන් ප්‍රවේශය සඳහා Chromium ඔබේ කාර්ය තීරුවට ඇමිණීමට, Windows දැනුම්දීමෙහි ඇති <ph name="BEGIN_BOLD" />ඔව්<ph name="END_BOLD" /> යන්න ක්ලික් කරන්න.</translation>
 <translation id="1808667845054772817">Chromium ප්‍රතිස්ථාපනය කරන්න</translation>
+<translation id="1814482312667514397">ඔබේ දුරකථනයේ Chromium යෙදුම භාවිතයෙන්, යන ගමන් Chromium හි හොඳම ආරක්ෂක විශේෂාංග ලබා ගන්න.</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chromium හට පුරන්න. ඔබට <ph name="DEVICE" /> වෙතින් ඔබේ දිගු සහ තවත් දේ ද ලැබෙනු ඇත.</translation>
 <translation id="183031085822326697">මීළඟ වතාවේ ඔබ ඔබේ <ph name="DEVICE_TYPE" /> මත Chromium විවෘත කරන විට, Google මුරපද කළමනාකරු භාවිත කිරීමට ප්‍රේරකයක් ඔබට පෙනෙනු ඇත.</translation>
@@ -134,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID උපාංගයකට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වන ලදි}=1{1 HID උපාංගයකට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}one{HID උපාංග #කට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}other{HID උපාංග #කට එක Chromium දිගුවකින් හෝ වැඩි ගණනකින් ප්‍රවේශ වනු ලබයි}}</translation>
 <translation id="2401032172288869980">මෙම අඩවිය සඳහා Chromium හට මයික්‍රෆෝන සහ කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="2403703063067034158">ආරම්භක දෝෂය: පිහිටුවීමේ තවත් අවස්ථාවක් දැනට ධාවනය වේ, පසුව නැවත උත්සාහ කරන්න.</translation>
+<translation id="241044568699443215">ඔබේ <ph name="DEVICE_TYPE" /> මත ඇති Chromium යෙදුම මඟින්, ඕනෑම තැනක සිට Chromium හි ආරක්ෂාව අත්විඳින්න.</translation>
 <translation id="2418322681019544463">ඕනෑම යෙදුමකින් Chromium හි සබැඳි විවෘත කර ඔබේ කාර්ය තීරුවේ බ්‍රව්සරයට ප්‍රවේශ විය හැකිව තබා ගන්න</translation>
 <translation id="2425157128016763890">ඉක්මන් දළ විශ්ලේෂණයක් ලබා ගැනීමට සහ පසු විපරම් ප්‍රශ්න ඇසීමට මෙම ලේඛනය Chromium හි Gemini සමග බෙදා ගැනීමට සාරාංශ කිරීමේ බොත්තම ක්ලික් කරන්න</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium වෙතින් මෙවලම්<ph name="END_LINK" /> සමගින්, ඔබට සුරක්ෂිතව බ්‍රවුස් කර පාලනයේ සිටිය හැක</translation>
@@ -751,6 +753,7 @@ Chromium හට ඔබගේ සැකසුම් ප්‍රතිසාධ�
 <translation id="8907580949721785412">රහස්වචන පෙන්වීමට Chromium උත්සාහ කරයි. මීට ඉඩ දීමට ඔබේ Windows රහස්වචනය ටයිප් කරන්න.</translation>
 <translation id="8910309838319708610">සාර්ථකයි! සෙවීම් AI මාදිලිය සමඟ බ්‍රවුස් කරන විට ඔබට දැන් පහසුවෙන් ප්‍රශ්න ඇසිය හැක</translation>
 <translation id="8932992523185907506">Chromium තවදුරටත් ඔබේ පෙරනිමි බ්‍රව්සරය නොවේ. Chromium පෙරනිමි බ්‍රව්සරය බවට පත් කරන්න ද?</translation>
+<translation id="8940844567350264767">Chromium සමඟ ඕනෑම තැනක සිට Chromium හි හොඳම ආරක්ෂක විශේෂාංග ලබා ගන්න</translation>
 <translation id="8941642502866065432">Chromium යාවත්කාලීන කළ නොහැක</translation>
 <translation id="8944232836376404813">මෙම ක්‍රියාව මගින් පහත දේ සිදු කරනු ඇත:
           <ph name="LINE_BREAKS" />

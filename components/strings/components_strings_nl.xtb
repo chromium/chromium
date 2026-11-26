@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1131264053432022307">Afbeelding die je hebt gekopieerd</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: als je het volledige scherm wilt sluiten, sleep je vanaf de bovenkant en tik je op de terugknop</translation>
+<translation id="1132789342529761192">Uploaden niet aanbevolen</translation>
 <translation id="11370190534773372">Kaartgegevens ingevuld</translation>
 <translation id="1138458427267715730">Krijg meldingen als de prijs daalt op een site op internet</translation>
 <translation id="1142713751288681188">Type papier</translation>
@@ -603,6 +604,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2025891858974379949">Onveilige content</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Kaart niet beschikbaar</translation>
+<translation id="2028329426302356196">Downloaden niet aanbevolen</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controleer de proxy en firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Deze instantie van Chrome wordt uitgevoerd met handmatig ingestelde opdrachtregelflags. Opdrachtregelflags kunnen op elk moment worden gewijzigd en worden niet ondersteund.</translation>
 <translation id="2033900728810589426">De snelkoppeling kan niet gelijk zijn aan het zoekwoord van de standaard zoekprovider dat is gedefinieerd door <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1453,6 +1455,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3443504041532578451">Optische schijf (satijn)</translation>
 <translation id="3447661539832366887">De eigenaar van dit apparaat heeft de dinosaurusgame uitgezet.</translation>
 <translation id="3447884698081792621">Certificaat bekijken (uitgegeven door <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Afdrukken niet aanbevolen</translation>
 <translation id="3450323514459570273">Kan vragen om je MIDI-apparaten te bedienen en te herprogrammeren</translation>
 <translation id="3452404311384756672">Ophaalinterval:</translation>
 <translation id="345268527248907593">Deze site is niet bereikbaar</translation>
@@ -2910,6 +2913,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5851868085455377790">Uitgever</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopiëren niet aanbevolen</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5862579898803147654">Stapeleenheid 8</translation>
 <translation id="5863515189965725638">IBAN bewerken</translation>

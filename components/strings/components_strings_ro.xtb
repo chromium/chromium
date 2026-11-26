@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Memoria cache pentru politică este OK</translation>
 <translation id="1131264053432022307">Imaginea copiată de tine</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pentru a ieși din ecranul complet, trage din partea de sus și atinge butonul Înapoi</translation>
+<translation id="1132789342529761192">Nu se recomandă încărcarea</translation>
 <translation id="11370190534773372">Detaliile cardului au fost completate</translation>
 <translation id="1138458427267715730">Primește alerte când scade prețul pe orice site de pe web</translation>
 <translation id="1142713751288681188">Tip de hârtie</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">Conținut nesecurizat</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Cardul nu este disponibil</translation>
+<translation id="2028329426302356196">Nu se recomandă descărcarea</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />să verifici proxy-ul și firewallul;<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Această instanță de Chrome rulează cu funcții experimentale în linia de comandă setate manual. Reține că funcțiile experimentale în linia de comandă se pot modifica oricând și nu sunt acceptate.</translation>
 <translation id="2033900728810589426">Comanda rapidă nu poate fi identică cu cuvântul cheie prestabilit al furnizorului de căutare, definit de <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3443504041532578451">Disc optic (satin)</translation>
 <translation id="3447661539832366887">Proprietarul acestui dispozitiv a dezactivat jocul cu dinozaurul.</translation>
 <translation id="3447884698081792621">Afișează certificatul (emis de <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Nu se recomandă printarea</translation>
 <translation id="3450323514459570273">Poate solicita permisiunea de a controla și a reprograma dispozitivele MIDI</translation>
 <translation id="3452404311384756672">Interval de preluare:</translation>
 <translation id="345268527248907593">Acest site nu a putut fi accesat</translation>
@@ -2916,6 +2919,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5851548754964597211">Listă de file</translation>
 <translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Nu se recomandă copierea</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5862579898803147654">Receptorul de hârtie 8</translation>
 <translation id="5863515189965725638">Editează codul IBAN</translation>

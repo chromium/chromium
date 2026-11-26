@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
 <translation id="1131264053432022307">Скопійоване зображення</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, проведіть пальцем від верхнього краю екрана й натисніть кнопку "Назад"</translation>
+<translation id="1132789342529761192">Не рекомендується завантажувати на сервер</translation>
 <translation id="11370190534773372">Дані картки заповнено</translation>
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1142713751288681188">Тип паперу</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">Незахищений контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2027707238798802149">Картка недоступна</translation>
+<translation id="2028329426302356196">Не рекомендується завантажувати</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />перевірити проксі-сервер і брандмауер<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Цей екземпляр Chrome запущено з експериментальними параметрами командного рядка, налаштованими вручну. Зверніть увагу, що експериментальні параметри командного рядка можуть будь-коли змінитися й для них не надається підтримка.</translation>
 <translation id="2033900728810589426">Швидка команда не може збігатися з ключовим словом пошукової системи за умовчанням, визначеним правилом <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">Оптичний диск (сатиновий)</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Не рекомендується друкувати</translation>
 <translation id="3450323514459570273">Може просити дозвіл керувати пристроями MIDI й перепрограмовувати їх</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
 <translation id="345268527248907593">Немає зв’язку із сайтом</translation>
@@ -2916,6 +2919,7 @@
 <translation id="5851548754964597211">Список вкладок</translation>
 <translation id="5851868085455377790">Видавець</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Не рекомендується копіювати контент</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5862579898803147654">Накопичувач 8</translation>
 <translation id="5863515189965725638">Змінити номер IBAN</translation>

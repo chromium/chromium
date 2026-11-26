@@ -1312,6 +1312,7 @@
 <translation id="244071666433939959">অ্যাপ উইন্ডোতে খোলে</translation>
 <translation id="2442916515643169563">টেক্সট শ্যাডো</translation>
 <translation id="2443487764245141020">সাইটগুলির জন্য শনাক্তকারী ব্যবহার করে আপনার ডিভাইস শনাক্ত করার দরকারও হতে পারে।</translation>
+<translation id="2444282212665587861">আপডেট, আপডেটগুলি, আপগ্রেড, ভার্সন, বিল্ড, তথ্য, আপডেটের জন্য চেক করুন</translation>
 <translation id="244475495405467108">বাঁদিকের ট্যাব বন্ধ করুন</translation>
 <translation id="2444874983932528148">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকে সহজেই শুরু করুন</translation>
 <translation id="2445081178310039857">এক্সটেনশন রুট ডিরেক্টরি প্রয়োজন৷</translation>
@@ -2150,6 +2151,7 @@
 <translation id="3321512411079201586">&amp;আইসোলেটেড</translation>
 <translation id="3323288183237359315">Edge-এর জন্য ইনস্টল করুন</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{আপনার গোপনীয়তা সুরক্ষিত রাখতে, কোনও একটি সাইট থেকে অনুমতি সরানো হয়েছে}one{আপনার গোপনীয়তা সুরক্ষিত রাখতে, কয়েকটি সাইট থেকে অনুমতি সরানো হয়েছে}other{আপনার গোপনীয়তা সুরক্ষিত রাখতে, কয়েকটি সাইট থেকে অনুমতি সরানো হয়েছে}}</translation>
+<translation id="3325561120400598624">জেনারেটিভ AI মডেলকে ট্রেনিং দিতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। Gemini হল AI এবং এটি ভুল করতে পারে। কিছু কন্টেন্ট সকলের জন্য উপযুক্ত নাও হতে পারে। আপনি <ph name="BEGIN_LINK_MANAGE_HISTORY" />নিজের ইতিহাস ম্যানেজ করতে<ph name="END_LINK_MANAGE_HISTORY" /> পারবেন, এর মধ্যে <ph name="BEGIN_LINK_LOCATION_INFO" />আপনার লোকেশন সংক্রান্ত তথ্যও<ph name="END_LINK_LOCATION_INFO" /> রয়েছে। <ph name="BEGIN_LINK_LEARN_MORE" />আপনার পছন্দ সম্পর্কে আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">স্টাইল</translation>
 <translation id="3331974543021145906">অ্যাপ্লিকেশানের তথ্য</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ভিডিওটি ছবির-মধ্যে-ছবি মোডে চালানো হচ্ছে</translation>
@@ -2275,6 +2277,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য ১টি .pdf ফাইল আপলোড করুন}one{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি .pdf ফাইল আপলোড করুন}other{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি .pdf ফাইল আপলোড করুন}}</translation>
 <translation id="3456750372063895499">আইসোলেটেড উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="345693547134384690">&amp;ছবি নতুন ট্যাবে খুলুন</translation>
+<translation id="3456949031754827166">আবার সাজান</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{গ্রুপ রেখে দিন}one{গ্রুপ রেখে দিন}other{গ্রুপ রেখে দিন}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{#টি বুকমার্ক মোছা হয়েছে}other{#টি বুকমার্ক মোছা হয়েছে}}</translation>
 <translation id="3471687177769494956">নেভিগেশন শর্টকাট এডিট করুন</translation>
@@ -3331,6 +3334,7 @@
 <translation id="4602776638371779614">ব্লুটুথ ডিভাইসের জন্য এই ট্যাবটি সক্রিয়ভাবে স্ক্যান করছে</translation>
 <translation id="4605026046465576953">আপনার কাছে আইসোলেটেড ওয়েব অ্যাপ চালানোর অনুমতি না থাকার কারণে এই অ্যাপ খোলা যাবে না</translation>
 <translation id="4606551464649945562">কোনও সাইটকে আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে দেবেন না</translation>
+<translation id="4606965546067937011">স্পিড, RAM, ল্যাগ, ফ্রিজ, ক্র্যাশ, রিসোর্স, ব্যবহার, ব্যাটারি, অপ্টিমাইজার, স্লো, মেমরি, মেমরি সেভার</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ট্যাব গ্রুপ মুছবেন?}one{ট্যাব গ্রুপ মুছবেন?}other{ট্যাব গ্রুপ মুছবেন?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য ১টি ফাইল আপলোড করুন}one{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি ফাইল আপলোড করুন}other{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি ফাইল আপলোড করুন}}</translation>
 <translation id="4608500690299898628">&amp;সন্ধান করুন...</translation>
@@ -4165,6 +4169,7 @@
 <translation id="5535769176698670170">উপরের ভিউয়ের সাথে অদল বদল করুন</translation>
 <translation id="5536642445914063887">প্রোফাইল পাল্টান</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
+<translation id="553876896781261711">মুছুন, সরান, নিরাপত্তা, গোপনীয়তা, ক্লিন-আপ, স্টোরেজ, রিসেট করুন, ক্যাশে, কুকি, স্লো, স্পিড, ইতিহাস</translation>
 <translation id="5541091577812545428">পাসওয়ার্ড পরিবর্তন করা যায়নি</translation>
 <translation id="5542132724887566711">প্রোফাইল</translation>
 <translation id="5543983818738093899">স্থিতি চেক করা হচ্ছে...</translation>
@@ -4757,6 +4762,7 @@
 <translation id="6214157047210274853">Google Wallet-এ এডিট করুন</translation>
 <translation id="621470880408090483">সাইটগুলিকে ব্লুটুথ ডিভাইস কানেক্ট করতে দেয় না</translation>
 <translation id="6215039389782910006">{1,plural, =1{আপনার পাসওয়ার্ড নিরাপদ রাখার জন্য, ইনঅ্যাক্টিভ হওয়ার ১ মিনিট পরে <ph name="BRAND" /> লক হয়ে যায়}one{আপনার পাসওয়ার্ড নিরাপদ রাখার জন্য, ইনঅ্যাক্টিভ হওয়ার # মিনিট পরে <ph name="BRAND" /> লক হয়ে যায়}other{আপনার পাসওয়ার্ড নিরাপদ রাখার জন্য, ইনঅ্যাক্টিভ হওয়ার # মিনিট পরে <ph name="BRAND" /> লক হয়ে যায়}}</translation>
+<translation id="6215427500141060726">জেনারেটিভ AI মডেলকে ট্রেনিং দিতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। Gemini হল AI এবং এটি ভুল করতে পারে। আপনি <ph name="BEGIN_LINK_MANAGE_HISTORY" />নিজের ইতিহাস ম্যানেজ করতে<ph name="END_LINK_MANAGE_HISTORY" /> পারবেন, এর মধ্যে <ph name="BEGIN_LINK_LOCATION_INFO" />আপনার লোকেশন সংক্রান্ত তথ্যও<ph name="END_LINK_LOCATION_INFO" /> রয়েছে। <ph name="BEGIN_LINK_LEARN_MORE" />আপনার পছন্দ সম্পর্কে আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">সাইট এবং অ্যাপ বাতিল করা হয়েছে</translation>
 <translation id="6216696360484424239">অটোমেটিক সাইন-ইন হয়ে যাবে</translation>
 <translation id="6218961554829577610">ভয়েস পছন্দ হয়নি</translation>
@@ -4908,6 +4914,7 @@
 <translation id="639880411171387127">আপনার Google Lens-এর বেছে নেওয়া আইটেম। Google Lens-এর বেছে নেওয়া আইটেম মুছতে, Enter বা Backspace প্রেস করুন</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> সবসময় চালু রাখা</translation>
 <translation id="6400714103322134861">ট্যাব গ্রুপ আনফোকাস করুন</translation>
+<translation id="6401522392962817913">চালিয়ে যাওয়ার অর্থ হল, আপনি Google Payments-এর পরিষেবার শর্তাবলীতে সম্মতি দিচ্ছেন। আপনার ডেটা কীভাবে ম্যানেজ করা হয় তা গোপনীয়তা বিজ্ঞপ্তি থেকে জানতে পারবেন। আপনার কার্ড আপনার Google অ্যাকাউন্ট, <ph name="ACCOUNT" />-এ সেভ করা হয়েছে।</translation>
 <translation id="6402042774506839496">কেন তা জানতে, অ্যাপ ডেভেলপারের সাথে যোগাযোগ করুন</translation>
 <translation id="6402921224457714577">সাইট আপনার MIDI ডিভাইসকে নিয়ন্ত্রণ ও রিপ্রোগ্র্যাম করার জন্য অনুমতি চাইতে পারে</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
@@ -4997,6 +5004,7 @@
 <translation id="6499143127267478107">প্রক্সি স্ক্রিপ্টের মধ্যে হোস্ট পুনসমাধান করুন..</translation>
 <translation id="6503077044568424649">সর্বাধিক দেখা</translation>
 <translation id="6504601948739128893">আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয় না</translation>
+<translation id="6505525633061207363">ক্রেডেনশিয়াল, সাইন-ইন, পাসকী, লক, ভল্ট, কী, লগ-ইন, লগ ইন, সাইন ইন</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" এই ডিভাইসে নিম্নলিখিত অ্যাপ ইনস্টল করতে চায়:}one{"<ph name="APP_NAME" />" এই ডিভাইসে নিম্নলিখিত অ্যাপগুলি ইনস্টল করতে চায়:}other{"<ph name="APP_NAME" />" এই ডিভাইসে নিম্নলিখিত অ্যাপগুলি ইনস্টল করতে চায়:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> সম্পর্কিত</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>

@@ -103,6 +103,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1896602904211344018">Get the Chrome app</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1925069572871307609">To get future Google Chrome updates, you'll need Windows 10 version 1809 or later. This computer is using an older version of Windows 10.</translation>
+<translation id="1975069140856174874">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to get Google's best safety features.</translation>
 <translation id="1975400514743766362">Take the safety of Google on the go with the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS</translation>
 <translation id="2001586581944147178">Make it harder for people with access to your Internet traffic to see which sites you visit. Chrome uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
@@ -141,6 +142,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2295218613066132598">Show Chrome site shortcuts</translation>
 <translation id="2301513536169703857">To get your passwords, bookmarks and more on all your devices, sign in to Chrome</translation>
 <translation id="2307973900865360088">Keep in Dock</translation>
+<translation id="2308558013860776484">Share a screenshot of content outside of Chrome, like other apps or files</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
 <translation id="2358140144860869442">To get your reading list and more on all your devices, sign in to Chrome</translation>
@@ -250,6 +252,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3294686910656423119">Usage statistics and crash reports</translation>
 <translation id="3327226547491422998">Later, Chrome can ask if you want to use saved info to autofill forms for you</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Sites and Chrome can use AI that runs directly on your device for features like summaries, proofreading, captions and more. This is separate from Gemini in Chrome. <ph name="BEGIN_LINK" />Learn more about on-device AI<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Some Chrome features and extensions come with shortcuts. You can choose to turn them back on.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3380249972812870825">To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY" /></translation>
@@ -349,6 +352,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Share this document with Gemini in Chrome to get a quick overview and ask follow-up questions</translation>
+<translation id="4440999670272408191">You can remove them at any time. Chrome may automatically download them again when a site or a feature needs them.</translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
@@ -356,6 +360,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4501839397124711198">You can pin Google Search in side panel to ask questions as you browse</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4580939929828762295">Stay safe with Google Password Manager</translation>
+<translation id="4589544932092381064">Show search with Chrome in Windows taskbar and turn on keyboard shortcut</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4598116752460667024">Search for any process from the list.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
@@ -371,6 +376,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks</translation>
 <translation id="4768676935374695498">Search this video with Google Lens</translation>
+<translation id="4783580253728290203">When off, Chrome removes on-device AI models and won't download them again. Some sites and Chrome features might not work.</translation>
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4803313124144656665">Close Google Search in Chrome</translation>
@@ -454,8 +460,10 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="568656514202614970">Success! You can now easily ask questions as you browse with Google Search side panel</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Get Google’s best safety features on the go with Chrome</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
+<translation id="5715427327524421317">Chrome downloads and updates these AI models automatically</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Advanced Protection requires that you relaunch Chrome to apply an update. Your Isolated Window won't reopen.}other{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="5719246646468301581">Google Chrome and ChromeOS additional terms of service</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
@@ -547,6 +555,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6491330562720922580">QR code to download Chrome browser on mobile devices</translation>
 <translation id="6493527311031785448">Google Chrome is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome was automatically closed</translation>
+<translation id="650039555447046671">Chrome will remove AI models from this device. Some sites and Chrome features might not work.</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
@@ -585,6 +594,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6877155553248388166">bottom-right corner of search area: right <ph name="RIGHT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Open Search with Chrome</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
+<translation id="6881997500528805781">Uses device storage. Chrome removes unused AI models after 45 days or when storage is low</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
 <translation id="6893363893008038481">Remove account from Chrome</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -616,6 +626,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7099479769133613710">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7121179479711575744">Sign in to Chrome</translation>
+<translation id="7137056136322108339">Get Google’s best safety features on the go, with the Chrome app on your phone</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
 <translation id="7193885263065350793">Your organisation closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>

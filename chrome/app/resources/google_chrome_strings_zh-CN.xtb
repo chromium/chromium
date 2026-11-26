@@ -451,6 +451,7 @@
 <translation id="568656514202614970">大功告成！现在，您可以使用 Google 搜索侧边栏在浏览时轻松提问</translation>
 <translation id="5686916850681061684">自定义和控制 Google Chrome。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">通过 Chrome，随时随地享受 Google 的最佳安全功能</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
 <translation id="5715427327524421317">Chrome 会自动下载和更新这些 AI 模型</translation>
@@ -616,6 +617,7 @@
 <translation id="7099479769133613710">重新启动以更新 Chrome 操作系统(&amp;C)</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
 <translation id="7121179479711575744">登录 Chrome</translation>
+<translation id="7137056136322108339">通过手机上的 Chrome 应用，随时随地畅享 Google 的最佳安全功能</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>
 <translation id="7193885263065350793">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>

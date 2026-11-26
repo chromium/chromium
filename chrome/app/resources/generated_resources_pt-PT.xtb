@@ -2579,6 +2579,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3771721161825963003">Mostrar separadores na vertical</translation>
 <translation id="3771851622616482156">A sua sessão neste site será terminada, incluindo em separadores abertos</translation>
 <translation id="3772951945682043324">Nenhum separador fechado recentemente</translation>
+<translation id="3775389358290351377">Mudar de fornecedor (Tab)</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Web Store do Chrome.</translation>
@@ -3043,6 +3044,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="429530814437327574">Mostrar em pilha</translation>
 <translation id="4296632172536745000">A palavra-passe original para este site foi encontrada numa violação de dados pública. A <ph name="DATE" />, pediu ao <ph name="BRAND" /> para alterar automaticamente a sua palavra-passe.</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4298381759837744019">Pesquisar "<ph name="QUERY" />" nas definições</translation>
 <translation id="4298660926525614540">Nomes de dispositivos de armazenamento amovíveis</translation>
 <translation id="4299022904780065004">Nova janela de navegação anón&amp;ima</translation>
 <translation id="4301231341924904092">Alterar por mim</translation>
@@ -4278,6 +4280,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5689516760719285838">Localização</translation>
 <translation id="568984110402742489">Não é possível enviar feedback</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
+<translation id="5693100627879528952">Saiba mais sobre as definições do motor de pesquisa e da pesquisa no site</translation>
 <translation id="5693255400847650006">O microfone está a ser usado</translation>
 <translation id="5693806089748511108">As suas competências</translation>
 <translation id="5694689722959820210">Criar grupo de separadores</translation>

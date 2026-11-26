@@ -227,6 +227,7 @@
 <translation id="1621729191093924223">मायक्रोफोनची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="1622717322707146952">“Google Calendar मध्ये जोडा” किंवा “Apple Calendar मध्ये जोडा” निवडा.</translation>
 <translation id="1629162218487290695">हे तुम्हीच असल्याची पडताळणी करा…</translation>
+<translation id="1633084385573994059">ही साइट वापरू नका</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">नेव्हिगेशन वैशिष्ट्य वापरून टर्न बाय टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानी जाण्यासाठी दिशानिर्देश मिळवा</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
@@ -387,6 +388,7 @@
 <translation id="2102396546234652240">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2104436223719117661">ट्रेंडिंग शोध</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
+<translation id="2113761902638026426">Gemini ला <ph name="SITE_DOMAIN" /> वर जाऊ द्यायचे आहे का?</translation>
 <translation id="2117650889962717098">गुप्त मोडवर स्विच करून तुमचे ब्राउझिंग खाजगी ठेवा</translation>
 <translation id="2119636449201577317">यामध्ये उघडा…</translation>
 <translation id="2119962645034852864">तुमच्या खात्यासाठी काही सेवा उपलब्ध नाहीत</translation>
@@ -768,6 +770,7 @@
 <translation id="3350976670663926380">संपादने सेव्ह केली आहेत</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. हे खाते व्यवस्थापित केले जात आहे.</translation>
 <translation id="3365529507898144230">Photos मध्ये सेव्ह करा</translation>
+<translation id="3371168305258344914">Gemini अशा साइटवर कृती करणार आहे, ज्यावर तुमची संवेदनशील माहिती असू शकते</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
 <translation id="3377063233124932127">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी आता सर्वात वरती आहेत.</translation>
 <translation id="3378214228000661758">साठी पासकी तयार करा</translation>
@@ -1511,6 +1514,7 @@
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">तुमच्या Google खाते मध्ये पासवर्ड वापरण्यासाठी आणि ते सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="5684761169742812828">हा पासवर्ड इंटरनेटवरील डेटा भंगामध्ये उघड झाला होता. तुम्‍हाला आता ते बदलण्‍यासाठी वेळ नसल्यास, नंतर आठवण करून देण्‍यासाठी Google ही चेतावणी ठेवण्‍याची शिफारस करते.</translation>
+<translation id="5691020463738411542">सर्व डिव्हाइसवर सुरक्षित ब्राउझिंग प्राधान्ये सिंक करा</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> साठी Drive मध्ये सेव्ह केली आहे.</translation>
 <translation id="570209299585559496">तुम्ही सेटिंग्ज त्यानंतर आशय सेटिंग्जमध्ये डीफॉल्ट साइट दृश्य हे डेस्कटॉप मोडमध्ये बदलू शकता</translation>
 <translation id="5702108177581350218">तुम्ही तुमचे वापरकर्ता नाव आणि पासवर्डची प्रत शेअर करता, तेव्हा तुमचा कुटुंब सदस्य Google Password Manager वापरून ते भरू शकतो.</translation>
@@ -1589,6 +1593,7 @@
 <translation id="5948605885471592910">तुम्ही उघडलेल्या सर्व गोष्टी पहा आणि व्यवस्थापित करा</translation>
 <translation id="5952641243319721872">तुमची निवड तुम्हाला नक्की काढून टाकायची आहे का?</translation>
 <translation id="5956112131836209882">टॅब गटाचा टॅब. <ph name="NUMBER_OF_TABS_IN_GROUP" /> पैकी <ph name="TAB_INDEX_IN_GROUP" />.</translation>
+<translation id="595662449352471176">टास्क सुरू करा</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> वापरून शोधा</translation>
 <translation id="5963694076845073027">पुढील वेळी इथे लिंक उघडा</translation>
 <translation id="5963939892571022323">हायलाइट करण्यासाठीची लिंक तयार करू शकत नाही.</translation>
@@ -1810,6 +1815,7 @@
 <translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6565899972286925956">काहीही तयार करा</translation>
 <translation id="6571070086367343653">क्रेडिट कार्ड संपादित करा</translation>
+<translation id="6571502147204686607">असुरक्षित साइटपासून स्वतःचे संरक्षण करा</translation>
 <translation id="6574092468346088891">सुरक्षितता तपासणी साठी नोटिफिकेशन सुरू करा</translation>
 <translation id="6579867704846662339">तुम्ही गुप्त मोड मध्ये इतर ॲप्सवरून येणाऱ्या URLs उघडण्याचा पर्याय निवडू शकता.</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
@@ -2250,6 +2256,7 @@
 <translation id="7921559948846049514">तुमच्या बॅकग्राउंडसाठी थीम, रंग किंवा आणखी बरेच काही निवडा</translation>
 <translation id="792357691529995513">कोणत्याही समस्या आढळल्या नाहीत</translation>
 <translation id="7925108652071887026">स्वयं-भरण डेटा</translation>
+<translation id="7926290435065552539">तुमचे पासवर्ड सुरक्षित ठेवा</translation>
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>
 <translation id="792762900715361006">फोटो किंवा व्हिडिओ घ्या</translation>
 <translation id="7927711904086083099">न निवडलेले</translation>
@@ -2668,6 +2675,7 @@
 <translation id="9144230693397287797">तुम्ही सेट केलेली रिमाइंडर आणि इतर डिव्हाइसमधील टॅबकडून अपडेट मिळवा</translation>
 <translation id="914781932147356857">सर्वांवर खूण करा…</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
+<translation id="914964947703922647">टास्कचे पुनरावलोकन करा</translation>
 <translation id="9149866541089851383">संपादन...</translation>
 <translation id="9152637745605628097">थीम, रंग यांमधून निवडा किंवा इमेज अपलोड करा</translation>
 <translation id="9153159728062222866">कॉपी आणि पेस्ट करणे वगळा</translation>

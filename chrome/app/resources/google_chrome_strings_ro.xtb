@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Descarcă aplicația Chrome.</translation>
 <translation id="1919130412786645364">Permite conectarea la Chrome</translation>
 <translation id="1925069572871307609">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 versiunea 1809 sau o versiune ulterioară. Acest computer folosește o versiune mai veche de Windows 10.</translation>
+<translation id="1975069140856174874">Data viitoare când deschizi Chrome pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a beneficia de cele mai bune funcții de siguranță de la Google.</translation>
 <translation id="1975400514743766362">Profită de siguranța oferită de Google din mers, cu aplicația Chrome pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Protejează-te mai bine în mișcare cu Navigarea sigură îmbunătățită în Chrome pentru iOS</translation>
 <translation id="2001586581944147178">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chrome folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
@@ -451,6 +452,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="568656514202614970">Succes! Acum poți să pui cu ușurință întrebări în timp ce navighezi cu panoul lateral Căutare Google</translation>
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Beneficiază de cele mai bune funcții de siguranță de la Google din mers cu Chrome</translation>
 <translation id="569897634095159764">Nu se poate realiza conexiunea la internet. Pentru serverul proxy este necesară autentificarea.</translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
 <translation id="5715427327524421317">Chrome descarcă și actualizează automat aceste modele AI</translation>
@@ -616,6 +618,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7099479769133613710">Relansează pentru a actualiza sistemul de operare &amp;Chrome</translation>
 <translation id="7106741999175697885">Manager de activități - Google Chrome</translation>
 <translation id="7121179479711575744">Conectează-te la Chrome</translation>
+<translation id="7137056136322108339">Beneficiază de cele mai bune funcții de siguranță de la Google din mers, cu aplicația Chrome pe telefon</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Este disponibilă o nouă actualizare pentru Chrome, iar aceasta va fi aplicată după ce îl relansezi.}=1{Este disponibilă o nouă actualizare pentru Chrome, iar aceasta va fi aplicată după ce îl relansezi. Fereastra incognito nu se va mai deschide.}few{Este disponibilă o nouă actualizare pentru Chrome, iar aceasta va fi aplicată după ce îl relansezi. Cele # ferestre incognito nu se vor mai deschide.}other{Este disponibilă o nouă actualizare pentru Chrome, iar aceasta va fi aplicată după ce îl relansezi. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="7161904924553537242">Bun venit la Google Chrome</translation>
 <translation id="7193885263065350793">Organizația ta închide Chrome dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />.</translation>

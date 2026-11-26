@@ -77,6 +77,7 @@
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
 <translation id="1131264053432022307">మీరు కాపీ చేసిన చిత్రం</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అవ్వడానికి, పైనుండి లాగి, వెనుక బటన్‌ను తాకండి</translation>
+<translation id="1132789342529761192">అప్‌లోడ్ చేయవద్దని సూచిస్తున్నాము</translation>
 <translation id="11370190534773372">కార్డ్ వివరాలు ఫిల్ అయ్యాయి</translation>
 <translation id="1138458427267715730">వెబ్‌లోని ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందండి</translation>
 <translation id="1142713751288681188">పేపర్ టైప్</translation>
@@ -598,6 +599,7 @@
 <translation id="2025891858974379949">అసురక్షితమైన కంటెంట్</translation>
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
 <translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
+<translation id="2028329426302356196">డౌన్‌లోడ్ చేయవద్దని సూచిస్తున్నాము</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీని, ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chromeకు సంబంధించిన ఈ ఇన్‌స్టెన్స్, మాన్యువల్‌గా సెట్ చేసిన కమాండ్ లైన్ ఫ్లాగ్‌లతో రన్ అవుతోంది. కమాండ్ లైన్ ఫ్లాగ్‌లు ఎప్పుడైనా మారవచ్చని, వాటికి సపోర్ట్ లేదని గమనించండి.</translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
@@ -1451,6 +1453,7 @@
 <translation id="3443504041532578451">ఆప్టికల్ డిస్క్ (శాటిన్)</translation>
 <translation id="3447661539832366887">ఈ పరికర యజమాని డైనోసార్ గేమ్‌ను ఆఫ్ చేశారు.</translation>
 <translation id="3447884698081792621">సర్టిఫికేట్‌ను చూపు (<ph name="ISSUER" /> ద్వారా జారీ చేయబడింది)</translation>
+<translation id="3449239216441121005">ప్రింట్ చేయవద్దని సూచిస్తున్నాము</translation>
 <translation id="3450323514459570273">మీ MIDI పరికరాలను కంట్రోల్ చేయడానికి, రీప్రోగ్రామ్ చేయమని అడగవచ్చు</translation>
 <translation id="3452404311384756672">విరామాన్ని పొందండి:</translation>
 <translation id="345268527248907593">ఈ సైట్‌ను రీచ్ అవ్వడం సాధ్యం కాలేదు</translation>
@@ -2911,6 +2914,7 @@
 <translation id="5851548754964597211">ట్యాబ్ లిస్ట్‌</translation>
 <translation id="5851868085455377790">జారీ చేసినవారు</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">కాపీ చేయవద్దని సూచిస్తున్నాము</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5862579898803147654">స్టాకర్ 8</translation>
 <translation id="5863515189965725638">IBANను ఎడిట్ చేయండి</translation>

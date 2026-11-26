@@ -529,6 +529,7 @@
 <translation id="6600016381025017075">এই পৃষ্ঠাতে যেকোনও তথ্য খুঁজুন</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
 <translation id="6614182654067789793">{NUM_TABS,plural, =1{Search-এর সাথে ট্যাব শেয়ার করুন}one{Search-এর সাথে #টি ট্যাব শেয়ার করুন}other{Search-এর সাথে #টি ট্যাব শেয়ার করুন}}</translation>
+<translation id="6637855549677695722">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chromium খোলার সময়, Chromium-এর সেরা নিরাপত্তা ফিচার পাওয়ার জন্য আপনাকে একটি প্রম্পট দেখানো হবে।</translation>
 <translation id="6637908313088374648">Windows চালু হলেই এখন Chromium লঞ্চ হয়, যাতে আপনি ইনস্ট্যান্ট ব্রাউজ করা শুরু করতে পারেন। আপনি সেটিংস থেকে এটি বন্ধ করতে পারবেন।</translation>
 <translation id="6644846457769259194">আপনার ডিভাইস আপডেট করা হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chromium-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>

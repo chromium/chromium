@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Táto stránka bola zablokovaná prehliadačom Chromium</translation>
 <translation id="48558539577516920">Prehliadaču Chromium povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
 <translation id="4949828774841497663">Prejdite do sekcie Aplikácie &gt; Nastavenia systému &gt; Sieť, vyberte aktívnu sieť, kliknite na tlačidlo Podrobnosti… a zrušte výber všetkých vybraných proxy serverov.</translation>
+<translation id="5228339820845278804">Pripomenutie: najlepšie bezpečnostné funkcie prehliadača Chromium vo vrecku</translation>
 <translation id="6480456350195404966">Prejdite do
           ponuky prehliadača Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -35,6 +36,7 @@
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
 <translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Vďaka aplikácii Chromium budete mať bezpečnosť prehliadača Chromium so sebou aj na cestách</translation>
 <translation id="7681937895330411637">Prehliadač Chromium je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Prejdite do
         ponuky Chromium &gt;

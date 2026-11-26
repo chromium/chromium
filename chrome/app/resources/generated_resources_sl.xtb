@@ -1307,6 +1307,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="244071666433939959">Aplikacije se odprejo v oknu</translation>
 <translation id="2442916515643169563">Senčenje besedila</translation>
 <translation id="2443487764245141020">Spletna mesta bodo morda morala tudi prepoznati napravo z identifikatorjem.</translation>
+<translation id="2444282212665587861">posodobitev, posodobitve, nadgradnja, različica, gradnja, informacije, preveri, ali so na voljo posodobitve</translation>
 <translation id="244475495405467108">Zapri zavihke na levi</translation>
 <translation id="2444874983932528148">Preprosto nadaljujte, kjer ste končali.</translation>
 <translation id="2445081178310039857">Potreben je korenski imenik razširitve.</translation>
@@ -2144,6 +2145,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3321512411079201586">&amp;Izolirano</translation>
 <translation id="3323288183237359315">Namesti za Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Zaradi zaščite zasebnosti so bila za spletno mesto odstranjena dovoljenja}one{Zaradi zaščite zasebnosti so bila za nekatera spletna mesta odstranjena dovoljenja}two{Zaradi zaščite zasebnosti so bila za nekatera spletna mesta odstranjena dovoljenja}few{Zaradi zaščite zasebnosti so bila za nekatera spletna mesta odstranjena dovoljenja}other{Zaradi zaščite zasebnosti so bila za nekatera spletna mesta odstranjena dovoljenja}}</translation>
+<translation id="3325561120400598624">Klepeti se pregledujejo in uporabljajo za usposabljanje modelov generativne umetne inteligence. Gemini je umetna inteligenca in se lahko zmoti. Nekatera vsebina morda ni primerna za vse. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Upravljate lahko zgodovino<ph name="END_LINK_MANAGE_HISTORY" />, vključno s <ph name="BEGIN_LINK_LOCATION_INFO" />podatki o lokaciji<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Preberite več o možnostih, ki so vam na voljo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Slog</translation>
 <translation id="3331974543021145906">Podatki o aplikaciji</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videoposnetek se predvaja v načinu slike v sliki</translation>
@@ -2269,6 +2271,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Naložite 1 datoteko .pdf, ki jo želite uporabiti pri vprašanju}one{Naložite do # datoteko .pdf, ki jih želite uporabiti pri vprašanju}two{Naložite do # datoteki .pdf, ki jih želite uporabiti pri vprašanju}few{Naložite do # datoteke .pdf, ki jih želite uporabiti pri vprašanju}other{Naložite do # datotek .pdf, ki jih želite uporabiti pri vprašanju}}</translation>
 <translation id="3456750372063895499">Odpri povezavo v i&amp;zoliranem oknu</translation>
 <translation id="345693547134384690">Odpri &amp;sliko v novem zavihku</translation>
+<translation id="3456949031754827166">Prerazporedi</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Ohrani skupino}one{Ohrani skupine}two{Ohrani skupine}few{Ohrani skupine}other{Ohrani skupine}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 zaznamek je izbrisan}one{# zaznamek je izbrisan}two{# zaznamka sta izbrisana}few{# zaznamki so izbrisani}other{# zaznamkov je izbrisanih}}</translation>
 <translation id="3471687177769494956">Urejanje bližnjice za pomikanje</translation>
@@ -3322,6 +3325,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="4602776638371779614">Ta zavihek aktivno išče naprave Bluetooth</translation>
 <translation id="4605026046465576953">Te aplikacije ni mogoče odpreti, ker nimate dovoljenja za izvajanje izoliranih spletnih aplikacij</translation>
 <translation id="4606551464649945562">Spletnim mestom ne dovoli ustvarjanja 3D-zemljevida vaše okolice ali spremljanja položaja kamere</translation>
+<translation id="4606965546067937011">hitrost, RAM, zamik, zamrznitev, zrušitev, sredstvo, uporaba, baterija, optimizator, počasno, pomnilnik, varčevanje s pomnilnikom</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite izbrisati skupino zavihkov?}one{Želite izbrisati skupine zavihkov?}two{Želite izbrisati skupine zavihkov?}few{Želite izbrisati skupine zavihkov?}other{Želite izbrisati skupine zavihkov?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Naložite 1 datoteko, ki jo želite uporabiti pri vprašanju}one{Naložite do # datoteko, ki jih želite uporabiti pri vprašanju}two{Naložite do # datoteki, ki jih želite uporabiti pri vprašanju}few{Naložite do # datoteke, ki jih želite uporabiti pri vprašanju}other{Naložite do # datotek, ki jih želite uporabiti pri vprašanju}}</translation>
 <translation id="4608500690299898628">&amp;Iskanje ...</translation>
@@ -4154,6 +4158,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="5535769176698670170">Zamenjava s pogledom z vrha</translation>
 <translation id="5536642445914063887">Preklop profila</translation>
 <translation id="5537725057119320332">Predvajanje</translation>
+<translation id="553876896781261711">izbriši, odstrani, varnost, zasebnost, čiščenje, shranjevanje, ponastavitev, predpomnilnik, piškotki, počasno, hitrost, zgodovina</translation>
 <translation id="5541091577812545428">Geslo ni bilo spremenjeno</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Preverjanje stanja ...</translation>
@@ -4746,6 +4751,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6214157047210274853">Uredi v Google Denarnici</translation>
 <translation id="621470880408090483">Spletnim mestom ni dovoljeno povezovanje z napravami Bluetooth.</translation>
 <translation id="6215039389782910006">{1,plural, =1{Zaradi zagotavljanja varnosti gesel se <ph name="BRAND" /> zaklene po 1 minuti nedejavnosti.}one{Zaradi zagotavljanja varnosti gesel se <ph name="BRAND" /> zaklene po # minuti nedejavnosti.}two{Zaradi zagotavljanja varnosti gesel se <ph name="BRAND" /> zaklene po # minutah nedejavnosti.}few{Zaradi zagotavljanja varnosti gesel se <ph name="BRAND" /> zaklene po # minutah nedejavnosti.}other{Zaradi zagotavljanja varnosti gesel se <ph name="BRAND" /> zaklene po # minutah nedejavnosti.}}</translation>
+<translation id="6215427500141060726">Klepeti se pregledujejo in uporabljajo za usposabljanje modelov generativne umetne inteligence. Gemini je umetna inteligenca in se lahko zmoti. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Upravljate lahko zgodovino<ph name="END_LINK_MANAGE_HISTORY" />, vključno s <ph name="BEGIN_LINK_LOCATION_INFO" />podatki o lokaciji<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Preberite več o možnostih, ki so vam na voljo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Zavrnjena spletna mesta in aplikacije</translation>
 <translation id="6216696360484424239">Samodejna prijava</translation>
 <translation id="6218961554829577610">Glas mi ni bil všeč</translation>
@@ -4897,6 +4903,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="639880411171387127">Vaš izbor v Googlu Lens. Pritisnite tipko Enter ali vračalko, če želite izbrisati izbor v Googlu Lens</translation>
 <translation id="6400360390396538896">Vedno vklopljeno <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Premakni skupino zavihkov iz fokusa</translation>
+<translation id="6401522392962817913">Z nadaljevanjem potrjujete, da se strinjate s pogoji storitve za Google Payments. V obvestilu o zasebnosti je opisano, kako se obdelujejo vaši podatki. Kartica je shranjena v vašem računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Če želite izvedeti, zakaj, se obrnite na razvijalca aplikacije</translation>
 <translation id="6402921224457714577">Spletna mesta lahko zahtevajo upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="6404511346730675251">Uredi zaznamek</translation>
@@ -4985,6 +4992,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6499143127267478107">Razreševanje gostitelja v skriptu proxy ...</translation>
 <translation id="6503077044568424649">Najpogostejše</translation>
 <translation id="6504601948739128893">Ni dovoljena uporaba pisave, nameščene v napravi</translation>
+<translation id="6505525633061207363">poverilnice, prijava, ključ za dostop, zaklepanje, trezor, ključi, prijava, prijaviti se</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{»<ph name="APP_NAME" />« želi v napravo namestiti to aplikacijo:}one{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}two{»<ph name="APP_NAME" />« želi v napravo namestiti ti aplikaciji:}few{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}other{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}}</translation>
 <translation id="6508248480704296122">Sorodno z <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>

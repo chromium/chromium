@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Du kan til enhver tid fjerne dem. Chromium kan automatisk downloade dem igen, når et website eller en funktion har brug for dem.</translation>
 <translation id="1793486931176048546">Klik på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-notifikationen for at fastgøre Chromium til proceslinjen og få hurtig adgang.</translation>
 <translation id="1808667845054772817">Geninstaller Chromium</translation>
+<translation id="1814482312667514397">Få Chromiums bedste sikkerhedsfunktioner på farten med Chromium-appen på din telefon</translation>
 <translation id="1820835682567584003">Chromium forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine udvidelser og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Næste gang du åbner Chromium på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at bruge Google Adgangskodeadministrator.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="2403703063067034158">Opstartsfejl: En anden konfigurationsinstans kører i øjeblikket. Prøv igen senere.</translation>
+<translation id="241044568699443215">Tag Chromiums sikkerhedsfunktioner med på farten med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Åbn links i Chromium fra en hvilken som helst app, og sørg for, at browseren altid er tilgængelig på proceslinjen</translation>
 <translation id="2425157128016763890">Klik på knappen Opsummer for at dele dette dokument med Gemini i Chromium for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />værktøjer fra Chromium<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
@@ -517,6 +519,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6598877126913850652">Gå til indstillinger for Chromium-notifikationer</translation>
 <translation id="6600016381025017075">Søg efter hvad som helst på denne side</translation>
 <translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
+<translation id="6637855549677695722">Næste gang du åbner Chromium på din <ph name="DEVICE_TYPE" />, får du en meddelelse, hvor du kan aktivere Chromiums bedste sikkerhedsfunktioner.</translation>
 <translation id="6637908313088374648">Chromium åbnes nu, når Windows starter, så du kan begynde at browse med det samme. Du kan deaktivere dette i indstillingerne.</translation>
 <translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium skal have kameratilladelse for at oprette et 3D-kort over dine omgivelser</translation>
@@ -750,6 +753,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8910309838319708610">Sådan! Nu kan du nemt stille spørgsmål, mens du browser, med AI-tilstand i Søgning</translation>
 <translation id="8932992523185907506">Chromium er ikke længere din standardbrowser. Vil du gøre Chromium til din standardbrowser?</translation>
+<translation id="8940844567350264767">Få Chromiums bedste sikkerhedsfunktioner på farten med Chromium</translation>
 <translation id="8941642502866065432">Chromium kunne ikke opdateres</translation>
 <translation id="8944232836376404813">Denne handling gør følgende:
           <ph name="LINE_BREAKS" />

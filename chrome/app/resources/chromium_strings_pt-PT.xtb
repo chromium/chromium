@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Pode removê-los em qualquer altura. O Chromium pode voltar a transferi-los automaticamente quando um site ou uma funcionalidade precisar deles.</translation>
 <translation id="1793486931176048546">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
+<translation id="1814482312667514397">Usufrua das melhores funcionalidades de segurança do Chromium em qualquer lugar com a app Chromium no telemóvel</translation>
 <translation id="1820835682567584003">O Chromium está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas extensões e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para usar o Gestor de Palavras-passe da Google.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chromium estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chromium estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chromium estão a aceder a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">O Chromium necessita de autorizações da câmara e do microfone para este site</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
+<translation id="241044568699443215">Beneficie da segurança do Chromium em qualquer lugar com a app Chromium no <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Abra links no Chromium a partir de qualquer app e mantenha o navegador acessível na barra de tarefas</translation>
 <translation id="2425157128016763890">Clique no botão Resumir para partilhar este documento com o Gemini no Chromium, obter uma vista geral rápida e fazer perguntas de seguimento</translation>
 <translation id="2440750600860946460">Com as <ph name="BEGIN_LINK" />ferramentas do Chromium<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
@@ -751,6 +753,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8910309838319708610">Concluído com êxito! Agora, pode fazer perguntas facilmente enquanto navega com o Modo IA da Pesquisa</translation>
 <translation id="8932992523185907506">O Chromium já não é o seu navegador predefinido. Definir o Chromium como navegador predefinido?</translation>
+<translation id="8940844567350264767">Usufrua das melhores funcionalidades de segurança do Chromium em qualquer lugar com a app Chromium</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium.</translation>
 <translation id="8944232836376404813">Esta ação vai:
           <ph name="LINE_BREAKS" />

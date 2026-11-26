@@ -77,6 +77,7 @@
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1131264053432022307">আপনার কপি করা ছবি</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ফুল-স্ক্রিন থেকে বেরিয়ে আসতে উপর থেকে টেনে আনুন এবং ফিরে যাওয়ার বোতাম টাচ করুন</translation>
+<translation id="1132789342529761192">আপলোড না করার সাজেশন দেওয়া হচ্ছে</translation>
 <translation id="1136582904187541177"><ph name="ITEM_LABEL" />, টিকচিহ্ন দেওয়া, মেনু আইটেম। শেয়ারিং বন্ধ করতে বেছে নিন</translation>
 <translation id="11370190534773372">কার্ডের বিবরণ পূরণ করা হয়েছে</translation>
 <translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
@@ -605,6 +606,7 @@
 <translation id="2025891858974379949">নিরাপদ নয় এমন কন্টেন্ট</translation>
 <translation id="2027465737841872819">প্লাস্টিক</translation>
 <translation id="2027707238798802149">কার্ড উপলভ্য নয়</translation>
+<translation id="2028329426302356196">ডাউনলোড না করার সাজেশন দেওয়া হচ্ছে</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্রক্সি এবং ফায়ারওয়াল পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome-এর এই ইনস্ট্যান্সটি ম্যানুয়ালি সেট করা কমান্ড লাইন ফ্ল্যাগ-সহ রান করছে। মনে রাখবেন, কমান্ড লাইন ফ্ল্যাগ যেকোনও সময় পরিবর্তিত হতে পারে এবং এগুলির জন্য কোনও সহায়তা প্রদান করা হয় না।</translation>
 <translation id="2033900728810589426">শর্টকার্ট, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> দ্বারা সংজ্ঞায়িত সার্চ পরিষেবা প্রদানকারীর কীওয়ার্ডের মতো এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
@@ -1460,6 +1462,7 @@
 <translation id="3443504041532578451">অপটিকাল (স্যাটিন)</translation>
 <translation id="3447661539832366887">এই ডিভাইসের মালিক ডাইনোসর গেমটি বন্ধ করেছেন৷</translation>
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
+<translation id="3449239216441121005">প্রিন্ট না করার সাজেশন দেওয়া হচ্ছে</translation>
 <translation id="3450323514459570273">আপনার MIDI ডিভাইসকে নিয়ন্ত্রণ ও রিপ্রোগ্র্যাম করার জন্য অনুমতি চাইতে পারে</translation>
 <translation id="3452404311384756672">বিরামকাল প্রাপ্ত করুন:</translation>
 <translation id="345268527248907593">এই সাইট অ্যাক্সেস করা যায়নি</translation>
@@ -2922,6 +2925,7 @@
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5851868085455377790">ইস্যুকারী</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">কপি না করার সাজেশন দেওয়া হচ্ছে</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
 <translation id="5863515189965725638">IBAN এডিট করুন</translation>
