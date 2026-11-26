@@ -27,6 +27,7 @@ import {SearchboxSelectionMixin} from '//resources/cr_components/searchbox/searc
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -44,14 +45,6 @@ import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 // Generic search icon, used until the browser pushes the default search
 // engine's icon and when there is no default search engine.
 const LOUPE_ICON = '//resources/cr_components/searchbox/icons/search_cr23.svg';
-
-export function getSearchEngineIconPath(
-    info: SearchEngineInfo|null|undefined, isDarkMode: boolean): string {
-  if (!info) {
-    return LOUPE_ICON;
-  }
-  return isDarkMode ? info.darkModeIconPath : info.iconPath;
-}
 
 // Default hold and cross-fade durations for rotating placeholder hints,
 // matching `NTPComposeboxConfig_PlaceholderConfig` defaults (4000ms hold, 250ms
@@ -128,7 +121,7 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
       },
       searchEngineInfo: {type: Object},
-      isDarkMode: {type: Boolean},
+      isDarkMode_: {type: Boolean},
       searchboxVoiceSearchEnabled_: {
         type: Boolean,
         reflect: true,
@@ -222,7 +215,7 @@ export class OmniboxEverywhereOmniboxElement extends
   // (loupe, no placeholder) and voice search stays available. Null when there
   // is no default search engine (e.g. disabled by policy).
   accessor searchEngineInfo: SearchEngineInfo|null|undefined = undefined;
-  accessor isDarkMode: boolean = false;
+  private accessor isDarkMode_: boolean = false;
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
@@ -247,6 +240,9 @@ export class OmniboxEverywhereOmniboxElement extends
   private currentCyclerInputEl_: HTMLInputElement|HTMLTextAreaElement|null =
       null;
   private isPlaceholderCycling_: boolean = false;
+  private darkModeMediaQuery_: MediaQueryList =
+      window.matchMedia('(prefers-color-scheme: dark)');
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
@@ -282,6 +278,9 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateDarkMode_();
+    this.eventTracker_.add(
+        this.darkModeMediaQuery_, 'change', () => this.updateDarkMode_());
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged.bind(this));
@@ -307,6 +306,7 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.eventTracker_.removeAll();
     if (this.autocompleteResultChangedListenerId_ !== null) {
       this.callbackRouter_.removeListener(
           this.autocompleteResultChangedListenerId_);
@@ -562,7 +562,11 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   protected searchboxIcon_(): string {
-    return getSearchEngineIconPath(this.searchEngineInfo, this.isDarkMode);
+    if (!this.searchEngineInfo) {
+      return LOUPE_ICON;
+    }
+    return this.isDarkMode_ ? this.searchEngineInfo.darkModeIconPath :
+                              this.searchEngineInfo.iconPath;
   }
 
   protected showVoiceSearchButton_(): boolean {
@@ -571,6 +575,10 @@ export class OmniboxEverywhereOmniboxElement extends
 
   protected showLensSearchButton_(): boolean {
     return this.isFuseboxEnabled && this.searchboxLensSearchEnabled_;
+  }
+
+  private updateDarkMode_() {
+    this.isDarkMode_ = this.darkModeMediaQuery_.matches;
   }
 
   protected computePlaceholderText_(): string {
