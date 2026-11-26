@@ -473,6 +473,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "android-desktop-webui-downloads",
+    "owners": [ "bjfong@google.com", "clank-webui-team@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "android-desktop-webui-history",
     "owners": [ "wylieb@google.com", "clank-webui-team@google.com" ],
     "expiry_milestone": 165

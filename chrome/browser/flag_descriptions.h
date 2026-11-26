@@ -5470,6 +5470,11 @@ inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
     "Enables large display specific layout/renderer settings for "
     "Android large form factor devices";
 
+inline constexpr char kAndroidDesktopWebUiDownloadsName[] =
+    "Android Desktop WebUI Downloads";
+inline constexpr char kAndroidDesktopWebUiDownloadsDescription[] =
+    "Enables the WebUI Downloads page on Android Desktop.";
+
 inline constexpr char kAndroidDesktopWebUiHistoryName[] =
     "Android Desktop WebUI History";
 inline constexpr char kAndroidDesktopWebUiHistoryDescription[] =

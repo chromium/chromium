@@ -46,4 +46,25 @@ public class DownloadFeaturesUnitTest {
         DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
         assertFalse(DownloadFeatures.isDownloadToolbarButtonEnabled());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_DOWNLOADS)
+    public void testIsAndroidDesktopWebUiDownloadsEnabled_featureEnabled_desktop() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        assertTrue(DownloadFeatures.isAndroidDesktopWebUiDownloadsEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_DOWNLOADS)
+    public void testIsAndroidDesktopWebUiDownloadsEnabled_featureEnabled_notDesktop() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        assertFalse(DownloadFeatures.isAndroidDesktopWebUiDownloadsEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_DOWNLOADS)
+    public void testIsAndroidDesktopWebUiDownloadsEnabled_featureDisabled_desktop() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        assertFalse(DownloadFeatures.isAndroidDesktopWebUiDownloadsEnabled());
+    }
 }

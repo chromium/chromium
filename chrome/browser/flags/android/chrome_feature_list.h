@@ -54,6 +54,7 @@ BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkDialog);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkLayout);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkPopup);
 BASE_DECLARE_FEATURE(kAndroidDesktopHistoryLayout);
+BASE_DECLARE_FEATURE(kAndroidDesktopWebUiDownloads);
 BASE_DECLARE_FEATURE(kAndroidDesktopWebUiHistory);
 BASE_DECLARE_FEATURE(kAndroidDeviceSignalsDisclaimer);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);

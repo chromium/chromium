@@ -11556,6 +11556,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopHistoryLayoutDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopHistoryLayout)},
 
+    {"android-desktop-webui-downloads",
+     flag_descriptions::kAndroidDesktopWebUiDownloadsName,
+     flag_descriptions::kAndroidDesktopWebUiDownloadsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopWebUiDownloads)},
+
     {"android-desktop-webui-history",
      flag_descriptions::kAndroidDesktopWebUiHistoryName,
      flag_descriptions::kAndroidDesktopWebUiHistoryDescription, kOsAndroid,

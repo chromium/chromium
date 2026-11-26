@@ -325,6 +325,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_DESKTOP_BOOKMARK_LAYOUT = "AndroidDesktopBookmarkLayout";
     public static final String ANDROID_DESKTOP_BOOKMARK_POPUP = "AndroidDesktopBookmarkPopup";
     public static final String ANDROID_DESKTOP_HISTORY_LAYOUT = "AndroidDesktopHistoryLayout";
+    public static final String ANDROID_DESKTOP_WEB_UI_DOWNLOADS = "AndroidDesktopWebUiDownloads";
     public static final String ANDROID_DESKTOP_WEB_UI_HISTORY = "AndroidDesktopWebUiHistory";
     public static final String ANDROID_DEVICE_SIGNALS_DISCLAIMER = "AndroidDeviceSignalsDisclaimer";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
@@ -1035,6 +1036,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_AUTO_PROJECTED, false);
     public static final CachedFlag sAndroidBottomBar =
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidDesktopWebUiDownloads =
+            newCachedFlag(ANDROID_DESKTOP_WEB_UI_DOWNLOADS, /* defaultValue= */ false);
     public static final CachedFlag sAndroidDesktopWebUiHistory =
             newCachedFlag(
                     ANDROID_DESKTOP_WEB_UI_HISTORY,
@@ -1582,6 +1585,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAutoMintedTwa,
                     sAndroidAutoProjected,
                     sAndroidBottomBar,
+                    sAndroidDesktopWebUiDownloads,
                     sAndroidDesktopWebUiHistory,
                     sAndroidElegantTextHeight,
                     sAndroidKeyboardShortcutOpenFile,

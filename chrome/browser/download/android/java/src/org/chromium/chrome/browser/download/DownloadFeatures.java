@@ -23,4 +23,10 @@ public final class DownloadFeatures {
         return ChromeFeatureList.sDownloadToolbarButtonForDesktop.isEnabled()
                 && DeviceInfo.isDesktop();
     }
+
+    /** Returns whether the WebUI downloads surface is enabled on Android Desktop. */
+    public static boolean isAndroidDesktopWebUiDownloadsEnabled() {
+        return DeviceInfo.isDesktop()
+                && ChromeFeatureList.sAndroidDesktopWebUiDownloads.isEnabled();
+    }
 }
