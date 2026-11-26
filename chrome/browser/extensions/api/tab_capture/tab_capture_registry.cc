@@ -26,6 +26,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -403,23 +404,40 @@ bool TabCaptureRegistry::CanCaptureWebContents(
     return true;
   }
 
-  // Non-component extensions may only capture chrome:// URLs if they have been
-  // explicitly granted activeTab permission for the current page view (or are
-  // allowlisted via command line). ActiveTab grants on chrome:// pages are
-  // ephemeral and do not persist across navigations (see
-  // ActiveTabPermissionGranter::DidFinishNavigation); note that
-  // PrimaryPageChanged fires before DidFinishNavigation clears the previous
-  // page's grant, so `is_navigation` unconditionally disallows chrome:// URLs
-  // unless allowlisted.
-  if (origin_url.SchemeIs(content::kChromeUIScheme) &&
-      (is_navigation ||
-       !extension.permissions_data()->HasAPIPermissionForTab(
-           sessions::SessionTabHelper::IdForTab(&target_contents).id(),
-           mojom::APIPermissionID::kTabCaptureForTab)) &&
+  // Restricted URLs (see PermissionsData::IsRestrictedUrl()) are never covered
+  // by the host access that tabCapture implies. Similar to
+  // PermissionsData::CanCaptureVisiblePage(), non-component extensions that
+  // are not allowlisted via command line:
+  // - may capture chrome:// pages, other extensions' chrome-extension:// pages
+  //   and the Chrome Web Store only if they have been explicitly granted
+  //   activeTab for the current page view, and
+  // - may never capture other restricted URLs (such as chrome-untrusted://,
+  //   devtools:// or other non-web schemes).
+  // Opaque origins without a precursor (such as data: URLs) resolve to an
+  // empty `origin_url` and are not treated as restricted here.
+  //
+  // `is_navigation` disallows restricted URLs on any cross-document navigation,
+  // including same-origin navigations and reloads. This is intentionally
+  // stricter than ActiveTabPermissionGranter::DidFinishNavigation, which only
+  // clears grants on same-origin navigations for chrome:// pages, since
+  // PrimaryPageChanged does not expose whether the navigation was same-origin
+  // and fires before DidFinishNavigation clears the previous page's grant.
+  if (!origin_url.is_empty() &&
+      extension.permissions_data()->IsRestrictedUrl(origin_url,
+                                                    /*error=*/nullptr) &&
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAllowlistedExtensionID) != extension.id()) {
-    error = tab_capture_errors::kCannotCapturePage;
-    return false;
+    const bool can_be_granted_via_active_tab =
+        origin_url.SchemeIs(content::kChromeUIScheme) ||
+        origin_url.SchemeIs(kExtensionScheme) ||
+        extension_urls::IsWebstoreDomain(origin_url);
+    if (!can_be_granted_via_active_tab || is_navigation ||
+        !extension.permissions_data()->HasAPIPermissionForTab(
+            sessions::SessionTabHelper::IdForTab(&target_contents).id(),
+            mojom::APIPermissionID::kTabCaptureForTab)) {
+      error = tab_capture_errors::kCannotCapturePage;
+      return false;
+    }
   }
 
   if (extension.permissions_data()->IsPolicyBlockedHost(origin_url)) {

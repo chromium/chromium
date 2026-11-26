@@ -104,11 +104,13 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
 
   // Returns whether `extension` is permitted to capture `target_contents`.
   // Disallows capturing hosts blocked by enterprise policy, hosts restricted by
-  // the user, file URLs when file access is not enabled, and chrome:// URLs
-  // without an active tab grant for the current page view (or on navigation,
-  // since activeTab grants on chrome:// pages do not persist across
-  // navigations). Also resolves precursor origins for opaque URLs (such as
-  // about:blank). Populates `error` if not null and capture is disallowed.
+  // the user, file URLs when file access is not enabled, restricted URLs that
+  // cannot be granted via activeTab (such as chrome-untrusted:// or
+  // devtools://), and other restricted URLs (chrome://, other extensions'
+  // chrome-extension:// pages, or the Chrome Web Store) without an active tab
+  // grant for the current page view or on navigation (`is_navigation`). Also
+  // resolves precursor origins for opaque URLs (such as about:blank). Populates
+  // `error` if capture is disallowed.
   static bool CanCaptureWebContents(const Extension& extension,
                                     content::BrowserContext& browser_context,
                                     content::WebContents& target_contents,

@@ -35,6 +35,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
@@ -51,6 +52,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"  // nogncheck
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -69,6 +71,10 @@ namespace {
 
 constexpr char kExtensionId[] = "ddchlicdkolnonkihahngkmmmjnjlkkf";
 constexpr char kValidChromeURL[] = "chrome://version";
+constexpr char kUntrustedTestHost[] = "test";
+constexpr char kUntrustedTestURL[] = "chrome-untrusted://test/title1.html";
+constexpr char kDevToolsURL[] =
+    "devtools://devtools/bundled/devtools_compatibility.js";
 
 void SetUpTabCaptureCommandLine(base::CommandLine* command_line) {
   // Specify smallish window size to make testing of tab capture less CPU
@@ -586,9 +592,16 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
       let captureResult = 'none';
       let captureState = 'none';
       let captureStream = null;
+      let captureStoppedPromise = null;
+      let resolveStatusStopped = null;
 
       chrome.tabCapture.onStatusChanged.addListener((info) => {
         captureState = info.status;
+        if (info.status === 'stopped' && resolveStatusStopped) {
+          const resolve = resolveStatusStopped;
+          resolveStatusStopped = null;
+          resolve();
+        }
       });
 
       function captureTabAsync(options) {
@@ -656,10 +669,19 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
       async function startCapture() {
         captureState = 'none';
         try {
+          const statusStopped = new Promise((resolve) => {
+            resolveStatusStopped = resolve;
+          });
           captureStream = await captureTabAsync({audio: false, video: true});
-          captureStream.getVideoTracks()[0].onended = () => {
-            captureState = 'stopped';
-          };
+          const track = captureStream.getVideoTracks()[0];
+          const trackEnded = new Promise((resolve) => {
+            track.onended = () => {
+              captureState = 'stopped';
+              resolve();
+            };
+          });
+          captureStoppedPromise =
+              Promise.all([trackEnded, statusStopped]).then(() => 'stopped');
           captureState = 'active';
         } catch (e) {
           captureState = 'error: ' + e.message;
@@ -705,17 +727,40 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
   std::string GetCaptureState() {
     return content::EvalJs(extension_contents_, "captureState").ExtractString();
   }
+  std::string WaitForCaptureStopped() {
+    return content::EvalJs(extension_contents_, "captureStoppedPromise")
+        .ExtractString();
+  }
 
   // Opens a new tab at `host` and grants it active tab.
   content::WebContents* OpenNewTabAndGrantActiveTab(const std::string& host) {
-    content::RenderFrameHost* const main_frame = NavigateToURLInNewTab(
+    return OpenNewTabAtURLAndGrantActiveTab(
         embedded_test_server()->GetURL(host, "/simple.html"));
+  }
+
+  // Opens a new tab at `url` and grants it active tab.
+  content::WebContents* OpenNewTabAtURLAndGrantActiveTab(const GURL& url) {
+    content::RenderFrameHost* const main_frame = NavigateToURLInNewTab(url);
     EXPECT_TRUE(main_frame);
+    EXPECT_EQ(url, main_frame->GetLastCommittedURL());
     content::WebContents* const web_contents =
         content::WebContents::FromRenderFrameHost(main_frame);
     ActiveTabPermissionGranter::FromWebContents(web_contents)
         ->GrantIfRequested(extension(), base::DoNothing());
     return web_contents;
+  }
+
+  // Loads a second extension with a page at "other_page.html".
+  const Extension* LoadOtherExtension() {
+    other_extension_dir_.WriteManifest(R"({
+      "name": "Other Extension",
+      "version": "0.1",
+      "manifest_version": 3
+    })");
+    other_extension_dir_.WriteFile(
+        FILE_PATH_LITERAL("other_page.html"),
+        "<!doctype html><p>Other extension page</p>");
+    return LoadExtension(other_extension_dir_.UnpackedPath());
   }
 
   const Extension* extension() {
@@ -725,6 +770,7 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
 
  protected:
   TestExtensionDir test_dir_;
+  TestExtensionDir other_extension_dir_;
   ExtensionId extension_id_;
   raw_ptr<content::WebContents> extension_contents_ = nullptr;
 };
@@ -970,6 +1016,103 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::HistoryGoBack(web_contents4));
   RedeemLastMediaStreamId();
   EXPECT_EQ("AbortError", GetCaptureResult());
+}
+
+// Tests that navigating a captured tab to a restricted URL (another extension's
+// chrome-extension:// page, the Chrome Web Store, chrome-untrusted:// or
+// devtools://) aborts the active capture session, while navigating to the
+// capturing extension's own chrome-extension:// page maintains capture.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
+                       RestrictedUrlNavigationAbortsCapture) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  content::ScopedWebUIConfigRegistration untrusted_registration(
+      std::make_unique<ui::TestUntrustedWebUIConfig>(kUntrustedTestHost));
+
+  test_dir_.WriteFile(FILE_PATH_LITERAL("own_page.html"),
+                      "<!doctype html><p>Own extension page</p>");
+  const Extension* other_extension = LoadOtherExtension();
+  ASSERT_TRUE(other_extension);
+
+  // 1. Navigating a captured tab to the capturing extension's own
+  // chrome-extension:// page should maintain capture, while navigating to
+  // another extension's chrome-extension:// page should abort it.
+  content::WebContents* const web_contents1 =
+      OpenNewTabAndGrantActiveTab("b.test");
+
+  StartCapture();
+  EXPECT_EQ("active", GetCaptureState());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents1, extension()->GetResourceURL("own_page.html")));
+  EXPECT_EQ("active", GetCaptureState());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents1, other_extension->GetResourceURL("other_page.html")));
+  EXPECT_EQ("stopped", WaitForCaptureStopped());
+
+  // 2. Navigating a captured tab to the Chrome Web Store, chrome-untrusted://
+  // or devtools:// should abort capture.
+  for (const GURL& url : {embedded_test_server()->GetURL(
+                              "chromewebstore.google.com", "/simple.html"),
+                          GURL(kUntrustedTestURL), GURL(kDevToolsURL)}) {
+    SCOPED_TRACE(url);
+    content::WebContents* const web_contents =
+        OpenNewTabAndGrantActiveTab("b.test");
+
+    StartCapture();
+    EXPECT_EQ("active", GetCaptureState());
+
+    ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+    EXPECT_EQ("stopped", WaitForCaptureStopped());
+  }
+}
+
+// Tests that other extensions' pages and the Chrome Web Store can be captured
+// only if the extension has been invoked on that page view.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
+                       ActiveTabGrantableRestrictedUrlCapture) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* other_extension = LoadOtherExtension();
+  ASSERT_TRUE(other_extension);
+
+  for (const GURL& url : {other_extension->GetResourceURL("other_page.html"),
+                          embedded_test_server()->GetURL(
+                              "chromewebstore.google.com", "/simple.html")}) {
+    SCOPED_TRACE(url);
+
+    // Without activeTab, the page cannot be captured.
+    ASSERT_TRUE(NavigateToURLInNewTab(url));
+    CaptureTab();
+    EXPECT_EQ(tab_capture_errors::kGrantError, GetCaptureResult());
+
+    // With activeTab granted on this page view, the page can be captured.
+    content::WebContents* const web_contents =
+        OpenNewTabAtURLAndGrantActiveTab(url);
+    GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents));
+    EXPECT_EQ("success", GetCaptureResult());
+    CaptureTab();
+    EXPECT_EQ("success", GetCaptureResult());
+  }
+}
+
+// Tests that restricted URLs that cannot be granted via activeTab (such as
+// chrome-untrusted:// and devtools://) cannot be captured, even if the
+// extension has been invoked on that tab.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
+                       UntrustedAndDevToolsUrlsCannotBeCaptured) {
+  content::ScopedWebUIConfigRegistration untrusted_registration(
+      std::make_unique<ui::TestUntrustedWebUIConfig>(kUntrustedTestHost));
+
+  for (const GURL& url : {GURL(kUntrustedTestURL), GURL(kDevToolsURL)}) {
+    SCOPED_TRACE(url);
+    content::WebContents* const web_contents =
+        OpenNewTabAtURLAndGrantActiveTab(url);
+
+    GetMediaStreamIdForTab(ExtensionTabUtil::GetTabId(web_contents));
+    EXPECT_EQ(tab_capture_errors::kCannotCapturePage, GetCaptureResult());
+    CaptureTab();
+    EXPECT_EQ(tab_capture_errors::kCannotCapturePage, GetCaptureResult());
+  }
 }
 
 // Tests the interaction between tab capture and hosts on which the user has
