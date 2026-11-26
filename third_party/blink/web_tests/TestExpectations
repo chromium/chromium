@@ -8669,3 +8669,6 @@ crbug.com/526682330 external/wpt/digital-credentials/create.tentative.https.html
 
 # Gardener 2026-11-05
 crbug.com/566874115 [ Linux ] virtual/fedcm-delegation/external/wpt/fedcm/fedcm-delegation/evt-basic.https.html [ Failure Pass ]
+
+# Flaky on Mac-26 CI builders
+crbug.com/585965057 [ Mac ] http/tests/inspector-protocol/emulation/prerender-emulation-overrides-cleared.js [ Failure Pass ]
