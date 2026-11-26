@@ -2256,7 +2256,8 @@ TEST_F(GeminiContainerMediatorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
-       kGeminiLive, kGeminiLiveDormantReasons, kFullscreenRefactoring},
+       kGeminiLive, kEnableGeminiLiveInBottomSheet, kGeminiLiveDormantReasons,
+       kFullscreenRefactoring},
       {});
 
   AppendActiveWebState();
@@ -2309,7 +2310,8 @@ TEST_F(GeminiContainerMediatorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
-       kGeminiLive, kGeminiLiveDormantReasons, kFullscreenRefactoring},
+       kGeminiLive, kEnableGeminiLiveInBottomSheet, kGeminiLiveDormantReasons,
+       kFullscreenRefactoring},
       {});
 
   AppendActiveWebState();

@@ -189,6 +189,14 @@ bool IsGeminiEligibilityAblationEnabled();
 
 // Feature flag for Gemini Live.
 BASE_DECLARE_FEATURE(kGeminiLive);
+
+// Feature flag to allow Gemini Live when `kIOSGeminiBottomSheetMigration` is
+// enabled. This is useful for running Gemini Live experiments excluding
+// `kIOSGeminiBottomSheetMigration` users, or experiments that combine
+// `kIOSGeminiBottomSheetMigration` and Gemini Live.
+BASE_DECLARE_FEATURE(kEnableGeminiLiveInBottomSheet);
+
+// Returns true if Gemini Live is enabled.
 bool IsGeminiLiveEnabled();
 
 // Parameter to skip the Gemini Live FRE intro.

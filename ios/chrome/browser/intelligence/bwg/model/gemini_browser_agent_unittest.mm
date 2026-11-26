@@ -1228,7 +1228,7 @@ TEST_F(GeminiBrowserAgentTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration, kGeminiLive,
-       kGeminiLiveDormantReasons},
+       kEnableGeminiLiveInBottomSheet, kGeminiLiveDormantReasons},
       {});
   base::HistogramTester histogram_tester;
 

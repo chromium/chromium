@@ -368,6 +368,8 @@ bool IsGeminiEligibilityAblationEnabled() {
 
 BASE_FEATURE(kGeminiLive, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableGeminiLiveInBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(bool,
                    kGeminiLiveSkipIntro,
                    &kGeminiLive,
@@ -382,6 +384,12 @@ BASE_FEATURE_PARAM(bool,
 
 bool IsGeminiLiveEnabled() {
   if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  // Disable live for users with IOSGeminiBottomSheetMigration unless
+  // explicitly enabled.
+  if (IsIOSGeminiBottomSheetMigrationEnabled() &&
+      !base::FeatureList::IsEnabled(kEnableGeminiLiveInBottomSheet)) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiLive);

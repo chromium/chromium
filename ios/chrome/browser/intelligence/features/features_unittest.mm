@@ -9,6 +9,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -357,4 +358,63 @@ TEST_F(ActorFeaturesTest, IsPageStabilityEnabled_FeatureParamDisabled) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kActorTools, {{kActorToolsPageStabilityParam, "false"}});
   EXPECT_FALSE(IsPageStabilityEnabled());
+}
+
+// Tests that `IsGeminiLiveEnabled()` is false by default when bottom sheet
+// migration is enabled and `kEnableGeminiLiveInBottomSheet` is disabled.
+TEST_F(ActorFeaturesTest,
+       IsGeminiLiveEnabled_DisabledByDefaultInBottomSheetMigration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kGeminiLive, kAssistantContainer,
+       kIOSGeminiBottomSheetMigration},
+      {});
+  EXPECT_FALSE(IsGeminiLiveEnabled());
+}
+
+// Tests that `IsGeminiLiveEnabled()` relies on `kGeminiLive` when
+// `kIOSGeminiBottomSheetMigration` is disabled.
+TEST_F(ActorFeaturesTest,
+       IsGeminiLiveEnabled_EnabledWithoutBottomSheetMigration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kGeminiLive},
+      {kIOSGeminiBottomSheetMigration, kEnableGeminiLiveInBottomSheet});
+  EXPECT_TRUE(IsGeminiLiveEnabled());
+}
+
+// Tests that `IsGeminiLiveEnabled()` is false when
+// `kIOSGeminiBottomSheetMigration` and `kGeminiLive` are disabled, even when
+// `kEnableGeminiLiveInBottomSheet` is enabled.
+TEST_F(ActorFeaturesTest,
+       IsGeminiLiveEnabled_DisabledWithoutBottomSheetMigrationWhenLiveOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kEnableGeminiLiveInBottomSheet},
+      {kIOSGeminiBottomSheetMigration, kGeminiLive});
+  EXPECT_FALSE(IsGeminiLiveEnabled());
+}
+
+// Tests that `kEnableGeminiLiveInBottomSheet` allows Gemini Live when
+// `IsIOSGeminiBottomSheetMigrationEnabled()` and `kGeminiLive` are enabled.
+TEST_F(ActorFeaturesTest,
+       IsGeminiLiveEnabled_EnabledInBottomSheetWhenFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kGeminiLive, kAssistantContainer,
+       kIOSGeminiBottomSheetMigration, kEnableGeminiLiveInBottomSheet},
+      {});
+  EXPECT_TRUE(IsGeminiLiveEnabled());
+}
+
+// Tests that `kEnableGeminiLiveInBottomSheet` alone does not enable Gemini Live
+// in bottom sheet migration when `kGeminiLive` is disabled.
+TEST_F(ActorFeaturesTest,
+       IsGeminiLiveEnabled_DisabledInBottomSheetWhenGeminiLiveOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kEnableGeminiLiveInBottomSheet},
+      {kGeminiLive});
+  EXPECT_FALSE(IsGeminiLiveEnabled());
 }

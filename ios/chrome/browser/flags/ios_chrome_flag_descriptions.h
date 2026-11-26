@@ -831,6 +831,12 @@ inline constexpr char kEnableFuseboxKeyboardAccessoryName[] =
 inline constexpr char kEnableFuseboxKeyboardAccessoryDescription[] =
     "Enables parts or all of omnibox keyboard accessory.";
 
+inline constexpr char kEnableGeminiLiveInBottomSheetName[] =
+    "Enable Gemini Live in Bottom Sheet";
+inline constexpr char kEnableGeminiLiveInBottomSheetDescription[] =
+    "When enabled, allows Gemini Live when the iOS Gemini bottom sheet "
+    "migration is enabled.";
+
 inline constexpr char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 inline constexpr char kEnableLensInOmniboxCopiedImageDescription[] =

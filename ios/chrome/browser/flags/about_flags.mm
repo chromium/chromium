@@ -3137,6 +3137,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ephemeral-bottom-sheet", flag_descriptions::kEphemeralBottomSheetName,
      flag_descriptions::kEphemeralBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEphemeralBottomSheet)},
+    {"enable-gemini-live-in-bottom-sheet",
+     flag_descriptions::kEnableGeminiLiveInBottomSheetName,
+     flag_descriptions::kEnableGeminiLiveInBottomSheetDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableGeminiLiveInBottomSheet)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
