@@ -27,9 +27,6 @@ tast.ui.WebUIJSErrors.field_trial_on
 # b/394409115
 tast.network.AllowCACertificateManagement
 
-# b/408102591
-tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
-
 # b/409064294
 tast.apps.SystemWebAppsInstallGuest
 
