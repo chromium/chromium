@@ -291,7 +291,7 @@ vars = {
   'siso_version': 'git_revision:3025be9c477069426f08b8235e9545d5b20afd0f',
 
   # CPython 3 CIPD package version for Siso hermetic toolchain.
-  'cpython3_version': 'version:3@3.11.9.chromium.38',
+  'cpython3_version': 'version:3@3.11.9.chromium.39',
 
   # RBE project to download rewrapper config files for. Only needed if
   # different from the project used in 'rbe_instance'
