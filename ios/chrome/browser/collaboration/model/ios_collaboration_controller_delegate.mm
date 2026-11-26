@@ -543,6 +543,7 @@ void IOSCollaborationControllerDelegate::SetLeaveOrDeleteConfirmationCallback(
 void IOSCollaborationControllerDelegate::BrowserDestroyed(Browser* browser) {
   browser->RemoveObserver(this);
   browser_ = nullptr;
+  favicons_grid_configurator_.reset();
   if (exit_callback_) {
     std::move(exit_callback_).Run();
   }

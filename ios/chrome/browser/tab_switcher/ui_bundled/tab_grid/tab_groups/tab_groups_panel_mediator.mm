@@ -244,6 +244,7 @@ NSString* CreationText(base::Time creation_date) {
   _dataSharingService = nullptr;
   _versioningMessageController = nullptr;
   _regularWebStateList = nullptr;
+  _browserList = nullptr;
   _faviconsGridConfigurator = nullptr;
 }
 
