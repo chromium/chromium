@@ -37,14 +37,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
@@ -129,10 +128,10 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
-    // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testESBBottomSheetMainPageAccept() {
+        // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
+        // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
 
@@ -167,10 +166,10 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
-    // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testESBBottomSheetDetailPageAccept() throws IOException {
+        // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
+        // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
         List<Integer> detailPageStepsRes =
@@ -378,10 +377,10 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
-    // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testBottomOmniboxBottomSheetMainPageAccept() {
+        // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
+        // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.BOTTOM_OMNIBOX;
 
         // Check that clicking the settings button on the main page opens the bottom omnibox page.
@@ -418,10 +417,10 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
-    // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testBottomOmniboxBottomSheetDetailPageAccept() throws IOException {
+        // TODO(crbug.com/574047415): Remove once Public Transit can model Settings opening in a tab
+        // from a bottom sheet (the NTP's url bar and the sheet container stay displayed).
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.BOTTOM_OMNIBOX;
         List<Integer> detailPageStepsRes =
                 List.of(
