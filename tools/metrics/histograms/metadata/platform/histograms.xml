@@ -617,16 +617,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.DiskUsage.UsersOnDevice" units="units"
-    expires_after="M85">
-  <owner>achuith@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Number of user home dirs on device. Logged once a day, if disk usage is
-    high.
-  </summary>
-</histogram>
-
 <histogram name="Platform.DiskUsageChronos" units="KB"
     expires_after="2027-04-11">
   <owner>sarthakkukreti@google.com</owner>
@@ -2489,22 +2479,6 @@ chromium-metrics-reviews@google.com.
     attempts were required to complete migration. Recorded once after successful
     migration.
   </summary>
-</histogram>
-
-<histogram name="Platform.Ti50.ARVCount{CountType}" units="GSC resets"
-    expires_after="2025-07-06">
-  <owner>jettrink@google.com</owner>
-  <owner>cros-hwsec+uma@google.com</owner>
-  <summary>
-    The count of potential GSC resets for AP RO Verification due to system
-    event.
-  </summary>
-  <token key="CountType">
-    <variant name="Combined"/>
-    <variant name="ExternalWp"/>
-    <variant name="InternalWp"/>
-    <variant name="SettingsChange"/>
-  </token>
 </histogram>
 
 <histogram name="Platform.TPM.ApRoVerificationTime" units="ms"
