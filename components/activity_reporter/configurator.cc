@@ -255,6 +255,14 @@ ActivityReporterConfigurator::GetCrxCache() const {
   return base::MakeRefCounted<update_client::CrxCache>(std::nullopt);
 }
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+std::vector<std::string> ActivityReporterConfigurator::GetRequiredComponents()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return {};
+}
+#endif
+
 bool ActivityReporterConfigurator::IsConnectionMetered() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // activity_reporter won't apply updates, so it does not matter what this

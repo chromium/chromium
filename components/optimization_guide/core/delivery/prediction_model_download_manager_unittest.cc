@@ -22,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/pref_names.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_observer.h"
@@ -136,6 +137,10 @@ class PredictionModelDownloadManagerTest : public testing::Test {
 
   download::test::MockDownloadService* download_service() {
     return mock_download_service_.get();
+  }
+
+  TestingPrefServiceSimple* local_state_prefs() {
+    return local_state_prefs_.get();
   }
 
   base::FilePath models_dir() const { return temp_models_dir_.GetPath(); }
@@ -458,6 +463,10 @@ TEST_F(PredictionModelDownloadManagerTest, IsAvailableForDownloads) {
 
 TEST_F(PredictionModelDownloadManagerTest,
        ShouldFetchModelsRequiresGoogleChromeApiKey) {
+  // Enable component updates explicitly because Chrome for Testing disables
+  // them by default.
+  local_state_prefs()->SetBoolean(::prefs::kComponentUpdatesEnabled, true);
+
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
       kGoogleApiKeyConfigurationCheckOverrideSwitch);

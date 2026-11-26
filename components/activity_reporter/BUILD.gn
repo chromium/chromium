@@ -75,6 +75,7 @@ source_set("impl") {
     ":buildflags",
     "//base",
     "//base/version_info",
+    "//build:branding_buildflags",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/update_client",
