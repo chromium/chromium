@@ -49,7 +49,8 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [
-      "no-fallback"
+      "no-fallback",
+      "auto-restat-content"
     ],
     "output_local_strategy": "minimum",
     "profile_mode": "cloud",

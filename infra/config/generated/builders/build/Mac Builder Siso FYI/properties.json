@@ -88,7 +88,9 @@
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
-    "experiments": [],
+    "experiments": [
+      "auto-restat-content"
+    ],
     "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250

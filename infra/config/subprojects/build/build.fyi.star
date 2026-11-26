@@ -29,6 +29,8 @@ ci.defaults.set(
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
+    # TODO(575621006): Remove once auto-restat-content is enabled by default in Siso.
+    siso_experiments = ["auto-restat-content"],
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

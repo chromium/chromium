@@ -97,7 +97,11 @@ ci.defaults.set(
     resultdb_enable = False,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = [],
-    siso_experiments = ["no-fallback"],
+    siso_experiments = [
+        "no-fallback",
+        # TODO(575621006): Remove once auto-restat-content is enabled by default in Siso.
+        "auto-restat-content",
+    ],
 )
 
 consoles.console_view(
@@ -370,7 +374,8 @@ ci_build_perf_builder(
     ),
     siso_configs = ["builder"],
     # TODO(333491525): enable no-fallback once OOM fallback mitigated.
-    siso_experiments = [],
+    # TODO(575621006): Remove once auto-restat-content is enabled by default in Siso.
+    siso_experiments = ["auto-restat-content"],
     siso_limits = "fastlocal=0",
     # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
     siso_profile_mode = "cloud",
