@@ -28,22 +28,16 @@ source_set("test_support") {
     ":browser",
     ":device_parental_controls",
     "//base",
-    "//base/test:test_support",
-    "//components/content_settings/core/browser:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_search_api:test_support",
-    "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/common",
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
-    "//google_apis/common:test_support",
     "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
   if (is_android) {
     deps += [ "//components/supervised_user/core/browser/android" ]
@@ -86,7 +80,6 @@ static_library("fetcher") {
     "//components/supervised_user/core/common",
     "//google_apis",
     "//google_apis/common:request_util",
-    "//net/traffic_annotation",
     "//url",
   ]
 }
@@ -139,13 +132,11 @@ static_library("browser") {
   ]
 
   public_deps = [
-    "//components/autofill/core/common",
     "//components/history/core/common",
     "//components/keyed_service/core",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/safe_search_api",
-    "//components/safe_search_api:safe_search_client",
     "//components/supervised_user/core/browser/proto",
     "//extensions/buildflags",
     "//third_party/protobuf:protobuf_lite",
@@ -164,18 +155,16 @@ static_library("browser") {
     "//components/prefs",
     "//components/resources:components_resources",
     "//components/security_interstitials/core",
-    "//components/signin/internal/identity_manager",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//components/sync",
     "//components/url_matcher",
-    "//components/user_manager",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
-    "//services/network/public/mojom",
     "//ui/base",
     "//url",
   ]
@@ -194,9 +183,7 @@ static_library("device_parental_controls") {
     "device_parental_controls_noop_impl.cc",
     "device_parental_controls_noop_impl.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -268,4 +255,3 @@ source_set("unit_tests") {
     deps += [ "//components/supervised_user/core/browser/android" ]
   }
 }
-
