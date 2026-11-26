@@ -1410,6 +1410,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/share/android:long_screenshots_bitmap_generation_java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/paint_preview/common/mojom:mojom_java",

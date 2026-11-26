@@ -16,7 +16,7 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/LongScreenshotsTabServiceFactory_jni.h"
+#include "chrome/browser/share/android/jni_headers/LongScreenshotsTabServiceFactory_jni.h"
 
 namespace long_screenshots {
 

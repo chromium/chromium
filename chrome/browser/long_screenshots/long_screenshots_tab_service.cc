@@ -25,7 +25,7 @@
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/LongScreenshotsTabService_jni.h"
+#include "chrome/browser/share/android/jni_headers/LongScreenshotsTabService_jni.h"
 
 namespace long_screenshots {
 

@@ -1179,7 +1179,6 @@ if (is_android) {
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/EntryManagerTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositorTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsEntryTest.java",
-      "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceJUnitTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/ScreenshotBoundsManagerTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialogTest.java",
       "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotCoordinatorTest.java",
@@ -1212,6 +1211,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//base:flagged_apis_java",
+      "//chrome/browser/share/android:long_screenshots_bitmap_generation_java",
       "//chrome/browser/tab:junit",
       "//chrome/browser/ui/android/pdf:pdf_utils_java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",

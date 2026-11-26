@@ -27,9 +27,9 @@ source_set("long_screenshots") {
   ]
 
   deps = [
-    "//chrome/android:chrome_jni_headers",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles",
+    "//chrome/browser/share/android:jni_headers",
     "//components/google/core/common",
   ]
 }
