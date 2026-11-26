@@ -49,6 +49,9 @@ TranslateRealtimeUrlCheckMode(
 enterprise_management::ProfileSignalsReport::SafeBrowsingLevel
 TranslateSafeBrowsingLevel(safe_browsing::SafeBrowsingState level);
 
+enterprise_management::AppBoundEncryptionState TranslateAppBoundEncryptionState(
+    device_signals::AppBoundEncryptionState state);
+
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<enterprise_management::AntiVirusProduct> TranslateAvProduct(
     device_signals::AvProduct av_product);

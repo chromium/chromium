@@ -22,6 +22,18 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/enterprise/signals/app_bound_encryption_state_win.h"
+#include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/signals_features.h"
+#include "components/enterprise/browser/reporting/report_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace em = ::enterprise_management;
 
 namespace enterprise_reporting {
@@ -72,9 +84,32 @@ void BrowserReportGeneratorDesktop::GenerateBuildStateInfo(
   const auto* const build_state = g_browser_process->GetBuildState();
   if (build_state->update_type() != BuildState::UpdateType::kNone) {
     const auto& installed_version = build_state->installed_version();
-    if (installed_version)
+    if (installed_version) {
       report->set_installed_browser_version(installed_version->GetString());
+    }
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+void BrowserReportGeneratorDesktop::GenerateAppBoundEncryptionInfo(
+    std::unique_ptr<em::BrowserReport> report,
+    BrowserReportGenerator::ReportCallback callback) {
+  if (enterprise_signals::features::IsReportAppBoundEncryptionStateEnabled()) {
+    device_signals::GetAppBoundEncryptionState(
+        g_browser_process->os_crypt_async(), g_browser_process->local_state(),
+        base::BindOnce(
+            [](std::unique_ptr<em::BrowserReport> report,
+               BrowserReportGenerator::ReportCallback callback,
+               device_signals::AppBoundEncryptionState state) {
+              report->set_app_bound_encryption_state(
+                  TranslateAppBoundEncryptionState(state));
+              std::move(callback).Run(std::move(report));
+            },
+            std::move(report), std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(std::move(report));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace enterprise_reporting

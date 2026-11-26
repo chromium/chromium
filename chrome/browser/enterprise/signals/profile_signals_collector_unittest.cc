@@ -58,10 +58,14 @@ class ProfileSignalsCollectorUnitTest : public testing::Test {
  protected:
 #if BUILDFLAG(IS_WIN)
   explicit ProfileSignalsCollectorUnitTest(
-      bool enable_device_trust_signal = false) {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kDeviceTrustAppBoundEncryptionStateSignal,
-        enable_device_trust_signal);
+      bool enable_device_trust_signal = false,
+      bool enable_reporting_signal = false) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{enterprise_signals::features::
+              kDeviceTrustAppBoundEncryptionStateSignal,
+          enable_device_trust_signal},
+         {enterprise_signals::features::kReportAppBoundEncryptionState,
+          enable_reporting_signal}});
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -265,6 +269,52 @@ TEST_F(ProfileSignalsCollectorAppBoundEnabledTest,
 
   EXPECT_FALSE(done_future.IsReady());
   histogram_tester_.ExpectTotalCount(kCollectionSuccessHistogram, 0);
+}
+
+TEST_F(ProfileSignalsCollectorAppBoundDisabledTest,
+       AppBoundEncryptionState_SignalsReportDisabled) {
+  TestingBrowserProcess::GetGlobal()
+      ->set_additional_os_crypt_async_provider_for_test(
+          /*precedence=*/10u,
+          std::make_unique<test::FakeAppBoundKeyProvider>(
+              std::string(os_crypt_async::kAppBoundDataPrefix)));
+
+  SignalsAggregationResponse response = CollectSignals(Trigger::kSignalsReport);
+  ASSERT_TRUE(response.profile_signals_response.has_value());
+  EXPECT_FALSE(response.profile_signals_response->app_bound_encryption_state
+                   .has_value());
+}
+
+class ProfileSignalsCollectorAppBoundReportingEnabledTest
+    : public ProfileSignalsCollectorUnitTest {
+ protected:
+  ProfileSignalsCollectorAppBoundReportingEnabledTest()
+      : ProfileSignalsCollectorUnitTest(/*enable_device_trust_signal=*/false,
+                                        /*enable_reporting_signal=*/true) {}
+};
+
+TEST_F(ProfileSignalsCollectorAppBoundReportingEnabledTest,
+       AppBoundEncryptionState_SignalsReportEnabledIndependentlyOfDtc) {
+  TestingBrowserProcess::GetGlobal()
+      ->set_additional_os_crypt_async_provider_for_test(
+          /*precedence=*/10u,
+          std::make_unique<test::FakeAppBoundKeyProvider>(
+              std::string(os_crypt_async::kAppBoundDataPrefix)));
+
+  SignalsAggregationResponse report_response =
+      CollectSignals(Trigger::kSignalsReport);
+  ASSERT_TRUE(report_response.profile_signals_response.has_value());
+  EXPECT_EQ(
+      report_response.profile_signals_response->app_bound_encryption_state,
+      AppBoundEncryptionState::kEnabled);
+
+  for (Trigger trigger : {Trigger::kUnspecified, Trigger::kBrowserNavigation}) {
+    SCOPED_TRACE(static_cast<int>(trigger));
+    SignalsAggregationResponse other_response = CollectSignals(trigger);
+    ASSERT_TRUE(other_response.profile_signals_response.has_value());
+    EXPECT_FALSE(other_response.profile_signals_response
+                     ->app_bound_encryption_state.has_value());
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

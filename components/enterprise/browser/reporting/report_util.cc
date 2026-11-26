@@ -13,8 +13,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
 
 namespace {
@@ -139,6 +141,24 @@ em::ProfileSignalsReport::SafeBrowsingLevel TranslateSafeBrowsingLevel(
       return em::ProfileSignalsReport::STANDARD_PROTECTION;
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       return em::ProfileSignalsReport::ENHANCED_PROTECTION;
+  }
+}
+
+em::AppBoundEncryptionState TranslateAppBoundEncryptionState(
+    device_signals::AppBoundEncryptionState state) {
+  switch (state) {
+    case device_signals::AppBoundEncryptionState::kUnspecified:
+      return em::APP_BOUND_ENCRYPTION_STATE_UNSPECIFIED;
+    case device_signals::AppBoundEncryptionState::kEnabled:
+      return em::APP_BOUND_ENCRYPTION_STATE_ENABLED;
+    case device_signals::AppBoundEncryptionState::kDisabledByPolicy:
+      return em::APP_BOUND_ENCRYPTION_STATE_DISABLED_BY_POLICY;
+    case device_signals::AppBoundEncryptionState::kUnsupportedRoamingProfile:
+      return em::APP_BOUND_ENCRYPTION_STATE_UNSUPPORTED_ROAMING_PROFILE;
+    case device_signals::AppBoundEncryptionState::kUnsupportedInstallOrPath:
+      return em::APP_BOUND_ENCRYPTION_STATE_UNSUPPORTED_INSTALL_OR_PATH;
+    case device_signals::AppBoundEncryptionState::kServiceFailure:
+      return em::APP_BOUND_ENCRYPTION_STATE_SERVICE_FAILURE;
   }
 }
 
@@ -280,6 +300,12 @@ bool PopulateSecuritySignalsDict(
             profile_signals_report.safe_browsing_protection_level()));
     signals_dict.Set("site_isolation_enabled",
                      profile_signals_report.site_isolation_enabled());
+    if (profile_signals_report.has_app_bound_encryption_state()) {
+      signals_dict.Set(
+          "app_bound_encryption_state",
+          static_cast<int>(
+              profile_signals_report.app_bound_encryption_state()));
+    }
 
     // Providers section
     signals_dict.Set("file_downloaded_providers",

@@ -5,21 +5,20 @@
 #include "components/enterprise/browser/reporting/fake_browser_report_generator_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/channel.h"
-
-namespace enterprise_management {
-class ChromeUserProfileInfo;
-class BrowserReport;
-}  // namespace enterprise_management
 
 namespace policy {
 class PolicyConversionsClient;
@@ -72,8 +71,11 @@ FakeProfileReportGeneratorDelegate::GetCloudPolicyManager(
 }
 
 FakeBrowserReportGeneratorDelegate::FakeBrowserReportGeneratorDelegate(
-    std::string_view executable_path)
-    : executable_path_(executable_path) {}
+    std::string_view executable_path,
+    std::optional<enterprise_management::AppBoundEncryptionState>
+        app_bound_encryption_state)
+    : executable_path_(executable_path),
+      app_bound_encryption_state_(app_bound_encryption_state) {}
 
 FakeBrowserReportGeneratorDelegate::~FakeBrowserReportGeneratorDelegate() =
     default;
@@ -100,6 +102,16 @@ void FakeBrowserReportGeneratorDelegate::GenerateBuildStateInfo(
   return;
 }
 
+void FakeBrowserReportGeneratorDelegate::GenerateAppBoundEncryptionInfo(
+    std::unique_ptr<enterprise_management::BrowserReport> report,
+    BrowserReportGenerator::ReportCallback callback) {
+  if (app_bound_encryption_state_.has_value()) {
+    report->set_app_bound_encryption_state(*app_bound_encryption_state_);
+  }
+  BrowserReportGenerator::Delegate::GenerateAppBoundEncryptionInfo(
+      std::move(report), std::move(callback));
+}
+
 FakeReportingDelegateFactory::FakeReportingDelegateFactory(
     std::string_view executable_path)
     : executable_path_(executable_path), profile_init_result_(true) {}
@@ -109,7 +121,7 @@ FakeReportingDelegateFactory::~FakeReportingDelegateFactory() = default;
 std::unique_ptr<BrowserReportGenerator::Delegate>
 FakeReportingDelegateFactory::GetBrowserReportGeneratorDelegate() const {
   return std::make_unique<test::FakeBrowserReportGeneratorDelegate>(
-      executable_path_);
+      executable_path_, app_bound_encryption_state_);
 }
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
@@ -141,6 +153,11 @@ FakeReportingDelegateFactory::GetRealTimeReportControllerDelegate() const {
 
 void FakeReportingDelegateFactory::SetProfileInitResult(bool result) {
   profile_init_result_ = result;
+}
+
+void FakeReportingDelegateFactory::SetAppBoundEncryptionState(
+    std::optional<enterprise_management::AppBoundEncryptionState> state) {
+  app_bound_encryption_state_ = state;
 }
 
 }  // namespace enterprise_reporting::test

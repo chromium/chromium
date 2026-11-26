@@ -4,10 +4,13 @@
 
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -17,6 +20,12 @@
 namespace em = ::enterprise_management;
 
 namespace enterprise_reporting {
+
+void BrowserReportGenerator::Delegate::GenerateAppBoundEncryptionInfo(
+    std::unique_ptr<em::BrowserReport> report,
+    ReportCallback callback) {
+  std::move(callback).Run(std::move(report));
+}
 
 BrowserReportGenerator::BrowserReportGenerator(
     ReportingDelegateFactory* delegate_factory)
@@ -32,7 +41,9 @@ void BrowserReportGenerator::Generate(ReportType report_type,
   if (report_type != ReportType::kProfileReport) {
     GenerateProfileInfo(report.get());
   }
-  std::move(callback).Run(std::move(report));
+
+  delegate_->GenerateAppBoundEncryptionInfo(std::move(report),
+                                            std::move(callback));
 }
 
 void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {

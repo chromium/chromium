@@ -31,6 +31,9 @@ BASE_FEATURE(kContentBindingVersioningEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
+// Enables the reporting of the App-Bound Encryption state on Windows.
+BASE_FEATURE(kReportAppBoundEncryptionState, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables including the App-Bound Encryption state in Device Trust signals on
 // Windows.
 BASE_FEATURE(kDeviceTrustAppBoundEncryptionStateSignal,
@@ -68,6 +71,10 @@ bool IsContentBindingVersioningEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
+bool IsReportAppBoundEncryptionStateEnabled() {
+  return base::FeatureList::IsEnabled(kReportAppBoundEncryptionState);
+}
+
 bool IsDeviceTrustAppBoundEncryptionStateSignalEnabled() {
   return base::FeatureList::IsEnabled(
       kDeviceTrustAppBoundEncryptionStateSignal);

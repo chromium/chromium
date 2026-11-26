@@ -81,6 +81,13 @@ source_set("unit_tests") {
       "//components/webui/flags",
     ]
   }
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/enterprise/signals:test_support",
+      "//components/device_signals/core/common:features",
+    ]
+  }
 }
 
 if (!is_android) {

@@ -48,6 +48,12 @@ class BrowserReportGenerator {
     virtual bool IsExtendedStableChannel() = 0;
     virtual void GenerateBuildStateInfo(
         enterprise_management::BrowserReport* report) = 0;
+    // Asynchronously populates `app_bound_encryption_state` on `report` if
+    // supported on the current platform, then passes `report` to `callback`.
+    // Implementations must always run `callback`.
+    virtual void GenerateAppBoundEncryptionInfo(
+        std::unique_ptr<enterprise_management::BrowserReport> report,
+        ReportCallback callback);
   };
 
   explicit BrowserReportGenerator(ReportingDelegateFactory* delegate_factory);
@@ -58,7 +64,7 @@ class BrowserReportGenerator {
   // Generates a BrowserReport with the following fields:
   // - browser_version, channel, executable_path
   // - user profiles: id, name, is_detail_available (always be false).
-  // - plugins: name, version, filename, description.
+  // - app_bound_encryption_state (on Windows).
   void Generate(ReportType report_type, ReportCallback callback);
 
   // Generates user profiles info in the given report instance.

@@ -186,6 +186,36 @@ TEST(ReportUtilTest,
   EXPECT_EQ(json_string, expected_json);
 }
 
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithAppBoundEncryptionState) {
+  em::ChromeProfileReportRequest request;
+  auto* browser_report = request.mutable_browser_report();
+  auto* profile_info = browser_report->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report()
+      ->set_app_bound_encryption_state(em::APP_BOUND_ENCRYPTION_STATE_ENABLED);
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(dict->FindInt("app_bound_encryption_state"),
+            static_cast<int>(em::APP_BOUND_ENCRYPTION_STATE_ENABLED));
+}
+
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithoutAppBoundEncryptionState) {
+  em::ChromeProfileReportRequest request;
+  auto* browser_report = request.mutable_browser_report();
+  auto* profile_info = browser_report->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_FALSE(dict->contains("app_bound_encryption_state"));
+}
+
 #if BUILDFLAG(IS_IOS)
 TEST(ReportUtilTest, GetSecuritySignalsInReportWithVendorId) {
   em::ChromeProfileReportRequest request;

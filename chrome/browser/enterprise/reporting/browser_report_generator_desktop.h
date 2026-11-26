@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_DESKTOP_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_DESKTOP_H_
 
+#include "build/build_config.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/version_info/channel.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <memory>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_management {
 class BrowserReport;
@@ -32,6 +37,11 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
   // Adds the auto-updated version to the given report instance.
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
+#if BUILDFLAG(IS_WIN)
+  void GenerateAppBoundEncryptionInfo(
+      std::unique_ptr<enterprise_management::BrowserReport> report,
+      BrowserReportGenerator::ReportCallback callback) override;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace enterprise_reporting

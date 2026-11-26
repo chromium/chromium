@@ -4,8 +4,11 @@
 
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 
+#include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/fake_browser_report_generator_delegate.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
@@ -146,6 +150,10 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
   profile_signals.realtime_url_check_mode = enterprise_connectors::
       EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED;
   profile_signals.is_isolated_mode = is_isolated_mode;
+#if BUILDFLAG(IS_WIN)
+  profile_signals.app_bound_encryption_state =
+      device_signals::AppBoundEncryptionState::kEnabled;
+#endif  // BUILDFLAG(IS_WIN)
 
   response.profile_signals_response = profile_signals;
 
@@ -419,6 +427,13 @@ class ChromeProfileRequestGeneratorTest
         EXPECT_EQ(profile_signals_report.is_isolated_mode(),
                   expect_isolated_mode);
       }
+      EXPECT_FALSE(browser_report.has_app_bound_encryption_state());
+      EXPECT_EQ(profile_signals_report.has_app_bound_encryption_state(),
+                static_cast<bool>(BUILDFLAG(IS_WIN)));
+#if BUILDFLAG(IS_WIN)
+      EXPECT_EQ(profile_signals_report.app_bound_encryption_state(),
+                em::APP_BOUND_ENCRYPTION_STATE_ENABLED);
+#endif  // BUILDFLAG(IS_WIN)
 
       if (expect_cert_signals) {
         EXPECT_EQ(1, chrome_user_profile_info.certificates_size());
@@ -430,6 +445,73 @@ class ChromeProfileRequestGeneratorTest
         EXPECT_EQ(0, chrome_user_profile_info.certificates_size());
         EXPECT_FALSE(chrome_user_profile_info.certificates_were_truncated());
       }
+    }
+  }
+
+  void ExpectSignalsCollectionWithAppBoundState(
+      std::optional<device_signals::AppBoundEncryptionState> state) {
+    EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
+        .WillOnce(
+            [state](const device_signals::SignalsAggregationRequest& request,
+                    base::OnceCallback<void(
+                        device_signals::SignalsAggregationResponse)> callback) {
+              device_signals::SignalsAggregationResponse response =
+                  CreateFilledResponse();
+              response.profile_signals_response->app_bound_encryption_state =
+                  state;
+              std::move(callback).Run(std::move(response));
+            });
+  }
+
+  em::BrowserReport GenerateProfileBrowserReport(
+      ChromeProfileRequestGenerator& generator,
+      SecuritySignalsMode signals_mode) {
+    base::test::TestFuture<
+        base::expected<ReportRequestQueue, ReportGenerationError>>
+        test_future;
+    generator.Generate(
+        ReportGenerationConfig(ReportTrigger::kTriggerNone,
+                               ReportType::kProfileReport, signals_mode,
+                               /*use_cookies=*/false),
+        test_future.GetCallback());
+
+    const auto& requests = test_future.Get();
+    EXPECT_TRUE(requests.has_value());
+    if (!requests.has_value() || requests->size() != 1u) {
+      ADD_FAILURE() << "Expected exactly one profile report request.";
+      return {};
+    }
+    return requests->front()->GetChromeProfileReportRequest().browser_report();
+  }
+
+  em::BrowserReport GenerateProfileBrowserReport(
+      SecuritySignalsMode signals_mode) {
+    return GenerateProfileBrowserReport(generator_, signals_mode);
+  }
+
+  void VerifyReportedAppBoundState(
+      const em::BrowserReport& browser_report,
+      std::optional<em::AppBoundEncryptionState> expected_browser_state,
+      std::optional<em::AppBoundEncryptionState>
+          expected_profile_signals_state) {
+    ASSERT_EQ(1, browser_report.chrome_user_profile_infos_size());
+    const em::ProfileSignalsReport& profile_signals_report =
+        browser_report.chrome_user_profile_infos(0).profile_signals_report();
+
+    if (expected_browser_state.has_value()) {
+      EXPECT_TRUE(browser_report.has_app_bound_encryption_state());
+      EXPECT_EQ(browser_report.app_bound_encryption_state(),
+                *expected_browser_state);
+    } else {
+      EXPECT_FALSE(browser_report.has_app_bound_encryption_state());
+    }
+
+    if (expected_profile_signals_state.has_value()) {
+      EXPECT_TRUE(profile_signals_report.has_app_bound_encryption_state());
+      EXPECT_EQ(profile_signals_report.app_bound_encryption_state(),
+                *expected_profile_signals_state);
+    } else {
+      EXPECT_FALSE(profile_signals_report.has_app_bound_encryption_state());
     }
   }
 
@@ -731,6 +813,62 @@ TEST_P(ChromeProfileRequestGeneratorTest, AbortsWhenProfileReportIsEmpty) {
   const auto& result = test_future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ReportGenerationError::kProfileEmptyReport);
+}
+
+TEST_P(ChromeProfileRequestGeneratorTest, AppBoundEncryptionStates) {
+  struct TestCase {
+    std::optional<device_signals::AppBoundEncryptionState> input_state;
+    std::optional<em::AppBoundEncryptionState> expected_proto_state;
+  };
+  static constexpr TestCase kTestCases[] = {
+      {std::nullopt, std::nullopt},
+      {device_signals::AppBoundEncryptionState::kUnspecified,
+       em::APP_BOUND_ENCRYPTION_STATE_UNSPECIFIED},
+      {device_signals::AppBoundEncryptionState::kEnabled,
+       em::APP_BOUND_ENCRYPTION_STATE_ENABLED},
+      {device_signals::AppBoundEncryptionState::kDisabledByPolicy,
+       em::APP_BOUND_ENCRYPTION_STATE_DISABLED_BY_POLICY},
+      {device_signals::AppBoundEncryptionState::kUnsupportedRoamingProfile,
+       em::APP_BOUND_ENCRYPTION_STATE_UNSUPPORTED_ROAMING_PROFILE},
+      {device_signals::AppBoundEncryptionState::kUnsupportedInstallOrPath,
+       em::APP_BOUND_ENCRYPTION_STATE_UNSUPPORTED_INSTALL_OR_PATH},
+      {device_signals::AppBoundEncryptionState::kServiceFailure,
+       em::APP_BOUND_ENCRYPTION_STATE_SERVICE_FAILURE},
+  };
+
+  for (SecuritySignalsMode signals_mode :
+       {SecuritySignalsMode::kSignalsOnly,
+        SecuritySignalsMode::kSignalsAttached}) {
+    SCOPED_TRACE(static_cast<int>(signals_mode));
+    for (const auto& test_case : kTestCases) {
+      SCOPED_TRACE(test_case.expected_proto_state.has_value()
+                       ? static_cast<int>(*test_case.expected_proto_state)
+                       : -1);
+      ExpectSignalsCollectionWithAppBoundState(test_case.input_state);
+      const em::BrowserReport browser_report =
+          GenerateProfileBrowserReport(signals_mode);
+      VerifyReportedAppBoundState(
+          browser_report,
+          /*expected_browser_state=*/std::nullopt,
+          /*expected_profile_signals_state=*/test_case.expected_proto_state);
+    }
+  }
+}
+
+TEST_P(ChromeProfileRequestGeneratorTest,
+       ProfileSignalsWithoutAppBoundStateLeavesBrowserReportFieldUntouched) {
+  delegate_factory_.SetAppBoundEncryptionState(
+      em::APP_BOUND_ENCRYPTION_STATE_ENABLED);
+  ChromeProfileRequestGenerator generator(
+      base::FilePath(kProfilePath), &delegate_factory_, &mock_aggregator_);
+
+  ExpectSignalsCollectionWithAppBoundState(std::nullopt);
+  const em::BrowserReport browser_report = GenerateProfileBrowserReport(
+      generator, SecuritySignalsMode::kSignalsAttached);
+  VerifyReportedAppBoundState(
+      browser_report,
+      /*expected_browser_state=*/em::APP_BOUND_ENCRYPTION_STATE_ENABLED,
+      /*expected_profile_signals_state=*/std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(, ChromeProfileRequestGeneratorTest, testing::Bool());

@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_FAKE_BROWSER_REPORT_GENERATOR_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,12 +15,8 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/channel.h"
-
-namespace enterprise_management {
-class ChromeUserProfileInfo;
-class BrowserReport;
-}  // namespace enterprise_management
 
 namespace policy {
 class PolicyConversionsClient;
@@ -68,7 +65,10 @@ class FakeProfileReportGeneratorDelegate
 class FakeBrowserReportGeneratorDelegate
     : public BrowserReportGenerator::Delegate {
  public:
-  explicit FakeBrowserReportGeneratorDelegate(std::string_view executable_path);
+  explicit FakeBrowserReportGeneratorDelegate(
+      std::string_view executable_path,
+      std::optional<enterprise_management::AppBoundEncryptionState>
+          app_bound_encryption_state = std::nullopt);
   ~FakeBrowserReportGeneratorDelegate() override;
 
   std::string GetExecutablePath() override;
@@ -83,8 +83,14 @@ class FakeBrowserReportGeneratorDelegate
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
 
+  void GenerateAppBoundEncryptionInfo(
+      std::unique_ptr<enterprise_management::BrowserReport> report,
+      BrowserReportGenerator::ReportCallback callback) override;
+
  private:
   const std::string executable_path_;
+  const std::optional<enterprise_management::AppBoundEncryptionState>
+      app_bound_encryption_state_;
 };
 
 class FakeReportingDelegateFactory : public ReportingDelegateFactory {
@@ -113,9 +119,14 @@ class FakeReportingDelegateFactory : public ReportingDelegateFactory {
 
   void SetProfileInitResult(bool result);
 
+  void SetAppBoundEncryptionState(
+      std::optional<enterprise_management::AppBoundEncryptionState> state);
+
  private:
   const std::string executable_path_;
   bool profile_init_result_ = false;
+  std::optional<enterprise_management::AppBoundEncryptionState>
+      app_bound_encryption_state_;
 };
 
 }  // namespace enterprise_reporting::test

@@ -51,9 +51,17 @@ bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
 
 #if BUILDFLAG(IS_WIN)
 bool ShouldCollectAppBoundEncryptionState(Trigger trigger) {
-  return trigger == Trigger::kBrowserNavigation &&
-         enterprise_signals::features::
-             IsDeviceTrustAppBoundEncryptionStateSignalEnabled();
+  switch (trigger) {
+    case Trigger::kBrowserNavigation:
+      return enterprise_signals::features::
+          IsDeviceTrustAppBoundEncryptionStateSignalEnabled();
+    case Trigger::kSignalsReport:
+      return enterprise_signals::features::
+          IsReportAppBoundEncryptionStateEnabled();
+    case Trigger::kUnspecified:
+    case Trigger::kLoginScreen:
+      return false;
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

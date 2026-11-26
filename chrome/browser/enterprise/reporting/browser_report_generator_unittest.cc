@@ -50,6 +50,14 @@
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_future.h"
+#include "chrome/browser/enterprise/signals/app_bound_encryption_test_utils_win.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
+#include "components/device_signals/core/common/signals_features.h"
+#include "components/os_crypt/async/browser/key_provider.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace em = enterprise_management;
 
 namespace enterprise_reporting {
@@ -239,6 +247,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
   }
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }
+  BrowserReportGenerator* generator() { return &generator_; }
 
  private:
   PlatformReportingDelegateFactory delegate_factory_;
@@ -323,5 +332,95 @@ TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(BrowserReportGeneratorTest, AppBoundEncryptionState_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_signals::features::kReportAppBoundEncryptionState);
+  device_signals::test::ScopedAppBoundEncryptionOverrides overrides;
+
+  TestingBrowserProcess::GetGlobal()
+      ->set_additional_os_crypt_async_provider_for_test(
+          /*precedence=*/10u,
+          std::make_unique<device_signals::test::FakeAppBoundKeyProvider>(
+              std::string(os_crypt_async::kAppBoundDataPrefix)));
+
+  InitializeProfile();
+  base::test::TestFuture<std::unique_ptr<em::BrowserReport>> test_future;
+  generator()->Generate(ReportType::kBrowser, test_future.GetCallback());
+  std::unique_ptr<em::BrowserReport> report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_FALSE(report->has_app_bound_encryption_state());
+}
+
+TEST_F(BrowserReportGeneratorTest,
+       AppBoundEncryptionState_BrowserAndProfileReports) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_signals::features::kReportAppBoundEncryptionState);
+  device_signals::test::ScopedAppBoundEncryptionOverrides overrides;
+
+  TestingBrowserProcess::GetGlobal()
+      ->set_additional_os_crypt_async_provider_for_test(
+          /*precedence=*/10u,
+          std::make_unique<device_signals::test::FakeAppBoundKeyProvider>(
+              std::string(os_crypt_async::kAppBoundDataPrefix)));
+
+  InitializeProfile();
+
+  // Verify Browser report (ReportType::kBrowser).
+  base::test::TestFuture<std::unique_ptr<em::BrowserReport>> test_future;
+  generator()->Generate(ReportType::kBrowser, test_future.GetCallback());
+  std::unique_ptr<em::BrowserReport> browser_report = test_future.Take();
+  ASSERT_TRUE(browser_report);
+  EXPECT_TRUE(browser_report->has_app_bound_encryption_state());
+  EXPECT_EQ(em::APP_BOUND_ENCRYPTION_STATE_ENABLED,
+            browser_report->app_bound_encryption_state());
+
+  // Verify Profile status report (ReportType::kProfileReport).
+  test_future.Clear();
+  generator()->Generate(ReportType::kProfileReport, test_future.GetCallback());
+  std::unique_ptr<em::BrowserReport> profile_report = test_future.Take();
+  ASSERT_TRUE(profile_report);
+  EXPECT_TRUE(profile_report->has_app_bound_encryption_state());
+  EXPECT_EQ(em::APP_BOUND_ENCRYPTION_STATE_ENABLED,
+            profile_report->app_bound_encryption_state());
+}
+
+TEST_F(BrowserReportGeneratorTest,
+       AppBoundEncryptionState_DeferredOSCryptAsyncCallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_signals::features::kReportAppBoundEncryptionState);
+  device_signals::test::ScopedAppBoundEncryptionOverrides overrides;
+
+  base::test::TestFuture<os_crypt_async::KeyProvider::KeyCallback>
+      key_callback_future;
+  TestingBrowserProcess::GetGlobal()
+      ->set_additional_os_crypt_async_provider_for_test(
+          /*precedence=*/10u,
+          std::make_unique<
+              device_signals::test::DeferredFakeAppBoundKeyProvider>(
+              /*use_for_encryption=*/true, key_callback_future.GetCallback()));
+
+  InitializeProfile();
+
+  base::test::TestFuture<std::unique_ptr<em::BrowserReport>> test_future;
+  generator()->Generate(ReportType::kBrowser, test_future.GetCallback());
+  EXPECT_FALSE(test_future.IsReady());
+  ASSERT_TRUE(key_callback_future.Wait());
+
+  key_callback_future.Take().Run(
+      std::string(os_crypt_async::kAppBoundDataPrefix),
+      device_signals::test::CreateFakeAppBoundKey());
+
+  std::unique_ptr<em::BrowserReport> report = test_future.Take();
+  ASSERT_TRUE(report);
+  EXPECT_TRUE(report->has_app_bound_encryption_state());
+  EXPECT_EQ(em::APP_BOUND_ENCRYPTION_STATE_ENABLED,
+            report->app_bound_encryption_state());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace enterprise_reporting

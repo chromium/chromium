@@ -397,6 +397,11 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
               ? em::ChromeUserProfileInfo::ISOLATED
               : em::ChromeUserProfileInfo::REGULAR);
     }
+    if (profile_signals.app_bound_encryption_state.has_value()) {
+      profile_signals_report->set_app_bound_encryption_state(
+          TranslateAppBoundEncryptionState(
+              profile_signals.app_bound_encryption_state.value()));
+    }
     profile_report->set_allocated_profile_signals_report(
         profile_signals_report.release());
 

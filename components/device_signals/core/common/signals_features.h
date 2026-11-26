@@ -19,6 +19,7 @@ BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
 BASE_DECLARE_FEATURE(kCertificateCollectionEnabled);
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabled);
 #if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kReportAppBoundEncryptionState);
 BASE_DECLARE_FEATURE(kDeviceTrustAppBoundEncryptionStateSignal);
 #endif  // BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabledIOS);
@@ -37,6 +38,8 @@ bool IsCertificateCollectionEnabled();
 // Returns true if content binding versioning feature has been enabled.
 bool IsContentBindingVersioningEnabled();
 #if BUILDFLAG(IS_WIN)
+// Returns true if App-Bound Encryption state reporting has been enabled.
+bool IsReportAppBoundEncryptionStateEnabled();
 // Returns true if including App-Bound Encryption state in Device Trust signals
 // has been enabled.
 bool IsDeviceTrustAppBoundEncryptionStateSignalEnabled();

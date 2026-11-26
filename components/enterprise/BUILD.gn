@@ -235,6 +235,7 @@ source_set("unit_tests") {
     "common/proto:connectors_proto",
     "//base/test:test_support",
     "//components/certificate_matching",
+    "//components/device_signals/core/browser",
     "//components/device_signals/core/browser:test_support",
     "//components/device_signals/core/common:features",
     "//components/enterprise/browser/identifiers",
