@@ -4,17 +4,25 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 
+#include <initializer_list>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/commands/split_text_node_command.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/ime/ime_text_span.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
+#include "third_party/blink/renderer/core/editing/plain_text_range.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
+#include "third_party/blink/renderer/core/paint/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
@@ -22,6 +30,9 @@
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/base/ime/mojom/ime_types.mojom-blink.h"
 
 namespace blink {
 
@@ -29,6 +40,27 @@ class HighlightPainterTest : public PaintControllerPaintTest {
  public:
   explicit HighlightPainterTest(LocalFrameClient* local_frame_client = nullptr)
       : PaintControllerPaintTest(local_frame_client) {}
+
+ protected:
+  void ExpectCompositionBackground(std::initializer_list<gfx::Rect> rects,
+                                   std::initializer_list<int> sample_rows) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(80, 40);
+    bitmap.eraseColor(SK_ColorWHITE);
+    SkCanvas canvas(bitmap);
+    GetDocument().View()->GetPaintRecord().Playback(&canvas);
+    for (int y : sample_rows) {
+      for (int x = 0; x < bitmap.width(); ++x) {
+        bool highlighted = false;
+        for (const auto& rect : rects) {
+          highlighted |= rect.Contains(x, y);
+        }
+        EXPECT_EQ(highlighted ? SK_ColorRED : SK_ColorWHITE,
+                  bitmap.getColor(x, y))
+            << "at " << x << ", " << y;
+      }
+    }
+  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(HighlightPainterTest);
@@ -300,6 +332,109 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
       ::spelling-error { text-emphasis-color: blue; }
   )HTML"));
   expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
+}
+
+TEST_P(HighlightPainterTest, CompositionAfterPreservedLeadingSpaces) {
+  LoadAhem();
+  for (const char* prefix : {" ", "  ", "   "}) {
+    const String spaces(prefix);
+    SCOPED_TRACE(spaces.length());
+    SetBodyInnerHTML(
+        "<style>body{margin:0}"
+        "#sample{white-space:pre-wrap;font:10px/10px Ahem;"
+        "color:transparent;caret-color:transparent}</style>"
+        "<div id='sample' contenteditable>" +
+        spaces + "</div>");
+    UpdateAllLifecyclePhasesForTest();
+    auto* sample = GetElementById("sample");
+    sample->Focus();
+    auto& controller = GetFrame().GetInputMethodController();
+    ASSERT_TRUE(controller.SetEditableSelectionOffsets(
+        PlainTextRange(spaces.length(), spaces.length())));
+    const Vector<ImeTextSpan> spans = {
+        ImeTextSpan(ImeTextSpan::Type::kComposition, 0, 2, Color::kTransparent,
+                    ui::mojom::ImeTextSpanThickness::kNone,
+                    ui::mojom::ImeTextSpanUnderlineStyle::kNone,
+                    Color::kTransparent, Color(255, 0, 0))};
+    controller.SetComposition("ni", spans, 2, 2);
+    ASSERT_TRUE(controller.HasComposition());
+
+    // A real preedit must survive painting before the committed text arrives.
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(spaces + "ni", sample->textContent());
+    const auto markers = GetDocument().Markers().Markers();
+    ASSERT_EQ(1u, markers.size());
+    EXPECT_EQ(DocumentMarker::kComposition, markers[0]->GetType());
+    EXPECT_EQ(spaces.length(), markers[0]->StartOffset());
+    EXPECT_EQ(spaces.length() + 2, markers[0]->EndOffset());
+    // Sample the text line and the empty line below it.
+    ExpectCompositionBackground({gfx::Rect(10 * spaces.length(), 0, 20, 10)},
+                                {5, 15});
+
+    ASSERT_TRUE(controller.CommitText(String::FromUtf8("\xE4\xBD\xA0"), {}, 0));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(controller.HasComposition());
+    EXPECT_EQ(spaces + String::FromUtf8("\xE4\xBD\xA0"), sample->textContent());
+    ExpectCompositionBackground({}, {5, 15});
+  }
+}
+
+TEST_P(HighlightPainterTest, CompositionBackgroundAcrossLineFragments) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<style>body{margin:0}"
+      "#sample{width:20px;white-space:pre-wrap;word-break:break-all;"
+      "font:10px/10px Ahem;color:transparent;caret-color:transparent}</style>"
+      "<div id='sample' contenteditable> </div>");
+  UpdateAllLifecyclePhasesForTest();
+  GetElementById("sample")->Focus();
+  auto& controller = GetFrame().GetInputMethodController();
+  ASSERT_TRUE(controller.SetEditableSelectionOffsets(PlainTextRange(1, 1)));
+  const Vector<ImeTextSpan> spans = {
+      ImeTextSpan(ImeTextSpan::Type::kComposition, 0, 5, Color::kTransparent,
+                  ui::mojom::ImeTextSpanThickness::kNone,
+                  ui::mojom::ImeTextSpanUnderlineStyle::kNone,
+                  Color::kTransparent, Color(255, 0, 0))};
+  controller.SetComposition("nihao", spans, 5, 5);
+  ASSERT_TRUE(controller.HasComposition());
+  UpdateAllLifecyclePhasesForTest();
+
+  // The first fragment ends inside the composition; the remaining characters
+  // wrap onto two more lines. The leading space must remain unhighlighted.
+  // Sample all three text lines and the empty line below them.
+  ExpectCompositionBackground(
+      {gfx::Rect(10, 0, 10, 10), gfx::Rect(0, 10, 20, 20)}, {5, 15, 25, 35});
+}
+
+TEST_P(HighlightPainterTest, CompositionMarkerInCollapsedWhitespace) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<style>body{margin:0}"
+      "#sample{font:10px/10px Ahem;color:transparent}</style>"
+      "<style id='preserve'>#sample{white-space:pre}</style>"
+      "<div id='sample'>a  b</div>");
+  UpdateAllLifecyclePhasesForTest();
+  auto* text = To<Text>(GetElementById("sample")->firstChild());
+  auto& controller = GetDocument().Markers();
+  controller.AddCompositionMarker(
+      EphemeralRange(Position(text, 2), Position(text, 3)), Color::kTransparent,
+      ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+      Color(255, 0, 0));
+  const auto markers = controller.Markers();
+  ASSERT_EQ(1u, markers.size());
+  // Keep the DOM marker while changing its whitespace from visible to
+  // collapsed, so the painter receives an empty mapped text range.
+  GetElementById("preserve")->setTextContent("#sample{white-space:normal}");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(1u, controller.Markers().size());
+  MarkerRangeMappingContext mapping_context(*text, *text->GetLayoutObject(),
+                                            {0, text->length()});
+  const auto offsets = mapping_context.GetTextContentOffsets(*markers[0]);
+  ASSERT_TRUE(offsets);
+  ASSERT_EQ(offsets->start, offsets->end);
+
+  ExpectCompositionBackground({}, {5, 15});
 }
 
 }  // namespace blink

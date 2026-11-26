@@ -562,11 +562,18 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
   for (const DocumentMarker* marker : markers_) {
     std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
-    if (!marker_offsets || (marker_offsets->start == marker_offsets->end)) {
+    if (!marker_offsets) {
       continue;
     }
-    const unsigned paint_start_offset = marker_offsets->start;
-    const unsigned paint_end_offset = marker_offsets->end;
+    // With preserved whitespace, DOM-to-text mapping can extend beyond this
+    // fragment. Intersect with the range being painted.
+    const unsigned paint_start_offset =
+        std::max(marker_offsets->start, fragment_paint_info_.from);
+    const unsigned paint_end_offset =
+        std::min(marker_offsets->end, fragment_paint_info_.to);
+    if (paint_start_offset >= paint_end_offset) {
+      continue;
+    }
 
     DCHECK(!DocumentMarker::MarkerTypes::HighlightPseudos().Contains(
         marker->GetType()));
