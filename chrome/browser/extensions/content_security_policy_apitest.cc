@@ -28,8 +28,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest, ContentSecurityPolicy) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest, DefaultContentSecurityPolicy) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("default_content_security_policy")) <<
-      message_;
+  ASSERT_TRUE(RunExtensionTest("default_content_security_policy")) << message_;
 }
 
 // Tests that the Manifest V3 extension CSP allows localhost sources to be
@@ -253,8 +252,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTestWithPageNavigation,
 
 // Verifies that a service worker that is listed in sandbox.pages is still
 // subject to the strict MV3 CSP.
-IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
-                       ServiceWorkerIsConstrainedByMV3CSPEvenIfSandboxed) {
+// TODO(crbug.com/588228715): Flaky across multiple platforms.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionCspApiTest,
+    DISABLED_ServiceWorkerIsConstrainedByMV3CSPEvenIfSandboxed) {
   static constexpr char kManifest[] =
       R"({
            "name": "Sandboxed Service Worker",
