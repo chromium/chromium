@@ -378,9 +378,9 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 
 - (CACornerMask)selectionUICornerMask {
   if (base::i18n::IsRTL()) {
-    return kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner;
+    return kCALayerMinXMinYCorner;
   } else {
-    return kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+    return kCALayerMaxXMinYCorner;
   }
 }
 
