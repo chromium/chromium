@@ -265,9 +265,6 @@ public class FirstRunActivity extends FirstRunActivityBase
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO(crbug.com/534388538): Resume the Safety promo carousel on the card the user left
-        // off. Returning from the launcher creates a new activity, so this bundle is dropped and
-        // the selected card has to be persisted outside the activity.
         if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
             // Called by Android right before the First Run Activity is destroyed (toggle dark mode,
             // etc.). Before activity recreation, store which page the user was looking at.
@@ -419,13 +416,6 @@ public class FirstRunActivity extends FirstRunActivityBase
                                     FirstRunUtils.shouldShowSafetyFrePromoCarousel()
                                             && mSafetyPromoFirstRunState.hasSelectedItem()));
             mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN);
-
-            // TODO(crbug.com/534388538): Restore the selected card when the FRE resumes on the
-            // carousel. Until then, resume on the overview: the carousel is only shown with a
-            // selected card, and skipping it would complete the FRE.
-            if (FirstRunStatus.getResumePage() == MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN) {
-                FirstRunStatus.setResumePage(MobileFreProgress.SAFETY_PROMO_SHOWN);
-            }
         }
 
         if (mPagerAdapter != null) {
@@ -1032,6 +1022,7 @@ public class FirstRunActivity extends FirstRunActivityBase
         // the Default Browser Promo.
         if (!FirstRunUtils.shouldShowSafetyFrePromo()) return false;
 
+        mSafetyPromoFirstRunState.maybeRestoreSelectedItem();
         int targetIndex = mFreProgressStates.indexOf(FirstRunStatus.getResumePage());
         if (targetIndex <= mPager.getCurrentItem()) return false;
 

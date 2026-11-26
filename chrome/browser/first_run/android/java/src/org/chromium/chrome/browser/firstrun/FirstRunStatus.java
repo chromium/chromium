@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -131,7 +132,25 @@ public class FirstRunStatus {
                 .readInt(ChromePreferenceKeys.FIRST_RUN_RESUME_PAGE, NO_RESUME_PAGE);
     }
 
-    static void clearResumePage() {
+    /** Clears the persisted resume page and Safety promo carousel card key. */
+    static void clearResumeState() {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.FIRST_RUN_RESUME_PAGE);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.FIRST_RUN_RESUME_SAFETY_PROMO_ITEM_KEY);
+    }
+
+    /**
+     * Persists the key of the Safety promo carousel card the user is on, to resume the carousel on
+     * it. Cleared by {@link #clearResumeState()}.
+     */
+    static void setResumeSafetyPromoItemKey(String itemKey) {
+        ChromeSharedPreferences.getInstance()
+                .writeString(ChromePreferenceKeys.FIRST_RUN_RESUME_SAFETY_PROMO_ITEM_KEY, itemKey);
+    }
+
+    /** Returns the key of the Safety promo carousel card the user was on, or null if none. */
+    static @Nullable String getResumeSafetyPromoItemKey() {
+        return ChromeSharedPreferences.getInstance()
+                .readString(ChromePreferenceKeys.FIRST_RUN_RESUME_SAFETY_PROMO_ITEM_KEY, null);
     }
 }

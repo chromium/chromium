@@ -21,8 +21,9 @@ import java.util.List;
  * Mediator for the Safety Promo Carousel. Decides which page is active and writes its state to the
  * {@link PropertyModel}; it never touches views.
  *
- * <p>The active page follows the item picked on the overview page, and the page the user swipes to,
- * as reported via {@link #onPageSnapped(int)}.
+ * <p>The active page follows the selected item (e.g. the item picked on the overview page, or the
+ * item the carousel resumes on), and the page the user swipes to, as reported via {@link
+ * #onPageSnapped(int)}.
  */
 @NullMarked
 class SafetyPromoCarouselMediator {
@@ -33,8 +34,7 @@ class SafetyPromoCarouselMediator {
 
     /**
      * @param model The {@link PropertyModel} of the carousel.
-     * @param selectedItemSupplier Supplier of the {@link SafetyPromoItem} picked on the overview
-     *     page.
+     * @param selectedItemSupplier Supplier of the selected {@link SafetyPromoItem}.
      * @param items The list of {@link SafetyPromoItem}s displayed in the carousel.
      */
     SafetyPromoCarouselMediator(

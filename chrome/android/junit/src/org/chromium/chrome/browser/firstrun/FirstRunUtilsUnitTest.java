@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils.SafetyFrePromoArm;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 
 /** Unit tests for {@link FirstRunUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -93,5 +95,34 @@ public class FirstRunUtilsUnitTest {
         assertTrue(
                 FirstRunUtils.getItemsForSafetyFrePromoArm(SafetyFrePromoArm.ANIMATED_ILLUSTRATION)
                         .isEmpty());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testGetSafetyFrePromoCarouselItem() {
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
+
+        assertEquals(
+                SafetyPromoItem.PASSWORD_MANAGER,
+                FirstRunUtils.getSafetyFrePromoCarouselItem(SafetyPromoItem.PASSWORD_MANAGER.key));
+        // History Quick Delete is only shown in the carousel of arms 2 and 3.
+        assertNull(
+                FirstRunUtils.getSafetyFrePromoCarouselItem(
+                        SafetyPromoItem.HISTORY_QUICK_DELETE.key));
+        assertNull(FirstRunUtils.getSafetyFrePromoCarouselItem("unknown"));
+        assertNull(FirstRunUtils.getSafetyFrePromoCarouselItem(null));
+
+        // Arms without the carousel have no items.
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.ANIMATED_ILLUSTRATION);
+        assertNull(
+                FirstRunUtils.getSafetyFrePromoCarouselItem(SafetyPromoItem.PASSWORD_MANAGER.key));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testGetSafetyFrePromoCarouselItem_FeatureDisabled() {
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
+        assertNull(
+                FirstRunUtils.getSafetyFrePromoCarouselItem(SafetyPromoItem.PASSWORD_MANAGER.key));
     }
 }

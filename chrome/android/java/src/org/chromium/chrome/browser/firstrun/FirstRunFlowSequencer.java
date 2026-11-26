@@ -226,7 +226,7 @@ public abstract class FirstRunFlowSequencer {
 
         // Mark the FRE flow as complete.
         FirstRunStatus.setFirstRunFlowComplete(true);
-        FirstRunStatus.clearResumePage();
+        FirstRunStatus.clearResumeState();
         SigninPreferencesManager.getInstance()
                 .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
     }

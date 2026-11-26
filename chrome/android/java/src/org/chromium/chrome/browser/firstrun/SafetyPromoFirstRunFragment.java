@@ -89,6 +89,9 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
             view.setCards(
                     FirstRunUtils.getItemsForSafetyFrePromoArm(arm),
                     item -> {
+                        // Clear first so the carousel shows the picked card even if it was already
+                        // selected, e.g. after the user swiped the carousel and came back.
+                        state.setSelectedItem(null);
                         state.setSelectedItem(item);
                         pageDelegate.advanceToNextPage();
                     });
@@ -102,16 +105,6 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
                             state.setSelectedItem(null);
                             pageDelegate.advanceToNextPage();
                         });
-    }
-
-    @Override
-    public void reset() {
-        // Clear the previous selection when the user comes back to this page. Without this,
-        // picking card A, swiping the carousel to card B, coming back here and picking card A
-        // again would leave the carousel on card B: the carousel fragment and its coordinator
-        // survive back-navigation, and the supplier does not notify observers because card A is
-        // still its value.
-        assumeNonNull(getPageDelegate()).getSafetyPromoFirstRunState().setSelectedItem(null);
     }
 
     @Override

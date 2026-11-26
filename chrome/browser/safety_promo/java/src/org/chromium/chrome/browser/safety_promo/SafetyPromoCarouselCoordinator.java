@@ -62,8 +62,8 @@ public class SafetyPromoCarouselCoordinator {
     /**
      * @param context The {@link Context} used for inflating views and accessing resources.
      * @param useLandscapeLayout Whether to show the landscape (dual-pane) layout.
-     * @param selectedItemSupplier Supplier of the {@link SafetyPromoItem} picked on the overview
-     *     page.
+     * @param selectedItemSupplier Supplier of the selected {@link SafetyPromoItem}, e.g. the item
+     *     picked on the overview page or the item the carousel resumes on.
      * @param advancePage The {@link Runnable} to execute when advancing to the next page or
      *     completing the promo.
      * @param bottomSheetController The {@link BottomSheetController} used to show the "Show me how"
@@ -129,6 +129,11 @@ public class SafetyPromoCarouselCoordinator {
     /** Returns the carousel view of the current layout. */
     public SafetyPromoCarouselView getView() {
         return assumeNonNull(mUseLandscapeLayout ? mLandscapeView : mPortraitView);
+    }
+
+    /** Returns the {@link SafetyPromoItem} of the page the carousel is showing. */
+    public SafetyPromoItem getActiveItem() {
+        return mMediator.getActiveItem();
     }
 
     /** Creates and shows a new "Show me how" bottom sheet for the active item. */

@@ -16,6 +16,7 @@ import java.util.List;
 public class SafetyPromoItem {
     public static final SafetyPromoItem PASSWORD_MANAGER =
             new SafetyPromoItem(
+                    "password_manager",
                     R.drawable.safety_promo_password_manager_illustration,
                     R.string.safety_fre_promo_password_manager_title,
                     R.string.safety_fre_promo_password_manager_subtitle,
@@ -33,6 +34,7 @@ public class SafetyPromoItem {
 
     public static final SafetyPromoItem HISTORY_QUICK_DELETE =
             new SafetyPromoItem(
+                    "history_quick_delete",
                     R.drawable.safety_promo_history_quick_delete_illustration,
                     R.string.safety_fre_promo_history_quick_delete_title,
                     R.string.safety_fre_promo_history_quick_delete_subtitle,
@@ -50,6 +52,7 @@ public class SafetyPromoItem {
 
     public static final SafetyPromoItem ENHANCED_SAFE_BROWSING =
             new SafetyPromoItem(
+                    "enhanced_safe_browsing",
                     R.drawable.safety_promo_enhanced_safe_browsing_illustration,
                     R.string.safety_fre_promo_enhanced_safe_browsing_title,
                     R.string.safety_fre_promo_enhanced_safe_browsing_subtitle,
@@ -67,6 +70,7 @@ public class SafetyPromoItem {
 
     public static final SafetyPromoItem INCOGNITO =
             new SafetyPromoItem(
+                    "incognito",
                     R.drawable.safety_promo_incognito_illustration,
                     R.string.safety_fre_promo_incognito_title,
                     R.string.safety_fre_promo_incognito_subtitle,
@@ -80,6 +84,12 @@ public class SafetyPromoItem {
                             R.string.safety_fre_promo_incognito_bottom_sheet_instructions_step_2,
                             R.string.safety_fre_promo_incognito_bottom_sheet_instructions_step_3));
 
+    /**
+     * Identifies the item, e.g. to persist which carousel card the user is on. It must be unique
+     * and must not be changed or reused once shipped, since it is persisted across launches.
+     */
+    public final String key;
+
     public final @DrawableRes int cardIconResId;
     public final @StringRes int cardTitleResId;
     public final @StringRes int cardSubtitleResId;
@@ -92,6 +102,7 @@ public class SafetyPromoItem {
     public final List<Integer> bottomSheetInstructionsStepResIds;
 
     private SafetyPromoItem(
+            String key,
             @DrawableRes int cardIconResId,
             @StringRes int cardTitleResId,
             @StringRes int cardSubtitleResId,
@@ -100,6 +111,7 @@ public class SafetyPromoItem {
             @DrawableRes int carouselIllustrationResId,
             @StringRes int bottomSheetTitleResId,
             List<Integer> bottomSheetInstructionsStepResIds) {
+        this.key = key;
         this.cardIconResId = cardIconResId;
         this.cardTitleResId = cardTitleResId;
         this.cardSubtitleResId = cardSubtitleResId;

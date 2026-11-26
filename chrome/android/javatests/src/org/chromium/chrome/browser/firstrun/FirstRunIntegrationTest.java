@@ -804,7 +804,7 @@ public class FirstRunIntegrationTest {
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
-    public void testFirstRunPages_ProgressHistogramRecording_SafetyPromoCarousel()
+    public void testSafetyPromoCarousel_ProgressHistogramRecorded_RestoredWhenRecreated()
             throws Exception {
         ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
         HistogramWatcher histograms =
@@ -831,11 +831,18 @@ public class FirstRunIntegrationTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "MobileFre.Progress.ViewIntent",
                         MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN);
+        // Pick a card that isn't the first one, to check the carousel resumes on it below.
         navigationHelper
-                .clickSafetyPromoCard(SafetyPromoItem.PASSWORD_MANAGER)
-                .ensureSafetyPromoCarouselIsCurrentPage(SafetyPromoItem.PASSWORD_MANAGER);
+                .clickSafetyPromoCard(SafetyPromoItem.ENHANCED_SAFE_BROWSING)
+                .ensureSafetyPromoCarouselIsCurrentPage(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
 
         histograms.assertExpected();
+
+        FirstRunActivity recreatedActivity =
+                ApplicationTestUtils.recreateActivity(firstRunActivity);
+        new FirstRunNavigationHelper(recreatedActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureSafetyPromoCarouselIsCurrentPage(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
     }
 
     @Test

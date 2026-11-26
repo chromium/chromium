@@ -11,6 +11,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -172,5 +173,19 @@ public class FirstRunUtils {
             default:
                 return List.of();
         }
+    }
+
+    /**
+     * Returns the item with the given {@link SafetyPromoItem#key} shown in the Safety FRE promo
+     * carousel of the current arm, or null if the carousel isn't shown or has no such item.
+     */
+    static @Nullable SafetyPromoItem getSafetyFrePromoCarouselItem(@Nullable String key) {
+        if (key == null || !shouldShowSafetyFrePromoCarousel()) return null;
+
+        @SafetyFrePromoArm int arm = ChromeFeatureList.sSafetyFrePromoArm.getValue();
+        for (SafetyPromoItem item : getItemsForSafetyFrePromoArm(arm)) {
+            if (item.key.equals(key)) return item;
+        }
+        return null;
     }
 }

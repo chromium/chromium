@@ -443,6 +443,13 @@ public final class ChromePreferenceKeys {
      */
     public static final String FIRST_RUN_RESUME_PAGE = "Chrome.FirstRun.ResumePage";
 
+    /**
+     * The key of the Safety promo carousel card the user was on, used together with {@link
+     * #FIRST_RUN_RESUME_PAGE} to resume the carousel on that card.
+     */
+    public static final String FIRST_RUN_RESUME_SAFETY_PROMO_ITEM_KEY =
+            "Chrome.FirstRun.ResumeSafetyPromoItemKey";
+
     /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
@@ -1266,6 +1273,7 @@ public final class ChromePreferenceKeys {
                 EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.pattern(),
                 FEED_PREVIOUS_WIDESCREEN_STATE,
                 FIRST_RUN_RESUME_PAGE,
+                FIRST_RUN_RESUME_SAFETY_PROMO_ITEM_KEY,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,

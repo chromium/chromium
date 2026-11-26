@@ -63,6 +63,19 @@ public class SafetyPromoCarouselFirstRunFragment extends Fragment implements Fir
     }
 
     @Override
+    public void onPause() {
+        // The card is only persisted when the carousel is paused, not when it is picked or swiped
+        // to. If Chrome dies without pausing (e.g. a crash), the FRE may resume on a card persisted
+        // earlier or on the overview.
+        if (mCoordinator != null) {
+            assumeNonNull(getPageDelegate())
+                    .getSafetyPromoFirstRunState()
+                    .persistActiveItem(mCoordinator.getActiveItem());
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onDestroyView() {
         if (mCoordinator != null) {
             mCoordinator.destroy();
