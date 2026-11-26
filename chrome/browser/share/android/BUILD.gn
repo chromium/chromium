@@ -14,10 +14,12 @@ android_library("long_screenshots_bitmap_generation_java") {
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositor.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/ScreenshotBoundsManager.java",
   ]
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/paint_preview/browser/android:java",
@@ -26,6 +28,7 @@ android_library("long_screenshots_bitmap_generation_java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
 }
@@ -41,11 +44,14 @@ robolectric_library("junit") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositorTest.java",
     "javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceJUnitTest.java",
+    "javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/ScreenshotBoundsManagerTest.java",
   ]
   deps = [
     ":long_screenshots_bitmap_generation_java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/common/mojom:mojom_java",
