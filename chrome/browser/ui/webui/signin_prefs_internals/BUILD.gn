@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("signin_prefs_internals") {
+  sources = [
+    "signin_prefs_internals_handler.cc",
+    "signin_prefs_internals_handler.h",
+  ]
+
+  # Only what the header exposes.
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_prefs_internal",
+    "//components/signin/public/identity_manager",
+    "//components/webui/chrome_urls",
+    "//google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "signin_prefs_internals_handler_unittest.cc" ]
+  deps = [
+    ":signin_prefs_internals",
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:identity_test_support",
+    "//chrome/browser/signin:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/webui/chrome_urls",
+    "//content/test:test_support",
+    "//google_apis",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+}

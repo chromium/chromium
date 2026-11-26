@@ -317,8 +317,8 @@ constexpr bool DeprecatedPrefsAreUnregistered(
 
 // Ensures that no registered key contains a dot prefix matching a registered
 // dictionary key at the same level (e.g. a key "foo.bar" alongside a dict
-// "foo"). This prevents ambiguous path resolutions for
-// chrome://signin-prefs-internals.
+// "foo"). This prevents ambiguous path resolutions for the Sign-in prefs tab of
+// chrome://signin-internals.
 constexpr bool NoDottedKeyShadowsDict(base::span<const PrefDescriptor> prefs) {
   for (const auto& dict : prefs) {
     if (dict.type != base::Value::Type::DICT) {

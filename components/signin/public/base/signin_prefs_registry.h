@@ -15,18 +15,28 @@
 #include "base/values.h"
 
 class SigninPrefsAccessor;
+// Backs the Sign-in prefs tab of chrome://signin-internals. Forward declared
+// because //components cannot depend on //chrome; `base::PassKey` only needs
+// the declaration.
+class SigninPrefsInternalsHandler;
 
 // Schema of the per-account preferences stored by `SigninPrefs`: which keys
 // exist, how they are nested, and what type each one holds.
 //
-// Access is restricted via the `PassKey` below and by `visibility` on the GN
-// target. Other code must use the typed `SigninPrefs` accessors.
+// Access is restricted to `SigninPrefsAccessor`, which enforces the schema on
+// every read and write, to the Sign-in prefs tab of chrome://signin-internals,
+// which enumerates and validates arbitrary prefs, and to unit tests (via
+// `CreatePassKeyForTesting()`). Other code must use the typed `SigninPrefs`
+// accessors. The restriction is enforced by the `PassKey` below and by
+// `visibility` on the GN target.
 class SigninPrefsRegistry {
  public:
   // Listing `SigninPrefsRegistry` itself is what lets
   // `CreatePassKeyForTesting()` mint a key: `base::PassKey<T>` befriends `T`,
-  // and a single-holder key converts to a multi-holder one.
-  using PassKey = base::PassKey<SigninPrefsAccessor, SigninPrefsRegistry>;
+  // and a single-holder key converts to the multi-holder one.
+  using PassKey = base::PassKey<SigninPrefsAccessor,
+                                SigninPrefsInternalsHandler,
+                                SigninPrefsRegistry>;
 
   static PassKey CreatePassKeyForTesting() {
     return base::PassKey<SigninPrefsRegistry>();

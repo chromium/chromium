@@ -21,6 +21,10 @@ class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 class SigninPrefs;
+// Backs the Sign-in prefs tab of chrome://signin-internals. Forward declared
+// because //components cannot depend on //chrome; `base::PassKey` only needs
+// the declaration.
+class SigninPrefsInternalsHandler;
 
 // Privileged generic accessor for the single-account metadata dictionary
 // (`"signin.accounts_metadata_dict"`) and multi-account metadata list
@@ -37,11 +41,13 @@ class SigninPrefs;
 // intermediate entries return the default value without mutating prefs.
 //
 // Access is restricted via `PassKey` and GN `visibility` to `SigninPrefs`
-// (which exposes typed methods to standard consumers) and unit tests (via
-// `CreatePassKeyForTesting()`).
+// (which exposes typed methods to standard consumers),
+// `SigninPrefsInternalsHandler` (which backs the Sign-in prefs tab of
+// chrome://signin-internals), and unit tests (via `CreatePassKeyForTesting()`).
 class SigninPrefsAccessor {
  public:
-  using PassKey = base::PassKey<SigninPrefs, SigninPrefsAccessor>;
+  using PassKey = base::
+      PassKey<SigninPrefs, SigninPrefsInternalsHandler, SigninPrefsAccessor>;
 
   static PassKey CreatePassKeyForTesting() {
     return base::PassKey<SigninPrefsAccessor>();

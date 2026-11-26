@@ -2676,6 +2676,7 @@ test("unit_tests") {
     "//chrome/browser/ui/webui/connectors_internals:unit_tests",
     "//chrome/browser/ui/webui/context_hub:unit_tests",
     "//chrome/browser/ui/webui/sanitized_image:unit_tests",
+    "//chrome/browser/ui/webui/signin_prefs_internals:unit_tests",
     "//chrome/browser/ui/webui/top_chrome:unit_tests",
     "//chrome/browser/update_client:unit_tests",
     "//chrome/browser/updater:unit_tests",
