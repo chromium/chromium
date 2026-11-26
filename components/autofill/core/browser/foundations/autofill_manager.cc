@@ -1087,9 +1087,11 @@ void AutofillManager::UpdateFormCache(
 
   for (size_t i = 0; i < forms.size(); ++i) {
     auto apply_predictions = [&](FormStructure& form_structure) {
-      if (!context) {
+      if (!context ||
+          forms[i].version() < form_structure.last_predicted_version(*source)) {
         return;
       }
+      form_structure.set_last_predicted_version(*source, forms[i].version());
       switch (*source) {
         case Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
           for (HeuristicSource s : DenseSet<HeuristicSource>::all()) {
@@ -1146,6 +1148,14 @@ void AutofillManager::UpdateFormCache(
       apply_predictions(*form_structure);
       form_structures_[forms[i].global_id()] = std::move(form_structure);
       DCHECK_LE(form_structures_.size(), kAutofillManagerMaxFormCacheSize);
+      continue;
+    }
+
+    // TODO(crbug.com/590212450): Use `<=` instead of `<` once
+    // `AutofillDriverIOS` and unit tests bypassing `AutofillDriver` set
+    // `FormVersion`.
+    if (forms[i].version() < cached_form_structure->version()) {
+      apply_predictions(*cached_form_structure);
       continue;
     }
 

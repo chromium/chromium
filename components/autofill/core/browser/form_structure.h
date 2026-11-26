@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,15 @@ class FormData;
 struct FormDataPredictions;
 class LogBuffer;
 class LogManager;
+
+// Source of field type predictions applied to a `FormStructure`.
+// At the moment, we cannot distinguish whether autocomplete attributes or
+// local heuristics changed.
+enum class FieldTypeSource {
+  kHeuristicsOrAutocomplete,
+  kAutofillServer,
+  kAutofillAiModel
+};
 
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
@@ -230,6 +240,16 @@ class FormStructure {
 
   FormVersion version() const { return version_; }
 
+  FormVersion last_predicted_version(FieldTypeSource source) const {
+    const FormVersion* version =
+        base::FindOrNull(last_predicted_versions_, source);
+    return version ? *version : FormVersion();
+  }
+
+  void set_last_predicted_version(FieldTypeSource source, FormVersion version) {
+    last_predicted_versions_[source] = version;
+  }
+
   FormVersion last_successfully_queried_version() const {
     return last_successfully_queried_version_;
   }
@@ -357,6 +377,10 @@ class FormStructure {
   // A monotonically increasing counter that indicates the generation of the
   // form.
   FormVersion version_;
+
+  // The latest `FormVersion` for which predictions from each `FieldTypeSource`
+  // were applied.
+  base::flat_map<FieldTypeSource, FormVersion> last_predicted_versions_;
 
   // The last FormVersion for which ServerPredictions::ApplyTo() ran
   // successfully.

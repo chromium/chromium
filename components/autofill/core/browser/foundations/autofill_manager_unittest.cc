@@ -1469,5 +1469,67 @@ TEST_F(
             kAutofillManagerMaxFormCacheSize);
 }
 
+// Tests that local parsing of an older FormVersion does not downgrade a newer
+// FormStructure already in the cache.
+TEST_F(AutofillManagerTest,
+       OnFormsSeen_DoesNotDowngradeCachedFormWithHigherVersion) {
+  FormData form_v1 = test::CreateTestAddressFormData();
+  form_v1.set_version(FormVersion::FromUnsafeValue(1));
+  FormData form_v2 = form_v1;
+  form_v2.set_action(GURL("https://example.test/"));
+  form_v2.set_version(FormVersion::FromUnsafeValue(2));
+
+  // Populate the cache with `form_v2` via server predictions first.
+  EXPECT_CALL(autofill_manager(), OnFormProcessed);
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions("", {CalculateFormSignature(form_v2)},
+                                 {form_v2});
+
+  // Now run local parsing on the older `form_v1`. Heuristics should still
+  // apply, without reverting `version()` or `form_signature()`.
+  OnFormsSeenWithExpectations(autofill_manager(), {form_v1}, {}, {form_v1});
+
+  const FormStructure& cached_form =
+      CHECK_DEREF(autofill_manager().FindCachedFormById(form_v2.global_id()));
+  EXPECT_EQ(cached_form.version(), form_v2.version());
+  EXPECT_EQ(cached_form.last_predicted_version(
+                FieldTypeSource::kHeuristicsOrAutocomplete),
+            form_v1.version());
+  EXPECT_EQ(cached_form.form_signature(), CalculateFormSignature(form_v2));
+  EXPECT_EQ(cached_form.fields()[0]->heuristic_type(), NAME_FIRST);
+}
+
+// Tests that a late local parse for an older FormVersion does not overwrite
+// local predictions already computed for a newer FormVersion.
+TEST_F(AutofillManagerTest,
+       OnFormsSeen_SkipsStaleLocalPredictionsForHigherParsedVersion) {
+  FormData form_v2 = test::CreateTestAddressFormData();
+  form_v2.set_version(FormVersion::FromUnsafeValue(2));
+  FormData form_v1 = form_v2;
+  test_api(form_v1).Remove(-1);
+  form_v1.set_version(FormVersion::FromUnsafeValue(1));
+
+  // Populate the cache with local predictions for `form_v2` first.
+  OnFormsSeenWithExpectations(autofill_manager(), {form_v2}, {}, {form_v2});
+  const FormStructure& cached_form =
+      CHECK_DEREF(autofill_manager().FindCachedFormById(form_v2.global_id()));
+  const FieldType expected_last_field_type =
+      cached_form.fields().back()->heuristic_type();
+  ASSERT_NE(expected_last_field_type, UNKNOWN_TYPE);
+
+  // Simulate a late local parse for `form_v1` (which lacks the last field).
+  // Neither `FormData` nor `form_v2`'s heuristic predictions should be
+  // overwritten.
+  OnFormsSeenWithExpectations(autofill_manager(), {form_v1}, {}, {form_v1});
+
+  EXPECT_EQ(cached_form.version(), form_v2.version());
+  EXPECT_EQ(cached_form.last_predicted_version(
+                FieldTypeSource::kHeuristicsOrAutocomplete),
+            form_v2.version());
+  ASSERT_EQ(cached_form.field_count(), form_v2.fields().size());
+  EXPECT_EQ(cached_form.fields().back()->heuristic_type(),
+            expected_last_field_type);
+}
+
 }  // namespace
 }  // namespace autofill

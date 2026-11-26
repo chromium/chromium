@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -222,13 +223,7 @@ class AutofillManager
         base::span<const FormGlobalId> forms) {}
 
     // Fired when the field types predictions of a form *may* have changed.
-    // At the moment, we cannot distinguish whether autocomplete attributes or
-    // local heuristics changed.
-    enum class FieldTypeSource {
-      kHeuristicsOrAutocomplete,
-      kAutofillServer,
-      kAutofillAiModel
-    };
+    using FieldTypeSource = autofill::FieldTypeSource;
     virtual void OnFieldTypesDetermined(AutofillManager& manager,
                                         FormGlobalId form,
                                         FieldTypeSource source,
