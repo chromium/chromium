@@ -448,11 +448,13 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
 // TODO(crbug.com/461258716): enable this flaky test.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/590645673): Re-enable on Mac once RunLoop timeout in
+// ScreenCaptureVideo/All.Standard_Reject and Standard_Accept flakes are fixed.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
-#endif  // BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#endif
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
   if (!test_config_.should_prefer_current_tab &&
