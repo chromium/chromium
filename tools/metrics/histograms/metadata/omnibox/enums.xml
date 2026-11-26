@@ -900,7 +900,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Aborted: User canceled"/>
   <int value="2" label="Aborted: Navigated away"/>
   <int value="3" label="Aborted: Permission denied"/>
-  <int value="4" label="Refused: Account consent declined"/>
+  <int value="4"
+      label="(Obsolete) Refused: Account consent declined. Deprecated as of
+             11/2026."/>
   <int value="5" label="Refused: Account mismatch"/>
   <int value="6" label="Refused: Error"/>
   <int value="7" label="Refused: Other or missing reason"/>
