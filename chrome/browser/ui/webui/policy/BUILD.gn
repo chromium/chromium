@@ -84,6 +84,7 @@ if (!is_android) {
       "//content/test:test_support",
       "//net:test_support",
       "//testing/gtest",
+      "//ui/accessibility:ax_base",
     ]
 
     if (!is_chromeos) {
@@ -114,6 +115,7 @@ if (is_android) {
       "//components/policy/test_support",
       "//content/test:test_support",
       "//testing/gtest",
+      "//ui/accessibility:ax_base",
     ]
   }
 }

@@ -72,8 +72,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -1193,12 +1195,16 @@ std::vector<std::string> EvalStringVec(content::WebContents* web_contents,
                                             policy_name)) == true;
 }
 
+constexpr char kHomepageDetailElementCountJs[] =
+    "getChromePolicyRow('HomepageLocation').shadowRoot.querySelectorAll("
+    "'.row:not(.policy.row), policy-conflict').length";
+
 }  // namespace
 
-// TODO(crbug.com/587108581): Flaky timeouts on Linux and ChromeOS.
-IN_PROC_BROWSER_TEST_P(PolicyUITest,
-                       DISABLED_FilterPoliciesViaUrlAndSearchSync) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, FilterPoliciesViaUrlAndSearchSync) {
   SetHomepageAndUrlBlocklistPolicies(provider_);
+  content::ScopedAccessibilityModeOverride ax_mode(
+      web_contents(), ui::kAXModeComplete | ui::AXMode::kScreenReader);
 
   const GURL initial_url =
       GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage&extra=1");
@@ -1212,35 +1218,23 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest,
             "Homepage");
   EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
               ElementsAre(policy::key::kHomepageLocation));
+  EXPECT_EQ(0, content::EvalJs(web_contents(), kHomepageDetailElementCountJs));
   const int initial_entries = web_contents()->GetController().GetEntryCount();
+
+  // Create a second same-document history entry via a fragment navigation,
+  // update its filter via `replaceState`, and verify that `HistoryGoBack`
+  // fires `popstate` to restore `Homepage`.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), GURL(chrome::kChromeUIPolicyURL)
+                          .Resolve("?filter=Homepage&extra=1#section")));
+  EXPECT_EQ(web_contents()->GetController().GetEntryCount(),
+            initial_entries + 1);
 
   ASSERT_TRUE(SetToolbarSearchValue(web_contents(), "URLBlock"));
   EXPECT_EQ(web_contents()->GetLastCommittedURL().query(),
             "filter=URLBlock&extra=1");
-  EXPECT_EQ(web_contents()->GetController().GetEntryCount(), initial_entries);
-  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
-              ElementsAre(policy::key::kURLBlocklist));
-
-  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), ""));
-  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(), "extra=1");
-  EXPECT_THAT(
-      EvalStringVec(web_contents(), "getVisiblePolicies()"),
-      ElementsAre(policy::key::kHomepageLocation, policy::key::kURLBlocklist));
-
-  // Navigate to `?filter=Homepage`, create a second same-document history entry
-  // via a fragment navigation, update its filter via `replaceState`, and verify
-  // that `HistoryGoBack` fires `popstate` to restore `Homepage`.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage")));
-  {
-    SCOPED_TRACE("waiting for Homepage filtered table");
-    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
-  }
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage#section")));
-  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), "URLBlock"));
+  EXPECT_EQ(web_contents()->GetController().GetEntryCount(),
+            initial_entries + 1);
   EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
               ElementsAre(policy::key::kURLBlocklist));
 
@@ -1249,14 +1243,25 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest,
     SCOPED_TRACE("waiting for policy table after HistoryGoBack");
     ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
   }
-  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(), "filter=Homepage");
+  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(),
+            "filter=Homepage&extra=1");
   EXPECT_EQ(content::EvalJs(web_contents(), "getToolbarSearchValue()"),
             "Homepage");
   EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
               ElementsAre(policy::key::kHomepageLocation));
 
   ASSERT_TRUE(SetToolbarSearchValue(web_contents(), ""));
-  EXPECT_FALSE(web_contents()->GetLastCommittedURL().has_query());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(), "extra=1");
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisiblePolicies()"),
+      ElementsAre(policy::key::kHomepageLocation, policy::key::kURLBlocklist));
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest,
+                       NormalizeUnknownSubpathPreservesUrlFilter) {
+  SetHomepageAndUrlBlocklistPolicies(provider_);
+  content::ScopedAccessibilityModeOverride ax_mode(
+      web_contents(), ui::kAXModeComplete | ui::AXMode::kScreenReader);
 
   // Unrecognized subpaths normalize `pathname` to `/` via `replaceState` while
   // preserving `?filter=`.
@@ -1275,6 +1280,12 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest,
             "Homepage");
   EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
               ElementsAre(policy::key::kHomepageLocation));
+
+  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), ""));
+  EXPECT_FALSE(web_contents()->GetLastCommittedURL().has_query());
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisiblePolicies()"),
+      ElementsAre(policy::key::kHomepageLocation, policy::key::kURLBlocklist));
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUITest,
@@ -1322,6 +1333,9 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest,
                   l10n_util::GetStringUTF8(IDS_POLICY_LEVEL_MANDATORY),
                   l10n_util::GetStringUTF8(IDS_POLICY_OK), ""));
 
+  // Detail subtrees render lazily only while the policy row is expanded.
+  EXPECT_EQ(0, content::EvalJs(web_contents(), kHomepageDetailElementCountJs));
+
   ASSERT_TRUE(
       TogglePolicyRowExpanded(web_contents(), policy::key::kHomepageLocation));
   EXPECT_THAT(
@@ -1344,6 +1358,10 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest,
   EXPECT_THAT(
       EvalStringVec(web_contents(), "getVisibleDetailRows('HomepageLocation')"),
       ElementsAre("value", "source", "scope", "level", "messages"));
+
+  ASSERT_TRUE(
+      TogglePolicyRowExpanded(web_contents(), policy::key::kHomepageLocation));
+  EXPECT_EQ(0, content::EvalJs(web_contents(), kHomepageDetailElementCountJs));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
