@@ -156,9 +156,9 @@ running CPU. Only renderer processes load that pak, in
 [chrome_main_delegate.cc](/chrome/app/chrome_main_delegate.cc). Renderer
 processes look up resource IDs directly from the compiled GRIT resource maps in
 `//chrome/renderer/webui/` via
-`ChromeContentRendererClient::GetWebUIBundledCodeCacheResourceId()` when
-`--enable-webui-bundled-code-cache` is passed, so the browser process never
-reads or maps the cache resources at runtime.
+`ChromeContentRendererClient::GetWebUIBundledCodeCacheResourceId()` in
+processes started with `--disallow-v8-feature-flag-overrides`, so the browser
+process never reads or maps the cache resources at runtime.
 
 ### Rejected: both caches in resources.pak
 

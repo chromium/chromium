@@ -211,9 +211,10 @@ class CONTENT_EXPORT ContentRendererClient {
       const blink::WebURL& request_url) const;
 
   // Returns the resource ID of the bundled bytecode cache for
-  // `webui_resource_url`, or `std::nullopt` if none is available. Can be
-  // called from any thread (e.g. the background resource loader), so
-  // overrides must be thread-safe.
+  // `webui_resource_url`, or `std::nullopt` if none is available. Only queried
+  // when `features::kWebUIBundledCodeCache` is enabled in a renderer process
+  // that disallows V8 feature flag overrides. Can be called from any thread
+  // (e.g. the background resource loader), so overrides must be thread-safe.
   virtual std::optional<int> GetWebUIBundledCodeCacheResourceId(
       const GURL& webui_resource_url) const;
 

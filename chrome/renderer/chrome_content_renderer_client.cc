@@ -1500,13 +1500,10 @@ std::optional<int>
 ChromeContentRendererClient::GetWebUIBundledCodeCacheResourceId(
     [[maybe_unused]] const GURL& webui_resource_url) const {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableWebUIBundledCodeCache)) {
-    return webui::GetWebUIBundledCodeCacheResourceId(webui_resource_url);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
+  return webui::GetWebUIBundledCodeCacheResourceId(webui_resource_url);
+#else
   return std::nullopt;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<media::KeySystemSupportRegistration>

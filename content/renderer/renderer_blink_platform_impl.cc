@@ -294,6 +294,13 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 std::optional<int>
 RendererBlinkPlatformImpl::GetWebUIBundledCodeCacheResourceId(
     const GURL& webui_resource_url) {
+  // Bundled V8 bytecode is only valid in renderer processes that disallow
+  // runtime V8 feature flag overrides so `FlagList::Hash()` matches the
+  // build-time `code_cache_generator`.
+  if (!base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) ||
+      !DisallowV8FeatureFlagOverrides()) {
+    return std::nullopt;
+  }
   if (ContentRendererClient* renderer = GetContentClient()->renderer()) {
     return renderer->GetWebUIBundledCodeCacheResourceId(webui_resource_url);
   }

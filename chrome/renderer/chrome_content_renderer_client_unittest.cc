@@ -11,11 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_switches.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,41 +54,11 @@ TEST_F(ChromeContentRendererClientTest, GetWebUIBundledCodeCacheResourceId) {
   ChromeContentRendererClient client(/*create_extensions_client=*/false);
   const GURL url("chrome://resources/lit/v3_0/lit.rollup.js");
 
-  // Neither feature nor renderer switch enabled.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(features::kWebUIBundledCodeCache);
-    EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(url));
-  }
-
-  // Feature enabled without renderer switch.
-  {
-    base::test::ScopedFeatureList features(features::kWebUIBundledCodeCache);
-    EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(url));
-  }
-
-  // Renderer switch present with feature disabled.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(features::kWebUIBundledCodeCache);
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        switches::kEnableWebUIBundledCodeCache);
-    EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(url));
-  }
-
-  // Both feature and renderer switch enabled.
-  {
-    base::test::ScopedFeatureList features(features::kWebUIBundledCodeCache);
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        switches::kEnableWebUIBundledCodeCache);
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE) && !BUILDFLAG(IS_ANDROID)
-    EXPECT_TRUE(client.GetWebUIBundledCodeCacheResourceId(url).has_value());
-    EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(GURL(
-                                "chrome://settings/lit/v3_0/lit.rollup.js")));
+  EXPECT_TRUE(client.GetWebUIBundledCodeCacheResourceId(url).has_value());
+  EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(GURL(
+                              "chrome://settings/lit/v3_0/lit.rollup.js")));
 #else
-    EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(url));
+  EXPECT_EQ(std::nullopt, client.GetWebUIBundledCodeCacheResourceId(url));
 #endif
-  }
 }
