@@ -4,12 +4,18 @@
 
 #include "chrome/browser/google/google_brand.h"
 
-#include <algorithm>
+#include <stddef.h>
+
+#include <array>
+#include <compare>
+#include <concepts>
 #include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +27,36 @@
 #endif
 
 namespace google_brand {
+
+namespace {
+
+// A fixed-length brand code stored by value, so constant tables of them need
+// no relocations.
+template <size_t N>
+struct FixedBrandCode {
+  // Needed for brace-init with string literals in `MakeFixedFlatSet`.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval FixedBrandCode(const char (&s)[N + 1]) {
+    auto input = base::span(s);
+    CHECK(input.back() == '\0');
+    base::span(chars).copy_from(input.template first<N>());
+    CHECK(!std::string_view(chars).contains('\0'));
+  }
+
+  friend constexpr auto operator<=>(const FixedBrandCode& lhs,
+                                    const FixedBrandCode& rhs) {
+    return std::string_view(lhs.chars) <=> std::string_view(rhs.chars);
+  }
+  template <typename T>
+    requires std::convertible_to<const T&, std::string_view>
+  friend constexpr auto operator<=>(const FixedBrandCode& lhs, const T& rhs) {
+    return std::string_view(lhs.chars) <=> std::string_view(rhs);
+  }
+
+  std::array<char, N> chars{};
+};
+
+}  // namespace
 
 const char* g_brand_for_testing = nullptr;
 
@@ -102,14 +138,16 @@ bool IsOrganic(const std::string& brand) {
     return true;
   }
 
-  constexpr auto kOrganicBrands = base::MakeFixedFlatSet<std::string_view>(
-      {"CHCA", "CHCB", "CHCG", "CHCH", "CHCI", "CHCJ", "CHCK", "CHCL", "CHFO",
-       "CHFT", "CHHS", "CHHM", "CHMA", "CHMB", "CHME", "CHMF", "CHMG", "CHMH",
-       "CHMI", "CHMQ", "CHMV", "CHNB", "CHNC", "CHNG", "CHNH", "CHNI", "CHOA",
-       "CHOB", "CHOC", "CHON", "CHOO", "CHOP", "CHOQ", "CHOR", "CHOS", "CHOT",
-       "CHOU", "CHOX", "CHOY", "CHOZ", "CHPD", "CHPE", "CHPF", "CHPG", "ECBA",
-       "ECBB", "ECDA", "ECDB", "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB",
-       "ECWC", "ECWD", "ECWE", "ECWF", "EUBB", "EUBC", "GCEL", "GGLA", "GGLS"});
+  static constexpr auto kOrganicBrands =
+      base::MakeFixedFlatSet<FixedBrandCode<4>>(
+          {"CHCA", "CHCB", "CHCG", "CHCH", "CHCI", "CHCJ", "CHCK", "CHCL",
+           "CHFO", "CHFT", "CHHS", "CHHM", "CHMA", "CHMB", "CHME", "CHMF",
+           "CHMG", "CHMH", "CHMI", "CHMQ", "CHMV", "CHNB", "CHNC", "CHNG",
+           "CHNH", "CHNI", "CHOA", "CHOB", "CHOC", "CHON", "CHOO", "CHOP",
+           "CHOQ", "CHOR", "CHOS", "CHOT", "CHOU", "CHOX", "CHOY", "CHOZ",
+           "CHPD", "CHPE", "CHPF", "CHPG", "ECBA", "ECBB", "ECDA", "ECDB",
+           "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB", "ECWC", "ECWD",
+           "ECWE", "ECWF", "EUBB", "EUBC", "GCEL", "GGLA", "GGLS"});
   if (kOrganicBrands.contains(brand)) {
     return true;
   }
@@ -135,11 +173,10 @@ bool IsOrganicFirstRun(const std::string& brand) {
 }
 
 bool IsInternetCafeBrandCode(const std::string& brand) {
-  const char* const kBrands[] = {
-      "CHIQ", "CHSG", "HLJY", "NTMO", "OOBA", "OOBB", "OOBC", "OOBD",
-      "OOBE", "OOBF", "OOBG", "OOBH", "OOBI", "OOBJ", "IDCM",
-  };
-  return std::ranges::contains(kBrands, brand);
+  static constexpr auto kBrands = base::MakeFixedFlatSet<FixedBrandCode<4>>(
+      {"CHIQ", "CHSG", "HLJY", "IDCM", "NTMO", "OOBA", "OOBB", "OOBC", "OOBD",
+       "OOBE", "OOBF", "OOBG", "OOBH", "OOBI", "OOBJ"});
+  return kBrands.contains(brand);
 }
 
 bool IsEnterprise(const std::string& brand) {
@@ -147,16 +184,29 @@ bool IsEnterprise(const std::string& brand) {
   if (brand == "GCEL") {
     return false;
   }
-  const char* const kEnterpriseBrands[] = {
-      "GCE", "GCF", "GCG", "GCH",  // CBE brands codes.
-      "GCO", "GCP", "GCQ", "GCS",
-      "GCC", "GCK", "GCL", "GCM",  // CBE+CBCM brand codes.
-      "GCT", "GCU", "GCV", "GCW",
-  };
+  static constexpr auto kEnterpriseBrands =
+      base::MakeFixedFlatSet<FixedBrandCode<3>>({
+          // CBE brand codes.
+          "GCE",
+          "GCF",
+          "GCG",
+          "GCH",
+          "GCO",
+          "GCP",
+          "GCQ",
+          "GCS",
+          // CBE+CBCM brand codes.
+          "GCC",
+          "GCK",
+          "GCL",
+          "GCM",
+          "GCT",
+          "GCU",
+          "GCV",
+          "GCW",
+      });
   return brand == "GGRV" ||
-         std::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
-           return base::StartsWith(brand, br, base::CompareCase::SENSITIVE);
-         });
+         kEnterpriseBrands.contains(std::string_view(brand).substr(0, 3));
 }
 
 // BrandForTesting ------------------------------------------------------------

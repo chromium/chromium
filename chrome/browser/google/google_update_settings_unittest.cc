@@ -89,6 +89,18 @@ TEST_F(GoogleUpdateTest, IsOrganic) {
 
   // GGLS must always be organic.
   EXPECT_TRUE(google_brand::IsOrganic("GGLS"));
+
+  // Codes listed out of order, misses before/between/after entries, and
+  // wrong-length inputs.
+  EXPECT_TRUE(google_brand::IsOrganic("CHCA"));
+  EXPECT_TRUE(google_brand::IsOrganic("CHHM"));
+  EXPECT_TRUE(google_brand::IsOrganic("CHHS"));
+  EXPECT_FALSE(google_brand::IsOrganic("AAAA"));
+  EXPECT_FALSE(google_brand::IsOrganic("CHHN"));
+  EXPECT_FALSE(google_brand::IsOrganic("GGL"));
+  EXPECT_FALSE(google_brand::IsOrganic("GGLSX"));
+  EXPECT_FALSE(google_brand::IsOrganic(std::string("GGLS\0", 5)));
+  EXPECT_FALSE(google_brand::IsOrganic("\xC3HCA"));
 }
 
 TEST_F(GoogleUpdateTest, IsOrganicFirstRunBrandCodes) {
@@ -127,7 +139,19 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
   EXPECT_FALSE(google_brand::IsEnterprise("CHFO"));
   EXPECT_FALSE(google_brand::IsEnterprise("CHMA"));
   EXPECT_FALSE(google_brand::IsEnterprise("EUBA"));
+  EXPECT_FALSE(google_brand::IsEnterprise("GC"));
+  EXPECT_TRUE(google_brand::IsEnterprise("GCE"));
   EXPECT_FALSE(google_brand::IsEnterprise(""));
+}
+
+TEST_F(GoogleUpdateTest, IsInternetCafeBrandCode) {
+  EXPECT_TRUE(google_brand::IsInternetCafeBrandCode("CHIQ"));
+  EXPECT_TRUE(google_brand::IsInternetCafeBrandCode("IDCM"));
+  EXPECT_TRUE(google_brand::IsInternetCafeBrandCode("OOBJ"));
+  EXPECT_FALSE(google_brand::IsInternetCafeBrandCode("AAAA"));
+  EXPECT_FALSE(google_brand::IsInternetCafeBrandCode("CHI"));
+  EXPECT_FALSE(google_brand::IsInternetCafeBrandCode("CHIQX"));
+  EXPECT_FALSE(google_brand::IsInternetCafeBrandCode(""));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
