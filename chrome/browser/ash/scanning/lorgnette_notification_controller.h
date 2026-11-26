@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/scoped_observation.h"
@@ -62,8 +61,6 @@ class LorgnetteNotificationController : public DlcserviceClient::Observer {
       dlc_observer_{this};
   // Contains the current state of each DLC.
   std::map<std::string, DlcState> current_state_per_dlc_;
-  // Set of all DLC IDs supported by LorgnetteNotificationController.
-  std::set<std::string> supported_dlc_ids_;
 };
 }  // namespace ash
 

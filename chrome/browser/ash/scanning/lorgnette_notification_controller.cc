@@ -5,10 +5,12 @@
 #include "chrome/browser/ash/scanning/lorgnette_notification_controller.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/device_event_log/device_event_log.h"
@@ -26,6 +28,13 @@ namespace ash {
 namespace {
 const char kNotifierId[] = "scanning.dlc";
 const char kNotificationId[] = "scanning_dlc_notification";
+
+// Set of all DLC IDs supported by LorgnetteNotificationController.
+constexpr auto kSupportedDlcIds = base::MakeFixedFlatSet<std::string_view>({
+    lorgnette::kSaneBackendsPfuDlcId,
+    lorgnette::kSaneBackendsCanonDlcId,
+    lorgnette::kSaneBackendsBrother5DlcId,
+});
 
 std::unique_ptr<message_center::Notification> NewNotification(
     const std::string& notification_id,
@@ -51,17 +60,14 @@ std::unique_ptr<message_center::Notification> NewNotification(
 
 LorgnetteNotificationController::LorgnetteNotificationController(
     const user_manager::User& user)
-    : dlc_observer_(this),
-      supported_dlc_ids_(std::set<std::string>(
-          {lorgnette::kSaneBackendsPfuDlcId, lorgnette::kSaneBackendsCanonDlcId,
-           lorgnette::kSaneBackendsBrother5DlcId})) {
+    : dlc_observer_(this) {
   notification_id_ =
       CreateUserScopedNotificationId(kNotificationId, user.username_hash());
   profile_id_ = user.GetAccountId().GetUserEmail();
   dlc_observer_.Observe(DlcserviceClient::Get());
 
-  for (const auto& id : supported_dlc_ids_) {
-    current_state_per_dlc_[id] = DlcState::kIdle;
+  for (std::string_view id : kSupportedDlcIds) {
+    current_state_per_dlc_.emplace(id, DlcState::kIdle);
   }
 }
 
@@ -69,7 +75,7 @@ LorgnetteNotificationController::~LorgnetteNotificationController() = default;
 
 void LorgnetteNotificationController::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
-  if (supported_dlc_ids_.find(dlc_state.id()) == supported_dlc_ids_.end()) {
+  if (!kSupportedDlcIds.contains(dlc_state.id())) {
     return;
   }
 
