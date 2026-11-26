@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -12,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/screen_base.h"
@@ -102,8 +104,11 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
         screenDetails.addEventListener('currentscreenchange', freezeJS);
       });
   )";
-  content::WebContentsAddedObserver web_contents_added_observer;
   ASSERT_TRUE(EvalJs(tab, script).is_ok());
+
+  content::TestNavigationObserver print_preview_observer(
+      GURL{chrome::kChromeUIPrintURL});
+  print_preview_observer.StartWatchingNewWebContents();
 
   // Alter the display to trigger the currentscreenchange event and print().
 #if BUILDFLAG(IS_CHROMEOS)
@@ -116,10 +121,11 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
+  print_preview_observer.Wait();
   content::WebContents* print_preview =
-      web_contents_added_observer.GetWebContents();
-  EXPECT_EQ(print_preview, printing::PrintPreviewDialogController::GetInstance()
-                               ->GetPrintPreviewForContents(tab));
+      printing::PrintPreviewDialogController::GetInstance()
+          ->GetPrintPreviewForContents(tab);
+  ASSERT_TRUE(print_preview);
   content::AwaitDocumentOnLoadCompleted(print_preview);
 
   // Add a second display while the print preview dialog is showing.

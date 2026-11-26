@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -295,10 +296,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS));
   ASSERT_NE(nullptr, site_settings_button);
 
-  content::WebContentsAddedObserver new_tab_observer;
+  ui_test_utils::TabAddedWaiter new_tab_waiter(browser());
   views::test::InteractionTestUtilSimulatorViews::PressButton(
       site_settings_button);
-  content::WebContents* settings_contents = new_tab_observer.GetWebContents();
+  content::WebContents* settings_contents = new_tab_waiter.Wait();
   ASSERT_NE(nullptr, settings_contents);
   WebContentsFocusTracker settings_focus_tracker(settings_contents);
   EXPECT_TRUE(content::WaitForLoadStop(settings_contents));
