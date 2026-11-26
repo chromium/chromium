@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -112,6 +113,20 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
      */
     public StripTabFacility<HostStationT> expectTab(int tabId) {
         return noopTo().enterFacility(new StripTabFacility<>(this, tabId));
+    }
+
+    /** Expects the host Station's tab to be clickable on the strip, see {@link #expectTab(int)}. */
+    public StripTabFacility<HostStationT> expectCurrentTab() {
+        return expectTab(mHostStation.getTab().getId());
+    }
+
+    public StripLayoutHelperManager getStripLayoutHelperManager() {
+        return stripLayoutHelperManagerElement.value();
+    }
+
+    /** Returns the {@link StripLayoutHelper} of the host Station's model (regular or incognito). */
+    public StripLayoutHelper getStripLayoutHelper() {
+        return getStripLayoutHelperManager().getStripLayoutHelper(mHostStation.isIncognito());
     }
 
     /**

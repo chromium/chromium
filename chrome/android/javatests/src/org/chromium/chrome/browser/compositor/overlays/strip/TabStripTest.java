@@ -702,14 +702,13 @@ public class TabStripTest {
 
         // Check scrolling tab strip
         checkTabStrips();
+        StripLayoutHelper tabStrip = page.expectTabStrip().getStripLayoutHelper();
 
         // Scroll so the selected tab is not visible.
         assertSetTabStripScrollOffset(0);
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
+                tabStrip.findTabById(
                         ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(20).getId()));
         assertTabVisibility(false, tab);
 
@@ -785,22 +784,14 @@ public class TabStripTest {
 
         // Select the first tab by setting the index directly. It may not be visible, so don't
         // try to tap on it.
-        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
+        CtaPageStation page =
+                ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         // Check scrolling tab strip
         checkTabStrips();
 
-        StripLayoutTab selectedLayoutTab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () ->
-                                        mActivityTestRule
-                                                .getActivity()
-                                                .getCurrentTabModel()
-                                                .getTabAt(0)
-                                                .getId()));
+        StripLayoutHelper tabStrip = page.expectTabStrip().getStripLayoutHelper();
+        StripLayoutTab selectedLayoutTab = tabStrip.findTabById(page.getTab().getId());
 
         // Create visibility callback helper.
         final CallbackHelper helper = new CallbackHelper();
@@ -820,11 +811,7 @@ public class TabStripTest {
 
         // Scroll so the first tab is off screen and the selected tab may or may not be visible with
         // the ScrollingStripStacker.
-        assertSetTabStripScrollOffset(
-                (int)
-                        TabStripTestUtils.getActiveStripLayoutHelper(
-                                        mActivityTestRule.getActivity())
-                                .getScrollOffsetLimitForTesting());
+        assertSetTabStripScrollOffset((int) tabStrip.getScrollOffsetLimitForTesting());
 
         // Tab should now be hidden.
         helper.waitForCallback(0);
@@ -867,9 +854,8 @@ public class TabStripTest {
         checkTabStrips();
 
         // Open enough regular tabs to cause the strip to scroll.
-        StripLayoutHelper tabStrip =
-                TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false);
         CtaPageStation page = mActivityTestRule.startOnBlankPage();
+        StripLayoutHelper tabStrip = page.expectTabStrip().getStripLayoutHelper();
         while (tabStrip.getScrollOffsetLimitForTesting() >= 0) {
             page = page.openNewTabFast();
         }
@@ -885,9 +871,7 @@ public class TabStripTest {
         // at partial opacity.
         assertSetTabStripScrollOffset(
                 (int)
-                        (TabStripTestUtils.getActiveStripLayoutHelper(
-                                                mActivityTestRule.getActivity())
-                                        .getScrollOffsetLimitForTesting()
+                        (tabStrip.getScrollOffsetLimitForTesting()
                                 + StripLayoutHelper.FADE_FULL_OPACITY_THRESHOLD_DP / 2));
         assertTabStripFadePartiallyVisible(!isLeft);
         assertTabStripFadeFullyVisible(isLeft);
@@ -920,9 +904,7 @@ public class TabStripTest {
         // Open enough regular tabs to hide the tab at index 0.
         CtaPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab0 = page.getTab();
-        final StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(), false, tab0.getId());
+        final StripLayoutTab tab = page.expectTabStrip().expectCurrentTab().getStripLayoutTab();
         while (tab.isVisible()) {
             page = page.openNewTabFast();
         }
@@ -1076,26 +1058,22 @@ public class TabStripTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHoverOnTabStripTabs() throws Exception {
         // Open a few regular tabs.
-        openBlankTabs(4);
+        WebPageStation page = openBlankTabs(4);
 
         // Select tabs to hover on.
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        var tabStrip = page.expectTabStrip();
         StripLayoutTab tab1 =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(1).getId()));
+                tabStrip.expectTab(
+                                ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(1).getId()))
+                        .getStripLayoutTab();
         StripLayoutTab tab2 =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(2).getId()));
-        assertTabVisibility(true, tab1);
-        assertTabVisibility(true, tab2);
+                tabStrip.expectTab(
+                                ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(2).getId()))
+                        .getStripLayoutTab();
 
         // Simulate a hover into tab1.
-        StripLayoutHelperManager stripLayoutHelperManager =
-                TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
+        StripLayoutHelperManager stripLayoutHelperManager = tabStrip.getStripLayoutHelperManager();
         Assert.assertNotNull(
                 "Hover card ViewStub should not be inflated before first hover event.",
                 stripLayoutHelperManager.getTabHoverCardViewStubForTesting().getParent());
@@ -1174,16 +1152,14 @@ public class TabStripTest {
 
         // Select a tab to hover on.
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        var tabStrip = page.expectTabStrip();
         StripLayoutTab standardTab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(1).getId()));
-        assertTabVisibility(true, standardTab);
+                tabStrip.expectTab(
+                                ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(1).getId()))
+                        .getStripLayoutTab();
 
         // Simulate a hover into standardTab.
-        StripLayoutHelperManager stripLayoutHelperManager =
-                TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
+        StripLayoutHelperManager stripLayoutHelperManager = tabStrip.getStripLayoutHelperManager();
         float standardXEnter = standardTab.getDrawX() + standardTab.getWidth() / 2;
         float standardYEnter = standardTab.getDrawY() + standardTab.getHeight() / 2;
         ThreadUtils.runOnUiThreadBlocking(
@@ -1208,11 +1184,9 @@ public class TabStripTest {
                 hoverCardView.getBackgroundTintList());
 
         // Open an incognito tab from the menu.
-        Tab tab = page.openNewIncognitoTabFast().getTab();
+        IncognitoNewTabPageStation incognitoPage = page.openNewIncognitoTabFast();
         StripLayoutTab incognitoTab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(), true, tab.getId());
-        assertTabVisibility(true, incognitoTab);
+                incognitoPage.expectTabStrip().expectCurrentTab().getStripLayoutTab();
 
         // Simulate a hover into incognitoTab.
         float incognitoXEnter = incognitoTab.getDrawX() + incognitoTab.getWidth() / 2;
@@ -1246,17 +1220,12 @@ public class TabStripTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @DisabledTest(message = "crbug.com/342984901")
     public void testTabHoverStateClearedOnActivityPause() throws Exception {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(0).getId()));
-        assertTabVisibility(true, tab);
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        var tabStrip = page.expectTabStrip();
+        StripLayoutTab tab = tabStrip.expectCurrentTab().getStripLayoutTab();
 
         // Simulate a hover into the tab.
-        StripLayoutHelperManager stripLayoutHelperManager =
-                TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
+        StripLayoutHelperManager stripLayoutHelperManager = tabStrip.getStripLayoutHelperManager();
         float xEnter = tab.getDrawX() + tab.getWidth() / 2;
         float yEnter = tab.getDrawY() + tab.getHeight() / 2;
         ThreadUtils.runOnUiThreadBlocking(

@@ -65,6 +65,10 @@ public class StripTabFacility<HostStationT extends CtaPageStation> extends Facil
                                 /* optional= */ true));
     }
 
+    public StripLayoutTab getStripLayoutTab() {
+        return tabElement.value();
+    }
+
     /**
      * Clicks the strip tab to select it.
      *
