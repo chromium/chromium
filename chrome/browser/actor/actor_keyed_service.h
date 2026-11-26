@@ -333,7 +333,7 @@ class ActorKeyedService : public KeyedService,
   // `last_actuated_tab_`). Not emitted for per-surface teardown removals
   // performed inside `ActorTask::Stop()`. Subscribers must not synchronously
   // mutate or stop `task`.
-  // TODO(crbug.com/587942594): Temporary hook; remove once the Glic locality
+  // TODO(b/587942594): Temporary hook; remove once the Glic locality
   // consumer can read surface changes from the task UI model or
   // `ActorFlowDelegate`.
   using TaskSurfacesChangedCallback = base::RepeatingCallback<void(ActorTask&)>;
@@ -521,6 +521,8 @@ class ActorKeyedService : public KeyedService,
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
 
+  // TODO(b/587942594): Temporary hook; remove with
+  // `AddTaskSurfacesChangedCallback()`.
   base::RepeatingCallbackList<void(ActorTask&)>
       task_surfaces_changed_callback_list_;
 
