@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -60,16 +61,17 @@ constexpr net::NetworkTrafficAnnotationTag
           "proxy settings."
       })");
 
-// Returns true if proxy override rules were written to `config`.
-bool SetProxyOverrideRules(const PrefService* pref_service,
-                           net::ProxyConfigWithAnnotation* config,
-                           policy::PolicyService* policy_service) {
+// Reads and validates `kProxyOverrideRules` from `pref_service`, returning an
+// empty vector if unset, disabled, disallowed by affiliation, or invalid.
+std::vector<net::ProxyConfig::ProxyOverrideRule> ReadPrefProxyOverrideRules(
+    const PrefService* pref_service,
+    policy::PolicyService* policy_service) {
   const PrefService::Preference* pref =
       pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
   DCHECK(pref);
 
   if (!pref->GetValue() || !pref->GetValue()->is_list()) {
-    return false;
+    return {};
   }
 
   const base::ListValue& rules_list =
@@ -77,44 +79,121 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
   if (rules_list.empty() ||
       !base::FeatureList::IsEnabled(kEnableProxyOverrideRules) ||
       !proxy_config::ProxyOverrideRulesAllowed(pref_service, policy_service)) {
-    return false;
+    return {};
   }
 
-  std::vector<net::ProxyConfig::ProxyOverrideRule> proxy_override_rules =
-      proxy_config::ParseProxyOverrideRules(rules_list);
-  if (proxy_override_rules.empty()) {
-    return false;
+  return proxy_config::ParseProxyOverrideRules(rules_list);
+}
+
+// Reads the baseline `kProxy` preference from `pref_service`, populating
+// `base_config` without any overlay rules.
+ProxyPrefs::ConfigState ReadBasePrefConfig(
+    const PrefService* pref_service,
+    net::ProxyConfigWithAnnotation* base_config) {
+  *base_config = net::ProxyConfigWithAnnotation();
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(proxy_config::prefs::kProxy);
+  DCHECK(pref);
+
+  const base::DictValue& dict =
+      pref_service->GetDict(proxy_config::prefs::kProxy);
+  ProxyConfigDictionary proxy_dict(dict.Clone());
+
+  if (!PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(proxy_dict,
+                                                         base_config)) {
+    return ProxyPrefs::CONFIG_UNSET;
+  }
+  if (pref->IsUserModifiable() && !pref->HasUserSetting()) {
+    return ProxyPrefs::CONFIG_FALLBACK;
+  }
+  if (pref->IsManaged()) {
+    return ProxyPrefs::CONFIG_POLICY;
+  }
+  if (pref->IsExtensionControlled()) {
+    return ProxyPrefs::CONFIG_EXTENSION;
+  }
+  return ProxyPrefs::CONFIG_OTHER_PRECEDE;
+}
+
+bool HasDynamicRoutingOverlay(
+    const net::ProxyConfig::DynamicRoutingConfig& dynamic_config) {
+  return !dynamic_config.routing_rules.empty() ||
+         dynamic_config.is_update_in_progress;
+}
+
+bool HasAnyProxyOverlays(const net::ProxyConfig& config) {
+  return !config.proxy_override_rules().empty() ||
+         HasDynamicRoutingOverlay(config.dynamic_routing_config());
+}
+
+// Returns a copy of `config` containing only baseline proxy settings (with any
+// ProxyOverrideRules or DynamicRoutingConfig overlays cleared).
+net::ProxyConfigWithAnnotation StripProxyOverlays(
+    const net::ProxyConfigWithAnnotation& config) {
+  if (!HasAnyProxyOverlays(config.value())) {
+    return config;
+  }
+  net::ProxyConfig base_config = config.value();
+  base_config.set_proxy_override_rules({});
+  base_config.set_dynamic_routing_config({});
+  return net::ProxyConfigWithAnnotation(base_config,
+                                        config.traffic_annotation());
+}
+
+// Returns a copy of `base_config` with `override_rules` and
+// `dynamic_routing_config` overlays attached.
+net::ProxyConfigWithAnnotation ApplyProxyOverlays(
+    const net::ProxyConfigWithAnnotation& base_config,
+    std::vector<net::ProxyConfig::ProxyOverrideRule> override_rules,
+    net::ProxyConfig::DynamicRoutingConfig dynamic_routing_config) {
+  if (override_rules.empty() &&
+      !HasDynamicRoutingOverlay(dynamic_routing_config)) {
+    return base_config;
+  }
+  net::ProxyConfig merged_config = base_config.value();
+  merged_config.set_proxy_override_rules(std::move(override_rules));
+  merged_config.set_dynamic_routing_config(std::move(dynamic_routing_config));
+  return net::ProxyConfigWithAnnotation(merged_config,
+                                        base_config.traffic_annotation());
+}
+
+// Phase 1 of `GetEffectiveProxyConfig`: Arbitrates strictly between baseline
+// proxy modes (`Policy > Extension > OtherPrecede > System > Fallback >
+// Direct`), independent of declarative overlay rules.
+net::ProxyConfigService::ConfigAvailability SelectBaseProxyConfig(
+    ProxyPrefs::ConfigState pref_state,
+    const net::ProxyConfigWithAnnotation& pref_config,
+    net::ProxyConfigService::ConfigAvailability system_availability,
+    const net::ProxyConfigWithAnnotation& system_config,
+    bool ignore_fallback_config,
+    ProxyPrefs::ConfigState* effective_config_state,
+    net::ProxyConfigWithAnnotation* base_config) {
+  *effective_config_state = pref_state;
+
+  if (PrefProxyConfigTrackerImpl::PrefPrecedes(pref_state)) {
+    *base_config = StripProxyOverlays(pref_config);
+    return net::ProxyConfigService::CONFIG_VALID;
   }
 
-  net::ProxyConfig new_config(config->value());
-  new_config.set_proxy_override_rules(std::move(proxy_override_rules));
-  *config =
-      net::ProxyConfigWithAnnotation(new_config, config->traffic_annotation());
-  return true;
-}
+  if (system_availability == net::ProxyConfigService::CONFIG_UNSET) {
+    // Preserve legacy behavior where active overlays on a fallback config
+    // retained the fallback base proxy even when `ignore_fallback_config` is
+    // true; stripping the ignored fallback base is gated separately.
+    if (pref_state == ProxyPrefs::CONFIG_FALLBACK &&
+        (!ignore_fallback_config ||
+         (HasAnyProxyOverlays(pref_config.value()) &&
+          base::FeatureList::IsEnabled(
+              kProxyOverrideRulesFixUnsetSystemProxy)))) {
+      *base_config = StripProxyOverlays(pref_config);
+    } else {
+      *base_config = net::ProxyConfigWithAnnotation::CreateDirect();
+    }
+    return net::ProxyConfigService::CONFIG_VALID;
+  }
 
-// Returns true if the proxy config contains active dynamic routing rules or
-// an in-progress update.
-bool HasDynamicProxyRules(const net::ProxyConfig& config) {
-  return !config.dynamic_routing_config().routing_rules.empty() ||
-         config.dynamic_routing_config().is_update_in_progress;
-}
-
-// Returns true if the proxy config contains explicit proxy rules (Proxy
-// Override Rules or PvD dynamic routing rules) that should overlay baseline
-// configs.
-bool HasExplicitProxyRules(const net::ProxyConfig& config) {
-  return !config.proxy_override_rules().empty() || HasDynamicProxyRules(config);
-}
-
-// Returns true if `active_config` has dynamic routing rules that need to be
-// attached to `config`.
-bool ShouldAttachDynamicRoutingRules(
-    const net::ProxyConfig& config,
-    const net::ProxyConfig::DynamicRoutingConfig& active_config) {
-  return !HasDynamicProxyRules(config) &&
-         (!active_config.routing_rules.empty() ||
-          active_config.is_update_in_progress);
+  *effective_config_state = ProxyPrefs::CONFIG_SYSTEM;
+  *base_config = StripProxyOverlays(system_config);
+  return system_availability;
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -402,44 +481,31 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
     bool ignore_fallback_config,
     ProxyPrefs::ConfigState* effective_config_state,
     net::ProxyConfigWithAnnotation* effective_config) {
-  *effective_config_state = pref_state;
+  // Phase 1: Arbitrate between baseline proxy configurations.
+  net::ProxyConfigWithAnnotation base_config;
+  const net::ProxyConfigService::ConfigAvailability availability =
+      SelectBaseProxyConfig(pref_state, pref_config, system_availability,
+                            system_config, ignore_fallback_config,
+                            effective_config_state, &base_config);
 
-  if (PrefPrecedes(pref_state)) {
-    *effective_config = pref_config;
-    return net::ProxyConfigService::CONFIG_VALID;
-  }
-
-  if (system_availability == net::ProxyConfigService::CONFIG_UNSET) {
-    // If there's no system proxy config, fall back to prefs, explicit rules,
-    // or default.
-    if ((pref_state == ProxyPrefs::CONFIG_FALLBACK &&
-         !ignore_fallback_config) ||
-        (base::FeatureList::IsEnabled(kProxyOverrideRulesFixUnsetSystemProxy) &&
-         HasExplicitProxyRules(pref_config.value()))) {
-      *effective_config = pref_config;
-    } else {
-      *effective_config = net::ProxyConfigWithAnnotation::CreateDirect();
-    }
-    return net::ProxyConfigService::CONFIG_VALID;
-  }
-
-  *effective_config_state = ProxyPrefs::CONFIG_SYSTEM;
-  if (!HasExplicitProxyRules(pref_config.value())) {
-    *effective_config = system_config;
-  } else {
-    // When system proxy settings are active, overlay explicit rules (Proxy
-    // Override Rules and PvD dynamic routing rules) onto the baseline system
-    // configuration.
-    net::ProxyConfig new_config = system_config.value();
-    new_config.set_proxy_override_rules(
-        pref_config.value().proxy_override_rules());
-    new_config.set_dynamic_routing_config(
+  // Phase 2: Overlay declarative rules (`ProxyOverrideRules` and PvD
+  // `DynamicRoutingConfig`) onto the winning baseline configuration.
+  // Note: `pref_config` is only valid when `pref_state != CONFIG_UNSET`.
+  const bool should_apply_overlays =
+      pref_state != ProxyPrefs::CONFIG_UNSET &&
+      (PrefPrecedes(pref_state) ||
+       system_availability != net::ProxyConfigService::CONFIG_UNSET ||
+       (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config) ||
+       base::FeatureList::IsEnabled(kProxyOverrideRulesFixUnsetSystemProxy));
+  if (should_apply_overlays) {
+    *effective_config = ApplyProxyOverlays(
+        base_config, pref_config.value().proxy_override_rules(),
         pref_config.value().dynamic_routing_config());
-    *effective_config = net::ProxyConfigWithAnnotation(
-        new_config, system_config.traffic_annotation());
+  } else {
+    *effective_config = std::move(base_config);
   }
 
-  return system_availability;
+  return availability;
 }
 
 // static
@@ -487,35 +553,22 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
     const PrefService* pref_service,
     net::ProxyConfigWithAnnotation* config,
     policy::PolicyService* policy_service) {
-  // Clear the configuration and source.
-  *config = net::ProxyConfigWithAnnotation();
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(proxy_config::prefs::kProxy);
-  DCHECK(pref);
+  // Phase 1: Read baseline `kProxy` preference.
+  ProxyPrefs::ConfigState state = ReadBasePrefConfig(pref_service, config);
 
-  const base::DictValue& dict =
-      pref_service->GetDict(proxy_config::prefs::kProxy);
-  ProxyConfigDictionary proxy_dict(dict.Clone());
-
-  ProxyPrefs::ConfigState state = ProxyPrefs::CONFIG_OTHER_PRECEDE;
-  if (!PrefConfigToNetConfig(proxy_dict, config)) {
-    state = ProxyPrefs::CONFIG_UNSET;
-  } else if (pref->IsUserModifiable() && !pref->HasUserSetting()) {
-    state = ProxyPrefs::CONFIG_FALLBACK;
-  } else if (pref->IsManaged()) {
-    state = ProxyPrefs::CONFIG_POLICY;
-  } else if (pref->IsExtensionControlled()) {
-    state = ProxyPrefs::CONFIG_EXTENSION;
-  }
-
-  const PrefService::Preference* proxy_override_pref =
-      pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
-  if (SetProxyOverrideRules(pref_service, config, policy_service) &&
-      state == ProxyPrefs::CONFIG_UNSET) {
-    if (proxy_override_pref->IsManaged()) {
-      state = ProxyPrefs::CONFIG_POLICY_OVERRIDE;
-    } else {
-      state = ProxyPrefs::CONFIG_EXTENSION_OVERRIDE;
+  // Phase 2: Overlay `kProxyOverrideRules` onto the baseline preference config.
+  std::vector<net::ProxyConfig::ProxyOverrideRule> override_rules =
+      ReadPrefProxyOverrideRules(pref_service, policy_service);
+  if (!override_rules.empty()) {
+    *config = ApplyProxyOverlays(*config, std::move(override_rules),
+                                 /*dynamic_routing_config=*/{});
+    if (state == ProxyPrefs::CONFIG_UNSET) {
+      const PrefService::Preference* proxy_override_pref =
+          pref_service->FindPreference(
+              proxy_config::prefs::kProxyOverrideRules);
+      state = proxy_override_pref->IsManaged()
+                  ? ProxyPrefs::CONFIG_POLICY_OVERRIDE
+                  : ProxyPrefs::CONFIG_EXTENSION_OVERRIDE;
     }
   }
 
@@ -536,23 +589,22 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
     const net::ProxyConfigWithAnnotation& config) {
   net::ProxyConfigWithAnnotation config_with_dynamic_routes = config;
 
-  if (ShouldAttachDynamicRoutingRules(config.value(),
-                                      active_dynamic_routing_config_)) {
-    // When no other proxy rules (e.g. CONFIG_UNSET), create proxy config with
-    // DIRECT and CONFIG_POLICY_DYNAMIC_ROUTING state. This ensures transmission
-    // to the Network Process and fallback to DIRECT connection (or system OS
-    // proxy if configured), in cases such as  the clearing of proxy
-    // preferences.
+  if ((config_state == ProxyPrefs::CONFIG_UNSET ||
+       !HasDynamicRoutingOverlay(config.value().dynamic_routing_config())) &&
+      HasDynamicRoutingOverlay(active_dynamic_routing_config_)) {
+    // When no other proxy rules (e.g. CONFIG_UNSET), start from DIRECT with
+    // CONFIG_POLICY_DYNAMIC_ROUTING so the overlay is transmitted to the
+    // Network Service while unmatched URLs still fall through to the system OS
+    // proxy or DIRECT.
     if (config_state == ProxyPrefs::CONFIG_UNSET) {
       config_with_dynamic_routes =
           net::ProxyConfigWithAnnotation::CreateDirect();
       config_state = ProxyPrefs::CONFIG_POLICY_DYNAMIC_ROUTING;
     }
-
-    net::ProxyConfig pc = config_with_dynamic_routes.value();
-    pc.set_dynamic_routing_config(active_dynamic_routing_config_);
-    config_with_dynamic_routes = net::ProxyConfigWithAnnotation(
-        pc, config_with_dynamic_routes.traffic_annotation());
+    config_with_dynamic_routes = ApplyProxyOverlays(
+        config_with_dynamic_routes,
+        config_with_dynamic_routes.value().proxy_override_rules(),
+        active_dynamic_routing_config_);
   }
 
   // If the configuration hasn't changed, do nothing.
