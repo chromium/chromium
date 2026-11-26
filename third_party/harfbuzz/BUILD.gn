@@ -63,10 +63,6 @@ if (use_system_harfbuzz) {
       "//third_party/rust/skrifa/v0_50:lib",
       "//third_party/rust/smallvec/v1:lib",
     ]
-    if (enable_harfrust) {
-      features += [ "shape" ]
-      deps += [ "//third_party/rust/harfrust/v0_16:lib" ]
-    }
   }
 
   config("harfbuzz_config") {
@@ -578,10 +574,6 @@ if (use_system_harfbuzz) {
       ":harfbuzz_rust",
       "//third_party/icu:icuuc",
     ]
-    if (enable_harfrust) {
-      defines += [ "HAVE_HARFRUST" ]
-      deps += [ "//third_party/rust/harfrust/v0_16:lib" ]
-    }
 
     if (use_glib) {
       configs += [ "//build/config/linux:glib" ]
