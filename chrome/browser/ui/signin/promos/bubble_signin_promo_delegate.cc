@@ -200,8 +200,7 @@ void BubbleSignInPromoForSyncableDataTypeDelegate::
   // If the data type was not enabled before, do so directly when the promo
   // is clicked in sign in pending state, rather than waiting for a reauth
   // event for it to be enabled.
-  if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
-      signed_in_state == signin_util::SignedInState::kSignInPending &&
+  if (signed_in_state == signin_util::SignedInState::kSignInPending &&
       !sync_user_settings->GetSelectedTypes().Has(
           user_selectable_type.value())) {
     sync_user_settings->SetSelectedType(user_selectable_type.value(), true);
