@@ -40,9 +40,6 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   CalendarDateCellView& operator=(const CalendarDateCellView& other) = delete;
   ~CalendarDateCellView() override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Draws the background for 'today'. If today is a grayed out date, which is
   // shown in its previous/next month, this background won't be drawn.
   void OnPaintBackground(gfx::Canvas* canvas) override;

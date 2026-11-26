@@ -142,17 +142,13 @@ CalendarDateCellView::CalendarDateCellView(
   }
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
-}
-
-CalendarDateCellView::~CalendarDateCellView() = default;
-
-void CalendarDateCellView::OnThemeChanged() {
-  views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
   SetEnabledTextColors(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
                                    : cros_tokens::kCrosSysOnSurface);
 }
+
+CalendarDateCellView::~CalendarDateCellView() = default;
 
 // Draws the background for this date. Note that this includes not only the
 // circular fill (if any), but also the border (if focused) and text color. If
