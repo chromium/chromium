@@ -40,7 +40,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -68,10 +67,6 @@ import java.util.Locale;
 /** Tests for the Settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class SettingsActivityTest {
     @Rule
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
@@ -141,6 +136,9 @@ public class SettingsActivityTest {
     @Test
     @SmallTest
     public void testStandaloneFragments() {
+        // On tablets and desktop, embeddable fragments would otherwise open in a tab.
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
+
         // Start the main settings, which is an embeddable fragment.
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -312,7 +310,6 @@ public class SettingsActivityTest {
     @Test
     @SmallTest
     public void testUnfoldKeepsSettingsActivity() {
-        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         assertNull(
                 "SettingsActivity should not have SettingsHostFragment",
