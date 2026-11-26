@@ -549,16 +549,11 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (void)showPromoTimerFinished {
-  // If the promo cannot be displayed or is already active, it will be canceled
-  // either by the user, after the timeout, when the app goes into the
-  // background, or when a new overlay appears. In any of these cases, the state
-  // will be cleared, making it safe to return early.
+  // If the promo can't be shown, clear the pending state. Otherwise, the fired
+  // `_showPromoTimer` and the stale `currentPromoReason` would block all future
+  // triggers until the next tab switch or backgrounding.
   if (![self promoCanBeDisplayed] || self.promoIsShowing) {
-    return;
-  }
-
-  // If the tracker is null, the promo cannot be shown.
-  if (!self.tracker) {
+    [self cancelShowPromoTimer];
     return;
   }
 
@@ -568,6 +563,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 
   if (!self.tracker->ShouldTriggerHelpUI(
           GetFeatureForPromoReason(self.currentPromoReason))) {
+    [self cancelShowPromoTimer];
     return;
   }
 

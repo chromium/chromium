@@ -146,10 +146,15 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
 
-  // Stubs `mock_tracker_` to allow `feature` to trigger.
-  void AllowPromoFeature(const base::Feature& feature) {
+  // Stubs `mock_tracker_` so that `feature` passes the eligibility checks.
+  void AllowPromoFeatureEligibility(const base::Feature& feature) {
     EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(feature)))
         .WillRepeatedly(testing::Return(true));
+  }
+
+  // Stubs `mock_tracker_` to allow `feature` to trigger.
+  void AllowPromoFeature(const base::Feature& feature) {
+    AllowPromoFeatureEligibility(feature);
     EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::Ref(feature)))
         .WillRepeatedly(testing::Return(true));
   }
@@ -157,8 +162,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   // Allows `feature` to pass eligibility checks but expects it never to be
   // triggered (i.e. the promo is cancelled before it would show).
   void ExpectPromoFeatureNeverTriggers(const base::Feature& feature) {
-    EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(feature)))
-        .WillRepeatedly(testing::Return(true));
+    AllowPromoFeatureEligibility(feature);
     EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::Ref(feature)))
         .Times(0);
   }
@@ -445,6 +449,95 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   task_env_.FastForwardBy(base::Seconds(1));
 
   [promo_commands_handler_ verify];
+}
+
+// Tests that if the promo can't be shown when the show timer fires, the pending
+// state is cleared, so a later trigger can show the promo.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FailedShowAttemptDoesNotBlockFuturePromos) {
+  AllowPromoFeatureEligibility(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature);
+  EXPECT_CALL(
+      *mock_tracker_,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature)))
+      .WillOnce(testing::Return(false))
+      .WillRepeatedly(testing::Return(true));
+
+  // The first attempt is rejected by the tracker when the timer fires. The
+  // strict mock fails if the promo is shown.
+  [scheduler_ logUserFinishedActivityFlow];
+  task_env_.FastForwardBy(base::Seconds(1));
+
+  // A later trigger shows the promo.
+  [scheduler_ logUserFinishedActivityFlow];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonShare];
+  task_env_.FastForwardBy(base::Seconds(1));
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+}
+
+// Tests that if the promo becomes ineligible before the show timer fires, the
+// pending state is cleared, so a later trigger can show the promo.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       PromoBecomingIneligibleBeforeTimerFiresDoesNotBlockFuturePromos) {
+  // Eligibility is checked several times while scheduling, so it is toggled
+  // around the pending timer rather than stubbed per call.
+  bool eligible = true;
+  EXPECT_CALL(
+      *mock_tracker_,
+      WouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature)))
+      .WillRepeatedly(testing::ReturnPointee(&eligible));
+  EXPECT_CALL(
+      *mock_tracker_,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature)))
+      .WillRepeatedly(testing::Return(true));
+
+  // Eligible when scheduled, ineligible when the timer fires.
+  [scheduler_ logUserFinishedActivityFlow];
+  eligible = false;
+  task_env_.FastForwardBy(base::Seconds(1));
+  eligible = true;
+
+  // A later trigger shows the promo.
+  [scheduler_ logUserFinishedActivityFlow];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonShare];
+  task_env_.FastForwardBy(base::Seconds(1));
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+}
+
+// Tests that if the promo can't be shown when the show timer fires,
+// backgrounding the app afterwards doesn't record a cancel.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       FailedShowAttemptDoesNotRecordBackgroundCancel) {
+  AllowPromoFeatureEligibility(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature);
+  EXPECT_CALL(
+      *mock_tracker_,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature)))
+      .WillRepeatedly(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
+  [scheduler_ logUserFinishedActivityFlow];
+  task_env_.FastForwardBy(base::Seconds(1));
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+  EXPECT_OCMOCK_VERIFY(promo_commands_handler_);
+
+  histogram_tester.ExpectBucketCount("IOS.DefaultBrowserPromo.NonModal.Share",
+                                     NonModalPromoAction::kBackgroundCancel, 0);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.NonModal.FirstImpression",
+      NonModalPromoAction::kBackgroundCancel, 0);
 }
 
 // Tests that the promo dismisses automatically after the dismissal time and
