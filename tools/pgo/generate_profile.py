@@ -36,7 +36,7 @@ import time
 import psutil
 import tempfile
 from dataclasses import dataclass, field, replace
-from typing import List, Optional
+from typing import Optional
 
 _SRC_DIR = pathlib.Path(__file__).parents[2]
 _TELEMETRY_DIR = _SRC_DIR / 'third_party/catapult/telemetry'
@@ -109,9 +109,9 @@ class Benchmark:
     '''Describes a benchmark and the set of arguments needed to run it.'''
 
     name: str
-    args: List[str]
-    enable_features: List[str] = field(default_factory=list)
-    disable_features: List[str] = field(default_factory=list)
+    args: list[str]
+    enable_features: list[str] = field(default_factory=list)
+    disable_features: list[str] = field(default_factory=list)
     pageset_repeat: int = 1
     weight: int = 1
 
@@ -131,7 +131,7 @@ class Benchmark:
         )
 
     def ProduceBrowserArgs(
-        self, extra_disabled_features: Optional[List[str]] = None
+        self, extra_disabled_features: Optional[list[str]] = None
     ):
         '''Returns the browser flags this benchmark needs.'''
         if extra_disabled_features is None:
@@ -160,8 +160,8 @@ class Benchmark:
 
     def ProduceBenchmarkArgs(
         self,
-        extra_disabled_features: Optional[List[str]] = None,
-        browser_args: Optional[List[str]] = None,
+        extra_disabled_features: Optional[list[str]] = None,
+        browser_args: Optional[list[str]] = None,
     ):
         if any(a.startswith('--extra-browser-args') for a in self.args):
             raise RuntimeError(
@@ -473,7 +473,7 @@ def get_crossbench_driver_path(args: OptionsNamespace):
     raise FileNotFoundError(f"chromedriver not found for {args.builddir}")
 
 
-def build_crossbench_flags_dict(browser_args: List[str]):
+def build_crossbench_flags_dict(browser_args: list[str]):
     '''Turns `--flag` / `--flag=value` strings into crossbench's dict form.
 
     Valueless flags map to ''. Rejects anything else (e.g. a space-separated
@@ -481,7 +481,7 @@ def build_crossbench_flags_dict(browser_args: List[str]):
     letting it silently turn into a broken flag, and rejects conflicting
     duplicates instead of silently keeping the last value.
     '''
-    flags = {}
+    flags: dict[str, str] = {}
     for flag in browser_args:
         name, _, value = flag.partition('=')
         if not name.startswith('-') or ' ' in name:
@@ -499,7 +499,7 @@ def build_crossbench_flags_dict(browser_args: List[str]):
 
 
 def write_crossbench_browser_config(
-    args: OptionsNamespace, browser_args: List[str], config_path: str
+    args: OptionsNamespace, browser_args: list[str], config_path: str
 ):
     '''Writes a crossbench browser config and returns the args selecting it.'''
     # TODO(crbug.com/479547498): Support passing flags directly as a list in
@@ -537,7 +537,7 @@ def write_crossbench_browser_config(
     return [f'--browser-config={config_path}']
 
 
-def get_crossbench_variations_browser_args(browser_args: List[str]):
+def get_crossbench_variations_browser_args(browser_args: list[str]):
     '''Returns `browser_args` plus the field trials telemetry applies.'''
     # Telemetry enables the field trial testing config for every perf benchmark.
     # On Android it cannot use --enable-field-trial-config, because the config's
@@ -883,7 +883,7 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
         # basename.
         # e.g., 'default-12345.profraw' -> prefix 'default'
         # e.g., 'renderer-12345.profraw' -> prefix 'renderer'
-        files_by_prefix = {}
+        files_by_prefix: dict[str, list[str]] = {}
         for f in profraw_files:
             filename = os.path.basename(f)
             prefix = (
@@ -909,10 +909,10 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
             _LOGGER.warning(f'No non-default profile files found for {name}')
 
     # Test merge to prevent issues like: https://crbug.com/353702041
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.NamedTemporaryFile() as tmp_file:
         _LOGGER.debug("Testing profdata merge")
 
-        run_profdata_merge(f.name, [profdata_path], args)
+        run_profdata_merge(tmp_file.name, [profdata_path], args)
 
 
 def run_benchmark_with_repeats(benchmark: Benchmark, args: OptionsNamespace):
@@ -988,7 +988,7 @@ def get_stories(benchmark: Benchmark, args: OptionsNamespace):
     return stories
 
 
-def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
+def run_benchmarks(benchmarks: list[Benchmark], args: OptionsNamespace):
     fail_count = 0
     for benchmark in benchmarks:
         _LOGGER.info(f"Starting benchmark: {benchmark.name}")
@@ -1014,7 +1014,7 @@ def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
 def merge_profdata(
     profile_output_path: str,
     args: OptionsNamespace,
-    benchmarks: Optional[List[Benchmark]] = None,
+    benchmarks: Optional[list[Benchmark]] = None,
 ):
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
     all_profdata = glob.glob(f'{args.profiledir}/*.profdata')
@@ -1052,7 +1052,7 @@ def merge_profdata(
     else:
         benchmark_names = {b.name for b in benchmarks} if benchmarks else set()
         default_profdata = []
-        files_by_prefix = {}
+        files_by_prefix: dict[str, list[str]] = {}
         for f in all_profdata:
             basename = os.path.basename(f)
             stem = (
@@ -1117,6 +1117,12 @@ def write_isolated_script_test_output(
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
     status = 'PASS' if passed else 'FAIL'
+    test_entry: dict[str, str | bool] = {
+        'expected': 'PASS',
+        'actual': status,
+    }
+    if not passed:
+        test_entry['is_unexpected'] = True
     results = {
         'version': 3,
         'interrupted': False,
@@ -1125,17 +1131,12 @@ def write_isolated_script_test_output(
             start_time if start_time is not None else time.time()
         ),
         'tests': {
-            'generate_profile': {
-                'expected': 'PASS',
-                'actual': status,
-            }
+            'generate_profile': test_entry,
         },
         'num_failures_by_type': {
             status: 1,
         },
     }
-    if not passed:
-        results['tests']['generate_profile']['is_unexpected'] = True
     with open(output_path, 'w') as f:
         json.dump(results, f)
 
