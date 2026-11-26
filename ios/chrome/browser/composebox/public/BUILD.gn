@@ -24,9 +24,11 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
+  public_deps = [ ":entrypoint" ]
   deps = [
     "//base",
     "//components/omnibox/common",
+    "//components/omnibox/common:features",
     "//ui/base",
   ]
 }
