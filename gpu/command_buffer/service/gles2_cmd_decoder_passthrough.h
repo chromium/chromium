@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -890,6 +891,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   GLuint linking_program_service_id_ = 0u;
   GLuint linking_program_client_id_ = 0u;
   uint32_t linking_program_link_count_ = 0u;
+
+  // Opaque identifier registered with PassthroughCallbackRegistry and passed as
+  // userParam to ANGLE's per-context debug and blob-cache callbacks instead of
+  // raw `this`, so late callbacks on a surviving GLContext safely no-op after
+  // this decoder is lost or destroyed.
+  uintptr_t decoder_id_for_callbacks_ = 0u;
 
   void ScheduleIdleMemoryTrim();
   void PostIdleMemoryTrimTask();

@@ -4,13 +4,21 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/no_destructor.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
+#include "gpu/command_buffer/service/passthrough_program_cache.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_switches.h"
+#include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
 namespace gles2 {
@@ -434,6 +442,345 @@ TEST_F(GLES2WebGLDecoderPassthroughProgramCompletionTest,
             returned_program_infos_[0].return_data_header.return_data_type);
   EXPECT_EQ(kProgramClientId, returned_program_infos_[0].program_client_id);
   EXPECT_EQ(2u, returned_program_infos_[0].link_count);
+}
+
+class GLES2WebGLDecoderPassthroughCallbackTest
+    : public GLES2WebGLDecoderPassthroughTest {
+ public:
+  GLES2WebGLDecoderPassthroughCallbackTest() {
+    feature_list_.InitAndEnableFeature(features::kANGLEPerContextBlobCache);
+  }
+
+  void SetUp() override {
+    // ANGLE's Null backend disables `cacheCompiledShader` by default, leaving
+    // `MemoryShaderCache` null. Enable it so compiling shaders (including
+    // pending compiles resolved during Context::onDestroy) exercises ANGLE's
+    // per-context blob-cache callbacks.
+    base::CommandLine* command_line =
+        scoped_command_line_.GetProcessCommandLine();
+    std::string enabled_angle_features =
+        command_line->GetSwitchValueASCII(switches::kEnableANGLEFeatures);
+    if (!enabled_angle_features.empty()) {
+      enabled_angle_features += ",";
+    }
+    enabled_angle_features += "cacheCompiledShader";
+    command_line->RemoveSwitch(switches::kEnableANGLEFeatures);
+    command_line->AppendSwitchASCII(switches::kEnableANGLEFeatures,
+                                    enabled_angle_features);
+    GLES2WebGLDecoderPassthroughTest::SetUp();
+  }
+
+  void OnConsoleMessage(int32_t id, const std::string& message) override {
+    ++console_message_count_;
+    GLES2WebGLDecoderPassthroughTest::OnConsoleMessage(id, message);
+  }
+
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override {
+    ++cached_blob_count_;
+    GLES2WebGLDecoderPassthroughTest::CacheBlob(type, key, blob);
+  }
+
+ protected:
+  struct SecondaryDecoderState {
+    SecondaryDecoderState() {
+      preferences.use_passthrough_cmd_decoder = true;
+      translator_cache = std::make_unique<ShaderTranslatorCache>(preferences);
+    }
+    ~SecondaryDecoderState() = default;
+
+    void DestroyDecoderWithoutContext() {
+      decoder->Destroy(/*have_context=*/false);
+      group->Destroy(decoder.get(), /*have_context=*/false);
+      decoder.reset();
+      group = nullptr;
+    }
+
+    PassthroughProgramCache program_cache{
+        /*max_cache_size_bytes=*/1024 * 1024,
+        /*disable_gpu_shader_disk_cache=*/false};
+    GpuPreferences preferences;
+    std::unique_ptr<ShaderTranslatorCache> translator_cache;
+    FramebufferCompletenessCache completeness_cache;
+    scoped_refptr<FeatureInfo> feature_info;
+    scoped_refptr<ContextGroup> group;
+    scoped_refptr<gl::GLSurface> surface;
+    scoped_refptr<gl::GLContext> context;
+    FakeCommandBufferServiceBase cb_service;
+    TraceOutputter outputter;
+    std::unique_ptr<GLES2DecoderPassthroughImpl> decoder;
+  };
+
+  void InitSecondaryDecoder(SecondaryDecoderState& state) {
+    state.feature_info = base::MakeRefCounted<FeatureInfo>(
+        workarounds_for_test_, GpuFeatureInfo());
+    state.group = base::MakeRefCounted<ContextGroup>(
+        state.preferences, /*memory_tracker=*/nullptr,
+        state.translator_cache.get(), &state.completeness_cache,
+        state.feature_info, /*progress_reporter=*/nullptr, GpuFeatureInfo(),
+        GetSharedImageManager());
+    state.group->set_program_cache(&state.program_cache);
+
+    gl::GLDisplay* display = GetDecoder()->GetGLSurface()->GetGLDisplay();
+    state.surface =
+        gl::init::CreateOffscreenGLSurface(display, gfx::Size(4, 4));
+    ASSERT_TRUE(state.surface);
+    state.context = gl::init::CreateGLContext(
+        nullptr, state.surface.get(),
+        GenerateGLContextAttribsForDecoder(CONTEXT_TYPE_WEBGL1,
+                                           gl::GpuPreference::kLowPower,
+                                           state.group.get()));
+    ASSERT_TRUE(state.context);
+    ASSERT_TRUE(state.context->MakeCurrent(state.surface.get()));
+
+    state.decoder = std::make_unique<GLES2DecoderPassthroughImpl>(
+        this, &state.cb_service, &state.outputter, state.group.get());
+    ASSERT_EQ(state.group->Initialize(state.decoder.get(), CONTEXT_TYPE_WEBGL1),
+              gpu::ContextResult::kSuccess);
+    ASSERT_EQ(state.decoder->Initialize(
+                  state.surface, state.context, state.surface->IsSurfaceless(),
+                  CONTEXT_TYPE_WEBGL1,
+                  /*lose_context_when_out_of_memory=*/true),
+              gpu::ContextResult::kSuccess);
+  }
+
+  int console_message_count_ = 0;
+  int cached_blob_count_ = 0;
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
+       CallbacksDeliveredWhileContextActive) {
+  PassthroughProgramCache program_cache(
+      /*max_cache_size_bytes=*/1024 * 1024,
+      /*disable_gpu_shader_disk_cache=*/false);
+  group()->set_program_cache(&program_cache);
+
+  const char kKey[] = "sample_key";
+  const char kValue[] = "sample_value";
+  void* set_fn_ptr = nullptr;
+  void* get_fn_ptr = nullptr;
+  void* user_param = nullptr;
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_SET_FUNCTION_ANGLE,
+                                               &set_fn_ptr);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_GET_FUNCTION_ANGLE,
+                                               &get_fn_ptr);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_USER_PARAM_ANGLE,
+                                               &user_param);
+  ASSERT_NE(set_fn_ptr, nullptr);
+  ASSERT_NE(get_fn_ptr, nullptr);
+  ASSERT_NE(user_param, nullptr);
+
+  auto set_fn = reinterpret_cast<GLSETBLOBPROCANGLE>(set_fn_ptr);
+  auto get_fn = reinterpret_cast<GLGETBLOBPROCANGLE>(get_fn_ptr);
+  set_fn(kKey, sizeof(kKey), kValue, sizeof(kValue), user_param);
+  EXPECT_EQ(1, cached_blob_count_);
+  char buffer[sizeof(kValue)] = {};
+  EXPECT_EQ(static_cast<GLsizeiptr>(sizeof(kValue)),
+            get_fn(kKey, sizeof(kKey), buffer, sizeof(buffer), user_param));
+
+  // Verify that compiling a shader through ANGLE actually invokes the
+  // per-context blob-cache callback (confirming `cacheCompiledShader` is
+  // active on the Null backend).
+  cached_blob_count_ = 0;
+  GLuint shader = gl::g_current_gl_context->glCreateShaderFn(GL_VERTEX_SHADER);
+  const char* kShaderSrc = "void main() { gl_Position = vec4(0.5); }";
+  gl::g_current_gl_context->glShaderSourceFn(shader, 1, &kShaderSrc, nullptr);
+  gl::g_current_gl_context->glCompileShaderFn(shader);
+  GLint compile_status = GL_FALSE;
+  gl::g_current_gl_context->glGetShaderivFn(shader, GL_COMPILE_STATUS,
+                                            &compile_status);
+  EXPECT_EQ(GL_TRUE, compile_status);
+  EXPECT_GT(cached_blob_count_, 0);
+  gl::g_current_gl_context->glDeleteShaderFn(shader);
+
+  // Issue a capability not filtered by IsIgnoredCap() so ANGLE validates it
+  // and dispatches GL_KHR_debug through PassthroughGLDebugMessageCallback().
+  console_message_count_ = 0;
+  cmds::Enable invalid_cmd;
+  invalid_cmd.Init(GL_INVALID_ENUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(invalid_cmd));
+  EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
+  EXPECT_GT(console_message_count_, 0);
+
+  group()->set_program_cache(nullptr);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
+       CallbacksIgnoredAfterContextLostInANGLE) {
+  SecondaryDecoderState secondary;
+  ASSERT_NO_FATAL_FAILURE(InitSecondaryDecoder(secondary));
+
+  void* debug_fn_ptr = nullptr;
+  void* debug_user_param = nullptr;
+  void* blob_set_fn_ptr = nullptr;
+  void* blob_get_fn_ptr = nullptr;
+  void* blob_user_param = nullptr;
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_DEBUG_CALLBACK_FUNCTION,
+                                               &debug_fn_ptr);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_DEBUG_CALLBACK_USER_PARAM,
+                                               &debug_user_param);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_SET_FUNCTION_ANGLE,
+                                               &blob_set_fn_ptr);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_GET_FUNCTION_ANGLE,
+                                               &blob_get_fn_ptr);
+  gl::g_current_gl_context->glGetPointervKHRFn(GL_BLOB_CACHE_USER_PARAM_ANGLE,
+                                               &blob_user_param);
+  ASSERT_NE(debug_fn_ptr, nullptr);
+  ASSERT_NE(debug_user_param, nullptr);
+  ASSERT_NE(blob_set_fn_ptr, nullptr);
+  ASSERT_NE(blob_get_fn_ptr, nullptr);
+  ASSERT_NE(blob_user_param, nullptr);
+
+  // Queue a shader compilation without querying GL_COMPILE_STATUS so ANGLE
+  // resolves it during Context::onDestroy.
+  GLuint shader = gl::g_current_gl_context->glCreateShaderFn(GL_VERTEX_SHADER);
+  const char* kShaderSrc = "void main() { gl_Position = vec4(0.0); }";
+  gl::g_current_gl_context->glShaderSourceFn(shader, 1, &kShaderSrc, nullptr);
+  gl::g_current_gl_context->glCompileShaderFn(shader);
+
+  // Mark the context lost inside ANGLE while current so ANGLE nulls its valid
+  // context slot and drops subsequent GL callback clear calls.
+  gl::g_current_gl_context->glRequestExtensionANGLEFn(
+      "GL_CHROMIUM_lose_context");
+  using LoseContextProc = void(GL_BINDING_CALL*)(GLenum, GLenum);
+  auto lose_context_fn = reinterpret_cast<LoseContextProc>(
+      gl::GetGLProcAddress("glLoseContextCHROMIUM"));
+  ASSERT_NE(lose_context_fn, nullptr);
+  lose_context_fn(GL_GUILTY_CONTEXT_RESET_KHR, GL_INNOCENT_CONTEXT_RESET_KHR);
+  secondary.decoder->MarkContextLost(error::kGuilty);
+  EXPECT_TRUE(secondary.decoder->WasContextLost());
+  EXPECT_EQ(static_cast<GLenum>(GL_CONTEXT_LOST_KHR),
+            gl::g_current_gl_context->glGetErrorFn());
+
+  secondary.DestroyDecoderWithoutContext();
+
+  // Trigger a GL error on the lost context and invoke the callbacks directly
+  // after the decoder has been freed while `secondary.context` remains alive.
+  console_message_count_ = 0;
+  cached_blob_count_ = 0;
+  gl::g_current_gl_context->glBindTextureFn(GL_TEXTURE_2D, 0);
+
+  const char kMsg[] = "sample debug message";
+  reinterpret_cast<GLDEBUGPROC>(debug_fn_ptr)(
+      GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, 1, GL_DEBUG_SEVERITY_HIGH,
+      sizeof(kMsg) - 1, kMsg, debug_user_param);
+  const char kKey[] = "sample_key";
+  const char kValue[] = "sample_value";
+  reinterpret_cast<GLSETBLOBPROCANGLE>(blob_set_fn_ptr)(
+      kKey, sizeof(kKey), kValue, sizeof(kValue), blob_user_param);
+  EXPECT_EQ(0, reinterpret_cast<GLGETBLOBPROCANGLE>(blob_get_fn_ptr)(
+                   kKey, sizeof(kKey), nullptr, 0, blob_user_param));
+  EXPECT_EQ(0, console_message_count_);
+  EXPECT_EQ(0, cached_blob_count_);
+
+  // Dropping the last reference to `secondary.context` runs Context::onDestroy,
+  // which resolves the pending shader compile and invokes the blob cache
+  // callback in ANGLE.
+  secondary.context->ReleaseCurrent(secondary.surface.get());
+  secondary.surface = nullptr;
+  secondary.context = nullptr;
+  EXPECT_EQ(0, console_message_count_);
+  EXPECT_EQ(0, cached_blob_count_);
+
+  ASSERT_TRUE(GetDecoder()->MakeCurrent());
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
+       CallbacksIgnoredAfterContextLostWhileNotCurrent) {
+  SecondaryDecoderState secondary;
+  ASSERT_NO_FATAL_FAILURE(InitSecondaryDecoder(secondary));
+
+  GLuint shader = gl::g_current_gl_context->glCreateShaderFn(GL_VERTEX_SHADER);
+  const char* kShaderSrc = "void main() { gl_Position = vec4(1.0); }";
+  gl::g_current_gl_context->glShaderSourceFn(shader, 1, &kShaderSrc, nullptr);
+  gl::g_current_gl_context->glCompileShaderFn(shader);
+
+  // Switch back to the primary context and create two textures on the primary
+  // decoder: one retained only in `texture_object_map` (unbound) and one
+  // retained only in `bound_textures_` (removed from `texture_object_map`), so
+  // each branch of MarkContextLost() is tested independently when the last
+  // TexturePassthrough reference is dropped below.
+  ASSERT_TRUE(GetDecoder()->MakeCurrent());
+  EXPECT_FALSE(secondary.context->IsCurrent(nullptr));
+
+  DoGenTexture(kClientTextureId);
+  DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
+  scoped_refptr<TexturePassthrough> resource_texture;
+  ASSERT_TRUE(GetPassthroughResources()->texture_object_map.GetServiceID(
+      kClientTextureId, &resource_texture));
+  ASSERT_TRUE(resource_texture);
+  const GLuint resource_service_id = resource_texture->service_id();
+  DoBindTexture(GL_TEXTURE_2D, 0);
+
+  constexpr GLuint kBoundClientTextureId = kClientTextureId + 1;
+  DoGenTexture(kBoundClientTextureId);
+  DoBindTexture(GL_TEXTURE_2D, kBoundClientTextureId);
+  scoped_refptr<TexturePassthrough> bound_texture;
+  ASSERT_TRUE(GetPassthroughResources()->texture_object_map.GetServiceID(
+      kBoundClientTextureId, &bound_texture));
+  ASSERT_TRUE(bound_texture);
+  const GLuint bound_service_id = bound_texture->service_id();
+  GetPassthroughResources()->texture_object_map.RemoveClientID(
+      kBoundClientTextureId);
+  GetPassthroughResources()->texture_id_map.RemoveClientID(
+      kBoundClientTextureId);
+
+  // Lose and destroy `secondary.decoder` while `secondary.context` is not
+  // current, so neither MarkContextLost() nor Destroy(false) can issue GL calls
+  // on `secondary.context`.
+  secondary.decoder->MarkContextLost(error::kUnknown);
+  secondary.DestroyDecoderWithoutContext();
+
+  // Make `secondary.context` current again so the primary context is not
+  // current when the primary decoder's MarkContextLost() runs.
+  ASSERT_TRUE(secondary.context->MakeCurrent(secondary.surface.get()));
+  GetDecoder()->MarkContextLost(error::kUnknown);
+  EXPECT_TRUE(GetDecoder()->WasContextLost());
+
+  // Trigger a GL debug error callback and destroy `secondary.context` to
+  // resolve the pending shader compilation.
+  console_message_count_ = 0;
+  cached_blob_count_ = 0;
+  gl::g_current_gl_context->glBindTextureFn(GL_INVALID_ENUM, 0);
+  secondary.context->ReleaseCurrent(secondary.surface.get());
+  secondary.surface = nullptr;
+  secondary.context = nullptr;
+  EXPECT_EQ(0, console_message_count_);
+  EXPECT_EQ(0, cached_blob_count_);
+
+  ASSERT_TRUE(
+      GetDecoder()->GetGLContext()->MakeCurrent(GetDecoder()->GetGLSurface()));
+
+  // Drop the remaining map reference and local reference to `resource_texture`
+  // so ~TexturePassthrough() runs now; it must not delete `resource_service_id`
+  // because resources_->MarkContextLost() ran while non-current.
+  GetPassthroughResources()->texture_object_map.RemoveClientID(
+      kClientTextureId);
+  GetPassthroughResources()->texture_id_map.RemoveClientID(kClientTextureId);
+  ASSERT_TRUE(resource_texture->HasOneRef());
+  resource_texture.reset();
+  EXPECT_EQ(static_cast<GLboolean>(GL_TRUE),
+            gl::g_current_gl_context->glIsTextureFn(resource_service_id));
+
+  // Unbind on the primary decoder to drop `bound_textures_`'s reference, then
+  // drop `bound_texture` so ~TexturePassthrough() runs now; it must not delete
+  // `bound_service_id` because MarkContextLost() marked `bound_textures_` lost
+  // while non-current.
+  cmds::BindTexture unbind_cmd;
+  unbind_cmd.Init(GL_TEXTURE_2D, 0);
+  EXPECT_EQ(error::kLostContext, ExecuteCmd(unbind_cmd));
+  ASSERT_TRUE(bound_texture->HasOneRef());
+  bound_texture.reset();
+  EXPECT_EQ(static_cast<GLboolean>(GL_TRUE),
+            gl::g_current_gl_context->glIsTextureFn(bound_service_id));
+
+  gl::g_current_gl_context->glDeleteTexturesFn(1, &resource_service_id);
+  gl::g_current_gl_context->glDeleteTexturesFn(1, &bound_service_id);
 }
 
 }  // namespace gles2

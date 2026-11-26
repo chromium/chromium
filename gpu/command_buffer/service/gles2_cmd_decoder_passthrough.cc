@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -12,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -20,11 +22,14 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -409,6 +414,58 @@ void RequestExtensions(gl::GLApi* api,
   }
 }
 
+// Maps opaque per-decoder tokens to live GLES2DecoderPassthroughImpl instances.
+// ANGLE ignores callback-clearing calls once a context is marked lost, and
+// MarkContextLost() / Destroy() may run when the context is not current, while
+// external references (such as SharedImage holders) can keep the underlying
+// GLContext alive past decoder teardown. Unregistering the token ensures late
+// ANGLE callbacks safely become no-ops.
+class PassthroughCallbackRegistry {
+ public:
+  static PassthroughCallbackRegistry& Get() {
+    static base::NoDestructor<PassthroughCallbackRegistry> instance;
+    return *instance;
+  }
+
+  PassthroughCallbackRegistry() = default;
+  PassthroughCallbackRegistry(const PassthroughCallbackRegistry&) = delete;
+  PassthroughCallbackRegistry& operator=(const PassthroughCallbackRegistry&) =
+      delete;
+
+  uintptr_t Register(GLES2DecoderPassthroughImpl* decoder) {
+    base::AutoLock auto_lock(lock_);
+    do {
+      ++next_id_;
+    } while (next_id_ == 0u || decoders_.contains(next_id_));
+    decoders_.emplace(next_id_, decoder);
+    return next_id_;
+  }
+
+  void Unregister(uintptr_t id) {
+    if (id == 0u) {
+      return;
+    }
+    base::AutoLock auto_lock(lock_);
+    decoders_.erase(id);
+  }
+
+  GLES2DecoderPassthroughImpl* Lookup(const void* user_param) {
+    uintptr_t id = reinterpret_cast<uintptr_t>(user_param);
+    if (id == 0u) {
+      return nullptr;
+    }
+    base::AutoLock auto_lock(lock_);
+    auto it = decoders_.find(id);
+    return it != decoders_.end() ? it->second.get() : nullptr;
+  }
+
+ private:
+  base::Lock lock_;
+  uintptr_t next_id_ GUARDED_BY(lock_) = 0u;
+  base::flat_map<uintptr_t, raw_ptr<GLES2DecoderPassthroughImpl>> decoders_
+      GUARDED_BY(lock_);
+};
+
 void GL_APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
                                                    GLenum type,
                                                    GLuint id,
@@ -416,9 +473,11 @@ void GL_APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
                                                    GLsizei length,
                                                    const GLchar* message,
                                                    const GLvoid* user_param) {
-  DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
-      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+      PassthroughCallbackRegistry::Get().Lookup(user_param);
+  if (!command_decoder) {
+    return;
+  }
   command_decoder->OnDebugMessage(source, type, id, severity, length, message);
   LogGLDebugMessage(source, type, id, severity, length, message,
                     command_decoder->GetLogger());
@@ -452,9 +511,11 @@ PassthroughGLBlobCacheGetCallback(const void* key,
                                   void* value,
                                   GLsizeiptr value_size,
                                   const void* user_param) {
-  DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
-      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+      PassthroughCallbackRegistry::Get().Lookup(user_param);
+  if (!command_decoder) {
+    return 0;
+  }
   return command_decoder->BlobCacheGet(key, key_size, value, value_size);
 }
 
@@ -463,9 +524,11 @@ void GL_APIENTRY PassthroughGLBlobCacheSetCallback(const void* key,
                                                    const void* value,
                                                    GLsizeiptr value_size,
                                                    const void* user_param) {
-  DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
-      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+      PassthroughCallbackRegistry::Get().Lookup(user_param);
+  if (!command_decoder) {
+    return;
+  }
   command_decoder->BlobCacheSet(key, key_size, value, value_size);
 }
 
@@ -1079,7 +1142,10 @@ GLES2DecoderPassthroughImpl::GLES2DecoderPassthroughImpl(
   DCHECK(group);
 }
 
-GLES2DecoderPassthroughImpl::~GLES2DecoderPassthroughImpl() = default;
+GLES2DecoderPassthroughImpl::~GLES2DecoderPassthroughImpl() {
+  PassthroughCallbackRegistry::Get().Unregister(
+      std::exchange(decoder_id_for_callbacks_, 0u));
+}
 
 GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommands(
     unsigned int num_commands,
@@ -1235,12 +1301,18 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   surface_ = surface;
   offscreen_ = offscreen;
 
+  PassthroughCallbackRegistry::Get().Unregister(
+      std::exchange(decoder_id_for_callbacks_, 0u));
+  decoder_id_for_callbacks_ = PassthroughCallbackRegistry::Get().Register(this);
+  const void* callback_user_param =
+      reinterpret_cast<const void*>(decoder_id_for_callbacks_);
+
   // For WebGL contexts, log GL errors so they appear in devtools. Otherwise
   // only enable debug logging if requested.
   bool log_non_errors =
       group_->gpu_preferences().enable_gpu_driver_debug_logging;
   InitializeGLDebugLogging(log_non_errors, PassthroughGLDebugMessageCallback,
-                           this);
+                           callback_user_param);
 
   // Create GPU Tracer for timing values.
   gpu_tracer_ = std::make_unique<GPUTracer>(this);
@@ -1325,7 +1397,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
   if (feature_info_->feature_flags().angle_blob_cache) {
     api()->glBlobCacheCallbacksANGLEFn(PassthroughGLBlobCacheSetCallback,
-                                       PassthroughGLBlobCacheGetCallback, this);
+                                       PassthroughGLBlobCacheGetCallback,
+                                       callback_user_param);
   }
 
   resources_ = group_->passthrough_resources();
@@ -1447,6 +1520,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
 void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
   idle_trim_cb_.Cancel();
+  PassthroughCallbackRegistry::Get().Unregister(
+      std::exchange(decoder_id_for_callbacks_, 0u));
 
   if (have_context && feature_info_->feature_flags().angle_blob_cache) {
     api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
@@ -1916,35 +1991,34 @@ bool GLES2DecoderPassthroughImpl::WasContextLostByRobustnessExtension() const {
 void GLES2DecoderPassthroughImpl::MarkContextLost(
     error::ContextLostReason reason) {
   idle_trim_cb_.Cancel();
+  PassthroughCallbackRegistry::Get().Unregister(
+      std::exchange(decoder_id_for_callbacks_, 0u));
 
   // Only lose the context once.
   if (WasContextLost()) {
     return;
   }
 
-  bool have_context = context_ && context_->IsCurrent(nullptr);
-  if (have_context) {
-    for (auto& bound_texture_type : bound_textures_) {
-      for (auto& bound_texture : bound_texture_type) {
-        if (bound_texture.texture) {
-          bound_texture.texture->MarkContextLost();
-        }
+  for (auto& bound_texture_type : bound_textures_) {
+    for (auto& bound_texture : bound_texture_type) {
+      if (bound_texture.texture) {
+        bound_texture.texture->MarkContextLost();
       }
     }
+  }
 
-    if (resources_) {
-      resources_->MarkContextLost();
-    }
+  if (resources_) {
+    resources_->MarkContextLost();
+  }
 
-    // SECURITY: crbug.com/500187083 and crbug.com/517018374.
-    // Unconditionally clear per-context callbacks that hold a raw
-    // `this` pointer if the context IsCurrent before it gets lost, to
-    // prevent UAF when Destroy(have_context=false) skips them.
-    if (api()) {
-      api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
-      if (feature_info_ && feature_info_->feature_flags().angle_blob_cache) {
-        api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
-      }
+  // Clear per-context callbacks on a best-effort basis when the context is
+  // current. If ANGLE has already marked the context lost or the context is
+  // not current, `PassthroughCallbackRegistry` unregistration above ensures
+  // any subsequent callbacks are ignored.
+  if (IsDecoderContextCurrent() && api()) {
+    api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
+    if (feature_info_ && feature_info_->feature_flags().angle_blob_cache) {
+      api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
     }
   }
 
@@ -2532,7 +2606,9 @@ void GLES2DecoderPassthroughImpl::BuildRequestableExtensionString() {
 
 PassthroughProgramCache*
 GLES2DecoderPassthroughImpl::get_passthrough_program_cache() const {
-  return static_cast<PassthroughProgramCache*>(group_->get_program_cache());
+  return group_ ? static_cast<PassthroughProgramCache*>(
+                      group_->get_program_cache())
+                : nullptr;
 }
 
 error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
