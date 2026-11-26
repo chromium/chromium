@@ -195,7 +195,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void FinalizeFrame(FlushReason) override;
 
-  bool IsPaintable() const final;
   bool IsHibernating() const final;
 
   void WillDrawImage(CanvasImageSource*, bool image_is_texture_backed) final;

@@ -736,10 +736,6 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   }
 }
 
-bool CanvasRenderingContext2D::IsPaintable() const {
-  return canvas() && BaseRenderingContext2D::IsPaintable();
-}
-
 bool CanvasRenderingContext2D::IsHibernating() const {
   auto* hibernation_handler = GetHibernationHandler();
   return hibernation_handler && hibernation_handler->IsHibernating();
