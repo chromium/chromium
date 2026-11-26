@@ -322,9 +322,6 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
   bool managed_profile_already_exists =
       switch_to_entry && switch_to_entry->UserAcceptedAccountManagement();
 
-  std::u16string profile_name =
-      profiles::GetDefaultNameForNewSignedInProfile(account_info_);
-
   CHECK(!profile_creator_);
   if (managed_profile_already_exists) {
     profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
@@ -337,6 +334,8 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
 
     return;
   }
+  std::u16string profile_name =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info_);
   profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
       source_profile_, account_info_.GetAccountId(),
       std::vector<CoreAccountId>{}, profile_name,

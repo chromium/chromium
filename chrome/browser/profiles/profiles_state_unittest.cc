@@ -43,6 +43,15 @@
 #include "chrome/browser/signin/signin_util.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "base/not_fatal_until.h"
+#include "base/test/gtest_util.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif
+
 namespace {
 
 constexpr char kProfile1[] = "Profile 1";
@@ -591,3 +600,94 @@ void GetProfileDirFromCommandLineTest::TestIgnoreIfNotExistsImpl(
                              : base::FilePath(),
             GetProfileDir());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+TEST(GetDefaultNameForNewSignedInProfileTest, ManagedAccountWithoutNameFields) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "user@example.com")
+          .SetHostedDomain("example.com")
+          .Build();
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
+  ASSERT_FALSE(account_info.GetGivenName().has_value());
+  ASSERT_FALSE(account_info.GetFullName().has_value());
+
+  EXPECT_EQ(u"example.com",
+            profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileTest,
+     ManagedAccountUsesHostedDomainOverNames) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "user@example.com")
+          .SetFullName("Alice Smith")
+          .SetGivenName("Alice")
+          .SetHostedDomain("example.com")
+          .Build();
+
+  EXPECT_EQ(u"example.com",
+            profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileTest,
+     NonManagedAccountPrefersGivenNameOverFullName) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "elodie@gmail.com")
+          .SetFullName("Élodie Martin")
+          .SetGivenName("Élodie")
+          .SetHostedDomain(std::string())
+          .Build();
+
+  EXPECT_EQ(u"Élodie",
+            profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileTest,
+     NonManagedAccountFallsBackToFullName) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "ahmed@gmail.com")
+          .SetFullName("أحمد علي")
+          .SetHostedDomain(std::string())
+          .Build();
+
+  EXPECT_EQ(u"أحمد علي",
+            profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileTest,
+     NonManagedAccountFallsBackToEmail) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "alice@gmail.com")
+          .SetHostedDomain(std::string())
+          .Build();
+
+  EXPECT_EQ(u"alice@gmail.com",
+            profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileDeathTest,
+     CrashesWhenManagedStatusUnknown) {
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "alice@gmail.com")
+          .SetGivenName("Alice")
+          .Build();
+
+  EXPECT_CHECK_DEATH(
+      profiles::GetDefaultNameForNewSignedInProfile(account_info),
+      base::NotFatalUntil::M165, UNTIL_THEN({
+        EXPECT_EQ(u"Alice",
+                  profiles::GetDefaultNameForNewSignedInProfile(account_info));
+      }));
+}
+
+TEST(GetDefaultNameForNewSignedInProfileDeathTest,
+     CrashesWhenNonManagedAccountHasNoNameOrEmail) {
+  CoreAccountInfo core_info;
+  core_info.gaia = GaiaId("gaia_id");
+  core_info.account_id = CoreAccountId::FromGaiaId(core_info.gaia);
+  AccountInfo account_info =
+      AccountInfo::Builder(core_info).SetHostedDomain(std::string()).Build();
+
+  EXPECT_CHECK_DEATH(
+      profiles::GetDefaultNameForNewSignedInProfile(account_info));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

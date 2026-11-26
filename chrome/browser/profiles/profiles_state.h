@@ -168,12 +168,18 @@ std::u16string GetDefaultNameForNewEnterpriseProfile(
     std::optional<std::string_view> hosted_domain = std::nullopt);
 
 // Returns the default name for a new signed-in profile, based on
-// `account_info`. Never returns an empty string.
+// `account_info`. `account_info.IsManaged()` must not be
+// `signin::Tribool::kUnknown`. For managed accounts, delegates to
+// `GetDefaultNameForNewEnterpriseProfile()` using `GetHostedDomain()`. For
+// non-managed accounts, uses the given name, falling back to the full name or
+// email (which must be non-empty if both names are absent). Never returns an
+// empty string.
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info);
 
-// The same as above but using incomplete account info. `account_info` must be
-// valid. Never returns an empty string.
+// Returns the default name for a new signed-in profile when only
+// `CoreAccountInfo` is available (uses `account_info.email`, which must be
+// non-empty). Never returns an empty string.
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info);
 #endif  // !BUILDFLAG(IS_CHROMEOS)

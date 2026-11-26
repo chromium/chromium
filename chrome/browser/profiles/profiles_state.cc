@@ -5,11 +5,13 @@
 #include "chrome/browser/profiles/profiles_state.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -445,18 +447,23 @@ std::u16string GetDefaultNameForNewEnterpriseProfile(
 
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
-  // TODO(crbug.com/589721712): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(account_info.IsValid());
-  if (account_info.IsManaged() != signin::Tribool::kTrue) {
-    std::u16string given_name = base::UTF8ToUTF16(*account_info.GetGivenName());
-    CHECK(!given_name.empty());
-    return given_name;
+  CHECK_NE(account_info.IsManaged(), signin::Tribool::kUnknown,
+           base::NotFatalUntil::M165);
+  if (account_info.IsManaged() == signin::Tribool::kTrue) {
+    return GetDefaultNameForNewEnterpriseProfile(
+        account_info.GetHostedDomain());
   }
-  std::u16string default_name =
-      GetDefaultNameForNewEnterpriseProfile(account_info.GetHostedDomain());
-  CHECK(!default_name.empty());
-  return default_name;
+  std::optional<std::string_view> name = account_info.GetGivenName();
+  if (!name.has_value()) {
+    name = account_info.GetFullName();
+  }
+  if (name.has_value()) {
+    std::u16string profile_name = base::UTF8ToUTF16(*name);
+    CHECK(!profile_name.empty());
+    return profile_name;
+  }
+  return GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+      account_info.GetCoreAccountInfo());
 }
 
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(

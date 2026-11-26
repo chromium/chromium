@@ -8,6 +8,10 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -19,9 +23,11 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -506,6 +512,99 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTestBase,
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(GetIdentityManager(GetProfile())
                    ->HasAccountWithRefreshToken(account_info.GetAccountId()));
+}
+
+// Regression test for crbug.com/589721712: creating a new managed profile must
+// succeed when the managed account does not have optional name fields
+// populated.
+IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTestBase,
+                       NewProfileWithManagedAccountWithoutNameFields) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
+  ASSERT_FALSE(account_info.GetGivenName().has_value());
+  ASSERT_FALSE(account_info.GetFullName().has_value());
+
+  base::test::TestFuture<
+      base::expected<Profile*, ManagedProfileCreationFailureReason>, bool>
+      future;
+  auto managed_profile_creation_controller =
+      ManagedProfileCreationController::CreateManagedProfileForTesting(
+          GetProfile(), account_info, signin_metrics::AccessPoint::kStartPage,
+          future.GetCallback(), policy::ProfileSeparationPolicies(),
+          signin::SIGNIN_CHOICE_NEW_PROFILE);
+
+  ASSERT_TRUE(future.Wait());
+  Profile* new_profile =
+      future
+          .Get<base::expected<Profile*, ManagedProfileCreationFailureReason>>()
+          .value_or(nullptr);
+  ASSERT_NE(new_profile, nullptr);
+  EXPECT_NE(new_profile, GetProfile());
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(new_profile));
+  EXPECT_EQ(GetIdentityManager(new_profile)
+                ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+            account_info.GetAccountId());
+  EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(new_profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(u"example.com", entry->GetLocalProfileName());
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTestBase,
+                       ReusesExistingManagedProfileWithoutNameFields) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
+  ASSERT_FALSE(account_info.GetGivenName().has_value());
+  ASSERT_FALSE(account_info.GetFullName().has_value());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& existing_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  ProfileAttributesEntry* existing_entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(existing_profile.GetPath());
+  ASSERT_NE(existing_entry, nullptr);
+  existing_entry->SetLocalProfileName(u"Existing Work",
+                                      /*is_default_name=*/false);
+  existing_entry->SetAuthInfo(account_info.GetGaiaId(), u"bob@example.com",
+                              /*is_consented_primary_account=*/false);
+  enterprise_util::SetUserAcceptedAccountManagement(&existing_profile, true);
+  const size_t num_profiles_before = profile_manager->GetNumberOfProfiles();
+
+  base::test::TestFuture<
+      base::expected<Profile*, ManagedProfileCreationFailureReason>, bool>
+      future;
+  auto managed_profile_creation_controller =
+      ManagedProfileCreationController::CreateManagedProfileForTesting(
+          GetProfile(), account_info, signin_metrics::AccessPoint::kStartPage,
+          future.GetCallback(), policy::ProfileSeparationPolicies(),
+          signin::SIGNIN_CHOICE_NEW_PROFILE);
+
+  ASSERT_TRUE(future.Wait());
+  Profile* result_profile =
+      future
+          .Get<base::expected<Profile*, ManagedProfileCreationFailureReason>>()
+          .value_or(nullptr);
+  EXPECT_EQ(result_profile, &existing_profile);
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), num_profiles_before);
+  EXPECT_EQ(existing_entry->GetLocalProfileName(), u"Existing Work");
+  EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
