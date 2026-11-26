@@ -41,7 +41,6 @@ class SplitTabView : public TabCollectionZOrderManager,
   ~SplitTabView() override;
 
   // views::View
-  void OnThemeChanged() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

@@ -73,11 +73,6 @@ SplitTabView::SplitTabView(TabCollectionNode* collection_node)
 
 SplitTabView::~SplitTabView() = default;
 
-void SplitTabView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateBorder();
-}
-
 void SplitTabView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
