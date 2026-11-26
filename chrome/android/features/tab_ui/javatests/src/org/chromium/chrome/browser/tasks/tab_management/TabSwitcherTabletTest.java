@@ -62,6 +62,7 @@ import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -275,9 +276,11 @@ public class TabSwitcherTabletTest {
     }
 
     private void prepareTabs(int numTabs, int numIncognitoTabs) {
-        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), false, numTabs);
+        CtaPageStation page =
+                TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), false, numTabs);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && numIncognitoTabs > 0) {
-            mIncognitoPage = mPage.openNewIncognitoTabOrWindowFast();
+            // createTabs() returns null when it opened no tab; mPage is still active then.
+            mIncognitoPage = (page != null ? page : mPage).openNewIncognitoTabOrWindowFast();
             for (int i = 0; i < numTabs - 1; i++) {
                 mIncognitoPage = mIncognitoPage.openNewIncognitoTabOrWindowFast();
             }

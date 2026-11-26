@@ -64,10 +64,10 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -348,7 +348,7 @@ public class TabGridIphTest {
     public void testIphItemChangeWithLastTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
-        enterTabSwitcher(cta);
+        RegularTabSwitcherStation tabSwitcher = mPage.openRegularTabSwitcher();
         CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         waitForView(withId(R.id.tab_grid_message_item));
 
@@ -371,9 +371,7 @@ public class TabGridIphTest {
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
 
         // Add the first tab to an empty tab switcher and the IPH item should show.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), cta, false, true);
-        enterTabSwitcher(cta);
+        tabSwitcher.openNewTabFast().openRegularTabSwitcher();
         verifyTabSwitcherCardCount(cta, 1);
         CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         waitForView(withId(R.id.tab_grid_message_item));

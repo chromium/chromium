@@ -79,7 +79,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -987,10 +987,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         final ChromeActivity ca = mActivityTestRule.getActivity();
 
         // Create a new tab so |ca| isn't destroyed.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), ca);
-        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
+        Tab testTab = mPage.getTab();
+        mPage.openNewTabFast().selectTabFast(testTab, WebPageStation::newBuilder);
 
-        int testTabId = mActivityTestRule.getActivityTab().getId();
+        int testTabId = testTab.getId();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 ca,

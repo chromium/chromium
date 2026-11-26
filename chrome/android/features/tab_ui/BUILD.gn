@@ -280,6 +280,7 @@ android_library("test_support_javalib") {
     "//chrome/browser/flags:java",
     "//chrome/browser/hub:java",
     "//chrome/browser/hub/internal:java",
+    "//chrome/browser/incognito:incognito_utils_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",

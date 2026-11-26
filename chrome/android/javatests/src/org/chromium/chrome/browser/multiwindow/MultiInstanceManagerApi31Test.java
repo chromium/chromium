@@ -15,7 +15,6 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -535,7 +534,7 @@ public class MultiInstanceManagerApi31Test {
             ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
         }
         if (createMultipleTabs && !addIncognitoExtras) {
-            ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
+            page.openNewTabFast();
         }
         mExtraActivities.add(activity);
         return activity;

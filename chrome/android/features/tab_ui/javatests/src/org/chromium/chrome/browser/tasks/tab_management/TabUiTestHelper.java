@@ -61,6 +61,8 @@ import org.hamcrest.Matcher;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.TrafficControl;
+import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -68,6 +70,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.hub.HubLayout;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,8 +88,11 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -101,16 +107,48 @@ public class TabUiTestHelper {
     /**
      * Create {@code tabsCount} tabs for {@code cta} in certain tab model based on {@code
      * isIncognito}.
-     * @param cta            A current running activity to create tabs.
-     * @param isIncognito    Indicator for whether to create tabs in normal model or incognito
-     *         model.
-     * @param tabsCount      Number of tabs to be created.
+     *
+     * <p>Opening a tab hops on at its NTP, which finishes the Stations the caller holds. Continue
+     * from the returned Station instead.
+     *
+     * @param cta A current running activity to create tabs.
+     * @param isIncognito Indicator for whether to create tabs in normal model or incognito model.
+     * @param tabsCount Number of tabs to be created.
+     * @return The last new tab's Station, or null if no tab was opened.
      */
-    public static void createTabs(ChromeTabbedActivity cta, boolean isIncognito, int tabsCount) {
+    public static @Nullable CtaPageStation createTabs(
+            ChromeTabbedActivity cta, boolean isIncognito, int tabsCount) {
+        CtaPageStation page = null;
         for (int i = 0; i < (isIncognito ? tabsCount : tabsCount - 1); i++) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), cta, isIncognito, true);
+            page = openNewTabFrom(page, cta, isIncognito);
         }
+        return page;
+    }
+
+    /** Opens one new tab: hops on at its NTP without a Station yet, otherwise from {@code page}. */
+    private static CtaPageStation openNewTabFrom(
+            @Nullable CtaPageStation page, ChromeTabbedActivity cta, boolean isIncognito) {
+        if (page != null) {
+            return isIncognito ? page.openNewIncognitoTabFast() : page.openNewTabFast();
+        }
+        assert isIncognito == cta.getTabModelSelector().isOffTheRecordModelSelected()
+                        || !IncognitoUtils.shouldOpenIncognitoAsWindow()
+                : "Tabs can only be opened in a window of the same type.";
+        int menuId =
+                isIncognito
+                        ? org.chromium.chrome.R.id.new_incognito_tab_menu_id
+                        : org.chromium.chrome.R.id.new_tab_menu_id;
+        TripBuilder openNewTab =
+                Triggers.runTo(
+                        () ->
+                                MenuUtils.invokeCustomMenuActionSync(
+                                        InstrumentationRegistry.getInstrumentation(), cta, menuId));
+        if (isIncognito) {
+            return openNewTab.hopOnTo(
+                    cta, IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
+        }
+        return openNewTab.hopOnTo(
+                cta, RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 
     /**
@@ -549,12 +587,16 @@ public class TabUiTestHelper {
      * Make Chrome have {@code numTabs} of regular Tabs and {@code numIncognitoTabs} of incognito
      * tabs with {@code url} loaded.
      *
+     * <p>When {@code url} is null, opening a tab hops on at its NTP, which finishes the Stations
+     * the caller holds. Continue from the returned Station instead.
+     *
      * @param rule The {@link ChromeTabbedActivityTestRule}.
      * @param numTabs The number of regular tabs.
      * @param numIncognitoTabs The number of incognito tabs.
      * @param url The URL to load.
+     * @return The last new tab's Station, or null if {@code url} is not null or no tab was opened.
      */
-    public static void prepareTabsWithThumbnail(
+    public static @Nullable CtaPageStation prepareTabsWithThumbnail(
             ChromeTabbedActivityTestRule rule,
             int numTabs,
             int numIncognitoTabs,
@@ -566,11 +608,14 @@ public class TabUiTestHelper {
         assertEquals(0, rule.tabsCount(true));
 
         if (url != null) rule.loadUrl(url);
+        CtaPageStation page = null;
         if (numTabs > 1) {
             // When Chrome started, there is already one Tab created by default.
-            createTabsWithThumbnail(rule, numTabs - 1, url, false);
+            page = createTabsWithThumbnail(rule, numTabs - 1, url, false);
         }
-        if (numIncognitoTabs > 0) createTabsWithThumbnail(rule, numIncognitoTabs, url, true);
+        if (numIncognitoTabs > 0) {
+            page = createTabsWithThumbnail(rule, numIncognitoTabs, url, true);
+        }
 
         assertEquals(numTabs, rule.tabsCount(false));
         assertEquals(numIncognitoTabs, rule.tabsCount(true));
@@ -578,6 +623,7 @@ public class TabUiTestHelper {
             verifyAllTabsHaveUrl(rule.getActivity().getTabModelSelector().getModel(false), url);
             verifyAllTabsHaveUrl(rule.getActivity().getTabModelSelector().getModel(true), url);
         }
+        return page;
     }
 
     private static void verifyAllTabsHaveUrl(TabModel tabModel, String url) {
@@ -595,13 +641,17 @@ public class TabUiTestHelper {
      * test doesn't care about thumbnail, use {@link TabUiTestHelper#createTabs} instead since it's
      * faster.
      *
+     * <p>When {@code url} is null, opening a tab hops on at its NTP, which finishes the Stations
+     * the caller holds. Continue from the returned Station instead.
+     *
      * @param rule The {@link ChromeTabbedActivityTestRule}.
      * @param numTabs The number of tabs to create.
      * @param url The URL to load. Skip loading when null, but the thumbnail for the NTP might not
      *     be saved.
      * @param isIncognito Whether the tab is incognito tab.
+     * @return The last new tab's Station, or null if {@code url} is not null.
      */
-    public static void createTabsWithThumbnail(
+    public static @Nullable CtaPageStation createTabsWithThumbnail(
             ChromeTabbedActivityTestRule rule,
             int numTabs,
             @Nullable String url,
@@ -610,6 +660,7 @@ public class TabUiTestHelper {
         assertTrue(numTabs >= 1);
         int previousTabCount = rule.tabsCount(isIncognito);
 
+        CtaPageStation page = null;
         for (int i = 0; i < numTabs; i++) {
             TabModel previousTabModel = cta.getTabModelSelector().getCurrentModel();
             int previousTabIndex =
@@ -618,10 +669,8 @@ public class TabUiTestHelper {
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> previousTabModel.getTabAt(previousTabIndex));
 
-            boolean urlIsNull = url == null;
-            if (urlIsNull) {
-                ChromeTabUtils.newTabFromMenu(
-                        InstrumentationRegistry.getInstrumentation(), cta, isIncognito, urlIsNull);
+            if (url == null) {
+                page = openNewTabFrom(page, cta, isIncognito);
             } else {
                 ChromeTabUtils.fullyLoadUrlInNewTab(
                         InstrumentationRegistry.getInstrumentation(), cta, url, isIncognito);
@@ -643,6 +692,7 @@ public class TabUiTestHelper {
 
         // Don't wait on the current tab to fetch. It should be fetched either when entering the
         // tab switcher or as a side-effect of unsticking the last tab.
+        return page;
     }
 
     private static void waitForThumbnailsToCapture(

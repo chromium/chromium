@@ -32,8 +32,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -140,14 +141,10 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     // Revived 6/2022 based on reviver: https://crbug.com/40845543
     // Previously disabled: https://crbug.com/40757167, https://crbug.com/40757310
     public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        final Tab tab2 = mActivityTestRule.getActivityTab();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.setIndex(mActivityTestRule.getActivity().getCurrentTabModel(), 0);
-                });
+        Tab tab1 = mPage.getTab();
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
+        final Tab tab2 = ntp.getTab();
+        ntp.selectTabFast(tab1, WebPageStation::newBuilder);
 
         triggerResolve(SEARCH_NODE);
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());

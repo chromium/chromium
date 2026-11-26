@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -353,6 +354,9 @@ public class ContextualSearchInstrumentationBase {
 
     protected String mTestPage = "/chrome/test/data/android/contextualsearch/simple_test.html";
 
+    /** The test page loaded by {@link #setUp()}. */
+    protected WebPageStation mPage;
+
     protected ContextualSearchManagerWrapper mContextualSearchManager;
     protected OverlayPanelManagerWrapper mPanelManager;
     private SelectionClient mContextualSearchClient;
@@ -394,7 +398,7 @@ public class ContextualSearchInstrumentationBase {
 
         mTestServer = mActivityTestRule.getTestServer();
 
-        mActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
+        mPage = mActivityTestRule.startOnTestServerUrl(mTestPage);
         // DOMUtils sometimes hits the wrong node due to an incorrect page scale factor,
         // so wait until that is set. https://crbug.com/40840940
         mActivityTestRule.assertWaitForPageScaleFactorMatch(1.0f);
