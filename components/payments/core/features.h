@@ -124,6 +124,10 @@ BASE_DECLARE_FEATURE(kPaymentHandlerModalDialogHost);
 // the client security state on the resource request.
 BASE_DECLARE_FEATURE(kPaymentRequestEnforceLNAWithClientSecurityState);
 
+// Used to control whether the Page Info icon in Payment Handler dialog headers
+// follows the HTML head <meta name="theme-color">.
+BASE_DECLARE_FEATURE(kPaymentHandlerPageInfoThemeColor);
+
 }  // namespace features
 }  // namespace payments
 

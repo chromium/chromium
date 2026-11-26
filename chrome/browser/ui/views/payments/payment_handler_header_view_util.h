@@ -23,6 +23,10 @@
 class PermissionDashboardView;
 class SkBitmap;
 
+namespace gfx {
+class FontList;
+}  // namespace gfx
+
 namespace payments {
 
 // The progress bar used in the Payment Handler UI.
@@ -95,6 +99,32 @@ class PaymentHandlerCloseButton : public views::ImageButton {
   base::WeakPtrFactory<PaymentHandlerCloseButton> weak_ptr_factory_{this};
 };
 
+// The Page Info button used in the header of the Payment Handler UI.
+class PaymentHandlerLocationIconView : public LocationIconView {
+  METADATA_HEADER(PaymentHandlerLocationIconView, LocationIconView)
+
+ public:
+  PaymentHandlerLocationIconView(
+      const gfx::FontList& font_list,
+      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+      LocationIconView::Delegate* location_icon_delegate);
+  PaymentHandlerLocationIconView(const PaymentHandlerLocationIconView&) =
+      delete;
+  PaymentHandlerLocationIconView& operator=(
+      const PaymentHandlerLocationIconView&) = delete;
+  ~PaymentHandlerLocationIconView() override;
+
+  void SetThemeColor(std::optional<SkColor> theme_color);
+  std::optional<SkColor> theme_color() const { return theme_color_; }
+
+ protected:
+  // IconLabelBubbleView:
+  void UpdateBackground() override;
+
+ private:
+  std::optional<SkColor> theme_color_;
+};
+
 struct PaymentHandlerHeaderViews {
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label;
   base::WeakPtr<PaymentHandlerCloseButton> close_button;
@@ -130,11 +160,15 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
 SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
                                           std::optional<SkColor> theme_color);
 
+// Computes a contrasting Google Grey icon color against `background_color`.
+SkColor GetContrastingHeaderIconColor(SkColor background_color);
+
 // Computes and applies header backgrounds and item colors based on theme color.
 void SetHeaderColors(views::View* header_view,
                      PaymentHandlerOriginLabel* origin_label,
                      PaymentHandlerProgressBar* progress_bar,
                      PaymentHandlerCloseButton* close_button,
+                     LocationIconView* location_icon_view,
                      std::optional<SkColor> theme_color);
 
 }  // namespace payments

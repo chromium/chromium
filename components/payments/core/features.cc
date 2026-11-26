@@ -105,5 +105,8 @@ BASE_FEATURE(kPaymentHandlerModalDialogHost, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPaymentRequestEnforceLNAWithClientSecurityState,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentHandlerPageInfoThemeColor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

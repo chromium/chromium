@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/views/payments/payment_handler_header_view_util.h"
 
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -23,6 +27,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -31,7 +36,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -41,6 +49,8 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace payments {
 
@@ -246,6 +256,57 @@ PaymentHandlerCloseButton::GetWeakPtr() {
 BEGIN_METADATA(PaymentHandlerCloseButton)
 END_METADATA
 
+PaymentHandlerLocationIconView::PaymentHandlerLocationIconView(
+    const gfx::FontList& font_list,
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    LocationIconView::Delegate* location_icon_delegate)
+    : LocationIconView(font_list,
+                       icon_label_bubble_delegate,
+                       location_icon_delegate) {
+  SetBackgroundVisibility(BackgroundVisibility::kAlways);
+}
+
+PaymentHandlerLocationIconView::~PaymentHandlerLocationIconView() = default;
+
+void PaymentHandlerLocationIconView::SetThemeColor(
+    std::optional<SkColor> theme_color) {
+  if (theme_color_ == theme_color) {
+    return;
+  }
+  theme_color_ = theme_color;
+  if (GetWidget()) {
+    Update(/*suppress_animations=*/true);
+  }
+}
+
+void PaymentHandlerLocationIconView::UpdateBackground() {
+  if (!GetWidget()) {
+    return;
+  }
+  if (!theme_color_.has_value()) {
+    // `LocationIconView::UpdateBackground()` is private, so this calls the
+    // grandparent's. That only skips the red "Dangerous" pill, which payment
+    // apps cannot reach because this dialog closes on pages that are not
+    // secure.
+    // TODO(crbug.com/587503732): Remove with the icon's background circle.
+    IconLabelBubbleView::UpdateBackground();
+    return;
+  }
+
+  SetBackground(nullptr);
+  // `LocationIconView` installs hover and press effects in Omnibox colors,
+  // which follow the browser theme and can be invisible on the themed header.
+  // Clearing them falls back to the defaults, which use the icon color.
+  views::InkDrop::Get(this)->SetCreateHighlightCallback({});
+  views::InkDrop::Get(this)->SetCreateRippleCallback({});
+  if (views::InkDrop::Get(this)->HasInkDrop() && !GetWidget()->IsClosed()) {
+    views::InkDrop::Get(this)->GetInkDrop()->HostViewThemeChanged();
+  }
+}
+
+BEGIN_METADATA(PaymentHandlerLocationIconView)
+END_METADATA
+
 std::unique_ptr<views::View> CreatePaymentHandlerLoadingIconView() {
   auto page_info_icon_view = std::make_unique<views::ImageView>();
   page_info_icon_view->SetID(
@@ -270,8 +331,12 @@ std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
 
   const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
-  auto icon_view = std::make_unique<LocationIconView>(
-      font_list, icon_label_bubble_delegate, location_icon_delegate);
+  std::unique_ptr<LocationIconView> icon_view =
+      base::FeatureList::IsEnabled(features::kPaymentHandlerPageInfoThemeColor)
+          ? std::make_unique<PaymentHandlerLocationIconView>(
+                font_list, icon_label_bubble_delegate, location_icon_delegate)
+          : std::make_unique<LocationIconView>(
+                font_list, icon_label_bubble_delegate, location_icon_delegate);
   // LocationIconView defaults to kLocationIconElementId, but Payment Handler
   // shares the browser window's ElementContext with the Omnibox. Retagging
   // with kAppIconElementId avoids duplicate element IDs in the same context.
@@ -399,10 +464,17 @@ SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
              : dialog_background_color;
 }
 
+SkColor GetContrastingHeaderIconColor(SkColor background_color) {
+  return GetContrastingGoogleColor(gfx::kGoogleGrey700, gfx::kGoogleGrey500,
+                                   background_color,
+                                   color_utils::kMinimumVisibleContrastRatio);
+}
+
 void SetHeaderColors(views::View* header_view,
                      PaymentHandlerOriginLabel* origin_label,
                      PaymentHandlerProgressBar* progress_bar,
                      PaymentHandlerCloseButton* close_button,
+                     LocationIconView* location_icon_view,
                      std::optional<SkColor> theme_color) {
   // Calculates the header background based on the provided theme color if
   // provided, otherwise the Chrome theme color by default.
@@ -422,6 +494,14 @@ void SetHeaderColors(views::View* header_view,
 
   if (close_button) {
     close_button->SetThemeColor(theme_color);
+  }
+
+  // The icon is only a `PaymentHandlerLocationIconView` when
+  // `kPaymentHandlerPageInfoThemeColor` is enabled.
+  if (auto* themed_icon_view =
+          views::AsViewClass<PaymentHandlerLocationIconView>(
+              location_icon_view)) {
+    themed_icon_view->SetThemeColor(theme_color);
   }
 }
 
