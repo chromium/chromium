@@ -356,6 +356,7 @@ source_set("browser") {
     "//components/safe_browsing/content/browser/triggers",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/content/common/file_type_policies",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:safebrowsing_proto",
