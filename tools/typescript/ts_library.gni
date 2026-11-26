@@ -78,7 +78,16 @@ template("ts_library") {
     ]
 
     if (defined(in_files)) {
-      args += [ "--in_files" ] + in_files
+      # Pass via a response file to stay under the Windows command line limit.
+      if (host_os == "win") {
+        response_file_contents = in_files
+        args += [
+          "--in_files_file",
+          "{{response_file_name}}",
+        ]
+      } else {
+        args += [ "--in_files" ] + in_files
+      }
     }
 
     if (defined(path_mappings_file)) {

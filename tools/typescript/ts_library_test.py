@@ -222,10 +222,19 @@ class TsLibraryTest(unittest.TestCase):
     tsconfig = json.loads(tsconfig_contents)
     self.assertFalse('skipLibCheck' in tsconfig['compilerOptions'])
 
-  def _build_project4(self):
+  def _build_project4(self, use_in_files_file=False):
     gen_dir = os.path.join(
       self._out_folder, 'tools', 'typescript', 'tests', 'project4'
     )
+
+    in_files = ['include.ts', 'exclude.ts']
+    if use_in_files_file:
+      in_files_file = os.path.join(self._out_folder, 'in_files.rsp')
+      with open(in_files_file, 'w', encoding='utf-8') as f:
+        f.write(' '.join(in_files))
+      in_files_args = ['--in_files_file', in_files_file]
+    else:
+      in_files_args = ['--in_files'] + in_files
 
     # Build project4, which includes multiple TS files, only one of which should
     # be included in the manifest.
@@ -243,9 +252,7 @@ class TsLibraryTest(unittest.TestCase):
         os.path.relpath(gen_dir, _CWD),
         '--out_dir',
         os.path.relpath(gen_dir, _CWD),
-        '--in_files',
-        'include.ts',
-        'exclude.ts',
+        *in_files_args,
         '--manifest_excludes',
         'exclude.ts',
       ]
@@ -574,6 +581,19 @@ class TsLibraryTest(unittest.TestCase):
         self.assertTrue(lines[-1].startswith(SOURCE_MAP_TOKEN))
 
     _assert_source_map_exists(os.path.join(gen_dir, 'foo.js'))
+
+  # Test case where |in_files| are passed via a response file, as done by
+  # ts_library.gni on Windows hosts.
+  def testInFilesFile(self):
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    gen_dir = self._build_project4(use_in_files_file=True)
+    self._assert_project4_output(gen_dir)
+
+    tsconfig = json.loads(self._read_file(gen_dir, 'tsconfig_build_ts.json'))
+    self.assertEqual(
+      ['include.ts', 'exclude.ts'],
+      [os.path.basename(f) for f in tsconfig['files']],
+    )
 
 
 if __name__ == '__main__':

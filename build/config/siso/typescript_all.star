@@ -189,6 +189,8 @@ def _ts_library(ctx, cmd):
             out_dir = cmd.args[i + 1]
         if arg == "--tsconfig_base":
             tsconfig_base = cmd.args[i + 1]
+        if arg == "--in_files_file":
+            in_files.extend(str(cmd.rspfile_content).split())
         if arg in ("--in_files", "--definitions", "--deps", "--path_mappings"):
             flag = arg
     root_dir = path.rel(gen_dir, root_dir)
