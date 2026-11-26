@@ -207,6 +207,21 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     @Test
+    public void testDetermineMinWidth() {
+        enableManualResize();
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 300));
+        clearInvocations(mMockTabListCoordinator);
+
+        assertEquals(
+                Integer.valueOf(mCollapsedRailWidth),
+                mCoordinator.determineMinWidth(/* isFullscreen= */ false));
+        assertNull(mCoordinator.determineMinWidth(/* isFullscreen= */ true));
+        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
+    }
+
+    @Test
     public void testDetermineShowableSize() {
         assertEquals(
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
@@ -238,12 +253,15 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testDetermineShowableSize_FullscreenReturnsZeroWidth() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        clearInvocations(mMockTabListCoordinator);
+
         assertEquals(
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ mExpandedRailWidth,
-                        /* windowWidth= */ mWideWindowWidth,
-                        /* isFullscreen= */ true));
+                        mCollapsedRailWidth - 1, mWideWindowWidth, /* isFullscreen= */ true));
+        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
     }
 
     @Test

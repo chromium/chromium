@@ -464,6 +464,18 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public @Px @Nullable Integer determineMinWidth(boolean isFullscreen) {
+        log(TAG, "determineMinWidth", isFullscreen);
+        ThreadUtils.assertOnUiThread();
+
+        if (mSimulateAutoCloseConditionForTesting) {
+            return null;
+        }
+
+        return ViewUtils.dpToPx(mContainerView.getContext(), getMinSidePanelContainerWidthDp());
+    }
+
+    @Override
     public SideUiSize determineShowableSize(
             @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
         log(TAG, "determineShowableSize", availableWidth, windowWidth, isFullscreen);

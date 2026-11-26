@@ -55,6 +55,17 @@ public interface SideUiContainer {
     int getAnchorSide();
 
     /**
+     * Called by {@link SideUiCoordinator} to determine the minimum {@link
+     * SideUiSize#mReservedWidth} in px required to show this container, or {@code null} if
+     * unshowable regardless of available width (e.g. in fullscreen). Must be independent of {@link
+     * #hasContentToShow}.
+     *
+     * @param isFullscreen Whether the app is currently in persistent fullscreen mode.
+     */
+    @Px
+    @Nullable Integer determineMinWidth(boolean isFullscreen);
+
+    /**
      * Called by {@link SideUiCoordinator} for this container to determine its <i>showable</i> size,
      * given the constraints of {@code availableWidth} and {@code windowWidth}.
      *
@@ -163,7 +174,8 @@ public interface SideUiContainer {
      * <ul>
      *   <li>the {@link UiUpdateRequest} isn't from the container, and
      *   <li>the container has informed {@link SideUiCoordinator} that it should be closed, via
-     *       {@link #determineShowableSize} and {@link #hasContentToShow}.
+     *       {@link #determineMinWidth}, {@link #determineShowableSize}, and {@link
+     *       #hasContentToShow}.
      * </ul>
      *
      * <p>The typical reason this API is invoked is a change in available space, such as:
@@ -181,8 +193,9 @@ public interface SideUiContainer {
      * <ul>
      *   <li>t0: Container_1 and Container_2 are open.
      *   <li>t1: Container_2 prepares its internal states for closing itself. These internal states
-     *       will be used by {@link #determineShowableSize} and {@link #hasContentToShow} to inform
-     *       {@link SideUiCoordinator} that Container_2 should be closed.
+     *       will be used by {@link #determineMinWidth}, {@link #determineShowableSize}, and {@link
+     *       #hasContentToShow} to inform {@link SideUiCoordinator} that Container_2 should be
+     *       closed.
      *   <li>t2: Before Container_2 sends a {@link UiUpdateRequest}, something else (Container_1, or
      *       some OS signal we are observing) sends a request.
      *   <li>t3: Container_2's {@code onWillAutoClose} will be invoked.

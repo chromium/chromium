@@ -30,6 +30,7 @@ import java.util.Map;
 @DoNotMock
 @NullMarked
 public final class TestSideUiContainer implements SideUiContainer {
+    private static final int DEFAULT_MIN_WIDTH_DP = 1;
     private static final int DEFAULT_MAX_WIDTH_DP = 412;
 
     /** Height type for this container. */
@@ -40,6 +41,9 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     /** Number of times {@link #hasContentToShow} is called. */
     public int mNumHasContentToShowCalls;
+
+    /** Number of times {@link #determineMinWidth} is called. */
+    public int mNumDetermineMinWidthCalls;
 
     /**
      * Whether browser top controls should remain locked when this container is showing.
@@ -57,11 +61,17 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** The last {@code isFullscreen} received by {@link #determineShowableSize}. */
     public boolean mLastIsFullscreen;
 
+    /** The last {@code isFullscreen} received by {@link #determineMinWidth}. */
+    public boolean mLastDetermineMinWidthIsFullscreen;
+
     /** Maximum width for this {@link SideUiContainer}. */
     public int mMaxWidthDp = DEFAULT_MAX_WIDTH_DP;
 
     /** Minimum width for this {@link SideUiContainer}. */
-    public int mMinWidthDp;
+    public int mMinWidthDp = DEFAULT_MIN_WIDTH_DP;
+
+    /** Whether this container is unshowable regardless of available width. */
+    public boolean mIsUnshowable;
 
     /**
      * How much wider than its reserved width this container renders, i.e. how much of the web
@@ -155,11 +165,20 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
+    public @Px @Nullable Integer determineMinWidth(boolean isFullscreen) {
+        assert mMinWidthDp >= 0 && mMinWidthDp <= mMaxWidthDp;
+
+        mNumDetermineMinWidthCalls++;
+        mLastDetermineMinWidthIsFullscreen = isFullscreen;
+        if (mIsUnshowable) return null;
+        return ViewUtils.dpToPx(mSideUiContainerView.getContext(), mMinWidthDp);
+    }
+
+    @Override
     public SideUiSize determineShowableSize(
             @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
-        assert availableWidth <= windowWidth;
-        assert mMinWidthDp <= mMaxWidthDp;
-        assert mMaxWidthDp <= windowWidth;
+        assert availableWidth >= 0 && availableWidth <= windowWidth;
+        assert mMinWidthDp >= 0 && mMinWidthDp <= mMaxWidthDp;
 
         mLastAvailableWidth = availableWidth;
         mLastWindowWidth = windowWidth;
@@ -168,12 +187,15 @@ public final class TestSideUiContainer implements SideUiContainer {
         @Px int minWidth = ViewUtils.dpToPx(mSideUiContainerView.getContext(), mMinWidthDp);
         @Px int maxWidth = ViewUtils.dpToPx(mSideUiContainerView.getContext(), mMaxWidthDp);
 
-        if (availableWidth < minWidth) {
+        if (mIsUnshowable || availableWidth < minWidth) {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
 
         @Px int reservedWidth = availableWidth < maxWidth ? availableWidth : maxWidth;
-        return new SideUiSize(reservedWidth, reservedWidth + mOverlayWidth, mHeightType);
+        @Px int renderedWidth = reservedWidth + mOverlayWidth;
+        return renderedWidth == 0
+                ? new SideUiSize(0, HeightType.NOT_APPLICABLE)
+                : new SideUiSize(reservedWidth, renderedWidth, mHeightType);
     }
 
     @Override

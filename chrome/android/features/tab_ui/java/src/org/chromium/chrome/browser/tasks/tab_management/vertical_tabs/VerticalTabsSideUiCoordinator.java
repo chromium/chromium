@@ -314,8 +314,18 @@ public class VerticalTabsSideUiCoordinator
     }
 
     @Override
+    public @Px @Nullable Integer determineMinWidth(boolean isFullscreen) {
+        return isFullscreen ? null : mCollapsedViewWidth;
+    }
+
+    @Override
     public SideUiSize determineShowableSize(
             @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
+        // Return before updating collapse or auto-hidden state so hiding for fullscreen (where
+        // availableWidth may be 0) is not treated as a narrow-window collapse or auto-hide.
+        if (isFullscreen) {
+            return new SideUiSize(0, HeightType.NOT_APPLICABLE);
+        }
         Context context = mRootView.getContext();
         int availableWidthDp = ViewUtils.pxToDp(context, availableWidth);
         int windowWidthDp = ViewUtils.pxToDp(context, windowWidth);
@@ -346,7 +356,7 @@ public class VerticalTabsSideUiCoordinator
         boolean shouldHide = boundary == WindowWidthBoundary.NOT_SHOWABLE;
 
         updateAutoHiddenState(mManualVisible && shouldHide);
-        if (isFullscreen || shouldHide) {
+        if (shouldHide) {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
         return new SideUiSize(reservedWidth, renderedWidth, HeightType.TOOLBAR);
