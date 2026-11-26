@@ -86,6 +86,8 @@ import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.H
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.chrome.browser.ttc.settings.TtcSettings;
+import org.chromium.chrome.browser.ttc.settings.TtcSettingsUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
@@ -484,6 +486,10 @@ public class SettingsFragmentRegistry {
         // Glic
         registerMapping("/ai/gemini", GlicSettings.class);
         registerMapping("/ai/gemini/permissions", GlicActorLoginPermissionsFragment.class);
+
+        // TTC
+        registerMapping("/ai/ttc", TtcSettings.class)
+                .availableWhen(TtcSettingsUtils::shouldShowSettingsPage);
 
         // Parameter translations mapping URL query string keys to Fragment
         // argument extra keys with appropriate type deserialization.

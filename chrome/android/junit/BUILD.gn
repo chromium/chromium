@@ -1692,6 +1692,8 @@ if (is_android) {
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/settings:java",
       "//chrome/browser/settings:settings_in_tab_java",
+      "//chrome/browser/ttc/android:java",
+      "//chrome/browser/ttc/android:settings_java",
       "//chrome/browser/ui/android/edge_to_edge:factory_java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
       "//chrome/browser/ui/vertical_tabs:java",

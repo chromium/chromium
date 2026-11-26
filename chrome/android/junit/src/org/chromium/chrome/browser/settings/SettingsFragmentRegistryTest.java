@@ -29,6 +29,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
@@ -70,6 +71,9 @@ import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.H
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.chrome.browser.ttc.TtcKeyedService;
+import org.chromium.chrome.browser.ttc.TtcKeyedServiceFactory;
+import org.chromium.chrome.browser.ttc.settings.TtcSettings;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
@@ -895,6 +899,43 @@ public class SettingsFragmentRegistryTest {
         assertRedirects(
                 "chrome://settings/storageAccess?site=https://example.com",
                 "chrome://settings/allSites");
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
+    public void testResolveShowsTtcSettingsWhenTtcIsAvailable() {
+        Profile profile = mock(Profile.class);
+        when(profile.getOriginalProfile()).thenReturn(profile);
+        TtcKeyedService service = mock(TtcKeyedService.class);
+        when(service.isEnabled()).thenReturn(true);
+        TtcKeyedServiceFactory.setForTesting(service);
+
+        assertEquals(
+                TtcSettings.class,
+                SettingsFragmentRegistry.resolve("chrome://settings/ai/ttc", profile)
+                        .fragmentClass);
+        assertEquals(
+                "chrome://settings/ai/ttc",
+                SettingsFragmentRegistry.createUrlForFragment(TtcSettings.class, null));
+
+        // A mistyped subpage lands on the page.
+        assertRedirects("chrome://settings/ai/ttc/nonsense", "chrome://settings/ai/ttc", profile);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TTC)
+    public void testResolveRedirectsTtcSettingsWhenTtcIsUnavailable() {
+        // A URL replayed from history, or typed, after TTC stopped being available.
+        Profile profile = mock(Profile.class);
+        when(profile.getOriginalProfile()).thenReturn(profile);
+
+        assertRedirects("chrome://settings/ai/ttc", "chrome://settings", profile);
+    }
+
+    @Test
+    public void testResolveRedirectsAiToTheSettingsRoot() {
+        // Android has no page for chrome://settings/ai, only pages below it.
+        assertRedirects("chrome://settings/ai", "chrome://settings");
     }
 
     @Test
