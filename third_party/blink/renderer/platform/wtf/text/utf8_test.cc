@@ -466,4 +466,70 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   EXPECT_EQ(expected_error_in_middle, result.converted);
 }
 
+TEST(Utf8Test, CalculateUtf8LengthAndEncodeUtf8_Latin1) {
+  // Empty input.
+  EXPECT_EQ(0u, CalculateUtf8Length(base::span<const LChar>()));
+  EncodeUtf8(base::span<const LChar>(), base::span<uint8_t>());
+
+  // Pure ASCII.
+  const std::vector<LChar> ascii = {'h', 'e', 'l', 'l', 'o'};
+  EXPECT_EQ(5u, CalculateUtf8Length(ascii));
+  std::vector<uint8_t> ascii_out(5);
+  EncodeUtf8(ascii, ascii_out);
+  EXPECT_EQ(std::vector<uint8_t>({'h', 'e', 'l', 'l', 'o'}), ascii_out);
+
+  // Mixed ASCII and non-ASCII Latin-1 (long enough to exercise SIMD + tail).
+  std::vector<LChar> mixed(33, 'a');
+  mixed[0] = 0xE9;   // 'é' -> 0xC3, 0xA9
+  mixed[17] = 0x80;  // U+0080 -> 0xC2, 0x80
+  mixed[32] = 0xFF;  // 'ÿ' -> 0xC3, 0xBF
+  EXPECT_EQ(36u, CalculateUtf8Length(mixed));
+  std::vector<uint8_t> mixed_out(36);
+  EncodeUtf8(mixed, mixed_out);
+  std::vector<uint8_t> expected(36, 'a');
+  expected[0] = 0xC3;
+  expected[1] = 0xA9;
+  expected[18] = 0xC2;
+  expected[19] = 0x80;
+  expected[34] = 0xC3;
+  expected[35] = 0xBF;
+  EXPECT_EQ(expected, mixed_out);
+}
+
+TEST(Utf8Test, CalculateUtf8LengthAndEncodeUtf8_Utf16) {
+  // Empty input.
+  EXPECT_EQ(0u, CalculateUtf8Length(base::span<const UChar>()));
+  EncodeUtf8(base::span<const UChar>(), base::span<uint8_t>());
+
+  // Valid UTF-16 with ASCII, 2-byte, 3-byte, and 4-byte surrogate pairs.
+  std::vector<UChar> valid(32, 'a');
+  valid.push_back(0x00E9);  // 'é' (2 bytes)
+  valid.push_back(0x2713);  // '✓' (3 bytes)
+  valid.push_back(0xD83D);  // '🚀' lead (4 bytes total)
+  valid.push_back(0xDE80);  // '🚀' trail
+  EXPECT_EQ(32u + 2u + 3u + 4u, CalculateUtf8Length(valid));
+  std::vector<uint8_t> valid_out(41);
+  EncodeUtf8(valid, valid_out);
+  std::vector<uint8_t> expected_valid(32, 'a');
+  expected_valid.insert(
+      expected_valid.end(),
+      {0xC3, 0xA9, 0xE2, 0x9C, 0x93, 0xF0, 0x9F, 0x9A, 0x80});
+  EXPECT_EQ(expected_valid, valid_out);
+
+  // Invalid UTF-16 (unpaired surrogates) falls back to U+FFFD replacement.
+  const std::vector<UChar> invalid = {0xD800, 'a', 0xDFFF, 0xDC00, 0xD800};
+  // 4 unpaired surrogates * 3 bytes + 'a' (1 byte) = 13 bytes.
+  EXPECT_EQ(13u, CalculateUtf8Length(invalid));
+  std::vector<uint8_t> invalid_out(13);
+  EncodeUtf8(invalid, invalid_out);
+  const std::vector<uint8_t> expected_invalid = {
+      0xEF, 0xBF, 0xBD,  // U+FFFD
+      'a',
+      0xEF, 0xBF, 0xBD,  // U+FFFD
+      0xEF, 0xBF, 0xBD,  // U+FFFD
+      0xEF, 0xBF, 0xBD,  // U+FFFD
+  };
+  EXPECT_EQ(expected_invalid, invalid_out);
+}
+
 }  // namespace blink::unicode

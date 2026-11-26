@@ -6,6 +6,7 @@
 
 #include <array>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -32,14 +33,22 @@ std::vector<uint8_t> CopyToVector(v8::Local<v8::Uint8Array> array) {
   return result;
 }
 
-class TextEncoderTest : public testing::TestWithParam<bool> {
+class TextEncoderTest : public testing::TestWithParam<std::tuple<bool, bool>> {
  public:
   void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kTextEncoderFastPath);
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (std::get<0>(GetParam())) {
+      enabled.push_back(kTextEncoderFastPath);
     } else {
-      feature_list_.InitAndDisableFeature(kTextEncoderFastPath);
+      disabled.push_back(kTextEncoderFastPath);
     }
+    if (std::get<1>(GetParam())) {
+      enabled.push_back(kTextEncoderDirectEncode);
+    } else {
+      disabled.push_back(kTextEncoderDirectEncode);
+    }
+    feature_list_.InitWithFeatures(enabled, disabled);
   }
 
  private:
@@ -47,7 +56,9 @@ class TextEncoderTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, TextEncoderTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         TextEncoderTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(TextEncoderTest, EncodeEmptyAndNullString) {
   V8TestingScope scope;
@@ -301,7 +312,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
   V8TestingScope scope;
   TextEncoder* encoder = MakeGarbageCollected<TextEncoder>(Utf8Encoding());
   DummyExceptionStateForTesting exception_state;
-  const bool fast_path_enabled = GetParam();
+  const bool fast_path_enabled = std::get<0>(GetParam());
 
   {
     base::HistogramTester histogram_tester;

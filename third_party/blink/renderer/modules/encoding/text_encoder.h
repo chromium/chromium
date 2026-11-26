@@ -45,6 +45,7 @@
 namespace blink {
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(kTextEncoderFastPath);
+MODULES_EXPORT BASE_DECLARE_FEATURE(kTextEncoderDirectEncode);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

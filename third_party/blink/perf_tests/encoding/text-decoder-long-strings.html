@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<!--
+  Benchmark: TextDecoder.decode performance on long UTF-8 byte buffers.
+-->
+  <title>TextDecoder Performance on Long Strings</title>
+</head>
+<body>
+<script src="../resources/runner.js"></script>
+<script>
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
+
+const LONG_ASCII_BYTES = encoder.encode("a".repeat(100000));
+const LONG_MOSTLY_ASCII_UTF8_BYTES = encoder.encode("a".repeat(100000) + "\u2713");
+const LONG_UTF8_BYTES = encoder.encode("あ".repeat(50000));
+
+const INNER_LOOP_COUNT = 5;
+
+PerfTestRunner.measureRunsPerSecond({
+  description: "Measures TextDecoder.decode performance on long UTF-8 buffers (100KB-150KB across ASCII, mostly-ASCII UTF-8, and dense 3-byte UTF-8).",
+  run: function() {
+    for (let i = 0; i < INNER_LOOP_COUNT; ++i) {
+      decoder.decode(LONG_ASCII_BYTES);
+      decoder.decode(LONG_MOSTLY_ASCII_UTF8_BYTES);
+      decoder.decode(LONG_UTF8_BYTES);
+    }
+  }
+});
+</script>
+</body>
+</html>

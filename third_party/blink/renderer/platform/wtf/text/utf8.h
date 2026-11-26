@@ -92,6 +92,19 @@ CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
                               bool& seen_non_ascii,
                               bool& seen_non_latin1);
 
+// Computes the exact UTF-8 byte length for `source` (replacing unpaired UTF-16
+// surrogates with U+FFFD).
+WTF_EXPORT size_t CalculateUtf8Length(base::span<const LChar> source);
+WTF_EXPORT size_t CalculateUtf8Length(base::span<const UChar> source);
+
+// Encodes `source` into `destination`, which must have the exact size returned
+// by `CalculateUtf8Length(source)` (replacing unpaired UTF-16 surrogates with
+// U+FFFD).
+WTF_EXPORT void EncodeUtf8(base::span<const LChar> source,
+                           base::span<uint8_t> destination);
+WTF_EXPORT void EncodeUtf8(base::span<const UChar> source,
+                           base::span<uint8_t> destination);
+
 }  // namespace blink::unicode
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF8_H_

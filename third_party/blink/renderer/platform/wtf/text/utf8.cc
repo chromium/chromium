@@ -27,10 +27,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
 #include <unicode/utf16.h>
+#include <unicode/utf8.h>
 
 #include <array>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -497,6 +499,65 @@ wtf_size_t CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
 
   data = data.first(data_cursor);
   return utf16_length;
+}
+
+size_t CalculateUtf8Length(base::span<const LChar> source) {
+  if (source.empty()) {
+    return 0;
+  }
+  return simdutf::utf8_length_from_latin1(source);
+}
+
+size_t CalculateUtf8Length(base::span<const UChar> source) {
+  if (source.empty()) {
+    return 0;
+  }
+  if (simdutf::validate_utf16(source)) {
+    return simdutf::utf8_length_from_utf16(source);
+  }
+  const size_t length = source.size();
+  size_t total_bytes = 0;
+  size_t i = 0;
+  while (i < length) {
+    UChar32 character;
+    U16_NEXT_OR_FFFD(source, i, length, character);
+    total_bytes += U8_LENGTH(character);
+  }
+  return total_bytes;
+}
+
+void EncodeUtf8(base::span<const LChar> source,
+                base::span<uint8_t> destination) {
+  if (source.empty()) {
+    CHECK(destination.empty());
+    return;
+  }
+  const size_t written = simdutf::convert_latin1_to_utf8(
+      source, base::as_writable_chars(destination));
+  CHECK_EQ(written, destination.size());
+}
+
+void EncodeUtf8(base::span<const UChar> source,
+                base::span<uint8_t> destination) {
+  if (source.empty()) {
+    CHECK(destination.empty());
+    return;
+  }
+  const simdutf::result res =
+      simdutf::convert_utf16_to_utf8_with_errors(source, destination);
+  if (res.error == simdutf::SUCCESS) {
+    CHECK_EQ(res.count, destination.size());
+    return;
+  }
+  const size_t length = source.size();
+  size_t i = 0;
+  size_t bytes_written = 0;
+  while (i < length) {
+    UChar32 character;
+    U16_NEXT_OR_FFFD(source, i, length, character);
+    U8_APPEND_UNSAFE(destination, bytes_written, character);
+  }
+  CHECK_EQ(bytes_written, destination.size());
 }
 
 }  // namespace blink::unicode
