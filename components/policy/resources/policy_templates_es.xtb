@@ -2327,6 +2327,7 @@ Si se inhabilita esta política, Chrome volverá al comportamiento antiguo y los
 
 Esta política es temporal y se eliminará en la versión 157.</translation>
 <translation id="2452225615952836461">Utilizar métodos de solicitud siempre en mayúsculas</translation>
+<translation id="2453512475686299774">Inhabilitar Buscar desde un ordenador</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
 <translation id="2460127623195247744">Esta política está obsoleta. Usa la política <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> en su lugar.
@@ -3777,6 +3778,19 @@ Por ello, esta política solo debe inhabilitarse si usas una solución de seguri
       Si no se le asigna ningún valor, los usuarios podrán elegir la imagen que quieran usar como fondo de pantalla de su escritorio y página de inicio de sesión.</translation>
 <translation id="3313395530427546108">No usar firmas de código específicas.</translation>
 <translation id="3315324240256767419">Habilitar la función de ventana fantasma</translation>
+<translation id="3319692863291981022">Controla si la función Buscar desde el escritorio está disponible en <ph name="PRODUCT_NAME" /> tanto en <ph name="MS_WIN_NAME" /> como en <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> ofrece el ajuste Buscar desde un ordenador, que permite a los usuarios abrir un cuadro de búsqueda flotante en el escritorio desde cualquier lugar del ordenador mediante una combinación de teclas global, el icono de la bandeja del sistema o de la barra de menús, o bien, en <ph name="MS_WIN_NAME" />, los accesos directos del menú Inicio y de la barra de tareas.
+
+Si se habilita esta política, se activa la función Buscar desde un ordenador y se impide que los usuarios puedan desactivarla en la configuración de <ph name="PRODUCT_NAME" />. Los usuarios pueden seguir personalizando su propia combinación de teclas. Después de usar por primera vez la función Buscar desde un ordenador, <ph name="PRODUCT_NAME" /> se sigue ejecutando en segundo plano para que la combinación de teclas funcione aunque no haya ninguna ventana del navegador abierta. Además, en <ph name="MS_WIN_NAME" />, también se inicia cuando el usuario inicia sesión.
+
+Si se inhabilita esta política, se desactiva la función Buscar desde un ordenador, se cierra cualquier ventana de búsqueda que esté abierta en el ordenador, se anula el registro de la combinación de teclas global, se quita el icono de la bandeja del sistema o de la barra de menú y se impide que los usuarios activen la función en la configuración de <ph name="PRODUCT_NAME" />. A partir de ese momento, la función Buscar desde un ordenador deja de mantener <ph name="PRODUCT_NAME" /> ejecutándose en segundo plano y, en <ph name="MS_WIN_NAME" />, deja de iniciarlo cuando el usuario inicia sesión. En <ph name="MS_WIN_NAME" />, los accesos directos de Buscar desde un ordenador en el menú Inicio o en la barra de tareas no se eliminan, pero abren <ph name="PRODUCT_NAME" /> como se haría con un inicio normal: en una ventana del navegador o en el selector de perfiles.
+
+Si no se define esta política, se activa la función Buscar desde un ordenador y los usuarios pueden desactivarla en la configuración de <ph name="PRODUCT_NAME" />.
+
+Cuando la opción Buscar desde un ordenador está habilitada, la disponibilidad de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y el uso compartido del contenido de pantalla o de los archivos desde el cuadro de búsqueda del escritorio siguen sujetos a <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> y <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Esta política no tiene ningún efecto en las versiones de <ph name="PRODUCT_NAME" /> en las que la función Buscar desde un ordenador no esté disponible ni en los perfiles en los que no se ofrezca esta opción, por ejemplo, cuando Google no es el buscador predeterminado.</translation>
 <translation id="3321099611644751329">Certificados TLS en los que <ph name="PRODUCT_NAME" /> debería confiar para autenticar el servidor con restricciones</translation>
 <translation id="3323819750604111729">Habilitar la importación de los marcadores en la primera ejecución</translation>
 <translation id="332771718998993005">Determina el nombre que se utiliza como destino de <ph name="PRODUCT_NAME" />.
@@ -5246,6 +5260,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">No usar el cifrado de caché.</translation>
+<translation id="4301274356429819881">Habilitar Buscar desde un ordenador</translation>
 <translation id="4301478455179579340">Firma de aplicaciones nativas durante la instalación de aplicaciones web progresivas</translation>
 <translation id="4303167373847512281">Permitir el modo Desarrollador</translation>
 <translation id="4307116964468610577">Esta política alarga la vida útil de las baterías de un sistema cargándolas por completo solo una vez al día. El resto del día, las baterías mantienen un estado de carga inferior que es beneficioso para su almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.

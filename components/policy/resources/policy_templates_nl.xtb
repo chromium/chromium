@@ -2302,6 +2302,7 @@ Als je dit beleid niet toepast, keert Chrome terug naar het oude gedrag en nemen
 
 Dit beleid is tijdelijk en wordt verwijderd in mijlpaal 157.</translation>
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
+<translation id="2453512475686299774">Zoeken vanaf desktop uitzetten</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
 <translation id="2460127623195247744">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -3745,6 +3746,19 @@ Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten g
       Als je het beleid niet instelt, kiezen gebruikers de afbeelding voor de achtergrond van het bureaublad en het inlogscherm.</translation>
 <translation id="3313395530427546108">Geen ad-hoc-codehandtekeningen gebruiken.</translation>
 <translation id="3315324240256767419">De functie voor ghostvenster aanzetten.</translation>
+<translation id="3319692863291981022">Bepaalt of de functie Zoeken vanaf desktop beschikbaar is in <ph name="PRODUCT_NAME" /> op <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> biedt de instelling Zoeken vanaf desktop, waarmee gebruikers overal op hun computer een zwevend zoekvak op de desktop kunnen openen met een algemene sneltoets, het icoon in het systeemvak of de menubalk, of, op <ph name="MS_WIN_NAME" />, snelkoppelingen in het menu Start en op de taakbalk.
+
+Als je het beleid toepast, wordt Zoeken vanaf desktop aangezet en kunnen gebruikers dit niet uitzetten in de instellingen van <ph name="PRODUCT_NAME" />. Gebruikers kunnen nog steeds hun lokale sneltoets aanpassen. Nadat Zoeken vanaf desktop voor het eerst is gebruikt, blijft <ph name="PRODUCT_NAME" /> op de achtergrond actief, zodat de sneltoets werkt als er geen browservenster is geopend. Op <ph name="MS_WIN_NAME" /> wordt de functie ook gestart als de gebruiker inlogt.
+
+Als het beleid uitstaat, wordt Zoeken vanaf desktop uitgezet, worden alle geopende vensters voor zoeken op de desktop gesloten, wordt de registratie van de algemene sneltoets ongedaan gemaakt, wordt het icoon in het systeemvak of de menubalk verwijderd en kunnen gebruikers de functie niet aanzetten in de instellingen van <ph name="PRODUCT_NAME" />. Zoeken vanaf desktop zorgt er dan niet meer voor dat <ph name="PRODUCT_NAME" /> op de achtergrond blijft lopen of, op <ph name="MS_WIN_NAME" />, wordt gestart als de gebruiker inlogt. Op <ph name="MS_WIN_NAME" /> worden bestaande snelkoppelingen voor Zoeken vanaf desktop in het menu Start of de taakbalk niet verwijderd, maar ze openen <ph name="PRODUCT_NAME" /> zoals een normale lancering zou doen, in een browservenster of de profielkiezer.
+
+Als je het beleid niet instelt, wordt Zoeken vanaf desktop aangezet en kunnen gebruikers dit uitzetten in de instellingen van <ph name="PRODUCT_NAME" />.
+
+Als Zoeken vanaf desktop aanstaat, blijven de beschikbaarheid van <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en het delen van scherm- of bestandscontent in het zoekvak op de desktop <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> en <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> respecteren.
+
+Dit beleid heeft geen effect op versies van <ph name="PRODUCT_NAME" /> waarin de instelling Zoeken vanaf desktop niet beschikbaar is of voor profielen waarin deze niet beschikbaar is, zoals wanneer Google niet de standaard zoekmachine is.</translation>
 <translation id="3321099611644751329">TLS-certificaten die moeten worden vertrouwd door <ph name="PRODUCT_NAME" /> voor serververificatie met beperkingen</translation>
 <translation id="3323819750604111729">Import van bookmarks bij eerste uitvoering aanzetten</translation>
 <translation id="332771718998993005">De naam bepalen die wordt geadverteerd als een bestemming van <ph name="PRODUCT_NAME" />.
@@ -5208,6 +5222,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Versleuteling van het cachegeheugen niet gebruiken.</translation>
+<translation id="4301274356429819881">Zoeken vanaf desktop aanzetten</translation>
 <translation id="4301478455179579340">Ondertekening van systeemeigen app bij installatie van progressive web-app</translation>
 <translation id="4303167373847512281">Ontwikkelaarsmodus toestaan</translation>
 <translation id="4307116964468610577">Het beleid verlengt de bruikbare levensduur van de systeembatterijen door ze maar één keer per dag volledig op te laden. De rest van de dag worden de batterijen in een lagere oplaadstatus gehouden, wat beter is voor opslag, ook als het systeem is aangesloten op een voedingsbron.

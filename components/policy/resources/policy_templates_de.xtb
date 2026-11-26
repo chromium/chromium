@@ -2302,6 +2302,7 @@ Wenn diese Richtlinie deaktiviert ist, stellt Chrome das alte Verhalten wieder h
 
 Diese Richtlinie gilt vorübergehend und wird in Version 157 entfernt.</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
+<translation id="2453512475686299774">„Vom Desktop aus suchen“ deaktivieren</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>
 <translation id="2460127623195247744">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -3749,6 +3750,19 @@ Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwend
       Ist die Richtlinie nicht konfiguriert, können Nutzer das Hintergrundbild für den Desktop und den Anmeldebildschirm selbst auswählen.</translation>
 <translation id="3313395530427546108">Keine Ad‑hoc‑Codesignaturen verwenden.</translation>
 <translation id="3315324240256767419">Funktion für ghost-Dialogfelder aktivieren.</translation>
+<translation id="3319692863291981022">Legt fest, ob die Funktion „Vom Desktop aus suchen“ in <ph name="PRODUCT_NAME" /> auf <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" /> verfügbar ist.
+
+<ph name="PRODUCT_NAME" /> stellt die Einstellung „Vom Desktop aus suchen“ zur Verfügung, mit der Nutzer über eine globale Tastenkombination, das Symbol in der Taskleiste oder der Menüleiste oder unter <ph name="MS_WIN_NAME" /> über Verknüpfungen im Startmenü und in der Taskleiste überall auf ihrem Computer ein unverankertes Desktop-Suchfeld öffnen können.
+
+Wenn die Richtlinie aktiviert ist, wird die Funktion „Vom Desktop aus suchen“ aktiviert und Nutzer können sie in den <ph name="PRODUCT_NAME" />-Einstellungen nicht deaktivieren. Nutzer können ihre lokale Tastenkombination weiterhin anpassen. Nachdem die Suche vom Desktop aus zum ersten Mal verwendet wurde, läuft <ph name="PRODUCT_NAME" /> im Hintergrund weiter, sodass die Tastenkombination auch dann funktioniert, wenn kein Browserfenster geöffnet ist. Unter <ph name="MS_WIN_NAME" /> wird die Suche ebenfalls gestartet, wenn sich der Nutzer anmeldet.
+
+Wenn die Richtlinie deaktiviert ist, wird die Suche vom Desktop aus deaktiviert, alle geöffneten Desktop-Suchfenster werden geschlossen, die globale Tastenkombination wird abgemeldet, das Symbol in der Taskleiste oder Menüleiste wird entfernt und Nutzer können die Funktion nicht in den <ph name="PRODUCT_NAME" />-Einstellungen aktivieren. Die Suche vom Desktop aus führt dann nicht mehr dazu, dass <ph name="PRODUCT_NAME" /> im Hintergrund ausgeführt wird oder unter <ph name="MS_WIN_NAME" /> gestartet wird, wenn sich der Nutzer anmeldet. Unter <ph name="MS_WIN_NAME" /> werden vorhandene Desktopverknüpfungen für die Suche im Startmenü oder in der Taskleiste nicht entfernt, sondern sie öffnen <ph name="PRODUCT_NAME" /> wie bei einem normalen Start in einem Browserfenster oder in der Profilauswahl.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird die Suche vom Desktop aus aktiviert und Nutzer können sie in den <ph name="PRODUCT_NAME" />-Einstellungen deaktivieren.
+
+Wenn die Suche vom Desktop aus aktiviert ist, werden die Verfügbarkeit von <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> und die Freigabe von Bildschirm- oder Dateiinhalten im Suchfeld auf dem Desktop weiterhin durch <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> und <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> geregelt.
+
+Diese Richtlinie hat keine Auswirkungen auf Versionen von <ph name="PRODUCT_NAME" /> oder auf Profile, in denen die Einstellung „Vom Desktop aus suchen“ nicht verfügbar ist, z. B. wenn Google nicht als Standardsuchmaschine festgelegt wurde.</translation>
 <translation id="3321099611644751329">TLS-Zertifikate, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung mit Einschränkungen als vertrauenswürdig eingestuft werden sollen</translation>
 <translation id="3323819750604111729">Import von Lesezeichen bei der ersten Ausführung aktivieren</translation>
 <translation id="332771718998993005">Hiermit wird der Name von <ph name="PRODUCT_NAME" />-Zielen festgelegt.
@@ -5212,6 +5226,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="4297918983070495117">Cache-Verschlüsselung nicht verwenden.</translation>
+<translation id="4301274356429819881">„Vom Desktop aus suchen“ aktivieren</translation>
 <translation id="4301478455179579340">Signatur nativer Anwendungen während der Installation einer progressiven Webanwendung</translation>
 <translation id="4303167373847512281">Entwicklermodus zulassen</translation>
 <translation id="4307116964468610577">Die Richtlinie verlängert die Lebensdauer von Systemakkus, indem sie nur einmal pro Tag vollständig aufgeladen werden. Für den Rest des Tages werden die Akkus in einem niedrigeren Ladezustand gehalten. So werden sie geschont, auch wenn das System an eine Stromquelle angeschlossen ist.

@@ -2353,6 +2353,7 @@ False로 설정하면 개인 정보 보호 화면은 항상 사용 중지됩니�
 
 이 정책은 임시 조치이며 157 버전에서 삭제될 예정입니다.</translation>
 <translation id="2452225615952836461">요청 메서드를 항상 대문자로 표시</translation>
+<translation id="2453512475686299774">데스크톱에서 검색 사용 중지</translation>
 <translation id="2454228136871844693">안정성에 최적화합니다.</translation>
 <translation id="2455033019778127130">기본 브라우저 동작을 사용하고 서비스 약관을 표시한 다음 사용자가 수락할 때까지 기다림</translation>
 <translation id="2460127623195247744">이 정책은 지원 중단되었으므로 ‘<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />’ 정책을 대신 사용하세요.
@@ -3805,6 +3806,19 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
       설정하지 않으면 사용자가 데스크톱 및 로그인 화면의 배경화면 이미지를 선택합니다.</translation>
 <translation id="3313395530427546108">임시 코드 서명을 사용하지 않습니다.</translation>
 <translation id="3315324240256767419">고스트 창 기능 사용함</translation>
+<translation id="3319692863291981022"><ph name="MS_WIN_NAME" /> 및 <ph name="MAC_OS_NAME" />의 <ph name="PRODUCT_NAME" />에서 데스크톱에서 검색 기능을 사용할 수 있는지를 제어합니다.
+
+<ph name="PRODUCT_NAME" />에서는 '데스크톱에서 검색' 설정을 제공합니다. 이 기능을 통해 사용자는 전역 키보드 단축키, 시스템 트레이 또는 메뉴 바 아이콘을 사용하거나, <ph name="MS_WIN_NAME" />의 경우 시작 메뉴 및 작업 표시줄 바로가기를 사용하여 컴퓨터 어디에서나 플로팅 데스크톱 검색창을 열 수 있습니다.
+
+정책을 사용 설정하면 데스크톱에서 검색이 켜지며 사용자가 <ph name="PRODUCT_NAME" /> 설정에서 이 설정을 사용 중지할 수 없습니다. 사용자는 로컬 키보드 단축키를 맞춤설정할 수 있습니다. 데스크톱에서 검색을 처음 사용한 후에는 브라우저 창이 열려 있지 않아도 키보드 단축키가 작동하도록 <ph name="PRODUCT_NAME" />이(가) 백그라운드에서 계속 실행되며, <ph name="MS_WIN_NAME" />에서는 사용자가 로그인할 때도 시작됩니다.
+
+정책을 사용 중지로 설정하면 데스크톱에서 검색 기능이 꺼지고, 열려 있는 모든 데스크톱 검색 창이 닫힙니다. 또한 전역 키보드 단축키 등록이 해제되고 작업 표시줄 또는 메뉴 바 아이콘이 삭제되며, 사용자가 <ph name="PRODUCT_NAME" /> 설정에서 이 기능을 사용 설정할 수 없게 됩니다. 따라서 데스크톱에서 검색 기능을 사용하면 <ph name="PRODUCT_NAME" />이(가) 백그라운드에서 계속 실행되지 않으며, <ph name="MS_WIN_NAME" />의 경우 사용자가 로그인할 때 자동으로 시작되지도 않습니다. <ph name="MS_WIN_NAME" />의 경우, 시작 메뉴나 작업 표시줄에 있는 기존 '데스크톱에서 검색 바로가기는 삭제되지 않지만, 이를 실행하면 일반적인 실행 방식과 동일하게 브라우저 창이나 프로필 선택 도구에서 <ph name="PRODUCT_NAME" />이(가) 열립니다.
+
+정책을 설정하지 않으면 데스크톱에서 검색이 사용 설정되며 사용자는 <ph name="PRODUCT_NAME" /> 설정에서 사용 중지할 수 있습니다.
+
+데스크톱에서 검색이 사용 설정된 경우 데스크톱 검색창 내에서 <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> 사용 가능 여부 및 화면 또는 파일 콘텐츠 공유는 계속해서 <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> 및 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />을(를) 따릅니다.
+
+이 정책은 '데스크톱에서 검색' 설정을 사용할 수 없는 <ph name="PRODUCT_NAME" /> 버전이나 Google이 기본 검색엔진이 아닌 경우와 같이 이 설정을 사용할 수 없는 프로필에는 영향을 미치지 않습니다.</translation>
 <translation id="3321099611644751329">제약 조건이 있는 서버 인증 목적으로 <ph name="PRODUCT_NAME" />에서 신뢰하는 TLS 인증서</translation>
 <translation id="3323819750604111729">처음 실행 시 북마크 가져오기 사용 설정</translation>
 <translation id="332771718998993005"><ph name="PRODUCT_NAME" /> 전송 대상으로 알릴 이름을 설정하세요.
@@ -5301,6 +5315,7 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 
 <ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="4297918983070495117">캐시 암호화를 사용하지 않습니다.</translation>
+<translation id="4301274356429819881">데스크톱에서 검색 사용 설정</translation>
 <translation id="4301478455179579340">프로그레시브 웹 애플리케이션 설치 중 네이티브 애플리케이션 서명</translation>
 <translation id="4303167373847512281">개발자 모드 허용</translation>
 <translation id="4307116964468610577">이 정책은 하루에 한 번만 완전 충전하여 시스템 배터리 수명을 연장합니다. 남은 시간 동안은 시스템이 전원에 연결되어 있더라도 배터리가 보관에 유리한 저충전 상태로 유지됩니다.

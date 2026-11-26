@@ -2248,6 +2248,7 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
 
 這項政策僅是暫時性措施，將於 157 版中移除。</translation>
 <translation id="2452225615952836461">一律使用大寫字母要求方法</translation>
+<translation id="2453512475686299774">停用「從桌面搜尋」</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
 <translation id="2460127623195247744">這項政策已淘汰，請改用「<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />」政策。
@@ -3660,6 +3661,17 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
       如果未設定，使用者將可選擇桌面和登入畫面背景的圖片。</translation>
 <translation id="3313395530427546108">不要使用臨時程式碼簽名。</translation>
 <translation id="3315324240256767419">啟用 ghost 視窗功能。</translation>
+<translation id="3319692863291981022">控管是否可在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 的 <ph name="PRODUCT_NAME" /> 中使用「從桌面搜尋」功能。
+
+<ph name="PRODUCT_NAME" /> 提供「從桌面搜尋」設定，使用者只要使用全域鍵盤快速鍵、系統匣或選單列圖示，或在 <ph name="MS_WIN_NAME" /> 上使用「開始」選單和工作列快速鍵，就能在電腦上的任何位置開啟浮動式桌面搜尋框。
+
+如果將這項政策設為啟用，系統會開啟「從桌面搜尋」功能，並禁止使用者在 <ph name="PRODUCT_NAME" /> 設定中關閉這項功能。使用者仍可自訂本機鍵盤快速鍵。首次使用「從桌面搜尋」後，<ph name="PRODUCT_NAME" /> 會在背景持續執行，因此即使沒有開啟任何瀏覽器視窗，鍵盤快速鍵仍可正常運作。在 <ph name="MS_WIN_NAME" /> 上，這項功能也會在使用者登入時啟動。
+
+如果將這項政策設為停用，系統會關閉「從桌面搜尋」功能、關閉所有開啟的桌面搜尋視窗、取消註冊全域鍵盤快速鍵、移除系統匣或選單列圖示，並禁止使用者在 <ph name="PRODUCT_NAME" /> 設定中開啟這項功能。「從桌面搜尋」功能不會再讓 <ph name="PRODUCT_NAME" /> 在背景執行，或在 <ph name="MS_WIN_NAME" /> 上於使用者登入時啟動。在 <ph name="MS_WIN_NAME" /> 上，系統不會移除「開始」選單或工作列中現有的「從桌面搜尋」捷徑，但點選捷徑會像一般啟動一樣，在瀏覽器視窗或設定檔挑選器中開啟 <ph name="PRODUCT_NAME" />。如果不設定這項政策，系統會啟用「從桌面搜尋」功能，使用者可以前往 <ph name="PRODUCT_NAME" /> 設定關閉。
+
+啟用「從桌面搜尋」功能後，<ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> 的可用性，以及在桌面搜尋框中分享螢幕畫面或檔案內容的功能，仍會遵循 <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> 和 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />。
+
+在不提供「從桌面搜尋」設定的 <ph name="PRODUCT_NAME" /> 版本中，或在不提供這項設定的設定檔 (例如 Google 不是預設搜尋引擎時)，這項政策不會有任何作用。</translation>
 <translation id="3321099611644751329">驗證伺服器時，<ph name="PRODUCT_NAME" /> 應信任的 TLS 憑證，但有限制條件</translation>
 <translation id="3323819750604111729">允許在第一次執行時匯入書籤</translation>
 <translation id="332771718998993005">確定公開為「<ph name="PRODUCT_NAME" />」目的地的名稱。
@@ -5096,6 +5108,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
 在 <ph name="MAC_OS_NAME" /> 上，這項政策適用的執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />。</translation>
 <translation id="4297918983070495117">不使用快取加密功能。</translation>
+<translation id="4301274356429819881">啟用「從桌面搜尋」</translation>
 <translation id="4301478455179579340">在安裝漸進式網頁應用程式期間簽署原生應用程式</translation>
 <translation id="4303167373847512281">允許使用開發人員模式</translation>
 <translation id="4307116964468610577">這項政策每天只會將電池充飽一次，藉此延長系統電池的使用壽命。在當天剩餘時間內，即使系統已接上電源，電池仍會保持在較低的充電狀態。

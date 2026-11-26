@@ -2336,6 +2336,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì Chrome sẽ quay lại c
 
 Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ ở mốc 157.</translation>
 <translation id="2452225615952836461">Luôn viết hoa phương thức yêu cầu</translation>
+<translation id="2453512475686299774">Tắt tính năng Tìm kiếm trên máy tính</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
 <translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>
 <translation id="2460127623195247744">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3786,6 +3787,19 @@ Bạn chỉ nên tắt chính sách này nếu đang sử dụng giải pháp b�
       Nếu bạn không đặt chính sách này, thì người dùng sẽ được chọn hình nền cho màn hình đăng nhập và máy tính.</translation>
 <translation id="3313395530427546108">Không sử dụng chữ ký mã đặc biệt.</translation>
 <translation id="3315324240256767419">Bật tính năng cửa sổ ảo.</translation>
+<translation id="3319692863291981022">Kiểm soát việc tính năng Tìm kiếm trên máy tính có được cung cấp trong <ph name="PRODUCT_NAME" /> trên <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" /> hay không.
+
+<ph name="PRODUCT_NAME" /> cung cấp chế độ cài đặt "Tìm kiếm trên máy tính" cho phép người dùng mở hộp tìm kiếm nổi trên máy tính từ bất cứ đâu trên máy tính bằng phím tắt chung, biểu tượng trên khay hệ thống hoặc thanh trình đơn, hoặc trên <ph name="MS_WIN_NAME" />, Trình đơn Bắt đầu và lối tắt trên thanh tác vụ.
+
+Nếu bạn đặt chính sách này thành Bật, tính năng Tìm kiếm trên máy tính sẽ được bật và người dùng sẽ không thể tắt tính năng này trong phần cài đặt của <ph name="PRODUCT_NAME" />. Người dùng vẫn có thể tuỳ chỉnh phím tắt trên thiết bị của họ. Sau lần đầu tiên sử dụng tính năng Tìm kiếm trên máy tính, <ph name="PRODUCT_NAME" /> sẽ tiếp tục chạy ở chế độ nền để phím tắt hoạt động khi không có cửa sổ trình duyệt nào đang mở. Trên <ph name="MS_WIN_NAME" />, ứng dụng này cũng sẽ tự động khởi chạy khi người dùng đăng nhập.
+
+Nếu bạn đặt chính sách này thành Tắt, tính năng Tìm kiếm trên máy tính sẽ tắt, mọi cửa sổ tìm kiếm đang mở trên máy tính sẽ đóng, phím tắt chung sẽ bị huỷ đăng ký, biểu tượng trên khay hệ thống hoặc thanh trình đơn sẽ bị xoá và người dùng sẽ không thể bật tính năng này trong phần cài đặt của <ph name="PRODUCT_NAME" />. Khi đó, tính năng Tìm kiếm trên máy tính sẽ không còn duy trì cho <ph name="PRODUCT_NAME" /> chạy ở chế độ nền hoặc tự động khởi chạy ứng dụng này khi người dùng đăng nhập trên <ph name="MS_WIN_NAME" />. Trên <ph name="MS_WIN_NAME" />, các lối tắt Tìm kiếm trên máy tính hiện có trong Trình đơn Bắt đầu hoặc thanh tác vụ sẽ không bị xoá, nhưng sẽ mở <ph name="PRODUCT_NAME" /> như khi khởi chạy bình thường, trong cửa sổ trình duyệt hoặc bộ chọn hồ sơ.
+
+Nếu bạn không đặt chính sách này, tính năng Tìm kiếm trên máy tính sẽ được bật và người dùng có thể tắt tính năng này trong phần cài đặt của <ph name="PRODUCT_NAME" />.
+
+Khi bạn bật tính năng Tìm kiếm trên máy tính, khả năng sử dụng <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> và việc chia sẻ nội dung trên màn hình hoặc tệp trong hộp tìm kiếm trên máy tính vẫn tuân theo <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> và <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Chính sách này không ảnh hưởng đến các phiên bản <ph name="PRODUCT_NAME" /> không có chế độ cài đặt "Tìm kiếm trên máy tính" hoặc các hồ sơ không có chế độ cài đặt này, chẳng hạn như khi Google không phải là công cụ tìm kiếm mặc định.</translation>
 <translation id="3321099611644751329">Chứng chỉ TLS mà <ph name="PRODUCT_NAME" /> cần tin cậy khi xác thực máy chủ kèm theo các quy tắc ràng buộc</translation>
 <translation id="3323819750604111729">Bật chính sách nhập dấu trang trong lần chạy đầu tiên</translation>
 <translation id="332771718998993005">Xác định tên được quảng cáo là đích <ph name="PRODUCT_NAME" />.
@@ -5289,6 +5303,7 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Không sử dụng tính năng mã hoá bộ nhớ đệm.</translation>
+<translation id="4301274356429819881">Bật tính năng Tìm kiếm trên máy tính</translation>
 <translation id="4301478455179579340">Ký ứng dụng gốc trong quá trình cài đặt Ứng dụng web tiến bộ</translation>
 <translation id="4303167373847512281">Cho phép chế độ nhà phát triển</translation>
 <translation id="4307116964468610577">Chính sách này kéo dài tuổi thọ của pin hệ thống nhờ chỉ sạc đầy pin một lần mỗi ngày. Đối với thời gian còn lại trong ngày, pin được duy trì ở trạng thái sạc thấp hơn vì chế độ này có lợi hơn cho khả năng tích trữ, ngay cả khi bạn cắm hệ thống vào nguồn điện.

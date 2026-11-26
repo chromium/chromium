@@ -2361,6 +2361,7 @@ Se questa policy viene impostata su Disattivata, Chrome ripristina il comportame
 
 Questa policy è stata pensata per essere temporanea e verrà rimossa nella milestone 157.</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
+<translation id="2453512475686299774">Disattiva Ricerca dal desktop</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2460127623195247744">Questa policy è deprecata. Utilizza la policy "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3830,6 +3831,19 @@ Disattiva la policy solo se utilizzi una soluzione di sicurezza degli endpoint c
       Se la policy non viene impostata, gli utenti possono scegliere l'immagine da usare come sfondo del desktop e della schermata di accesso.</translation>
 <translation id="3313395530427546108">Non utilizzare firme di codice ad hoc.</translation>
 <translation id="3315324240256767419">Attiva la funzionalità di finestre nascoste.</translation>
+<translation id="3319692863291981022">Controlla se la funzionalità Ricerca dal desktop è disponibile in <ph name="PRODUCT_NAME" /> su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> offre l'impostazione "Ricerca dal desktop" che permette di aprire una casella di ricerca mobile ovunque ci si trovi sul computer, utilizzando una scorciatoia da tastiera globale, l'icona nella barra delle applicazioni o nella barra dei menu oppure, su <ph name="MS_WIN_NAME" />, le scorciatoie nel menu Start e nella barra delle applicazioni.
+
+Se la policy viene impostata su Attivata, la Ricerca dal desktop viene abilitata e agli utenti viene impedito di disattivarla nelle impostazioni di <ph name="PRODUCT_NAME" />. Gli utenti possono comunque personalizzare la scorciatoia da tastiera locale. Dopo il primo utilizzo di Ricerca dal desktop, <ph name="PRODUCT_NAME" /> continua a restare in esecuzione in background affinché la scorciatoia da tastiera funzioni anche senza finestre del browser aperte; su <ph name="MS_WIN_NAME" />, inoltre, si avvia automaticamente al momento dell'accesso.
+
+Se la policy viene impostata su Disattivata, la Ricerca dal desktop viene disattivata, ogni finestra di ricerca aperta sul desktop viene chiusa, la scorciatoia da tastiera globale viene annullata, l'icona nella barra delle applicazioni o nella barra dei menu viene rimossa e agli utenti viene impedito di riattivare la funzionalità nelle impostazioni di <ph name="PRODUCT_NAME" />. In tal caso, Ricerca dal desktop non mantiene più <ph name="PRODUCT_NAME" /> in esecuzione in background né, su <ph name="MS_WIN_NAME" />, lo avvia al momento dell'accesso dell'utente. In <ph name="MS_WIN_NAME" />, i collegamenti esistenti per la Ricerca dal desktop nel menu Start o nella barra delle applicazioni non vengono rimossi; tuttavia, questi apriranno <ph name="PRODUCT_NAME" /> come un normale avvio, in una finestra del browser o nel selettore del profilo.
+
+Se la policy non viene configurata, la Ricerca dal desktop viene attivata e gli utenti possono disattivarla nelle impostazioni di <ph name="PRODUCT_NAME" />.
+
+Quando la Ricerca dal desktop è abilitata, la disponibilità di <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> e la condivisione dei contenuti dello schermo o dei file all'interno della casella di ricerca continuano a rispettare <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> e <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Questa policy non ha alcun effetto sulle versioni di <ph name="PRODUCT_NAME" /> in cui l'impostazione "Ricerca dal desktop" non è disponibile, né sui profili per i quali non è attiva, come nel caso in cui Google non sia impostato come motore di ricerca predefinito.</translation>
 <translation id="3321099611644751329">Certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server con vincoli</translation>
 <translation id="3323819750604111729">Abilita l'importazione dei preferiti alla prima esecuzione</translation>
 <translation id="332771718998993005">Consente di stabilire il nome pubblicizzato come destinazione di <ph name="PRODUCT_NAME" />.
@@ -5305,6 +5319,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Non utilizzare la crittografia della cache.</translation>
+<translation id="4301274356429819881">Attiva Ricerca dal desktop</translation>
 <translation id="4301478455179579340">Firma dell'applicazione nativa durante l'installazione dell'applicazione web progressiva</translation>
 <translation id="4303167373847512281">Consenti modalità sviluppatore</translation>
 <translation id="4307116964468610577">La policy consente di prolungare la durata utilizzabile delle batterie di un sistema ricaricandole completamente solo una volta al giorno. Per il resto della giornata, la carica delle batterie viene mantenuta a un livello più basso, consentendo di conservarla più a lungo, anche quando il sistema è collegato a una fonte di alimentazione.

@@ -2301,6 +2301,7 @@ Si cette règle est désactivée, Chrome rétablit l'ancien comportement et les 
 
 Cette règle est provisoire et sera supprimée dans la version 157.</translation>
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
+<translation id="2453512475686299774">Désactiver Rechercher depuis un ordinateur</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
 <translation id="2460127623195247744">Cette règle est obsolète (veuillez utiliser la règle <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> à la place).
@@ -3745,6 +3746,19 @@ Désactivez cette règle uniquement si vous utilisez une solution de sécurité 
       Si cette règle n'est pas configurée, les utilisateurs peuvent alors choisir l'image pour l'arrière-plan de l'écran de connexion et leur bureau.</translation>
 <translation id="3313395530427546108">Ne pas utiliser de signatures de code ponctuelles.</translation>
 <translation id="3315324240256767419">Activer la fonctionnalité Fenêtre fantôme.</translation>
+<translation id="3319692863291981022">Détermine si la fonctionnalité Rechercher depuis un ordinateur est disponible dans <ph name="PRODUCT_NAME" /> sur <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> fournit un paramètre "Rechercher depuis un ordinateur" qui permet aux utilisateurs d'ouvrir un champ de recherche flottant depuis n'importe quel emplacement de leur ordinateur à l'aide d'un raccourci clavier global, de l'icône de la barre d'état système ou de la barre de menu. Sur <ph name="MS_WIN_NAME" />, ce champ peut être ouvert à l'aide des raccourcis du menu Démarrer et de la barre des tâches.
+
+Si cette règle est activée, la fonctionnalité Rechercher depuis un ordinateur est activée et les utilisateurs ne peuvent pas la désactiver dans les paramètres de <ph name="PRODUCT_NAME" />. Les utilisateurs peuvent tout de même personnaliser leur raccourci clavier local. Après la première utilisation de Rechercher depuis un ordinateur, <ph name="PRODUCT_NAME" /> continue de s'exécuter en arrière-plan pour que le raccourci clavier fonctionne lorsqu'aucune fenêtre de navigateur n'est ouverte. Sur <ph name="MS_WIN_NAME" />, il démarre également lorsque l'utilisateur se connecte.
+
+Si cette règle est désactivée, la fonctionnalité Rechercher depuis un ordinateur est désactivée, toutes les fenêtres de recherche ouvertes sur l'ordinateur sont fermées, le raccourci clavier global est désactivé, l'icône de la barre d'état système ou de la barre de menu est supprimée et les utilisateurs ne peuvent pas activer la fonctionnalité dans les paramètres de <ph name="PRODUCT_NAME" />. Rechercher depuis un ordinateur ne maintient plus <ph name="PRODUCT_NAME" /> en arrière-plan et, sur <ph name="MS_WIN_NAME" />, elle ne le lance plus lorsque l'utilisateur se connecte. Sur <ph name="MS_WIN_NAME" />, les raccourcis existants de la fonctionnalité Rechercher depuis un ordinateur dans le menu Démarrer ou la barre des tâches ne sont pas supprimés, mais ils lancent <ph name="PRODUCT_NAME" /> de manière normale, dans une fenêtre de navigateur ou dans le sélecteur de profil.
+
+Si cette règle n'est pas configurée, la fonctionnalité Rechercher depuis un ordinateur est activée, et les utilisateurs peuvent la désactiver dans les paramètres de <ph name="PRODUCT_NAME" />.
+
+Lorsque la fonctionnalité Rechercher depuis un ordinateur est activée, la disponibilité du <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> et le partage de contenu d'écran ou de fichier dans le champ de recherche de l'ordinateur continuent de respecter <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> et <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Cette règle n'a aucun effet sur les versions de <ph name="PRODUCT_NAME" /> dans lesquelles le paramètre "Rechercher depuis un ordinateur" n'est pas disponible, ni pour les profils où il n'est pas disponible, par exemple lorsque Google n'est pas le moteur de recherche par défaut.</translation>
 <translation id="3321099611644751329">Certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur avec des contraintes</translation>
 <translation id="3323819750604111729">Activer l'importation des favoris à la première exécution</translation>
 <translation id="332771718998993005">Détermine le nom de la destination <ph name="PRODUCT_NAME" />.
@@ -5207,6 +5221,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Ne pas utiliser le chiffrement du cache.</translation>
+<translation id="4301274356429819881">Activer Rechercher depuis un ordinateur</translation>
 <translation id="4301478455179579340">Signature d'une appli native lors de l'installation d'une progressive web app</translation>
 <translation id="4303167373847512281">Autoriser le mode développeur</translation>
 <translation id="4307116964468610577">La règle prolonge la durée de vie de la batterie d'un système en ne la chargeant entièrement qu'une fois par jour. Le reste de la journée, la batterie est maintenue dans un état de charge réduit qui est mieux adapté au stockage, même lorsque le système est branché sur une source d'alimentation.

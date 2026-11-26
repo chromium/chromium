@@ -2291,6 +2291,7 @@ Web Worker 可通过包含 Worker 脚本的数据网址创建。以前，这些 
 
 此政策只是暂时性措施，将在里程碑 157 中移除。</translation>
 <translation id="2452225615952836461">始终大写请求方法</translation>
+<translation id="2453512475686299774">停用“从桌面搜索”功能</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
@@ -3731,6 +3732,17 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
       如果您不设置此政策，用户可以选择要在桌面和登录屏幕背景中显示的图片。</translation>
 <translation id="3313395530427546108">不使用临时代码签名。</translation>
 <translation id="3315324240256767419">启用“ghost 窗口”功能。</translation>
+<translation id="3319692863291981022">控制是否可在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 的 <ph name="PRODUCT_NAME" /> 中使用“从桌面搜索”功能。
+
+<ph name="PRODUCT_NAME" /> 提供“从桌面搜索”设置，允许用户通过全局键盘快捷键、系统任务栏或菜单栏图标，或者在 <ph name="MS_WIN_NAME" /> 上通过“开始”菜单和任务栏快捷方式，从计算机任意位置打开浮动的桌面搜索框。
+
+将此政策设为“启用”会打开“从桌面搜索”，并禁止用户在 <ph name="PRODUCT_NAME" /> 的设置中将其关闭。用户仍可自定义其本地键盘快捷键。首次使用“从桌面搜索”后，<ph name="PRODUCT_NAME" /> 会继续在后台运行，以便在没有打开任何浏览器窗口时键盘快捷键也可用；在 <ph name="MS_WIN_NAME" /> 上，它还会在用户登录时启动。
+
+将此政策设为“停用”会关闭“从桌面搜索”，关闭所有打开的桌面搜索窗口，取消注册全局键盘快捷键，移除系统任务栏或菜单栏图标，并禁止用户在 <ph name="PRODUCT_NAME" /> 的设置中开启此功能。此后，“从桌面搜索”将不再使 <ph name="PRODUCT_NAME" /> 在后台运行，也不会在用户登录 <ph name="MS_WIN_NAME" /> 时启动该功能。在 <ph name="MS_WIN_NAME" /> 上，“开始”菜单或任务栏中现有的“从桌面搜索”快捷方式不会被移除，但它们会像正常启动一样，在浏览器窗口或个人资料选择器中打开 <ph name="PRODUCT_NAME" />。如果未设置此政策，系统会开启“从桌面搜索”，用户可在 <ph name="PRODUCT_NAME" /> 的设置中将其关闭。
+
+启用“从桌面搜索”后，<ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> 的可用性以及桌面搜索框内的屏幕或文件内容共享将继续遵循 <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> 和 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />。
+
+对于不具有“从桌面搜索”设置的 <ph name="PRODUCT_NAME" /> 版本，或不具有该设置的个人资料（例如 Google 不是默认搜索引擎时），此策略不会产生任何影响。</translation>
 <translation id="3321099611644751329"><ph name="PRODUCT_NAME" /> 在验证服务器身份时应信任的 TLS 证书（有限制条件）</translation>
 <translation id="3323819750604111729">允许在首次运行时导入书签</translation>
 <translation id="332771718998993005">将广告中宣传的名称确定为 <ph name="PRODUCT_NAME" /> 目标名称。
@@ -5168,6 +5180,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="4297774573405304484">指向特定图片的网址，该图片将用作受管浏览器的企业标记。此网址必须指向图片。建议使用网站图标（例如 https://www.google.com/favicon.ico）或不小于 48 x 48 像素的图标。请注意，此政策仅适用于受管浏览器，对使用非受管浏览器的受管用户没有影响。在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
 <translation id="4297918983070495117">不使用缓存加密。</translation>
+<translation id="4301274356429819881">启用“从桌面搜索”功能</translation>
 <translation id="4301478455179579340">在安装渐进式 Web 应用期间对原生应用进行签名</translation>
 <translation id="4303167373847512281">允许使用开发者模式</translation>
 <translation id="4307116964468610577">此政策允许系统电池每天只充满 1 次，以延长它的使用寿命。除了用来将电池充满的时间，在当天的其余时间内，电池始终都不会充到 100%，即使系统已接通电源也是如此，这样更利于储电。

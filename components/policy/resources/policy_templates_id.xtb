@@ -2409,6 +2409,7 @@ Jika kebijakan ini disetel ke Nonaktif, Chrome akan kembali ke perilaku lama, da
 
 Kebijakan ini bersifat sementara dan akan dihapus di pencapaian 157.</translation>
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
+<translation id="2453512475686299774">Nonaktifkan Telusuri dari desktop</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
 <translation id="2460127623195247744">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />'.
@@ -3920,6 +3921,19 @@ Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint y
       Jika tidak ditetapkan, pengguna akan memilih gambar untuk latar belakang desktop dan layar login.</translation>
 <translation id="3313395530427546108">Jangan gunakan tanda tangan kode ad-hoc.</translation>
 <translation id="3315324240256767419">Aktifkan fitur jendela bayangan.</translation>
+<translation id="3319692863291981022">Mengontrol apakah fitur Telusuri dari desktop tersedia di <ph name="PRODUCT_NAME" /> di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> menyediakan setelan "Telusuri dari desktop" yang memungkinkan pengguna membuka kotak penelusuran desktop mengambang dari mana saja di komputer mereka menggunakan pintasan keyboard global, ikon area notifikasi atau panel menu, atau, di <ph name="MS_WIN_NAME" />, pintasan Menu Start dan taskbar.
+
+Jika kebijakan ini disetel ke Aktif, Telusuri dari desktop akan diaktifkan dan pengguna tidak akan dapat menonaktifkannya di setelan <ph name="PRODUCT_NAME" />. Pengguna masih dapat menyesuaikan pintasan keyboard lokal mereka. Setelah Telusuri dari desktop pertama kali digunakan, <ph name="PRODUCT_NAME" /> akan terus berjalan di latar belakang sehingga pintasan keyboard berfungsi saat tidak ada jendela browser yang terbuka, dan di <ph name="MS_WIN_NAME" />, pintasan keyboard juga dimulai saat pengguna login.
+
+Jika kebijakan ini disetel ke Nonaktif, Telusuri dari desktop akan dinonaktifkan, jendela penelusuran desktop yang terbuka akan ditutup, pintasan keyboard global akan dibatalkan pendaftarannya, ikon area notifikasi atau panel menu akan dihapus, dan pengguna tidak akan dapat mengaktifkan fitur tersebut di setelan <ph name="PRODUCT_NAME" />. Telusuri dari desktop tidak lagi membuat <ph name="PRODUCT_NAME" /> tetap berjalan di latar belakang atau, di <ph name="MS_WIN_NAME" />, memulainya saat pengguna login. Di <ph name="MS_WIN_NAME" />, pintasan Telusuri dari desktop yang ada di Menu Start atau taskbar tidak akan dihapus, tetapi pintasan tersebut akan membuka <ph name="PRODUCT_NAME" /> seperti peluncuran biasa, baik di jendela browser maupun pemilih profil.
+
+Jika kebijakan ini tidak disetel, Telusuri dari desktop akan diaktifkan, dan pengguna dapat menonaktifkannya di setelan <ph name="PRODUCT_NAME" />.
+
+Jika Telusuri dari desktop diaktifkan, ketersediaan <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> dan berbagi konten layar atau file dalam kotak penelusuran desktop akan terus mematuhi <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> dan <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Kebijakan ini tidak berpengaruh pada versi <ph name="PRODUCT_NAME" /> yang tidak menyediakan setelan "Telusuri dari desktop", atau untuk profil yang tidak menyediakan setelan tersebut, seperti saat Google bukan mesin telusur default.</translation>
 <translation id="3321099611644751329">Sertifikat TLS yang seharusnya dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server dengan batasan</translation>
 <translation id="3323819750604111729">Aktifkan impor bookmark saat browser pertama kali dijalankan</translation>
 <translation id="332771718998993005">Tentukan nama yang diiklankan sebagai tujuan <ph name="PRODUCT_NAME" />.
@@ -5423,6 +5437,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Jangan gunakan enkripsi cache.</translation>
+<translation id="4301274356429819881">Aktifkan Telusuri dari desktop</translation>
 <translation id="4301478455179579340">Penandatanganan aplikasi native selama penginstalan Progressive Web Application</translation>
 <translation id="4303167373847512281">Izinkan mode developer</translation>
 <translation id="4307116964468610577">Kebijakan ini memperpanjang masa pakai baterai sistem dengan mengisi daya baterai hingga kapasitas penuh hanya sekali per hari. Selama sisa hari tersebut, baterai berada dalam status pengisian daya lambat dan lebih baik untuk penyimpanan daya, bahkan ketika sistem dicolokkan ke sumber listrik.

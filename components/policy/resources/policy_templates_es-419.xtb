@@ -2406,6 +2406,7 @@ Si inhabilitas esta política, Chrome volverá al comportamiento heredado y los 
 
 Esta política es temporal y se quitará en el evento importante 157.</translation>
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
+<translation id="2453512475686299774">Inhabilitar Buscar desde el escritorio</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
 <translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
 <translation id="2460127623195247744">Esta política dejó de estar disponible. En su lugar, utiliza la política "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -3913,6 +3914,19 @@ Solo desactiva la política si usas una solución de seguridad de endpoint que b
       Si no estableces la política, los usuarios podrán elegir la imagen de fondo para la pantalla de acceso y el escritorio.</translation>
 <translation id="3313395530427546108">No usar firmas de código ad-hoc.</translation>
 <translation id="3315324240256767419">Habilitar la función de ventana fantasma</translation>
+<translation id="3319692863291981022">Controla si la función Buscar desde el escritorio está disponible en <ph name="PRODUCT_NAME" /> en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />.
+
+<ph name="PRODUCT_NAME" /> proporciona un parámetro de configuración "Buscar desde el escritorio" que permite a los usuarios abrir un cuadro de búsqueda flotante en el escritorio desde cualquier lugar de su computadora con una combinación de teclas global o a través del ícono de la bandeja del sistema o de la barra de menú. En <ph name="MS_WIN_NAME" />, se pueden usar los accesos directos del menú Inicio y de la barra de tareas.
+
+Si habilitas la política, se activará la función Buscar desde el escritorio y los usuarios no podrán desactivarla en la configuración de <ph name="PRODUCT_NAME" />. Los usuarios pueden personalizar su combinación de teclas local. Después de que se usa Buscar desde el escritorio por primera vez, <ph name="PRODUCT_NAME" /> se sigue ejecutando en segundo plano para que la combinación de teclas funcione cuando no hay ninguna ventana del navegador abierta. En <ph name="MS_WIN_NAME" />, también se inicia cuando el usuario accede.
+
+Si inhabilitas la política, se desactivará Buscar desde el escritorio, se cerrarán las ventanas de búsqueda de escritorio abiertas, se anulará el registro de la combinación de teclas global, se quitará el ícono de la bandeja del sistema o de la barra de menú, y se impedirá que los usuarios activen la función en la configuración de <ph name="PRODUCT_NAME" />. Buscar desde el escritorio ya no mantiene <ph name="PRODUCT_NAME" /> en ejecución en segundo plano. Tampoco se inicia en <ph name="MS_WIN_NAME" /> cuando el usuario accede. En <ph name="MS_WIN_NAME" />, los accesos directos existentes de Buscar desde el escritorio en el menú Inicio o la barra de tareas no se quitan, pero abren <ph name="PRODUCT_NAME" /> como lo haría un inicio normal, en una ventana del navegador o en el selector de perfiles.
+
+Si no estableces la política, se activará la función Buscar desde el escritorio y los usuarios podrán desactivarla en la configuración de <ph name="PRODUCT_NAME" />.
+
+Cuando se habilita Buscar desde el escritorio, la disponibilidad de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y el uso compartido de contenido de pantalla o archivos en el cuadro de búsqueda del escritorio siguen respetando las políticas <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> y <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Esta política no tiene efecto en las versiones de <ph name="PRODUCT_NAME" /> en las que no está disponible el parámetro de configuración "Buscar desde el escritorio" ni en los perfiles en los que no está disponible, como cuando Google no es el motor de búsqueda predeterminado.</translation>
 <translation id="3321099611644751329">Certificados TLS en los que debe confiar <ph name="PRODUCT_NAME" /> para la autenticación del servidor con restricciones</translation>
 <translation id="3323819750604111729">Habilitar la importación de favoritos en la primera ejecución</translation>
 <translation id="332771718998993005">Determina el nombre anunciado como un destino de <ph name="PRODUCT_NAME" />.
@@ -5413,6 +5427,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">No usar la encriptación de caché.</translation>
+<translation id="4301274356429819881">Habilitar Buscar desde el escritorio</translation>
 <translation id="4301478455179579340">Firma de aplicaciones nativas durante la instalación de aplicaciones web progresivas</translation>
 <translation id="4303167373847512281">Permitir el modo de desarrollador</translation>
 <translation id="4307116964468610577">La política prolonga la vida útil de las baterías del sistema, ya que las carga a la capacidad máxima solo una vez por día. Durante el resto del día, las baterías se mantienen en un estado de carga más bajo, que es mejor para el almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.

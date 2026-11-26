@@ -2403,6 +2403,7 @@ Se essa política for desativada, o Chrome vai reverter para o comportamento leg
 
 Essa política é temporária e será removida na etapa 157.</translation>
 <translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
+<translation id="2453512475686299774">Desativar a pesquisa no computador</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
 <translation id="2460127623195247744">Esta política foi suspensa. Use a <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -3909,6 +3910,19 @@ Desative a política somente se você estiver usando uma solução de segurança
       Se a política não for definida, os usuários escolherão a imagem de plano de fundo da área de trabalho e da tela de login.</translation>
 <translation id="3313395530427546108">Não usar assinaturas de código ad-hoc.</translation>
 <translation id="3315324240256767419">Ativar o recurso de janela fantasma.</translation>
+<translation id="3319692863291981022">Controla se o recurso Pesquisar na área de trabalho está disponível no <ph name="PRODUCT_NAME" /> no <ph name="MS_WIN_NAME" /> e no <ph name="MAC_OS_NAME" />.
+
+O <ph name="PRODUCT_NAME" /> oferece uma configuração "Pesquisar na área de trabalho" que permite aos usuários abrir uma caixa de pesquisa flutuante em qualquer lugar do computador usando um atalho de teclado global, o ícone da bandeja do sistema ou da barra de menus ou, no <ph name="MS_WIN_NAME" />, os atalhos do menu Iniciar e da barra de tarefas.
+
+Se a política for ativada, a opção "Pesquisar na área de trabalho" será ativada, e os usuários não poderão desativá-la nas configurações do <ph name="PRODUCT_NAME" />. Os usuários ainda podem personalizar o atalho de teclado local. Depois que a opção "Pesquisar na área de trabalho" é usada pela primeira vez, o <ph name="PRODUCT_NAME" /> continua em execução em segundo plano para que o atalho do teclado funcione quando nenhuma janela do navegador estiver aberta. No <ph name="MS_WIN_NAME" />, ele também é iniciado quando o usuário faz login.
+
+Se a política for desativada, a opção "Pesquisar na área de trabalho" será desativada, todas as janelas abertas desta opção serão fechadas, o atalho de teclado global será cancelado, o ícone da bandeja do sistema ou da barra de menus será removido e os usuários não poderão ativar o recurso nas configurações do <ph name="PRODUCT_NAME" />. A pesquisa no computador não mantém mais o <ph name="PRODUCT_NAME" /> em execução em segundo plano nem o inicia no <ph name="MS_WIN_NAME" /> quando o usuário faz login. No <ph name="MS_WIN_NAME" />, os atalhos na área de trabalho existentes para a Pesquisa no menu "Iniciar" ou na barra de tarefas não são removidos, mas abrem o <ph name="PRODUCT_NAME" /> como uma inicialização normal, em uma janela do navegador ou no seletor de perfil.
+
+Se a política não for definida, a opção "Pesquisar na área de trabalho" será ativada, e os usuários poderão desativá-la nas configurações do <ph name="PRODUCT_NAME" />.
+
+Quando "Pesquisar na área de trabalho" está ativada, a disponibilidade do <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> e o compartilhamento de conteúdo da tela ou de arquivos na caixa de pesquisa da área de trabalho continuam respeitando as políticas <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> e <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />.
+
+Esta política não afeta as versões do <ph name="PRODUCT_NAME" /> em que a configuração "Pesquisar no computador" não está disponível ou os perfis em que ela não está disponível, como quando o Google não é o mecanismo de pesquisa padrão.</translation>
 <translation id="3321099611644751329">Certificados TLS que precisam ser considerados confiáveis pelo <ph name="PRODUCT_NAME" /> para autenticação do servidor com restrições</translation>
 <translation id="3323819750604111729">Ativar a importação de favoritos na primeira execução</translation>
 <translation id="332771718998993005">Determina o nome anunciado como um destino do <ph name="PRODUCT_NAME" />.
@@ -5411,6 +5425,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4297918983070495117">Não usar a criptografia de cache.</translation>
+<translation id="4301274356429819881">Ativar a Pesquisa no computador</translation>
 <translation id="4301478455179579340">Assinatura de app nativo durante a instalação de um App Web Progressivo</translation>
 <translation id="4303167373847512281">Permitir o modo de desenvolvedor</translation>
 <translation id="4307116964468610577">A política prolonga a vida útil de baterias do sistema ao carregá-las até a capacidade total apenas uma vez por dia. No restante do dia, as baterias são mantidas em um estado de carregamento mais baixo. Isso é melhor para o armazenamento, mesmo que o sistema esteja conectado a uma fonte de energia.
