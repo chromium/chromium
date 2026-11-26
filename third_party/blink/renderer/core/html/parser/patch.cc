@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/memory/stack_allocated.h"
 #include "base/no_destructor.h"
@@ -11,14 +13,15 @@
 #include "third_party/blink/renderer/core/dom/active_template_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/patch_marker_map.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -94,13 +97,51 @@ class [[nodiscard]] NodeRemovalScope {
   Node* start_marker_ = nullptr;
 };
 
+ProcessingInstruction* FindTargetMarker(
+    ContainerNode& scope,
+    const AtomicString& marker_name,
+    const AtomicString& marker_target,
+    const AtomicString& start_target,
+    std::optional<const PatchMarkerMap*> fragment_patch_markers) {
+  if (RuntimeEnabledFeatures::HTMLPatchingMarkerMapEnabled()) {
+    if (scope.IsInTreeScope()) {
+      return scope.GetTreeScope().FindPatchMarker(marker_name, scope);
+    }
+    if (fragment_patch_markers.has_value()) {
+      return *fragment_patch_markers ? (*fragment_patch_markers)
+                                           ->FindFirstWithin(marker_name, scope)
+                                     : nullptr;
+    }
+  }
+
+  static base::NoDestructor<AtomicString> kNamePseudoAttr(
+      AtomicString::FromLiteral<"name">());
+  for (Node& descendant : NodeTraversal::DescendantsOf(scope)) {
+    auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
+    if (!processing_instruction) {
+      continue;
+    }
+    const String& target = processing_instruction->target();
+    if (target != marker_target && target != start_target) {
+      continue;
+    }
+    if (processing_instruction->GetAttributeValue(
+            *kNamePseudoAttr, g_empty_atom) == marker_name) {
+      return processing_instruction;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
-Patch* Patch::Prepare(ContainerNode* scope,
-                      const AtomicString& marker_name,
-                      HTMLTemplateElement* template_element,
-                      StreamingSanitizer* parent_sanitizer,
-                      ParserContentPolicy content_policy) {
+Patch* Patch::Prepare(
+    ContainerNode* scope,
+    const AtomicString& marker_name,
+    HTMLTemplateElement* template_element,
+    StreamingSanitizer* parent_sanitizer,
+    ParserContentPolicy content_policy,
+    std::optional<const PatchMarkerMap*> fragment_patch_markers) {
   if (marker_name.empty()) {
     return nullptr;
   }
@@ -113,6 +154,24 @@ Patch* Patch::Prepare(ContainerNode* scope,
       }
     }
     scope = parent_template->InsertionTarget();
+  }
+
+  if (scope == scope->GetDocument().body()) {
+    scope = scope->GetDocument().documentElement();
+  }
+
+  static base::NoDestructor<AtomicString> kMarkerTarget(
+      AtomicString::FromLiteral<"marker">());
+  static base::NoDestructor<AtomicString> kStartTarget(
+      AtomicString::FromLiteral<"start">());
+  static base::NoDestructor<AtomicString> kEndTarget(
+      AtomicString::FromLiteral<"end">());
+
+  ProcessingInstruction* processing_instruction =
+      FindTargetMarker(*scope, marker_name, *kMarkerTarget, *kStartTarget,
+                       fragment_patch_markers);
+  if (!processing_instruction) {
+    return nullptr;
   }
 
   const bool has_external_src =
@@ -129,46 +188,21 @@ Patch* Patch::Prepare(ContainerNode* scope,
   bool had_end_marker = false;
   ActiveTemplateInvocation* invocation = nullptr;
 
-  if (scope == scope->GetDocument().body()) {
-    scope = scope->GetDocument().documentElement();
-  }
-
-  static base::NoDestructor<AtomicString> kNamePseudoAttr(
-      AtomicString::FromLiteral<"name">());
-  static base::NoDestructor<AtomicString> kMarkerTarget(
-      AtomicString::FromLiteral<"marker">());
-  static base::NoDestructor<AtomicString> kStartTarget(
-      AtomicString::FromLiteral<"start">());
-  static base::NoDestructor<AtomicString> kEndTarget(
-      AtomicString::FromLiteral<"end">());
-
-  for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
-    auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
-    if (!processing_instruction ||
-        (processing_instruction->GetAttributeValue(
-             *kNamePseudoAttr, g_empty_atom) != marker_name)) {
-      continue;
-    }
-    if (processing_instruction->target() == *kMarkerTarget) {
-      parent = processing_instruction->parentNode();
-      start_marker = processing_instruction;
-      end_marker = processing_instruction;
-      had_end_marker = true;
-      if (track_active_template) {
-        invocation = ActiveTemplateInvocation::Create(template_element, parent);
-        if (parent && invocation) {
-          MutationObserverInterestGroup::EnqueueActiveTemplateRecord(
-              *parent, V8MutationRecordActiveTemplateStatus::Enum::kStart,
-              invocation, start_marker->previousSibling(), start_marker);
-        }
+  if (processing_instruction->target() == *kMarkerTarget) {
+    parent = processing_instruction->parentNode();
+    start_marker = processing_instruction;
+    end_marker = processing_instruction;
+    had_end_marker = true;
+    if (track_active_template) {
+      invocation = ActiveTemplateInvocation::Create(template_element, parent);
+      if (parent && invocation) {
+        MutationObserverInterestGroup::EnqueueActiveTemplateRecord(
+            *parent, V8MutationRecordActiveTemplateStatus::Enum::kStart,
+            invocation, start_marker->previousSibling(), start_marker);
       }
-      break;
     }
-
-    if (processing_instruction->target() != *kStartTarget) {
-      continue;
-    }
-
+  } else {
+    DCHECK_EQ(processing_instruction->target(), *kStartTarget);
     ContainerNode* pi_parent = processing_instruction->parentNode();
     int marker_depth = 0;
     NodeRemovalScope remove_scope(scope->GetDocument());
@@ -205,7 +239,6 @@ Patch* Patch::Prepare(ContainerNode* scope,
       invocation = ActiveTemplateInvocation::Create(template_element, parent);
       remove_scope.SetActiveTemplate(invocation, parent, start_marker);
     }
-    break;
   }
 
   if (!parent) {

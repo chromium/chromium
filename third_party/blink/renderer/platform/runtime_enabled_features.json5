@@ -3984,6 +3984,13 @@
       status: "test",
     },
     {
+      // Indexes <?start> and <?marker> processing instructions by name so
+      // <template for> lookup is O(1) instead of walking the DOM tree.
+      // https://crbug.com/590209746
+      name: "HTMLPatchingMarkerMap",
+      status: "stable",
+    },
+    {
       // Defers image loads triggered from
       // HTMLPlugInElement::CustomStyleForLayoutObject to a DOM manipulation
       // task instead of loading synchronously during style recalc.

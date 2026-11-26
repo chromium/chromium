@@ -61,6 +61,8 @@ class Element;
 class HTMLFormElement;
 class HTMLParserReentryPermit;
 class ParserRootInsertionPoint;
+class PatchMarkerMap;
+class ProcessingInstruction;
 class StreamingSanitizer;
 
 class HTMLConstructionSite final {
@@ -235,6 +237,12 @@ class HTMLConstructionSite final {
   void Attach(ContainerNode* parent, Node* child, bool self_closing = false) {
     Attach({parent, nullptr}, child, self_closing);
   }
+  void AttachProcessingInstruction(InsertionLocation location,
+                                   ProcessingInstruction* pi);
+  // Returns std::nullopt when fragment marker tracking does not apply (caller
+  // falls back to TreeScope or DOM traversal), or the (possibly null) map when
+  // this fragment parse tracks all markers.
+  std::optional<const PatchMarkerMap*> FragmentPatchMarkersForLookup() const;
 
   void AttachOrFosterParent(Node* child,
                             HTMLStackItem* item = nullptr,
@@ -343,6 +351,7 @@ class HTMLConstructionSite final {
   Member<CustomElementRegistry> custom_element_registry_;
 
   Member<StreamingSanitizer> sanitizer_;
+  Member<PatchMarkerMap> fragment_patch_markers_;
 };
 
 }  // namespace blink

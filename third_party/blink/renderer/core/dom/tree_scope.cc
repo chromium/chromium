@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/focusable.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
+#include "third_party/blink/renderer/core/dom/patch_marker_map.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -164,6 +165,22 @@ void TreeScope::RemoveElementById(const AtomicString& element_id,
   if (id_target_observer_registry_) {
     id_target_observer_registry_->NotifyObservers(element_id);
   }
+}
+
+void TreeScope::AddPatchMarker(ProcessingInstruction& marker) {
+  if (!patch_markers_by_name_) {
+    patch_markers_by_name_ = MakeGarbageCollected<PatchMarkerMap>();
+  }
+  patch_markers_by_name_->Add(marker);
+}
+
+ProcessingInstruction* TreeScope::FindPatchMarker(
+    const AtomicString& name,
+    const ContainerNode& scope) const {
+  if (!patch_markers_by_name_) {
+    return nullptr;
+  }
+  return patch_markers_by_name_->FindFirstWithin(name, scope);
 }
 
 Node* TreeScope::AncestorInThisScope(Node* node) const {
@@ -925,6 +942,7 @@ void TreeScope::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
   visitor->Trace(elements_by_id_);
   visitor->Trace(image_maps_by_name_);
+  visitor->Trace(patch_markers_by_name_);
   visitor->Trace(scoped_style_resolver_);
   visitor->Trace(radio_button_group_scope_);
   visitor->Trace(svg_tree_scoped_resources_);

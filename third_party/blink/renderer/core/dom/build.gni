@@ -234,6 +234,8 @@ blink_core_sources_dom = [
   "opaque_range.cc",
   "opaque_range.h",
   "parser_content_policy.h",
+  "patch_marker_map.cc",
+  "patch_marker_map.h",
   "popover_data.h",
   "presentation_attribute_style.cc",
   "presentation_attribute_style.h",

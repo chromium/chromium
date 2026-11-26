@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -122,6 +123,7 @@ CharacterData* ProcessingInstruction::CloneWithData(Document& factory,
 
 void ProcessingInstruction::DidChangeData() {
   attributes_dirty_ = true;
+  MaybeRegisterPatchMarker();
   bool was_xsl = is_xsl_;
   String href;
   String charset;
@@ -300,7 +302,24 @@ void ProcessingInstruction::UpdateDataFromAttributes() {
     builder.Append("\"");
   }
   SetDataFromAttributeChange(builder.ReleaseString());
+  MaybeRegisterPatchMarker();
   UpdateStylesheetIfNeeded();
+}
+
+const AtomicString& ProcessingInstruction::PatchMarkerName() {
+  if (target_ != "start" && target_ != "marker") {
+    return g_empty_atom;
+  }
+  static base::NoDestructor<AtomicString> kNamePseudoAttr(
+      AtomicString::FromLiteral<"name">());
+  return GetAttributeValue(*kNamePseudoAttr, g_empty_atom);
+}
+
+void ProcessingInstruction::MaybeRegisterPatchMarker() {
+  if (RuntimeEnabledFeatures::HTMLPatchingMarkerMapEnabled() &&
+      IsInTreeScope() && !PatchMarkerName().empty()) {
+    GetTreeScope().AddPatchMarker(*this);
+  }
 }
 
 bool ProcessingInstruction::IsXMLStylesheet() const {
@@ -504,6 +523,7 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
 Node::InsertionNotificationRequest ProcessingInstruction::InsertedInto(
     ContainerNode& insertion_point) {
   CharacterData::InsertedInto(insertion_point);
+  MaybeRegisterPatchMarker();
   if (!insertion_point.isConnected()) {
     return kInsertionDone;
   }

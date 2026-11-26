@@ -51,6 +51,8 @@ class HitTestRequest;
 class HitTestResult;
 class IdTargetObserverRegistry;
 class Node;
+class PatchMarkerMap;
+class ProcessingInstruction;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
 class ScriptState;
@@ -109,6 +111,10 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   bool ContainsMultipleElementsWithId(const AtomicString& id) const;
   void AddElementById(const AtomicString& element_id, Element&);
   void RemoveElementById(const AtomicString& element_id, Element&);
+
+  void AddPatchMarker(ProcessingInstruction&);
+  ProcessingInstruction* FindPatchMarker(const AtomicString& name,
+                                         const ContainerNode& scope) const;
 
   Document& GetDocument() const {
     DCHECK(document_);
@@ -252,6 +258,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   Member<TreeOrderedMap> elements_by_id_;
   Member<TreeOrderedMap> image_maps_by_name_;
+  Member<PatchMarkerMap> patch_markers_by_name_;
 
   Member<IdTargetObserverRegistry> id_target_observer_registry_;
 

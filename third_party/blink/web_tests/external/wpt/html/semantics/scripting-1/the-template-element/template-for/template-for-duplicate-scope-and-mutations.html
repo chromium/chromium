@@ -1,0 +1,77 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>HTML partial updates: duplicate scopes and dynamic marker mutations</title>
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+test(() => {
+  const root = document.createElement("div");
+  root.setHTMLUnsafe(
+    `<div id="outside"><?start name="dup">outside-old<?end></div>` +
+    `<div id="inside"><?start name="dup">inside-old<?end>` +
+    `<template for="dup">inside-new</template></div>`
+  );
+  assert_equals(root.querySelector("#outside").textContent, "outside-old");
+  assert_equals(root.querySelector("#inside").textContent, "inside-new");
+}, "Out-of-scope marker with duplicate name does not shadow an in-scope marker");
+
+promise_test(async (t) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  t.add_cleanup(() => container.remove());
+
+  const writer = container.streamAppendHTMLUnsafe().getWriter();
+  await writer.write(
+    `<div id="first"><?marker name="dup"></div>` +
+    `<div id="second"><?marker name="dup"></div>`
+  );
+
+  // Move #second before #first dynamically before <template for="dup"> arrives.
+  const first = container.querySelector("#first");
+  const second = container.querySelector("#second");
+  container.insertBefore(second, first);
+
+  await writer.write(`<template for="dup">patched-first-in-tree</template>`);
+  await writer.close();
+
+  assert_equals(second.textContent, "patched-first-in-tree");
+  assert_equals(first.textContent, "");
+}, "Reordering duplicate markers before <template for> patches the new first marker in tree order");
+
+promise_test(async (t) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  t.add_cleanup(() => container.remove());
+
+  const writer = container.streamAppendHTMLUnsafe().getWriter();
+  await writer.write(
+    `<div id="a"><?start name="old-a">old-a<?end></div>` +
+    `<div id="b"><?start name="old-b">old-b<?end></div>`
+  );
+
+  const walker = document.createTreeWalker(
+    container,
+    NodeFilter.SHOW_PROCESSING_INSTRUCTION,
+  );
+  const startA = walker.nextNode();
+  while (walker.nextNode()?.nodeName !== "start") {}
+  const startB = walker.currentNode;
+
+  // Mutate one PI via data and another via setAttribute.
+  startA.data = 'name="new-a"';
+  startB.setAttribute("name", "new-b");
+
+  await writer.write(
+    `<template for="old-a">wrong-a</template>` +
+    `<template for="new-a">updated-a</template>` +
+    `<template for="new-b">updated-b</template>`
+  );
+  await writer.close();
+
+  assert_equals(container.querySelector("#a").textContent, "updated-a");
+  assert_equals(container.querySelector("#b").textContent, "updated-b");
+}, "Mutating marker PI data and attributes updates <template for> target resolution");
+</script>
+</body>

@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>HTML partial updates: &lt;template for&gt; lookup should not be O(n^2)</title>
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function buildLargePatchDocument({ patches, padding, unmatched }) {
+  const parts = ['<main style="display:none">'];
+  for (let i = 0; i < patches; ++i) {
+    parts.push(`<section><?start name="p${i}"><i>wait</i><?end></section>`);
+  }
+  for (let i = 0; i < padding; ++i) {
+    parts.push("<span>.</span>");
+  }
+  parts.push("</main>");
+  // Stream patches in reverse order so earlier placeholders are still live.
+  for (let i = patches - 1; i >= 0; --i) {
+    parts.push(`<template for="p${i}"><b>done ${i}</b></template>`);
+  }
+  for (let i = 0; i < unmatched; ++i) {
+    parts.push(`<template for="unmatched-${i}"><b>unused</b></template>`);
+  }
+  return parts.join("");
+}
+
+test((t) => {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+
+  const markup = buildLargePatchDocument({
+    patches: 8000,
+    padding: 50000,
+    unmatched: 8000,
+  });
+
+  iframe.contentDocument.open();
+  iframe.contentDocument.write(`<!doctype html><body>${markup}</body>`);
+  iframe.contentDocument.close();
+
+  assert_equals(
+    iframe.contentDocument.querySelectorAll("main > section > b").length,
+    8000,
+    "All 8000 matched placeholders should be patched without timing out",
+  );
+  assert_equals(
+    iframe.contentDocument.querySelectorAll("template").length,
+    8000,
+    "Unmatched templates should remain unpatched without timing out",
+  );
+}, "Document-level <template for> lookup across a large DOM should not be O(n^2)");
+
+test((t) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  t.add_cleanup(() => container.remove());
+
+  const markup = buildLargePatchDocument({
+    patches: 5000,
+    padding: 40000,
+    unmatched: 5000,
+  });
+
+  container.setHTMLUnsafe(markup);
+
+  assert_equals(
+    container.querySelectorAll("main > section > b").length,
+    5000,
+    "All 5000 fragment placeholders should be patched without timing out",
+  );
+}, "Fragment <template for> lookup via setHTMLUnsafe across a large DOM should not be O(n^2)");
+
+test((t) => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  t.add_cleanup(() => container.remove());
+
+  const markup = buildLargePatchDocument({
+    patches: 0,
+    padding: 40000,
+    unmatched: 5000,
+  });
+
+  container.setHTMLUnsafe(markup);
+
+  assert_equals(
+    container.querySelectorAll("template").length,
+    5000,
+    "All 5000 unmatched fragment templates should remain unpatched without timing out",
+  );
+}, "Unmatched fragment <template for> lookup with no markers across a large DOM should not be O(n^2)");
+</script>
+</body>

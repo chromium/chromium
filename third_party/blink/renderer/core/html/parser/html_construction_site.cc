@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
+#include "third_party/blink/renderer/core/dom/patch_marker_map.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
@@ -464,6 +465,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(pending_text_);
   visitor->Trace(custom_element_registry_);
   visitor->Trace(sanitizer_);
+  visitor->Trace(fragment_patch_markers_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -473,6 +475,7 @@ void HTMLConstructionSite::Detach() {
   pending_text_.Discard();
   document_ = nullptr;
   attachment_root_ = nullptr;
+  fragment_patch_markers_ = nullptr;
 }
 
 HTMLFormElement* HTMLConstructionSite::TakeForm() {
@@ -809,24 +812,50 @@ HTMLConstructionSite::AdjustInsertionLocation(InsertionLocation location) {
   return location;
 }
 
+void HTMLConstructionSite::AttachProcessingInstruction(
+    InsertionLocation location,
+    ProcessingInstruction* pi) {
+  Attach(location, pi);
+  if (RuntimeEnabledFeatures::HTMLPatchingMarkerMapEnabled() &&
+      is_parsing_fragment_ && !root_insertion_point_ && pi->parentNode() &&
+      !pi->IsInTreeScope() && !pi->PatchMarkerName().empty()) {
+    if (!fragment_patch_markers_) {
+      fragment_patch_markers_ = MakeGarbageCollected<PatchMarkerMap>();
+    }
+    fragment_patch_markers_->Add(*pi);
+  }
+}
+
+std::optional<const PatchMarkerMap*>
+HTMLConstructionSite::FragmentPatchMarkersForLookup() const {
+  if (!RuntimeEnabledFeatures::HTMLPatchingMarkerMapEnabled() ||
+      !is_parsing_fragment_ || root_insertion_point_) {
+    return std::nullopt;
+  }
+  return fragment_patch_markers_.Get();
+}
+
 void HTMLConstructionSite::InsertProcessingInstruction(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
-  Attach(CurrentInsertionLocation(), CreateProcessingInstructionFromToken(
-                                         token, OwnerDocumentForCurrentNode()));
+  AttachProcessingInstruction(CurrentInsertionLocation(),
+                              CreateProcessingInstructionFromToken(
+                                  token, OwnerDocumentForCurrentNode()));
 }
 
 void HTMLConstructionSite::InsertProcessingInstructionOnDocument(
     AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
-  Attach(attachment_root_,
-         CreateProcessingInstructionFromToken(token, *document_));
+  AttachProcessingInstruction(
+      {attachment_root_, nullptr},
+      CreateProcessingInstructionFromToken(token, *document_));
 }
 
 void HTMLConstructionSite::InsertProcessingInstructionOnHTMLHtmlElement(
     AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
-  Attach(open_elements_.RootNode(),
-         CreateProcessingInstructionFromToken(token, *document_));
+  AttachProcessingInstruction(
+      {open_elements_.RootNode(), nullptr},
+      CreateProcessingInstructionFromToken(token, *document_));
 }
 
 void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
@@ -990,7 +1019,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   }
   if (Patch* patch = Patch::Prepare(current_insertion_location.parent,
                                     patch_target, template_element,
-                                    sanitizer_.Get(), patch_content_policy)) {
+                                    sanitizer_.Get(), patch_content_policy,
+                                    FragmentPatchMarkersForLookup())) {
     UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
     template_element->SetPatch(patch);
 

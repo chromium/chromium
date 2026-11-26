@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<body>
+<pre id="log"></pre>
+<div id="host"></div>
+<script src="../resources/runner.js"></script>
+<script>
+const kTemplateCount = 1000;
+const kPaddingCount = 20000;
+
+let shellHtml = '<main style="display:none">';
+for (let i = 0; i < kPaddingCount; ++i) {
+  shellHtml += "<span>.</span>";
+}
+shellHtml += "</main>";
+
+let unmatchedTemplatesHtml = "";
+for (let i = 0; i < kTemplateCount; ++i) {
+  unmatchedTemplatesHtml += `<template for="missing-${i}"><b>done ${i}</b></template>`;
+}
+
+const fullMarkup = shellHtml + unmatchedTemplatesHtml;
+const host = document.getElementById("host");
+
+PerfTestRunner.measureRunsPerSecond({
+  description: "Benchmarks unmatched template[for] lookups in a 20k-element DOM",
+  run: function() {
+    host.setHTMLUnsafe(fullMarkup);
+    host.replaceChildren();
+  }
+});
+</script>
+</body>

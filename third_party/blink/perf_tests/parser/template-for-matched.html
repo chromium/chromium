@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<body>
+<pre id="log"></pre>
+<div id="host"></div>
+<script src="../resources/runner.js"></script>
+<script>
+const kPatchCount = 4000;
+const kPaddingCount = 0;
+
+function buildMatchedMarkup() {
+  let out = '<main style="display:none">';
+  for (let i = 0; i < kPatchCount; ++i) {
+    out += `<section><?start name="t${i}"><i>wait ${i}</i><?end></section>`;
+  }
+  for (let i = 0; i < kPaddingCount; ++i) {
+    out += "<span>.</span>";
+  }
+  out += "</main>";
+  // Out-of-order (reverse) streaming arrival.
+  for (let i = kPatchCount - 1; i >= 0; --i) {
+    out += `<template for="t${i}"><b>done ${i}</b></template>`;
+  }
+  return out;
+}
+
+const markup = buildMatchedMarkup();
+const host = document.getElementById("host");
+
+PerfTestRunner.measureRunsPerSecond({
+  description: "Benchmarks out-of-order template[for] patching across 4000 boundaries",
+  run: function() {
+    host.setHTMLUnsafe(markup);
+    host.replaceChildren();
+  }
+});
+</script>
+</body>

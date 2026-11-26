@@ -102,6 +102,7 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   const AtomicString& GetAttributeValue(
       const AtomicString& name,
       const AtomicString& default_value = g_null_atom);
+  const AtomicString& PatchMarkerName();
 
  private:
   String nodeName() const override;
@@ -119,6 +120,7 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   void DetachLayoutTree(bool performing_reattach) final {}
 
   void ProcessAttributesIfNeeded();
+  void MaybeRegisterPatchMarker();
   bool CheckStyleSheet(String& href, String& charset);
   void ProcessStylesheet(const String& href, const String& charset);
   void UpdateDataFromAttributes();
