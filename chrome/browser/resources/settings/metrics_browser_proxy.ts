@@ -467,7 +467,8 @@ export enum YourSavedInfoDataChip {
   VEHICLES = 12,
   SHIPMENTS = 13,
   ORDERS = 14,
-  COUNT = 15,
+  OFFERS = 15,
+  COUNT = 16,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataChip)
 

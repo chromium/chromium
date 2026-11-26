@@ -159,6 +159,23 @@ export function createLoyaltyCardEntry(
 }
 
 /**
+ * Creates a new valid Wallet direct offer entry for testing.
+ */
+export function createWalletDirectOfferEntry(
+    overrides: Partial<chrome.autofillPrivate.WalletDirectOfferEntry> = {}):
+    chrome.autofillPrivate.WalletDirectOfferEntry {
+  return {
+    offerId: makeGuid(),
+    issuerName: 'Sephora',
+    shortTitle: '15% off your next purchase',
+    promoCode: 'WELCOME15',
+    expirationDate: 'Nov 20, 2026',
+    offerDetailsUrl: 'https://wallet.google.com/wallet/passes',
+    ...overrides,
+  };
+}
+
+/**
  * Creates a new random GUID for testing.
  */
 export function makeGuid(): string {
@@ -367,6 +384,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     ibans: chrome.autofillPrivate.IbanEntry[],
     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
     loyaltyCards: chrome.autofillPrivate.LoyaltyCardEntry[],
+    walletDirectOffers: chrome.autofillPrivate.WalletDirectOfferEntry[],
   };
 
   lastCallback: {
@@ -387,6 +405,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'removeIban',
       'getPayOverTimeIssuerList',
       'getLoyaltyCardList',
+      'getWalletDirectOfferList',
       'removeLoyaltyCardsChangedListener',
       'removePersonalDataManagerListener',
       'setLoyaltyCardsChangedListener',
@@ -399,6 +418,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       ibans: [],
       payOverTimeIssuers: [],
       loyaltyCards: [],
+      walletDirectOffers: [],
     };
 
     // Holds the last callbacks so they can be called when needed.
@@ -475,6 +495,11 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   removeLoyaltyCardsChangedListener(_listener: LoyaltyCardsChangedListener) {
     this.methodCalled('removeLoyaltyCardsChangedListener');
+  }
+
+  getWalletDirectOfferList() {
+    this.methodCalled('getWalletDirectOfferList');
+    return Promise.resolve(structuredClone(this.data.walletDirectOffers));
   }
 
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {

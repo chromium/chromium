@@ -6535,6 +6535,7 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Vehicles"/>
   <int value="13" label="Shipments"/>
   <int value="14" label="Orders"/>
+  <int value="15" label="Offers"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataChip) -->

@@ -51,6 +51,7 @@ type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
 type IbanEntry = chrome.autofillPrivate.IbanEntry;
 type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
 type LoyaltyCardEntry = chrome.autofillPrivate.LoyaltyCardEntry;
+type WalletDirectOfferEntry = chrome.autofillPrivate.WalletDirectOfferEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type EntityType = chrome.autofillPrivate.EntityType;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
@@ -278,8 +279,17 @@ export class SettingsAutofillPageElement extends
       },
       offersAndLoyaltyCards: {
         id: YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS,
-        // TODO(crbug.com/546252995): Add the offers chip.
-        chips: this.isOffersAndLoyaltyCardsEnabled_ ? [loyaltyCardsChip] : [],
+        chips: this.isOffersAndLoyaltyCardsEnabled_ ?
+            [
+              {
+                id: YourSavedInfoDataChip.OFFERS,
+                label: this.i18n('offersTitle'),
+                icon: 'settings20:sell',
+                isVisibleWhenNoEntitiesOfTypeExists: () => true,
+              },
+              loyaltyCardsChip,
+            ] :
+            [],
       },
       shopping: {
         id: YourSavedInfoDataCategory.SHOPPING,
@@ -339,6 +349,7 @@ export class SettingsAutofillPageElement extends
     this.paymentsManager_.getIbanList().then(setIbansListener);
     this.paymentsManager_.getPayOverTimeIssuerList().then(
         setPayOverTimeListener);
+    this.updateOffersCount_();
 
     // Addresses and Payments: Listen for changes.
     const setPersonalDataListener: PersonalDataChangedListener =
@@ -351,6 +362,7 @@ export class SettingsAutofillPageElement extends
           this.setChipCount_(YourSavedInfoDataChip.IBANS, ibans.length);
           this.setChipCount_(
               YourSavedInfoDataChip.PAY_OVER_TIME, payOverTimeIssuers.length);
+          this.updateOffersCount_();
         };
     this.setPersonalDataListener_ = setPersonalDataListener;
     this.autofillManager_.setPersonalDataManagerListener(
@@ -387,6 +399,20 @@ export class SettingsAutofillPageElement extends
     this.paymentsManager_.setLoyaltyCardsChangedListener(
         setLoyaltyCardsListener);
     this.paymentsManager_.getLoyaltyCardList().then(setLoyaltyCardsListener);
+  }
+
+  // Offers are not part of the personal data changed event, but the event
+  // fires whenever they change, so the count is fetched again on each event.
+  private updateOffersCount_() {
+    // The Offers chip only exists when the Offers and loyalty cards page is
+    // enabled.
+    if (!this.isOffersAndLoyaltyCardsEnabled_) {
+      return;
+    }
+    this.paymentsManager_.getWalletDirectOfferList().then(
+        (offers: WalletDirectOfferEntry[]) => {
+          this.setChipCount_(YourSavedInfoDataChip.OFFERS, offers.length);
+        });
   }
 
   private onAutofillAiEntitiesChanged(entities: EntityInstanceWithLabels[]) {

@@ -94,6 +94,12 @@ export interface PaymentsManagerProxy {
       void;
 
   /**
+   * Request the list of active Google Wallet direct offers.
+   */
+  getWalletDirectOfferList():
+      Promise<chrome.autofillPrivate.WalletDirectOfferEntry[]>;
+
+  /**
    * A null response means that there is no platform authenticator.
    */
   isUserVerifyingPlatformAuthenticatorAvailable(): Promise<boolean|null>;
@@ -198,6 +204,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   removeLoyaltyCardsChangedListener(listener: LoyaltyCardsChangedListener) {
     chrome.autofillPrivate.onLoyaltyCardsChanged.removeListener(listener);
+  }
+
+  getWalletDirectOfferList() {
+    return chrome.autofillPrivate.getWalletDirectOfferList();
   }
 
   isUserVerifyingPlatformAuthenticatorAvailable() {

@@ -47,6 +47,7 @@ type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
 type IbanEntry = chrome.autofillPrivate.IbanEntry;
 type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
 type LoyaltyCardEntry = chrome.autofillPrivate.LoyaltyCardEntry;
+type WalletDirectOfferEntry = chrome.autofillPrivate.WalletDirectOfferEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
@@ -97,6 +98,7 @@ export class SettingsAutofillPageV2Element extends
   private ibanCount_?: number;
   private payOverTimeCount_?: number;
   private loyaltyCardsCount_?: number;
+  private offersCount_?: number;
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -150,6 +152,7 @@ export class SettingsAutofillPageV2Element extends
     this.paymentsManager_.getIbanList().then(setIbansListener);
     this.paymentsManager_.getPayOverTimeIssuerList().then(
         setPayOverTimeListener);
+    this.updateOffersCount_();
 
     // Addresses and Payments: Listen for changes.
     const setPersonalDataListener: PersonalDataChangedListener =
@@ -161,6 +164,7 @@ export class SettingsAutofillPageV2Element extends
           this.ibanCount_ = ibans.length;
           this.payOverTimeCount_ = payOverTimeIssuers.length;
           this.updatePaymentsCount_();
+          this.updateOffersCount_();
         };
 
     this.setPersonalDataListener_ = setPersonalDataListener;
@@ -179,16 +183,40 @@ export class SettingsAutofillPageV2Element extends
     const setLoyaltyCardsListener: LoyaltyCardsChangedListener =
         (loyaltyCards: LoyaltyCardEntry[]) => {
           this.loyaltyCardsCount_ = loyaltyCards.length;
-          if (this.isOffersAndLoyaltyCardsEnabled_) {
-            // TODO(crbug.com/546252995): Include the offers count.
-            this.offersAndLoyaltyCardsCount_ = loyaltyCards.length;
-          }
+          this.updateOffersAndLoyaltyCardsCount_();
           this.updatePaymentsCount_();
         };
     this.loyaltyCardsChangedListener_ = setLoyaltyCardsListener;
     this.paymentsManager_.setLoyaltyCardsChangedListener(
         setLoyaltyCardsListener);
     this.paymentsManager_.getLoyaltyCardList().then(setLoyaltyCardsListener);
+  }
+
+  // Offers are not part of the personal data changed event, but the event
+  // fires whenever they change, so the count is fetched again on each event.
+  private updateOffersCount_() {
+    // Offers are only counted in the offers and loyalty cards row.
+    if (!this.isOffersAndLoyaltyCardsEnabled_) {
+      return;
+    }
+    this.paymentsManager_.getWalletDirectOfferList().then(
+        (offers: WalletDirectOfferEntry[]) => {
+          this.offersCount_ = offers.length;
+          this.updateOffersAndLoyaltyCardsCount_();
+        });
+  }
+
+  private updateOffersAndLoyaltyCardsCount_() {
+    if (!this.isOffersAndLoyaltyCardsEnabled_) {
+      return;
+    }
+    if (this.offersCount_ === undefined &&
+        this.loyaltyCardsCount_ === undefined) {
+      this.offersAndLoyaltyCardsCount_ = undefined;
+      return;
+    }
+    this.offersAndLoyaltyCardsCount_ =
+        (this.offersCount_ ?? 0) + (this.loyaltyCardsCount_ ?? 0);
   }
 
   private updatePaymentsCount_() {

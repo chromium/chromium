@@ -12,7 +12,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, createWalletDirectOfferEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -363,6 +363,67 @@ suite('AutofillPage', function() {
     assertEquals('Settings.YourSavedInfo.ChipClick.LOYALTY_CARDS', action);
   });
 
+  test('OffersCounterIsUpdated', async function() {
+    paymentsManager.data.walletDirectOffers =
+        Array.from({length: 2}, () => createWalletDirectOfferEntry());
+    // `setup()` already created a page, so reset the resolver to wait for the
+    // call from the recreated page below.
+    paymentsManager.resetResolver('getWalletDirectOfferList');
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
+    await paymentsManager.whenCalled('getWalletDirectOfferList');
+    await microtasksFinished();
+    assertEquals(2, getChipCount(loadTimeData.getString('offersTitle')));
+
+    // Offers are fetched again when personal data changes.
+    paymentsManager.data.walletDirectOffers =
+        Array.from({length: 3}, () => createWalletDirectOfferEntry());
+    paymentsManager.resetResolver('getWalletDirectOfferList');
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        ([], [], [], []);
+    await paymentsManager.whenCalled('getWalletDirectOfferList');
+    await microtasksFinished();
+    assertEquals(3, getChipCount(loadTimeData.getString('offersTitle')));
+  });
+
+  test('OffersNotRequestedWhenFlagDisabled', async function() {
+    // `setup()` already created a page with the flag enabled.
+    paymentsManager.reset();
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: false});
+    await paymentsManager.whenCalled('getCreditCardList');
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        ([], [], [], []);
+    await microtasksFinished();
+
+    // There is no Offers chip, so offers are not requested, not even when
+    // personal data changes.
+    assertEquals(0, paymentsManager.getCallCount('getWalletDirectOfferList'));
+    assertEquals(
+        undefined, getChipCount(loadTimeData.getString('offersTitle')));
+  });
+
+  test('ClickOnOffersChipNavigatesToLeafPage', async function() {
+    const card = autofillPage.shadowRoot.querySelector<HTMLElement>(
+        '#offersAndLoyaltyCardsManagerButton');
+    assertTrue(!!card);
+    const chips: HTMLElement[] =
+        Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
+    const chip: HTMLElement = chips.find(chip => {
+      const labelSpan = chip.querySelector('span:not(.counter)');
+      return labelSpan &&
+          labelSpan.textContent === loadTimeData.getString('offersTitle');
+    })!;
+    assertTrue(!!chip);
+
+    chip.click();
+    assertEquals(
+        '/offersAndLoyaltyCards', Router.getInstance().currentRoute.path);
+    const [metricChip] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoDataChipClick');
+    assertEquals(YourSavedInfoDataChip.OFFERS, metricChip);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.YourSavedInfo.ChipClick.OFFERS', action);
+  });
+
   test('SuggestionsFromGeminiHiddenWhenFlagDisabled', async function() {
     await setupPage({
       showSuggestionsFromGeminiSettings: false,
@@ -582,8 +643,13 @@ suite('DataChipsVisibility', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
         ],
         getChipLabels(autofillPage, '#paymentManagerButton'));
+    // The Offers chip is shown even with no offers, also where Wallet direct
+    // offers are not available yet.
     assertDeepEquals(
-        [loadTimeData.getString('loyaltyCardsTitle')],
+        [
+          loadTimeData.getString('offersTitle'),
+          loadTimeData.getString('loyaltyCardsTitle'),
+        ],
         getChipLabels(autofillPage, '#offersAndLoyaltyCardsManagerButton'));
   });
 

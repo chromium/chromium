@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} f
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, makeGuid, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {createAddressEntry, createCreditCardEntry, createIbanEntry, createLoyaltyCardEntry, createPayOverTimeIssuerEntry, createWalletDirectOfferEntry, makeGuid, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -793,6 +793,27 @@ suite('AutofillPageV2', function() {
         '#offersAndLoyaltyCardsManagerButton'));
   });
 
+  test('OffersNotRequestedWhenFlagDisabled', async function() {
+    setupProxies();
+    paymentsManager.data.creditCards = [createCreditCardEntry()];
+    paymentsManager.data.walletDirectOffers =
+        Array.from({length: 3}, () => createWalletDirectOfferEntry());
+
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: false});
+    await paymentsManager.whenCalled('getCreditCardList');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        ([], [createCreditCardEntry()], [], []);
+    await microtasksFinished();
+
+    // Offers are not counted anywhere, so they are not requested, not even
+    // when personal data changes.
+    assertEquals(0, paymentsManager.getCallCount('getWalletDirectOfferList'));
+    assertEquals('1', getRowCountBySelector('#paymentManagerButton'));
+    assertFalse(!!autofillPage.shadowRoot.querySelector(
+        '#offersAndLoyaltyCardsManagerButton'));
+  });
+
   test('OffersAndLoyaltyCardsRowNavigates', async function() {
     await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
     const row = autofillPage.shadowRoot.querySelector<CrLinkRowElement>(
@@ -840,5 +861,41 @@ suite('AutofillPageV2', function() {
     assertEquals('1', getRowCountBySelector('#paymentManagerButton'));
     assertEquals(
         '5', getRowCountBySelector('#offersAndLoyaltyCardsManagerButton'));
+  });
+
+  test('OffersAndLoyaltyCardsCountedTogetherInRow', async function() {
+    setupProxies();
+    paymentsManager.data.creditCards = [createCreditCardEntry()];
+    paymentsManager.data.walletDirectOffers =
+        Array.from({length: 3}, () => createWalletDirectOfferEntry());
+    paymentsManager.data.loyaltyCards = [
+      createLoyaltyCardEntry(),
+      createLoyaltyCardEntry(),
+    ];
+
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
+    await paymentsManager.whenCalled('getCreditCardList');
+    await paymentsManager.whenCalled('getWalletDirectOfferList');
+    await paymentsManager.whenCalled('getLoyaltyCardList');
+    await microtasksFinished();
+
+    // Offers are not counted in the payments row.
+    assertEquals('1', getRowCountBySelector('#paymentManagerButton'));
+    // 3 offers + 2 loyalty cards.
+    assertEquals(
+        '5', getRowCountBySelector('#offersAndLoyaltyCardsManagerButton'));
+
+    // Offers are fetched again when personal data changes.
+    paymentsManager.data.walletDirectOffers =
+        Array.from({length: 4}, () => createWalletDirectOfferEntry());
+    paymentsManager.resetResolver('getWalletDirectOfferList');
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        ([], [createCreditCardEntry()], [], []);
+    await paymentsManager.whenCalled('getWalletDirectOfferList');
+    await microtasksFinished();
+
+    assertEquals('1', getRowCountBySelector('#paymentManagerButton'));
+    assertEquals(
+        '6', getRowCountBySelector('#offersAndLoyaltyCardsManagerButton'));
   });
 });

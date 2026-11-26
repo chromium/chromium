@@ -34725,6 +34725,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.YourSavedInfo.ChipClick.OFFERS">
+  <owner>andrewlj@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>
+    User clicks on the Offers data chip in the Your saved info page.
+  </description>
+</action>
+
 <action name="Settings.YourSavedInfo.ChipClick.PASSKEYS">
   <owner>jsobiech@google.com</owner>
   <description>
