@@ -241,13 +241,6 @@ bool CanvasRenderingContext2D::IsComposited() const {
   return true;
 }
 
-bool CanvasRenderingContext2D::Is2DCanvasAccelerated() const {
-  if (IsHibernating() || !canvas()) {
-    return false;
-  }
-  return BaseRenderingContext2D::Is2DCanvasAccelerated();
-}
-
 void CanvasRenderingContext2D::Stop() {
   // Never attempt to restore the context because the page is being torn down.
   context_restorable_ = false;

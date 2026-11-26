@@ -179,7 +179,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasRenderingContext implementation
   bool IsComposited() const override;
-  bool Is2DCanvasAccelerated() const override;
   const std::optional<cc::PaintRecord>& GetLastRecording() override;
 
   bool CanCreateBacking() final;

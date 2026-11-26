@@ -330,7 +330,7 @@ class MODULES_EXPORT BaseRenderingContext2D
            color_params_.GetAlphaType() == kOpaque_SkAlphaType;
   }
   bool IsPaintable() const override;
-  bool Is2DCanvasAccelerated() const override;
+  bool Is2DCanvasAccelerated() const final;
   base::ByteSize AllocatedBufferSize() const override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer) override;

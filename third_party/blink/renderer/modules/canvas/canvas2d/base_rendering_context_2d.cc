@@ -413,6 +413,9 @@ bool BaseRenderingContext2D::IsPaintable() const {
 }
 
 bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
+  if (IsHibernating()) {
+    return false;
+  }
   if (image_pool_) {
     return is_accelerated_;
   }
