@@ -886,7 +886,6 @@ if (!is_android) {
     public_deps = [ "//content/public/browser" ]
     deps = [
       "//chrome/app:generated_resources",
-      "//components/sync/base:features",
       "//ui/base",
       "//ui/webui",
     ]

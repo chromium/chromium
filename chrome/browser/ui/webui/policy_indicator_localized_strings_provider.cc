@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -18,18 +17,10 @@
 namespace policy_indicator {
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  int controlled_setting_policy_id = IDS_CONTROLLED_SETTING_POLICY;
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::demo_mode::IsDeviceInDemoMode()) {
-    controlled_setting_policy_id = IDS_CONTROLLED_SETTING_DEMO_SESSION;
-  }
-#else
-  if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
-    controlled_setting_policy_id = IDS_SETTINGS_ACCOUNT_SYNC_DISABLED;
-  }
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+#if !BUILDFLAG(IS_CHROMEOS)
+      {"controlledSettingPolicy", IDS_SETTINGS_ACCOUNT_SYNC_DISABLED},
 #endif
-  webui::LocalizedString localized_strings[] = {
-      {"controlledSettingPolicy", controlled_setting_policy_id},
       {"controlledSettingRecommendedMatches",
        IDS_CONTROLLED_SETTING_RECOMMENDED},
       {"controlledSettingRecommendedDiffers",
@@ -47,7 +38,13 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"controlledSettingNoOwner", IDS_CONTROLLED_SETTING_NO_OWNER},
 #endif
   };
-  html_source->AddLocalizedStrings(localized_strings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString("controlledSettingPolicy",
+                                  ash::demo_mode::IsDeviceInDemoMode()
+                                      ? IDS_CONTROLLED_SETTING_DEMO_SESSION
+                                      : IDS_CONTROLLED_SETTING_POLICY);
+#endif
 }
 
 }  // namespace policy_indicator
