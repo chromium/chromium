@@ -271,8 +271,13 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
 
 void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
                                         float scale) {
-  if (size_ == viewport_size)
+  // The scale may change while the size in pixels stays the same, e.g. when the
+  // display scale changes. The buffers can be kept, but the next frame must be
+  // committed with the new scale.
+  viewport_scale_ = scale;
+  if (size_ == viewport_size) {
     return;
+  }
   // First clear submitted frame, which will execute the pending swap ack
   // callback and only then clear unsubmitted ones. This helps to preserve order
   // of swap ack callbacks.
@@ -295,7 +300,6 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
   buffers_.clear();
 
   size_ = viewport_size;
-  viewport_scale_ = scale;
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {

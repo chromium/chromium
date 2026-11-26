@@ -40,6 +40,7 @@ class TestSurfaceOzoneCanvas : public ui::SurfaceOzoneCanvas {
   void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
     surface_ = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(
         viewport_size.width(), viewport_size.height()));
+    scale_ = scale;
   }
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override {
     return nullptr;
@@ -47,8 +48,11 @@ class TestSurfaceOzoneCanvas : public ui::SurfaceOzoneCanvas {
 
   MOCK_METHOD1(PresentCanvas, void(const gfx::Rect& damage));
 
+  float scale() const { return scale_; }
+
  private:
   sk_sp<SkSurface> surface_;
+  float scale_ = 0.f;
 };
 
 }  // namespace
@@ -112,6 +116,17 @@ TEST_F(SoftwareOutputDeviceOzoneTest, CheckCorrectResizeBehavior) {
   EXPECT_EQ(size2, canvas_size);
   EXPECT_CALL(*surface_ozone_, PresentCanvas(damage2)).Times(1);
   output_device_->EndPaint();
+}
+
+// Checks that a scale factor change reaches the canvas even when the size in
+// pixels stays the same.
+TEST_F(SoftwareOutputDeviceOzoneTest, ScaleChangeWithoutResize) {
+  constexpr gfx::Size size(200, 100);
+  output_device_->Resize(size, 1.f);
+  EXPECT_EQ(1.f, surface_ozone_->scale());
+
+  output_device_->Resize(size, 1.5f);
+  EXPECT_EQ(1.5f, surface_ozone_->scale());
 }
 
 }  // namespace viz

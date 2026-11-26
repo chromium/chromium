@@ -26,12 +26,18 @@ SoftwareOutputDeviceOzone::~SoftwareOutputDeviceOzone() = default;
 
 void SoftwareOutputDeviceOzone::Resize(const gfx::Size& viewport_pixel_size,
                                        float scale_factor) {
-  if (viewport_pixel_size_ == viewport_pixel_size)
+  // The scale factor may change while the size in pixels stays the same, e.g.
+  // on a display scale change. The canvas still needs the new scale factor to
+  // present at the right size.
+  if (viewport_pixel_size_ == viewport_pixel_size &&
+      scale_factor_ == scale_factor) {
     return;
+  }
 
   viewport_pixel_size_ = viewport_pixel_size;
+  scale_factor_ = scale_factor;
 
-  surface_ozone_->ResizeCanvas(viewport_pixel_size_, scale_factor);
+  surface_ozone_->ResizeCanvas(viewport_pixel_size_, scale_factor_);
 }
 
 SkCanvas* SoftwareOutputDeviceOzone::BeginPaint(const gfx::Rect& damage_rect) {

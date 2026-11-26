@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -997,6 +998,54 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
 
   // TODO(forney): We could check that the contents match something drawn to the
   // SkSurface above.
+}
+
+// Checks that a scale change that keeps the size in pixels (e.g. a display
+// scale change while the window keeps its pixel size) applies to the next
+// frame.
+TEST_P(WaylandSurfaceFactoryTest, CanvasScaleChangeWithoutResize) {
+  auto canvas = CreateCanvas(widget_);
+  ASSERT_TRUE(canvas);
+
+  const gfx::Size size_px(200, 100);
+  const gfx::Rect damage(5, 10, 20, 15);
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  for (float scale_factor : {1.f, 2.f}) {
+    canvas->ResizeCanvas(size_px, scale_factor);
+    ASSERT_TRUE(canvas->GetCanvas());
+
+    const gfx::Rect expected_damage =
+        gfx::ScaleToEnclosingRect(damage, 1.f / scale_factor);
+    PostToServerAndWait([surface_id, expected_damage,
+                         scale_factor](wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+      if (mock_surface->fractional_scale()) {
+        mock_surface->fractional_scale()->SendPreferredScale(scale_factor);
+      }
+      Expectation damage =
+          EXPECT_CALL(*mock_surface,
+                      Damage(expected_damage.x(), expected_damage.y(),
+                             expected_damage.width(), expected_damage.height()))
+              .Times(1);
+      Expectation attach = EXPECT_CALL(*mock_surface, Attach(_, 0, 0)).Times(1);
+      EXPECT_CALL(*mock_surface, Commit()).After(damage, attach);
+    });
+
+    canvas->PresentCanvas(damage);
+    base::RunLoop run_loop;
+    canvas->OnSwapBuffers(
+        base::IgnoreArgs<const gfx::Size&>(run_loop.QuitClosure()),
+        gfx::FrameData());
+    run_loop.Run();
+
+    PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+      auto* buffer_resource = mock_surface->attached_buffer();
+      ASSERT_TRUE(buffer_resource);
+      mock_surface->ReleaseBuffer(buffer_resource);
+      mock_surface->SendFrameCallback();
+    });
+  }
 }
 
 TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {

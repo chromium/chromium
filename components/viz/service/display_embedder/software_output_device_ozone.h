@@ -49,6 +49,8 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   std::unique_ptr<ui::PlatformWindowSurface> platform_window_surface_;
 
   std::unique_ptr<ui::SurfaceOzoneCanvas> surface_ozone_;
+
+  float scale_factor_ = 1.f;
 };
 
 }  // namespace viz
