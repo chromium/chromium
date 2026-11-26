@@ -178,8 +178,9 @@ Matcher<AutofillUploadContents> EqualsIgnoringMetadataValues(
         PROPERTY_EQ(vote_type), PROPERTY_EQ(initial_value_hash),
         PROPERTY_EQ(single_username_vote_type),
         PROPERTY_EQ(is_most_recent_single_username_candidate),
-        PROPERTY_EQ(initial_value_changed),
-        PROPERTY_EQ(did_trigger_javascript_autofill),
+        PROPERTY_EQ(initial_value_changed), PROPERTY_EQ(has_traits),
+        Property("traits", &AutofillUploadContents::Field::traits,
+                 EqualsProto(expected.traits())),
         Property("autofill_type", &AutofillUploadContents::Field::autofill_type,
                  ElementsAreArray(
                      base::ToVector(expected.autofill_type(), Eq<int32_t>))),
@@ -518,7 +519,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
     upload_firstname_field->set_signature(
         *form_structure->field(0)->GetFieldSignature());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    upload_firstname_field->set_did_trigger_javascript_autofill(false);
+    upload_firstname_field->mutable_traits()->set_triggers_javascript_autofill(
+        false);
 #endif
   }
   {
@@ -526,7 +528,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
     upload_date_field->set_signature(
         *form_structure->field(1)->GetFieldSignature());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    upload_date_field->set_did_trigger_javascript_autofill(false);
+    upload_date_field->mutable_traits()->set_triggers_javascript_autofill(
+        false);
 #endif
   }
 
@@ -584,7 +587,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
     upload_firstname_field->set_signature(
         *form_structure->field(0)->GetFieldSignature());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    upload_firstname_field->set_did_trigger_javascript_autofill(false);
+    upload_firstname_field->mutable_traits()->set_triggers_javascript_autofill(
+        false);
 #endif
   }
 
@@ -593,7 +597,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
     upload_date_field->set_signature(
         *form_structure->field(1)->GetFieldSignature());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    upload_date_field->set_did_trigger_javascript_autofill(false);
+    upload_date_field->mutable_traits()->set_triggers_javascript_autofill(
+        false);
 #endif
     {
       auto* added_format_string = upload_date_field->add_format_string();
@@ -612,7 +617,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
     upload_date_field->set_signature(
         *form_structure->field(2)->GetFieldSignature());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    upload_date_field->set_did_trigger_javascript_autofill(false);
+    upload_date_field->mutable_traits()->set_triggers_javascript_autofill(
+        false);
 #endif
     {
       auto* added_format_string = upload_date_field->add_format_string();
@@ -2199,7 +2205,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_SetsDidTriggerJavaScriptAutofill) {
+       EncodeUploadRequest_SetsTriggersJavaScriptAutofillTrait) {
   FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                                 {.role = ADDRESS_HOME_CITY},
                                                 {.role = ADDRESS_HOME_ZIP}}});
@@ -2216,16 +2222,19 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   ASSERT_EQ(upload.field_data_size(), 3);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(upload.field_data(0).has_did_trigger_javascript_autofill());
-  EXPECT_TRUE(upload.field_data(0).did_trigger_javascript_autofill());
-  EXPECT_TRUE(upload.field_data(1).has_did_trigger_javascript_autofill());
-  EXPECT_FALSE(upload.field_data(1).did_trigger_javascript_autofill());
-  EXPECT_TRUE(upload.field_data(2).has_did_trigger_javascript_autofill());
-  EXPECT_FALSE(upload.field_data(2).did_trigger_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(0).has_traits());
+  EXPECT_TRUE(upload.field_data(0).traits().has_triggers_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(0).traits().triggers_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(1).has_traits());
+  EXPECT_TRUE(upload.field_data(1).traits().has_triggers_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(1).traits().triggers_javascript_autofill());
+  EXPECT_TRUE(upload.field_data(2).has_traits());
+  EXPECT_TRUE(upload.field_data(2).traits().has_triggers_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(2).traits().triggers_javascript_autofill());
 #else
-  EXPECT_FALSE(upload.field_data(0).has_did_trigger_javascript_autofill());
-  EXPECT_FALSE(upload.field_data(1).has_did_trigger_javascript_autofill());
-  EXPECT_FALSE(upload.field_data(2).has_did_trigger_javascript_autofill());
+  EXPECT_FALSE(upload.field_data(0).has_traits());
+  EXPECT_FALSE(upload.field_data(1).has_traits());
+  EXPECT_FALSE(upload.field_data(2).has_traits());
 #endif
 }
 

@@ -543,7 +543,7 @@ void EncodeFormFieldsForUpload(
     }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    added_field->set_did_trigger_javascript_autofill(
+    added_field->mutable_traits()->set_triggers_javascript_autofill(
         field->did_trigger_javascript_autofill());
 #endif
 

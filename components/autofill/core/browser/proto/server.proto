@@ -217,6 +217,16 @@ message FormatString {
   optional string format_string = 50;
 }
 
+// Field-level traits observed by the client (or predicted by the server). Each
+// trait uses explicit presence so the server can distinguish negative votes
+// (`false`) from clients that did not evaluate the trait.
+message FieldTraits {
+  // Whether the client detected that this field triggered a custom JavaScript
+  // autofill dropdown (e.g., an address or email picker). Always populated by
+  // supporting (Desktop) clients when detection is active.
+  optional bool triggers_javascript_autofill = 1;
+}
+
 // The collection of autofill field metadata hashes using three bits.
 message ThreeBitHashedFieldMetadata {
   // Input element id attribute hash.
@@ -265,7 +275,7 @@ message ThreeBitHashedFormMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 55
+// Next available id: 56
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -413,14 +423,12 @@ message AutofillUploadContents {
     // List of format strings which match the field's value.
     repeated FormatString format_string = 51;
 
-    // Whether the client detected that this field triggered a custom JavaScript
-    // autofill dropdown (e.g., an address or email picker). Always populated by
-    // supporting (Desktop) clients so the server can distinguish `false` votes
-    // from mobile or older clients that do not support detection.
-    optional bool did_trigger_javascript_autofill = 54;
+    // Field-level traits observed by the client.
+    optional FieldTraits traits = 55;
 
-    reserved 8, 9, 10, 19, 21;
-    reserved "name", "autocomplete", "type", "css_classes", "id";
+    reserved 8, 9, 10, 19, 21, 54;
+    reserved "name", "autocomplete", "type", "css_classes", "id",
+        "did_trigger_javascript_autofill";
   }
   repeated Field field_data = 48;
 

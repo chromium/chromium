@@ -424,9 +424,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
       out << Tr{} << "initial_value_changed:"
           << static_cast<int>(field.initial_value_changed());
     }
-    if (field.has_did_trigger_javascript_autofill()) {
-      out << Tr{} << "did_trigger_javascript_autofill:"
-          << field.did_trigger_javascript_autofill();
+    if (field.has_traits() &&
+        field.traits().has_triggers_javascript_autofill()) {
+      out << Tr{} << "triggers_javascript_autofill:"
+          << field.traits().triggers_javascript_autofill();
     }
   }
   out << CTag{"table"};
