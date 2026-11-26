@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -81,6 +82,10 @@ void JSEventListener::InvokeInternal(EventTarget& current_target,
   // property on the callback object, and directly reuses the existing
   // |js_event| wrapper instead of re-wrapping the event a second time.
   if (event_listener_->IsCallbackObjectCallable()) {
+    if (ScriptForbiddenScope::IsScriptForbidden()) [[unlikely]] {
+      ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+      return;
+    }
     ScriptState* script_state = event_listener_->CallbackRelevantScriptState();
     v8::Context::BackupIncumbentScope backup_incumbent_scope(
         event_listener_->IncumbentScriptState()->GetContext());

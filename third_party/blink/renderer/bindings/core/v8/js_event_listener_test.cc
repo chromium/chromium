@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -196,6 +197,75 @@ TEST(JSEventListenerTest, CrossOriginListenerBlockedBySecurity) {
 
   invoked_object = Eval(scope_listener, "window.invokedObject;");
   EXPECT_TRUE(invoked_object->BooleanValue(isolate));
+}
+
+template <typename Callback>
+void RunAtMicrotaskDepth(ExecutionContext* execution_context,
+                         int remaining_depth,
+                         Callback&& callback) {
+  if (remaining_depth <= 0) {
+    std::forward<Callback>(callback)();
+    return;
+  }
+  V8RunMicrotasksScope microtasks_scope(execution_context);
+  RunAtMicrotaskDepth(execution_context, remaining_depth - 1,
+                      std::forward<Callback>(callback));
+}
+
+TEST(JSEventListenerTest,
+     CallableFunctionListenerBlockedInScriptForbiddenScopeAtMaxDepth) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  ExecutionContext* execution_context =
+      ExecutionContext::From(scope.GetScriptState());
+
+  v8::Local<v8::Value> fn_val = Eval(scope, R"JS(
+    window.listenerRan = false;
+    window.errorGetterRan = false;
+    window.scriptWasAllowedInErrorGetter = false;
+    window.addEventListener('error', {
+      get handleEvent() {
+        window.errorGetterRan = true;
+        return function() {
+          window.scriptWasAllowedInErrorGetter = true;
+        };
+      }
+    });
+    function listener() {
+      window.listenerRan = true;
+    }
+    listener;
+  )JS");
+  ASSERT_TRUE(fn_val->IsFunction());
+
+  V8EventListener* v8_listener =
+      V8EventListener::Create(fn_val.As<v8::Function>());
+  JSEventListener* js_listener = JSEventListener::CreateOrNull(v8_listener);
+  ASSERT_TRUE(js_listener);
+
+  LocalDOMWindow& window = scope.GetWindow();
+  // Ensure Event's wrapper boilerplate is cached before entering
+  // ScriptForbiddenScope (matching JSBasedEventListener::Invoke's ToV8).
+  Eval(scope, "document.createEvent('Event');");
+  Event* event = Event::Create(AtomicString("test"));
+  event->SetTarget(&window);
+  event->SetCurrentTarget(&window);
+
+  // Test both below and at/above V8ScriptRunner's kMaxRecursionDepth (44).
+  for (int depth : {0, 44, 50}) {
+    RunAtMicrotaskDepth(execution_context, depth, [&]() {
+      ScriptForbiddenScope forbid_script;
+      ASSERT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+      js_listener->Invoke(&window, event);
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    });
+  }
+
+  EXPECT_FALSE(Eval(scope, "window.listenerRan;")->BooleanValue(isolate));
+  EXPECT_FALSE(Eval(scope, "window.errorGetterRan;")->BooleanValue(isolate));
+  EXPECT_FALSE(Eval(scope, "window.scriptWasAllowedInErrorGetter;")
+                   ->BooleanValue(isolate));
 }
 
 class JSEventListenerSourceLocationTest : public testing::Test {

@@ -18,9 +18,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
@@ -842,6 +845,243 @@ TEST_F(V8ScriptRunnerTest, TraceScriptIdAndNestedCallFunctionAttribution) {
   const std::string* call_fn_name = call_data.FindString("functionName");
   ASSERT_NE(call_fn_name, nullptr);
   EXPECT_EQ(*call_fn_name, "myNestedCallback");
+}
+
+template <typename Callback>
+void RunAtMicrotaskDepth(ExecutionContext* execution_context,
+                         int remaining_depth,
+                         Callback&& callback) {
+  if (remaining_depth <= 0) {
+    std::forward<Callback>(callback)();
+    return;
+  }
+  V8RunMicrotasksScope microtasks_scope(execution_context);
+  RunAtMicrotaskDepth(execution_context, remaining_depth - 1,
+                      std::forward<Callback>(callback));
+}
+
+TEST_F(V8ScriptRunnerTest, ScriptForbiddenScopeCheckedBeforeRecursionLimit) {
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+  ScriptState* script_state = scope.GetScriptState();
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  // Called from the window 'error' handleEvent getter during a legitimate stack
+  // overflow (outside ScriptForbiddenScope) to verify that entering a nested
+  // ScriptForbiddenScope while IsHandlingRecursionLevelError() is true still
+  // throws "Script execution is forbidden." instead of returning undefined.
+  v8::Local<v8::Function> nested_forbidden_check =
+      v8::Function::New(context, [](const v8::FunctionCallbackInfo<v8::Value>&
+                                        info) {
+        v8::Isolate* cb_isolate = info.GetIsolate();
+        v8::Local<v8::Context> cb_context = cb_isolate->GetCurrentContext();
+        ExecutionContext* cb_exec_context = ExecutionContext::From(cb_context);
+        ASSERT_TRUE(info[0]->IsFunction());
+
+        v8::Local<v8::Value> nested_exception;
+        {
+          ScriptForbiddenScope forbid_script;
+          v8::TryCatch try_catch(cb_isolate);
+          try_catch.SetVerbose(true);
+          v8::MaybeLocal<v8::Value> result = V8ScriptRunner::CallFunction(
+              info[0].As<v8::Function>(), cb_exec_context, cb_context->Global(),
+              0, nullptr, cb_isolate);
+          EXPECT_TRUE(result.IsEmpty());
+          EXPECT_TRUE(try_catch.HasCaught());
+          EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+          if (try_catch.HasCaught()) {
+            nested_exception = try_catch.Exception();
+          }
+        }
+        ASSERT_FALSE(nested_exception.IsEmpty());
+        EXPECT_EQ(ToCoreString(
+                      cb_isolate,
+                      nested_exception->ToString(cb_context).ToLocalChecked()),
+                  "Error: Script execution is forbidden.");
+        info.GetReturnValue().Set(true);
+      }).ToLocalChecked();
+  ASSERT_TRUE(context->Global()
+                  ->Set(context, V8String(isolate, "runNestedForbiddenCheck"),
+                        nested_forbidden_check)
+                  .FromJust());
+
+  ClassicScript* setup_script = ClassicScript::Create(
+      R"JS(
+        window.callCount = 0;
+        window.errorGetterCount = 0;
+        window.expectScriptForbidden = false;
+        window.ranInForbiddenScope = false;
+        window.nestedForbiddenCheckCompleted = false;
+        function sampleCallback() {
+          window.callCount++;
+        }
+        function SampleConstructor() {
+          window.callCount++;
+        }
+        window.addEventListener('error', {
+          get handleEvent() {
+            window.errorGetterCount++;
+            if (window.expectScriptForbidden) {
+              window.ranInForbiddenScope = true;
+            } else {
+              window.nestedForbiddenCheckCompleted =
+                  Boolean(window.runNestedForbiddenCheck(sampleCallback));
+            }
+            return function() {};
+          }
+        });
+        ({ sampleCallback, SampleConstructor });
+      )JS",
+      Url(), Url(), ScriptFetchOptions(), ScriptSourceLocationType::kInline);
+  ScriptEvaluationResult setup_result =
+      setup_script->RunScriptOnScriptStateAndReturnValue(script_state);
+  ASSERT_EQ(setup_result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
+  v8::Local<v8::Object> exports =
+      setup_result.GetSuccessValue().As<v8::Object>();
+  v8::Local<v8::Function> sample_fn =
+      exports->Get(context, V8String(isolate, "sampleCallback"))
+          .ToLocalChecked()
+          .As<v8::Function>();
+  v8::Local<v8::Function> sample_ctor =
+      exports->Get(context, V8String(isolate, "SampleConstructor"))
+          .ToLocalChecked()
+          .As<v8::Function>();
+
+  auto get_int = [&](const char* name) {
+    return context->Global()
+        ->Get(context, V8String(isolate, name))
+        .ToLocalChecked()
+        ->Int32Value(context)
+        .FromJust();
+  };
+  auto get_bool = [&](const char* name) {
+    return context->Global()
+        ->Get(context, V8String(isolate, name))
+        .ToLocalChecked()
+        ->BooleanValue(isolate);
+  };
+  auto exception_str = [&](v8::Local<v8::Value> exception) -> String {
+    if (exception.IsEmpty()) {
+      return String();
+    }
+    return ToCoreString(isolate, exception->ToString(context).ToLocalChecked());
+  };
+
+  // 1. Outside ScriptForbiddenScope at depth > 44, verbose TryCatch throws
+  // RangeError and dispatches 'error' on window while enforcing nested
+  // ScriptForbiddenScope inside the handler.
+  v8::Local<v8::Value> overflow_exception;
+  RunAtMicrotaskDepth(execution_context, 45, [&]() {
+    v8::TryCatch try_catch(isolate);
+    try_catch.SetVerbose(true);
+    EXPECT_TRUE(V8ScriptRunner::CallFunction(sample_fn, execution_context,
+                                             context->Global(), 0, nullptr,
+                                             isolate)
+                    .IsEmpty());
+    ASSERT_TRUE(try_catch.HasCaught());
+    overflow_exception = try_catch.Exception();
+  });
+  EXPECT_EQ(exception_str(overflow_exception),
+            "RangeError: Maximum call stack size exceeded.");
+  EXPECT_EQ(get_int("callCount"), 0);
+  EXPECT_EQ(get_int("errorGetterCount"), 1);
+  EXPECT_TRUE(get_bool("nestedForbiddenCheckCompleted"));
+
+  // 2. Inside ScriptForbiddenScope at depth >= 44 and > 44, all V8ScriptRunner
+  // entry points must reject script execution without lifting
+  // ScriptForbiddenScope or dispatching 'error'.
+  ASSERT_TRUE(context->Global()
+                  ->Set(context, V8String(isolate, "expectScriptForbidden"),
+                        v8::Boolean::New(isolate, true))
+                  .FromJust());
+
+  v8::Local<v8::Value> depth44_call_exception;
+  v8::Local<v8::Value> depth44_ctor_exception;
+  RunAtMicrotaskDepth(execution_context, 44, [&]() {
+    ScriptForbiddenScope forbid_script;
+    {
+      v8::TryCatch try_catch(isolate);
+      try_catch.SetVerbose(true);
+      EXPECT_TRUE(V8ScriptRunner::CallFunction(sample_fn, execution_context,
+                                               context->Global(), 0, nullptr,
+                                               isolate)
+                      .IsEmpty());
+      EXPECT_TRUE(try_catch.HasCaught());
+      depth44_call_exception = try_catch.Exception();
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    }
+    {
+      v8::TryCatch try_catch(isolate);
+      try_catch.SetVerbose(true);
+      EXPECT_TRUE(V8ScriptRunner::CallAsConstructor(
+                      isolate, sample_ctor, execution_context, 0, nullptr)
+                      .IsEmpty());
+      EXPECT_TRUE(try_catch.HasCaught());
+      depth44_ctor_exception = try_catch.Exception();
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    }
+  });
+
+  ClassicScript* forbidden_inline_script = ClassicScript::Create(
+      "window.callCount++;", Url(), Url(), ScriptFetchOptions(),
+      ScriptSourceLocationType::kInline);
+  v8::Local<v8::Value> depth45_call_exception;
+  v8::Local<v8::Value> depth45_ctor_exception;
+  v8::Local<v8::Value> depth45_script_exception;
+  RunAtMicrotaskDepth(execution_context, 45, [&]() {
+    ScriptForbiddenScope forbid_script;
+    {
+      v8::TryCatch try_catch(isolate);
+      try_catch.SetVerbose(true);
+      EXPECT_TRUE(V8ScriptRunner::CallFunction(sample_fn, execution_context,
+                                               context->Global(), 0, nullptr,
+                                               isolate)
+                      .IsEmpty());
+      EXPECT_TRUE(try_catch.HasCaught());
+      depth45_call_exception = try_catch.Exception();
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    }
+    {
+      v8::TryCatch try_catch(isolate);
+      try_catch.SetVerbose(true);
+      EXPECT_TRUE(V8ScriptRunner::CallAsConstructor(
+                      isolate, sample_ctor, execution_context, 0, nullptr)
+                      .IsEmpty());
+      EXPECT_TRUE(try_catch.HasCaught());
+      depth45_ctor_exception = try_catch.Exception();
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    }
+    {
+      ScriptEvaluationResult eval_result = V8ScriptRunner::CompileAndRunScript(
+          script_state, forbidden_inline_script,
+          ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled,
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+      EXPECT_EQ(eval_result.GetResultType(),
+                ScriptEvaluationResult::ResultType::kException);
+      if (eval_result.GetResultType() ==
+          ScriptEvaluationResult::ResultType::kException) {
+        depth45_script_exception =
+            eval_result.GetExceptionForClassicForTesting();
+      }
+      EXPECT_TRUE(ScriptForbiddenScope::IsScriptForbidden());
+    }
+  });
+
+  EXPECT_EQ(exception_str(depth44_call_exception),
+            "Error: Script execution is forbidden.");
+  EXPECT_EQ(exception_str(depth44_ctor_exception),
+            "Error: Script execution is forbidden.");
+  EXPECT_EQ(exception_str(depth45_call_exception),
+            "Error: Script execution is forbidden.");
+  EXPECT_EQ(exception_str(depth45_ctor_exception),
+            "Error: Script execution is forbidden.");
+  EXPECT_EQ(exception_str(depth45_script_exception),
+            "Error: Script execution is forbidden.");
+  EXPECT_EQ(get_int("callCount"), 0);
+  EXPECT_EQ(get_int("errorGetterCount"), 1);
+  EXPECT_FALSE(get_bool("ranInForbiddenScope"));
 }
 
 }  // namespace

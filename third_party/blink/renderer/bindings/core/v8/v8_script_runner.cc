@@ -113,7 +113,7 @@ v8::MaybeLocal<v8::Value> ThrowStackOverflowExceptionIfNeeded(
   V8DoNotRunMicrotasksScope microtasks_scope(execution_context);
   V8PerIsolateData::From(isolate)->SetIsHandlingRecursionLevelError(true);
 
-  ScriptForbiddenScope::AllowUserAgentScript allow_script;
+  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::MaybeLocal<v8::Value> result =
       v8::Function::New(context, ThrowStackOverflowException,
@@ -519,20 +519,21 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
+  if (ScriptForbiddenScope::IsScriptForbidden()) [[unlikely]] {
+    ThrowScriptForbiddenException(isolate);
+    return v8::MaybeLocal<v8::Value>();
+  }
+
   v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
-  if (GetMicrotasksScopeDepth(isolate, microtask_queue) > kMaxRecursionDepth)
+  if (GetMicrotasksScopeDepth(isolate, microtask_queue) > kMaxRecursionDepth) {
     return ThrowStackOverflowExceptionIfNeeded(context);
+  }
 
   CHECK(!context->ContextLifecycleObserverSet().IsIteratingOverObservers());
 
   // Run the script and keep track of the current recursion depth.
   v8::MaybeLocal<v8::Value> result;
   {
-    if (ScriptForbiddenScope::IsScriptForbidden()) {
-      ThrowScriptForbiddenException(isolate);
-      return v8::MaybeLocal<v8::Value>();
-    }
-
     V8RunMicrotasksScope microtasks_scope(context);
     v8::Local<v8::String> script_url;
     if (!script_name->ToString(isolate->GetCurrentContext())
@@ -803,17 +804,18 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
   });
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
-  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
-  int depth = GetMicrotasksScopeDepth(isolate, microtask_queue);
-  if (depth >= kMaxRecursionDepth)
-    return ThrowStackOverflowExceptionIfNeeded(context);
-
-  CHECK(!context->ContextLifecycleObserverSet().IsIteratingOverObservers());
-
-  if (ScriptForbiddenScope::IsScriptForbidden()) {
+  if (ScriptForbiddenScope::IsScriptForbidden()) [[unlikely]] {
     ThrowScriptForbiddenException(isolate);
     return v8::MaybeLocal<v8::Value>();
   }
+
+  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
+  int depth = GetMicrotasksScopeDepth(isolate, microtask_queue);
+  if (depth >= kMaxRecursionDepth) {
+    return ThrowStackOverflowExceptionIfNeeded(context);
+  }
+
+  CHECK(!context->ContextLifecycleObserverSet().IsIteratingOverObservers());
 
   // TODO(dominicc): When inspector supports tracing object
   // invocation, change this to use v8::Object instead of
@@ -864,17 +866,18 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
-  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
-  int depth = GetMicrotasksScopeDepth(isolate, microtask_queue);
-  if (depth >= kMaxRecursionDepth)
-    return ThrowStackOverflowExceptionIfNeeded(context);
-
-  CHECK(!context->ContextLifecycleObserverSet().IsIteratingOverObservers());
-
-  if (ScriptForbiddenScope::IsScriptForbidden()) {
+  if (ScriptForbiddenScope::IsScriptForbidden()) [[unlikely]] {
     ThrowScriptForbiddenException(isolate);
     return v8::MaybeLocal<v8::Value>();
   }
+
+  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
+  int depth = GetMicrotasksScopeDepth(isolate, microtask_queue);
+  if (depth >= kMaxRecursionDepth) {
+    return ThrowStackOverflowExceptionIfNeeded(context);
+  }
+
+  CHECK(!context->ContextLifecycleObserverSet().IsIteratingOverObservers());
 
   DCHECK(!window || !window->GetFrame() ||
          BindingSecurity::ShouldAllowAccessTo(
