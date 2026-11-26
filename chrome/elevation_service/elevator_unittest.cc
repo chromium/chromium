@@ -95,11 +95,12 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
         L"\"C:\\untrusted\\path.exe\" --disable-component-update "
         L"--profile-directory=\"Profile 1\" --no-startup-window "
         L"--source-shortcut-location=taskbar --source-single-argument "
-        L"--isolated-stub-start-qpc-us=123456");
+        L"--isolated-stub-start-qpc-us=123456 --omnibox-everywhere");
 
     EXPECT_EQ(kTrustedProgram, result.GetProgram());
     EXPECT_TRUE(result.HasSwitch(::switches::kIsolated));
     EXPECT_TRUE(result.HasSwitch(::switches::kNoStartupWindow));
+    EXPECT_TRUE(result.HasSwitch(::switches::kOmniboxEverywhere));
     EXPECT_EQ("Profile 1",
               result.GetSwitchValueASCII(::switches::kProfileDirectory));
     EXPECT_EQ("taskbar",

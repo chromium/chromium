@@ -434,6 +434,7 @@ std::wstring Elevator::GenerateIsolatedCommandLine(
       ::switches::kApp,
       ::switches::kPwaLauncherVersion,
       ::switches::kAppRunOnOsLoginMode,
+      ::switches::kOmniboxEverywhere,
       // Jumplist action.
       ::switches::kWinJumplistAction,
       // Do not de-elevate.
