@@ -21,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/platform/fonts/buildflags.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink::hb_shim {
 
@@ -137,10 +138,7 @@ inline constexpr Language kLanguageInvalid = nullptr;
 
 ALWAYS_INLINE bool IsHarfRustEnabled() {
 #if BUILDFLAG(ENABLE_HARFRUST)
-  // TODO(crbug.com/427409139): Wire to
-  // RuntimeEnabledFeatures::HarfRustShapingEnabled() once all Blink font and
-  // shaping call sites are migrated to hb_shim.
-  return false;
+  return RuntimeEnabledFeatures::HarfRustShapingEnabled();
 #else
   return false;
 #endif

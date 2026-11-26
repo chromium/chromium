@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 #include <hb.h>
+#include <hr.h>
 #include <unicode/locid.h>
 #include <unicode/ulocdata.h>
 
@@ -16,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/hb_shim.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
@@ -161,10 +163,12 @@ inline UScriptCode NormalizeStylishVariants(UScriptCode script) {
 
 }  // namespace
 
-static hb_language_t ToHarfbuzzLanguage(const AtomicString& locale) {
-  std::string locale_as_latin1 = locale.Latin1();
-  return hb_language_from_string(locale_as_latin1.data(),
-                                 static_cast<int>(locale_as_latin1.length()));
+const hb_shim::LanguageImpl* LayoutLocale::ComputeHarfbuzzLanguage() const {
+  std::string locale_as_latin1 = string_.Latin1();
+  hb_language_ = hb_language_from_string(
+      locale_as_latin1.data(), static_cast<int>(locale_as_latin1.length()));
+  hb_language_computed_ = true;
+  return reinterpret_cast<const hb_shim::LanguageImpl*>(hb_language_.get());
 }
 
 // SkFontMgr uses two/three-letter language code with an optional ISO 15924
@@ -185,6 +189,21 @@ static const char* ToSkFontMgrLocale(UScriptCode script) {
     default:
       return nullptr;
   }
+}
+
+const hb_shim::LanguageImpl* LayoutLocale::HarfbuzzLanguage() const {
+  if (hb_shim::IsHarfRustEnabled()) {
+    if (!hr_language_computed_) {
+      std::string locale_as_latin1 = string_.Latin1();
+      hr_language_ = hr_language_from_string(
+          locale_as_latin1.data(), static_cast<int>(locale_as_latin1.length()));
+      hr_language_computed_ = true;
+    }
+    return reinterpret_cast<const hb_shim::LanguageImpl*>(hr_language_.get());
+  }
+  return hb_language_computed_ ? reinterpret_cast<const hb_shim::LanguageImpl*>(
+                                     hb_language_.get())
+                               : ComputeHarfbuzzLanguage();
 }
 
 const char* LayoutLocale::LocaleForSkFontMgr() const {
@@ -288,9 +307,17 @@ void LayoutLocale::ComputeCaseMapLocale() const {
 
 LayoutLocale::LayoutLocale(const AtomicString& locale)
     : string_(locale),
-      harfbuzz_language_(ToHarfbuzzLanguage(locale)),
       script_for_font_(LocaleToScriptCodeForFontSelection(locale)),
-      script_(NormalizeStylishVariants(script_for_font_)) {}
+      script_(NormalizeStylishVariants(script_for_font_)) {
+  if (hb_shim::IsHarfRustEnabled()) {
+    std::string locale_as_latin1 = string_.Latin1();
+    hr_language_ = hr_language_from_string(
+        locale_as_latin1.data(), static_cast<int>(locale_as_latin1.length()));
+    hr_language_computed_ = true;
+  } else {
+    ComputeHarfbuzzLanguage();
+  }
+}
 
 // static
 const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {

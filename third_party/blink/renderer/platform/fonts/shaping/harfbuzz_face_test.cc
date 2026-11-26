@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 
-#include "hb.h"
+#include <hb.h>
+
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/buildflags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
@@ -91,36 +94,42 @@ hb_codepoint_t GetGlyphForCjkVsFromFontWithVs(
 
 }  // namespace
 
-class HarfBuzzFaceTest : public FontTestBase {};
+class HarfBuzzFaceTest : public FontTestBase,
+                         public testing::WithParamInterface<bool> {
+ protected:
+  ScopedHarfRustShapingForTest scoped_harfrust_{GetParam()};
+};
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVs) {
+INSTANTIATE_TEST_SUITE_P(All, HarfBuzzFaceTest, testing::Bool());
+
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVs) {
   hb_codepoint_t glyph =
       GetGlyphForCjkVsFromFontWithVs(VariationSelectorMode::kUseSpecified);
   EXPECT_TRUE(glyph);
   EXPECT_NE(glyph, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVs_IgnoreVs) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVs_IgnoreVs) {
   hb_codepoint_t glyph =
       GetGlyphForCjkVsFromFontWithVs(VariationSelectorMode::kIgnore);
   EXPECT_TRUE(glyph);
   EXPECT_NE(glyph, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly) {
   EXPECT_EQ(GetGlyphForStandardizedVsFromFontWithBaseCharOnly(
                 VariationSelectorMode::kUseSpecified),
             kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest,
-     HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly_IgnoreVs) {
+TEST_P(HarfBuzzFaceTest,
+       HarfBuzzGetNominalGlyph_TestFontWithBaseCharOnly_IgnoreVs) {
   hb_codepoint_t glyph = GetGlyphForStandardizedVsFromFontWithBaseCharOnly(
       VariationSelectorMode::kIgnore);
   EXPECT_FALSE(glyph);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithoutBaseChar) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithoutBaseChar) {
   UChar32 character = uchar::kFullwidthExclamationMark;
   UChar32 variation_selector = uchar::kVariationSelector2;
 
@@ -130,7 +139,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithoutBaseChar) {
       VariationSelectorMode::kUseSpecified));
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
 
@@ -144,7 +153,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
 
@@ -158,7 +167,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
   EXPECT_EQ(glyph_from_font_with_vs16, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = 0;
 
@@ -174,7 +183,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVsGlyphId);
 }
 
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVsOverrideVariantEmoji) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVsOverrideVariantEmoji) {
   UChar32 character = uchar::kShakingFaceEmoji;
   UChar32 variation_selector = uchar::kVariationSelector15;
 
@@ -191,7 +200,7 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVsOverrideVariantEmoji) {
 // Test emoji variation selectors support in system fallback. We are only
 // enabling this feature on Windows, Android and Mac platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVs) {
+TEST_P(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVs) {
   UChar32 character = uchar::kShakingFaceEmoji;
 
   hb_codepoint_t glyph_from_font_with_vs15 =
@@ -205,6 +214,33 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVs) {
                                          VariationSelectorMode::kUseSpecified);
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVsGlyphId);
+}
+#endif
+
+#if BUILDFLAG(ENABLE_HARFRUST)
+TEST(HarfBuzzFaceRuntimeSwitchTest, RecreatesFaceWhenTogglingHarfRustShaping) {
+  ScopedHarfRustShapingForTest scoped_off(false);
+  Font* font = test::CreateAhemFont(12);
+  const FontPlatformData& platform_data = font->PrimaryFont()->PlatformData();
+
+  HarfBuzzFace* hb_face = platform_data.GetHarfBuzzFace();
+  ASSERT_TRUE(hb_face);
+  EXPECT_FALSE(hb_face->IsHarfRust());
+  EXPECT_EQ(1000u, hb_face->UnitsPerEmFromHeadTable());
+
+  {
+    ScopedHarfRustShapingForTest scoped_on(true);
+    HarfBuzzFace* hr_face = platform_data.GetHarfBuzzFace();
+    ASSERT_TRUE(hr_face);
+    EXPECT_TRUE(hr_face->IsHarfRust());
+    EXPECT_NE(hb_face, hr_face);
+    EXPECT_EQ(1000u, hr_face->UnitsPerEmFromHeadTable());
+  }
+
+  HarfBuzzFace* hb_face_again = platform_data.GetHarfBuzzFace();
+  ASSERT_TRUE(hb_face_again);
+  EXPECT_FALSE(hb_face_again->IsHarfRust());
+  EXPECT_EQ(1000u, hb_face_again->UnitsPerEmFromHeadTable());
 }
 #endif
 

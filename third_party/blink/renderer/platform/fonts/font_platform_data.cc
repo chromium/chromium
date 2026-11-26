@@ -183,7 +183,8 @@ SkTypeface* FontPlatformData::Typeface() const {
 }
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
-  if (!harfbuzz_face_) {
+  if (!harfbuzz_face_ ||
+      harfbuzz_face_->IsHarfRust() != hb_shim::IsHarfRustEnabled()) {
     harfbuzz_face_ = MakeGarbageCollected<HarfBuzzFace>(this, UniqueID());
   }
 

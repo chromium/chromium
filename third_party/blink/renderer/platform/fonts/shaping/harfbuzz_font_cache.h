@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FONT_CACHE_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -33,10 +35,12 @@ class HarfBuzzFontCache final {
                                 const FontPlatformData* platform_data);
 
  private:
-  HeapHashMap<uint64_t,
-              WeakMember<HarfBuzzFontData>,
-              IntWithZeroKeyHashTraits<uint64_t>>
-      font_map_;
+  using FontMap = HeapHashMap<uint64_t,
+                              WeakMember<HarfBuzzFontData>,
+                              IntWithZeroKeyHashTraits<uint64_t>>;
+  // Separate maps for HarfBuzz (index 0) and HarfRust (index 1) so runtime
+  // flag toggling in tests never returns a handle from the wrong backend.
+  std::array<FontMap, 2> font_maps_;
 };
 
 }  // namespace blink

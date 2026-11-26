@@ -9,7 +9,9 @@
 namespace blink {
 
 void HarfBuzzFontCache::Trace(Visitor* visitor) const {
-  visitor->Trace(font_map_);
+  for (const auto& font_map : font_maps_) {
+    visitor->Trace(font_map);
+  }
 }
 
 }  // namespace blink

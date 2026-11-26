@@ -82,6 +82,8 @@ class PLATFORM_EXPORT HarfBuzzFace final
   // `platform_data_.size()`.
   hb_shim::Font* GetScaledFont() const;
 
+  bool IsHarfRust() const;
+
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   wtf_size_t UnitsPerEmFromHeadTable();
   Glyph HbGlyphForCharacter(UChar32 character);

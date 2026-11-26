@@ -37,6 +37,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "third_party/blink/renderer/platform/fonts/buildflags.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
@@ -78,6 +80,10 @@ void HarfBuzzFace::Trace(Visitor* visitor) const {
   visitor->Trace(harfbuzz_font_data_);
 }
 
+bool HarfBuzzFace::IsHarfRust() const {
+  return harfbuzz_font_data_->is_harfrust_;
+}
+
 void HarfBuzzFace::SetVariationSelectorMode(VariationSelectorMode value) {
   harfbuzz_font_data_->SetVariationSelectorMode(value);
 }
@@ -97,13 +103,6 @@ struct BackendTraits<false> {
 
   ALWAYS_INLINE static Font* font_get_parent(Font* font) {
     return hb_font_get_parent(font);
-  }
-  ALWAYS_INLINE static hb_bool_t font_get_glyph(
-      Font* font,
-      hb_codepoint_t unicode,
-      hb_codepoint_t variation_selector,
-      hb_codepoint_t* glyph) {
-    return hb_font_get_glyph(font, unicode, variation_selector, glyph);
   }
   ALWAYS_INLINE static hb_bool_t font_get_variation_glyph(
       Font* font,
@@ -180,6 +179,96 @@ struct BackendTraits<false> {
                                     void* user_data,
                                     hb_destroy_func_t destroy) {
     return hb_blob_create(data, length, HB_MEMORY_MODE_WRITABLE, user_data,
+                          destroy);
+  }
+};
+
+template <>
+struct BackendTraits<true> {
+  using Font = hr_font_t;
+  using Face = hr_face_t;
+  using Blob = hr_blob_t;
+  using FontFuncs = hr_font_funcs_t;
+  using GlyphExtents = hr_glyph_extents_t;
+
+  ALWAYS_INLINE static Font* font_get_parent(Font* font) {
+    return hr_font_get_parent(font);
+  }
+  ALWAYS_INLINE static hb_bool_t font_get_variation_glyph(
+      Font* font,
+      hb_codepoint_t unicode,
+      hb_codepoint_t variation_selector,
+      hb_codepoint_t* glyph) {
+    return hr_font_get_variation_glyph(font, unicode, variation_selector,
+                                       glyph);
+  }
+  ALWAYS_INLINE static hb_bool_t font_get_nominal_glyph(Font* font,
+                                                        hb_codepoint_t unicode,
+                                                        hb_codepoint_t* glyph) {
+    return hr_font_get_nominal_glyph(font, unicode, glyph);
+  }
+  ALWAYS_INLINE static unsigned int font_get_nominal_glyphs(
+      Font* font,
+      unsigned int count,
+      const hb_codepoint_t* first_unicode,
+      unsigned int unicode_stride,
+      hb_codepoint_t* first_glyph,
+      unsigned int glyph_stride) {
+    return hr_font_get_nominal_glyphs(
+        font, count, first_unicode, unicode_stride, first_glyph, glyph_stride);
+  }
+  static FontFuncs* font_funcs_create() { return hr_font_funcs_create(); }
+  static void font_funcs_destroy(FontFuncs* ffuncs) {
+    hr_font_funcs_destroy(ffuncs);
+  }
+  static void font_funcs_make_immutable(FontFuncs* ffuncs) {
+    hr_font_funcs_make_immutable(ffuncs);
+  }
+  static void font_funcs_set_glyph_h_advance_func(
+      FontFuncs* ffuncs,
+      hr_font_get_glyph_advance_func_t func) {
+    hr_font_funcs_set_glyph_h_advance_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_glyph_h_advances_func(
+      FontFuncs* ffuncs,
+      hr_font_get_glyph_h_advances_func_t func) {
+    hr_font_funcs_set_glyph_h_advances_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_variation_glyph_func(
+      FontFuncs* ffuncs,
+      hr_font_get_variation_glyph_func_t func) {
+    hr_font_funcs_set_variation_glyph_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_nominal_glyph_func(
+      FontFuncs* ffuncs,
+      hr_font_get_nominal_glyph_func_t func) {
+    hr_font_funcs_set_nominal_glyph_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_nominal_glyphs_func(
+      FontFuncs* ffuncs,
+      hr_font_get_nominal_glyphs_func_t func) {
+    hr_font_funcs_set_nominal_glyphs_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_glyph_v_advance_func(
+      FontFuncs* ffuncs,
+      hr_font_get_glyph_advance_func_t func) {
+    hr_font_funcs_set_glyph_v_advance_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_glyph_v_origin_func(
+      FontFuncs* ffuncs,
+      hr_font_get_glyph_origin_func_t func) {
+    hr_font_funcs_set_glyph_v_origin_func(ffuncs, func, nullptr, nullptr);
+  }
+  static void font_funcs_set_glyph_extents_func(
+      FontFuncs* ffuncs,
+      hr_font_get_glyph_extents_func_t func) {
+    hr_font_funcs_set_glyph_extents_func(ffuncs, func, nullptr, nullptr);
+  }
+  static Blob* blob_create_writable(char* data,
+                                    unsigned int length,
+                                    void* user_data,
+                                    hr_destroy_func_t destroy) {
+    return hr_blob_create(data, length, HR_MEMORY_MODE_WRITABLE, user_data,
                           destroy);
   }
 };
@@ -287,8 +376,21 @@ struct FontCallbacks {
       variation_selector = 0;
     }
 
-    hb_bool_t hb_has_base_glyph = Traits::font_get_glyph(
-        Traits::font_get_parent(hb_font), unicode, variation_selector, glyph);
+    // Unlike HarfBuzz's `hb_font_get_glyph()`, `harfrust_capi`'s
+    // `hr_font_get_glyph()` falls back to `hr_font_get_nominal_glyph()` when
+    // `variation_selector` is non-zero and has no cmap format 14 entry.
+    // Dispatch explicitly to preserve HarfBuzz's `hb_font_get_glyph()` behavior
+    // so non-cmap-14 variation sequences (such as Mongolian FVS handled by
+    // GSUB) are not collapsed to the base glyph.
+    //
+    // See https://github.com/harfbuzz/harfrust/issues/672 .
+    hb_bool_t hb_has_base_glyph =
+        variation_selector
+            ? Traits::font_get_variation_glyph(Traits::font_get_parent(hb_font),
+                                               unicode, variation_selector,
+                                               glyph)
+            : Traits::font_get_nominal_glyph(Traits::font_get_parent(hb_font),
+                                             unicode, glyph);
 
     if (consider_variation_selector && hb_has_base_glyph) {
       // Unable to find a glyph for variation sequence, but found a glyph for
@@ -516,6 +618,7 @@ static bool GetSpaceGlyph(hb_shim::Font* font, hb_codepoint_t& space) {
 }
 
 bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
+  DCHECK_EQ(harfbuzz_font_data_->is_harfrust_, hb_shim::IsHarfRustEnabled());
   const hb_codepoint_t kInvalidCodepoint = static_cast<hb_codepoint_t>(-1);
   hb_codepoint_t space = kInvalidCodepoint;
 
@@ -567,6 +670,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
 }
 
 wtf_size_t HarfBuzzFace::UnitsPerEmFromHeadTable() {
+  DCHECK_EQ(harfbuzz_font_data_->is_harfrust_, hb_shim::IsHarfRustEnabled());
   hb_shim::Face* face =
       hb_shim::font_get_face(harfbuzz_font_data_->unscaled_font_.get());
   return hb_shim::face_get_upem(face);
@@ -574,6 +678,15 @@ wtf_size_t HarfBuzzFace::UnitsPerEmFromHeadTable() {
 
 Glyph HarfBuzzFace::HbGlyphForCharacter(UChar32 character) {
   hb_codepoint_t glyph = 0;
+  if constexpr (BUILDFLAG(ENABLE_HARFRUST)) {
+    if (harfbuzz_font_data_->is_harfrust_) {
+      FontCallbacks<true>::GetNominalGlyph(
+          hb_shim::HandleTraits<hb_shim::Font>::ToHr(
+              harfbuzz_font_data_->unscaled_font_.get()),
+          harfbuzz_font_data_, character, &glyph, nullptr);
+      return glyph;
+    }
+  }
   FontCallbacks<false>::GetNominalGlyph(
       hb_shim::HandleTraits<hb_shim::Font>::ToHb(
           harfbuzz_font_data_->unscaled_font_.get()),
@@ -585,6 +698,15 @@ hb_codepoint_t HarfBuzzFace::HarfBuzzGetGlyphForTesting(
     UChar32 character,
     UChar32 variation_selector) {
   hb_codepoint_t glyph = 0;
+  if constexpr (BUILDFLAG(ENABLE_HARFRUST)) {
+    if (harfbuzz_font_data_->is_harfrust_) {
+      FontCallbacks<true>::GetGlyph(
+          hb_shim::HandleTraits<hb_shim::Font>::ToHr(
+              harfbuzz_font_data_->unscaled_font_.get()),
+          harfbuzz_font_data_, character, variation_selector, &glyph, nullptr);
+      return glyph;
+    }
+  }
   FontCallbacks<false>::GetGlyph(hb_shim::HandleTraits<hb_shim::Font>::ToHb(
                                      harfbuzz_font_data_->unscaled_font_.get()),
                                  harfbuzz_font_data_, character,
@@ -598,8 +720,8 @@ bool HarfBuzzFace::ShouldSubpixelPosition() {
 
 namespace {
 
-// `HarfBuzzSkiaFontFuncs` is shared `hb_font_funcs_t`s among threads for
-// calculating horizontal advances functions.
+// `HarfBuzzSkiaFontFuncs` is shared `hb_font_funcs_t`/`hr_font_funcs_t`s among
+// threads for calculating horizontal advances functions.
 template <bool kUseHarfRust>
 class HarfBuzzSkiaFontFuncs final {
  public:
@@ -736,7 +858,8 @@ typename BackendTraits<kUseHarfRust>::Blob* HarfBuzzSkiaGetTable(
 
 // TODO(yosin): We should move |CreateFace()| to "harfbuzz_font_cache.cc".
 hb_shim::unique_ptr<hb_shim::Face> CreateFace(
-    const FontPlatformData* platform_data) {
+    const FontPlatformData* platform_data,
+    bool is_harfrust) {
   hb_shim::unique_ptr<hb_shim::Face> face;
 
   sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data->Typeface());
@@ -747,6 +870,17 @@ hb_shim::unique_ptr<hb_shim::Face> CreateFace(
 
   // Fallback to table copies if there is no in-memory access.
   if (!face) {
+    if constexpr (BUILDFLAG(ENABLE_HARFRUST)) {
+      if (is_harfrust) {
+        face = hb_shim::unique_ptr<hb_shim::Face>(
+            hb_shim::HandleTraits<hb_shim::Face>::FromHr(
+                hr_face_create_for_tables(HarfBuzzSkiaGetTable<true>,
+                                          typeface.get(), nullptr)),
+            /*is_harfrust=*/true);
+        DCHECK(face);
+        return face;
+      }
+    }
     face = hb_shim::unique_ptr<hb_shim::Face>(
         hb_shim::HandleTraits<hb_shim::Face>::FromHb(hb_face_create_for_tables(
             HarfBuzzSkiaGetTable<false>, typeface.get(), nullptr)),
@@ -758,8 +892,10 @@ hb_shim::unique_ptr<hb_shim::Face> CreateFace(
 }
 
 HarfBuzzFontData* CreateHarfBuzzFontData(hb_shim::Face* face,
-                                         SkTypeface* typeface) {
-  hb_shim::unique_ptr<hb_shim::Font> ot_font(hb_shim::font_create(face));
+                                         SkTypeface* typeface,
+                                         bool is_harfrust) {
+  hb_shim::unique_ptr<hb_shim::Font> ot_font(hb_shim::font_create(face),
+                                             is_harfrust);
   hb_shim::ot_font_set_funcs(ot_font.get());
 
   int axis_count = typeface->getVariationDesignPosition({});
@@ -778,7 +914,16 @@ HarfBuzzFontData* CreateHarfBuzzFontData(hb_shim::Face* face,
   hb_shim::Font* const unscaled_font =
       hb_shim::font_create_sub_font(ot_font.get());
   HarfBuzzFontData* data =
-      MakeGarbageCollected<HarfBuzzFontData>(unscaled_font);
+      MakeGarbageCollected<HarfBuzzFontData>(unscaled_font, is_harfrust);
+  if constexpr (BUILDFLAG(ENABLE_HARFRUST)) {
+    if (is_harfrust) {
+      hr_font_set_funcs(
+          hb_shim::HandleTraits<hb_shim::Font>::ToHr(unscaled_font),
+          HarfBuzzSkiaFontFuncs<true>::Get().GetFunctions(typeface), data,
+          nullptr);
+      return data;
+    }
+  }
   hb_font_set_funcs(hb_shim::HandleTraits<hb_shim::Font>::ToHb(unscaled_font),
                     HarfBuzzSkiaFontFuncs<false>::Get().GetFunctions(typeface),
                     data, nullptr);
@@ -790,11 +935,13 @@ HarfBuzzFontData* CreateHarfBuzzFontData(hb_shim::Face* face,
 HarfBuzzFontData* HarfBuzzFontCache::GetOrCreate(
     uint64_t unique_id,
     const FontPlatformData* platform_data) {
-  const auto& result = font_map_.insert(unique_id, nullptr);
+  const bool is_harfrust = hb_shim::IsHarfRustEnabled();
+  const auto& result = font_maps_[is_harfrust].insert(unique_id, nullptr);
   if (result.is_new_entry) {
-    hb_shim::unique_ptr<hb_shim::Face> face = CreateFace(platform_data);
-    result.stored_value->value =
-        CreateHarfBuzzFontData(face.get(), platform_data->Typeface());
+    hb_shim::unique_ptr<hb_shim::Face> face =
+        CreateFace(platform_data, is_harfrust);
+    result.stored_value->value = CreateHarfBuzzFontData(
+        face.get(), platform_data->Typeface(), is_harfrust);
   }
   return result.stored_value->value.Get();
 }
@@ -823,6 +970,7 @@ hb_shim::Font* HarfBuzzFace::GetScaledFont(
     const UnicodeRangeSet* range_set,
     VerticalLayoutCallbacks vertical_layout,
     float specified_size) const {
+  DCHECK_EQ(harfbuzz_font_data_->is_harfrust_, hb_shim::IsHarfRustEnabled());
   harfbuzz_font_data_->range_set_ = range_set;
   harfbuzz_font_data_->UpdateFallbackMetricsAndScale(*platform_data_,
                                                      vertical_layout);
@@ -851,6 +999,9 @@ hb_shim::Font* HarfBuzzFace::GetScaledFont() const {
 void HarfBuzzFace::Init() {
   DCHECK(IsMainThread());
   HarfBuzzSkiaFontFuncs<false>::Get();
+#if BUILDFLAG(ENABLE_HARFRUST)
+  HarfBuzzSkiaFontFuncs<true>::Get();
+#endif
 }
 
 }  // namespace blink

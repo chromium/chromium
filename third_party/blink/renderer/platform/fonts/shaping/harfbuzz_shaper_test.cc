@@ -11,8 +11,10 @@
 #include "base/check.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/buildflags.h"
 #include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -26,6 +28,8 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -2710,5 +2714,75 @@ TEST_F(HarfBuzzShaperIftTest, ShapesWithLastFontEvenWhenExtensionFails) {
               ElementsAre(unmappable_text_, unmappable_text_));
   EXPECT_THAT(GetRunFonts(result), ElementsAre(primary.FontData()));
 }
+
+#if BUILDFLAG(ENABLE_HARFRUST)
+TEST_F(HarfBuzzShaperTest, RuntimeSwitchBetweenHarfBuzzAndHarfRust) {
+  FontDescription::VariantLigatures ligatures;
+  ligatures.common = FontDescription::kEnabledLigaturesState;
+  ligatures.discretionary = FontDescription::kEnabledLigaturesState;
+
+  // Exercise HarfBuzzFace/HarfBuzzFontCache, PooledHarfBuzzBuffer, and
+  // LayoutLocale language handles across runtime toggles.
+  Persistent<Font> megalopolis = blink::test::CreateTestFont(
+      AtomicString("MEgalopolis"),
+      blink::test::PlatformTestDataPath(
+          "third_party/MEgalopolis/MEgalopolisExtra.woff"),
+      16, &ligatures, FontVariantEmoji::kNormal, [](FontDescription* desc) {
+        desc->SetLocale(LayoutLocale::Get(AtomicString("en-US")));
+      });
+
+  FontDescription ja_desc = font_description;
+  ja_desc.SetLocale(LayoutLocale::Get(AtomicString("ja")));
+  Persistent<Font> locale_font = MakeGarbageCollected<Font>(ja_desc);
+
+  String text(u"ffi RADDAYoVaDD");
+  HarfBuzzShaper shaper(text);
+
+  Vector<ShapeResultTestGlyphInfo> hb_glyphs;
+  float hb_width = 0;
+  Vector<wtf_size_t> hb_safe_breaks;
+  {
+    ScopedHarfRustShapingForTest scoped_off(false);
+    const ShapeResult* hb_result =
+        shaper.Shape(megalopolis.Get(), TextDirection::kLtr);
+    hb_width = hb_result->Width();
+    ComputeGlyphResults(*hb_result, &hb_glyphs);
+    for (wtf_size_t i = 0; i <= text.length(); ++i) {
+      hb_safe_breaks.push_back(hb_result->NextSafeToBreakOffset(i));
+    }
+    // Also exercise locale language lookup under HarfBuzz.
+    EXPECT_TRUE(shaper.Shape(locale_font.Get(), TextDirection::kLtr));
+  }
+
+  {
+    ScopedHarfRustShapingForTest scoped_on(true);
+    const ShapeResult* hr_result =
+        shaper.Shape(megalopolis.Get(), TextDirection::kLtr);
+    EXPECT_FLOAT_EQ(hb_width, hr_result->Width());
+
+    Vector<ShapeResultTestGlyphInfo> hr_glyphs;
+    ComputeGlyphResults(*hr_result, &hr_glyphs);
+    ASSERT_EQ(hb_glyphs.size(), hr_glyphs.size());
+    EXPECT_TRUE(
+        CompareResultGlyphs(hr_glyphs, hb_glyphs, 0u, hb_glyphs.size()));
+
+    for (wtf_size_t i = 0; i <= text.length(); ++i) {
+      EXPECT_EQ(hb_safe_breaks[i], hr_result->NextSafeToBreakOffset(i)) << i;
+    }
+    // Exercise the same LayoutLocale instance under HarfRust.
+    EXPECT_TRUE(shaper.Shape(locale_font.Get(), TextDirection::kLtr));
+  }
+
+  // Toggle back to HarfBuzz and force Oilpan GC while HarfRustShaping is false
+  // to verify HarfRust handles cached during the inner scope are destroyed
+  // with the matching backend destructor.
+  {
+    ScopedHarfRustShapingForTest scoped_off(false);
+    megalopolis.Clear();
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    EXPECT_TRUE(shaper.Shape(locale_font.Get(), TextDirection::kLtr));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_HARFRUST)
 
 }  // namespace blink

@@ -35,6 +35,7 @@
 #include <unicode/uscript.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -82,8 +83,8 @@ namespace {
 //
 class PooledHarfBuzzBuffer {
  public:
-  PooledHarfBuzzBuffer() {
-    Pool& pool = GetPool();
+  PooledHarfBuzzBuffer() : is_harfrust_(hb_shim::IsHarfRustEnabled()) {
+    Pool& pool = GetPool(is_harfrust_);
     if (!pool.empty()) {
       buffer_ = std::move(pool.back());
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -96,11 +97,12 @@ class PooledHarfBuzzBuffer {
       return;
     }
 
-    buffer_ = hb_shim::unique_ptr<hb_shim::Buffer>{hb_shim::buffer_create()};
+    buffer_ = hb_shim::unique_ptr<hb_shim::Buffer>{hb_shim::buffer_create(),
+                                                   is_harfrust_};
   }
 
   ~PooledHarfBuzzBuffer() {
-    Pool& pool = GetPool();
+    Pool& pool = GetPool(is_harfrust_);
     pool.push_back(std::move(buffer_));
 #if EXPENSIVE_DCHECKS_ARE_ON()
     DCHECK_LE(pool.size(), kInlineCapacity);
@@ -116,12 +118,14 @@ class PooledHarfBuzzBuffer {
  private:
   static constexpr wtf_size_t kInlineCapacity = 8;
   using Pool = Vector<hb_shim::unique_ptr<hb_shim::Buffer>, kInlineCapacity>;
+  using Pools = std::array<Pool, 2>;
 
-  static Pool& GetPool() {
-    static base::NoDestructor<ThreadSpecific<Pool>> pool;
-    return **pool;
+  static Pool& GetPool(bool is_harfrust) {
+    static base::NoDestructor<ThreadSpecific<Pools>> pools;
+    return (**pools)[is_harfrust];
   }
 
+  const bool is_harfrust_;
   hb_shim::unique_ptr<hb_shim::Buffer> buffer_;
 };
 
@@ -870,8 +874,7 @@ inline hb_shim::Language GetLanguageFromFontDescription(
       return override_language;
     }
   }
-  return hb_shim::FromHbLanguage(
-      font_description.LocaleOrDefault().HarfbuzzLanguage());
+  return font_description.LocaleOrDefault().HarfbuzzLanguage();
 }
 
 bool IftRequireSubset(const SimpleFontData* font_data, const StringView& text) {
@@ -1221,8 +1224,7 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
   }
   PooledHarfBuzzBuffer pooled_hb_buffer;
   hb_shim::Buffer* hb_buffer = pooled_hb_buffer.Get();
-  hb_shim::buffer_set_language(
-      hb_buffer, hb_shim::FromHbLanguage(locale.HarfbuzzLanguage()));
+  hb_shim::buffer_set_language(hb_buffer, locale.HarfbuzzLanguage());
   hb_shim::buffer_set_script(hb_buffer, IcuScriptToHbScript(script));
   hb_shim::buffer_set_direction(
       hb_buffer, is_horizontal ? (blink::IsLtr(direction) ? HB_DIRECTION_LTR

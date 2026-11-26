@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 
+#include <unicode/uscript.h>
+
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
@@ -16,11 +18,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
-#include <unicode/uscript.h>
-
 struct hb_language_impl_t;
+struct hr_language_impl_t;
 
 namespace blink {
+
+namespace hb_shim {
+struct LanguageImpl;
+}  // namespace hb_shim
 
 // A Unicode Line Break Style Identifier (key "lb".)
 // https://www.unicode.org/reports/tr35/#UnicodeLineBreakStyleIdentifier
@@ -48,9 +53,7 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   operator const AtomicString&() const { return string_; }
   std::string Ascii() const { return string_.Ascii(); }
 
-  const hb_language_impl_t* HarfbuzzLanguage() const {
-    return harfbuzz_language_;
-  }
+  const hb_shim::LanguageImpl* HarfbuzzLanguage() const;
   const char* LocaleForSkFontMgr() const;
 
   UScriptCode GetScript() const { return script_; }
@@ -99,6 +102,7 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
 
   void ComputeScriptForHan() const;
   void ComputeCaseMapLocale() const;
+  const hb_shim::LanguageImpl* ComputeHarfbuzzLanguage() const;
 
   AtomicString string_;
   mutable std::string string_for_sk_font_mgr_;
@@ -106,8 +110,10 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable scoped_refptr<Hyphenation> hyphenation_;
   mutable scoped_refptr<QuotesData> quotes_data_;
 
-  // hb_language_t is defined in hb.h, which not all files can include.
-  raw_ptr<const hb_language_impl_t> harfbuzz_language_;
+  // hb_language_t / hr_language_t are defined in hb.h / hr.h, which not all
+  // files should include.
+  mutable raw_ptr<const hb_language_impl_t> hb_language_ = nullptr;
+  mutable raw_ptr<const hr_language_impl_t> hr_language_ = nullptr;
 
   UScriptCode script_for_font_;
   UScriptCode script_;
@@ -119,6 +125,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable uint32_t case_map_computed_ : 1 = false;
   mutable uint32_t is_macrolanguage_chinese_computed_ : 1 = false;
   mutable uint32_t is_macrolanguage_chinese_ : 1 = false;
+  mutable uint32_t hb_language_computed_ : 1 = false;
+  mutable uint32_t hr_language_computed_ : 1 = false;
 };
 
 }  // namespace blink

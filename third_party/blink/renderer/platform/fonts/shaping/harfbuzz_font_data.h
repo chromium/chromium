@@ -28,8 +28,8 @@ inline constexpr wtf_size_t kInvalidFallbackMetricsValue =
 // Since it lives on a thread-local cache, it is used by one thread only.
 struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
  public:
-  explicit HarfBuzzFontData(hb_shim::Font* unscaled_font)
-      : unscaled_font_(unscaled_font) {}
+  HarfBuzzFontData(hb_shim::Font* unscaled_font, bool is_harfrust)
+      : unscaled_font_(unscaled_font, is_harfrust), is_harfrust_(is_harfrust) {}
 
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
   HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
@@ -109,6 +109,7 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
   }
 
   const hb_shim::unique_ptr<hb_shim::Font> unscaled_font_;
+  const bool is_harfrust_;
   SkFont font_;
   // Lazily-populated cached strike for the HarfBuzz advance callbacks; reset
   // when `font_` changes. See `UpdateFallbackMetricsAndScale`.
