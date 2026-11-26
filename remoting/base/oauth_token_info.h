@@ -6,6 +6,7 @@
 #define REMOTING_BASE_OAUTH_TOKEN_INFO_H_
 
 #include <string>
+#include <string_view>
 
 namespace remoting {
 
@@ -19,12 +20,10 @@ struct OAuthTokenInfo {
   const std::string& access_token() const { return access_token_; }
   const std::string& user_email() const { return user_email_; }
 
-  void set_access_token(const std::string& access_token) {
+  void set_access_token(std::string_view access_token) {
     access_token_ = access_token;
   }
-  void set_user_email(const std::string& user_email) {
-    user_email_ = user_email;
-  }
+  void set_user_email(std::string_view user_email) { user_email_ = user_email; }
 
  private:
   std::string access_token_;

@@ -5,6 +5,7 @@
 #include "remoting/test/test_token_storage.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -12,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 
 namespace {
@@ -143,14 +145,14 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  const std::string* token =
-      token_data->FindStringByDottedPath(user_name_ + '.' + key);
-  if (!token) {
-    VLOG(1) << "Could not find token for: " << key;
-    return std::string();
-  }
+  ASSIGN_OR_RETURN(std::string_view token,
+                   token_data->FindStrByDottedPath(user_name_ + '.' + key),
+                   [&] {
+                     VLOG(1) << "Could not find token for: " << key;
+                     return std::string();
+                   });
 
-  return *token;
+  return std::string(token);
 }
 
 bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,

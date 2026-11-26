@@ -40,9 +40,9 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   struct Pairing {
     Pairing();
     Pairing(const base::Time& created_time,
-            const std::string& client_name,
-            const std::string& client_id,
-            const std::string& shared_secret);
+            std::string_view client_name,
+            std::string_view client_id,
+            std::string_view shared_secret);
     Pairing(const Pairing& other);
     ~Pairing();
 
@@ -132,7 +132,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   // Delete a pairing, identified by its client ID. |callback| is called with
   // the result of saving the new config, which occurs even if the client ID
   // did not match any pairing.
-  void DeletePairing(const std::string& client_id, DoneCallback callback);
+  void DeletePairing(std::string_view client_id, DoneCallback callback);
 
   // Clear all pairings from the registry.
   void ClearAllPairings(DoneCallback callback);

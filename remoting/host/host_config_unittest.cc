@@ -84,34 +84,19 @@ TEST_P(HostConfigTest, ReadConfigFromFile) {
   ASSERT_TRUE(target.has_value());
 
   // Verify the expected values.
-  std::string* value = target->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostOwnerEmail);
-  value = target->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kServiceAccountEmail);
-  value = target->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kRefreshToken);
-  value = target->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostId);
-  value = target->FindString(kHostNameConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostName);
-  value = target->FindString(kPrivateKeyConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kPrivateKey);
+  EXPECT_EQ(target->FindStr(kHostOwnerConfigPath), kHostOwnerEmail);
+  EXPECT_EQ(target->FindStr(kServiceAccountConfigPath), kServiceAccountEmail);
+  EXPECT_EQ(target->FindStr(kOAuthRefreshTokenConfigPath), kRefreshToken);
+  EXPECT_EQ(target->FindStr(kHostIdConfigPath), kHostId);
+  EXPECT_EQ(target->FindStr(kHostNameConfigPath), kHostName);
+  EXPECT_EQ(target->FindStr(kPrivateKeyConfigPath), kPrivateKey);
 
   // Verify deprecated values are not present.
-  value = target->FindString(kDeprecatedXmppLoginConfigPath);
-  EXPECT_EQ(value, nullptr);
-  value = target->FindString(kDeprecatedHostOwnerEmailConfigPath);
-  EXPECT_EQ(value, nullptr);
+  EXPECT_EQ(target->FindStr(kDeprecatedXmppLoginConfigPath), std::nullopt);
+  EXPECT_EQ(target->FindStr(kDeprecatedHostOwnerEmailConfigPath), std::nullopt);
 
   // Verify non-existent values are not present.
-  value = target->FindString("non_existent_value");
-  EXPECT_EQ(value, nullptr);
+  EXPECT_EQ(target->FindStr("non_existent_value"), std::nullopt);
 }
 
 TEST_P(HostConfigTest, WriteConfigToFile) {
@@ -133,36 +118,21 @@ TEST_P(HostConfigTest, WriteConfigToFile) {
   ASSERT_TRUE(reader.has_value());
 
   // Verify the update value was persisted.
-  std::string* value = target->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kNewRefreshToken);
+  EXPECT_EQ(target->FindStr(kOAuthRefreshTokenConfigPath), kNewRefreshToken);
 
   // Verify the rest of the expected values.
-  value = target->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostOwnerEmail);
-  value = target->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kServiceAccountEmail);
-  value = target->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostId);
-  value = target->FindString(kHostNameConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kHostName);
-  value = target->FindString(kPrivateKeyConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kPrivateKey);
+  EXPECT_EQ(target->FindStr(kHostOwnerConfigPath), kHostOwnerEmail);
+  EXPECT_EQ(target->FindStr(kServiceAccountConfigPath), kServiceAccountEmail);
+  EXPECT_EQ(target->FindStr(kHostIdConfigPath), kHostId);
+  EXPECT_EQ(target->FindStr(kHostNameConfigPath), kHostName);
+  EXPECT_EQ(target->FindStr(kPrivateKeyConfigPath), kPrivateKey);
 
   // Verify deprecated values are not present.
-  value = target->FindString(kDeprecatedXmppLoginConfigPath);
-  EXPECT_EQ(value, nullptr);
-  value = target->FindString(kDeprecatedHostOwnerEmailConfigPath);
-  EXPECT_EQ(value, nullptr);
+  EXPECT_EQ(target->FindStr(kDeprecatedXmppLoginConfigPath), std::nullopt);
+  EXPECT_EQ(target->FindStr(kDeprecatedHostOwnerEmailConfigPath), std::nullopt);
 
   // Verify non-existent values are not present.
-  value = target->FindString("non_existent_value");
-  EXPECT_EQ(value, nullptr);
+  EXPECT_EQ(target->FindStr("non_existent_value"), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

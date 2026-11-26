@@ -16,8 +16,8 @@ namespace remoting::protocol {
 const size_t kSharedSecretHashLength = 32;
 
 // Returns HMAC-SHA-256 hash for |shared_secret| with the specified |tag|.
-std::string GetSharedSecretHash(const std::string& tag,
-                                const std::string& shared_secret);
+std::string GetSharedSecretHash(std::string_view tag,
+                                std::string_view shared_secret);
 
 }  // namespace remoting::protocol
 

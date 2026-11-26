@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -138,7 +139,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
       std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
       base::WeakPtr<It2MeHost::Observer> observer,
       CreateDeferredConnectContext create_context,
-      const std::string& username);
+      std::string_view username);
 
   // Disconnects and shuts down the host.
   virtual void Disconnect();

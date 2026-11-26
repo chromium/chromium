@@ -5,6 +5,7 @@
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -67,7 +68,7 @@ class FakeIt2MeHost : public It2MeHost {
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
                base::WeakPtr<It2MeHost::Observer> observer,
                CreateDeferredConnectContext create_context,
-               const std::string& user_name) override {
+               std::string_view user_name) override {
     observer_ = observer;
     user_name_ = user_name;
     connect_waiter_.SetValue();

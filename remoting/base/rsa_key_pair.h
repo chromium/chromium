@@ -21,7 +21,7 @@ class RsaKeyPair : public base::RefCountedThreadSafe<RsaKeyPair> {
   static scoped_refptr<RsaKeyPair> Generate();
 
   // Loads a private key from a base64-encoded string. Returns true on success.
-  static scoped_refptr<RsaKeyPair> FromString(const std::string& key_base64);
+  static scoped_refptr<RsaKeyPair> FromString(std::string_view key_base64);
 
   RsaKeyPair(const RsaKeyPair&) = delete;
   RsaKeyPair& operator=(const RsaKeyPair&) = delete;

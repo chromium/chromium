@@ -7,12 +7,14 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -44,12 +46,10 @@ class MockPairingRegistryCallbacks {
 // any shared secret.
 void VerifyPairing(PairingRegistry::Pairing expected,
                    const base::DictValue& actual) {
-  const std::string* value = actual.FindString(PairingRegistry::kClientNameKey);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, expected.client_name());
-  value = actual.FindString(PairingRegistry::kClientIdKey);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, expected.client_id());
+  EXPECT_EQ(actual.FindStr(PairingRegistry::kClientNameKey),
+            expected.client_name());
+  EXPECT_EQ(actual.FindStr(PairingRegistry::kClientIdKey),
+            expected.client_id());
 
   EXPECT_FALSE(actual.Find(PairingRegistry::kSharedSecretKey));
 }
@@ -135,10 +135,10 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   const base::DictValue* actual_pairing_2 = &actual_pairing_2_value.GetDict();
 
   // Ordering is not guaranteed, so swap if necessary.
-  const std::string* actual_client_id =
-      actual_pairing_1->FindString(PairingRegistry::kClientIdKey);
-  ASSERT_TRUE(actual_client_id);
-  if (*actual_client_id != pairing_1.client_id()) {
+  ASSERT_OK_AND_ASSIGN(
+      std::string_view actual_client_id,
+      actual_pairing_1->FindStr(PairingRegistry::kClientIdKey));
+  if (actual_client_id != pairing_1.client_id()) {
     std::swap(actual_pairing_1, actual_pairing_2);
   }
 
@@ -164,11 +164,9 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   ASSERT_EQ(pairings_.size(), 1u);
   const base::Value& actual_pairing_2_value = pairings_[0];
   ASSERT_TRUE(actual_pairing_2_value.is_dict());
-  const std::string* actual_client_id =
-      actual_pairing_2_value.GetDict().FindString(
-          PairingRegistry::kClientIdKey);
-  ASSERT_TRUE(actual_client_id);
-  EXPECT_EQ(*actual_client_id, pairing_2.client_id());
+  EXPECT_EQ(
+      actual_pairing_2_value.GetDict().FindStr(PairingRegistry::kClientIdKey),
+      pairing_2.client_id());
 }
 
 TEST_F(PairingRegistryTest, InvalidClientId) {

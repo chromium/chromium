@@ -44,9 +44,9 @@ std::optional<std::string> PairingRegistry::GetCanonicalClientId(
 PairingRegistry::Pairing::Pairing() = default;
 
 PairingRegistry::Pairing::Pairing(const base::Time& created_time,
-                                  const std::string& client_name,
-                                  const std::string& client_id,
-                                  const std::string& shared_secret)
+                                  std::string_view client_name,
+                                  std::string_view client_id,
+                                  std::string_view shared_secret)
     : created_time_(created_time),
       client_name_(client_name),
       client_id_(client_id),
@@ -71,15 +71,14 @@ PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
     const base::DictValue& pairing) {
   std::optional<double> created_time_value =
       pairing.FindDouble(kCreatedTimeKey);
-  const std::string* client_name = pairing.FindString(kClientNameKey);
-  const std::string* client_id = pairing.FindString(kClientIdKey);
+  std::optional<std::string_view> client_name = pairing.FindStr(kClientNameKey);
+  std::optional<std::string_view> client_id = pairing.FindStr(kClientIdKey);
   if (created_time_value && client_name && client_id) {
-    // The shared secret is optional.
-    const std::string* shared_secret = pairing.FindString(kSharedSecretKey);
     base::Time created_time =
         base::Time::FromMillisecondsSinceUnixEpoch(*created_time_value);
+    // The shared secret is optional.
     return Pairing(created_time, *client_name, *client_id,
-                   shared_secret ? *shared_secret : "");
+                   pairing.FindStr(kSharedSecretKey).value_or(""));
   }
 
   LOG(ERROR) << "Failed to load pairing information: unexpected format.";
@@ -161,7 +160,7 @@ void PairingRegistry::GetAllPairings(GetAllPairingsCallback callback) {
                                        std::move(sanitize_callback)));
 }
 
-void PairingRegistry::DeletePairing(const std::string& client_id,
+void PairingRegistry::DeletePairing(std::string_view client_id,
                                     DoneCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

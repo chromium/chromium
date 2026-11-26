@@ -6,6 +6,7 @@
 #define REMOTING_BASE_OAUTH_TOKEN_GETTER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -37,8 +38,8 @@ class OAuthTokenGetter {
     // |is_service_account| should be True if the OAuth refresh token is for a
     // service account, False for a user account, to allow the correct client-ID
     // to be used.
-    OAuthAuthorizationCredentials(const std::string& login,
-                                  const std::string& refresh_token,
+    OAuthAuthorizationCredentials(std::string_view login,
+                                  std::string_view refresh_token,
                                   bool is_service_account,
                                   std::vector<std::string> scopes = {});
 

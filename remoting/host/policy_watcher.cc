@@ -8,6 +8,8 @@
 #include "remoting/host/policy_watcher.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -126,9 +128,9 @@ base::DictValue CopyChromotingPoliciesIntoDictionary(
 // well-typed policy values and further verifies policy contents.
 bool VerifyWellformedness(const base::DictValue& changed_policies) {
   // Verify UdpPortRange policy.
-  const std::string* udp_port_range_string =
-      changed_policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (udp_port_range_string) {
+  if (std::optional<std::string_view> udp_port_range_string =
+          changed_policies.FindStr(
+              policy::key::kRemoteAccessHostUdpPortRange)) {
     if (!PortRange::Parse(*udp_port_range_string).has_value()) {
       return false;
     }
@@ -273,8 +275,8 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictValue* dict) {
   // RemoteAccessHostDomain
   if (dict->Find(policy::key::kRemoteAccessHostDomain)) {
     if (!dict->Find(policy::key::kRemoteAccessHostDomainList)) {
-      const std::string* domain =
-          dict->FindString(policy::key::kRemoteAccessHostDomain);
+      std::optional<std::string_view> domain =
+          dict->FindStr(policy::key::kRemoteAccessHostDomain);
       if (domain && !domain->empty()) {
         base::ListValue list;
         list.Append(*domain);
@@ -285,8 +287,8 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictValue* dict) {
   }
 
   // RemoteAccessHostClientDomain
-  if (const std::string* domain =
-          dict->FindString(policy::key::kRemoteAccessHostClientDomain)) {
+  if (std::optional<std::string_view> domain =
+          dict->FindStr(policy::key::kRemoteAccessHostClientDomain)) {
     if (!dict->Find(policy::key::kRemoteAccessHostClientDomainList)) {
       if (!domain->empty()) {
         base::ListValue list;

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -39,15 +40,14 @@ base::DictValue SessionParamsToDict(const mojom::SupportSessionParams& params) {
 
 mojom::SupportSessionParams SessionParamsFromDict(const base::DictValue& dict) {
   mojom::SupportSessionParams result;
-  const std::string* user_name = dict.FindString(kUserName);
-  if (user_name) {
+  if (std::optional<std::string_view> user_name = dict.FindStr(kUserName)) {
     result.user_name = *user_name;
   } else {
     LOG(ERROR) << "SupportSessionParams missing field: " << kUserName;
   }
 
-  const std::string* authorized_helper = dict.FindString(kAuthorizedHelper);
-  if (authorized_helper) {
+  if (std::optional<std::string_view> authorized_helper =
+          dict.FindStr(kAuthorizedHelper)) {
     result.authorized_helper = *authorized_helper;
   } else {
     LOG(ERROR) << "SupportSessionParams missing field: " << kAuthorizedHelper;

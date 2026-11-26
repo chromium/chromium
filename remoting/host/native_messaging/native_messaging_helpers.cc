@@ -4,9 +4,14 @@
 
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringize_macros.h"
+#include "base/types/expected_macros.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 
 namespace remoting {
@@ -27,9 +32,8 @@ bool ParseNativeMessageJson(const std::string& message,
     return false;
   }
 
-  const std::string* message_type_value =
-      message_value.GetDict().FindString(kMessageType);
-  if (message_type_value) {
+  if (std::optional<std::string_view> message_type_value =
+          message_value.GetDict().FindStr(kMessageType)) {
     message_type = *message_type_value;
   }
 
@@ -40,14 +44,13 @@ bool ParseNativeMessageJson(const std::string& message,
 
 std::optional<base::DictValue> CreateNativeMessageResponse(
     const base::DictValue& request) {
-  const std::string* type = request.FindString(kMessageType);
-  if (!type) {
+  ASSIGN_OR_RETURN(std::string_view type, request.FindStr(kMessageType), [] {
     LOG(ERROR) << "'" << kMessageType << "' not found in request.";
     return std::nullopt;
-  }
+  });
 
   base::DictValue response;
-  response.Set(kMessageType, *type + "Response");
+  response.Set(kMessageType, base::StrCat({type, "Response"}));
 
   // If the client supplies an ID, it will expect it in the response. This
   // might be a string or a number, so cope with both.

@@ -31,8 +31,8 @@ std::string NormalizeSignalingId(const std::string& id) {
   return base::ToLowerASCII(email);
 }
 
-std::string GetCanonicalEmail(const std::string& email) {
-  DCHECK(email.find('/') == std::string::npos)
+std::string GetCanonicalEmail(std::string_view email) {
+  DCHECK(!email.contains('/'))
       << "This function expects an email address, not a signaling ID.";
   std::string canonical_email = base::ToLowerASCII(email);
   base::TrimString(canonical_email, base::kWhitespaceASCII, &canonical_email);

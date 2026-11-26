@@ -40,6 +40,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/utils.h"
@@ -1424,12 +1425,11 @@ bool ParseEncoderConfig(const base::DictValue& dict,
     }
   }
 
-  const std::string* codec_ptr = dict.FindString("codec");
-  if (!codec_ptr) {
+  ASSIGN_OR_RETURN(std::string_view codec, dict.FindStr("codec"), [] {
     LOG(ERROR) << "Encoder configuration is missing required 'codec' string.";
     return false;
-  }
-  std::string codec_str = base::ToLowerASCII(*codec_ptr);
+  });
+  std::string codec_str = base::ToLowerASCII(codec);
   if (codec_str == "av1") {
     out_config.codec = Codec::kAv1;
   } else if (codec_str == "vp8") {
@@ -1437,7 +1437,7 @@ bool ParseEncoderConfig(const base::DictValue& dict,
   } else if (codec_str == "vp9") {
     out_config.codec = Codec::kVp9;
   } else {
-    LOG(ERROR) << "Invalid codec '" << *codec_ptr
+    LOG(ERROR) << "Invalid codec '" << codec
                << "'. Supported codecs: av1, vp8, vp9.";
     return false;
   }
@@ -1534,7 +1534,7 @@ bool ParseEncoderConfig(const base::DictValue& dict,
     out_config.bitrate_kbps = bitrate_value->GetInt();
   }
 
-  if (const std::string* name_ptr = dict.FindString("name")) {
+  if (std::optional<std::string_view> name_ptr = dict.FindStr("name")) {
     if (name_ptr->empty()) {
       LOG(ERROR) << "'name' cannot be empty when specified.";
       return false;
@@ -1605,15 +1605,17 @@ bool LoadJsonConfigFile(const base::FilePath& config_path,
     config.bitrate_kbps = bitrate_val->GetInt();
   }
 
-  if (const std::string* frame_dir = root.FindString("frame_dir")) {
+  if (std::optional<std::string_view> frame_dir = root.FindStr("frame_dir")) {
     config.frame_dir = base::FilePath::FromUTF8Unsafe(*frame_dir);
   }
 
-  if (const std::string* chrome_path = root.FindString("chrome_path")) {
+  if (std::optional<std::string_view> chrome_path =
+          root.FindStr("chrome_path")) {
     config.chrome_path = base::FilePath::FromUTF8Unsafe(*chrome_path);
   }
 
-  if (const std::string* output_json = root.FindString("output_json")) {
+  if (std::optional<std::string_view> output_json =
+          root.FindStr("output_json")) {
     config.output_json_path = base::FilePath::FromUTF8Unsafe(*output_json);
   }
 
@@ -1629,7 +1631,7 @@ bool LoadJsonConfigFile(const base::FilePath& config_path,
         return false;
       }
       webrtc::DesktopSize parsed_size;
-      if (!ParseSizeWxH(item.GetString(), parsed_size)) {
+      if (!ParseSizeWxH(item.GetStr(), parsed_size)) {
         return false;
       }
       config.sizes.push_back(parsed_size);
@@ -1643,15 +1645,15 @@ bool LoadJsonConfigFile(const base::FilePath& config_path,
     }
     config.scenarios.clear();
     for (const base::Value& item : scenarios_val->GetList()) {
-      if (!item.is_string() || item.GetString().empty()) {
+      if (!item.is_string() || item.GetStr().empty()) {
         LOG(ERROR) << "Each entry in 'scenarios' must be a non-empty string.";
         return false;
       }
-      if (item.GetString() == "all") {
+      if (item.GetStr() == "all") {
         config.scenarios = GetDefaultScenarios();
         break;
       }
-      config.scenarios.push_back(item.GetString());
+      config.scenarios.emplace_back(item.GetStr());
     }
   }
 

@@ -104,7 +104,7 @@ SessionOptions SessionOptions::Parse(const base::DictValue& dict) {
       LOG(WARNING) << "Unexpected non-string value for option key " << key;
       continue;
     }
-    const std::string& string_val = value.GetString();
+    std::string_view string_val = value.GetStr();
 
     auto bool_it = kBoolFieldsMap.find(key);
     if (bool_it != kBoolFieldsMap.end()) {

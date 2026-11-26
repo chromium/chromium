@@ -68,7 +68,7 @@ enum class ErrorCode {
   kMaxValue = UNCURTAINED_SESSION,
 };
 
-bool ParseErrorCode(const std::string& name, ErrorCode* result);
+bool ParseErrorCode(std::string_view name, ErrorCode* result);
 
 // Returns the literal string of |error|.
 const char* ErrorCodeToString(ErrorCode error);

@@ -22,7 +22,7 @@ GaiaOAuthClient::~GaiaOAuthClient() = default;
 
 void GaiaOAuthClient::GetCredentialsFromAuthCode(
     const gaia::OAuthClientInfo& oauth_client_info,
-    const std::string& auth_code,
+    std::string_view auth_code,
     bool need_user_email,
     CompletionCallback on_done) {
   if (on_done_) {
@@ -85,7 +85,7 @@ void GaiaOAuthClient::OnNetworkError(int response_code) {
 
 GaiaOAuthClient::Request::Request(
     const gaia::OAuthClientInfo& oauth_client_info,
-    const std::string& auth_code,
+    std::string_view auth_code,
     bool need_user_email,
     CompletionCallback on_done) {
   this->oauth_client_info = oauth_client_info;

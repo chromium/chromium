@@ -38,6 +38,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
@@ -452,7 +453,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
-  void OnUpdateHostOwner(const std::string& host_owner) override;
+  void OnUpdateHostOwner(std::string_view host_owner) override;
   void OnUpdateRequireSessionAuthorization(bool require_session_auth) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
@@ -927,9 +928,7 @@ void HostProcess::SigUsr2Handler(int signal_number) {
 bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
   // |user_email_view| may already be in a canonical form but we transform it
   // just in case so that it matches the format we use in |host_owner_emails_|.
-  // TODO: joedow - Add an overload for GetCanonicalEmail() which takes a
-  // std::string_view.
-  auto canonical_email = GetCanonicalEmail(std::string(user_email_view));
+  auto canonical_email = GetCanonicalEmail(user_email_view);
   auto email_parts = base::SplitStringOnce(canonical_email, '@');
   if (!email_parts) {
     LOG(ERROR) << "Unexpected email address format: " << user_email_view;
@@ -1269,7 +1268,7 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 #endif
 }
 
-void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+void HostProcess::OnUpdateHostOwner(std::string_view owner_email) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!owner_email.empty());
 
@@ -1469,27 +1468,27 @@ void HostProcess::SetRequiredUsernameOnDaemonProcess() {
 bool HostProcess::ApplyConfig(const base::DictValue& config) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  const std::string* host_id = config.FindString(kHostIdConfigPath);
-  if (!host_id) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kHostIdConfigPath << "`";
-    return false;
-  }
-  host_id_ = *host_id;
+  ASSIGN_OR_RETURN(std::string_view host_id, config.FindStr(kHostIdConfigPath),
+                   [] {
+                     LOG(ERROR) << "Host config is missing a required path: `"
+                                << kHostIdConfigPath << "`";
+                     return false;
+                   });
+  host_id_ = host_id;
 
-  const std::string* key_base64 = config.FindString(kPrivateKeyConfigPath);
-  if (!key_base64) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kPrivateKeyConfigPath << "`";
-    return false;
-  }
+  ASSIGN_OR_RETURN(std::string_view key_base64,
+                   config.FindStr(kPrivateKeyConfigPath), [] {
+                     LOG(ERROR) << "Host config is missing a required path: `"
+                                << kPrivateKeyConfigPath << "`";
+                     return false;
+                   });
 
-  bool generate_private_key = *key_base64 == "generate";
+  bool generate_private_key = key_base64 == "generate";
   if (generate_private_key) {
     HOST_LOG << "private_key is set to 'generate', generating a new key pair.";
     key_pair_ = RsaKeyPair::Generate();
   } else {
-    key_pair_ = RsaKeyPair::FromString(*key_base64);
+    key_pair_ = RsaKeyPair::FromString(key_base64);
   }
   if (!key_pair_.get()) {
     LOG(ERROR) << "Host config has an invalid value for path: `"
@@ -1498,43 +1497,40 @@ bool HostProcess::ApplyConfig(const base::DictValue& config) {
   }
 
   // Retrieve the service account used for signaling and backend requests.
-  const std::string* service_account_email =
-      config.FindString(kServiceAccountConfigPath);
-  if (!service_account_email) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kServiceAccountConfigPath << "`";
-    return false;
-  }
-  service_account_email_ = *service_account_email;
+  ASSIGN_OR_RETURN(std::string_view service_account_email,
+                   config.FindStr(kServiceAccountConfigPath), [] {
+                     LOG(ERROR) << "Host config is missing a required path: `"
+                                << kServiceAccountConfigPath << "`";
+                     return false;
+                   });
+  service_account_email_ = service_account_email;
 
   // Retrieve robot account credentials for session signaling.
-  const std::string* oauth_refresh_token =
-      config.FindString(kOAuthRefreshTokenConfigPath);
-  if (!oauth_refresh_token) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kOAuthRefreshTokenConfigPath << "`";
-    return false;
-  }
-  oauth_refresh_token_ = *oauth_refresh_token;
+  ASSIGN_OR_RETURN(std::string_view oauth_refresh_token,
+                   config.FindStr(kOAuthRefreshTokenConfigPath), [] {
+                     LOG(ERROR) << "Host config is missing a required path: `"
+                                << kOAuthRefreshTokenConfigPath << "`";
+                     return false;
+                   });
+  oauth_refresh_token_ = oauth_refresh_token;
 
   // Retrieve the host_owner field value.
-  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
-  if (!host_owner) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kHostOwnerConfigPath << "`";
-    return false;
-  }
-  OnUpdateHostOwner(*host_owner);
+  ASSIGN_OR_RETURN(std::string_view host_owner,
+                   config.FindStr(kHostOwnerConfigPath), [] {
+                     LOG(ERROR) << "Host config is missing a required path: `"
+                                << kHostOwnerConfigPath << "`";
+                     return false;
+                   });
+  OnUpdateHostOwner(host_owner);
 
-  auto* host_type_hint = config.FindString(kHostTypeHintPath);
-  is_cloud_host_ = (host_type_hint && *host_type_hint == kCloudHostTypeHint);
+  is_cloud_host_ = config.FindStr(kHostTypeHintPath) == kCloudHostTypeHint;
   is_corp_host_ = IsCorpHostConfig(config);
 
   require_session_authorization_ =
       config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
 
-  const std::string* host_secret_hash =
-      config.FindString(kHostSecretHashConfigPath);
+  std::optional<std::string_view> host_secret_hash =
+      config.FindStr(kHostSecretHashConfigPath);
   if (require_session_authorization_) {
     HOST_LOG << "Host config specifies that Session Authorization is required.";
     HOST_LOG << "PIN authentication is disabled.";
@@ -1696,7 +1692,7 @@ bool HostProcess::OnHostDomainListPolicyUpdate(
 
   host_domain_list_.clear();
   for (const auto& value : *list) {
-    host_domain_list_.push_back(value.GetString());
+    host_domain_list_.emplace_back(value.GetStr());
   }
 
   ApplyHostDomainListPolicy();
@@ -1715,7 +1711,7 @@ bool HostProcess::OnClientDomainListPolicyUpdate(
 
   client_domain_list_.clear();
   for (const auto& value : *list) {
-    client_domain_list_.push_back(value.GetString());
+    client_domain_list_.emplace_back(value.GetStr());
   }
 
   return true;

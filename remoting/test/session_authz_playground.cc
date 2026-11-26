@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -177,14 +178,14 @@ SessionAuthzPlayground::CreateOAuthTokenGetter(
                         host_config_file_path.MaybeAsASCII().data()));
     std::exit(1);
   }
-  const std::string* refresh_token =
-      host_config_dict->FindString(kOAuthRefreshTokenConfigPath);
+  std::optional<std::string_view> refresh_token =
+      host_config_dict->FindStr(kOAuthRefreshTokenConfigPath);
   if (!refresh_token) {
     fprintf(stderr, "Cannot find OAuth refresh token from host config file.\n");
     std::exit(1);
   }
-  const std::string* service_account_email =
-      host_config_dict->FindString(kServiceAccountConfigPath);
+  std::optional<std::string_view> service_account_email =
+      host_config_dict->FindStr(kServiceAccountConfigPath);
   if (!service_account_email) {
     fprintf(stderr, "Cannot find service account email.\n");
     std::exit(1);

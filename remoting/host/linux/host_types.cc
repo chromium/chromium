@@ -22,6 +22,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "remoting/base/secure_file_reader.h"
 #include "remoting/host/linux/auto_session_host_type.h"
@@ -243,16 +244,15 @@ base::expected<const HostType*, std::string> HostType::GetConfigured(
     return base::unexpected(
         InvalidHostTypeRecordError(path, "It is not a JSON dictionary."));
   }
-  const std::string* name = json->GetDict().FindString(kHostTypeRecordKey);
-  if (!name) {
-    return base::unexpected(InvalidHostTypeRecordError(
-        path, base::StrCat(
-                  {"It has no string \"", kHostTypeRecordKey, "\" field."})));
-  }
-  const HostType* host_type = Find(*name);
+  ASSIGN_OR_RETURN(std::string_view name,
+                   json->GetDict().FindStr(kHostTypeRecordKey),
+                   base::unexpected(InvalidHostTypeRecordError(
+                       path, base::StrCat({"It has no string \"",
+                                           kHostTypeRecordKey, "\" field."}))));
+  const HostType* host_type = Find(name);
   if (!host_type) {
     return base::unexpected(InvalidHostTypeRecordError(
-        path, base::StrCat({"Unknown host type '", *name, "'."})));
+        path, base::StrCat({"Unknown host type '", name, "'."})));
   }
   return base::ok(host_type);
 }

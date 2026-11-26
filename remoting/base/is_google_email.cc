@@ -4,6 +4,8 @@
 
 #include "remoting/base/is_google_email.h"
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 
 namespace remoting {
@@ -13,7 +15,7 @@ namespace {
 constexpr char kGooglerEmailDomain[] = "@google.com";
 }  // namespace
 
-bool IsGoogleEmail(const std::string& email_address) {
+bool IsGoogleEmail(std::string_view email_address) {
   return base::EndsWith(email_address, kGooglerEmailDomain,
                         base::CompareCase::INSENSITIVE_ASCII);
 }

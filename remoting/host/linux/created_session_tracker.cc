@@ -139,7 +139,8 @@ ParseEntries(std::string_view content) {
           Loggable(FROM_HERE, base::StrCat({"Entry for session \"", session_id,
                                             "\" is not a dictionary."})));
     }
-    const std::string* username = session.GetDict().FindString(kUsernameKey);
+    std::optional<std::string_view> username =
+        session.GetDict().FindStr(kUsernameKey);
     const base::Value* uid_value = session.GetDict().Find(kUidKey);
     std::optional<uid_t> uid =
         uid_value ? ValueToUid(*uid_value) : std::nullopt;
@@ -148,7 +149,8 @@ ParseEntries(std::string_view content) {
           FROM_HERE, base::StrCat({"Entry for session \"", session_id,
                                    "\" has a missing or invalid field."})));
     }
-    CreatedSessionTracker::Entry entry{session_id, *username, *uid};
+    CreatedSessionTracker::Entry entry{session_id, std::string(*username),
+                                       *uid};
     auto valid = ValidateEntry(entry);
     if (!valid.has_value()) {
       return base::unexpected(std::move(valid).error());

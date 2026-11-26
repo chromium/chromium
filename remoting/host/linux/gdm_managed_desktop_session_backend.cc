@@ -262,7 +262,7 @@ void GdmManagedDesktopSessionBackend::OnRemoteDisplaysFileLoaded(
         if (client_id.empty() || !display_name_value.is_string()) {
           continue;
         }
-        const std::string& display_name = display_name_value.GetString();
+        std::string_view display_name = display_name_value.GetStr();
         if (remote_display_session_manager_.GetRemoteDisplayInfo(
                 display_name)) {
           HOST_LOG << "Recovering remote display " << display_name << " for "
@@ -470,7 +470,7 @@ void GdmManagedDesktopSessionBackend::WriteRemoteDisplaysToFile() {
 
     if (dict.contains(managed.client_id)) {
       LOG(WARNING) << "Multiple remote displays found for " << managed.client_id
-                   << ". Using " << *dict.FindString(managed.client_id)
+                   << ". Using " << *dict.FindStr(managed.client_id)
                    << " and ignoring " << display_name;
     } else {
       dict.Set(managed.client_id, display_name);

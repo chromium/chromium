@@ -11,8 +11,8 @@ namespace remoting {
 // OAuthAuthorizationCredentials implementation.
 
 OAuthTokenGetter::OAuthAuthorizationCredentials::OAuthAuthorizationCredentials(
-    const std::string& login,
-    const std::string& refresh_token,
+    std::string_view login,
+    std::string_view refresh_token,
     bool is_service_account,
     std::vector<std::string> scopes)
     : login(login),

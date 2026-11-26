@@ -6,6 +6,7 @@
 #define REMOTING_BASE_OAUTH_CLIENT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 
@@ -35,7 +36,7 @@ class OAuthClient {
   // processed after the first one is finished.
   virtual void GetCredentialsFromAuthCode(
       const gaia::OAuthClientInfo& oauth_client_info,
-      const std::string& auth_code,
+      std::string_view auth_code,
       bool need_user_email,
       CompletionCallback on_done) = 0;
 };

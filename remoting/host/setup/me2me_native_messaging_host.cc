@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -16,9 +17,11 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringize_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -96,52 +99,49 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
     response.Set("id", id->Clone());
   }
 
-  const std::string* type = message_dict->FindString("type");
-  if (!type) {
-    OnError("'type' not found");
-    return;
-  }
+  ASSIGN_OR_RETURN(std::string_view type, message_dict->FindStr("type"),
+                   [this] { OnError("'type' not found"); });
 
-  response.Set("type", *type + "Response");
+  response.Set("type", base::StrCat({type, "Response"}));
 
-  if (*type == "hello") {
+  if (type == "hello") {
     ProcessHello(std::move(*message_dict), std::move(response));
-  } else if (*type == "clearPairedClients") {
+  } else if (type == "clearPairedClients") {
     ProcessClearPairedClients(std::move(*message_dict), std::move(response));
-  } else if (*type == "deletePairedClient") {
+  } else if (type == "deletePairedClient") {
     ProcessDeletePairedClient(std::move(*message_dict), std::move(response));
-  } else if (*type == "getHostName") {
+  } else if (type == "getHostName") {
     ProcessGetHostName(std::move(*message_dict), std::move(response));
-  } else if (*type == "getPinHash") {
+  } else if (type == "getPinHash") {
     ProcessGetPinHash(std::move(*message_dict), std::move(response));
-  } else if (*type == "generateKeyPair") {
+  } else if (type == "generateKeyPair") {
     ProcessGenerateKeyPair(std::move(*message_dict), std::move(response));
-  } else if (*type == "updateDaemonConfig") {
+  } else if (type == "updateDaemonConfig") {
     ProcessUpdateDaemonConfig(std::move(*message_dict), std::move(response));
-  } else if (*type == "getDaemonConfig") {
+  } else if (type == "getDaemonConfig") {
     ProcessGetDaemonConfig(std::move(*message_dict), std::move(response));
-  } else if (*type == "getPairedClients") {
+  } else if (type == "getPairedClients") {
     ProcessGetPairedClients(std::move(*message_dict), std::move(response));
-  } else if (*type == "getUsageStatsConsent") {
+  } else if (type == "getUsageStatsConsent") {
     ProcessGetUsageStatsConsent(std::move(*message_dict), std::move(response));
-  } else if (*type == "startDaemon") {
+  } else if (type == "startDaemon") {
     ProcessStartDaemon(std::move(*message_dict), std::move(response));
-  } else if (*type == "stopDaemon") {
+  } else if (type == "stopDaemon") {
     ProcessStopDaemon(std::move(*message_dict), std::move(response));
-  } else if (*type == "getDaemonState") {
+  } else if (type == "getDaemonState") {
     ProcessGetDaemonState(std::move(*message_dict), std::move(response));
-  } else if (*type == "getHostClientId") {
+  } else if (type == "getHostClientId") {
     ProcessGetHostClientId(std::move(*message_dict), std::move(response));
-  } else if (*type == "getCredentialsFromAuthCode") {
+  } else if (type == "getCredentialsFromAuthCode") {
     ProcessGetCredentialsFromAuthCode(std::move(*message_dict),
                                       std::move(response), true);
-  } else if (*type == "getRefreshTokenFromAuthCode") {
+  } else if (type == "getRefreshTokenFromAuthCode") {
     ProcessGetCredentialsFromAuthCode(std::move(*message_dict),
                                       std::move(response), false);
-  } else if (*type == "it2mePermissionCheck") {
+  } else if (type == "it2mePermissionCheck") {
     ProcessIt2mePermissionCheck(std::move(*message_dict), std::move(response));
   } else {
-    OnError("Unsupported request type: " + *type);
+    OnError(base::StrCat({"Unsupported request type: ", type}));
   }
 }
 
@@ -204,19 +204,17 @@ void Me2MeNativeMessagingHost::ProcessDeletePairedClient(
     return;
   }
 
-  std::string* client_id =
-      message.FindString(protocol::PairingRegistry::kClientIdKey);
-  if (!client_id) {
-    OnError("'" + std::string(protocol::PairingRegistry::kClientIdKey) +
-            "' string not found.");
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view client_id,
+      message.FindStr(protocol::PairingRegistry::kClientIdKey), [this] {
+        OnError("'" + std::string(protocol::PairingRegistry::kClientIdKey) +
+                "' string not found.");
+      });
 
   if (pairing_registry_.get()) {
     pairing_registry_->DeletePairing(
-        std::move(*client_id),
-        base::BindOnce(&Me2MeNativeMessagingHost::SendBooleanResult, weak_ptr_,
-                       std::move(response)));
+        client_id, base::BindOnce(&Me2MeNativeMessagingHost::SendBooleanResult,
+                                  weak_ptr_, std::move(response)));
   } else {
     SendBooleanResult(std::move(response), false);
   }
@@ -234,17 +232,13 @@ void Me2MeNativeMessagingHost::ProcessGetPinHash(base::DictValue message,
                                                  base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  std::string* host_id = message.FindString("hostId");
-  if (!host_id) {
+  ASSIGN_OR_RETURN(std::string_view host_id, message.FindStr("hostId"), [&] {
     OnError("'hostId' not found: " + base::WriteJson(message).value_or(""));
-    return;
-  }
-  std::string* pin = message.FindString("pin");
-  if (!pin) {
+  });
+  ASSIGN_OR_RETURN(std::string_view pin, message.FindStr("pin"), [&] {
     OnError("'pin' not found: " + base::WriteJson(message).value_or(""));
-    return;
-  }
-  response.Set("hash", MakeHostPinHash(std::move(*host_id), std::move(*pin)));
+  });
+  response.Set("hash", MakeHostPinHash(host_id, pin));
   SendMessageToClient(std::move(response));
 }
 
@@ -441,11 +435,9 @@ void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
     bool need_user_email) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  std::string* auth_code = message.FindString("authorizationCode");
-  if (!auth_code) {
-    OnError("'authorizationCode' string not found.");
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view auth_code, message.FindStr("authorizationCode"),
+      [this] { OnError("'authorizationCode' string not found."); });
 
   // Pass an empty redirect_uri value since it's not needed when exchanging
   // robot auth codes. See b/231442487 for more details.
@@ -456,7 +448,7 @@ void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
       redirect_uri};
 
   oauth_client_->GetCredentialsFromAuthCode(
-      oauth_client_info, std::move(*auth_code), need_user_email,
+      oauth_client_info, auth_code, need_user_email,
       base::BindOnce(&Me2MeNativeMessagingHost::SendCredentialsResponse,
                      weak_ptr_, std::move(response)));
 }

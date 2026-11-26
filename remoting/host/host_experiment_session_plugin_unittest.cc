@@ -44,9 +44,9 @@ TEST(HostExperimentSessionPluginTest, LoadConfiguration) {
 
   const base::DictValue& configuration = plugin.configuration();
   EXPECT_EQ(configuration.size(), 3u);
-  EXPECT_EQ(*configuration.FindString("Detect-Updated-Region"), "test-value");
-  EXPECT_EQ(*configuration.FindString("Exp1"), "val1");
-  EXPECT_EQ(*configuration.FindString("Exp2"), "val2");
+  EXPECT_EQ(configuration.FindStr("Detect-Updated-Region"), "test-value");
+  EXPECT_EQ(configuration.FindStr("Exp1"), "val1");
+  EXPECT_EQ(configuration.FindStr("Exp2"), "val2");
 }
 
 TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
@@ -58,8 +58,7 @@ TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
   HostExperimentSessionPlugin plugin;
   plugin.OnIncomingMessage(attachment1);
   ASSERT_TRUE(plugin.configuration_received());
-  EXPECT_EQ(*plugin.configuration().FindString("Detect-Updated-Region"),
-            "val1");
+  EXPECT_EQ(plugin.configuration().FindStr("Detect-Updated-Region"), "val1");
 
   Attachment attachment2;
   HostConfigAttachment config2;
@@ -67,8 +66,7 @@ TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
   attachment2.host_config = std::move(config2);
   plugin.OnIncomingMessage(attachment2);
   ASSERT_TRUE(plugin.configuration_received());
-  EXPECT_EQ(*plugin.configuration().FindString("Detect-Updated-Region"),
-            "val1");
+  EXPECT_EQ(plugin.configuration().FindStr("Detect-Updated-Region"), "val1");
 }
 
 }  // namespace remoting

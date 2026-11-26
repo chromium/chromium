@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,8 +33,7 @@ scoped_refptr<RsaKeyPair> RsaKeyPair::Generate() {
 }
 
 // static
-scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(
-    const std::string& key_base64) {
+scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(std::string_view key_base64) {
   std::optional<std::vector<uint8_t>> key_bytes =
       base::Base64Decode(key_base64);
   if (!key_bytes.has_value()) {

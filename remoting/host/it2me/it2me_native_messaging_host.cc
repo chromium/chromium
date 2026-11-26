@@ -5,7 +5,9 @@
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -21,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -279,16 +282,11 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
     return;
   }
 
-  std::string username;
-  const std::string* username_from_message = message.FindString(kUserName);
-  if (username_from_message) {
-    username = *username_from_message;
-  }
+  std::string_view username = message.FindStr(kUserName).value_or("");
 
   std::string authorized_helper;
-  const std::string* authorized_helper_value =
-      message.FindString(kAuthorizedHelper);
-  if (authorized_helper_value) {
+  if (std::optional<std::string_view> authorized_helper_value =
+          message.FindStr(kAuthorizedHelper)) {
     authorized_helper = *authorized_helper_value;
     if (!IsValidEmailAddress(authorized_helper)) {
       LOG(ERROR) << "Invalid authorized_helper value: " << authorized_helper;
@@ -305,9 +303,10 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
   if (!username.empty()) {
     signaling_token_getter_.set_username(username);
     api_token_getter_.set_username(username);
-    std::string* signaling_access_token =
-        message.FindString(kSignalingAccessToken);
-    std::string* api_access_token = message.FindString(kApiAccessToken);
+    const std::optional<std::string_view> signaling_access_token =
+        message.FindStr(kSignalingAccessToken);
+    const std::optional<std::string_view> api_access_token =
+        message.FindStr(kApiAccessToken);
     if (signaling_access_token && api_access_token) {
       signaling_token_getter_.set_access_token(*signaling_access_token);
       api_token_getter_.set_access_token(*api_access_token);
@@ -411,25 +410,23 @@ void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
     base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  const std::string* signaling_access_token =
-      message.FindString(kSignalingAccessToken);
-  if (!signaling_access_token) {
-    LOG(ERROR) << "Cannot find " << kSignalingAccessToken << " in the "
-               << kUpdateAccessTokensMessage << " message.";
-    SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view signaling_access_token,
+      message.FindStr(kSignalingAccessToken), [&] {
+        LOG(ERROR) << "Cannot find " << kSignalingAccessToken << " in the "
+                   << kUpdateAccessTokensMessage << " message.";
+        SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
+      });
 
-  const std::string* api_access_token = message.FindString(kApiAccessToken);
-  if (!api_access_token) {
-    LOG(ERROR) << "Cannot find " << kApiAccessToken << " in the "
-               << kUpdateAccessTokensMessage << " message.";
-    SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view api_access_token, message.FindStr(kApiAccessToken), [&] {
+        LOG(ERROR) << "Cannot find " << kApiAccessToken << " in the "
+                   << kUpdateAccessTokensMessage << " message.";
+        SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
+      });
 
-  signaling_token_getter_.set_access_token(*signaling_access_token);
-  api_token_getter_.set_access_token(*api_access_token);
+  signaling_token_getter_.set_access_token(signaling_access_token);
+  api_token_getter_.set_access_token(api_access_token);
 
   HOST_LOG << "OAuth access tokens updated";
   SendMessageToClient(std::move(response));
@@ -607,12 +604,12 @@ void It2MeNativeMessagingHost::OnPolicyError() {
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
     const base::DictValue& message) {
-  const std::string* access_token = message.FindString(kAccessToken);
-  if (!access_token) {
-    LOG(ERROR) << kAccessToken << " field not found in request.";
-    return {};
-  }
-  if (access_token->empty()) {
+  ASSIGN_OR_RETURN(
+      std::string_view access_token, message.FindStr(kAccessToken), [] {
+        LOG(ERROR) << kAccessToken << " field not found in request.";
+        return std::string();
+      });
+  if (access_token.empty()) {
     LOG(ERROR) << "Empty token stored in " << kAccessToken << " field";
     return {};
   }
@@ -620,12 +617,12 @@ std::string It2MeNativeMessagingHost::ExtractAccessToken(
   // Log an error if an access token is provided which does not match the
   // expected format. Though this prefix is effectively stable, there are no
   // guarantees it won't change so we shouldn't reject requests based on it.
-  if (!access_token->starts_with("ya29.")) {
+  if (!access_token.starts_with("ya29.")) {
     LOG(ERROR) << "Potentially invalid " << kAccessToken
-               << " value: " << *access_token;
+               << " value: " << access_token;
   }
 
-  return *access_token;
+  return std::string(access_token);
 }
 
 #if BUILDFLAG(IS_WIN)

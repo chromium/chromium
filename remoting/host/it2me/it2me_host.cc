@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -227,7 +228,7 @@ void It2MeHost::Connect(
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
     base::WeakPtr<It2MeHost::Observer> observer,
     CreateDeferredConnectContext create_context,
-    const std::string& username) {
+    std::string_view username) {
   DCHECK(host_context->ui_task_runner()->BelongsToCurrentThread());
 
   host_context_ = std::move(host_context);
@@ -256,8 +257,9 @@ void It2MeHost::Connect(
 
   // Switch to the network thread to start the actual connection.
   host_context_->network_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&It2MeHost::ConnectOnNetworkThread, this,
-                                username, std::move(create_context)));
+      FROM_HERE,
+      base::BindOnce(&It2MeHost::ConnectOnNetworkThread, this,
+                     std::string(username), std::move(create_context)));
 }
 
 void It2MeHost::Disconnect() {
@@ -542,7 +544,7 @@ void It2MeHost::OnPolicyUpdate(base::DictValue policies) {
   if (host_domain_list) {
     std::vector<std::string> host_domain_list_vector;
     for (const auto& value : *host_domain_list) {
-      host_domain_list_vector.push_back(value.GetString());
+      host_domain_list_vector.emplace_back(value.GetStr());
     }
     UpdateHostDomainListPolicy(std::move(host_domain_list_vector));
   }
@@ -552,7 +554,7 @@ void It2MeHost::OnPolicyUpdate(base::DictValue policies) {
   if (client_domain_list) {
     std::vector<std::string> client_domain_list_vector;
     for (const auto& value : *client_domain_list) {
-      client_domain_list_vector.push_back(value.GetString());
+      client_domain_list_vector.emplace_back(value.GetStr());
     }
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
@@ -996,8 +998,8 @@ bool It2MeHost::RemoteSupportConnectionsAllowed(
   if (is_enterprise_session()) {
     switch (chrome_os_enterprise_params_->request_origin) {
       case remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement:
-        if (const std::string* class_management_enabled_value =
-                policies.FindString(policy::key::kClassManagementEnabled)) {
+        if (std::optional<std::string_view> class_management_enabled_value =
+                policies.FindStr(policy::key::kClassManagementEnabled)) {
           return *class_management_enabled_value == kClassManagementStudent ||
                  *class_management_enabled_value == kClassManagementTeacher;
         }

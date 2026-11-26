@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/apple/bridging.h"
@@ -263,13 +264,13 @@ std::optional<base::DictValue> DaemonControllerDelegateMac::GetConfig() {
   }
 
   base::DictValue config;
-  std::string* value = host_config->FindString(kHostIdConfigPath);
-  if (value) {
+  if (const std::optional<std::string_view> value =
+          host_config->FindStr(kHostIdConfigPath)) {
     config.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindString(kServiceAccountConfigPath);
-  if (value) {
+  if (const std::optional<std::string_view> value =
+          host_config->FindStr(kServiceAccountConfigPath)) {
     // Set both keys for compatibility purposes.
     config.Set(kServiceAccountConfigPath, *value);
     config.Set(kDeprecatedXmppLoginConfigPath, *value);

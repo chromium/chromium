@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -20,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -64,18 +66,14 @@ void VerifyId(const base::DictValue& response, int expected_value) {
 void VerifyStringProperty(const base::DictValue& response,
                           const std::string& name,
                           const std::string& expected_value) {
-  const std::string* value = response.FindString(name);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, expected_value);
+  EXPECT_EQ(response.FindStr(name), expected_value);
 }
 
 // Verity the values of the "type" and "id" properties
 void VerifyCommonProperties(const base::DictValue& response,
                             const std::string& type,
                             int id) {
-  const std::string* string_value = response.FindString(kMessageType);
-  ASSERT_TRUE(string_value);
-  EXPECT_EQ(*string_value, type);
+  EXPECT_EQ(response.FindStr(kMessageType), type);
 
   std::optional<int> int_value = response.FindInt(kMessageId);
   ASSERT_TRUE(int_value);
@@ -127,7 +125,7 @@ class MockIt2MeHost : public It2MeHost {
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
                base::WeakPtr<It2MeHost::Observer> observer,
                CreateDeferredConnectContext create_connection_context,
-               const std::string& username) override;
+               std::string_view username) override;
   void Disconnect() override;
 
   OAuthTokenGetter* signaling_token_getter() {
@@ -154,7 +152,7 @@ void MockIt2MeHost::Connect(
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
     base::WeakPtr<It2MeHost::Observer> observer,
     CreateDeferredConnectContext create_connection_context,
-    const std::string& username) {
+    std::string_view username) {
   DCHECK(context->ui_task_runner()->BelongsToCurrentThread());
 
   // Verify that parameters are passed correctly.
@@ -419,8 +417,8 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
     }
 
     // If this is a debug message log, ignore it, otherwise return it.
-    const std::string* type = message->FindString(kMessageType);
-    if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
+    if (message->FindStr(kMessageType) !=
+        LogMessageHandler::kDebugMessageTypeName) {
       return std::move(*message);
     }
   }
@@ -462,51 +460,45 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
     std::optional<base::DictValue> response = ReadMessageFromOutputPipe();
     ASSERT_TRUE(response);
 
-    const std::string* type = response->FindString(kMessageType);
-    ASSERT_TRUE(type);
+    ASSERT_OK_AND_ASSIGN(std::string_view type,
+                         response->FindStr(kMessageType));
 
-    if (*type == kConnectResponse) {
+    if (type == kConnectResponse) {
       EXPECT_FALSE(connect_response_received);
       connect_response_received = true;
       VerifyId(*response, request_id);
-    } else if (*type == kNatPolicyChangedMessage) {
+    } else if (type == kNatPolicyChangedMessage) {
       EXPECT_FALSE(nat_policy_received);
       nat_policy_received = true;
-    } else if (*type == kHostStateChangedMessage) {
-      const std::string* state = response->FindString(kState);
-      ASSERT_TRUE(state);
+    } else if (type == kHostStateChangedMessage) {
+      ASSERT_OK_AND_ASSIGN(std::string_view state, response->FindStr(kState));
 
-      if (*state == It2MeHostStateToString(It2MeHostState::kStarting)) {
+      if (state == It2MeHostStateToString(It2MeHostState::kStarting)) {
         EXPECT_FALSE(starting_received);
         starting_received = true;
-      } else if (*state ==
+      } else if (state ==
                  It2MeHostStateToString(It2MeHostState::kRequestedAccessCode)) {
         EXPECT_FALSE(requestedAccessCode_received);
         requestedAccessCode_received = true;
-      } else if (*state ==
+      } else if (state ==
                  It2MeHostStateToString(It2MeHostState::kReceivedAccessCode)) {
         EXPECT_FALSE(receivedAccessCode_received);
         receivedAccessCode_received = true;
 
-        const std::string* value = response->FindString(kAccessCode);
-        ASSERT_TRUE(value);
-        EXPECT_EQ(*value, kTestAccessCode);
+        EXPECT_EQ(response->FindStr(kAccessCode), kTestAccessCode);
 
         std::optional<int> access_code_lifetime =
             response->FindInt(kAccessCodeLifetime);
         ASSERT_TRUE(access_code_lifetime);
         EXPECT_EQ(*access_code_lifetime, kTestAccessCodeLifetime.InSeconds());
-      } else if (*state ==
-                 It2MeHostStateToString(It2MeHostState::kConnecting)) {
+      } else if (state == It2MeHostStateToString(It2MeHostState::kConnecting)) {
         EXPECT_FALSE(connecting_received);
         connecting_received = true;
-      } else if (*state == It2MeHostStateToString(It2MeHostState::kConnected)) {
+      } else if (state == It2MeHostStateToString(It2MeHostState::kConnected)) {
         EXPECT_FALSE(connected_received);
         connected_received = true;
 
-        const std::string* value = response->FindString(kClient);
-        ASSERT_TRUE(value);
-        EXPECT_EQ(*value, kTestClientUsername);
+        EXPECT_EQ(response->FindStr(kClient), kTestClientUsername);
       } else {
         ADD_FAILURE() << "Unexpected host state: " << state;
       }
@@ -525,22 +517,20 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
     std::optional<base::DictValue> response = ReadMessageFromOutputPipe();
     ASSERT_TRUE(response);
 
-    const std::string* type = response->FindString(kMessageType);
-    ASSERT_TRUE(type);
+    ASSERT_OK_AND_ASSIGN(std::string_view type,
+                         response->FindStr(kMessageType));
 
-    if (*type == kDisconnectResponse) {
+    if (type == kDisconnectResponse) {
       EXPECT_FALSE(disconnect_response_received);
       disconnect_response_received = true;
       VerifyId(*response, request_id);
-    } else if (*type == kHostStateChangedMessage) {
-      const std::string* state = response->FindString(kState);
-      ASSERT_TRUE(state);
-      if (*state == It2MeHostStateToString(It2MeHostState::kDisconnected)) {
+    } else if (type == kHostStateChangedMessage) {
+      ASSERT_OK_AND_ASSIGN(std::string_view state, response->FindStr(kState));
+      if (state == It2MeHostStateToString(It2MeHostState::kDisconnected)) {
         EXPECT_FALSE(disconnected_received);
         disconnected_received = true;
-        const std::string* error_code = response->FindString(kDisconnectReason);
-        ASSERT_TRUE(error_code);
-        EXPECT_EQ(*error_code, ErrorCodeToString(protocol::ErrorCode::OK));
+        EXPECT_EQ(response->FindStr(kDisconnectReason),
+                  ErrorCodeToString(protocol::ErrorCode::OK));
       } else {
         ADD_FAILURE() << "Unexpected host state: " << state;
       }
@@ -553,9 +543,7 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
 void It2MeNativeMessagingHostTest::VerifyPolicyErrorResponse() {
   std::optional<base::DictValue> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
-  const std::string* type = response->FindString(kMessageType);
-  ASSERT_TRUE(type);
-  ASSERT_EQ(*type, kPolicyErrorMessage);
+  ASSERT_EQ(response->FindStr(kMessageType), kPolicyErrorMessage);
 }
 
 void It2MeNativeMessagingHostTest::TestBadRequest(
@@ -673,14 +661,11 @@ TEST_F(It2MeNativeMessagingHostTest, Id) {
 
   std::optional<base::DictValue> response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
-  const std::string* value = response->FindString(kMessageId);
-  EXPECT_FALSE(value);
+  EXPECT_EQ(response->FindStr(kMessageId), std::nullopt);
 
   response = ReadMessageFromOutputPipe();
   ASSERT_TRUE(response);
-  value = response->FindString(kMessageId);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "42");
+  EXPECT_EQ(response->FindStr(kMessageId), "42");
 }
 
 TEST_F(It2MeNativeMessagingHostTest, ConnectMultiple) {

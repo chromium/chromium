@@ -4,6 +4,8 @@
 
 #include "remoting/host/pin_hash.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -12,7 +14,7 @@
 
 namespace remoting {
 
-bool ParsePinHashFromConfig(const std::string& value,
+bool ParsePinHashFromConfig(std::string_view value,
                             const std::string& host_id,
                             std::string* pin_hash_out) {
   auto parts = base::SplitStringOnce(value, ':');
@@ -36,8 +38,7 @@ bool ParsePinHashFromConfig(const std::string& value,
   return false;
 }
 
-std::string MakeHostPinHash(const std::string& host_id,
-                            const std::string& pin) {
+std::string MakeHostPinHash(std::string_view host_id, std::string_view pin) {
   std::string hash = protocol::GetSharedSecretHash(host_id, pin);
   std::string hash_base64 = base::Base64Encode(hash);
   return "hmac:" + hash_base64;

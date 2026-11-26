@@ -9,7 +9,7 @@
 
 namespace remoting {
 
-extern bool IsGoogleEmail(const std::string& email_address);
+extern bool IsGoogleEmail(std::string_view email_address);
 
 }  // namespace remoting
 

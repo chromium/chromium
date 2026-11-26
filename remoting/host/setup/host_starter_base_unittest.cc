@@ -353,25 +353,13 @@ TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
   // Verify the configuration dict has the expected fields populated.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
-  value = config->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestRobotEmail);
-  value = config->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kRefreshToken);
-  value = config->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestDirectoryId);
-  value = config->FindString(kHostNameConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestMachineName);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kServiceAccountConfigPath), kTestRobotEmail);
+  EXPECT_EQ(config->FindStr(kOAuthRefreshTokenConfigPath), kRefreshToken);
+  EXPECT_EQ(config->FindStr(kHostIdConfigPath), kTestDirectoryId);
+  EXPECT_EQ(config->FindStr(kHostNameConfigPath), kTestMachineName);
   // Verify subclass value was applied.
-  value = config->FindString(kTestConfigValuePath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestConfigValue);
+  EXPECT_EQ(config->FindStr(kTestConfigValuePath), kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -397,24 +385,14 @@ TEST_F(HostStarterBaseTest, CorpCodePath) {
   // Verify the configuration dict has the expected fields populated.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
-  value = config->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestRobotEmail);
-  value = config->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kRefreshToken);
-  value = config->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestDirectoryId);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kServiceAccountConfigPath), kTestRobotEmail);
+  EXPECT_EQ(config->FindStr(kOAuthRefreshTokenConfigPath), kRefreshToken);
+  EXPECT_EQ(config->FindStr(kHostIdConfigPath), kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
-  EXPECT_TRUE(config->FindString(kHostNameConfigPath));
+  EXPECT_TRUE(config->FindStr(kHostNameConfigPath));
   // Verify subclass value was applied.
-  value = config->FindString(kTestConfigValuePath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestConfigValue);
+  EXPECT_EQ(config->FindStr(kTestConfigValuePath), kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -441,24 +419,14 @@ TEST_F(HostStarterBaseTest, CloudCodePath) {
   // Verify the configuration dict has the expected fields populated.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
-  value = config->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestRobotEmail);
-  value = config->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kRefreshToken);
-  value = config->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestDirectoryId);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kServiceAccountConfigPath), kTestRobotEmail);
+  EXPECT_EQ(config->FindStr(kOAuthRefreshTokenConfigPath), kRefreshToken);
+  EXPECT_EQ(config->FindStr(kHostIdConfigPath), kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
-  EXPECT_TRUE(config->FindString(kHostNameConfigPath));
+  EXPECT_TRUE(config->FindStr(kHostNameConfigPath));
   // Verify subclass value was applied.
-  value = config->FindString(kTestConfigValuePath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestConfigValue);
+  EXPECT_EQ(config->FindStr(kTestConfigValuePath), kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -485,24 +453,14 @@ TEST_F(HostStarterBaseTest, LegacyCloudCodePath) {
   // Verify the configuration dict has the expected fields populated.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
-  value = config->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestRobotEmail);
-  value = config->FindString(kOAuthRefreshTokenConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kRefreshToken);
-  value = config->FindString(kHostIdConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestDirectoryId);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kServiceAccountConfigPath), kTestRobotEmail);
+  EXPECT_EQ(config->FindStr(kOAuthRefreshTokenConfigPath), kRefreshToken);
+  EXPECT_EQ(config->FindStr(kHostIdConfigPath), kTestDirectoryId);
   // We use the value from GetHostname() if no name is provided.
-  EXPECT_TRUE(config->FindString(kHostNameConfigPath));
+  EXPECT_TRUE(config->FindStr(kHostNameConfigPath));
   // Verify subclass value was applied.
-  value = config->FindString(kTestConfigValuePath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestConfigValue);
+  EXPECT_EQ(config->FindStr(kTestConfigValuePath), kTestConfigValue);
 
   // Verify Stop() was not called.
   EXPECT_FALSE(test_daemon_controller_delegate().stop_called());
@@ -550,9 +508,7 @@ TEST_F(HostStarterBaseTest, CorpFlowWithMismatchedOwnerEmailValue) {
   // placeholder value.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
 }
 
 TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideId) {
@@ -629,9 +585,7 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideOwnerEmail) {
   // Verify the owner email to be written to the config.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kHostOwnerConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestUserEmail);
+  EXPECT_EQ(config->FindStr(kHostOwnerConfigPath), kTestUserEmail);
 }
 
 TEST_F(HostStarterBaseTest,
@@ -653,9 +607,7 @@ TEST_F(HostStarterBaseTest,
   // Verify the expected service account was written to the config.
   auto config = test_daemon_controller_delegate().GetConfig();
   ASSERT_TRUE(config.has_value());
-  const std::string* value = config->FindString(kServiceAccountConfigPath);
-  ASSERT_NE(value, nullptr);
-  EXPECT_EQ(*value, kTestRobotEmail);
+  EXPECT_EQ(config->FindStr(kServiceAccountConfigPath), kTestRobotEmail);
 }
 
 TEST_F(HostStarterBaseTest, NewHostFailsToStart) {

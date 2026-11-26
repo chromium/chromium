@@ -63,11 +63,7 @@ std::string FileHostSettings::GetString(
                "doesn't exist.";
     return default_value;
   }
-  const std::string* string_value = settings_->FindString(key);
-  if (!string_value) {
-    return default_value;
-  }
-  return *string_value;
+  return std::string(settings_->FindStr(key).value_or(default_value));
 }
 
 void FileHostSettings::SetString(const HostSettingKey key,

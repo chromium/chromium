@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -64,7 +65,7 @@ class GaiaOAuthClient::Core
   }
 
   void GetTokensFromAuthCode(const OAuthClientInfo& oauth_client_info,
-                             const std::string& auth_code,
+                             std::string_view auth_code,
                              int max_retries,
                              GaiaOAuthClient::Delegate* delegate);
   void RefreshToken(const OAuthClientInfo& oauth_client_info,
@@ -158,7 +159,7 @@ class GaiaOAuthClient::Core
 
 void GaiaOAuthClient::Core::GetTokensFromAuthCode(
     const OAuthClientInfo& oauth_client_info,
-    const std::string& auth_code,
+    std::string_view auth_code,
     int max_retries,
     GaiaOAuthClient::Delegate* delegate) {
   std::string post_body =
@@ -628,7 +629,7 @@ GaiaOAuthClient::~GaiaOAuthClient() {}
 
 void GaiaOAuthClient::GetTokensFromAuthCode(
     const OAuthClientInfo& oauth_client_info,
-    const std::string& auth_code,
+    std::string_view auth_code,
     int max_retries,
     Delegate* delegate) {
   return core_->GetTokensFromAuthCode(oauth_client_info, auth_code, max_retries,

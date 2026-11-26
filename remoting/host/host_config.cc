@@ -4,6 +4,9 @@
 
 #include "remoting/host/host_config.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/json/json_reader.h"
@@ -27,10 +30,10 @@ std::optional<base::DictValue> HostConfigFromJson(const std::string& json) {
   // if the host was configured using an earlier package version. For that case,
   // we read from xmpp_login and use that value if it is present. Otherwise the
   // config is considered to be malformed.
-  if (!config->FindString(kServiceAccountConfigPath)) {
+  if (!config->FindStr(kServiceAccountConfigPath)) {
     auto xmpp_login = config->Extract(kDeprecatedXmppLoginConfigPath);
     if (xmpp_login.has_value()) {
-      config->Set(kServiceAccountConfigPath, xmpp_login->GetString());
+      config->Set(kServiceAccountConfigPath, xmpp_login->GetStr());
     } else {
       LOG(WARNING) << "Host config is missing values for both: "
                    << kServiceAccountConfigPath << " and "
@@ -45,7 +48,7 @@ std::optional<base::DictValue> HostConfigFromJson(const std::string& json) {
   if (host_owner_email.has_value()) {
     LOG(INFO) << "Replacing the value of `" << kHostOwnerConfigPath << "` with "
               << *host_owner_email;
-    config->Set(kHostOwnerConfigPath, host_owner_email->GetString());
+    config->Set(kHostOwnerConfigPath, host_owner_email->GetStr());
   }
 
   return config;
@@ -74,14 +77,16 @@ bool HostConfigToJsonFile(const base::DictValue& host_config,
 }
 
 bool IsCorpHostConfig(const base::DictValue& host_config) {
-  const std::string* host_owner = host_config.FindString(kHostOwnerConfigPath);
+  std::optional<std::string_view> host_owner =
+      host_config.FindStr(kHostOwnerConfigPath);
   // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
   bool has_google_email = host_owner && IsGoogleEmail(*host_owner);
-  const std::string* host_type_hint = host_config.FindString(kHostTypeHintPath);
-  bool is_cloud_host = host_type_hint && *host_type_hint == kCloudHostTypeHint;
+  std::optional<std::string_view> host_type_hint =
+      host_config.FindStr(kHostTypeHintPath);
+  bool is_cloud_host = host_type_hint == kCloudHostTypeHint;
   // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
   // have a hint set. This is used to allow Googlers to test with Cloud hosts.
-  return (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
+  return host_type_hint == kCorpHostTypeHint ||
          (has_google_email && !is_cloud_host);
 }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,7 +64,7 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
   void OnHelloResponse();
   void OnDisconnectResponse();
 
-  void OnStateError(const std::string& error_state,
+  void OnStateError(std::string_view error_state,
                     const base::DictValue& message);
   void OnStateRemoteConnected(const base::DictValue& message);
   void OnStateRemoteDisconnected();

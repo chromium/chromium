@@ -4,6 +4,9 @@
 
 #include "remoting/host/it2me/reconnect_params.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/uuid.h"
@@ -32,25 +35,24 @@ base::DictValue ReconnectParams::ToDict(const ReconnectParams& params) {
 
 ReconnectParams ReconnectParams::FromDict(const base::DictValue& dict) {
   ReconnectParams params;
-  const std::string* support_id = dict.FindString(kReconnectSupportId);
-  if (support_id) {
+  if (std::optional<std::string_view> support_id =
+          dict.FindStr(kReconnectSupportId)) {
     params.support_id = *support_id;
   }
-  const std::string* host_secret = dict.FindString(kReconnectHostSecret);
-  if (host_secret) {
+  if (std::optional<std::string_view> host_secret =
+          dict.FindStr(kReconnectHostSecret)) {
     params.host_secret = *host_secret;
   }
-  const std::string* private_key = dict.FindString(kReconnectPrivateKey);
-  if (private_key) {
+  if (std::optional<std::string_view> private_key =
+          dict.FindStr(kReconnectPrivateKey)) {
     params.private_key = *private_key;
   }
-  const std::string* ftl_device_id = dict.FindString(kReconnectFtlDeviceId);
-  if (ftl_device_id) {
+  if (std::optional<std::string_view> ftl_device_id =
+          dict.FindStr(kReconnectFtlDeviceId)) {
     params.ftl_device_id = *ftl_device_id;
   }
-  const std::string* client_ftl_address =
-      dict.FindString(kReconnectClientFtlAddress);
-  if (client_ftl_address) {
+  if (std::optional<std::string_view> client_ftl_address =
+          dict.FindStr(kReconnectClientFtlAddress)) {
     params.client_ftl_address = *client_ftl_address;
   }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -18,8 +19,8 @@
 #include "base/values.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
-#include "remoting/base/is_google_email.h"
 #include "remoting/base/fqdn.h"
+#include "remoting/base/is_google_email.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
 
@@ -59,8 +60,8 @@ bool GetUsageStatsConsentFromFile(const base::FilePath& path,
     return true;
   }
   // Note: kHostOwnerConfigPath only exists in the per-user host config file.
-  const std::string* host_owner_ptr = dict.FindString(kHostOwnerConfigPath);
-  if (host_owner_ptr) {
+  if (std::optional<std::string_view> host_owner_ptr =
+          dict.FindStr(kHostOwnerConfigPath)) {
     // Opt into crash reporting for Googlers if not set in the config.
     *allowed = IsGoogleEmail(*host_owner_ptr);
     return true;

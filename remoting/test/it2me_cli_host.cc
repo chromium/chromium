@@ -4,6 +4,9 @@
 
 #include "remoting/test/it2me_cli_host.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -11,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
@@ -94,44 +98,38 @@ void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
     return;
   }
 
-  std::string* type = message_dict->FindString(kMessageType);
-  if (!type) {
-    OnProtocolBroken("Message without type");
-    return;
-  }
+  ASSIGN_OR_RETURN(std::string_view type, message_dict->FindStr(kMessageType),
+                   [this] { OnProtocolBroken("Message without type"); });
 
-  if (*type == kHelloResponse) {
+  if (type == kHelloResponse) {
     OnHelloResponse();
-  } else if (*type == kConnectResponse) {
+  } else if (type == kConnectResponse) {
     // Ok, just ignore.
-  } else if (*type == kDisconnectResponse) {
+  } else if (type == kDisconnectResponse) {
     OnDisconnectResponse();
-  } else if (*type == kHostStateChangedMessage) {
+  } else if (type == kHostStateChangedMessage) {
     // Handle CRD host state changes
-    std::string* state = message_dict->FindString(kState);
-    if (!state) {
-      OnProtocolBroken("No state in message");
-      return;
-    }
+    ASSIGN_OR_RETURN(std::string_view state, message_dict->FindStr(kState),
+                     [this] { OnProtocolBroken("No state in message"); });
 
-    if (*state == kHostStateReceivedAccessCode) {
+    if (state == kHostStateReceivedAccessCode) {
       OnStateReceivedAccessCode(*message_dict);
-    } else if (*state == kHostStateConnected) {
+    } else if (state == kHostStateConnected) {
       OnStateRemoteConnected(*message_dict);
-    } else if (*state == kHostStateDisconnected) {
+    } else if (state == kHostStateDisconnected) {
       OnStateRemoteDisconnected();
-    } else if (*state == kHostStateError || *state == kHostStateDomainError) {
-      OnStateError(*state, *message_dict);
-    } else if (*state == kHostStateStarting ||
-               *state == kHostStateRequestedAccessCode) {
+    } else if (state == kHostStateError || state == kHostStateDomainError) {
+      OnStateError(state, *message_dict);
+    } else if (state == kHostStateStarting ||
+               state == kHostStateRequestedAccessCode) {
       // Just ignore these states.
     } else {
-      LOG(WARNING) << "Unhandled state: " << *state;
+      LOG(WARNING) << "Unhandled state: " << state;
     }
-  } else if (*type == kCRDDebugLog) {
+  } else if (type == kCRDDebugLog) {
     // The It2Me host already prints the log to stdout/stderr.
   } else {
-    LOG(WARNING) << "Unknown message type: " << *type;
+    LOG(WARNING) << "Unknown message type: " << type;
   }
 }
 
@@ -213,23 +211,19 @@ void It2MeCliHost::OnDisconnectResponse() {
   ShutdownHost();
 }
 
-void It2MeCliHost::OnStateError(const std::string& error_state,
+void It2MeCliHost::OnStateError(std::string_view error_state,
                                 const base::DictValue& message) {
   std::string error_message;
   if (error_state == kHostStateDomainError) {
     error_message = "CRD Error : Invalid domain";
   } else {
-    const std::string* error_code = message.FindString(kErrorMessageCode);
-    if (error_code) {
-      error_message = *error_code;
-    } else {
-      error_message = "Unknown CRD Error";
-    }
+    error_message =
+        message.FindStr(kErrorMessageCode).value_or("Unknown CRD Error");
   }
   // Notify callback if command is still running.
   if (command_awaiting_crd_access_code_) {
     command_awaiting_crd_access_code_ = false;
-    LOG(ERROR) << "CRD Error state " + error_state;
+    LOG(ERROR) << "CRD Error state " << error_state;
   }
   // Shut down host, if any
   ShutdownHost();
@@ -237,8 +231,7 @@ void It2MeCliHost::OnStateError(const std::string& error_state,
 
 void It2MeCliHost::OnStateRemoteConnected(const base::DictValue& message) {
   remote_connected_ = true;
-  const std::string* client = message.FindString(kClient);
-  if (client) {
+  if (std::optional<std::string_view> client = message.FindStr(kClient)) {
     HOST_LOG << "Remote connection by " << *client;
   }
 }
@@ -267,7 +260,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::DictValue& message) {
     return;
   }
 
-  const std::string* code = message.FindString(kAccessCode);
+  std::optional<std::string_view> code = message.FindStr(kAccessCode);
   const std::optional<int> code_lifetime = message.FindInt(kAccessCodeLifetime);
   if (!code || !code_lifetime) {
     OnProtocolBroken("Can not obtain access code");

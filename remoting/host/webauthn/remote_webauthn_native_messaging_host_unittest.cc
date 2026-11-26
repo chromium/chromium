@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -50,17 +49,15 @@ base::DictValue CreateRequestMessage(const std::string& message_type,
 void VerifyResponseMessage(const base::DictValue& response,
                            const std::string& request_message_type,
                            int message_id = 1) {
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            request_message_type + "Response");
+  ASSERT_EQ(response.FindStr(kMessageType), request_message_type + "Response");
   ASSERT_EQ(response.FindInt(kMessageId), message_id);
 }
 
 void VerifyFakeErrorResponse(const base::DictValue& response) {
   const base::DictValue* json_error = response.FindDict(kWebAuthnErrorKey);
   ASSERT_NE(json_error, nullptr);
-  ASSERT_EQ(CHECK_DEREF(json_error->FindString(kWebAuthnErrorNameKey)),
-            "NotSupportedError");
-  ASSERT_EQ(CHECK_DEREF(json_error->FindString(kWebAuthnErrorMessageKey)),
+  ASSERT_EQ(json_error->FindStr(kWebAuthnErrorNameKey), "NotSupportedError");
+  ASSERT_EQ(json_error->FindStr(kWebAuthnErrorMessageKey),
             "Test error message");
 }
 
@@ -171,9 +168,8 @@ void RemoteWebAuthnNativeMessagingHostTest::PostMessageFromNativeHost(
   auto message_json =
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(message_json.has_value());
-  std::string* message_type = message_json->GetDict().FindString(kMessageType);
-  if (message_type &&
-      *message_type == LogMessageHandler::kDebugMessageTypeName) {
+  if (message_json->GetDict().FindStr(kMessageType) ==
+      LogMessageHandler::kDebugMessageTypeName) {
     // Ignore debug message logs.
     return;
   }
@@ -290,8 +286,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
   SendMessage(CreateRequestMessage(kIsUvpaaMessageType));
 
   const base::DictValue& response = ReadMessage();
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            kClientDisconnectedMessageType);
+  ASSERT_EQ(response.FindStr(kMessageType), kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,
@@ -309,8 +304,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
   task_environment_.FastForwardBy(base::Minutes(1));
 
   const base::DictValue& response = ReadMessage();
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            kClientDisconnectedMessageType);
+  ASSERT_EQ(response.FindStr(kMessageType), kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, ParallelIsUvpaaRequests) {
@@ -351,7 +345,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_RequestMissingData_Error) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kCreateMessageType);
-  ASSERT_EQ(response.FindString(kCreateResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kCreateResponseDataKey));
   ASSERT_NE(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -364,8 +358,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
 
   const base::DictValue& response = ReadMessage();
 
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            kClientDisconnectedMessageType);
+  ASSERT_EQ(response.FindStr(kMessageType), kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
@@ -380,7 +373,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kCreateMessageType);
-  ASSERT_EQ(response.FindString(kCreateResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kCreateResponseDataKey));
   ASSERT_EQ(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -399,7 +392,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_ErrorResponse) {
 
   VerifyResponseMessage(response, kCreateMessageType);
   VerifyFakeErrorResponse(response);
-  ASSERT_EQ(response.FindString(kCreateResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kCreateResponseDataKey));
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_DataResponse) {
@@ -416,8 +409,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_DataResponse) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kCreateMessageType);
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kCreateResponseDataKey)),
-            "fake response");
+  ASSERT_EQ(response.FindStr(kCreateResponseDataKey), "fake response");
   ASSERT_EQ(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -432,7 +424,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_RequestMissingData_Error) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kGetMessageType);
-  ASSERT_EQ(response.FindString(kGetResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kGetResponseDataKey));
   ASSERT_NE(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -445,8 +437,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
 
   const base::DictValue& response = ReadMessage();
 
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            kClientDisconnectedMessageType);
+  ASSERT_EQ(response.FindStr(kMessageType), kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_EmptyResponse) {
@@ -461,7 +452,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_EmptyResponse) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kGetMessageType);
-  ASSERT_EQ(response.FindString(kGetResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kGetResponseDataKey));
   ASSERT_EQ(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -480,7 +471,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_ErrorResponse) {
 
   VerifyResponseMessage(response, kGetMessageType);
   VerifyFakeErrorResponse(response);
-  ASSERT_EQ(response.FindString(kGetResponseDataKey), nullptr);
+  ASSERT_FALSE(response.FindStr(kGetResponseDataKey));
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_DataResponse) {
@@ -497,8 +488,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_DataResponse) {
   const base::DictValue& response = ReadMessage();
 
   VerifyResponseMessage(response, kGetMessageType);
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kGetResponseDataKey)),
-            "fake response");
+  ASSERT_EQ(response.FindStr(kGetResponseDataKey), "fake response");
   ASSERT_EQ(response.Find(kWebAuthnErrorKey), nullptr);
 }
 
@@ -510,8 +500,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
 
   const base::DictValue& response = ReadMessage();
 
-  ASSERT_EQ(CHECK_DEREF(response.FindString(kMessageType)),
-            kClientDisconnectedMessageType);
+  ASSERT_EQ(response.FindStr(kMessageType), kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Cancel_NonexistentId_Failure) {

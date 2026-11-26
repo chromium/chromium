@@ -5,6 +5,7 @@
 #include "remoting/protocol/ice_config.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/json/json_reader.h"
@@ -72,10 +73,12 @@ IceConfig IceConfig::Parse(const base::DictValue& dictionary) {
   IceConfig ice_config;
 
   // Parse lifetimeDuration field.
-  const std::string* lifetime_str = dictionary.FindString("lifetimeDuration");
+  std::optional<std::string_view> lifetime_str =
+      dictionary.FindStr("lifetimeDuration");
   base::TimeDelta lifetime;
   if (!lifetime_str || !ParseLifetime(*lifetime_str, &lifetime)) {
-    LOG(ERROR) << "Received invalid lifetimeDuration value: " << lifetime_str;
+    LOG(ERROR) << "Received invalid lifetimeDuration value: "
+               << lifetime_str.value_or("");
 
     // If the |lifetimeDuration| field is missing or cannot be parsed then mark
     // the config as expired so it will refreshed for the next session.
@@ -100,17 +103,9 @@ IceConfig IceConfig::Parse(const base::DictValue& dictionary) {
       continue;
     }
 
-    std::string username;
-    const std::string* maybe_username = server_dict->FindString("username");
-    if (maybe_username) {
-      username = *maybe_username;
-    }
+    std::string username(server_dict->FindStr("username").value_or(""));
 
-    std::string password;
-    const std::string* maybe_password = server_dict->FindString("credential");
-    if (maybe_password) {
-      password = *maybe_password;
-    }
+    std::string password(server_dict->FindStr("credential").value_or(""));
 
     // Compute the lowest specified bitrate of all the ICE servers.
     // Ideally the bitrate would be stored per ICE server, but it is not
@@ -124,7 +119,7 @@ IceConfig IceConfig::Parse(const base::DictValue& dictionary) {
     }
 
     for (const auto& url : *urls_list) {
-      const std::string* url_str = url.GetIfString();
+      std::optional<std::string_view> url_str = url.GetIfStr();
       if (!url_str) {
         errors_found = true;
         continue;

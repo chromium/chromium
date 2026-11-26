@@ -36,7 +36,7 @@ class GaiaOAuthClient : public OAuthClient,
   // enqueued and processed after the first one is finished.
   void GetCredentialsFromAuthCode(
       const gaia::OAuthClientInfo& oauth_client_info,
-      const std::string& auth_code,
+      std::string_view auth_code,
       bool need_user_email,
       CompletionCallback on_done) override;
 
@@ -54,7 +54,7 @@ class GaiaOAuthClient : public OAuthClient,
  private:
   struct Request {
     Request(const gaia::OAuthClientInfo& oauth_client_info,
-            const std::string& auth_code,
+            std::string_view auth_code,
             bool need_user_email,
             CompletionCallback on_done);
     Request(Request&& other);

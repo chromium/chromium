@@ -58,9 +58,7 @@ TEST_F(DaemonControllerDelegateWinTest, GetConfigReturnsUnprivilegedConfig) {
 
   auto result = delegate_->GetConfig();
   ASSERT_TRUE(result.has_value());
-  const std::string* host_id = result->FindString(kHostIdConfigPath);
-  ASSERT_TRUE(host_id);
-  EXPECT_EQ(*host_id, "test_host_id");
+  EXPECT_EQ(result->FindStr(kHostIdConfigPath), "test_host_id");
 }
 
 TEST_F(DaemonControllerDelegateWinTest, CheckPermissionReturnsTrue) {
@@ -112,10 +110,7 @@ TEST_F(DaemonControllerDelegateWinTest, UpdateConfigSucceedsAndUpdatesFiles) {
   // Verify the unprivileged config is updated.
   auto unprivileged_result = delegate_->GetConfig();
   ASSERT_TRUE(unprivileged_result.has_value());
-  const std::string* host_id =
-      unprivileged_result->FindString(kHostIdConfigPath);
-  ASSERT_TRUE(host_id);
-  EXPECT_EQ(*host_id, "new_host_id");
+  EXPECT_EQ(unprivileged_result->FindStr(kHostIdConfigPath), "new_host_id");
 }
 
 TEST_F(DaemonControllerDelegateWinTest,

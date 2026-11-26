@@ -100,7 +100,7 @@ class MockDelegate : public HeartbeatSender::Delegate {
   MOCK_METHOD(void, OnFirstHeartbeatSuccessful, (), (override));
   MOCK_METHOD(void,
               OnUpdateHostOwner,
-              (const std::string& host_owner),
+              (std::string_view host_owner),
               (override));
   MOCK_METHOD(void,
               OnUpdateRequireSessionAuthorization,

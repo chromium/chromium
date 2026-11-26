@@ -439,7 +439,7 @@ base::expected<std::optional<base::DictValue>, std::string> ReadHostConfig(
                       ": it can't be read or isn't a JSON dictionary"}));
   }
   // A config without host ID ({}) indicates no host is registered.
-  const std::string* host_id = config->FindString(kHostIdConfigPath);
+  std::optional<std::string_view> host_id = config->FindStr(kHostIdConfigPath);
   if (!host_id || host_id->empty()) {
     return std::nullopt;
   }
@@ -593,8 +593,8 @@ HostTypeMigrator::LoadRegistration(bool multi_process) {
   }
   base::DictValue* config = registration_dict->FindDict(kHostConfigKey);
   base::ListValue* pairings = registration_dict->FindList(kPairingsKey);
-  const std::string* host_id =
-      config ? config->FindString(kHostIdConfigPath) : nullptr;
+  std::optional<std::string_view> host_id =
+      config ? config->FindStr(kHostIdConfigPath) : std::nullopt;
   if (!pairings || !host_id || host_id->empty()) {
     return base::unexpected(
         base::StrCat({"The single-process host config and pairings of ",

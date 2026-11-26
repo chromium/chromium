@@ -48,60 +48,42 @@ using remoting::protocol::SynchronousPairingRegistry;
 using ::testing::Optional;
 
 void VerifyHelloResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "helloResponse");
-
-  value = response.FindString("version");
-  ASSERT_TRUE(value);
+  EXPECT_EQ(response.FindStr("type"), "helloResponse");
 
 // The check below will compile but fail if VERSION isn't defined (STRINGIZE
 // silently converts undefined values).
 #ifndef VERSION
 #error VERSION must be defined
 #endif
-  EXPECT_EQ(*value, STRINGIZE(VERSION));
+  EXPECT_EQ(response.FindStr("version"), STRINGIZE(VERSION));
 }
 
 void VerifyGetHostNameResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getHostNameResponse");
-  value = response.FindString("hostname");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, net::GetHostName());
+  EXPECT_EQ(response.FindStr("type"), "getHostNameResponse");
+  EXPECT_EQ(response.FindStr("hostname"), net::GetHostName());
 }
 
 void VerifyGetPinHashResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getPinHashResponse");
-  value = response.FindString("hash");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, remoting::MakeHostPinHash("my_host", "1234"));
+  EXPECT_EQ(response.FindStr("type"), "getPinHashResponse");
+  EXPECT_EQ(response.FindStr("hash"),
+            remoting::MakeHostPinHash("my_host", "1234"));
 }
 
 void VerifyGenerateKeyPairResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "generateKeyPairResponse");
-  EXPECT_TRUE(response.FindString("privateKey"));
-  EXPECT_TRUE(response.FindString("publicKey"));
+  EXPECT_EQ(response.FindStr("type"), "generateKeyPairResponse");
+  EXPECT_TRUE(response.FindStr("privateKey"));
+  EXPECT_TRUE(response.FindStr("publicKey"));
 }
 
 void VerifyGetDaemonConfigResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getDaemonConfigResponse");
+  EXPECT_EQ(response.FindStr("type"), "getDaemonConfigResponse");
   const base::DictValue* config = response.FindDict("config");
   ASSERT_TRUE(config);
   EXPECT_EQ(*config, base::DictValue());
 }
 
 void VerifyGetUsageStatsConsentResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getUsageStatsConsentResponse");
+  EXPECT_EQ(response.FindStr("type"), "getUsageStatsConsentResponse");
 
   EXPECT_THAT(response.FindBool("supported"), Optional(true));
   EXPECT_THAT(response.FindBool("allowed"), Optional(true));
@@ -109,55 +91,33 @@ void VerifyGetUsageStatsConsentResponse(const base::DictValue& response) {
 }
 
 void VerifyStopDaemonResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "stopDaemonResponse");
-  value = response.FindString("result");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "OK");
+  EXPECT_EQ(response.FindStr("type"), "stopDaemonResponse");
+  EXPECT_EQ(response.FindStr("result"), "OK");
 }
 
 void VerifyGetDaemonStateResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getDaemonStateResponse");
-  value = response.FindString("state");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "STARTED");
+  EXPECT_EQ(response.FindStr("type"), "getDaemonStateResponse");
+  EXPECT_EQ(response.FindStr("state"), "STARTED");
 }
 
 void VerifyUpdateDaemonConfigResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "updateDaemonConfigResponse");
-  value = response.FindString("result");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "OK");
+  EXPECT_EQ(response.FindStr("type"), "updateDaemonConfigResponse");
+  EXPECT_EQ(response.FindStr("result"), "OK");
 }
 
 void VerifyStartDaemonResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "startDaemonResponse");
-  value = response.FindString("result");
-  ASSERT_TRUE(value);
+  EXPECT_EQ(response.FindStr("type"), "startDaemonResponse");
 #if BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(*value, "FAILED");
+  EXPECT_EQ(response.FindStr("result"), "FAILED");
 #else
-  EXPECT_EQ(*value, "OK");
+  EXPECT_EQ(response.FindStr("result"), "OK");
 #endif
 }
 
 void VerifyGetCredentialsFromAuthCodeResponse(const base::DictValue& response) {
-  const std::string* value = response.FindString("type");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "getCredentialsFromAuthCodeResponse");
-  value = response.FindString("userEmail");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "fake_user_email");
-  value = response.FindString("refreshToken");
-  ASSERT_TRUE(value);
-  EXPECT_EQ(*value, "fake_refresh_token");
+  EXPECT_EQ(response.FindStr("type"), "getCredentialsFromAuthCodeResponse");
+  EXPECT_EQ(response.FindStr("userEmail"), "fake_user_email");
+  EXPECT_EQ(response.FindStr("refreshToken"), "fake_refresh_token");
 }
 
 }  // namespace
@@ -455,9 +415,8 @@ Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return std::nullopt;
     }
 
-    const std::string* type = message->FindString("type");
     // If this is a debug message log, ignore it, otherwise return it.
-    if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
+    if (message->FindStr("type") != LogMessageHandler::kDebugMessageTypeName) {
       return std::move(*message);
     }
   }
@@ -596,14 +555,11 @@ TEST_F(Me2MeNativeMessagingHostTest, Id) {
 
   std::optional<base::DictValue> response = ReadMessageFromOutputPipe();
   EXPECT_TRUE(response);
-  std::string* value = response->FindString("id");
-  EXPECT_FALSE(value);
+  EXPECT_EQ(response->FindStr("id"), std::nullopt);
 
   response = ReadMessageFromOutputPipe();
   EXPECT_TRUE(response);
-  value = response->FindString("id");
-  EXPECT_TRUE(value);
-  EXPECT_EQ(*value, "42");
+  EXPECT_EQ(response->FindStr("id"), "42");
 }
 
 // Verify non-Dictionary requests are rejected.

@@ -5,6 +5,7 @@
 #include "remoting/host/session_policies_from_dict.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -29,9 +30,8 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
 #endif
 
   PortRange host_udp_port_range;
-  const std::string* udp_port_range_string =
-      dict.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (udp_port_range_string) {
+  if (std::optional<std::string_view> udp_port_range_string =
+          dict.FindStr(policy::key::kRemoteAccessHostUdpPortRange)) {
     auto parsed_port_range = PortRange::Parse(*udp_port_range_string);
     if (!parsed_port_range) {
       LOG(WARNING) << "Invalid port range: " << *udp_port_range_string;

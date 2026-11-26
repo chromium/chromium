@@ -4,6 +4,9 @@
 
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/json/values_util.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -37,7 +40,7 @@ constexpr char kAudioPlaybackRemoteOnly[] = "remoteOnly";
 constexpr char kAudioPlaybackUnknown[] = "audioPlaybackUnknown";
 
 ChromeOsEnterpriseRequestOrigin ConvertStringToChromeOsEnterpriseRequestOrigin(
-    const std::string& request_origin) {
+    std::string_view request_origin) {
   if (request_origin == kRequestOriginClassManagement) {
     return ChromeOsEnterpriseRequestOrigin::kClassManagement;
   }
@@ -63,15 +66,15 @@ std::string ConvertChromeOsEnterpriseRequestOriginToString(
 }
 
 ChromeOsEnterpriseRequestOrigin GetRequestOriginOrDefault(
-    const std::string* input_request_origin,
+    std::optional<std::string_view> input_request_origin,
     ChromeOsEnterpriseRequestOrigin default_request_origin) {
-  return input_request_origin ? ConvertStringToChromeOsEnterpriseRequestOrigin(
-                                    *input_request_origin)
-                              : default_request_origin;
+  return input_request_origin
+      .transform(&ConvertStringToChromeOsEnterpriseRequestOrigin)
+      .value_or(default_request_origin);
 }
 
 ChromeOsEnterpriseAudioPlayback ConvertStringToChromeOsEnterpriseAudioPlayback(
-    const std::string& audio_playback) {
+    std::string_view audio_playback) {
   if (audio_playback == kAudioPlaybackLocalOnly) {
     return ChromeOsEnterpriseAudioPlayback::kLocalOnly;
   }
@@ -88,11 +91,11 @@ ChromeOsEnterpriseAudioPlayback ConvertStringToChromeOsEnterpriseAudioPlayback(
 }
 
 ChromeOsEnterpriseAudioPlayback GetAudioPlaybackOrDefault(
-    const std::string* input_audio_playback,
+    std::optional<std::string_view> input_audio_playback,
     ChromeOsEnterpriseAudioPlayback default_audio_playback) {
-  return input_audio_playback ? ConvertStringToChromeOsEnterpriseAudioPlayback(
-                                    *input_audio_playback)
-                              : default_audio_playback;
+  return input_audio_playback
+      .transform(&ConvertStringToChromeOsEnterpriseAudioPlayback)
+      .value_or(default_audio_playback);
 }
 }  // namespace
 
@@ -151,12 +154,13 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
   params.connection_dialog_required =
       dict.FindBool(kConnectionDialogRequired).value_or(false);
   params.request_origin = GetRequestOriginOrDefault(
-      dict.FindString(kChromeOsEnterpriseRequestOrigin),
+      dict.FindStr(kChromeOsEnterpriseRequestOrigin),
       /* default_request_origin= */ ChromeOsEnterpriseRequestOrigin::
           kEnterpriseAdmin);
   params.audio_playback = GetAudioPlaybackOrDefault(
-      dict.FindString(kChromeOsEnterpriseAudioPlayback),
-      /* default_audio_playback= */ ChromeOsEnterpriseAudioPlayback::kLocalOnly);
+      dict.FindStr(kChromeOsEnterpriseAudioPlayback),
+      /* default_audio_playback= */ ChromeOsEnterpriseAudioPlayback::
+          kLocalOnly);
   params.connection_auto_accept_timeout =
       base::ValueToTimeDelta(dict.Find(kConnectionAutoAcceptTimeout))
           .value_or(base::TimeDelta());

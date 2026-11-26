@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -157,13 +158,13 @@ DaemonControllerDelegateLinuxSingleProcess::GetConfig() {
   }
 
   base::DictValue result;
-  std::string* value = host_config->FindString(kHostIdConfigPath);
-  if (value) {
+  if (const std::optional<std::string_view> value =
+          host_config->FindStr(kHostIdConfigPath)) {
     result.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindString(kServiceAccountConfigPath);
-  if (value) {
+  if (const std::optional<std::string_view> value =
+          host_config->FindStr(kServiceAccountConfigPath)) {
     // Set both keys for compatibility purposes.
     result.Set(kServiceAccountConfigPath, *value);
     result.Set(kDeprecatedXmppLoginConfigPath, *value);

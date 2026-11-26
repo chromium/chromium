@@ -4,6 +4,8 @@
 
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -11,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
@@ -160,31 +163,27 @@ void It2MeNativeMessageHostAsh::HandleDisconnectResponse() {
 void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string* new_state = message.FindString(kState);
-  if (!new_state) {
+  ASSIGN_OR_RETURN(std::string_view new_state, message.FindStr(kState), [this] {
     LOG(ERROR) << "Missing |" << kState << "| value in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
-    return;
-  }
+  });
 
-  if (*new_state == kHostStateStarting) {
+  if (new_state == kHostStateStarting) {
     remote_->OnHostStateStarting();
-  } else if (*new_state == kHostStateDisconnected) {
-    const std::string* disconnect_reason =
-        message.FindString(kDisconnectReason);
+  } else if (new_state == kHostStateDisconnected) {
     remote_->OnHostStateDisconnected(
-        disconnect_reason ? *disconnect_reason
-                          : ErrorCodeToString(protocol::ErrorCode::OK));
+        std::string(message.FindStr(kDisconnectReason)
+                        .value_or(ErrorCodeToString(protocol::ErrorCode::OK))));
     std::move(host_state_disconnected_callback_).Run();
-  } else if (*new_state == kHostStateRequestedAccessCode) {
+  } else if (new_state == kHostStateRequestedAccessCode) {
     remote_->OnHostStateRequestedAccessCode();
-  } else if (*new_state == kHostStateReceivedAccessCode) {
-    const std::string* access_code = message.FindString(kAccessCode);
-    if (!access_code) {
-      LOG(ERROR) << "Missing |" << kAccessCode << "| value in message.";
-      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
-      return;
-    }
+  } else if (new_state == kHostStateReceivedAccessCode) {
+    ASSIGN_OR_RETURN(
+        std::string_view access_code, message.FindStr(kAccessCode), [this] {
+          LOG(ERROR) << "Missing |" << kAccessCode << "| value in message.";
+          CloseChannel(
+              ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
+        });
     std::optional<int> access_code_lifetime =
         message.FindInt(kAccessCodeLifetime);
     if (!access_code_lifetime) {
@@ -193,17 +192,17 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     remote_->OnHostStateReceivedAccessCode(
-        *access_code, base::Seconds(*access_code_lifetime));
-  } else if (*new_state == kHostStateConnecting) {
+        std::string(access_code), base::Seconds(*access_code_lifetime));
+  } else if (new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
-  } else if (*new_state == kHostStateConnected) {
-    const std::string* remote_username = message.FindString(kClient);
-    if (!remote_username) {
-      LOG(ERROR) << "Missing |" << kClient << "| value in message.";
-      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
-      return;
-    }
-    remote_->OnHostStateConnected(*remote_username);
+  } else if (new_state == kHostStateConnected) {
+    ASSIGN_OR_RETURN(
+        std::string_view remote_username, message.FindStr(kClient), [this] {
+          LOG(ERROR) << "Missing |" << kClient << "| value in message.";
+          CloseChannel(
+              ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
+        });
+    remote_->OnHostStateConnected(std::string(remote_username));
 
     std::optional<ReconnectParams> reconnect_params;
     const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
@@ -213,27 +212,27 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     }
     std::move(host_state_connected_callback_).Run(std::move(reconnect_params));
 
-  } else if (*new_state == kHostStateError) {
-    const std::string* error_code_string =
-        message.FindString(kErrorMessageCode);
-    if (!error_code_string) {
-      LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
-      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
-      return;
-    }
+  } else if (new_state == kHostStateError) {
+    ASSIGN_OR_RETURN(std::string_view error_code_string,
+                     message.FindStr(kErrorMessageCode), [this] {
+                       LOG(ERROR) << "Missing |" << kErrorMessageCode
+                                  << "| value in message.";
+                       CloseChannel(ErrorCodeToString(
+                           protocol::ErrorCode::INVALID_ARGUMENT));
+                     });
 
     protocol::ErrorCode error_code;
-    if (!ParseErrorCode(*error_code_string, &error_code)) {
+    if (!ParseErrorCode(error_code_string, &error_code)) {
       LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
-                 << *error_code_string << "in message.";
+                 << error_code_string << "in message.";
       CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
     remote_->OnHostStateError(static_cast<int64_t>(error_code));
-  } else if (*new_state == kHostStateDomainError) {
+  } else if (new_state == kHostStateDomainError) {
     remote_->OnInvalidDomainError();
   } else {
-    NOTREACHED() << "Unknown state: " << *new_state;
+    NOTREACHED() << "Unknown state: " << new_state;
   }
 }
 
@@ -272,17 +271,17 @@ void It2MeNativeMessageHostAsh::HandlePolicyErrorMessage(
 
 void It2MeNativeMessageHostAsh::HandleErrorMessage(base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string* error_code_string = message.FindString(kErrorMessageCode);
-  if (!error_code_string) {
-    LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view error_code_string, message.FindStr(kErrorMessageCode),
+      [this] {
+        LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
+        CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
+      });
 
   protocol::ErrorCode error_code;
-  if (!ParseErrorCode(*error_code_string, &error_code)) {
+  if (!ParseErrorCode(error_code_string, &error_code)) {
     LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
-               << *error_code_string << "in message.";
+               << error_code_string << "in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }

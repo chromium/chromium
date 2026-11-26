@@ -13,8 +13,8 @@
 
 namespace remoting::protocol {
 
-std::string GetSharedSecretHash(const std::string& tag,
-                                const std::string& shared_secret) {
+std::string GetSharedSecretHash(std::string_view tag,
+                                std::string_view shared_secret) {
   // Note that the use of these parameters is backward from what you might
   // expect - a more usual construction would be to use the existing shared
   // secret as the key and the tag as the message, since here we're using the

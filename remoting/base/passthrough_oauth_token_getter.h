@@ -5,6 +5,8 @@
 #ifndef REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 #define REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -26,12 +28,12 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
   void InvalidateCache() override;
   base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
-  void set_username(const std::string& username) {
+  void set_username(std::string_view username) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     token_info_.set_user_email(username);
   }
 
-  void set_access_token(const std::string& access_token) {
+  void set_access_token(std::string_view access_token) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     token_info_.set_access_token(access_token);
   }

@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
   // and a valid access token. After the access token expires, RefreshToken()
   // can be used to fetch a fresh access token. See |max_retries| docs above.
   void GetTokensFromAuthCode(const OAuthClientInfo& oauth_client_info,
-                             const std::string& auth_code,
+                             std::string_view auth_code,
                              int max_retries,
                              Delegate* delegate);
 

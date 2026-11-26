@@ -5,7 +5,9 @@
 #include "remoting/host/setup/cloud_host_starter.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected_macros.h"
 #include "remoting/base/cloud_service_client.h"
 #include "remoting/base/compute_engine_service_client.h"
 #include "remoting/base/http_status.h"
@@ -145,14 +148,14 @@ void CloudHostStarter::OnApiAccessTokenRetrieved(const HttpStatus& status) {
     HandleError("Token response was not valid JSON.", Result::OAUTH_ERROR);
     return;
   }
-  auto* access_token = token_payload->GetDict().FindString("access_token");
-  if (!access_token) {
-    HandleError("Token response did not include an access token field.",
-                Result::OAUTH_ERROR);
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::string_view access_token,
+      token_payload->GetDict().FindStr("access_token"), [this] {
+        HandleError("Token response did not include an access token field.",
+                    Result::OAUTH_ERROR);
+      });
 
-  RegisterNewHost(*access_token);
+  RegisterNewHost(std::string(access_token));
 }
 
 void CloudHostStarter::RegisterNewHost(

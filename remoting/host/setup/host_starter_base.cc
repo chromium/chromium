@@ -5,7 +5,9 @@
 #include "remoting/host/setup/host_starter_base.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -66,8 +68,8 @@ void HostStarterBase::OnExistingConfigLoaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (config.has_value()) {
-    std::string* host_id = config->FindString(kHostIdConfigPath);
-    if (host_id) {
+    if (const std::optional<std::string_view> host_id =
+            config->FindStr(kHostIdConfigPath)) {
       existing_host_id_.emplace(*host_id);
       // Formatted to make start_host output more readable.
       LOG(INFO) << "\n  Found existing host: `" << *existing_host_id_ << "`.\n"

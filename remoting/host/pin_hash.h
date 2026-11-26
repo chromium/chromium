@@ -6,18 +6,19 @@
 #define REMOTING_HOST_PIN_HASH_H_
 
 #include <string>
+#include <string_view>
 
 namespace remoting {
 
 // Creates a Me2Me shared-secret hash, consisting of the hash method, and the
 // hashed host ID and PIN.
-std::string MakeHostPinHash(const std::string& host_id, const std::string& pin);
+std::string MakeHostPinHash(std::string_view host_id, std::string_view pin);
 
 // Parse string representation of a shared secret hash. The value can be either
 // "plain:<pin_in_base64>" or "hmac:<pin_hmac_in_base64>". In the first case the
 // returned value is automatically hashed. False is returned if |value| is in
 // invalid format.
-bool ParsePinHashFromConfig(const std::string& value,
+bool ParsePinHashFromConfig(std::string_view value,
                             const std::string& host_id,
                             std::string* pin_hash_out);
 

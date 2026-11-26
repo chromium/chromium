@@ -105,7 +105,7 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
           base::StringPrintf("Field 'sessionUser' in '%s' must be a string.",
                              path.value().c_str())));
     }
-    session_user = session_user_value->GetString();
+    session_user = session_user_value->GetStr();
     if (session_user.empty() || !IsValidUsername(session_user)) {
       return base::unexpected(Loggable(
           FROM_HERE,

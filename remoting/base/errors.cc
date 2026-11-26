@@ -4,6 +4,8 @@
 
 #include "remoting/base/errors.h"
 
+#include <string_view>
+
 #include "remoting/base/name_value_map.h"
 #include "remoting/proto/error_code.pb.h"
 
@@ -55,7 +57,7 @@ const char* ErrorCodeToString(ErrorCode error) {
   return ValueToName(kErrorCodeNames, error);
 }
 
-bool ParseErrorCode(const std::string& name, ErrorCode* result) {
+bool ParseErrorCode(std::string_view name, ErrorCode* result) {
   return NameToValue(kErrorCodeNames, name, result);
 }
 

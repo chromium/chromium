@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_info.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
@@ -342,24 +344,24 @@ bool WriteConfig(const base::FilePath& config_dir,
   }
 
   // Ensure the required fields are present.
-  if (!config.FindString(kHostIdConfigPath)) {
+  if (!config.FindStr(kHostIdConfigPath)) {
     LOG(ERROR) << "Config is missing " << kHostIdConfigPath;
     return false;
   }
-  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
-  if (!host_owner) {
-    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
-    return false;
-  }
-  if (!config.FindString(kHostSecretHashConfigPath) &&
-      !IsGoogleEmail(*host_owner)) {
+  ASSIGN_OR_RETURN(std::string_view host_owner,
+                   config.FindStr(kHostOwnerConfigPath), [] {
+                     LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
+                     return false;
+                   });
+  if (!config.FindStr(kHostSecretHashConfigPath) &&
+      !IsGoogleEmail(host_owner)) {
     // PIN authentication is not needed for Google hosts so we only want to
     // fail if a secret_hash value isn't present for a non-Google host.
     LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
     return false;
   }
-  if (!config.FindString(kServiceAccountConfigPath) &&
-      !config.FindString(kDeprecatedXmppLoginConfigPath)) {
+  if (!config.FindStr(kServiceAccountConfigPath) &&
+      !config.FindStr(kDeprecatedXmppLoginConfigPath)) {
     LOG(ERROR) << "Config is missing " << kServiceAccountConfigPath << " and "
                << kDeprecatedXmppLoginConfigPath;
     return false;

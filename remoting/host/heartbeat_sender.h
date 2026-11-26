@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -58,7 +59,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     virtual void OnFirstHeartbeatSuccessful() = 0;
 
     // Invoked when the host owner changes.
-    virtual void OnUpdateHostOwner(const std::string& host_owner) = 0;
+    virtual void OnUpdateHostOwner(std::string_view host_owner) = 0;
 
     // Invoked when |require_session_authorization| is set in HeartbeatResponse.
     virtual void OnUpdateRequireSessionAuthorization(bool require) = 0;

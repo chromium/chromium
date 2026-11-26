@@ -18,7 +18,7 @@ class MockOAuthClient : public OAuthClient {
 
   void GetCredentialsFromAuthCode(
       const gaia::OAuthClientInfo& oauth_client_info,
-      const std::string& auth_code,
+      std::string_view auth_code,
       bool need_user_email,
       CompletionCallback on_done) override;
 

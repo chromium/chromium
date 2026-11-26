@@ -14,7 +14,7 @@ MockOAuthClient::~MockOAuthClient() = default;
 
 void MockOAuthClient::GetCredentialsFromAuthCode(
     const gaia::OAuthClientInfo& oauth_client_info,
-    const std::string& auth_code,
+    std::string_view auth_code,
     bool need_user_email,
     CompletionCallback on_done) {
   std::move(on_done).Run(need_user_email ? user_email_ : "", refresh_token_);
