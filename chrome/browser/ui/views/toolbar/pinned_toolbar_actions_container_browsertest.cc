@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -1050,6 +1051,33 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   pinned_actions()->ShowActionEphemerallyInToolbar(kActionPrint, false);
   CheckIsPoppedOut(kActionPrint, false);
   CheckIsPinned(kActionPrint, false);
+}
+
+// Regression test: an action pinned through the model while the UI is hidden
+// for fullscreen must still be tracked as pinned by the container, so that it
+// can be unpinned from the toolbar button's context menu afterwards.
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerWebUIDisabledBrowserTest,
+                       ActionPinnedWhileUIHiddenForFullscreenCanBeUnpinned) {
+  UpdateActionItem(actions::kActionCut);
+  pinned_actions()->ShowActionEphemerallyInToolbar(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+
+  // Pin the action while the UI is hidden for fullscreen.
+  auto* const fullscreen_controller =
+      BrowserWindowFullscreenController::From(browser());
+  ASSERT_TRUE(fullscreen_controller);
+  fullscreen_controller->set_should_hide_ui_for_fullscreen_for_testing(true);
+  model()->UpdatePinnedState(actions::kActionCut, true);
+  fullscreen_controller->set_should_hide_ui_for_fullscreen_for_testing(false);
+
+  EXPECT_TRUE(model()->Contains(actions::kActionCut));
+  CheckIsPinned(actions::kActionCut, true);
+
+  // Unpinning the way the context menu does should update the model.
+  pinned_actions()->UpdatePinnedStateAndAnnounce(actions::kActionCut, false);
+  EXPECT_FALSE(model()->Contains(actions::kActionCut));
+  CheckIsPinned(actions::kActionCut, false);
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerWebUIDisabledBrowserTest,

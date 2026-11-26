@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_divider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/actions/action_id.h"
@@ -526,13 +526,16 @@ gfx::Size PinnedToolbarActionsContainer::GetDefaultButtonSize() const {
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     actions::ActionId id) {
-  // Pinned buttons shouldn't appear in web apps or browsers without a tabstrip
-  // (like popups).
+  // Pinning is only supported in normal browsers, so pinned buttons shouldn't
+  // appear in web apps or other browser types (like popups). Check the browser
+  // type rather than whether the tab strip is currently supported, since the
+  // latter depends on fullscreen state: an action pinned while the UI is hidden
+  // for fullscreen would be skipped here and stay out of sync with the model
+  // after fullscreen exits.
   if (auto* browser = browser_view_->browser();
       browser &&
       (web_app::AppBrowserController::From(browser) ||
-       !WindowFeatureController::From(browser)->SupportsWindowFeature(
-           WindowFeatureController::WindowFeature::kFeatureTabStrip))) {
+       browser->GetType() != BrowserWindowInterface::TYPE_NORMAL)) {
     return;
   }
 
