@@ -1031,23 +1031,28 @@ void Annotator::SendRequestBatchToServer() {
 std::vector<mojom::AnnotationPtr> Annotator::ExtractMantaAnnotations(
     const base::ListValue& results_list) const {
   // Candidate selection and scoring overview:
-  // 1. Each response entry is bucketed into one of four categories:
-  //    PRIMARY_CAPTION (full conceptual sentence), SECONDARY_CAPTION (noun-
-  //    phrase appendix), LABEL (single-word object/entity tag), or OCR
-  //    (extracted text). Within each bucket, only the entry with the highest
-  //    non-negative score is retained (clamping scores > 1.0 to 1.0 for
-  //    averaging, histograms, and Mojo output, and requiring OCR entries to
-  //    meet `min_ocr_confidence_`).
-  // 2. For the image description annotation, PRIMARY_CAPTION takes priority
-  //    over LABEL even if a LABEL has a higher raw confidence score:
+  // 1. Each response entry is bucketed into one of five categories: ICON (UI
+  //    icon enum identifier), PRIMARY_CAPTION (full conceptual sentence),
+  //    SECONDARY_CAPTION (noun-phrase appendix), LABEL (single-word
+  //    object/entity tag), or OCR (extracted text). Within each bucket, only
+  //    the entry with the highest non-negative score is retained (first entry
+  //    wins ties; scores > 1.0 are clamped to 1.0 for averaging, histograms,
+  //    and Mojo output; OCR entries must meet `min_ocr_confidence_`).
+  // 2. If an ICON candidate is present, it takes precedence over captions and
+  //    labels (suppressing PRIMARY_CAPTION, SECONDARY_CAPTION, and LABEL, and
+  //    skipping `ReportDescAnnotation`, matching legacy icon handling).
+  // 3. Otherwise, PRIMARY_CAPTION takes priority over LABEL even if a LABEL
+  //    has a higher raw confidence score:
   //    - If both PRIMARY_CAPTION and SECONDARY_CAPTION are present, their texts
   //      are joined with a newline and their clamped scores are averaged.
   //    - If only PRIMARY_CAPTION is present, it is used directly.
   //    - If no PRIMARY_CAPTION is present, any orphan SECONDARY_CAPTION is
   //      ignored and the highest-scoring LABEL is used as a fallback.
-  // 3. The highest-scoring OCR annotation (if any) is emitted alongside the
-  //    description annotation, and UMA metrics are reported once for each
-  //    emitted annotation.
+  // 4. The highest-scoring OCR annotation (if any) is emitted after any icon
+  //    or description annotation, and UMA metrics are reported once for each
+  //    emitted description or OCR annotation.
+  const base::DictValue* best_icon = nullptr;
+  std::optional<double> best_icon_score;
   const base::DictValue* best_primary_caption = nullptr;
   std::optional<double> best_primary_caption_score;
   const base::DictValue* best_secondary_caption = nullptr;
@@ -1080,6 +1085,12 @@ std::vector<mojom::AnnotationPtr> Annotator::ExtractMantaAnnotations(
         best_ocr_score = score;
         best_ocr = result_dict;
       }
+    } else if (*type == manta::anchovy::kTypeIcon) {
+      // Keep the highest-scoring icon candidate (first entry wins ties).
+      if (!best_icon_score.has_value() || *score > *best_icon_score) {
+        best_icon_score = score;
+        best_icon = result_dict;
+      }
     } else if (*type == manta::anchovy::kTypePrimaryCaption ||
                *type == manta::anchovy::kTypeCaption) {
       if (!best_primary_caption_score.has_value() ||
@@ -1102,7 +1113,19 @@ std::vector<mojom::AnnotationPtr> Annotator::ExtractMantaAnnotations(
   }
 
   std::vector<mojom::AnnotationPtr> annotations;
-  if (best_primary_caption) {
+  if (best_icon) {
+    // Suppress captions and labels (matching legacy icon precedence), and
+    // intentionally emit the icon before OCR for consistency with
+    // caption-before-OCR (legacy `UnpackJsonResponse` appended the icon after
+    // OCR). Construct the icon directly rather than adding `kIcon` to
+    // legacy-shared `kAnnotationTypes`, and skip `ReportDescAnnotation`, which
+    // only supports OCR, Label, and Caption.
+    const std::string* icon_text = best_icon->FindString("text");
+    CHECK(icon_text);
+    annotations.push_back(
+        mojom::Annotation::New(mojom::AnnotationType::kIcon,
+                               std::min(*best_icon_score, 1.0), *icon_text));
+  } else if (best_primary_caption) {
     if (best_secondary_caption) {
       // Join the primary conceptual caption and secondary noun-phrase appendix
       // with a newline and average their clamped scores, matching the legacy
@@ -1135,7 +1158,7 @@ std::vector<mojom::AnnotationPtr> Annotator::ExtractMantaAnnotations(
   }
 
   if (best_ocr) {
-    // Emit the highest-scoring OCR annotation alongside any description.
+    // Emit the highest-scoring OCR annotation after any icon or description.
     mojom::AnnotationPtr annotation =
         CreateAnnotationFromMantaResponse(*best_ocr);
     ReportOcrAnnotation(annotation->score, false);

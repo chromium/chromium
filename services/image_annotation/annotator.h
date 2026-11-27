@@ -243,8 +243,8 @@ class Annotator : public mojom::Annotator {
   void OnServerResponseReceived(const std::set<RequestKey>& request_keys,
                                 UrlLoaderList::iterator server_request_it,
                                 std::optional<std::string> json_response);
-  // Selects and joins the highest-scoring description and OCR annotations from
-  // a single image's Manta response candidate list.
+  // Selects and joins the highest-scoring icon, description, and OCR
+  // annotations from a single image's Manta response candidate list.
   std::vector<mojom::AnnotationPtr> ExtractMantaAnnotations(
       const base::ListValue& results_list) const;
 
