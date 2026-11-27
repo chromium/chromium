@@ -349,18 +349,27 @@ class DepsBuilder(object):
       subdir_path_norm = posixpath.join(dir_path_norm, subdir)
       self.directory_rules[subdir_path_norm] = None
 
-  def GetAllRulesAndFiles(self, dir_name=None):
-    """Yields (rules, filenames) for each repository directory with DEPS rules.
+  def _ScanDir(self, current_dir):
+    """Returns the sorted paths of the files and of the subdirectories of
+    |current_dir|, as a (files, subdirectories) tuple.
 
-    This walks the directory tree while staying in the repository. Specify
-    |dir_name| to walk just one directory and its children; omit |dir_name| to
-    walk the entire repository.
-
-    Yields:
-      Two-element (rules, filenames) tuples. |rules| is a rules.Rules object
-      for a directory, and |filenames| is a list of the absolute local paths
-      of all files in that directory.
+    os.scandir() already reports whether an entry is a directory, which avoids
+    a stat() call per entry.
     """
+    file_names = []
+    sub_dirs = []
+    with os.scandir(current_dir) as it:
+      for entry in it:
+        if entry.is_dir():
+          sub_dirs.append(entry.path)
+        else:
+          file_names.append(entry.path)
+    file_names.sort()
+    sub_dirs.sort()
+    return file_names, sub_dirs
+
+  def _EnsureGitSourceDirectories(self):
+    """Lists the git-tracked directories of the checkout on first use."""
     if self.is_git and self._git_source_directories is None:
       self._git_source_directories = _GitSourceDirectories(self.base_directory)
       base_prefix = NormalizePath(self.base_directory).rstrip('/') + '/'
@@ -376,6 +385,20 @@ class DepsBuilder(object):
         ):
           self._git_source_directories.add(parent_norm)
           parent_norm = posixpath.dirname(parent_norm)
+
+  def GetAllRulesAndFiles(self, dir_name=None):
+    """Yields (rules, filenames) for each repository directory with DEPS rules.
+
+    This walks the directory tree while staying in the repository. Specify
+    |dir_name| to walk just one directory and its children; omit |dir_name| to
+    walk the entire repository.
+
+    Yields:
+      Two-element (rules, filenames) tuples. |rules| is a rules.Rules object
+      for a directory, and |filenames| is a list of the absolute local paths
+      of all files in that directory.
+    """
+    self._EnsureGitSourceDirectories()
 
     # Collect a list of all files and directories to check.
     if dir_name and not os.path.isabs(dir_name):
@@ -402,15 +425,7 @@ class DepsBuilder(object):
       if not current_dir_rules:
         continue  # Handle the 'skip_child_includes' case.
 
-      current_dir_contents = sorted(os.listdir(current_dir))
-      file_names = []
-      sub_dirs = []
-      for file_name in current_dir_contents:
-        full_name = os.path.join(current_dir, file_name)
-        if os.path.isdir(full_name):
-          sub_dirs.append(full_name)
-        else:
-          file_names.append(full_name)
+      file_names, sub_dirs = self._ScanDir(current_dir)
       dirs_to_check.extend(reversed(sub_dirs))
 
       yield (current_dir_rules, file_names)
