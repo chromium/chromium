@@ -19,11 +19,14 @@ struct LeadingFloat {
   DISALLOW_NEW();
 
  public:
-  LeadingFloat(const PositionedFloat& positioned_float,
+  LeadingFloat(wtf_size_t item_index,
+               const PositionedFloat& positioned_float,
                const InlineBreakToken* parallel_flow_break_token)
-      : positioned_float(positioned_float),
+      : item_index(item_index),
+        positioned_float(positioned_float),
         parallel_flow_break_token(parallel_flow_break_token) {}
 
+  wtf_size_t item_index;
   PositionedFloat positioned_float;
   Member<const InlineBreakToken> parallel_flow_break_token;
 
@@ -41,9 +44,11 @@ class CORE_EXPORT LeadingFloats {
  public:
   ~LeadingFloats() { floats_.clear(); }
 
-  void Add(const PositionedFloat& positioned_float,
+  void Add(wtf_size_t item_index,
+           const PositionedFloat& positioned_float,
            const InlineBreakToken* parallel_flow_break_token) {
-    floats_.emplace_back(positioned_float, parallel_flow_break_token);
+    floats_.emplace_back(item_index, positioned_float,
+                         parallel_flow_break_token);
   }
   void SetHandledIndex(wtf_size_t idx) { handled_index_ = idx; }
 

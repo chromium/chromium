@@ -3813,12 +3813,19 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   }
 
   // Make sure we populate the positioned_float inside the |item_result|.
-  if (current_.item_index <= leading_floats_.HandledIndex() &&
+  const bool use_leading_float_item_index =
+      RuntimeEnabledFeatures::RubySkipLeadingFloatsEnabled();
+  if ((use_leading_float_item_index
+           ? index_before_float.item_index < leading_floats_.HandledIndex()
+           : current_.item_index <= leading_floats_.HandledIndex()) &&
       !leading_floats_.Empty()) {
     DCHECK_LT(leading_floats_index_, leading_floats_.Count());
 
     const LeadingFloat& leading_float =
         leading_floats_.At(leading_floats_index_++);
+    if (use_leading_float_item_index) {
+      CHECK_EQ(leading_float.item_index, index_before_float.item_index);
+    }
     item_result->positioned_float = leading_float.positioned_float;
     if (leading_float.parallel_flow_break_token) {
       line_info->PropagateParallelFlowBreakToken(
@@ -3928,9 +3935,13 @@ void LineBreaker::RewindFloats(unsigned new_end,
       // Adjust `leading_floats_index_` if this is a leading float. See
       // `HandleFloat` and `PositionLeadingFloats`.
       if (item_index < leading_floats_.HandledIndex()) {
+        const bool use_leading_float_item_index =
+            RuntimeEnabledFeatures::RubySkipLeadingFloatsEnabled();
         for (unsigned i = 0; i < leading_floats_.Count(); ++i) {
-          if (leading_floats_.At(i).positioned_float.layout_result ==
-              item_result.positioned_float->layout_result) {
+          if (use_leading_float_item_index
+                  ? leading_floats_.At(i).item_index == item_index
+                  : leading_floats_.At(i).positioned_float.layout_result ==
+                        item_result.positioned_float->layout_result) {
             leading_floats_index_ = i;
             // Need to restore `exclusion_space_` even if leading floats don't
             // modify `exclusion_space_`, because there may be following
