@@ -299,6 +299,7 @@ std::string_view SuggestionHidingReasonToDismissalTypeForHats(
     case SuggestionHidingReason::kOverlappingWithTouchToFillSurface:
     case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
     case SuggestionHidingReason::kOverlappingWithPictureInPictureWindow:
+    case SuggestionHidingReason::kOverlappingWithHtmlFormPopup:
     case SuggestionHidingReason::kContextMenuOpened:
       return "Overlapped by another UI surface or menu";
     case SuggestionHidingReason::kAcceptSuggestion:

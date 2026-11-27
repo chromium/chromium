@@ -662,8 +662,13 @@ PopupBaseView::GetOverlappingPromptHidingReason(
     if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds, web_contents)) {
       return SuggestionHidingReason::kOverlappingWithAnotherPrompt;
     }
-    if (BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents)) {
-      return SuggestionHidingReason::kOverlappingWithAnotherPrompt;
+    const bool blocked_by_html_form_popup =
+        base::FeatureList::IsEnabled(
+            features::kAutofillPopupDisallowSimultaneousHtmlFormPopup)
+            ? HasOpenHtmlFormPopup(web_contents)
+            : BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents);
+    if (blocked_by_html_form_popup) {
+      return SuggestionHidingReason::kOverlappingWithHtmlFormPopup;
     }
   }
 

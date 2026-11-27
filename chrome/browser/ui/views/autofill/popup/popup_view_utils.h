@@ -64,8 +64,15 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
 
 // Returns whether any HTML-based form popup (like a color picker) from the same
 // `web_contents` overlaps `popup_bounds`.
+// TODO(crbug.com/575312381): Remove once
+// `kAutofillPopupDisallowSimultaneousHtmlFormPopup` is launched.
 bool BoundsOverlapWithHtmlFormPopup(const gfx::Rect& popup_bounds,
                                     content::WebContents* web_contents);
+
+// Returns whether there is any open renderer-owned HTML form popup (e.g.,
+// date/color picker or <select> menu) in `web_contents`'s outermost
+// `WebContents` tree. Returns false if `web_contents` is null.
+bool HasOpenHtmlFormPopup(content::WebContents* web_contents);
 
 namespace internal {
 // To test the overlap logic without requiring a full browser environment,

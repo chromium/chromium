@@ -126,6 +126,15 @@ bool BoundsOverlapWithView(const gfx::Rect& screen_bounds,
          view->GetWidget()->GetWindowBoundsInScreen().Intersects(screen_bounds);
 }
 
+bool HasOpenHtmlFormPopupInTree(content::WebContents* web_contents) {
+  return std::ranges::any_of(web_contents->GetPopupWidgets(),
+                             [](content::RenderWidgetHostView* view) {
+                               return view->IsShowing();
+                             }) ||
+         std::ranges::any_of(web_contents->GetInnerWebContents(),
+                             &HasOpenHtmlFormPopupInTree);
+}
+
 }  // namespace
 
 namespace internal {
@@ -158,6 +167,18 @@ bool BoundsOverlapWithHtmlFormPopup(const gfx::Rect& popup_bounds,
                      });
   return internal::BoundsOverlapWithHtmlFormPopup(popup_bounds,
                                                   widget_properties);
+}
+
+bool HasOpenHtmlFormPopup(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  // Checking `web_contents`'s outermost tree is sufficient: Autofill popups
+  // require focus in their own tab, and on Aura other `WebContents` (e.g.,
+  // split view or side panels) cannot keep or open HTML form popups without
+  // focus. On macOS, Autofill popups already stack above renderer popups.
+  return HasOpenHtmlFormPopupInTree(web_contents->GetOutermostWebContents());
 }
 
 void CalculatePopupYAndHeight(int popup_preferred_height,
