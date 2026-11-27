@@ -308,6 +308,22 @@ TEST_F(MenuRunnerTest, MenuItemViewDoesNotShowMnemonics) {
   EXPECT_FALSE(menu_item_view()->show_mnemonics());
 }
 
+// Menus opened from the keyboard (e.g. a context menu opened with Shift+F10 or
+// the Menu key) show mnemonics.
+TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonicsWhenOpenedFromKeyboard) {
+  if (!MenuSupportsMnemonics()) {
+    return;
+  }
+
+  InitMenuRunner(MenuRunner::HAS_MNEMONICS | MenuRunner::CONTEXT_MENU);
+
+  menu_runner()->RunMenuAt(owner(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  EXPECT_TRUE(menu_item_view()->show_mnemonics());
+}
+
 TEST_F(MenuRunnerTest, PrefixSelect) {
   if (!MenuConfig::instance().all_menus_use_prefix_selection) {
     return;

@@ -82,7 +82,8 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   ~MenuRunnerImpl() override;
 
   // Returns true if mnemonics should be shown in the menu.
-  bool ShouldShowMnemonics(int32_t run_types);
+  bool ShouldShowMnemonics(int32_t run_types,
+                           ui::mojom::MenuSourceType source_type);
 
   // Delegate owned by `this`, see TakeOwnershipOfDelegate(). Declared before
   // `menu_` so that it outlives `menu_`.

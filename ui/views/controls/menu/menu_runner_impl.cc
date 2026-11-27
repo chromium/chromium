@@ -199,8 +199,12 @@ void MenuRunnerImpl::RunMenuAt(
       (run_types & MenuRunner::USE_ASH_SYS_UI_LAYOUT) != 0);
   controller_ = controller->AsWeakPtr();
   menu_->SetController(controller_.get());
-  menu_->PrepareForRun(has_mnemonics,
-                       !for_drop_ && ShouldShowMnemonics(run_types));
+  if (source_type == ui::mojom::MenuSourceType::kNone &&
+      (run_types & MenuRunner::INVOKED_FROM_KEYBOARD)) {
+    source_type = ui::mojom::MenuSourceType::kKeyboard;
+  }
+  menu_->PrepareForRun(
+      has_mnemonics, !for_drop_ && ShouldShowMnemonics(run_types, source_type));
   if (show_menu_host_duration_histogram.has_value() &&
       !show_menu_host_duration_histogram.value().empty()) {
     controller->SetShowMenuHostDurationHistogram(
@@ -212,11 +216,6 @@ void MenuRunnerImpl::RunMenuAt(
     menu_type = MenuController::MenuType::kMenuItemContextMenu;
   } else if ((run_types & MenuRunner::CONTEXT_MENU) != 0) {
     menu_type = MenuController::MenuType::kContextMenu;
-  }
-
-  if (source_type == ui::mojom::MenuSourceType::kNone &&
-      (run_types & MenuRunner::INVOKED_FROM_KEYBOARD)) {
-    source_type = ui::mojom::MenuSourceType::kKeyboard;
   }
 
   controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
@@ -302,8 +301,13 @@ MenuRunnerImpl::~MenuRunnerImpl() {
   }
 }
 
-bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
+bool MenuRunnerImpl::ShouldShowMnemonics(
+    int32_t run_types,
+    ui::mojom::MenuSourceType source_type) {
   bool show_mnemonics = run_types & MenuRunner::SHOULD_SHOW_MNEMONICS;
+  // Show mnemonics if the menu was opened from the keyboard (e.g. Shift+F10 or
+  // the Menu key for a context menu).
+  show_mnemonics |= source_type == ui::mojom::MenuSourceType::kKeyboard;
   // Show mnemonics if the button has focus or alt is pressed.
 #if BUILDFLAG(IS_WIN)
   show_mnemonics |= ui::win::IsAltPressed();
