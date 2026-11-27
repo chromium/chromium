@@ -79,7 +79,9 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest,
 
   observation.Observe(&autofill_client());
   CreateAndActivateAutofillDriver();
-  CreateAndActivateAutofillDriver();
+  CreateAutofillDriver();
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
 
   EXPECT_CALL(observer,
               OnCreditCardAccessManagerDestroyed(
