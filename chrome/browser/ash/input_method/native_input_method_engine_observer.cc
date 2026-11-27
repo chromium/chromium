@@ -806,14 +806,6 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     editor_mediator_->OnActivateIme(engine_id);
   }
 
-  if (HasXkbPrefix(engine_id) &&
-      ShouldHandleWithoutExtension(use_ime_service_, engine_id) &&
-      !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
-      !IsPredictiveWritingEnabled(prefs_, engine_id)) {
-    DisconnectFromImeService();
-    return;
-  }
-
   if (IsFirstPartyVietnameseEngine(engine_id)) {
     ConnectToImeService(engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
@@ -830,7 +822,13 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   }
 
   if (ShouldHandleWithoutExtension(use_ime_service_, engine_id)) {
-    ConnectToImeService(engine_id);
+    if (HasXkbPrefix(engine_id) &&
+        !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
+        !IsPredictiveWritingEnabled(prefs_, engine_id)) {
+      DisconnectFromImeService();
+    } else {
+      ConnectToImeService(engine_id);
+    }
     return;
   }
 
