@@ -69,9 +69,10 @@ bool IsFirstPartyVietnameseEngine(std::string_view engine_id) {
 }
 
 bool IsDirectXkbEngineWithoutXkbPrefix(std::string_view engine_id) {
-  // TODO(b/565986383): Add `vkd_th_tis` guarded by "direct-XKB Thai TIS" flag.
   // TODO(b/565990195): Add `vkd_th` guarded by "direct-XKB Thai Kedmanee" flag.
-  return false;
+  return engine_id == "vkd_th_tis" &&
+         base::FeatureList::IsEnabled(
+             features::kUseDirectXkbLayoutForThaiTisInputMethod);
 }
 
 bool IsRuleBasedEngine(std::string_view engine_id) {

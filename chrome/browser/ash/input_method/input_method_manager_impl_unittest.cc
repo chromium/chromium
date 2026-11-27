@@ -11,6 +11,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ime_controller.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -22,8 +23,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/mock_candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/ash/input_method/test_ime_controller.h"
@@ -1777,6 +1780,46 @@ TEST_F(InputMethodManagerImplTest, ValidatePositionalShortcutLayout) {
   EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->GetCurrentKeyboardLayoutName());
   EXPECT_TRUE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
+}
+
+TEST_F(InputMethodManagerImplTest, RecordInputMethodUsageThaiTisCategory) {
+  constexpr int kInputMethodCategoryM17n = 5;
+  const std::string cros_1p_thai_tis_id =
+      extension_ime_util::GetComponentInputMethodID(
+          "jkghodnilhceideoidjikpgommlajknk", "vkd_th_tis");
+  const std::string oss_m17n_thai_tis_id =
+      extension_ime_util::GetComponentInputMethodID(
+          "jhffeifommiaekmbkkjlpmilogcfdohp", "vkd_th_tis");
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kUseDirectXkbLayoutForThaiTisInputMethod);
+    base::HistogramTester histogram_tester;
+    manager_->RecordInputMethodUsage(cros_1p_thai_tis_id);
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryM17n, 1);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kUseDirectXkbLayoutForThaiTisInputMethod);
+    base::HistogramTester histogram_tester;
+    manager_->RecordInputMethodUsage(cros_1p_thai_tis_id);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    constexpr int kInputMethodCategoryXkb = 1;
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryXkb, 1);
+#else
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryM17n, 1);
+#endif
+
+    base::HistogramTester oss_histogram_tester;
+    manager_->RecordInputMethodUsage(oss_m17n_thai_tis_id);
+    oss_histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                            kInputMethodCategoryM17n, 1);
+  }
 }
 
 }  // namespace input_method

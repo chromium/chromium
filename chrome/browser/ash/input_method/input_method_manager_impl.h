@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -297,6 +298,8 @@ class InputMethodManagerImpl : public InputMethodManager,
 
   // Record input method usage histograms.
   void RecordInputMethodUsage(const std::string& input_method_id);
+  FRIEND_TEST_ALL_PREFIXES(InputMethodManagerImplTest,
+                           RecordInputMethodUsageThaiTisCategory);
 
   // Notifies the current input method or the list of enabled input method IDs
   // changed.

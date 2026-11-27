@@ -36,6 +36,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
@@ -97,7 +98,15 @@ InputMethodCategory GetInputMethodCategory(const std::string& input_method_id) {
   const std::string component_id =
       extension_ime_util::GetComponentIDByInputMethodID(input_method_id);
   InputMethodCategory category = INPUT_METHOD_CATEGORY_UNKNOWN;
-  if (base::StartsWith(component_id, "xkb:", base::CompareCase::SENSITIVE)) {
+  if (base::StartsWith(component_id, "xkb:", base::CompareCase::SENSITIVE)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      || (input_method_id ==
+              extension_ime_util::GetComponentInputMethodID(
+                  extension_ime_util::kXkbExtensionId, "vkd_th_tis") &&
+          base::FeatureList::IsEnabled(
+              features::kUseDirectXkbLayoutForThaiTisInputMethod))
+#endif
+  ) {
     category = INPUT_METHOD_CATEGORY_XKB;
   } else if (base::StartsWith(component_id, "zh-",
                               base::CompareCase::SENSITIVE)) {

@@ -61,6 +61,7 @@ using OnFocusCallback = ime::mojom::InputMethod::OnFocusCallback;
 constexpr char kEngineIdUs[] = "xkb:us::eng";
 constexpr char kEngineIdEs[] = "xkb:es::spa";
 constexpr char kEngineIdPinyin[] = "zh-t-i0-pinyin";
+constexpr char kEngineIdThaiTis[] = "vkd_th_tis";
 
 // This is a local copy of the JapaneseStartupActions used privately by
 // NativeInputMethodObserver.
@@ -284,6 +285,10 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/DisabledFeatures());
+  }
+
+  void SetVirtualKeyboardEnabled(bool enabled) {
+    keyboard_controller_client_test_helper_->SetKeyboardEnabled(enabled);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -982,6 +987,73 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
       {ui::EventType::kKeyReleased, ui::VKEY_HELP, ui::EF_NONE},
       base::DoNothing());
   engine.FlushForTesting();
+}
+
+class MockInputMethodEngineObserver : public StubInputMethodEngineObserver {
+ public:
+  MOCK_METHOD(void, OnActivate, (const std::string& engine_id), (override));
+  MOCK_METHOD(void,
+              OnKeyEvent,
+              (const std::string& engine_id,
+               const ui::KeyEvent& event,
+               TextInputMethod::KeyEventDoneCallback callback),
+              (override));
+};
+
+TEST_F(NativeInputMethodEngineTest,
+       ThaiTisLaunchesRuleBasedEngineWhenDirectXkbFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kUseDirectXkbLayoutForThaiTisInputMethod);
+
+  TestingProfile testing_profile;
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager(&mock_input_method);
+  auto observer =
+      std::make_unique<testing::StrictMock<MockInputMethodEngineObserver>>();
+  EXPECT_CALL(*observer, OnActivate(kEngineIdThaiTis));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::move(observer), /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdThaiTis);
+  engine.FlushForTesting();
+
+  EXPECT_TRUE(engine.IsConnectedForTesting());
+}
+
+TEST_F(NativeInputMethodEngineTest,
+       DirectXkbThaiTisStaysDormantUntilVirtualKeyboardEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kUseDirectXkbLayoutForThaiTisInputMethod);
+
+  TestingProfile testing_profile;
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager(&mock_input_method);
+  auto observer =
+      std::make_unique<testing::StrictMock<MockInputMethodEngineObserver>>();
+  auto* observer_ptr = observer.get();
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::move(observer), /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdThaiTis);
+  engine.FlushForTesting();
+  EXPECT_FALSE(engine.IsConnectedForTesting());
+
+  ui::ime::KeyEventHandledState handled_state =
+      ui::ime::KeyEventHandledState::kHandledByIME;
+  engine.ProcessKeyEvent(
+      {ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE},
+      base::BindOnce([](ui::ime::KeyEventHandledState* out,
+                        ui::ime::KeyEventHandledState state) { *out = state; },
+                     &handled_state));
+  EXPECT_EQ(handled_state, ui::ime::KeyEventHandledState::kNotHandled);
+
+  EXPECT_CALL(*observer_ptr, OnActivate(kEngineIdThaiTis));
+  SetVirtualKeyboardEnabled(true);
+  engine.FlushForTesting();
+  EXPECT_FALSE(engine.IsConnectedForTesting());
 }
 
 class NativeInputMethodEngineWithRenderViewHostTest

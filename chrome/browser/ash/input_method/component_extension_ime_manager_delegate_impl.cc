@@ -295,6 +295,18 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   } else {
     out->layout = "us";
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(b/587215253): Serialise this override back to in-memory parsed JSON,
+  // so it's also included in the result of chrome.runtime.getManifest() API.
+  if (*engine_id == "vkd_th_tis" &&
+      base::FeatureList::IsEnabled(
+          features::kUseDirectXkbLayoutForThaiTisInputMethod)) {
+    // TODO(b/590780820): Configure this directly in CrOS 1P manifest
+    // (chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json)
+    // once the feature flag has been enabled-by-default then dismantled.
+    out->layout = "th";
+  }
+#endif
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
