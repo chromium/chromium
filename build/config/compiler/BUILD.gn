@@ -1411,6 +1411,7 @@ config("compiler_codegen") {
   configs = []
   cflags = []
   ldflags = []
+  rustflags = []
 
   if (current_cpu == "arm64" && !is_win && is_clang) {
     # Disable outlining everywhere on arm64 except Win. For more information see
@@ -1427,6 +1428,41 @@ config("compiler_codegen") {
   }
 
   asmflags = cflags
+
+  if (is_desktop_android && current_cpu == "arm64") {
+    # Android Desktop arm64 devices guarantee at least Armv8.2-A with LSE,
+    # LRCPC, DotProd, and FP16. Pass these as Clang -target-feature flags
+    # rather than -march= so per-target -march= overrides (e.g. crc32c, libyuv)
+    # do not drop baseline features, and place them after asmflags so
+    # -Xclang flags are not passed to the assembler.
+    if (is_clang) {
+      cflags += [
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+v8.2a",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+lse",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+rcpc",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+dotprod",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+fullfp16",
+      ]
+    }
+    rustflags += [
+      "-Ctarget-feature=+crc,+lse,+rdm,+rcpc,+dotprod,+fp16,-outline-atomics",
+    ]
+  }
 }
 
 # This provides options that make the build deterministic, so that the same
