@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.transit.browser_controls;
 
-import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Facility;
@@ -74,7 +74,7 @@ public class BrowserControlsFacility<HostStationT extends WebPageStation>
     @Override
     public void declareExtraElements() {
         Supplier<@Nullable ChromeTabbedActivity> activitySupplier =
-                assertNonNull(mHostStation.getActivityElement());
+                assumeNonNull(mHostStation.getActivityElement());
         if (mExpectedConstraints != null) {
             declareEnterCondition(
                     new BrowserControlsStateCondition<>(
