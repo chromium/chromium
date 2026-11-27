@@ -31,7 +31,7 @@ gfx::RectF TransformToRootCoordinates(content::RenderFrameHost& source_rfh,
   content::RenderFrameHost* rfh = &source_rfh;
   content::RenderWidgetHostView* view = rfh->GetView();
   if (!view) {
-    return r;
+    return r.IsFinite() ? r : gfx::RectF();
   }
   r = transform_to_root(*view, r);
 
@@ -48,12 +48,24 @@ gfx::RectF TransformToRootCoordinates(content::RenderFrameHost& source_rfh,
     }
     gfx::RectF bounds =
         transform_to_root(*view, gfx::RectF(view->GetViewBounds().size()));
+    if (!bounds.IsFinite()) {
+      // This view cannot constrain anything; an ancestor will.
+      continue;
+    }
+    // Coordinate transforms use renderer-influenced state (e.g. the device
+    // scale factor a parent frame reports for its child). Non-finite rects
+    // must not reach the clamping below: gfx::RectF::InclusiveIntersect() and
+    // gfx::RectF::ClosestPoint() let NaN through.
+    if (!r.IsFinite()) {
+      r = gfx::RectF(bounds.origin(), gfx::SizeF());
+      continue;
+    }
     gfx::PointF origin = r.origin();
     if (!r.InclusiveIntersect(bounds)) {
       r = gfx::RectF(bounds.ClosestPoint(origin), gfx::SizeF());
     }
   }
-  return r;
+  return r.IsFinite() ? r : gfx::RectF();
 }
 
 }  // namespace autofill
