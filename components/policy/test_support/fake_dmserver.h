@@ -151,7 +151,8 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer,
   // Starts the EmbeddedPolicyTestServer on a different thread other than the
   // fake_dmserver_main thread, note that the EmbeddedPolicyTestServer will
   // shut down on its own when the destructor is called.
-  // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
+  // On ChromeOS, starts the gRPC server on the same thread as the
+  // fake_dmserver_main thread.
   // Starts the FakeFcmServer; an FCM port conflict logs a warning and starts
   // without FCM. Returns true if the HTTP server starts, and false otherwise.
   // If `port` or `fcm_port` is 0, the server listens on a random port. If
@@ -262,7 +263,8 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer,
   // Resets the gRPC server and shuts down the fake_dmserver_main.
   void OnShutdownGrpcServerDone(base::OnceClosure);
 
-  // Triggers Shutting down the fake_dmserver_main and the grpc server.
+  // Triggers shutting down the fake_dmserver_main. On ChromeOS, this stops the
+  // gRPC server first.
   void TriggerShutdown();
 
   const base::FilePath policy_blob_path_;

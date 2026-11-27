@@ -75,6 +75,9 @@ Example response:
 Queues a remote command for execution. The server sends an FCM push
 notification to connected clients immediately after queuing the command.
 
+On desktop, this endpoint is the only way to send remote commands. The gRPC
+`RemoteCommandsService` (`--grpc-unix-socket-uri`) exists only on ChromeOS.
+
 Request body fields:
 * `scope`: (String) Target scope. Must be `"browser"` or `"profile"`.
 * `command_type`: (Integer) Any valid `RemoteCommand.Type` enum value from

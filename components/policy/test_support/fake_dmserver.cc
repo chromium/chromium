@@ -101,6 +101,8 @@ constexpr int kDefaultPort = 6112;
 // ChromeOS does not connect to the FCM server of fake_dmserver.
 constexpr std::optional<int> kDefaultFcmPort =
     BUILDFLAG(IS_CHROMEOS) ? std::nullopt : std::optional<int>(6113);
+// The gRPC remote commands service exists only on ChromeOS.
+constexpr bool kHasGrpcServer = BUILDFLAG(IS_CHROMEOS);
 
 constexpr char kHelpSwitch[] = "help";
 constexpr char kHelpSwitchShort[] = "h";
@@ -818,7 +820,7 @@ Options:
   --policy-blob-path=<path>    Alias for --policy-path.
   --client-state-path=<path>   Path to client state JSON file (default: same dir
                                as --policy-path).
-  --grpc-unix-socket-uri=<uri> Unix domain socket for gRPC.
+  --grpc-unix-socket-uri=<uri> Unix domain socket for gRPC (ChromeOS only).
   --log-path=<path>            File path to write logs to.
   --startup-pipe=<fd>          Pipe to write server URL to.
   --min-log-level=<level>      Minimum log level (int).
@@ -877,6 +879,10 @@ ParseFlagsResult ParseFlags(const base::CommandLine& command_line,
   }
 
   if (command_line.HasSwitch(kGrpcUnixSocketUriSwitch)) {
+    if (!kHasGrpcServer) {
+      LOG(ERROR) << "--grpc-unix-socket-uri is available only on ChromeOS.";
+      return ParseFlagsResult::kError;
+    }
     config.grpc_unix_socket_uri =
         command_line.GetSwitchValueASCII(kGrpcUnixSocketUriSwitch);
   }
@@ -1023,12 +1029,16 @@ bool FakeDMServer::StartFakeServer(int port, std::optional<int> fcm_port) {
   LOG(INFO) << "Server started running on URL: "
             << EmbeddedPolicyTestServer::GetServiceURL();
   policy_invalidator_.Start(fcm_port);
+#if BUILDFLAG(IS_CHROMEOS)
   if (grpc_unix_socket_uri_.empty()) {
     LOG(INFO) << "grpc_unix_socket_uri is empty the grpc server won't start";
     return true;
   }
   grpc_server_ = RemoteCommandsGrpcServer::Start(grpc_unix_socket_uri_,
                                                  remote_commands_state());
+#else
+  CHECK(grpc_unix_socket_uri_.empty());
+#endif
   return true;
 }
 

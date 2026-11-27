@@ -98,6 +98,10 @@ Optional arguments:
 - `--client-state-path=...` to tell fake_dmserver where to load/save its
   internal state. Defaults to `state.json` in the same directory as your
   `policy-blob-path`.
+- `--grpc-unix-socket-uri=...` to start the gRPC `RemoteCommandsService` on a
+  Unix domain socket. A client can then send remote commands. This argument
+  and the gRPC service exist only on ChromeOS. On desktop, use the
+  [REST admin API](rest_api.md#remote-commands) to send remote commands.
 
 ### Step 4: Configure Chrome
 Write a configuration file to tell Chrome to use your local server.

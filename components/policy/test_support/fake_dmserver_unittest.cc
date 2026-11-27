@@ -1636,6 +1636,18 @@ TEST_F(FakeDMServerTest, ParseFlagsUnknownSwitch) {
   }
 }
 
+// Tests that the gRPC socket switch is accepted only on ChromeOS.
+TEST_F(FakeDMServerTest, ParseFlagsGrpcUnixSocketUri) {
+  FakeServerConfig config;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII("grpc-unix-socket-uri", "unix:/tmp/grpc.sock");
+  EXPECT_EQ(ParseFlags(command_line, config), BUILDFLAG(IS_CHROMEOS)
+                                                  ? ParseFlagsResult::kSuccess
+                                                  : ParseFlagsResult::kError);
+  EXPECT_EQ(config.grpc_unix_socket_uri,
+            BUILDFLAG(IS_CHROMEOS) ? "unix:/tmp/grpc.sock" : "");
+}
+
 TEST_F(FakeDMServerTest, ParseFlagsFcmPort) {
   {
     FakeServerConfig config;
