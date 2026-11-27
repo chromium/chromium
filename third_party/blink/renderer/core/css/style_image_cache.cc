@@ -31,6 +31,13 @@ ImageResourceContent* StyleImageCache::CacheImageContent(
     FetchParameters& params) {
   CHECK(!params.Url().IsNull());
 
+  // Bypass StyleImageCache for requests with SRI metadata so ResourceFetcher
+  // validates integrity and handles digest-matching reuse without overwriting
+  // an existing cached entry in fetched_image_map_.
+  if (!params.GetIntegrityMetadata().empty()) {
+    return ImageResourceContent::Fetch(params, fetcher);
+  }
+
   const KURL url_without_fragment =
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   auto& image_content =

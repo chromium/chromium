@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Request URL Modifiers: integrity() negative test for an image already loaded without integrity()</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-integrity-modifier">
+<link rel="match" href="/css/reference/ref-filled-green-100px-square.xht">
+<meta name="assert" content="An image already loaded without integrity metadata should not be used for a later url with a non-matching integrity() modifier.">
+<style>
+#container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+#container > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+}
+.without-integrity {
+  background-image: url("/css/support/1x1-red.png");
+}
+.with-integrity {
+  background-color: green;
+  background-image: url("/css/support/1x1-red.png" integrity("sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="));
+}
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="container">
+  <div class="without-integrity"></div>
+</div>
+<script>
+window.addEventListener("load", async () => {
+  const el = document.createElement("div");
+  el.className = "with-integrity";
+  document.getElementById("container").appendChild(el);
+  // Force style and layout so the integrity-checked image fetch starts now.
+  el.offsetHeight;
+  // Wait for a network round-trip and two animation frames so the second
+  // request has time to settle before taking the reftest screenshot.
+  await fetch("/css/support/1x1-red.png", { cache: "no-store" });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove("reftest-wait");
+    });
+  });
+});
+</script>
+</html>

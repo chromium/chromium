@@ -312,4 +312,58 @@ TEST_F(StyleImageCacheWithLoadingTest, DifferingCORSModesImageURLs) {
   EXPECT_NE(rule1_image, rule2_image);
 }
 
+TEST_F(StyleImageCacheWithLoadingTest, IntegrityMetadataBypassesCache) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .plain { background-image: url(http://test.com/background_image.png); }
+      .bad { background-image: url("http://test.com/background_image.png" integrity("sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")); }
+      .good1 { background-image: url("http://test.com/background_image.png" integrity("sha256-5EAqnjfseQ08xWbuV6aD4HwSG6pQuEY9J0W1p6hsWyQ=")); }
+      .good2 { background-image: url("http://test.com/background_image.png" integrity("sha256-5EAqnjfseQ08xWbuV6aD4HwSG6pQuEY9J0W1p6hsWyQ=")); }
+      .other { background-image: url("http://test.com/background_image.png" integrity("sha256-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=")); }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  const auto image_url =
+      url_test_helpers::ToKURL("http://test.com/background_image.png");
+  url_test_helpers::RegisterMockedURLLoad(
+      image_url, test::CoreTestDataPath(kTestResourceFilename),
+      kTestResourceMimeType);
+
+  Element* target = GetElementById("target");
+  auto load_with_class = [&](const char* class_name) -> ImageResourceContent* {
+    target->setAttribute(html_names::kClassAttr, AtomicString(class_name));
+    UpdateAllLifecyclePhasesForTest();
+    url_test_helpers::ServeAsynchronousRequests();
+    return target->ComputedStyleRef()
+        .BackgroundLayers()
+        .GetImage()
+        ->CachedImage();
+  };
+
+  ImageResourceContent* plain = load_with_class("plain");
+  ASSERT_TRUE(plain);
+  EXPECT_FALSE(plain->ErrorOccurred());
+
+  // Non-matching integrity after a plain load must fail and must not overwrite
+  // the valid entry in fetched_image_map_.
+  ImageResourceContent* bad = load_with_class("bad");
+  EXPECT_NE(plain, bad);
+  EXPECT_TRUE(bad->ErrorOccurred());
+  EXPECT_EQ(plain, FetchedImageMap().at(image_url.GetString()));
+
+  // Matching integrity loads and is reused for an identical digest, while a
+  // different digest is not reused and fails.
+  ImageResourceContent* good1 = load_with_class("good1");
+  EXPECT_NE(plain, good1);
+  EXPECT_FALSE(good1->ErrorOccurred());
+
+  ImageResourceContent* good2 = load_with_class("good2");
+  EXPECT_EQ(good1, good2);
+  EXPECT_FALSE(good2->ErrorOccurred());
+
+  ImageResourceContent* other = load_with_class("other");
+  EXPECT_NE(good1, other);
+  EXPECT_TRUE(other->ErrorOccurred());
+}
+
 }  // namespace blink
