@@ -192,7 +192,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.ClearBrowsingData.Advanced.TimePeriod"
     enum="SettingsClearBrowsingDataTimePeriod" expires_after="2027-04-11">
-  <owner>rainhard@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
