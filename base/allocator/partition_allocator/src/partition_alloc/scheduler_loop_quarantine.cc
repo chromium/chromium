@@ -571,6 +571,11 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
       target_size_in_bytes == 0 &&
       slots_.size() >= BatchFreeQueue<quarantine_target>::kQueueSize;
 
+  // Releasing a slot typically writes to its first bytes, which may have left
+  // the CPU cache during the task. A full purge releases all slots, so it
+  // prefetches the slot that it releases this many iterations later.
+  constexpr size_t kPrefetchDistance = 16;
+
   auto dequarantine_loop =
       [&]<ThreadCache::CacheFillPolicy fill_policy, typename QueueType>(
           QueueType& queue) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_) {
@@ -588,6 +593,10 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
           // the release runs that re-enters `PurgeInternal()` finds neither
           // this entry nor its bytes.
           slots_.pop_back();
+          if (target_size_in_bytes == 0 && slots_.size() >= kPrefetchDistance) {
+            PA_PREFETCH_FOR_WRITE(slots_[slots_.size() - kPrefetchDistance]
+                                      .slot_start.ToObject());
+          }
           ++freed_count;
           PA_DCHECK(slot_size > 0);
           freed_size_in_bytes += slot_size;
