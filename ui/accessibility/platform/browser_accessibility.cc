@@ -529,8 +529,10 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
     AXOffscreenResult* offscreen_result) const {
   // TODO(nektar): Move to `AXNode` as soon as hypertext computation is fully
   // migrated to that class.
-  CHECK_GE(start, 0, base::NotFatalUntil::M163);
-  CHECK_GE(len, 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/589676574): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(start, 0);
+  DCHECK_GE(len, 0);
 
   // Atomic text fields such as textarea have a text container node inside them
   // that holds all the text and do not expose any IA2 hypertext. We need to get
