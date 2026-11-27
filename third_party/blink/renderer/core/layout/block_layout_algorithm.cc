@@ -845,10 +845,15 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
 
+  LayoutUnit previous_sibling_annotation_space =
+      RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() &&
+              container_builder_.IsFragmentainerBoxType()
+          ? constraint_space.BlockStartAnnotationSpace()
+          : LayoutUnit();
   PreviousInflowPosition previous_inflow_position = {
       LayoutUnit(), constraint_space.GetMarginStrut(),
       ComputeInitialBlockStartAnnotationSpace(),
-      /* previous_sibling_block_end_annotation_space */ LayoutUnit(),
+      previous_sibling_annotation_space,
       /* self_collapsing_child_had_clearance */ false};
 
   if (GetBreakToken()) {
@@ -4135,11 +4140,16 @@ LogicalOffset BlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
 
 LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
     const {
+  const ConstraintSpace& space = GetConstraintSpace();
+  if (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() &&
+      (container_builder_.IsFragmentainerBoxType() || is_resuming_)) {
+    return space.BlockStartAnnotationSpace();
+  }
   if (is_resuming_) {
+    DCHECK(!RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled());
     return LayoutUnit();
   }
   LayoutUnit padding_start = container_builder_.Padding().block_start;
-  const ConstraintSpace& space = GetConstraintSpace();
   // Allow ruby annotations to overflow to the block-start margin if the
   // container has no block-start border.
   if (space.ContainsAnnotations() && !space.IsNewFormattingContext() &&

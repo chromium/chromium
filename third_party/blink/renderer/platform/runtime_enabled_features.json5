@@ -728,7 +728,7 @@
     {
       // crbug.com/538260158
       name: "AnnotationSpaceForMultiCol",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AnonymousIframe",

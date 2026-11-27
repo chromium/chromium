@@ -24,6 +24,25 @@ body {
   columns: 2;
   width: 400px;
 }
+
+#target {
+  columns: 3;
+  column-gap: 0;
+  orphans: 1;
+  widows: 1;
+  font-size: 20px;
+  line-height: 1.5;
+  border: 1px solid lightblue;
+  width: 10em;
+  margin: 8px;
+  padding: 20px;
+}
+
+#span-all {
+  column-span: all;
+  margin-block-end: 20px;
+  border: 1px solid lime;
+}
 </style>
 
 <div class="container-line-height-1"><ruby>base<rt>annotation</rt></ruby></div>
@@ -39,6 +58,19 @@ body {
   <div>Third block</div>
   <div>Fourth block</div>
 </div>
+
+<div id="target">
+  <ruby id="c1">XX<rt>a</ruby><br>
+  <span id="c2">XX</span><br>
+  <ruby id="c3">XX<rt>a</ruby>
+
+  <div id="span-all">span</div>
+
+  <ruby id="c4">XX<rt>a</ruby><br>
+  <span id="c5">XX</span><br>
+  <ruby id="c6">XX<rt>a</ruby>
+</div>
+
 <script>
 setup({ explicit_done: true });
 
@@ -71,6 +103,18 @@ document.fonts.load("16px Ahem").then(() => {
                      firstBlock.getBoundingClientRect().bottom);
   }, 'Two IFCs with line-height: 1.5em in a multicol container: second IFC ' +
      'first-line <rt> top is above first IFC bottom');
+
+  test(() => {
+    const referenceTop = document.querySelector('#c2').offsetTop;
+    assert_equals(document.querySelector('#c1').offsetTop, referenceTop, 'c1');
+    assert_equals(document.querySelector('#c3').offsetTop, referenceTop, 'c3');
+  }, 'Line-over ruby on the first line in columns: <rt> should be in the padding area');
+
+  test(() => {
+    const referenceTop = document.querySelector('#c5').offsetTop;
+    assert_equals(document.querySelector('#c4').offsetTop, referenceTop, 'c4');
+    assert_equals(document.querySelector('#c6').offsetTop, referenceTop, 'c6');
+  }, 'Line-over ruby after a spanner: <rt> should be in the margin of the spanner');
 
   done();
 });

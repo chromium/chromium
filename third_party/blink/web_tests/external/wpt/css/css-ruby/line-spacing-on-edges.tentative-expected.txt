@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Line-over ruby after a spanner: <rt> should be in the margin of the spanner
+  assert_equals: c4 expected 289 but got 294
+Harness: the test ran to completion.
+
