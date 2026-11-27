@@ -189,6 +189,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
 }
 
 void ContextualSearchSceneLayer::FetchThumbnail(Profile* profile) {
+  fetcher_.reset();
   if (thumbnail_url_.empty())
     return;
 
@@ -268,6 +269,8 @@ void ContextualSearchSceneLayer::HideTree(JNIEnv* env) {
   if (contextual_search_layer_) {
     contextual_search_layer_->layer()->SetHideLayerAndSubtree(true);
   }
+  fetcher_.reset();
+  thumbnail_url_.clear();
   // Reset base page brightness.
   color_overlay_->SetOpacity(0.f);
   // Reset base page offset.
