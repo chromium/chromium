@@ -1659,18 +1659,9 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
       element_bounds, max_bounds_for_popup, preferred_size,
       preferred_popup_sides);
 
-  if (OverlapsWithAnotherPrompt(popup_bounds)) {
-    controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
-    return false;
-  }
-
-  // The pip surface is given the most preference while rendering. So, the
-  // autofill popup should not be shown when the picture in picture window
-  // hides the autofill form behind it.
-  // For more details on how this can happen, see crbug.com/40060742.
-  if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
-    controller_->Hide(
-        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
+  if (std::optional<SuggestionHidingReason> hiding_reason =
+          GetOverlappingPromptHidingReason(popup_bounds)) {
+    controller_->Hide(*hiding_reason);
     return false;
   }
 

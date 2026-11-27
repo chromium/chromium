@@ -633,14 +633,9 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
       element_bounds, max_bounds_for_popup, preferred_size,
       kDefaultPreferredPopupSides);
 
-  if (OverlapsWithAnotherPrompt(popup_bounds)) {
-    HideController(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
-    return false;
-  }
-
-  if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
-    HideController(
-        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
+  if (std::optional<SuggestionHidingReason> hiding_reason =
+          GetOverlappingPromptHidingReason(popup_bounds)) {
+    HideController(*hiding_reason);
     return false;
   }
 
@@ -654,28 +649,33 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   return true;
 }
 
-bool PopupBaseView::OverlapsWithAnotherPrompt(
+std::optional<SuggestionHidingReason>
+PopupBaseView::GetOverlappingPromptHidingReason(
     const gfx::Rect& popup_bounds) const {
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents) {
-    return false;
+  if (content::WebContents* web_contents = GetWebContents()) {
+    if (BoundsOverlapWithAnyOpenPrompt(popup_bounds, web_contents)) {
+      return SuggestionHidingReason::kOverlappingWithAnotherPrompt;
+    }
+    // On Windows, due to platform-specific implementation details, the previous
+    // check isn't reliable, and fails to detect open prompts. Since the most
+    // critical bubble is the permission bubble, we check for that specifically.
+    if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds, web_contents)) {
+      return SuggestionHidingReason::kOverlappingWithAnotherPrompt;
+    }
+    if (BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents)) {
+      return SuggestionHidingReason::kOverlappingWithAnotherPrompt;
+    }
   }
 
-  if (BoundsOverlapWithAnyOpenPrompt(popup_bounds, web_contents)) {
-    return true;
-  }
-  // On Windows, due to platform-specific implementation details, the previous
-  // check isn't reliable, and fails to detect open prompts. Since the most
-  // critical bubble is the permission bubble, we check for that specifically.
-  if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds, web_contents)) {
-    return true;
+  // The PiP surface is given the most preference while rendering. So, the
+  // autofill popup should not be shown when the picture in picture window
+  // hides the autofill form behind it.
+  // For more details on how this can happen, see crbug.com/40060742.
+  if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
+    return SuggestionHidingReason::kOverlappingWithPictureInPictureWindow;
   }
 
-  if (BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents)) {
-    return true;
-  }
-
-  return false;
+  return std::nullopt;
 }
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {

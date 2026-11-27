@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
 
 #include <array>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -107,9 +109,11 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // testing).
   [[nodiscard]] virtual bool DoUpdateBoundsAndRedrawPopup();
 
-  // Checks whether the popup at `popup_bounds` overlaps with any open prompts,
-  // permission bubbles, or HTML form popups.
-  bool OverlapsWithAnotherPrompt(const gfx::Rect& popup_bounds) const;
+  // Checks whether showing the popup at `popup_bounds` would overlap with any
+  // open prompts, permission bubbles, HTML form popups, or picture-in-picture
+  // windows, and returns the corresponding `SuggestionHidingReason` if so.
+  std::optional<SuggestionHidingReason> GetOverlappingPromptHidingReason(
+      const gfx::Rect& popup_bounds) const;
 
   // Returns the optimal bounds to place the popup with `preferred_size` and
   // places an arrow on the popup border to point towards `element_bounds`
