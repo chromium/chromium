@@ -39,4 +39,9 @@ agentic_review {
     content_patterns: "\\bswitch\\s*\\(|\\bdefault\\s*:|\\b(?:FieldType|SuggestionType|FillingProduct)\\b"
     rules: "components/autofill/agents/knowledge_base/avoid-default-in-switch-over-autofill-enums.md"
   }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:cc|mm)"
+    content_patterns: "\\bl10n_util::Get(?:Plural)?String\\w*\\("
+    rules: "components/autofill/agents/knowledge_base/suffix-localized-string-getters-with-for-i18n.md"
+  }
 }
