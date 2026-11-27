@@ -336,9 +336,7 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
 scoped_refptr<CanvasNon2DResourceProvider::Resource>
 CanvasNon2DResourceProvider::NewOrRecycledResource() {
   auto resource = image_pool_->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
+  CHECK(resource);
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
@@ -484,14 +482,6 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
     return nullptr;
   }
 
-  scoped_refptr<Resource> software_resource;
-  if (IsSoftware()) {
-    software_resource = NewOrRecycledResource();
-    if (!software_resource) {
-      return nullptr;
-    }
-  }
-
   MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
@@ -499,12 +489,13 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
   }
 
   if (IsSoftware()) {
+    scoped_refptr<Resource> software_resource = NewOrRecycledResource();
     UploadSoftwareRenderingResults(*software_resource);
 
     return CreateExportedResource(std::move(software_resource));
   }
 
-  return resource_ ? CreateExportedResource(resource_) : nullptr;
+  return CreateExportedResource(resource_);
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -603,9 +594,6 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
   if (IsSoftware()) {
     DCHECK(GetSkSurface());
     scoped_refptr<Resource> output_resource = NewOrRecycledResource();
-    if (!output_resource) {
-      return nullptr;
-    }
 
     UploadSoftwareRenderingResults(*output_resource);
 
@@ -616,7 +604,7 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
     return nullptr;
   }
 
-  return resource_ ? CreateExportedResource(resource_) : nullptr;
+  return CreateExportedResource(resource_);
 }
 
 scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
@@ -777,7 +765,7 @@ void CanvasNon2DResourceProvider::FlushRecording(
 
 base::ByteSize CanvasNon2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result = image_pool_->EstimatedSizeInBytes();
-  if (resource_) {
+  if (!IsSoftware()) {
     result += resource_->GetSharedImage()->EstimatedSizeInBytes();
   }
   return result;
