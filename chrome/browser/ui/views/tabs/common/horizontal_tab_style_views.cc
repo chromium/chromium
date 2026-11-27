@@ -804,18 +804,20 @@ void HorizontalTabStyleViews::PaintTabBackgroundFill(
                      flags);
   }
 
-  if (fill_id.has_value()) {
+  BrowserWindowInterface* const browser_window =
+      fill_id.has_value() ? delegate_->GetBrowserWindowInterface() : nullptr;
+  const BrowserView* const browser_view =
+      browser_window ? BrowserView::GetBrowserViewForBrowser(browser_window)
+                     : nullptr;
+  // The theme image is aligned to the BrowserView, so it can't be painted
+  // without one (e.g. while the browser window is being created or torn
+  // down). Active and selected tabs still get their background color.
+  if (browser_view) {
     gfx::ScopedCanvas scale_scoper(canvas);
     canvas->sk_canvas()->scale(scale, scale);
     gfx::ImageSkia* image =
         delegate_->GetView()->GetThemeProvider()->GetImageSkiaNamed(
             fill_id.value());
-
-    BrowserWindowInterface* browser_window =
-        delegate_->GetBrowserWindowInterface();
-    BrowserView* browser_view =
-        browser_window ? BrowserView::GetBrowserViewForBrowser(browser_window)
-                       : nullptr;
     ThemedBackground::PaintThemeAlignedImage(canvas, delegate_->GetView(),
                                              browser_view, image);
   }

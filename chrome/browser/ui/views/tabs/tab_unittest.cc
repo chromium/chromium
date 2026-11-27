@@ -32,7 +32,10 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/grit/theme_resources.h"
+#include "chrome/test/base/test_theme_provider.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_test_widget.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -42,8 +45,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -76,6 +81,26 @@ PersistentMessage CreateMessage(std::string given_name,
 
   return message;
 }
+
+// Provides a custom toolbar image, so active tabs paint a theme image fill.
+class ToolbarImageThemeProvider : public TestThemeProvider {
+ public:
+  ToolbarImageThemeProvider() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(16, 16);
+    bitmap.eraseColor(SK_ColorRED);
+    image_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  }
+
+  // TestThemeProvider:
+  gfx::ImageSkia* GetImageSkiaNamed(int id) const override {
+    return id == IDR_THEME_TOOLBAR ? &image_ : nullptr;
+  }
+  bool HasCustomImage(int id) const override { return id == IDR_THEME_TOOLBAR; }
+
+ private:
+  mutable gfx::ImageSkia image_;
+};
 
 }  // namespace
 
@@ -1148,6 +1173,24 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
       EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
     }
   }
+}
+
+// Painting an active tab with a custom theme image must not crash when the
+// tab has no BrowserView to align the image to.
+TEST_F(TabTest, PaintActiveTabWithThemeImageWithoutBrowserView) {
+  FakeTabSlotController controller;
+  ASSERT_FALSE(controller.GetBrowserWindowInterface());
+  auto widget = std::make_unique<ChromeTestWidget>();
+  widget->Init(CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
+  widget->SetThemeProvider(std::make_unique<ToolbarImageThemeProvider>());
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), &controller));
+  controller.set_active_tab(tab);
+  tab->SetBounds(0, 0, 100, GetLayoutConstant(LayoutConstant::kTabHeight));
+
+  gfx::Canvas canvas(tab->size(), 1.0f, false);
+  tab->tab_style_views()->PaintTab(&canvas);
 }
 
 TEST_F(TabTest, GlassFrameTabBackgroundColors) {
