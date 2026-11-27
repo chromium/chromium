@@ -506,9 +506,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
   EXPECT_EQ("error", EvalJs(rfh_1.get(), "image_load_status"));
 }
 
-// Flaky on Mac.
+// TODO(crbug.com/519748049): Flaky on Mac and Android.
 // https://ci.chromium.org/ui/inv/build-8667819425430646593
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction \
   DISABLED_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction
 #else
