@@ -5665,10 +5665,11 @@
   {
     "name": "get-display-media-confers-activation",
     "owners": [
-      "eladalon@chromium.org",
+      "agpalak@chromium.org",
+      "kron@chromium.org",
       "tovep@chromium.org"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 190
   },
   {
     "name": "glanceables-time-management-classroom-student-view",
