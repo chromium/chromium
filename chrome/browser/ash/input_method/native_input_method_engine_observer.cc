@@ -68,9 +68,16 @@ bool IsFirstPartyVietnameseEngine(std::string_view engine_id) {
   return engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex";
 }
 
+bool IsDirectXkbEngineWithoutXkbPrefix(std::string_view engine_id) {
+  // TODO(b/565986383): Add `vkd_th_tis` guarded by "direct-XKB Thai TIS" flag.
+  // TODO(b/565990195): Add `vkd_th` guarded by "direct-XKB Thai Kedmanee" flag.
+  return false;
+}
+
 bool IsRuleBasedEngine(std::string_view engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE) &&
-         !IsFirstPartyVietnameseEngine(engine_id);
+         !IsFirstPartyVietnameseEngine(engine_id) &&
+         !IsDirectXkbEngineWithoutXkbPrefix(engine_id);
 }
 
 bool HasXkbPrefix(std::string_view engine_id) {
@@ -702,7 +709,8 @@ bool ShouldHandleWithoutExtension(bool use_ime_service,
     return false;
   }
 
-  return IsJapaneseEngine(engine_id) || IsTransliterationEngine(engine_id) ||
+  return IsDirectXkbEngineWithoutXkbPrefix(engine_id) ||
+         IsJapaneseEngine(engine_id) || IsTransliterationEngine(engine_id) ||
          IsKoreanEngine(engine_id) || HasXkbPrefix(engine_id) ||
          IsChineseEngine(engine_id);
 }
@@ -822,9 +830,10 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   }
 
   if (ShouldHandleWithoutExtension(use_ime_service_, engine_id)) {
-    if (HasXkbPrefix(engine_id) &&
-        !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
-        !IsPredictiveWritingEnabled(prefs_, engine_id)) {
+    if (IsDirectXkbEngineWithoutXkbPrefix(engine_id) ||
+        (HasXkbPrefix(engine_id) &&
+         !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
+         !IsPredictiveWritingEnabled(prefs_, engine_id))) {
       DisconnectFromImeService();
     } else {
       ConnectToImeService(engine_id);
