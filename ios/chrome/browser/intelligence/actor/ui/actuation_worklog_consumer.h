@@ -29,7 +29,7 @@
 - (void)setLastItem:(ActuationWorklogItem*)item
                chip:(ActuationWorklogChip*)chip;
 
-// Resets and clears all worklog timeline items and state.
+// Resets the worklog items, header content and state.
 - (void)reset;
 
 @end

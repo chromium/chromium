@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data_builders.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_configuration.h"
@@ -35,11 +34,8 @@ IntelligenceHeaderDensity HeaderDensityForDisplayMode(
 
 }  // namespace
 
-using intelligence::actor::kSpacingLarge;
-
 @interface ActuationWorklogViewController () <
     ActuationWorklogCompactViewDelegate,
-    ActuationWorklogViewDelegate,
     IntelligenceHeaderViewDelegate>
 @end
 
@@ -51,13 +47,6 @@ using intelligence::actor::kSpacingLarge;
   IntelligenceHeaderView* _headerView;
   // Current step layout. Visible in `ActuationWorklogDisplayModeCompact`.
   ActuationWorklogCompactView* _compactView;
-  // Timeline view embedded inside a scrollview to support vertical growth as
-  // steps are added.
-  ActuationWorklogView* _fullView;
-  // Scrollable container for the `_fullView`. Always hidden, since the full
-  // worklog is shown inline in Gemini responses.
-  // TODO(crbug.com/585107999): Remove `_scrollView` and `_fullView`.
-  UIScrollView* _scrollView;
   // Height of `_compactView`. Adjusted dynamically when its content changes.
   NSLayoutConstraint* _compactHeightConstraint;
   // Mode-specific header content applied to `_headerView`.
@@ -117,7 +106,6 @@ using intelligence::actor::kSpacingLarge;
     return;
   }
   _actuationActive = active;
-  _fullView.actuating = active;
   [self updateHeader];
 }
 
@@ -132,16 +120,11 @@ using intelligence::actor::kSpacingLarge;
   if (!item) {
     return;
   }
-  [_fullView addItem:item];
-  [_fullView setChip:chip];
   [_compactView transitionToItem:item chip:chip animated:animated];
-  [self scrollToBottomAnimated:animated];
 }
 
 - (void)setLastItem:(ActuationWorklogItem*)item
                chip:(ActuationWorklogChip*)chip {
-  [_fullView setLastItem:item];
-  [_fullView setChip:chip];
   [_compactView transitionToItem:item chip:chip animated:NO];
   [self notifyHeightDidChange];
 }
@@ -150,8 +133,6 @@ using intelligence::actor::kSpacingLarge;
   _headerContentVariants = nil;
   [self updateHeader];
   [_compactView reset];
-  [_fullView reset];
-  [_scrollView setContentOffset:CGPointZero animated:NO];
   _compactHeightConstraint.constant = 0.0;
   [self notifyHeightDidChange];
 }
@@ -175,13 +156,6 @@ using intelligence::actor::kSpacingLarge;
   [self.suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
 }
 
-#pragma mark - ActuationWorklogViewDelegate
-
-- (void)worklogView:(ActuationWorklogView*)worklogView
-    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
-  [self.suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
-}
-
 #pragma mark - Private
 
 // Creates the view hierarchy.
@@ -198,21 +172,6 @@ using intelligence::actor::kSpacingLarge;
   _compactView.itemDelegate = self;
   _compactView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_compactView];
-
-  _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
-  _scrollView.accessibilityIdentifier =
-      kFullWorklogScrollViewAccessibilityIdentifier;
-  _scrollView.showsVerticalScrollIndicator = NO;
-  _scrollView.showsHorizontalScrollIndicator = NO;
-  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  _scrollView.hidden = YES;
-  [self.view addSubview:_scrollView];
-
-  _fullView = [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
-  _fullView.delegate = self;
-  _fullView.actuating = _actuationActive;
-  _fullView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_scrollView addSubview:_fullView];
 }
 
 // Configures layout constraints.
@@ -223,17 +182,10 @@ using intelligence::actor::kSpacingLarge;
   AddSameConstraintsToSides(_headerView, self.view,
                             LayoutSides::kTop | LayoutSides::kHorizontal);
   AddSameConstraintsToSides(_compactView, self.view, LayoutSides::kHorizontal);
-  AddSameConstraintsToSides(_scrollView, self.view,
-                            LayoutSides::kHorizontal | LayoutSides::kBottom);
-  AddSameConstraintsWithInsets(_fullView, _scrollView.contentLayoutGuide,
-                               NSDirectionalEdgeInsets{0, 0, kSpacingLarge, 0});
 
   [NSLayoutConstraint activateConstraints:@[
     [_compactView.topAnchor constraintEqualToAnchor:_headerView.bottomAnchor],
     _compactHeightConstraint,
-    [_scrollView.topAnchor constraintEqualToAnchor:_headerView.bottomAnchor],
-    [_fullView.widthAnchor
-        constraintEqualToAnchor:_scrollView.frameLayoutGuide.widthAnchor],
   ]];
 }
 
@@ -311,18 +263,6 @@ using intelligence::actor::kSpacingLarge;
              withHorizontalFittingPriority:UILayoutPriorityRequired
                    verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
       .height;
-}
-
-// Scrolls the full worklog to the bottom to reveal newly appended items.
-- (void)scrollToBottomAnimated:(BOOL)animated {
-  [_scrollView layoutIfNeeded];
-  CGFloat bottomOffsetY = _scrollView.contentSize.height -
-                          _scrollView.bounds.size.height +
-                          _scrollView.adjustedContentInset.bottom;
-  if (bottomOffsetY > 0) {
-    [_scrollView setContentOffset:CGPointMake(0, bottomOffsetY)
-                         animated:animated];
-  }
 }
 
 #pragma mark - IntelligenceHeaderViewDelegate

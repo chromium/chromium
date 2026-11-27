@@ -369,11 +369,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   AddSameConstraintsToSidesWithInsets(
       worklogView, self.view, LayoutSides::kTop | LayoutSides::kHorizontal,
       kWorklogContainerInsets);
-  // Starts at the real height, as 0 conflicts with the worklog's content.
-  CGFloat worklogHeight = [_worklogViewController
-      heightForDisplayMode:_worklogViewController.displayMode];
   _worklogHeightConstraint =
-      [worklogView.heightAnchor constraintEqualToConstant:worklogHeight];
+      [worklogView.heightAnchor constraintEqualToConstant:0];
   _worklogHeightConstraint.active = YES;
   [_worklogViewController didMoveToParentViewController:self];
 

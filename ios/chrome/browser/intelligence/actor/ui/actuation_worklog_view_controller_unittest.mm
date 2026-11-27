@@ -80,8 +80,6 @@ class ActuationWorklogViewControllerTest : public PlatformTest {
 TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
   UIView* compact_view = FindViewById(view_controller_.view,
                                       kCompactWorklogAccessibilityIdentifier);
-  UIView* full_scroll_view = FindViewById(
-      view_controller_.view, kFullWorklogScrollViewAccessibilityIdentifier);
   UIView* header_view = FindViewById(view_controller_.view,
                                      kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
@@ -91,20 +89,17 @@ TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
   view_controller_.displayMode = ActuationWorklogDisplayModeExpanded;
   EXPECT_EQ(ActuationWorklogDisplayModeExpanded, view_controller_.displayMode);
   EXPECT_TRUE(compact_view.hidden);
-  EXPECT_TRUE(full_scroll_view.hidden);
   EXPECT_FALSE(header_view.hidden);
 
   // Compact worklog.
   view_controller_.displayMode = ActuationWorklogDisplayModeCompact;
   EXPECT_EQ(ActuationWorklogDisplayModeCompact, view_controller_.displayMode);
   EXPECT_FALSE(compact_view.hidden);
-  EXPECT_TRUE(full_scroll_view.hidden);
 
   // Minimized worklog only shows the header.
   view_controller_.displayMode = ActuationWorklogDisplayModeMinimized;
   EXPECT_EQ(ActuationWorklogDisplayModeMinimized, view_controller_.displayMode);
   EXPECT_TRUE(compact_view.hidden);
-  EXPECT_TRUE(full_scroll_view.hidden);
   EXPECT_FALSE(header_view.hidden);
 }
 
@@ -118,23 +113,24 @@ TEST_F(ActuationWorklogViewControllerTest, SetActuationActive) {
   EXPECT_FALSE(view_controller_.view.hidden);
 }
 
-// Tests that reset clears title and worklog content.
+// Tests that reset clears the header title and worklog content.
 TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
+  UIView* compact_view = FindViewById(view_controller_.view,
+                                      kCompactWorklogAccessibilityIdentifier);
+  ASSERT_NE(compact_view, nil);
   [consumer() setHeaderContentVariants:CreateHeaderContentVariants(nil)];
   ActuationWorklogItem* item =
       [ActuationWorklogItem simpleItemWithTitle:@"Step 1"];
   [consumer() updateWorklogWithItem:item chip:nil animated:NO];
+  ASSERT_EQ(1u, FindViewsByClass<ActuationWorklogItemView>(compact_view).count);
+
   [consumer() reset];
 
   IntelligenceHeaderView* header_view = FindViewById<IntelligenceHeaderView>(
       view_controller_.view, kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
   EXPECT_EQ(header_view.title, nil);
-
-  UIScrollView* scroll_view = FindViewById<UIScrollView>(
-      view_controller_.view, kFullWorklogScrollViewAccessibilityIdentifier);
-  ASSERT_NE(scroll_view, nil);
-  EXPECT_TRUE(CGPointEqualToPoint(scroll_view.contentOffset, CGPointZero));
+  EXPECT_EQ(0u, FindViewsByClass<ActuationWorklogItemView>(compact_view).count);
 }
 
 // Tests that the header displays the content variant matching the display
@@ -270,15 +266,12 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryItem) {
             nil);
 }
 
-// Tests that only the trailing item of an ongoing actuation is current in the
-// full worklog, without the items being replaced, and that the compact worklog
-// displays the trailing item as current.
-TEST_F(ActuationWorklogViewControllerTest, TestOnlyTrailingItemIsCurrent) {
-  UIView* full_scroll_view = FindViewById(
-      view_controller_.view, kFullWorklogScrollViewAccessibilityIdentifier);
+// Tests that the compact worklog displays the trailing item of an ongoing
+// actuation as current.
+TEST_F(ActuationWorklogViewControllerTest,
+       TestCompactShowsLatestItemAsCurrent) {
   UIView* compact_view = FindViewById(view_controller_.view,
                                       kCompactWorklogAccessibilityIdentifier);
-  ASSERT_NE(full_scroll_view, nil);
   ASSERT_NE(compact_view, nil);
   ActuationWorklogChip* chip =
       [[ActuationWorklogChip alloc] initWithText:@"Clicking" icon:nil];
@@ -293,22 +286,11 @@ TEST_F(ActuationWorklogViewControllerTest, TestOnlyTrailingItemIsCurrent) {
                        chip:chip
                    animated:NO];
 
-  NSArray<ActuationWorklogItemView*>* full_item_views =
-      FindViewsByClass<ActuationWorklogItemView>(full_scroll_view);
-  ASSERT_EQ(full_item_views.count, 2u);
-  EXPECT_FALSE(full_item_views[0].current);
-  EXPECT_TRUE(full_item_views[1].current);
   NSArray<ActuationWorklogItemView*>* compact_item_views =
       FindViewsByClass<ActuationWorklogItemView>(compact_view);
   ASSERT_EQ(compact_item_views.count, 1u);
+  EXPECT_NSEQ(compact_item_views[0].item.title, @"Step 2");
   EXPECT_TRUE(compact_item_views[0].current);
-
-  [consumer() setActuationActive:NO];
-
-  EXPECT_EQ(
-      FindViewsByClass<ActuationWorklogItemView>(full_scroll_view).lastObject,
-      full_item_views[1]);
-  EXPECT_FALSE(full_item_views[1].current);
 }
 
 }  // namespace

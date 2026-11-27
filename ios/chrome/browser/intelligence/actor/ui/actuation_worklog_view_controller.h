@@ -24,9 +24,11 @@
 
 @end
 
-// View controller displaying the actuation worklog in the Helios sheet. Its
-// content is laid out from the top of its view, whose height (see
-// `-heightForDisplayMode:`) and visibility are set by the host.
+// View controller displaying the actuation header and, in compact mode, the
+// current step. Its content is laid out from the top of its view, whose height
+// (see `-heightForDisplayMode:`) and visibility are set by the host.
+// TODO(crbug.com/583897274): Only display the compact worklog once the host
+// owns the header.
 @interface ActuationWorklogViewController
     : UIViewController <ActuationWorklogConsumer,
                         ActuationWorklogItemViewDelegate>

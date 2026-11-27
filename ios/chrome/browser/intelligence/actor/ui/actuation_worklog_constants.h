@@ -36,10 +36,6 @@ inline constexpr NSString* const kActuationHeaderPauseItemIdentifier =
 inline constexpr NSString* const kCompactWorklogAccessibilityIdentifier =
     @"CompactWorklogAccessibilityIdentifier";
 
-// Accessibility identifier for the full worklog scroll view.
-inline constexpr NSString* const kFullWorklogScrollViewAccessibilityIdentifier =
-    @"FullWorklogScrollViewAccessibilityIdentifier";
-
 // Accessibility identifier for the actuation intervention card view.
 inline constexpr NSString* const
     kActuationInterventionCardAccessibilityIdentifier =

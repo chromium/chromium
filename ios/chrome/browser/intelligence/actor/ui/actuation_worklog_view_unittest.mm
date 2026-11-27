@@ -88,6 +88,28 @@ TEST_F(ActuationWorklogViewTest, CollapseUpdatesItemVisibility) {
   EXPECT_TRUE(views[2].hidden);
 }
 
+// Tests that only the trailing item is current while actuating, and that it
+// stops being current once actuation ends, without the items being replaced.
+TEST_F(ActuationWorklogViewTest, OnlyTrailingItemIsCurrentWhileActuating) {
+  [worklog_view_ addItem:[ActuationWorklogItem simpleItemWithTitle:@"Step 1"]];
+  [worklog_view_ addItem:[ActuationWorklogItem simpleItemWithTitle:@"Step 2"]];
+  [worklog_view_ setChip:[[ActuationWorklogChip alloc] initWithText:@"Clicking"
+                                                               icon:nil]];
+
+  NSArray<ActuationWorklogItemView*>* views =
+      FindViewsByClass<ActuationWorklogItemView>(worklog_view_);
+  ASSERT_EQ(2u, views.count);
+  EXPECT_FALSE(views[0].current);
+  EXPECT_TRUE(views[1].current);
+
+  worklog_view_.actuating = NO;
+
+  EXPECT_EQ(
+      views[1],
+      FindViewsByClass<ActuationWorklogItemView>(worklog_view_).lastObject);
+  EXPECT_FALSE(views[1].current);
+}
+
 // Tests that tapping the first item toggles the collapsed state.
 TEST_F(ActuationWorklogViewTest, TappingFirstItemTogglesCollapsed) {
   [worklog_view_ setItems:@[

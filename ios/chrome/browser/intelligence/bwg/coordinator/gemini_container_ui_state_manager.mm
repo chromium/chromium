@@ -64,7 +64,8 @@ GeminiContainerUIState::WorklogDisplayMode() const {
     return std::nullopt;
   }
   // The minimized detent only shows the header, the medium detent shows the
-  // compact worklog and the large detent shows the full timeline.
+  // compact worklog and the large detent shows the header above the
+  // conversation.
   switch (detent) {
     case AssistantContainerDetent::kMinimized:
       return ActuationWorklogDisplayModeMinimized;

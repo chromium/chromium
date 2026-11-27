@@ -1196,8 +1196,8 @@ TEST_F(GeminiContainerMediatorTest,
 }
 
 // Tests that while actuating, the minimized detent shows only the header, the
-// medium detent shows the compact worklog and the large detent shows the full
-// timeline.
+// medium detent shows the compact worklog and the large detent shows the
+// header above the conversation.
 TEST_F(GeminiContainerMediatorTest,
        TestDidChangeDetentUpdatesWorklogDisplayModeWhileActuating) {
   base::test::ScopedFeatureList scoped_feature_list;
