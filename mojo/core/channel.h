@@ -7,12 +7,14 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -25,11 +27,16 @@
 #include "mojo/buildflags.h"
 #include "mojo/core/connection_params.h"
 #include "mojo/core/platform_handle_in_transit.h"
+#include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace mojo::core {
+
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+MOJO_SYSTEM_IMPL_EXPORT BASE_DECLARE_FEATURE(kUseMachVouchers);
+#endif
 
 namespace ipcz_driver {
 class Envelope;
@@ -469,6 +476,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // Causes the platform handle to leak when this channel is shut down instead
   // of closing it.
   virtual void LeakHandle() = 0;
+
+  // On Apple platforms, returns whether the underlying receive port has the
+  // MACH_PORT_IMPORTANCE_RECEIVER attribute, or std::nullopt if the port
+  // attributes cannot be read. Always returns std::nullopt on other platforms.
+  virtual std::optional<bool> IsImportanceReceiverForTesting() const;
 
   // Returns whether the experimental feature of multiple notifiers are
   // supported by the channel.

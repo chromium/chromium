@@ -23,8 +23,8 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "mojo/core/configuration.h"
 #include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/ipcz_driver/mach_voucher_release_pool_mac.h"
 
@@ -47,22 +48,21 @@
 
 namespace mojo::core {
 
-namespace {
-
 // IMPORTANT: Features used in this file must be registered with
 // base::FeatureList::SetEarlyAccessInstance in
 // chrome/app_shim/app_shim_controller.mm, because they can be checked early in
 // startup.
-
 BASE_FEATURE(kUseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
+
+namespace {
 
 BASE_FEATURE_PARAM(bool, kSkipInvalidMachVouchers, &kUseMachVouchers, false);
 
 BASE_FEATURE_PARAM(bool, kUseMachVoucherReleasePool, &kUseMachVouchers, false);
 
 bool ShouldUseVouchers() {
-  static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
-  return enabled;
+  return GetConfiguration().enable_mach_vouchers &&
+         base::FeatureList::IsEnabled(kUseMachVouchers);
 }
 
 constexpr mach_msg_id_t kChannelMacHandshakeMsgId = 'mjhs';
@@ -174,6 +174,26 @@ class ChannelMac : public Channel,
   void LeakHandle() override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     leak_handles_ = true;
+  }
+
+  std::optional<bool> IsImportanceReceiverForTesting() const override {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    if (!receive_port_.is_valid()) {
+      return std::nullopt;
+    }
+
+    // Check if the port was given the MACH_PORT_IMPORTANCE_RECEIVER attribute.
+    mach_port_status_t status = {};
+    mach_msg_type_number_t count = MACH_PORT_RECEIVE_STATUS_COUNT;
+    kern_return_t kr = mach_port_get_attributes(
+        mach_task_self(), receive_port_.get(), MACH_PORT_RECEIVE_STATUS,
+        reinterpret_cast<mach_port_info_t>(&status), &count);
+    if (kr != KERN_SUCCESS) {
+      MACH_LOG(ERROR, kr)
+          << "mach_port_get_attributes MACH_PORT_RECEIVE_STATUS";
+      return std::nullopt;
+    }
+    return (status.mps_flags & MACH_PORT_STATUS_FLAG_IMP_DONATION) != 0;
   }
 
   bool GetReadPlatformHandles(const void* payload,
@@ -289,7 +309,7 @@ class ChannelMac : public Channel,
       NOTREACHED();
     }
 
-    if (ShouldUseVouchers()) {
+    if (should_use_vouchers_) {
       kr = mach_port_set_attributes(mach_task_self(), receive_port_.get(),
                                     MACH_PORT_IMPORTANCE_RECEIVER, nullptr, 0);
       MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
@@ -763,7 +783,7 @@ class ChannelMac : public Channel,
         MACH_RCV_MSG | MACH_RCV_TIMEOUT |
         MACH_RCV_TRAILER_TYPE(MACH_MSG_TRAILER_FORMAT_0) |
         MACH_RCV_TRAILER_ELEMENTS(MACH_RCV_TRAILER_AUDIT) |
-        (ShouldUseVouchers() ? MACH_RCV_VOUCHER : 0);
+        (should_use_vouchers_ ? MACH_RCV_VOUCHER : 0);
     kern_return_t kr =
         mach_msg(header, rcv_options, 0, header->msgh_size, receive_port_.get(),
                  /*timeout=*/0, MACH_PORT_NULL);
@@ -777,7 +797,7 @@ class ChannelMac : public Channel,
     }
 
     scoped_refptr<ipcz_driver::Envelope> envelope;
-    if (ShouldUseVouchers()) {
+    if (should_use_vouchers_) {
       base::apple::ScopedMachSendRight voucher(header->msgh_voucher_port);
       header->msgh_voucher_port = MACH_PORT_NULL;
       header->msgh_bits &= ~MACH_MSGH_BITS_VOUCHER_MASK;
@@ -1040,6 +1060,11 @@ class ChannelMac : public Channel,
   // from any sequence.
   base::RepeatingCallback<void(base::apple::ScopedMachSendRight)>
       voucher_release_callback_;
+
+  // Whether this channel should use vouchers. Cached on creation so that the
+  // value doesn't change if the mojo config is reinitialized (which can happen
+  // in tests).
+  const bool should_use_vouchers_ = ShouldUseVouchers();
 
   // Lock that protects the following members.
   base::Lock write_lock_;

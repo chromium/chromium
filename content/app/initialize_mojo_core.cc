@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -18,6 +19,17 @@
 #include "sandbox/policy/sandbox_type.h"
 
 namespace content {
+
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+// Disables receiving Mach vouchers in the browser process, avoiding per-message
+// voucher deallocation overhead while standalone Mojo brokers (such as PWA app
+// shims and updater daemons) keep voucher support.
+BASE_FEATURE(kSkipMachVouchersInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
+}  // namespace
 
 void InitializeMojoCore() {
   if (base::FeatureList::GetInstance()) {
@@ -37,8 +49,9 @@ void InitializeMojoCore() {
     config.is_broker_process =
         !command_line.HasSwitch(switches::kDisableMojoBroker) &&
         !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line);
-    if (!config.is_broker_process)
+    if (!config.is_broker_process) {
       config.force_direct_shared_memory_allocation = true;
+    }
   } else {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
     // On Windows, Android and Apple platforms it is not necessary to broker
@@ -47,6 +60,13 @@ void InitializeMojoCore() {
     config.force_direct_shared_memory_allocation = true;
 #endif
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (config.is_broker_process &&
+      base::FeatureList::IsEnabled(kSkipMachVouchersInBrowser)) {
+    config.enable_mach_vouchers = false;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   mojo::core::Init(config);
 

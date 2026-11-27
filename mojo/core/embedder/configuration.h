@@ -27,6 +27,14 @@ struct Configuration {
   // which are otherwise sufficiently privileged to allocate named shared memory
   // objects.
   bool force_direct_shared_memory_allocation = false;
+
+  // If `true`, channels on Apple platforms will receive Mach vouchers to
+  // propagate task importance across IPCs to this process. Set to `false` to
+  // ignore incoming vouchers for a specific process. The OS will still attach
+  // vouchers to outgoing messages to donate importance to processes that are
+  // configured to receive them. Ignored on non-Apple platforms, or if the
+  // `kUseMachVouchers` feature flag is disabled to turn off vouchers globally.
+  bool enable_mach_vouchers = true;
 };
 
 }  // namespace core

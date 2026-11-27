@@ -1060,6 +1060,10 @@ void Channel::WriteNextIpczMessage(
                                    IncrementLastSentChannelSequenceNumber()));
 }
 
+std::optional<bool> Channel::IsImportanceReceiverForTesting() const {
+  return std::nullopt;
+}
+
 base::span<char> Channel::GetReadBuffer(size_t buffer_capacity) {
   DCHECK(read_buffer_);
   if (!buffer_capacity) {

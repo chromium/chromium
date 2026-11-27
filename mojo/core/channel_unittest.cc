@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -31,6 +32,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
+#include "mojo/core/configuration.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/platform_handle_utils.h"
@@ -2296,5 +2299,89 @@ INSTANTIATE_TEST_SUITE_P(
                     OfferMode::kOneSideOnly));
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+
+namespace {
+
+class ChannelMacVouchersTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
+ protected:
+  ChannelMacVouchersTest() {
+    std::tie(use_mach_vouchers_feature_, enable_mach_vouchers_config_) =
+        GetParam();
+  }
+
+  bool use_mach_vouchers_feature() const { return use_mach_vouchers_feature_; }
+
+  bool enable_mach_vouchers_config() const {
+    return enable_mach_vouchers_config_;
+  }
+
+ private:
+  bool use_mach_vouchers_feature_;
+  bool enable_mach_vouchers_config_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChannelMacVouchersTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+}  // namespace
+
+// Tests whether channels are set to receive Mach vouchers. It doesn't test that
+// a voucher is actually read from a message, because vouchers are added by the
+// OS so an incoming message may not have any voucher to read.
+TEST_P(ChannelMacVouchersTest, ImportanceReceiver) {
+  using ::testing::Optional;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(kUseMachVouchers,
+                                           use_mach_vouchers_feature());
+
+  base::test::SingleThreadTaskEnvironment task_env(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  auto io_task_runner = task_env.GetMainThreadTaskRunner();
+
+  PlatformChannel platform_channel;
+
+  // Simulate the remote end of the channel in a process using the default mojo
+  // config.
+  CallbackChannelDelegate remote_delegate;
+  auto remote_channel = Channel::CreateForIpczDriver(
+      &remote_delegate, platform_channel.TakeRemoteEndpoint(), io_task_runner);
+  remote_channel->Start();
+
+  // Simulate the local end of the channel in a process that overrides
+  // `enable_mach_vouchers`.
+  base::AutoReset<bool> override_config(
+      &mojo::core::internal::g_configuration.enable_mach_vouchers,
+      enable_mach_vouchers_config());
+  CallbackChannelDelegate local_delegate;
+  auto local_channel = Channel::CreateForIpczDriver(
+      &local_delegate, platform_channel.TakeLocalEndpoint(), io_task_runner);
+  local_channel->Start();
+
+  // Wait for StartOnIOThread() to finish.
+  io_task_runner->PostTask(FROM_HERE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+
+  EXPECT_THAT(remote_channel->IsImportanceReceiverForTesting(),
+              Optional(use_mach_vouchers_feature()));
+  EXPECT_THAT(
+      local_channel->IsImportanceReceiverForTesting(),
+      Optional(use_mach_vouchers_feature() && enable_mach_vouchers_config()));
+
+  remote_channel->ShutDown();
+  local_channel->ShutDown();
+
+  // Wait for ShutdownOnIOThread() to finish before letting the delegates go out
+  // of scope.
+  io_task_runner->PostTask(FROM_HERE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+}
+
+#endif  // BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 
 }  // namespace mojo::core
