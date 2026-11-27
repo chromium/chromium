@@ -26,6 +26,12 @@ class Conversation;
 class DebugSink;
 class SessionJournal;
 
+// Why the user might not hear the model's replies.
+enum class SpeakerVolumeWarning {
+  // The system muted the output.
+  kMuted,
+};
+
 // High-level lifecycle coordinator for a TTC session. Manages the lifetime
 // of the session UI (SessionView) and the model interaction (Conversation).
 // Agnostic of the underlying MES transport protocol.
@@ -58,6 +64,11 @@ class SessionController {
     // running, so audio levels continue at zero while muted. See
     // `SessionController::OnSystemMicMuteChanged()`.
     virtual void OnSystemMicMuteChanged(bool muted, bool at_stream_start) {}
+    // The user might not hear the model because of the system's output
+    // volume. Only reported while the session is live. Muting is reported when
+    // the session goes live muted and each time the system mutes the output
+    // after that.
+    virtual void OnSpeakerVolumeWarning(SpeakerVolumeWarning warning) {}
     // The get_pointer tool told the model that the user is pointing at
     // `points`, in DIPs relative to the top left of the voice-focused
     // contents.

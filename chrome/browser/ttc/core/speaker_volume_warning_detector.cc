@@ -17,8 +17,10 @@ namespace ttc {
 
 // static
 std::unique_ptr<SpeakerVolumeWarningDetector>
-SpeakerVolumeWarningDetector::MaybeCreate(SessionJournal& journal) {
-  auto detector = base::WrapUnique(new SpeakerVolumeWarningDetector(journal));
+SpeakerVolumeWarningDetector::MaybeCreate(SessionJournal& journal,
+                                          WarningCallback warning_callback) {
+  auto detector = base::WrapUnique(
+      new SpeakerVolumeWarningDetector(journal, std::move(warning_callback)));
   if (!detector->Start()) {
     return nullptr;
   }
@@ -26,8 +28,9 @@ SpeakerVolumeWarningDetector::MaybeCreate(SessionJournal& journal) {
 }
 
 SpeakerVolumeWarningDetector::SpeakerVolumeWarningDetector(
-    SessionJournal& journal)
-    : journal_(journal) {}
+    SessionJournal& journal,
+    WarningCallback warning_callback)
+    : journal_(journal), warning_callback_(std::move(warning_callback)) {}
 
 SpeakerVolumeWarningDetector::~SpeakerVolumeWarningDetector() = default;
 
@@ -55,7 +58,11 @@ void SpeakerVolumeWarningDetector::OnOutputVolumeChanged(
   }
   journal_->Log("TtcSystemSpeakerVolume", std::move(details).Build());
 
+  const bool was_muted = output_volume_ && output_volume_->muted;
   output_volume_ = state;
+  if (state.muted && !was_muted) {
+    warning_callback_.Run(SpeakerVolumeWarning::kMuted);
+  }
 }
 
 }  // namespace ttc

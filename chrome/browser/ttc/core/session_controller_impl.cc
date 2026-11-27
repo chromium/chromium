@@ -101,6 +101,13 @@ std::string_view SessionEndReasonToString(
   }
 }
 
+std::string_view SpeakerVolumeWarningToString(SpeakerVolumeWarning warning) {
+  switch (warning) {
+    case SpeakerVolumeWarning::kMuted:
+      return "muted";
+  }
+}
+
 }  // namespace
 
 SessionControllerImpl::SessionControllerImpl(
@@ -234,13 +241,13 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
   for (SessionController::Observer& observer : observers_) {
     observer.OnSessionLifecycleChanged(lifecycle);
   }
-  if (session_lifecycle_ == SessionLifecycle::kLive) {
-    if (base::FeatureList::IsEnabled(kTtcSpeakerVolumeWarning)) {
-      speaker_volume_warning_detector_ =
-          SpeakerVolumeWarningDetector::MaybeCreate(journal_);
-    }
-  } else if (session_lifecycle_ == SessionLifecycle::kFinished) {
-    speaker_volume_warning_detector_.reset();
+  if (session_lifecycle_ == SessionLifecycle::kLive &&
+      base::FeatureList::IsEnabled(kTtcSpeakerVolumeWarning)) {
+    speaker_volume_warning_detector_ =
+        SpeakerVolumeWarningDetector::MaybeCreate(
+            journal_, base::BindRepeating(
+                          &SessionControllerImpl::NotifySpeakerVolumeWarning,
+                          weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -573,6 +580,20 @@ void SessionControllerImpl::OnSessionEndConditionDetected(
                        .Add("reason", SessionEndReasonToString(reason))
                        .Build());
   EndSessionAsync();
+}
+
+void SessionControllerImpl::NotifySpeakerVolumeWarning(
+    SpeakerVolumeWarning warning) {
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  GetJournal().Log("TtcSpeakerVolumeWarning",
+                   actor::JournalDetailsBuilder()
+                       .Add("warning", SpeakerVolumeWarningToString(warning))
+                       .Build());
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnSpeakerVolumeWarning(warning);
+  }
 }
 
 }  // namespace ttc

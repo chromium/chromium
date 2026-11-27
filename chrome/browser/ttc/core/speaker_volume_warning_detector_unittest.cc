@@ -25,12 +25,14 @@ namespace ttc {
 namespace {
 
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pair;
 
 constexpr OutputVolumeState kAudible{.muted = false, .level = 0.5f};
+constexpr OutputVolumeState kMuted{.muted = true, .level = 0.5f};
 
 class FakeSessionJournal : public SessionJournal {
  public:
@@ -101,6 +103,13 @@ class SpeakerVolumeWarningDetectorTest : public testing::Test {
                                                      std::move(callback));
   }
 
+  SpeakerVolumeWarningDetector::WarningCallback RecordWarnings() {
+    return base::BindRepeating(
+        [](std::vector<SpeakerVolumeWarning>* warnings,
+           SpeakerVolumeWarning warning) { warnings->push_back(warning); },
+        &warnings_);
+  }
+
   void SetVolume(const OutputVolumeState& state) {
     ASSERT_TRUE(monitor_);
     monitor_->SetState(state);
@@ -110,6 +119,7 @@ class SpeakerVolumeWarningDetectorTest : public testing::Test {
   std::optional<OutputVolumeState> initial_state_ = kAudible;
   bool platform_supported_ = true;
   raw_ptr<FakeOutputVolumeMonitor> monitor_ = nullptr;
+  std::vector<SpeakerVolumeWarning> warnings_;
   OutputVolumeMonitor::ScopedFactoryForTesting factory_{
       base::BindRepeating(&SpeakerVolumeWarningDetectorTest::CreateMonitor,
                           base::Unretained(this))};
@@ -117,13 +127,16 @@ class SpeakerVolumeWarningDetectorTest : public testing::Test {
 
 TEST_F(SpeakerVolumeWarningDetectorTest, ReturnsNullWhenPlatformUnsupported) {
   platform_supported_ = false;
-  EXPECT_EQ(SpeakerVolumeWarningDetector::MaybeCreate(journal_), nullptr);
+  EXPECT_EQ(
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings()),
+      nullptr);
   EXPECT_THAT(journal_.entries(), IsEmpty());
+  EXPECT_THAT(warnings_, IsEmpty());
 }
 
 TEST_F(SpeakerVolumeWarningDetectorTest, LogsInitialAndChangedVolumeToJournal) {
   std::unique_ptr<SpeakerVolumeWarningDetector> detector =
-      SpeakerVolumeWarningDetector::MaybeCreate(journal_);
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
   ASSERT_TRUE(detector);
   SetVolume({.muted = true, .level = std::nullopt});
 
@@ -140,13 +153,48 @@ TEST_F(SpeakerVolumeWarningDetectorTest, LogsInitialAndChangedVolumeToJournal) {
 TEST_F(SpeakerVolumeWarningDetectorTest, UnknownInitialVolumeIsNotLogged) {
   initial_state_ = std::nullopt;
   std::unique_ptr<SpeakerVolumeWarningDetector> detector =
-      SpeakerVolumeWarningDetector::MaybeCreate(journal_);
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
   ASSERT_TRUE(detector);
   EXPECT_THAT(journal_.entries(), IsEmpty());
 
   SetVolume(kAudible);
   ASSERT_EQ(journal_.entries().size(), 1u);
   EXPECT_EQ(journal_.entries()[0].event_name, "TtcSystemSpeakerVolume");
+}
+
+TEST_F(SpeakerVolumeWarningDetectorTest, MutedAtStartWarnsImmediately) {
+  initial_state_ = kMuted;
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted));
+}
+
+TEST_F(SpeakerVolumeWarningDetectorTest, UnknownStateAtStartIsQuiet) {
+  initial_state_ = std::nullopt;
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  SetVolume(kMuted);
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted));
+}
+
+// Like the microphone, each transition to muted warns while live.
+TEST_F(SpeakerVolumeWarningDetectorTest, EachMuteWarns) {
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+
+  SetVolume(kMuted);
+  // Still muted: the volume changed, but there is nothing new to warn about.
+  SetVolume({.muted = true, .level = 0.8f});
+  SetVolume(kAudible);
+  SetVolume(kMuted);
+
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted,
+                                     SpeakerVolumeWarning::kMuted));
 }
 
 }  // namespace

@@ -144,6 +144,7 @@ class SessionControllerImpl : public SessionController,
   void OnInactivityTimeout();
   void OnSessionEndConditionDetected(
       SessionEndConditionDetector::Reason reason);
+  void NotifySpeakerVolumeWarning(SpeakerVolumeWarning warning);
 
   // Notifies observers of the tool call completion and returns the response to
   // forward it to the chained callback.
@@ -208,7 +209,7 @@ class SessionControllerImpl : public SessionController,
   std::unique_ptr<SessionInactivityDetector> inactivity_detector_;
   std::unique_ptr<SessionEndConditionDetector> session_end_condition_detector_;
   // Created when the session goes live if kTtcSpeakerVolumeWarning is enabled
-  // on a platform that can read the output volume, and reset when it finishes.
+  // on a platform that can read the output volume.
   std::unique_ptr<SpeakerVolumeWarningDetector>
       speaker_volume_warning_detector_;
 

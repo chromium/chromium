@@ -103,6 +103,7 @@ class MockSessionControllerObserver : public SessionController::Observer {
   MOCK_METHOD(void, OnSpeakerChanged, (Speaker), (override));
   MOCK_METHOD(void, OnMicCaptureChanged, (bool), (override));
   MOCK_METHOD(void, OnSystemMicMuteChanged, (bool, bool), (override));
+  MOCK_METHOD(void, OnSpeakerVolumeWarning, (SpeakerVolumeWarning), (override));
   MOCK_METHOD(void,
               OnPointerLocationsReported,
               (base::span<const gfx::Point>),
@@ -988,17 +989,17 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest, NoMonitorWithoutFeature) {
   EXPECT_EQ(monitors_created_, 0);
 }
 
-// The session follows the volume while live and stops once finished.
+// The session follows the volume once live and stops when destroyed.
 TEST_F(TtcSessionControllerImplSpeakerVolumeTest, SessionOwnsMonitorWhileLive) {
-  SessionControllerImpl controller(*service_);
-  EXPECT_EQ(monitors_created_, 0);
-  EXPECT_FALSE(monitor_);
+  {
+    SessionControllerImpl controller(*service_);
+    EXPECT_EQ(monitors_created_, 0);
+    EXPECT_FALSE(monitor_);
 
-  controller.SetSessionLifecycle(SessionLifecycle::kLive);
-  EXPECT_EQ(monitors_created_, 1);
-  ASSERT_TRUE(monitor_);
-
-  controller.SetSessionLifecycle(SessionLifecycle::kFinished);
+    controller.SetSessionLifecycle(SessionLifecycle::kLive);
+    EXPECT_EQ(monitors_created_, 1);
+    ASSERT_TRUE(monitor_);
+  }
   EXPECT_FALSE(monitor_);
 }
 
@@ -1038,6 +1039,28 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
   controller.SetSessionLifecycle(SessionLifecycle::kLive);
   EXPECT_EQ(monitors_created_, 1);
   EXPECT_FALSE(monitor_);
+}
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
+       MutedAtStartWarnsObserverAndLogsToJournal) {
+  initial_state_ = OutputVolumeState{.muted = true, .level = 0.5f};
+  actor::ActorJournalRecorder recorder(
+      actor::ActorKeyedService::Get(&profile_)->GetJournal());
+  SessionControllerImpl controller(*service_);
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  controller.AddObserver(&observer);
+
+  EXPECT_TRUE(recorder.GetEntries("TtcSpeakerVolumeWarning").empty());
+  EXPECT_CALL(observer, OnSpeakerVolumeWarning(SpeakerVolumeWarning::kMuted));
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
+
+  const std::vector<actor::ActorJournalRecorder::Entry> entries =
+      recorder.GetEntries("TtcSpeakerVolumeWarning");
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_THAT(entries[0].details,
+              testing::Contains(testing::Pair("warning", "muted")));
+
+  controller.RemoveObserver(&observer);
 }
 
 }  // namespace ttc
