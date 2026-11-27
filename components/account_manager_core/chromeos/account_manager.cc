@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +31,7 @@
 #include "components/account_manager_core/chromeos/tokens.pb.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -44,6 +45,11 @@
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace account_manager {
+
+// Returns a Base16 encoded SHA1 digest of `data`.
+std::string Sha1AsHexForTokenHash(std::string_view data) {
+  return base::HexEncode(crypto::obsolete::Sha1::Hash(data));
+}
 
 namespace {
 
@@ -105,11 +111,6 @@ internal::AccountType ToProtoAccountType(
   CHECK_EQ(account_type, account_manager::AccountType::kGaia);
 
   return internal::AccountType::ACCOUNT_TYPE_GAIA;
-}
-
-// Returns a Base16 encoded SHA1 digest of `data`.
-std::string Sha1Digest(const std::string& data) {
-  return base::HexEncode(base::SHA1Hash(base::as_byte_span(data)));
 }
 
 }  // namespace
@@ -801,7 +802,7 @@ void AccountManager::GetTokenHash(
     return;
   }
 
-  std::move(callback).Run(Sha1Digest(it->second.token));
+  std::move(callback).Run(Sha1AsHexForTokenHash(it->second.token));
 }
 
 void AccountManager::MaybeRevokeTokenOnServer(

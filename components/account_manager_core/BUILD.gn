@@ -30,6 +30,7 @@ component("account_manager_core") {
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
+    "//crypto",
     "//google_apis",
     "//services/network/public/cpp",
   ]
@@ -75,6 +76,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
+    "//crypto",
     "//google_apis",
     "//services/network:test_support",
     "//services/network/public/cpp",

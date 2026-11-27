@@ -1,6 +1,7 @@
 include_rules = [
   "+components/policy/core/common/policy_pref_names.h",
   "+components/prefs",
+  "+crypto",
   "+google_apis/gaia",
   "+services/network/public/cpp",
   "+third_party/protobuf",

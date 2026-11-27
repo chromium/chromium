@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +25,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -642,9 +643,9 @@ TEST_F(AccountManagerTest, GetTokenHashReturnsSha1Hash) {
   base::test::TestFuture<const std::string&> future;
   account_manager()->GetTokenHash(gaia_account_key_, future.GetCallback());
 
-  const base::SHA1Digest token_hash =
-      base::SHA1Hash(base::as_byte_span(std::string(kGaiaToken)));
-  const std::string token_hash_digest = base::HexEncode(token_hash);
+  const std::string token_hash_digest =
+      base::HexEncode(crypto::obsolete::Sha1::HashForTesting(
+          base::byte_span_from_cstring(kGaiaToken)));
   EXPECT_EQ(token_hash_digest, future.Get());
 }
 

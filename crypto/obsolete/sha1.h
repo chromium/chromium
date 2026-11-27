@@ -23,6 +23,10 @@ static constexpr size_t kSha1Size = 20;
 class Sha1;
 }  // namespace crypto::obsolete
 
+namespace account_manager {
+std::string Sha1AsHexForTokenHash(std::string_view data);
+}
+
 namespace arc {
 std::string GetSha1HashForArcPlayTermsOfService(std::string_view tos_content);
 }
@@ -115,6 +119,8 @@ class CRYPTO_EXPORT Sha1 {
 
   // The friends listed here are the areas required to continue using SHA-1 for
   // compatibility with existing specs, on-disk data, or similar.
+  friend std::string account_manager::Sha1AsHexForTokenHash(
+      std::string_view data);
   friend std::string ash::ambient::GetCachedImageHash(std::string_view image);
   friend std::string ash::ambient::Sha1UrlAsHexEncodeForFilename(
       std::string_view url);
