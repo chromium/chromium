@@ -778,10 +778,6 @@ def GitApplyCherryPicks():
     # # TODO(crbug.com/12345678): Remove once fixed upstream.
     # GitRevert(RUST_SRC_DIR, 'fedcba9876543210fedcba9876543210fedcba98')
 
-    # TODO(crbug.com/589797469): Remove once Crubit is updated for
-    # https://github.com/rust-lang/rust/pull/166270.
-    GitRevert(RUST_SRC_DIR, '520eab3ea8960d0f18ed55bbb8d0caba26ec5c70')
-
     print('Finished applying cherry-picks.')
 
 
