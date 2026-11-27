@@ -18,7 +18,6 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
-#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -785,19 +784,7 @@ class AutofillPrivateApiSavePrivatePassToWalletTest
   testing::NiceMock<consent_auditor::FakeConsentAuditor> consent_auditor_;
 };
 
-class AutofillPrivateApiSavePrivatePassConsentTest
-    : public base::test::WithFeatureOverride,
-      public AutofillPrivateApiSavePrivatePassToWalletTest {
- public:
-  AutofillPrivateApiSavePrivatePassConsentTest()
-      : base::test::WithFeatureOverride(
-            autofill::features::kAutofillRegionalizedPrivatePassesUxRefine) {}
-};
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    AutofillPrivateApiSavePrivatePassConsentTest);
-
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiSavePrivatePassConsentTest,
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
                        AddPassport_SavesToWallet_WhenEligible) {
   EntityInstance entity_instance = autofill::test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
@@ -808,15 +795,9 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiSavePrivatePassConsentTest,
           /*entity_supports_wallet_storage=*/true);
   api_entity.stored_in_wallet = true;
   // LINT.IfChange(WalletPrivatePassConsentStrings)
-  if (IsParamFeatureEnabled()) {
-    api_entity.consent_string_names = std::vector<std::string>{
-        "googleWalletTitle", "autofillAiHowThisInfoIsUsedAcrossGoogle",
-        "saveInfoToWalletPrivatePassAccountNotice", "autofillAiPrivacyPolicy"};
-  } else {
-    api_entity.consent_string_names = std::vector<std::string>{
-        "googleWalletTitle", "autofillAiManageYourInfo",
-        "saveInfoToWalletSettingsAccountNotice"};
-  }
+  api_entity.consent_string_names = std::vector<std::string>{
+      "googleWalletTitle", "autofillAiHowThisInfoIsUsedAcrossGoogle",
+      "saveInfoToWalletPrivatePassAccountNotice", "autofillAiPrivacyPolicy"};
   // LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/autofill_ai_add_or_edit_dialog.ts:WalletPrivatePassConsentStrings)
 
   base::ListValue args;
@@ -849,21 +830,13 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiSavePrivatePassConsentTest,
   autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
 
   EXPECT_EQ(session_id_consent, session_id_api);
-  if (IsParamFeatureEnabled()) {
-    EXPECT_THAT(
-        consent.description_grd_ids(),
-        ElementsAre(
-            IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
-            IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
-            IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
-            IDS_AUTOFILL_PRIVACY_POLICY_LINK));
-  } else {
-    EXPECT_THAT(
-        consent.description_grd_ids(),
-        ElementsAre(IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
-                    IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK,
-                    IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
-  }
+  EXPECT_THAT(
+      consent.description_grd_ids(),
+      ElementsAre(
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
   EXPECT_EQ(consent.confirmation_grd_id(), IDS_SAVE);
   base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
