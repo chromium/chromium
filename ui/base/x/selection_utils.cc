@@ -31,11 +31,13 @@ namespace ui {
 
 std::vector<x11::Atom> GetTextAtomsFrom() {
   auto* connection = x11::Connection::Get();
+  // Prefer explicitly UTF-8 types. Some sources (e.g. Firefox) put UTF-8 data
+  // in text/plain, which GetText() decodes as Latin-1.
   return {connection->GetAtom(kMimeTypeLinuxUtf8String),
+          connection->GetAtom(kMimeTypeUtf8PlainText),
           connection->GetAtom(kMimeTypeLinuxString),
           connection->GetAtom(kMimeTypeLinuxText),
-          connection->GetAtom(kMimeTypePlainText),
-          connection->GetAtom(kMimeTypeUtf8PlainText)};
+          connection->GetAtom(kMimeTypePlainText)};
 }
 
 std::vector<x11::Atom> GetURLAtomsFrom() {

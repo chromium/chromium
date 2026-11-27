@@ -29,12 +29,14 @@ class OSExchangeDataProviderX11Test : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         event_source(x11::Connection::Get()) {}
 
-  void AddURLList(const std::string& list_contents) {
-    scoped_refptr<base::RefCountedMemory> mem(
-        base::MakeRefCounted<base::RefCountedString>(list_contents));
-
+  void AddData(const char* mime_type, const std::string& contents) {
     provider.format_map_.Insert(
-        x11::Connection::Get()->GetAtom(kMimeTypeUriList), mem);
+        x11::Connection::Get()->GetAtom(mime_type),
+        base::MakeRefCounted<base::RefCountedString>(contents));
+  }
+
+  void AddURLList(const std::string& list_contents) {
+    AddData(kMimeTypeUriList, list_contents);
   }
 
  protected:
@@ -121,6 +123,19 @@ TEST_F(OSExchangeDataProviderX11Test, StringAndURIListFilterString) {
   EXPECT_FALSE(provider.GetString().has_value());
 
   EXPECT_TRUE(provider.HasFile());
+}
+
+// Drag sources such as Firefox offer both text/plain and
+// text/plain;charset=utf-8 without UTF8_STRING. The explicitly UTF-8 type must
+// win over text/plain, which is decoded as Latin-1.
+TEST_F(OSExchangeDataProviderX11Test, PrefersUtf8PlainTextOverPlainText) {
+  const std::string utf8_text =
+      "Espa\xC3\xB1"
+      "a \xC3\xA9";
+  AddData(kMimeTypePlainText, utf8_text);
+  AddData(kMimeTypeUtf8PlainText, utf8_text);
+
+  EXPECT_EQ(u"Espa\u00F1a \u00E9", provider.GetString());
 }
 
 }  // namespace ui
