@@ -147,7 +147,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
      *
      * <p>With {@link ChromeFeatureList#ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE}, the native NTP
      * focuses the Omnibox on load, so this enters {@link #omnibox}, skips the logo check, and skips
-     * {@link #toolbar} on phones (which hide toolbar buttons while focused).
+     * {@link #getDefaultToolbar()} on phones (which hide toolbar buttons while focused).
      */
     public static Outcome<RegularNewTabPageStation> openedInNewTabFrom(
             Station<ChromeTabbedActivity> origin) {
@@ -168,14 +168,15 @@ public class RegularNewTabPageStation extends CtaPageStation {
                         .build();
         Outcome<RegularNewTabPageStation> outcome = Outcome.enter(ntp);
         if (omniboxFocused && !origin.getActivity().isTablet()) {
-            outcome = outcome.withoutDefaultFacility(ntp.toolbar);
+            outcome = outcome.withoutDefaultFacility(ntp.getDefaultToolbar());
         }
         return outcome;
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
-        return toolbar.menuButtonElement
+        return getToolbar()
+                .menuButtonElement
                 .clickTo()
                 .enterFacility(new RegularNewTabPageAppMenuFacility());
     }

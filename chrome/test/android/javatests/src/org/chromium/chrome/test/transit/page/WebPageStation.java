@@ -101,7 +101,8 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIsIncognito;
-        return toolbar.menuButtonElement
+        return getToolbar()
+                .menuButtonElement
                 .clickTo()
                 .enterFacility(new RegularWebPageAppMenuFacility());
     }
@@ -109,7 +110,8 @@ public class WebPageStation extends CtaPageStation implements WebContentsElement
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIsIncognito;
-        return toolbar.menuButtonElement
+        return getToolbar()
+                .menuButtonElement
                 .clickTo()
                 .enterFacility(new IncognitoWebPageAppMenuFacility());
     }

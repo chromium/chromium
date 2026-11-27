@@ -5,6 +5,9 @@
 package org.chromium.base.test.transit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -18,7 +21,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.transit.ConditionalState.Phase;
 import org.chromium.build.annotations.Nullable;
 
-/** Unit tests for {@link Station#declareDefaultFacility(Facility)}. */
+/**
+ * Unit tests for {@link Station#declareDefaultFacility(Facility)} and {@link
+ * Station#getActiveFacility(Class)}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DefaultFacilitiesUnitTest {
     @Rule public final PublicTransitUnitTestRule mTransitRule = new PublicTransitUnitTestRule();
@@ -195,5 +201,44 @@ public class DefaultFacilitiesUnitTest {
 
         assertEquals(Phase.ACTIVE, destination.getPhase());
         assertEquals(Phase.ACTIVE, destination.defaultFacility.getPhase());
+    }
+
+    @Test
+    public void testGetActiveFacility_returnsActiveDefaultFacility() throws Throwable {
+        StationWithDefaultFacility station = hopOnTo(new StationWithDefaultFacility());
+
+        assertSame(station.defaultFacility, station.getActiveFacility(TestFacility.class));
+    }
+
+    @Test
+    public void testGetActiveFacility_afterExit_returnsNull() throws Throwable {
+        StationWithDefaultFacility station = hopOnTo(new StationWithDefaultFacility());
+
+        mTransitRule.runTransition(() -> station.noopTo().exitFacility(station.defaultFacility));
+
+        assertNull(station.getActiveFacility(TestFacility.class));
+    }
+
+    @Test
+    public void testGetActiveFacility_afterReplacing_returnsNewFacility() throws Throwable {
+        StationWithDefaultFacility station = hopOnTo(new StationWithDefaultFacility());
+
+        TestFacility replacement = new TestFacility();
+        mTransitRule.runTransition(
+                () ->
+                        station.noopTo()
+                                .exitFacilityAnd(station.defaultFacility)
+                                .enterFacility(replacement));
+
+        assertSame(replacement, station.getActiveFacility(TestFacility.class));
+    }
+
+    @Test
+    public void testGetActiveFacility_twoActive_throws() throws Throwable {
+        StationWithDefaultFacility station = hopOnTo(new StationWithDefaultFacility());
+
+        mTransitRule.runTransition(() -> station.noopTo().enterFacility(new TestFacility()));
+
+        assertThrows(AssertionError.class, () -> station.getActiveFacility(TestFacility.class));
     }
 }

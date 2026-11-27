@@ -51,7 +51,8 @@ public class IncognitoNewTabPageStation extends CtaPageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
-        return toolbar.menuButtonElement
+        return getToolbar()
+                .menuButtonElement
                 .clickTo()
                 .enterFacility(new IncognitoNewTabPageAppMenuFacility());
     }

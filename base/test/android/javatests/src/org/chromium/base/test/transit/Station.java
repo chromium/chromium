@@ -78,6 +78,24 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         return mDefaultFacilities;
     }
 
+    /**
+     * Returns the ACTIVE Facility of this Station that is an instance of |facilityClass|, or null
+     * if there is none. Asserts there is at most one.
+     */
+    public <FacilityT extends Facility<?>> @Nullable FacilityT getActiveFacility(
+            Class<FacilityT> facilityClass) {
+        FacilityT found = null;
+        for (ConditionalState child : getActiveChildren()) {
+            if (!facilityClass.isInstance(child)) continue;
+            assert found == null
+                    : String.format(
+                            "%s has more than one active %s: %s and %s",
+                            getName(), facilityClass.getSimpleName(), found, child);
+            found = facilityClass.cast(child);
+        }
+        return found;
+    }
+
     @Override
     public String getName() {
         return mName;

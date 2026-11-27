@@ -79,8 +79,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                     withId(R.id.optional_toolbar_button),
                     withContentDescription(R.string.accessibility_toolbar_btn_mic));
 
-    /** The toolbar, entered by default with this Station. */
-    public final ToolbarFacility toolbar;
+    /**
+     * @deprecated Use {@link #getToolbar()}.
+     */
+    @Deprecated public final ToolbarFacility toolbar;
 
     /** Prefer the CtaPageStation's subclass |newBuilder()|. */
     public static Builder<CtaPageStation> newGenericBuilder() {
@@ -97,6 +99,21 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         toolbar = declareDefaultFacility(new ToolbarFacility());
     }
 
+    /** Returns the ACTIVE toolbar of this Station. */
+    public ToolbarFacility getToolbar() {
+        ToolbarFacility activeToolbar = getActiveFacility(ToolbarFacility.class);
+        assert activeToolbar != null : getName() + " has no active ToolbarFacility";
+        return activeToolbar;
+    }
+
+    /**
+     * Returns the ToolbarFacility entered by default with this Station, e.g. to skip it with {@link
+     * Outcome#withoutDefaultFacility} before the Station is entered.
+     */
+    public ToolbarFacility getDefaultToolbar() {
+        return toolbar;
+    }
+
     /**
      * Clicks the mic button in the toolbar, expecting to navigate to a search results page.
      *
@@ -104,7 +121,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      * @return the {@link WebPageStation} representing the search results page
      */
     public WebPageStation clickToolbarMicToSearchPage(String query) {
-        return toolbar.optionalToolbarMicButtonElement
+        return getToolbar()
+                .optionalToolbarMicButtonElement
                 .clickTo()
                 .arriveAt(createSearchPageStation(query));
     }
@@ -120,14 +138,15 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
-        return toolbar.tabSwitcherButtonElement
+        return getToolbar()
+                .tabSwitcherButtonElement
                 .longPressTo()
                 .enterFacility(new TabSwitcherActionMenuFacility());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<CtaPageStation> openGenericAppMenu() {
-        return toolbar.menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
+        return getToolbar().menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
     }
 
     /**
@@ -138,7 +157,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         assert DeviceInfo.isDesktop() : "The account menu is only available on desktop";
         assert SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
                 : "The account menu requires SIGNIN_BUTTON_PROFILE_MENU";
-        return toolbar.signinButtonElement
+        return getToolbar()
+                .signinButtonElement
                 .clickTo()
                 .enterFacility(new SignedOutAccountMenuFacility());
     }
@@ -382,7 +402,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Start a Trip pressing the toolbar tab switcher button. */
     public TripBuilder clickTabSwitcherButtonTo() {
-        return toolbar.tabSwitcherButtonElement.clickTo();
+        return getToolbar().tabSwitcherButtonElement.clickTo();
     }
 
     /** Loads a |url| leading to a web page in the same tab and waits to transition. */
@@ -518,13 +538,14 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     public TripBuilder swipeToolbarTo(boolean directionRight) {
-        ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbar.toolbarElement.value(), directionRight);
+        // Read the toolbar before the Trip: the trigger runs once it is TRANSITIONING_FROM.
+        View toolbarView = getToolbar().toolbarElement.value();
+        ToolbarSwipeCoordinates coords = new ToolbarSwipeCoordinates(toolbarView, directionRight);
 
         return runTo(
                         () ->
                                 TouchCommon.performDrag(
-                                        toolbar.toolbarElement.value(),
+                                        toolbarView,
                                         coords.mFromX,
                                         coords.mToX,
                                         coords.mY,
@@ -541,7 +562,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     private SwipingToTabFacility swipeToolbarPartial(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(toolbar.toolbarElement.value(), directionRight);
+                new ToolbarSwipeCoordinates(getToolbar().toolbarElement.value(), directionRight);
         long downTime = SystemClock.uptimeMillis();
         Activity activity = getActivity();
 
