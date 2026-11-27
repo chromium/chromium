@@ -36,9 +36,12 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.Coordinates;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -59,6 +62,10 @@ public class VirtualKeyboardVisualViewportTest {
     private static final String INPUT_ID = "input";
     private static final long TIMEOUT_MS = 10000;
     private static final int MAX_SCROLL_ATTEMPTS = 5;
+
+    private static class InputPageFacility extends WebPageFacility {
+        public final HtmlElement input = declareHtmlElement("#" + INPUT_ID);
+    }
 
     // Tall enough for the browser controls to scroll away, with an input that stays on screen
     // after that scroll.
@@ -85,7 +92,7 @@ public class VirtualKeyboardVisualViewportTest {
     /** The input is focused while the browser controls are showing. */
     @Test
     @MediumTest
-    public void testControlsShown() throws Exception {
+    public void testControlsShown() {
         focusInputWithControlsShown();
     }
 
@@ -97,7 +104,7 @@ public class VirtualKeyboardVisualViewportTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE) // Large tablets lock the top controls.
-    public void testControlsScrolledAwayFirst() throws Exception {
+    public void testControlsScrolledAwayFirst() {
         focusInputAfterScrollingControlsAway();
     }
 
@@ -106,7 +113,7 @@ public class VirtualKeyboardVisualViewportTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX)
-    public void testControlsShown_withoutTransientInnerHeightFix() throws Exception {
+    public void testControlsShown_withoutTransientInnerHeightFix() {
         focusInputWithControlsShown();
     }
 
@@ -114,21 +121,29 @@ public class VirtualKeyboardVisualViewportTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX)
     @Restriction(DeviceFormFactor.PHONE) // Large tablets lock the top controls.
-    public void testControlsScrolledAwayFirst_withoutTransientInnerHeightFix() throws Exception {
+    public void testControlsScrolledAwayFirst_withoutTransientInnerHeightFix() {
         focusInputAfterScrollingControlsAway();
     }
 
-    private void focusInputWithControlsShown() throws Exception {
-        ChromeTabbedActivity activity = mActivityTestRule.startOnUrl(PAGE).getActivity();
+    private void focusInputWithControlsShown() {
+        InputPageFacility pageFacility = new InputPageFacility();
+        WebPageStation page =
+                mActivityTestRule.startOnPage(
+                        PAGE, WebPageStation.newBuilder().withFacility(pageFacility));
+        ChromeTabbedActivity activity = page.getActivity();
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, 0);
-        focusInput(activity);
+        focusInput(page, pageFacility);
         assertVisualViewportEndsAtKeyboardTop(activity);
     }
 
-    private void focusInputAfterScrollingControlsAway() throws Exception {
-        ChromeTabbedActivity activity = mActivityTestRule.startOnUrl(PAGE).getActivity();
+    private void focusInputAfterScrollingControlsAway() {
+        InputPageFacility pageFacility = new InputPageFacility();
+        WebPageStation page =
+                mActivityTestRule.startOnPage(
+                        PAGE, WebPageStation.newBuilder().withFacility(pageFacility));
+        ChromeTabbedActivity activity = page.getActivity();
         scrollBrowserControlsAway(activity);
-        focusInput(activity);
+        focusInput(page, pageFacility);
         assertVisualViewportEndsAtKeyboardTop(activity);
     }
 
@@ -178,7 +193,8 @@ public class VirtualKeyboardVisualViewportTest {
         }
     }
 
-    private void focusInput(ChromeTabbedActivity activity) throws Exception {
+    private void focusInput(WebPageStation page, InputPageFacility pageFacility) {
+        ChromeTabbedActivity activity = page.getActivity();
         // The keyboard doesn't show for a tap made before the window has input focus, which it may
         // not have yet once the page has loaded. Not Station#bringWindowToFront(), which fails when
         // the window already has focus.
@@ -192,14 +208,11 @@ public class VirtualKeyboardVisualViewportTest {
                 () -> activity.hasWindowFocus(),
                 TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), INPUT_ID);
-        CriteriaHelper.pollUiThread(
-                () ->
-                        mActivityTestRule
-                                .getKeyboardDelegate()
-                                .isKeyboardObscuring(activity.getTabsViewForTesting()),
-                TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        pageFacility
+                .input
+                .clickTo()
+                .withTimeout(TIMEOUT_MS)
+                .enterFacility(new SoftKeyboardFacility());
         // Focusing an editable node locks the browser controls shown.
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, 0);
     }

@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -69,7 +70,8 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -77,7 +79,6 @@ import org.chromium.ui.insets.CaptionBarInsetsRectProvider;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Browser test for {@link AppHeaderCoordinator} */
@@ -110,6 +111,10 @@ public class AppHeaderCoordinatorBrowserTest {
     private final Rect mWindowRect = new Rect();
     private int mTestAppHeaderHeight;
     private WebPageStation mPage;
+
+    private static class EditablePageFacility extends WebPageFacility {
+        public final HtmlElement inputElement = declareHtmlElement("#" + TEXTFIELD_DOM_ID);
+    }
 
     @Before
     public void setup() {
@@ -361,27 +366,13 @@ public class AppHeaderCoordinatorBrowserTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE) // https://crbug.com/393388366
-    public void testKeyboardInDesktopWindow_RootViewPadded() throws TimeoutException {
+    public void testKeyboardInDesktopWindow_RootViewPadded() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
         var insetObserver = activity.getWindowAndroid().getInsetObserver();
 
         // Navigate to a URL with an input field. Clicking on it should trigger the OSK.
-        mActivityTestRule.loadUrl(
-                mActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/page_with_editable.html"));
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), TEXTFIELD_DOM_ID);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    boolean isKeyboardShowing =
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardObscuring(activity.getTabsViewForTesting());
-                    Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
-                },
-                KEYBOARD_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        loadEditablePageAndShowKeyboard();
 
         // Verify that the root view is padded at the bottom to account for the OSK inset.
         var rootView = activity.getWindow().getDecorView().getRootView();
@@ -432,27 +423,13 @@ public class AppHeaderCoordinatorBrowserTest {
     @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TABLET})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @DisabledTest(message = "crbug.com/444486094")
-    public void testKeyboardInDesktopWindow_RootViewNotPadded() throws TimeoutException {
+    public void testKeyboardInDesktopWindow_RootViewNotPadded() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
         var insetObserver = activity.getWindowAndroid().getInsetObserver();
 
         // Navigate to a URL with an input field. Clicking on it should trigger the OSK.
-        mActivityTestRule.loadUrl(
-                mActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/page_with_editable.html"));
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), TEXTFIELD_DOM_ID);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    boolean isKeyboardShowing =
-                            mActivityTestRule
-                                    .getKeyboardDelegate()
-                                    .isKeyboardObscuring(activity.getTabsViewForTesting());
-                    Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
-                },
-                KEYBOARD_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        loadEditablePageAndShowKeyboard();
 
         // Verify that the root view is not padded by keyboard insets because it has been handled
         // by E2E controller.
@@ -488,6 +465,21 @@ public class AppHeaderCoordinatorBrowserTest {
         // Verify that the root view bottom padding is reset.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
+    }
+
+    private void loadEditablePageAndShowKeyboard() {
+        EditablePageFacility editablePage = new EditablePageFacility();
+        mPage =
+                mPage.loadPageProgrammatically(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/page_with_editable.html"),
+                        WebPageStation.newBuilder().withFacility(editablePage));
+        editablePage
+                .inputElement
+                .clickTo()
+                .withTimeout(KEYBOARD_TIMEOUT)
+                .enterFacility(new SoftKeyboardFacility());
     }
 
     @Test
