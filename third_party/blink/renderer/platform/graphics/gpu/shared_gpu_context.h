@@ -36,10 +36,14 @@ class PLATFORM_EXPORT SharedGpuContext {
   // needed and software-based resources should be given to the compositor
   // instead.
   static bool IsGpuCompositingEnabled();
-  // May re-create context if context was lost
+  // May re-create context if context was lost. If non-null, the returned
+  // wrapper's ContextProvider() is guaranteed to have a non-null
+  // RasterInterface() and SharedImageInterface().
   static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper();
-  // Returns an existing context and doesn't create one if none exists.
+  // Returns an existing context and doesn't create one if none exists. If
+  // non-null, the returned wrapper's ContextProvider() is guaranteed to have a
+  // non-null RasterInterface() and SharedImageInterface().
   static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   GetExistingContextProviderWrapper();
 

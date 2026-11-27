@@ -177,6 +177,10 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
       context_provider_wrapper_ = nullptr;
     }
   }
+  if (context_provider_wrapper_) {
+    CHECK(context_provider_wrapper_->ContextProvider().RasterInterface());
+    CHECK(context_provider_wrapper_->ContextProvider().SharedImageInterface());
+  }
 }
 
 static void CreateGpuChannelOnMainThread(
