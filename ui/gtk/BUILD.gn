@@ -10,6 +10,7 @@ import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
+import("//ui/base/ui_features.gni")
 
 assert(is_linux || is_chromeos,
        "This file should only be referenced on Linux or Chrome OS")
@@ -189,6 +190,10 @@ component("gtk") {
     ]
   }
 
+  if (use_xkbcommon) {
+    deps += [ "//ui/events/ozone/layout" ]
+  }
+
   if (ozone_platform_wayland) {
     public += [ "wayland/gtk_ui_platform_wayland.h" ]
     sources += [ "wayland/gtk_ui_platform_wayland.cc" ]
@@ -245,6 +250,9 @@ if (use_gtk) {
         "//ui/events:dom_keycode_converter",
         "//ui/gfx/x",
       ]
+      if (use_xkbcommon) {
+        deps += [ "//ui/events/ozone/layout" ]
+      }
     }
 
     if (ozone_platform_wayland) {

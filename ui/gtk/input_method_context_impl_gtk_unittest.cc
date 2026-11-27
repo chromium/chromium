@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -41,8 +42,11 @@ namespace {
 
 constexpr uint8_t kUnusedKeyCode = 248;
 constexpr uint8_t kKeyACode = 38;
+constexpr uint8_t kMinusKeyCode = 20;
 constexpr uint8_t kShiftLeftKeyCode = 50;
 constexpr uint32_t kDeadAcuteKeySym = 0xfe51;  // XK_dead_acute
+constexpr uint32_t kMultiKeySym = 0xff20;      // XK_Multi_key
+constexpr uint32_t kShiftMask = 1;
 constexpr int32_t kCombiningAcute = 0x0301;
 
 class TestInputMethodContextDelegate
@@ -100,7 +104,8 @@ void FlushGlibEvents() {
   }
 }
 
-base::ScopedClosureRunner MapDeadAcuteKeyCode() {
+// Maps `kUnusedKeyCode` to `keysym` until the returned runner is destroyed.
+base::ScopedClosureRunner MapUnusedKeyCode(uint32_t keysym) {
   auto* connection = x11::Connection::Get();
   auto orig_reply =
       connection
@@ -110,7 +115,7 @@ base::ScopedClosureRunner MapDeadAcuteKeyCode() {
 
   connection
       ->ChangeKeyboardMapping(1, static_cast<x11::KeyCode>(kUnusedKeyCode), 1,
-                              {static_cast<x11::KeySym>(kDeadAcuteKeySym)})
+                              {static_cast<x11::KeySym>(keysym)})
       .Sync();
   FlushGlibEvents();
 
@@ -139,7 +144,8 @@ base::ScopedClosureRunner MapDeadAcuteKeyCode() {
 // events as handled and drop DOM keyup events.
 TEST(InputMethodContextImplGtkTest,
      DeadKeyDoesNotFilterKeyReleaseAndStillComposes) {
-  base::ScopedClosureRunner restore_keymap = MapDeadAcuteKeyCode();
+  base::test::TaskEnvironment task_environment;
+  base::ScopedClosureRunner restore_keymap = MapUnusedKeyCode(kDeadAcuteKeySym);
 
   for (const char* im_module : {"", "gtk-im-context-simple"}) {
     SCOPED_TRACE(im_module);
@@ -203,7 +209,8 @@ TEST(InputMethodContextImplGtkTest,
      KeyReleaseRespectsAsyncImeHandledStateFlag) {
   base::ScopedEnvironmentVariableOverride im_override("GTK_IM_MODULE",
                                                       "gtk-im-context-simple");
-  base::ScopedClosureRunner restore_keymap = MapDeadAcuteKeyCode();
+  base::test::TaskEnvironment task_environment;
+  base::ScopedClosureRunner restore_keymap = MapUnusedKeyCode(kDeadAcuteKeySym);
 
   GtkUiPlatformStub platform;
   TestInputMethodContextDelegate delegate;
@@ -245,6 +252,7 @@ TEST(InputMethodContextImplGtkTest,
 // stay handled, otherwise InputMethodAuraLinux inserts the result with
 // InsertText() even when TextInputType is NONE.
 TEST(InputMethodContextImplGtkTest, KeyReleaseThatCommitsIsHandled) {
+  base::test::TaskEnvironment task_environment;
   base::ScopedEnvironmentVariableOverride im_override("GTK_IM_MODULE",
                                                       "gtk-im-context-simple");
   GtkUiPlatformStub platform;
@@ -281,6 +289,37 @@ TEST(InputMethodContextImplGtkTest, KeyReleaseThatCommitsIsHandled) {
       ui::DomKey::SHIFT, kShiftLeftKeyCode, kCtrlShift);
   EXPECT_TRUE(context.DispatchKeyEvent(shift_release));
   EXPECT_EQ(delegate.committed_text(), u"\u00e9");
+}
+
+// Regression test for crbug.com/40203824: GTK3's GtkIMContextSimple has an
+// outdated built-in Compose table (Compose - A gives U+00C3 instead of U+0100),
+// so compose sequences go through the system Compose table instead. Password
+// fields always use GtkIMContextSimple, independent of the IM module in use.
+TEST(InputMethodContextImplGtkTest, ComposeUsesXkbComposeTable) {
+  base::test::TaskEnvironment task_environment;
+  base::ScopedClosureRunner restore_keymap = MapUnusedKeyCode(kMultiKeySym);
+
+  GtkUiPlatformStub platform;
+  TestInputMethodContextDelegate delegate;
+  InputMethodContextImplGtk context(&delegate, &platform);
+  ASSERT_TRUE(context.xkb_composer_for_testing().SetComposeTableFromBuffer(
+      "<Multi_key> <minus> <A> : \"\u0100\"\n"));
+
+  ui::LinuxInputMethodContext::TextInputClientAttributes attrs;
+  attrs.input_type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  context.UpdateFocus(/*has_client=*/true, ui::TEXT_INPUT_TYPE_NONE, attrs,
+                      ui::TextInputClient::FOCUS_REASON_OTHER);
+
+  EXPECT_TRUE(context.DispatchKeyEvent(
+      MakeX11KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
+                      ui::DomCode::NONE, ui::DomKey::COMPOSE, kUnusedKeyCode)));
+  EXPECT_TRUE(context.DispatchKeyEvent(MakeX11KeyEvent(
+      ui::EventType::kKeyPressed, ui::VKEY_OEM_MINUS, ui::DomCode::MINUS,
+      ui::DomKey::FromCharacter('-'), kMinusKeyCode)));
+  EXPECT_TRUE(context.DispatchKeyEvent(
+      MakeX11KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_A, ui::DomCode::US_A,
+                      ui::DomKey::FromCharacter('A'), kKeyACode, kShiftMask)));
+  EXPECT_EQ(delegate.committed_text(), u"\u0100");
 }
 
 }  // namespace gtk

@@ -9,8 +9,10 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/linux/composition_text_util_pango.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -20,6 +22,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -166,6 +169,11 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
     }
   }
   gtk_simple_context_ = TakeGObject(gtk_im_context_simple_new());
+#if BUILDFLAG(USE_XKBCOMMON)
+  if (!GtkCheckVersion(4)) {
+    ui::XkbComposer::LoadDefaultComposeTable();
+  }
+#endif
 
   auto connect = [&](const char* detailed_signal, auto receiver) {
     for (const auto& context : {gtk_context_, gtk_simple_context_}) {
@@ -259,6 +267,13 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   base::AutoReset<raw_ptr<bool>> reset_ime_result(&ime_result_during_filter_,
                                                   &ime_result_during_filter);
   if (!GtkCheckVersion(4)) {
+#if BUILDFLAG(USE_XKBCOMMON)
+    if (key_event.type() == ui::EventType::kKeyPressed &&
+        ComposeWithXkb(gtk_context, event->keyval, key_event.flags())) {
+      gdk_event_free(reinterpret_cast<GdkEvent*>(event));
+      return true;
+    }
+#endif
     const bool handled = GtkImContextFilterKeypress(gtk_context, event);
     const guint result_state = event->state;
     gdk_event_free(reinterpret_cast<GdkEvent*>(event));
@@ -316,6 +331,9 @@ bool InputMethodContextImplGtk::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
 }
 
 void InputMethodContextImplGtk::Reset() {
+#if BUILDFLAG(USE_XKBCOMMON)
+  xkb_composer_.Reset();
+#endif
   gtk_im_context_reset(gtk_context_);
   gtk_im_context_reset(gtk_simple_context_);
 
@@ -375,6 +393,57 @@ void InputMethodContextImplGtk::SetSurroundingText(
     const gfx::Range& selection_range) {}
 
 // private:
+
+#if BUILDFLAG(USE_XKBCOMMON)
+bool InputMethodContextImplGtk::ComposeWithXkb(GtkIMContext* gtk_context,
+                                               unsigned int keyval,
+                                               int event_flags) {
+  if (gtk_context != gtk_simple_context_) {
+    // Leave composing to IME frameworks (IBus, Fcitx) and XIM, which already
+    // use the system Compose table.
+    const char* context_id =
+        gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(gtk_context));
+    if (context_id && std::string_view(context_id) != "gtk-im-context-simple") {
+      return false;
+    }
+  }
+
+  if (!xkb_composer_.is_composing()) {
+    // Let GTK finish sequences it started, such as Ctrl+Shift+U hex input or a
+    // dead key pressed before the compose table loaded.
+    gchar* gtk_preedit = nullptr;
+    gtk_im_context_get_preedit_string(gtk_context, &gtk_preedit, nullptr,
+                                      nullptr);
+    const bool gtk_is_composing = gtk_preedit && *gtk_preedit;
+    g_free(gtk_preedit);
+    if (gtk_is_composing) {
+      return false;
+    }
+  }
+
+  const bool had_preedit = !xkb_composer_.preedit_string().empty();
+  if (!xkb_composer_.FilterKeyPress(keyval, event_flags)) {
+    return false;
+  }
+
+  const std::u16string& composed = xkb_composer_.composed_character();
+  if (!composed.empty()) {
+    delegate_->OnCommit(composed);
+  }
+  const std::u16string& preedit_text = xkb_composer_.preedit_string();
+  if (had_preedit || !preedit_text.empty()) {
+    ui::CompositionText preedit;
+    preedit.text = preedit_text;
+    preedit.selection = gfx::Range(preedit_text.size());
+    preedit.ime_text_spans.emplace_back(
+        ui::ImeTextSpan::Type::kComposition, 0, preedit_text.size(),
+        ui::ImeTextSpan::Thickness::kThin,
+        ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT);
+    delegate_->OnPreeditChanged(preedit);
+  }
+  return true;
+}
+#endif
 
 // GtkIMContext event handlers.
 

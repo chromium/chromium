@@ -10,10 +10,15 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(USE_XKBCOMMON)
+#include "ui/events/ozone/layout/xkb/xkb_composer.h"
+#endif
 
 using GdkWindow = struct _GdkWindow;
 using GtkIMContext = struct _GtkIMContext;
@@ -53,6 +58,10 @@ class COMPONENT_EXPORT(GTK) InputMethodContextImplGtk
                           const gfx::Range& selection_range) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
+#if BUILDFLAG(USE_XKBCOMMON)
+  ui::XkbComposer& xkb_composer_for_testing() { return xkb_composer_; }
+#endif
+
  private:
   // GtkIMContext event handlers.  They are shared among |gtk_context_simple_|
   // and |gtk_multicontext_|.
@@ -66,6 +75,15 @@ class COMPONENT_EXPORT(GTK) InputMethodContextImplGtk
   GtkIMContext* GetIMContext();
 
   GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event);
+
+#if BUILDFLAG(USE_XKBCOMMON)
+  // Composes dead-key and Compose (Multi_key) sequences with the system
+  // Compose table when `gtk_context` is GtkIMContextSimple, whose built-in
+  // table is outdated in GTK3. Returns true if the key press was consumed.
+  bool ComposeWithXkb(GtkIMContext* gtk_context,
+                      unsigned int keyval,
+                      int event_flags);
+#endif
 
   // A set of callback functions.  Must not be nullptr.
   const raw_ptr<ui::LinuxInputMethodContextDelegate> delegate_;
@@ -95,6 +113,10 @@ class COMPONENT_EXPORT(GTK) InputMethodContextImplGtk
   raw_ptr<bool> ime_result_during_filter_ = nullptr;
 
   std::vector<ScopedGSignal> signals_;
+
+#if BUILDFLAG(USE_XKBCOMMON)
+  ui::XkbComposer xkb_composer_;
+#endif
 };
 
 }  // namespace gtk
