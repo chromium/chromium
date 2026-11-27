@@ -75,6 +75,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1651617469580841801">Če uporabljate Google Lens, se naslov strani, URL in vsebina, vključno s PDF-ji, pošljejo Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> – ta zavihek delite z Iskanjem Google</translation>
 <translation id="1682634494516646069">Google Chrome ne more brati svojega imenika s podatki ali pisati vanj:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3380249972812870825">Če želite odpreti Geminija v Chromu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome je dodal umetno inteligenco, ki se izvaja v vaši napravi. Spletna mesta in Chrome jo lahko uporabljajo za funkcije, kot so:</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
+<translation id="3404531968986217414">Začni novo nit z Iskanjem Google</translation>
 <translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3438681572027105609">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chrome</translation>
 <translation id="3450887623636316740">Ta datoteka je morda nevarna<ph name="LINE_BREAK" />Chrome lahko preveri ta prenos, če navedete geslo. Podatki o datoteki se pošljejo v Google Varno brskanje, vsebina datoteke in geslo pa ostaneta v napravi.</translation>
@@ -400,6 +402,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5003967926796347400">Kliknite »Googlov upravitelj gesel«</translation>
 <translation id="5043786843026425788">Preberite več o iskanju z Googlom Lens v Chromu</translation>
 <translation id="504867494566807945">Povezave iz poljubne aplikacije odprite v Chromu, ki bo pripet v opravilno vrstico, da boste lažje dostopali do njega.</translation>
+<translation id="507983337152787026">Začni novo nit z Iskanjem Google</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. Odprto je anonimno ali izolirano okno. Po vnovičnem zagonu se ne bo znova odprlo.}one{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. V profilih je odprto # anonimno in izolirano okno. Po vnovičnem zagonu se ne bodo znova odprla.}two{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. V profilih sta odprti # anonimni in izolirani okni. Po vnovičnem zagonu se ne bosta znova odprli.}few{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. V profilih so odprta # anonimna in izolirana okna. Po vnovičnem zagonu se ne bodo znova odprla.}other{Dodatna zaščita zahteva, da za uveljavitev posodobitve znova zaženete Chrome. V profilih je odprtih # anonimnih in izoliranih oken. Po vnovičnem zagonu se ne bodo znova odprla.}}</translation>
 <translation id="5105120510934353742">Če želite prejemati prihodnje posodobitve Googla Chrome, potrebujete macOS 13 ali novejšo različico. V tem računalniku je nameščen macOS 12.</translation>
 <translation id="5114340746415930644">Vnesite geslo, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="USER_EMAIL" /></translation>
@@ -426,6 +429,7 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="524751727772074981">Z Geminijem v Chromu lahko vprašate kar koli, kjer koli ste</translation>
 <translation id="5247617065091903691">Stransko podokno Iskanja Google lahko pripnete in med brskanjem postavljate vprašanja</translation>
 <translation id="5271833978500241046">Uporabljajte jih skupaj z drugimi funkcijami Geminija v Chromu</translation>
+<translation id="528611299569739095">Ta upravljani brskalnik lahko uporablja Geminija, ki ga je za delo nastavila domena <ph name="DOMAIN" />. Išče lahko informacije in zagotavlja odgovore, ki temeljijo na datotekah in storitvah organizacije. Za preklop je treba znova zagnati Chrome.</translation>
 <translation id="5320351714793324716">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="5321325624576443340">Google Lens ni na voljo. Poskusite pozneje.</translation>
 <translation id="5346389065299425353">Poglobite iskanje tako, da dodate več zavihkov, datotek in orodij</translation>
@@ -450,7 +454,9 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5600352656975192682">Pripnite Chrome v opravilno vrstico, da lahko kadar koli hitro dostopate do njega</translation>
 <translation id="5602351063754773347">Chrome priporoča, da jo odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Preklopite na Geminija Enterprise, ki ga upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Prilagodite si Chrome</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Prekliči deljenje zavihka z Iskanjem Google}one{Prekliči deljenje # zavihka z Iskanjem Google}two{Prekliči deljenje # zavihkov z Iskanjem Google}few{Prekliči deljenje # zavihkov z Iskanjem Google}other{Prekliči deljenje # zavihkov z Iskanjem Google}}</translation>
 <translation id="5649156266046089790">S profili v Chromu lahko ločite vse stvari v Chromu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="566568153320186256">Chrome varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več o varčevanju z energijo<ph name="END_LINK" /></translation>
@@ -544,6 +550,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija samodejno zapre Chrome, če ga ne uporabljate 1 minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}one{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}two{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuti. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}few{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minute. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}other{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minut. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}}</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
 <translation id="6426623519983252346">Ko boste naslednjič odprli Chrome za iOS, bo prikazan poziv, da preizkusite funkcijo <ph name="FEATURE_NAME" />.</translation>
+<translation id="6431496891888891615">Preklopite lahko na Geminija, ki je bil prvotno povezan z vašim računom Google in ga ne upravlja domena <ph name="DOMAIN" />. Za preklop je treba znova zagnati Chrome.</translation>
 <translation id="6434035853014503219">Hvala, ker ste izbrali Chrome kot privzeti brskalnik.</translation>
 <translation id="6438015621983209660">Razširite izboljšano varno brskanje s Chromom v telefonu</translation>
 <translation id="6442774133615368941">Uporabite fotoaparat v aplikaciji Chrome za iOS, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano</translation>
@@ -580,6 +587,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6712881677154121168">Napaka pri prenosu: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Pospešite Chrome</translation>
 <translation id="6734827584173583205">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
+<translation id="6737759643107005803">Preklopite nazaj na Geminija, ki ga ne upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Opustitev aktivnega iskanja na tem zavihku</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="6760235774835597023">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom. Ta nastavitev je vklopljena.</translation>
@@ -658,6 +666,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="749228101751499733">Ko ste prijavljeni, lahko v Chromu uporabljate gesla in drugo iz računa Google. <ph name="SHORTCUT" /> lahko spremeni nastavitve Googlovih storitev.</translation>
 <translation id="7496017508659652909">Chrome vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje. <ph name="BEGIN_LINK" />Preberite več o vnaprejšnjem nalaganju strani<ph name="END_LINK" />.</translation>
+<translation id="7512102939658787283">Ta zavihek delite z Iskanjem Google</translation>
 <translation id="7514258452813684157">Googlova storitev za posodabljanje</translation>
 <translation id="7515191208480168435">Google Lens lahko pripnete za preprost dostop</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -745,6 +754,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="8291415872436043161">Prenesi Chrome</translation>
 <translation id="829923460755755423">Dodajanje bližnjice do Googlovega upravitelja gesel</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Deli zavihek z Iskanjem Google}one{Deli # zavihek z Iskanjem Google}two{Deli # zavihka z Iskanjem Google}few{Deli # zavihke z Iskanjem Google}other{Deli # zavihkov z Iskanjem Google}}</translation>
 <translation id="8313851650939857356">Napaka pri zagonu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Uspelo je. S podoknom Iskanja Google lahko med brskanjem preprosto postavljate vprašanja.</translation>
 <translation id="8336463659890584292">Ko spletno mesto zahteva zasebno vnaprejšnje nalaganje povezav na svoji strani, Chrome uporabi Googlove strežnike. S tem je vaša identiteta skrita pred vnaprej naloženim mestom, vendar Google izve, katera spletna mesta se vnaprej nalagajo.</translation>
@@ -799,6 +809,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="8712767363896337380">Skoraj je posodobljen. Znova zaženite Chrome, da dokončate posodobitev.</translation>
 <translation id="8717554232729236539">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V napravi <ph name="DEVICE" /> boste imeli na voljo tudi bralni seznam in drugo.</translation>
 <translation id="8718062187489036808">Sign Out of Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Deli zavihek z Iskanjem Google}one{Deli # zavihek z Iskanjem Google}two{Deli # zavihka z Iskanjem Google}few{Deli # zavihke z Iskanjem Google}other{Deli # zavihkov z Iskanjem Google}}</translation>
 <translation id="873133009373065397">Google Chrome ne more določiti ali nastaviti privzetega brskalnika</translation>
 <translation id="8747073452963259673">spodnji levi kot območja za iskanje: levo <ph name="LEFT" /> %, spodaj <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">Chrome sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chrome pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje. <ph name="BEGIN_LINK" />Preberite več o varčevanju s pomnilnikom<ph name="END_LINK" /></translation>
@@ -850,6 +861,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Googlova naročnina.</translation>
 <translation id="922152298093051471">Prilagajanje Chroma</translation>
 <translation id="93760716455950538">Znova zaženite ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Prekliči deljenje zavihka z Iskanjem Google}one{Prekliči deljenje # zavihka z Iskanjem Google}two{Prekliči deljenje # zavihkov z Iskanjem Google}few{Prekliči deljenje # zavihkov z Iskanjem Google}other{Prekliči deljenje # zavihkov z Iskanjem Google}}</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
 <translation id="989816563149873169">Bližnjica <ph name="SHORTCUT" /> omogoča preklop med profili v Chromu</translation>

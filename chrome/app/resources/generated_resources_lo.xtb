@@ -1307,6 +1307,7 @@
 <translation id="244071666433939959">ແອັບເປີດໃນໜ້າຈໍ</translation>
 <translation id="2442916515643169563">ເງົາຂໍ້ຄວາມ</translation>
 <translation id="2443487764245141020">ເວັບໄຊອາດຕ້ອງຈຳແນກອຸປະກອນຂອງທ່ານໂດຍໃຊ້ຕົວລະບຸນຳ</translation>
+<translation id="2444282212665587861">ອັບເດດ, ການອັບເດດ, ອັບເກຣດ, ເວີຊັນ, ລຸ່ນ, ຂໍ້ມູນ, ກວດສອບການອັບເດດ</translation>
 <translation id="244475495405467108">ປິດແຖບຢູ່ທາງຊ້າຍ</translation>
 <translation id="2444874983932528148">ເຮັດຕໍ່ຈາກຈຸດທີ່ທ່ານຄ້າງໄວ້ໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2445081178310039857">ຈໍາເປັນຕ້ອງມີໄດເຣັກຕໍຣີພື້ນຖານສ່ວນຂະຫຍາຍ.</translation>
@@ -2144,6 +2145,7 @@
 <translation id="3321512411079201586">&amp;ແຍກຕ່າງຫາກ</translation>
 <translation id="3323288183237359315">ຕິດຕັ້ງສຳລັບ Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, ລະບົບໄດ້ລຶບການອະນຸຍາດອອກຈາກ 1 ເວັບໄຊ}other{ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, ລະບົບໄດ້ລຶບການອະນຸຍາດອອກຈາກບາງເວັບໄຊ}}</translation>
+<translation id="3325561120400598624">ລະບົບຈະກວດສອບການສົນທະນາ ແລະ ນຳເອົາໄປໃຊ້ເພື່ອເຝິກໂມເດວ AI ສ້າງເນື້ອຫາ. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. ເນື້ອຫາບາງຢ່າງອາດບໍ່ເໝາະສົມສຳລັບທຸກຄົນ. ທ່ານສາມາດ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ຈັດການປະຫວັດຂອງທ່ານ<ph name="END_LINK_MANAGE_HISTORY" />, ເຊິ່ງຮວມທັງ <ph name="BEGIN_LINK_LOCATION_INFO" />ຂໍ້ມູນກ່ຽວກັບສະຖານທີ່ຂອງທ່ານ<ph name="END_LINK_LOCATION_INFO" /> ໄດ້. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວເລືອກຂອງທ່ານ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">ຮູບແບບ</translation>
 <translation id="3331974543021145906">ຂໍ້​ມູນ​ແອັບ</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ວິດີໂອທີ່ຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
@@ -2269,6 +2271,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ອັບໂຫຼດໄຟລ໌ .pdf 1 ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}other{ອັບໂຫຼດໄຟລ໌ .pdf ສູງສຸດ # ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}}</translation>
 <translation id="3456750372063895499">ເປີດລິ້ງໃນໜ້າຈໍແຍກ</translation>
 <translation id="345693547134384690">ເປີດຮູບຢູ່ໃນແຖບໃໝ່</translation>
+<translation id="3456949031754827166">ຈັດຮຽງຄືນໃໝ່</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{ເກັບກຸ່ມໄວ້}other{ເກັບກຸ່ມໄວ້}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{ລຶບບຸກມາກ 1 ລາຍການແລ້ວ}other{ລຶບບຸກມາກ # ລາຍການແລ້ວ}}</translation>
 <translation id="3471687177769494956">ແກ້ໄຂທາງລັດການນຳທາງ</translation>
@@ -3322,6 +3325,7 @@
 <translation id="4602776638371779614">ແຖບນີ້ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth</translation>
 <translation id="4605026046465576953">ບໍ່ສາມາດເປີດແອັບນີ້ໄດ້ ເນື່ອງຈາກທ່ານບໍ່ໄດ້ຮັບການອະນຸຍາດໃຫ້ເອີ້ນໃຊ້ເວັບແອັບທີ່ແຍກໄວ້</translation>
 <translation id="4606551464649945562">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
+<translation id="4606965546067937011">ຄວາມໄວ, RAM, ອືດ, ສະດຸດ, ຄ້າງ, ຫຼົ້ມ, ຊັບພະຍາກອນ, ການນຳໃຊ້, ແບັດເຕີຣີ, ຕົວເພີ່ມປະສິດທິພາບ, ຊ້າ, ໜ່ວຍຄວາມຈຳ, ຕົວປະຢັດໜ່ວຍຄວາມຈຳ</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ລຶບກຸ່ມແຖບບໍ?}other{ລຶບກຸ່ມແຖບບໍ?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ອັບໂຫຼດ 1 ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}other{ອັບໂຫຼດສູງສຸດ # ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}}</translation>
 <translation id="4608500690299898628">ຊອກຫາ...</translation>
@@ -4154,6 +4158,7 @@
 <translation id="5535769176698670170">ສະຫຼັບກັບມຸມມອງທາງເທິງ</translation>
 <translation id="5536642445914063887">ສະຫຼັບໂປຣໄຟລ໌</translation>
 <translation id="5537725057119320332">ຄາສທ໌</translation>
+<translation id="553876896781261711">ລຶບ, ລຶບອອກ, ລ້າງຂໍ້ມູນ, ຄວາມປອດໄພ, ຄວາມເປັນສ່ວນຕົວ, ບ່ອນຈັດເກັບຂໍ້ມູນ, ຣີເຊັດ, ແຄສ, ຄຸກກີ້, ຊ້າ, ຄວາມໄວ, ປະຫວັດ</translation>
 <translation id="5541091577812545428">ບໍ່ໄດ້ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="5542132724887566711">ໂປຣໄຟລ໌</translation>
 <translation id="5543983818738093899">ກໍາລັງກວດ​ຫາ​ສະ​ຖາ​ນະ​...</translation>
@@ -4745,6 +4750,7 @@
 <translation id="6214157047210274853">ແກ້ໄຂໃນ Google Wallet</translation>
 <translation id="621470880408090483">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, <ph name="BRAND" /> ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ 1 ນາທີ}other{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, <ph name="BRAND" /> ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ # ນາທີ}}</translation>
+<translation id="6215427500141060726">ລະບົບຈະກວດສອບການສົນທະນາ ແລະ ນຳເອົາໄປໃຊ້ເພື່ອເຝິກໂມເດວ AI ສ້າງເນື້ອຫາ. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. ທ່ານສາມາດ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ຈັດການປະຫວັດຂອງທ່ານ<ph name="END_LINK_MANAGE_HISTORY" />, ເຊິ່ງຮວມທັງ <ph name="BEGIN_LINK_LOCATION_INFO" />ຂໍ້ມູນກ່ຽວກັບສະຖານທີ່ຂອງທ່ານ<ph name="END_LINK_LOCATION_INFO" /> ໄດ້. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວເລືອກຂອງທ່ານ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">ເວັບໄຊ ແລະ ແອັບທີ່ຖືກປະຕິເສດ</translation>
 <translation id="6216696360484424239">ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ</translation>
 <translation id="6218961554829577610">ບໍ່ມັກສຽງ</translation>
@@ -4896,6 +4902,7 @@
 <translation id="639880411171387127">ພາບທີ່ທ່ານເລືອກສຳລັບ Google Lens. ກົດປຸ່ມ Enter ຫຼື Backspace ເພື່ອລຶບພາບທີ່ທ່ານເລືອກສຳລັບ Google Lens ອອກ</translation>
 <translation id="6400360390396538896">ເປີດຕະຫຼອດຢູ່ <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">ຍົກເລີກການໂຟກັສກຸ່ມແຖບ</translation>
+<translation id="6401522392962817913">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບຂໍ້ກຳນົດບໍລິການຂອງ Google Payments. ປະກາດຄວາມເປັນສ່ວນຕົວຈະອະທິບາຍກ່ຽວກັບການຈັດການກັບຂໍ້ມູນຂອງທ່ານ. ບັດຂອງທ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">ເພື່ອສຶກສາເຫດຜົນ, ກະລຸນາຕິດຕໍ່ນັກພັດທະນາແອັບໄດ້</translation>
 <translation id="6402921224457714577">ເວັບໄຊສາມາດຂໍຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານໄດ້</translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
@@ -4984,6 +4991,7 @@
 <translation id="6499143127267478107">ກໍາລັງແກ້ໄຂແມ່ຂ່າຍຢູ່ໃນຕົວໜັງສືພຣັອກຊີ...</translation>
 <translation id="6503077044568424649">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
 <translation id="6504601948739128893">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ຟອນທີ່ຕິດຕັ້ງໄວ້ຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
+<translation id="6505525633061207363">ຂໍ້ມູນການເຂົ້າສູ່ລະບົບ, ເຂົ້າສູ່ລະບົບ, ລັອກອິນ, ລະຫັດຜ່ານ, ກະແຈຜ່ານ, ລັອກ, ຫ້ອງນິລະໄພ, ກະແຈ</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ຕ້ອງການຕິດຕັ້ງແອັບຕໍ່ໄປນີ້ຢູ່ອຸປະກອນນີ້:}other{"<ph name="APP_NAME" />" ຕ້ອງການຕິດຕັ້ງແອັບຕໍ່ໄປນີ້ຢູ່ອຸປະກອນນີ້:}}</translation>
 <translation id="6508248480704296122">ກ່ຽວຂ້ອງກັບ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">ແອັບ: <ph name="APP_NAME" /></translation>

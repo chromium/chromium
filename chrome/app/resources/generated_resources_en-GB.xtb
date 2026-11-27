@@ -57,7 +57,7 @@
 <translation id="1055606969515662982">Use remote to stop casting</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1059944192885972544">Found <ph name="NUM" /> tabs For '<ph name="SEARCH_TEXT" />'</translation>
-<translation id="1060172044035704924">Swap with right view</translation>
+<translation id="1060172044035704924">Swap with Right View</translation>
 <translation id="10619348099955377">Copy display name</translation>
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1064236804542808595">Restore organisation shortcuts</translation>
@@ -70,7 +70,7 @@
 <translation id="1069814191880976658">Choose a different screen</translation>
 <translation id="1070357312245925724">Navigation shortcut</translation>
 <translation id="1070705170564860382">Opening in alternative browser in <ph name="COUNTDOWN_SECONDS" /> seconds</translation>
-<translation id="1071661533099313342">Separate views</translation>
+<translation id="1071661533099313342">Separate Views</translation>
 <translation id="1076176485976385390">Navigate pages with a text cursor</translation>
 <translation id="1076730357641144594">You can view and manage your passkeys saved in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -93,7 +93,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="109038914521989341">Please enter a reason for copying this data:</translation>
-<translation id="1094158807129647987">Ask about “<ph name="SELECTION" />”</translation>
+<translation id="1094158807129647987">Ask About “<ph name="SELECTION" />”</translation>
 <translation id="1095879482467973146">Google Password Manager on the web</translation>
 <translation id="1097016918605049747">This page couldn't be translated</translation>
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
@@ -160,7 +160,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
-<translation id="1166212789817575481">Close tabs to the right</translation>
+<translation id="1166212789817575481">Close Tabs to the Right</translation>
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1167008614036441342">Card removed because you haven't used it recently</translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
@@ -362,7 +362,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1383861834909034572">Opening when complete</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">Download paused</translation>
-<translation id="1386966479075994683">Expand tabs</translation>
+<translation id="1386966479075994683">Expand Tabs</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1396120028054416908">Back to <ph name="FOLDER_TITLE" /></translation>
@@ -432,7 +432,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1470946456740188591">To turn caret browsing on or off, use the shortcut Ctrl+Search+7</translation>
 <translation id="1471034383866732283">Reading mode can't find the main content on this page</translation>
 <translation id="1472675084647422956">Show more</translation>
-<translation id="1473616112002966036">&amp;Video frame</translation>
+<translation id="1473616112002966036">&amp;Video Frame</translation>
 <translation id="1475224725276659152">To get your reading list and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Language Settings</translation>
 <translation id="1477654881618305065">Your organisation doesn't allow you to share this content. If you need help, contact your administrator.</translation>
@@ -587,7 +587,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1645004815457365098">Unknown source</translation>
 <translation id="1647408325348388858">Open and edit <ph name="FILE_NAME" /> in this web app?</translation>
 <translation id="1648401604841225489">Unlock your passkeys</translation>
-<translation id="1650723160137517362">Open link in bottom view</translation>
+<translation id="1650723160137517362">Open Link in Bottom View</translation>
 <translation id="1651008383952180276">You must enter the same passphrase twice</translation>
 <translation id="1651609627703324721">This tab is presenting VR content to a headset</translation>
 <translation id="1652281434788353738">Thoughtful</translation>
@@ -618,7 +618,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1678849866171627536">Scan failed. This file might be a virus or malware.</translation>
 <translation id="1679068421605151609">Developer Tools</translation>
 <translation id="1682195225331129001">Try now</translation>
-<translation id="1682548588986054654">New Incognito window</translation>
+<translation id="1682548588986054654">New Incognito Window</translation>
 <translation id="1682867089915960590">Turn on Caret Browsing?</translation>
 <translation id="1686684082159608623">An update for this app has been blocked by your admin and the app may not work correctly</translation>
 <translation id="1686785653877010442">Sites usually send notifications to let you know about breaking news or chat messages.</translation>
@@ -655,7 +655,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1708338024780164500">(Inactive)</translation>
 <translation id="1708563369218024896">No data collector selected. Please select at least one data collector.</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708971471914925330">Unmute left site</translation>
+<translation id="1708971471914925330">Unmute Left Site</translation>
 <translation id="1708979186656821319">Don't show when downloads finish</translation>
 <translation id="1709085899471866534">See when tabs are inactive at a glance. You can turn off this new look in settings at any time.</translation>
 <translation id="1709916727352927457">Delete passkey</translation>
@@ -719,7 +719,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1786290960428378411">Requesting to read and change</translation>
 <translation id="1786370916735012964">plug-ins, developer, tools, blocks, adblock, safety, customise, widgets</translation>
 <translation id="1789543093145556097">Always hide</translation>
-<translation id="179021551944139249">Add link to reading list</translation>
+<translation id="179021551944139249">Add Link to Reading List</translation>
 <translation id="1790976235243700817">Remove access</translation>
 <translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Hide password for <ph name="DOMAIN" /></translation>
@@ -809,7 +809,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1875939313868351773">Third-party cookies and site data</translation>
 <translation id="1878477879455105085">Opened</translation>
 <translation id="1879000426787380528">Sign in as</translation>
-<translation id="1880214489933905933">Reverse views</translation>
+<translation id="1880214489933905933">Reverse Views</translation>
 <translation id="1880618477732738742">Change and grant access to features such as geolocation, microphone, camera, cookies, etc. for all your websites and extensions, including this extension.</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="1883018549404920116">Gemini history</translation>
@@ -896,7 +896,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1965578266762387357">When you get writing help, the page's URL, content and your text are sent to Google. Don't enter personal info (like medical or financial details)</translation>
 <translation id="1969550816138571473">Getting ready</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970398335244262442">{COUNT,plural, =0{Open all in &amp;Isolated Window}=1{Open in &amp;Isolated Window}other{Open all ({COUNT}) in &amp;Isolated Window}}</translation>
+<translation id="1970398335244262442">{COUNT,plural, =0{Open All in &amp;Isolated Window}=1{Open in &amp;Isolated Window}other{Open All ({COUNT}) in &amp;Isolated Window}}</translation>
 <translation id="1971710400942610577">{NUM_EXTENSIONS,plural, =1{Review one extension that may be unsafe}other{Review {NUM_EXTENSIONS} extensions that may be unsafe}}</translation>
 <translation id="1972313920920745320">Websites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK" />Learn more about keeping specific sites active<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
@@ -933,7 +933,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2006638907958895361">Open Link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
 <translation id="200781997903833896">To use Read Aloud, clear space on your device</translation>
-<translation id="2009047848105043829">Manage your devices</translation>
+<translation id="2009047848105043829">Manage Your Devices</translation>
 <translation id="2010501376126504057">Compatible devices</translation>
 <translation id="2010636492623189611">Selected.</translation>
 <translation id="2011038507319686520">inspect, CSS, HTML, console, coding, debugging, source, code, tools, JavaScript</translation>
@@ -958,7 +958,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2044750031738659219">{0,plural, =1{Close Guest}other{Close Guest (# windows)}}</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
 <translation id="2045211794962848221">You won't see this specific message again</translation>
-<translation id="2045540927991079503">Open link as</translation>
+<translation id="2045540927991079503">Open Link As</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2047279909708154872">{NUM_TABS,plural, =1{Pause the tab that's slowing your browser}other{Pause the tabs that are slowing your browser}}</translation>
 <translation id="2048182445208425546">Access your network traffic</translation>
@@ -1044,7 +1044,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2146263598007866206">Sites might automatically download related files together to save you time</translation>
 <translation id="2147402320887035428">This file might be malware.<ph name="LINE_BREAK" />Google Safe Browsing is checking if this file is unsafe – a scan usually takes a few seconds.</translation>
 <translation id="2147584561902725329">Last periodic task run:</translation>
-<translation id="2148248734299717598">Close left view</translation>
+<translation id="2148248734299717598">Close Left View</translation>
 <translation id="2148401732477136168">Failed to query installed applications.</translation>
 <translation id="2148892889047469596">Cast tab</translation>
 <translation id="2149773378153994101">To get your extensions and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
@@ -1223,7 +1223,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2333766266387181994">Reading mode opened; full-page view</translation>
 <translation id="233471714539944337">Sensitive content</translation>
 <translation id="2335758110242123814">Open group</translation>
-<translation id="2336228925368920074">Bookmark all tabs...</translation>
+<translation id="2336228925368920074">Bookmark All Tabs...</translation>
 <translation id="2340152924294936648">Allow <ph name="EXTENSION_NAME" /> to read and change this site</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> can't be downloaded securely</translation>
 <translation id="2341392013052489530">Uninstalled version <ph name="VERSION" />, reason: <ph name="REASON" /></translation>
@@ -1284,7 +1284,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2413009156320833859">Customise your browser even more with extensions from the <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Resume browsing for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dark</translation>
-<translation id="2423226060967554289">Show bookmarks bar</translation>
+<translation id="2423226060967554289">Show Bookmarks Bar</translation>
 <translation id="2423506062824112361">Failed to download content due to an unknown reason.</translation>
 <translation id="2423578206845792524">Sa&amp;ve image as...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
@@ -1430,7 +1430,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="257088987046510401">Themes</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> tabs</translation>
 <translation id="2573276323521243649">Back from avatar selection page</translation>
-<translation id="2574037773163798130">{NUM_TABS,plural, =1{Share tab with Gemini}other{Share # tabs with Gemini}}</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{Share Tab with Gemini}other{Share # Tabs with Gemini}}</translation>
 <translation id="2575247648642144396">This icon will be visible when the extension can act on the current page. Use this extension by clicking on the icon or by pressing <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">Invalid URL. Make sure that it is formatted properly.</translation>
 <translation id="2575441894380764255">Not allowed to show intrusive or misleading ads</translation>
@@ -1478,7 +1478,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2626746300781063303">Sites, including Google, use their discretion when responding to this request</translation>
 <translation id="2626799779920242286">Please try again later.</translation>
 <translation id="2628258844236035475">Remove your home address from Chrome autofill?</translation>
-<translation id="2628874386573004005">Start new chat with Gemini</translation>
+<translation id="2628874386573004005">Start New Chat with Gemini</translation>
 <translation id="2629058811622993283">Also share app audio (from all its windows and related apps)</translation>
 <translation id="2630703150574465936">You've allowed Gemini to automatically sign you in to these sites and apps using your accounts</translation>
 <translation id="2632176111713971407">Sites can ask to scroll and zoom shared tabs</translation>
@@ -1567,7 +1567,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2724822892847436256">Constraints</translation>
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="2725312032345042618">Event history</translation>
-<translation id="272741954544380994">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="272741954544380994">Search Image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729310339366257582">Collapse tabs</translation>
 <translation id="2730550884708194161">About work profiles</translation>
@@ -1604,7 +1604,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="2756754491396884324">Block and leave group?</translation>
 <translation id="2756936198272359372">Not allowed to use JavaScript</translation>
-<translation id="2757292392033317957">Unmute right site</translation>
+<translation id="2757292392033317957">Unmute Right Site</translation>
 <translation id="2757338480560142065">Make sure that the password you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Camera blocked</translation>
 <translation id="2764920001292228569">Enter a profile name</translation>
@@ -1751,7 +1751,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2916745397441987255">Search extensions</translation>
 <translation id="2918484639460781603">Go to settings</translation>
 <translation id="2920257489056757859">An icon indicating that this profile is managed by your organisation</translation>
-<translation id="2920346489891435227">Open link in right view</translation>
+<translation id="2920346489891435227">Open Link in Right View</translation>
 <translation id="2920852127376356161">Not allowed to handle protocols</translation>
 <translation id="292371311537977079">Chrome settings</translation>
 <translation id="2926085873880284723">Restore default shortcuts</translation>
@@ -1760,11 +1760,11 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome removed permissions from 1 site}other{Chrome removed permissions from {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
-<translation id="2932085390869194046">Suggest password...</translation>
+<translation id="2932085390869194046">Suggest Password...</translation>
 <translation id="2932483646085333864">Sign out then sign in again to start sync</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2933632078076743449">Last update</translation>
-<translation id="2933653107553951760">Restore group</translation>
+<translation id="2933653107553951760">Restore Group</translation>
 <translation id="2934225044529065415">Can't access camera</translation>
 <translation id="2938981087412273365">Not allowed to read and change this site</translation>
 <translation id="2939005221756255562">Enable notifications in the Notification Centre. Open <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" />.</translation>
@@ -1824,7 +1824,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2998097899774209901">On • This extension violates the Chrome Web Store policy</translation>
 <translation id="3000378525979847272">Allowed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3002864108328203174">Gemini bottom sheet at half height.</translation>
-<translation id="300311730636583518">Ask about this</translation>
+<translation id="300311730636583518">Ask About This</translation>
 <translation id="3003152206838282768">Working on your Gemini app task in Chrome. Check Chrome for more updates</translation>
 <translation id="3003253259757197230">URLs that you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page that you're visiting</translation>
 <translation id="3003623123441819449">CSS cache</translation>
@@ -1891,7 +1891,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3061501546390656547">Summarising</translation>
 <translation id="306166624240243643">Review name and URL updates</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: If you don't respond soon, Gemini will stop working on this task to conserve battery</translation>
-<translation id="3062655045399308513">Delete browsing data…</translation>
+<translation id="3062655045399308513">Delete Browsing Data...</translation>
 <translation id="3064871050034234884">Sites can play sound</translation>
 <translation id="3065041951436100775">Tab killed feedback.</translation>
 <translation id="3067198360141518313">Run this plug-in</translation>
@@ -1974,7 +1974,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3157330780336267229">To share or join tab groups, you need to turn on sync</translation>
 <translation id="3157931365184549694">Restore</translation>
-<translation id="3158203338449343164">Unpin tab search</translation>
+<translation id="3158203338449343164">Unpin Tab Search</translation>
 <translation id="3159335509547415276">Learn about blocked accounts</translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="3163085718713826852">Enter certificate password</translation>
@@ -2077,7 +2077,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3255488448140650626">How screenshot sharing works</translation>
 <translation id="3257733480216378006">Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Suspicious download blocked</translation>
-<translation id="3261798996834477302">Unmute bottom site</translation>
+<translation id="3261798996834477302">Unmute Bottom Site</translation>
 <translation id="3261832505033014216">Passkey for <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">Don't allow sites to capture and use your mouse input</translation>
 <translation id="3262986719682892278">Too big</translation>
@@ -2151,7 +2151,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3331974543021145906">App info</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video playing in picture-in-picture mode</translation>
 <translation id="3335947283844343239">Re-open Closed Tab</translation>
-<translation id="3336661809256024098">New tab in <ph name="GROUP_NAME" /></translation>
+<translation id="3336661809256024098">New Tab in <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Not sure</translation>
 <translation id="3337568642696914359">Don't allow sites to handle protocols</translation>
 <translation id="333863344734218290">Warns you for insecure public and private sites</translation>
@@ -2184,7 +2184,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3369624026883419694">Resolving host...</translation>
 <translation id="3372602033006349389">On other devices</translation>
 <translation id="337286756654493126">Read folders that you open in the application</translation>
-<translation id="3373059063088819384">Open in reading mode</translation>
+<translation id="3373059063088819384">Open in Reading Mode</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' moved into '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3374750024044667358">Easily get back to sites that you've visited by signing in to the same account on both devices</translation>
 <translation id="3376035595160918049">Review app update</translation>
@@ -2198,7 +2198,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Your tab groups now automatically save.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387412523265061481">Open in &amp;split view</translation>
+<translation id="3387412523265061481">Open in &amp;Split View</translation>
 <translation id="3387614642886316601">Use enhanced spell check</translation>
 <translation id="3387829698079331264">Not allowed to know when you're actively using your device</translation>
 <translation id="3388094447051599208">Output tray is almost full</translation>
@@ -2214,7 +2214,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3400036602686830681">Your password was exposed in a data breach. Change it now or review all issues in <ph name="BEGIN_LINK" />Password Checkup<ph name="END_LINK" />.</translation>
 <translation id="3401484564516348917">Read information about your browser, OS, device, installed software, registry values and files</translation>
 <translation id="3402255108239926910">Pick an avatar</translation>
-<translation id="3402276740728396499">Show stacked</translation>
+<translation id="3402276740728396499">Show Stacked</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3402919263942402995">The Chrome skills gallery isn't currently supported for Gemini Enterprise. You can still create skills and explore those managed by your organisation in the <ph name="BEGIN_LINK" />Gemini Enterprise app<ph name="END_LINK" />.</translation>
 <translation id="3404065873681873169">No passwords saved for this site</translation>
@@ -2270,7 +2270,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="345163758690017738">Working on your task…</translation>
 <translation id="3453612417627951340">Needs authorisation</translation>
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Upload 1 .pdf file to use with your question}other{Upload up to # .pdf files to use with your question}}</translation>
-<translation id="3456750372063895499">Open link in I&amp;solated Window</translation>
+<translation id="3456750372063895499">Open Link in I&amp;solated Window</translation>
 <translation id="345693547134384690">Open &amp;image in new tab</translation>
 <translation id="3456949031754827166">Rearrange</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Keep group}other{Keep groups}}</translation>
@@ -2331,12 +2331,12 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3523789730715594198">You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="3524518036046613664">Discover devices on your local network, like printers</translation>
 <translation id="3524965460886318643">Export activities</translation>
-<translation id="3526034519184079374">Can't read or change site's data</translation>
+<translation id="3526034519184079374">Can't Read or Change Site's Data</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3527473647192919613">New Isolated Window</translation>
 <translation id="3527740693434122323">Credit and debit cards, IBANs and loyalty cards</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
-<translation id="35296112145429559">Pin scroll buttons</translation>
+<translation id="35296112145429559">Pin Scroll Buttons</translation>
 <translation id="3530919970074558307">Unfocus group</translation>
 <translation id="3531883061432162622">Find your reading list and bookmarks in Bookmarks and Lists</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Audio muted</translation>
@@ -2557,7 +2557,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3739349485749941749">Sites can ask to look for and use printers that are accessible to your device</translation>
 <translation id="3741056951918180319">You can always click the extension to use it on any site</translation>
 <translation id="3741510433331996336">Restart your device to finish updating</translation>
-<translation id="3743737928354166561">Unmute top site</translation>
+<translation id="3743737928354166561">Unmute Top Site</translation>
 <translation id="3744219658596020825">Your passwords weren't imported</translation>
 <translation id="3745306754941902605">Kitchen</translation>
 <translation id="3748424433435232460">A password for this account is already saved on this device</translation>
@@ -2589,7 +2589,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="377050016711188788">Ice-cream</translation>
 <translation id="3771290962915251154">This setting is disabled because parental controls are on</translation>
 <translation id="3771294271822695279">Video Files</translation>
-<translation id="3771721161825963003">Show tabs vertically</translation>
+<translation id="3771721161825963003">Show Tabs Vertically</translation>
 <translation id="3771851622616482156">You'll be signed out of this site, including in open tabs</translation>
 <translation id="3772951945682043324">No recently closed tabs</translation>
 <translation id="3775432569830822555">SSL Server Certificate</translation>
@@ -2726,7 +2726,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3900966090527141178">Export passwords</translation>
 <translation id="3904572359926093799">Split view resize handle (draggable)</translation>
 <translation id="3909456989251621103">If you delete a server certificate, Chrome will no longer use it to identify servers.</translation>
-<translation id="3909701002594999354">Show all &amp;controls</translation>
+<translation id="3909701002594999354">Show All &amp;Controls</translation>
 <translation id="3909791450649380159">Cu&amp;t</translation>
 <translation id="3913689539406883376">Turn on when your computer is unplugged</translation>
 <translation id="3914173277599553213">Required</translation>
@@ -2800,7 +2800,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3981760180856053153">Invalid save type entered.</translation>
 <translation id="3983586614702900908">devices from an unknown vendor</translation>
 <translation id="3984135167056005094">Do not include email address</translation>
-<translation id="398477389655464998">Copy link to highlight</translation>
+<translation id="398477389655464998">Copy Link to Highlight</translation>
 <translation id="3986813315215454677">ChromeOS Bluetooth</translation>
 <translation id="3987307536043958493">Block and leave</translation>
 <translation id="3987544746655539083">Continue blocking this site from accessing your location</translation>
@@ -2863,7 +2863,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4058793769387728514">Check Document Now</translation>
 <translation id="4060997212318214773">You can also remove these extensions from this device:</translation>
 <translation id="406213378265872299">Customised behaviours</translation>
-<translation id="4065910654823040256">Close right view</translation>
+<translation id="4065910654823040256">Close Right View</translation>
 <translation id="4065931125325392744">This extension may soon no longer be supported</translation>
 <translation id="4067839975993712852">Mark current tab as read</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
@@ -2928,7 +2928,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4154658846204884961">Comet</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – left view</translation>
-<translation id="4156532396656021084">&amp;Manage search engines and shortcuts</translation>
+<translation id="4156532396656021084">&amp;Manage Search Engines and Shortcuts</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4165077084524712774">More tools</translation>
 <translation id="4165986682804962316">Site settings</translation>
@@ -2972,7 +2972,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4209247656298167054">No update</translation>
 <translation id="4209251085232852247">Turned off</translation>
 <translation id="4210380525132844778">Reason: <ph name="RULE" /> was found in the '<ph name="LIST_NAME" />' list.</translation>
-<translation id="4210428686880035809">Open link in left view</translation>
+<translation id="4210428686880035809">Open Link in Left View</translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="4213540068152645535">Trouble changing your password</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
@@ -3051,7 +3051,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4290826901752066702"><ph name="NUM" /> member</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="4293154608148215505">your phone</translation>
-<translation id="429344752071832554">Unfocus group</translation>
+<translation id="429344752071832554">Unfocus Group</translation>
 <translation id="4294392694389031609">Deleted <ph name="FILE_NAME" /> from download history, but it's still on your device</translation>
 <translation id="429530814437327574">Show stacked</translation>
 <translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to change your password automatically for you.</translation>
@@ -3153,11 +3153,11 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4403775189117163360">Choose a different folder</translation>
 <translation id="440411460180511551">If Chromium finds one of your passwords in a public data breach, Google Password Manager can offer to change it for you when you're signed in.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
-<translation id="4405580203042711503">New tab below</translation>
+<translation id="4405580203042711503">New Tab Below</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406963243402726564">Unsaved data</translation>
-<translation id="4408595563209996725">{NUM_TABS,plural, =1{Unfocus tab}other{Unfocus tabs}}</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Unfocus Tab}other{Unfocus Tabs}}</translation>
 <translation id="4408599188496843485">H&amp;elp</translation>
 <translation id="4409697491990005945">Margins</translation>
 <translation id="4409779593816003679">Passwords and autofill</translation>
@@ -3289,7 +3289,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4563883094055457792">R&amp;estore split view</translation>
 <translation id="456449593072900590">Delete on exit</translation>
 <translation id="4565377596337484307">Hide password</translation>
-<translation id="4565465014351935093">Only show on New tab page</translation>
+<translation id="4565465014351935093">Only Show on New Tab Page</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="456717285308019641">Page language to translate</translation>
 <translation id="4567772783389002344">Add word</translation>
@@ -3340,7 +3340,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4617270414136722281">Extension options</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
-<translation id="4619910360235236556">&amp;Print text selection…</translation>
+<translation id="4619910360235236556">&amp;Print Text Selection...</translation>
 <translation id="4620809267248568679">This setting is enforced by an extension.</translation>
 <translation id="4623894491222334521">Identity docs</translation>
 <translation id="4624054169152573743">Colour theme</translation>
@@ -3417,7 +3417,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4699473989647132421">Shoreline</translation>
-<translation id="4700734033170984447">Summarise this page with Gemini</translation>
+<translation id="4700734033170984447">Summarise This Page with Gemini</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{Enter your new PIN. A PIN must be at least one character long and can contain letters, numbers and other characters.}other{Enter your new PIN. A PIN must be at least # characters long and can contain letters, numbers and other characters.}}</translation>
 <translation id="4707337002099455863">Always on All Sites</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -3532,7 +3532,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4827134188176577524">The Chrome Root Store contains certificates from certificate authorities trusted by the
       Chrome Root Program and is reviewed on an ongoing basis.</translation>
 <translation id="4827283332383516812">Delete card</translation>
-<translation id="4827904420700932487">Create QR code for this Image</translation>
+<translation id="4827904420700932487">Create QR Code for this Image</translation>
 <translation id="4827970183019354123">URL checker</translation>
 <translation id="4828567746430452681">'<ph name="EXTENSION_NAME" />' is no longer supported</translation>
 <translation id="482952334869563894">USB devices from vendor <ph name="VENDOR_ID" /></translation>
@@ -3586,7 +3586,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4876305945144899064">No username</translation>
 <translation id="4876327226315760474">This means site features should work as expected, but you may have less browsing protection.</translation>
 <translation id="4876867869589423092">Checks spelling and grammar</translation>
-<translation id="4877276003880815204">Inspect elements</translation>
+<translation id="4877276003880815204">Inspect Elements</translation>
 <translation id="4878634973244289103">Unable to send feedback. Please try again later.</translation>
 <translation id="4878718769565915065">Adding a fingerprint to this security key failed</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
@@ -3629,7 +3629,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4918844574251943176">Image copied</translation>
 <translation id="4922104989726031751">To use Password Manager with your operating system, relaunch Chromium and allow access to your computer's password manager. Your tabs will reopen after relaunching.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Save 1 item in account}other{Save # items in account}}</translation>
-<translation id="4923977675318667854">Show tab groups</translation>
+<translation id="4923977675318667854">Show Tab Groups</translation>
 <translation id="4924283156756356309">On your device</translation>
 <translation id="49265687513387605">Unable to cast screen. Check to see if you confirmed the prompt to start sharing your screen.</translation>
 <translation id="4927753642311223124">Nothing to see here, move along.</translation>
@@ -3722,7 +3722,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
 <translation id="5035846135112863536">Choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
-<translation id="5037676449506322593">Select all</translation>
+<translation id="5037676449506322593">Select All</translation>
 <translation id="5038621320029329200">Trusted certificates</translation>
 <translation id="5038818366306248416">You previously chose not to allow any extensions on <ph name="ORIGIN" /></translation>
 <translation id="5039804452771397117">Allow</translation>
@@ -3873,7 +3873,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5203035663139409780">Can edit files or folders on your device</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Click to view the extension}other{Click to view these extensions}}</translation>
 <translation id="5204282224596194174">Recovery password for <ph name="USER_EMAIL" /></translation>
-<translation id="5204584298075822291">Collapse tabs</translation>
+<translation id="5204584298075822291">Collapse Tabs</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5206980963892466043">Our <ph name="BEGIN_LINK_TERMS" />Terms<ph name="END_LINK_TERMS" />, <ph name="BEGIN_LINK_LOCATION_TERMS" />Korean Location Terms<ph name="END_LINK_LOCATION_TERMS" /> and <ph name="BEGIN_LINK_PRIVACY" />Privacy Notice<ph name="END_LINK_PRIVACY" /> apply.</translation>
 <translation id="5209320130288484488">No devices found</translation>
@@ -3887,7 +3887,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5221516927483787768">Unable to cast <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
-<translation id="5222710719845250566">Restore window</translation>
+<translation id="5222710719845250566">Restore Window</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5226253862147382094">Review logo and URL updates</translation>
@@ -3967,7 +3967,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5301398529256275325">Try asking things like 'summarise this page' or your own question.</translation>
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
-<translation id="5304952564528359007">Turn off auto-expanding tabs</translation>
+<translation id="5304952564528359007">Turn off Auto-Expanding Tabs</translation>
 <translation id="5307030433605830021">Source not supported</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5308989548591363504">Check for malware</translation>
@@ -4110,7 +4110,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="547615291475756075">Ma&amp;ximise</translation>
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481682542063333508">Offer writing help</translation>
-<translation id="5481876918948762495">Import passwords</translation>
+<translation id="5481876918948762495">Import Passwords</translation>
 <translation id="5483005706243021437">Stay here</translation>
 <translation id="5485435764083510385">Preferred caption language</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> may require a newer or different kind of device</translation>
@@ -4226,7 +4226,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
-<translation id="5611474372949142946">Close tabs below</translation>
+<translation id="5611474372949142946">Close Tabs Below</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5616571005307953937">Oldest</translation>
 <translation id="561698261642843490">Close Firefox</translation>
@@ -4415,7 +4415,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5841338463993781099">Save in account?</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="5844685625984052392">Hint</translation>
-<translation id="5846504156837627898">Manage site permissions</translation>
+<translation id="5846504156837627898">Manage Site Permissions</translation>
 <translation id="5848319660029558352">Read Aloud and text formatting</translation>
 <translation id="5849212445710944278">Already added</translation>
 <translation id="5849288995120328556">Stop sharing?</translation>
@@ -4445,7 +4445,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="587502357434914765">Select from screen</translation>
 <translation id="5875534259258494936">Screen sharing has ended</translation>
 <translation id="5876691914815078365">Chrome Apps &gt; <ph name="APP_NAME" /></translation>
-<translation id="5876851302954717356">New tab to the right</translation>
+<translation id="5876851302954717356">New Tab to the Right</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
 <translation id="5881710783061958569">If so, please edit your saved password in <ph name="BRAND" /> so that it matches your new password.</translation>
@@ -4573,7 +4573,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6020431688553761150">Server did not authorise you to access this resource.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps are no longer supported</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
-<translation id="6024317249717725918">Search video frame with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="6024317249717725918">&amp;Search Video Frame with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB device connected</translation>
 <translation id="6027945736510816438">Did you mean <ph name="WEBSITE" />?</translation>
@@ -4656,7 +4656,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6124698108608891449">This site needs more permissions.</translation>
 <translation id="6125202119952209826">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Moon</translation>
-<translation id="6125649408655762488">Focus on group</translation>
+<translation id="6125649408655762488">Focus on Group</translation>
 <translation id="6126601353087978360">Please enter your feedback here:</translation>
 <translation id="6127598727646973981">Secure connections</translation>
 <translation id="6129686474468159207">See which sites you call from and when your camera or microphone is used</translation>
@@ -4727,11 +4727,11 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6192413564913825901">Move to All bookmarks</translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
-<translation id="6197128521826316819">Create QR code for this page</translation>
+<translation id="6197128521826316819">Create QR Code for this Page</translation>
 <translation id="6198223452299275399">Swipe between pages</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6200047250927636406">Discard file</translation>
-<translation id="6200151268994853226">Manage extension</translation>
+<translation id="6200151268994853226">Manage Extension</translation>
 <translation id="6200780647297916498">Tab position</translation>
 <translation id="6201345951596836663">Link copied</translation>
 <translation id="6203247599828309566">You saved a note for a password on this site. To view it, click the key icon.</translation>
@@ -4798,7 +4798,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6265472496386910894">Ask about what's on your screen with Google Lens</translation>
 <translation id="6266984048393265562">Customise profile</translation>
 <translation id="6267166720438879315">Select a certificate to which you want to authenticate <ph name="HOST_NAME" /></translation>
-<translation id="6269392226729599142">Restore split view</translation>
+<translation id="6269392226729599142">Restore Split View</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6270770586500173387">Send <ph name="BEGIN_LINK1" />system and app information<ph name="END_LINK1" />, and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
 <translation id="6271824294945464304">Sharing password</translation>
@@ -5037,14 +5037,14 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6557199166823345360">Add more details or ask a question about your selection to refine your search</translation>
 <translation id="6557290421156335491">My shortcuts</translation>
 <translation id="655745275895381718">To get your tabs from <ph name="DEVICE" />, sign in and sync history. You'll also get your saved info and more on all of your devices. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
-<translation id="6558098963164662391">&amp;Remove from dictionary</translation>
+<translation id="6558098963164662391">&amp;Remove from Dictionary</translation>
 <translation id="6560061709899140565">Show other cast sessions</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6561877237303825108">This file of type (<ph name="TYPE" />) can be dangerous. Only save this file if you trust <ph name="ORIGIN" /></translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
 <translation id="6563002009564846727">View imported certificates from Windows</translation>
 <translation id="6564343790052433242">To create a passkey for <ph name="APP_NAME" />, Google Password Manager must be on</translation>
-<translation id="6566648465417201421">Reopen closed split view</translation>
+<translation id="6566648465417201421">Reopen Closed Split View</translation>
 <translation id="6569931898053264308">Medium savings</translation>
 <translation id="6570622975915850879">Use a different device</translation>
 <translation id="65711204837946324">Needs permission to download</translation>
@@ -5129,14 +5129,14 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6646696210740573446">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.</translation>
 <translation id="6647228709620733774">Netscape Certification Authority Revocation URL</translation>
 <translation id="6648602807077169189">Give task back</translation>
-<translation id="664954838591860799">Show side by side</translation>
+<translation id="664954838591860799">Show Side by Side</translation>
 <translation id="6650206238642452078">Subscribe to ChromeOS system events</translation>
 <translation id="6650584564768559994">Get balanced memory savings. Your tabs become inactive after an optimal period of time.</translation>
 <translation id="665061930738760572">Open in &amp;New Window</translation>
 <translation id="6651366126843599466">can use your information as you browse</translation>
 <translation id="6651762277693024112">Runs automatically every time that you visit this site</translation>
 <translation id="6655190889273724601">Developer mode</translation>
-<translation id="6656413384508017053">{NUM_TABS,plural, =1{Focus on tab}other{Focus on tabs}}</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Focus on Tab}other{Focus on Tabs}}</translation>
 <translation id="6657180931610302174">Add username?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659213950629089752">This page was zoomed by the "<ph name="NAME" />" extension</translation>
@@ -5217,7 +5217,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6738180164164974883">Allow to set third-party cookies</translation>
 <translation id="6739153164244375709">Gemini host renderer</translation>
 <translation id="6739923123728562974">Show desktop shortcut</translation>
-<translation id="6744397361782514824">Swap with left view</translation>
+<translation id="6744397361782514824">Swap with Left View</translation>
 <translation id="6745569635660688171">Region select screenshot</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="67465227497040338">Show password for <ph name="DOMAIN" /></translation>
@@ -5423,7 +5423,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6949089178006131285">Read ChromeOS Flex network information</translation>
 <translation id="6950143189069683062">Memory Details</translation>
 <translation id="6954936693361896459">Cast this tab instead</translation>
-<translation id="6955446738988643816">Inspect pop-up</translation>
+<translation id="6955446738988643816">Inspect Pop-Up</translation>
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6957044667612803194">This security key doesn’t support PINs</translation>
 <translation id="6959882218873172284">POST request</translation>
@@ -5476,7 +5476,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7003844668372540529">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Site can use MIDI</translation>
 <translation id="7004791323196577460">Arrange split view – right view active</translation>
-<translation id="7004923218520748660">Pin tab search</translation>
+<translation id="7004923218520748660">Pin Tab Search</translation>
 <translation id="7004969808832734860">Up to <ph name="DISCOUNT_UP_TO_AMOUNT" /> off</translation>
 <translation id="7005496624875927304">Additional permissions</translation>
 <translation id="7005812687360380971">Failure</translation>
@@ -5489,7 +5489,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="701080569351381435">View Source</translation>
 <translation id="7012873145982513962">This site recommends sharing audio for full functionality</translation>
 <translation id="7014174261166285193">Installation failed.</translation>
-<translation id="7014480873681694324">Remove highlight</translation>
+<translation id="7014480873681694324">Remove Highlight</translation>
 <translation id="7015135594296285641">Allow extensions</translation>
 <translation id="7017219178341817193">Add a new page</translation>
 <translation id="7017354871202642555">Cannot set mode after window is set.</translation>
@@ -5529,7 +5529,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# open Incognito windows}}</translation>
 <translation id="7056526158851679338">&amp;Inspect Devices</translation>
 <translation id="7057567173736333354">Describe your image</translation>
-<translation id="7058325593717863084">Send feedback about the tab strip</translation>
+<translation id="7058325593717863084">Send Feedback About the Tab Strip</translation>
 <translation id="7059858479264779982">Set to auto-launch</translation>
 <translation id="7063129466199351735">Processing shortcuts...</translation>
 <translation id="7063311912041006059">URL with <ph name="SPECIAL_SYMBOL" /> in place of query</translation>
@@ -5574,7 +5574,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7108419148561505648">Fill at least one field before saving</translation>
 <translation id="7109543803214225826">Shortcut removed</translation>
-<translation id="7110644433780444336">{NUM_TABS,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
+<translation id="7110644433780444336">{NUM_TABS,plural, =1{Add Tab to Group}other{Add Tabs to Group}}</translation>
 <translation id="7111822978084196600">Name this window</translation>
 <translation id="7113314569799918830">Gemini in Chrome is expanding to different locations but isn't available everywhere</translation>
 <translation id="7113502843173351041">Know your email address</translation>
@@ -5589,7 +5589,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7130680050151101667">Don't show this card</translation>
 <translation id="7131040479572660648">Read your data on <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Add pa&amp;ge...</translation>
-<translation id="7134227297966612037">Ask about this page</translation>
+<translation id="7134227297966612037">Ask About This Page</translation>
 <translation id="7134951043985383439">Downloaded dangerous file</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
 <translation id="7136694880210472378">Make default</translation>
@@ -5665,7 +5665,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7210257969463271891">Web apps that you install appear here</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
-<translation id="7214104268140700348">{NUM_TABS,plural, =1{New tab in 1 tab}other{New tab in # tabs}}</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{New Tab in 1 Tab}other{New Tab in # Tabs}}</translation>
 <translation id="721490496276866468">Import passwords</translation>
 <translation id="7216638029417040861">To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL" />. You'll also get your bookmarks and more on all of your devices. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="7217208603285112910">Selection not in <ph name="LANGUAGE" /></translation>
@@ -5855,14 +5855,14 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7407430846095439694">Import and Bind</translation>
 <translation id="7407504355934009739">Most people block notifications from this site</translation>
 <translation id="7407578029724074226"><ph name="FILE_NAME" /> has sensitive data. Your organisation will let you save it to cloud storage or discard it</translation>
-<translation id="740957773517302609">Mute right site</translation>
+<translation id="740957773517302609">Mute Right Site</translation>
 <translation id="7409735910987429903">Sites might send pop-ups to show ads, or use redirects to lead you to websites that you may not want to visit</translation>
 <translation id="7409854300652085600">Bookmarks imported.</translation>
 <translation id="7410344089573941623">Ask if <ph name="HOST" /> wants to access your camera and microphone</translation>
 <translation id="7410421966064092098">Sites can't help to verify that you're not a bot</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
 <translation id="7412226954991670867">GPU memory</translation>
-<translation id="7413479411124130610">Show tabs horizontally</translation>
+<translation id="7413479411124130610">Show Tabs Horizontally</translation>
 <translation id="7414622565840501288">Close left view</translation>
 <translation id="7415884723030194001">Desserts</translation>
 <translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
@@ -5989,7 +5989,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7563576896417108627">Customise and control <ph name="APP_NAME" />. Update is available.</translation>
 <translation id="756445078718366910">Open Browser Window</translation>
 <translation id="7564847347806291057">End process</translation>
-<translation id="7567100268516475532">Move tab into split view</translation>
+<translation id="7567100268516475532">Move Tab into Split View</translation>
 <translation id="7568014768212280234">Your tab group is full; new members can’t join with the link</translation>
 <translation id="756876171895853918">Customise avatar</translation>
 <translation id="7568790562536448087">Updating</translation>
@@ -6005,7 +6005,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7585490016012953607">Recovery password – temporarily saved for up to 3 months</translation>
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
 <translation id="7587297195142686341">Gemini can sign in for you</translation>
-<translation id="7589448773774086276">New split view with current tab</translation>
+<translation id="7589448773774086276">New Split View with Current Tab</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (error code <ph name="ERROR_CODE" />).</translation>
 <translation id="7597816893408026784">Open from the Mac menu bar</translation>
 <translation id="7600054753482800821">&amp;Manage search engines and Site Search</translation>
@@ -6182,7 +6182,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7792388396321542707">Stop sharing</translation>
 <translation id="779308894558717334">Light green</translation>
 <translation id="7793098747275782155">Dark blue</translation>
-<translation id="7798504574384119986">View web permissions</translation>
+<translation id="7798504574384119986">View Web Permissions</translation>
 <translation id="7798559336183476274">More actions for <ph name="BUTTON_TITLE" /></translation>
 <translation id="7798702742851934390">Only suggests fixes without rewriting your text</translation>
 <translation id="7798844538707273832">Automatically blocked <ph name="PERMISSION" /></translation>
@@ -6213,7 +6213,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7825973332242257878">Tab groups</translation>
 <translation id="7826039927887234077">Recent AI theme <ph name="INDEX" /> of <ph name="SUBJECT" />, with <ph name="MOOD" /> mood.</translation>
 <translation id="7826174860695147464">Legacy Browser Support (LBS) – Internals</translation>
-<translation id="7826838152281937785">Close bottom view</translation>
+<translation id="7826838152281937785">Close Bottom View</translation>
 <translation id="7828317134176902620"><ph name="BEGIN_LINK_TERMS" />Google Terms<ph name="END_LINK_TERMS" /> and the <ph name="BEGIN_LINK_PRIVACY" />Gemini Apps Privacy Notice<ph name="END_LINK_PRIVACY" /> apply</translation>
 <translation id="7828642077514646543">Error: Unable to decode certificate</translation>
 <translation id="7830276128493844263">Location is turned off in system settings</translation>
@@ -6221,7 +6221,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
 <translation id="7834832693620032149">To share audio, share a tab or window instead</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
-<translation id="7837994938322273689">Name window…</translation>
+<translation id="7837994938322273689">Name Window...</translation>
 <translation id="7839871177690823984">Slot canyon</translation>
 <translation id="7843778027750163580">search, look, page, text, string, replace, editor, locate</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
@@ -6259,7 +6259,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="78946041517601018">Shared drives</translation>
 <translation id="7896292361319775586">Save <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>
-<translation id="789859328812452250">Always show</translation>
+<translation id="789859328812452250">Always Show</translation>
 <translation id="7898725031477653577">Always translate</translation>
 <translation id="7899720074434636454">Dismiss request for <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">To make sure that this device can be used safely, your organisation can see information about its operating system, browser and settings, and what software is installed on the device</translation>
@@ -6315,7 +6315,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7949038991703929816">Failed to load history. Ensure that files contain valid updater logs.</translation>
 <translation id="7950629216186736592">Reason: LBS only supports http://, https:// and file:// URLs.</translation>
 <translation id="7950814699499457511">On • This extension hasn't published privacy practices, such as how it collects and uses data</translation>
-<translation id="7951159420392892566">Unpin scroll buttons</translation>
+<translation id="7951159420392892566">Unpin Scroll Buttons</translation>
 <translation id="795130320946928025">Turn off virtual card</translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
 <translation id="7953236668995583915">Reload this page to apply your updated settings on this site</translation>
@@ -6395,11 +6395,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Reading list}=1{Reading list ({SELECTED_ITEMS})}other{Reading list ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Permission requested, press ⌘ + Option + Up arrow to respond</translation>
 <translation id="8030814978699290230">Attempting sign-in…</translation>
-<translation id="8034697324150621782">Swap with top view</translation>
+<translation id="8034697324150621782">Swap with Top View</translation>
 <translation id="8035059678007243127">Incognito back-forward cached page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8035129145306910594">Yes</translation>
 <translation id="8036143516314698610">Show saved tab groups button</translation>
-<translation id="8036193484521570992">Help improve auto-fill</translation>
+<translation id="8036193484521570992">Help Improve Auto-Fill</translation>
 <translation id="803639495237134713">Customise keyboard shortcut</translation>
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8037117027592400564">Read all text spoken using synthesised speech</translation>
@@ -6498,7 +6498,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8137559199583651773">Manage extensions</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Review one extension that may be unsafe}other{Review {NUM_EXTENSIONS} extensions that may be unsafe}}</translation>
 <translation id="8138217203226449454">Did you mean to change your search provider?</translation>
-<translation id="813858113027420189">Open link in top view</translation>
+<translation id="813858113027420189">Open Link in Top View</translation>
 <translation id="8140108728130537923">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by <ph name="BROWSER_DOMAIN" /> and your <ph name="BEGIN_LINK" />profile is managed<ph name="END_LINK" /> by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8141584439523427891">Opening in alternative browser now</translation>
 <translation id="8141725884565838206">Manage your passwords</translation>
@@ -6551,7 +6551,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8206267832882844324">Edit note</translation>
 <translation id="8206713788440472560">Choose a screen</translation>
 <translation id="8206745257863499010">Bluesy</translation>
-<translation id="8206764473369122992">Mute left site</translation>
+<translation id="8206764473369122992">Mute Left Site</translation>
 <translation id="8207386708156457998">To search a specific site or search engine, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8207404892907560325">Choose a passkey</translation>
 <translation id="8207901006380134182">A large wave engulfs the ocean, with a dark forest ashore.</translation>
@@ -6577,7 +6577,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Delete <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Don't allow sites to show images</translation>
-<translation id="8231438895476693774">Add tab to new split view</translation>
+<translation id="8231438895476693774">Add Tab to New Split View</translation>
 <translation id="823226567613548870">delete your <ph name="BRAND" /> data</translation>
 <translation id="8233028084277069927">Open now</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
@@ -6599,7 +6599,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8248442552146815926">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="8248887045858762645">Chrome tip</translation>
 <translation id="8250210000648910632">Out of storage space</translation>
-<translation id="825238165904109940">Always show full URLs</translation>
+<translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8255927332875030912">Search + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>
@@ -6682,7 +6682,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8342387517402567689">Web app installs aren't supported in Incognito mode</translation>
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8347654878156675116">Search</translation>
-<translation id="8347728744337089388">Send to your &amp;device</translation>
+<translation id="8347728744337089388">Send to Your &amp;Device</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8348896480272971199">Check your Internet and try again.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -6743,7 +6743,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8418675848396538775">Add <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Search results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">Deletes history, including in the search box</translation>
-<translation id="8419145215916772468">Mute top site</translation>
+<translation id="8419145215916772468">Mute Top Site</translation>
 <translation id="8422787418163030046">Tray is missing</translation>
 <translation id="8424250197845498070">Blocked by Advanced Protection</translation>
 <translation id="8425213833346101688">Change</translation>
@@ -6784,7 +6784,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8460448946170646641">Review key privacy and security controls</translation>
 <translation id="8460490661223303637">To save memory, Chrome removed some content</translation>
 <translation id="8460932807646981183">Manage search engines and site search</translation>
-<translation id="8461572080432076264">Listen to this page</translation>
+<translation id="8461572080432076264">Listen to This Page</translation>
 <translation id="8461973047386722744">No passwords found</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{List box with 1 item}other{List box with {NUM_TABS} items}}</translation>
 <translation id="8463348458784127076">Manage passkeys in your Chrome profile</translation>
@@ -6805,7 +6805,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8477241577829954800">Superseded</translation>
 <translation id="8477384620836102176">&amp;General</translation>
 <translation id="8477446666255316832">Sign in faster next time</translation>
-<translation id="8477548388161793571">&amp;Translate selection</translation>
+<translation id="8477548388161793571">&amp;Translate Selection</translation>
 <translation id="8478346767369317046">Work</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8482077254400484047">Manage the look of inactive tabs here</translation>
@@ -6839,7 +6839,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8514828975162859845">Cake pops</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="8517759303731677493">Edit…</translation>
-<translation id="8518809011298357036">Close top view</translation>
+<translation id="8518809011298357036">Close Top View</translation>
 <translation id="8518942514525208851">Hide profanity</translation>
 <translation id="8520238089740349550">Failed – local download blocked</translation>
 <translation id="8520408093016204772">Store your passwords, bookmarks and settings</translation>
@@ -6877,7 +6877,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8561512694886779057">{LINKS,plural, =1{Link copied}other{Links copied}}</translation>
 <translation id="8561565784790166472">Proceed with caution</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
-<translation id="8563898784671745643">Mute bottom site</translation>
+<translation id="8563898784671745643">Mute Bottom Site</translation>
 <translation id="8564220755011656606">Can't access microphone</translation>
 <translation id="8564894539416715395">New tab page</translation>
 <translation id="8565021320663436446">Remove <ph name="MEMBER_FULL_NAME" />?</translation>
@@ -6908,7 +6908,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8600362954032151088">Manage your passwords and passkeys in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>
-<translation id="860399903490378651">Close this view</translation>
+<translation id="860399903490378651">Close This View</translation>
 <translation id="8605428685123651449">SQLite memory</translation>
 <translation id="8606857385325125054">This app was installed by <ph name="PARENT_APP_NAME" />. Uninstalling <ph name="APP_NAME" /> does not affect <ph name="PARENT_APP_NAME" /> or any other apps that it has installed.</translation>
 <translation id="8607661817136110841">Your tab groups</translation>
@@ -6978,7 +6978,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8667261224612332309">You have passwords that can be improved</translation>
 <translation id="8667543835349994431">Open &amp;with...</translation>
 <translation id="8670537393737592796">To get back here quickly, install <ph name="APP_NAME" /> by clicking the install button</translation>
-<translation id="8673026256276578048">Search the web...</translation>
+<translation id="8673026256276578048">Search the Web...</translation>
 <translation id="867329473311423817">Allowed to manage windows on all your displays</translation>
 <translation id="8673383193459449849">Server problem</translation>
 <translation id="8675657007450883866">Sites use this feature to enter full screen automatically. Typically, entering full screen requires user interaction.</translation>
@@ -7101,7 +7101,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Isolated)</translation>
 <translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="8793895150509408038">View site details for <ph name="SITE" /> from the <ph name="SECTION_HEADER" /> list</translation>
-<translation id="8795916974678578410">New window</translation>
+<translation id="8795916974678578410">New Window</translation>
 <translation id="8797459392481275117">Never translate this site</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Site not working?</translation>
@@ -7136,7 +7136,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8835005853697140186">Let DevTools edit files?</translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Leave group}other{Leave groups}}</translation>
 <translation id="8837072669197607689">Allow in Isolated mode</translation>
-<translation id="8837573527470979311">Swap with bottom view</translation>
+<translation id="8837573527470979311">Swap with Bottom View</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="883924185304953854">Search by image</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}other{{ITEM_COUNT} items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
@@ -7275,7 +7275,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8993787625629280252">If Chrome finds one of your passwords in a public data breach, it can offer to change your password for you if you're signed in</translation>
 <translation id="8993853206419610596">Expand all requests</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
-<translation id="8996080012222587839">Turn on auto-expanding tabs</translation>
+<translation id="8996080012222587839">Turn on Auto-Expanding Tabs</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{This extension is saved in your Google Account, but any data that it saved only on this device may be deleted}other{These extensions are saved in your Google Account, but any data that they've saved only on this device may be deleted}}</translation>
 <translation id="8999027165951679951">Inactive tab: <ph name="MEMORY_SAVINGS" /> freed up</translation>
 <translation id="9000529821022336229">No updater installations could be found.</translation>
@@ -7392,8 +7392,8 @@ This can include information about installed software, files, your browser, the 
 <translation id="9114663181201435112">Sign in easily</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
 <translation id="9116366756388192417">Choose a subject</translation>
-<translation id="9117446363580518867">Always hide</translation>
-<translation id="9120761757252614786">Customise toolbar</translation>
+<translation id="9117446363580518867">Always Hide</translation>
+<translation id="9120761757252614786">Customise Toolbar</translation>
 <translation id="9120800848981545750">Download Chrome for iOS to access your tabs, bookmarks and passwords on your phone.</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{Close tab and delete group?}other{Close tabs and delete groups?}}</translation>
 <translation id="9125910124977405374">Remove <ph name="LANGUAGE_NAME" /> from automatically translated languages</translation>
@@ -7463,7 +7463,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9222839391870847423">Duration: <ph name="DURATION" /></translation>
 <translation id="9223158240932249417">Not allowed to show text actions</translation>
 <translation id="923306663772315007">Send to your &amp;device</translation>
-<translation id="923467487918828349">Show all</translation>
+<translation id="923467487918828349">Show All</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{To manage it, open Extensions}other{To manage them, open Extensions}}</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>
 <translation id="925575170771547168">This will delete <ph name="TOTAL_USAGE" /> of data stored by sites</translation>
@@ -7503,7 +7503,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="96756691973639907">More actions for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="967745417352972504">Visit Google Wallet to add or manage <ph name="BEGIN_LINK_PAYMENT_METHODS" />payment methods<ph name="END_LINK_PAYMENT_METHODS" /> and <ph name="BEGIN_LINK_PASSES" />passes<ph name="END_LINK_PASSES" /> like loyalty cards, IDs and offers</translation>
-<translation id="968037381421390582">Paste and search for '<ph name="SEARCH_TERMS" />'</translation>
+<translation id="968037381421390582">Paste and Search for “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969574218206797926">Memory saver frees up memory from inactive tabs so it can be used by active tabs and other apps</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="971774202801778802">Bookmark URL</translation>

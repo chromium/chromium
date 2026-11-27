@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">फाइल चयन गर्नुहोस् अनि <ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{फाइल खोल्न सकिएन}other{फाइलहरू खोल्न सकिएन}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{थप एउटा}other{थप# वटा}}</translation>
 <translation id="1283126956823499975">डिभाइस सेटअप गर्ने क्रममा कुनै समस्या आयो</translation>
 <translation id="1285992161347843613">फोन रहेको स्थान पत्ता लगाउनुहोस्</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> नामक डेस्क सेभ गरिसकिएको छ</translation>
@@ -2190,6 +2191,7 @@
 <translation id="6249795363855770621">यो कार्यलाई "सम्पन्न भएको कार्य" का रूपमा चिन्ह लगाउन सकिएन। अनलाइन भएपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="625369703868467034">नेटवर्क हेल्थ</translation>
 <translation id="6254629735336163724">तेर्सो अवस्थामा लक गरियो</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{थप एउटा लिंक}other{थप # वटा लिंक}}</translation>
 <translation id="6259776178973198997">Wi-Fi डाइरेक्टको मालिकसम्बन्धी जानकारी रिफ्रेस गर्नुहोस्</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />। <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय गर्दै...</translation>

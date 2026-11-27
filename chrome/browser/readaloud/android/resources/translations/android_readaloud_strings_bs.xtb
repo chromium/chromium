@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Premotavanje <ph name="NUMBER_OF_SECONDS" /> s naprijed</translation>
 <translation id="1984328900355667246">Reprodukcija nije dostupna</translation>
+<translation id="2009730553732772041">Sadržaj i URL stranice na kojoj se nalazite podijelit će se s Googleom radi generiranja zvuka. Taj odabir uvijek možete ažurirati u postavkama.</translation>
 <translation id="2019727681730021602">Standardna reprodukcija</translation>
 <translation id="2224347680315897176">Stabilno</translation>
 <translation id="2575502321843437554">Nije dovoljno zanimljivo</translation>
 <translation id="2611765907167846862">Spokojno</translation>
 <translation id="3023502830214299618">Nažalost, reprodukcija trenutno nije dostupna za ovu stranicu. Pokušajte ponovo kasnije.</translation>
+<translation id="3431227249425330101">Da biste nastavili, želite li dopustiti Chromeu da upotrebljava sadržaj stranice za značajku Poslušajte ovu stranicu?</translation>
 <translation id="3493899379487634969">Šta nije uredu?</translation>
 <translation id="3730775656877876887">Generiranje AI reprodukcije</translation>
 <translation id="3778044272390020426">Meni s opcijama za negativne povratne informacije</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Plejer "Poslušajte ovu stranicu"</translation>
 <translation id="7051308646573997571">Koraljna</translation>
 <translation id="7138678301420049075">Drugo</translation>
+<translation id="7161867604252594316">Značajka Poslušajte ovu stranicu je isključena</translation>
 <translation id="7221920857098237570">Nježno</translation>
 <translation id="7237590978482584900">Živahno</translation>
 <translation id="7282547042039404307">Glatko</translation>

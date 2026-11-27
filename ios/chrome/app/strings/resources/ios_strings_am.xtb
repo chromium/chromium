@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">ማይክሮፎን የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1622717322707146952">«ወደ Google ቀን መቁጠሪያ አክል» የሚለውን ወይም «ወደ Apple ቀን መቁጠሪያ አክል» የሚለውን ይምረጡ።</translation>
 <translation id="1629162218487290695">እርስዎ መሆንዎን ያረጋግጡ…</translation>
+<translation id="1633084385573994059">ይህን ጣቢያ አትጠቀም</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">የአሰሳ ባህሪውን በመጠቀም ተራ በተራ በሆነ መመሪያ ወደ መድረሻዎ አቅጣጫዎችን ያግኙ</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2104436223719117661">በመታየት ላይ ያሉ ፍለጋዎች</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
+<translation id="2113761902638026426">Gemini ወደ <ph name="SITE_DOMAIN" /> እንዲሄድ ይፈቀድ?</translation>
 <translation id="2117650889962717098">ወደ ማንነት የማያሳውቅ ሁነታ በመቀየር አሳሽዎን የግል አድርገው ያቆዩ</translation>
 <translation id="2119636449201577317">ክፈት በ…</translation>
 <translation id="2119962645034852864">አንዳንድ አገልግሎቶች ለመለያዎ አይገኙም</translation>
@@ -422,7 +424,6 @@
 <translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
 <translation id="2237869114829007407">ለማንኛውም ገጽ ወይም ርዕስ አጠቃላይ ዕይታ እና ቁልፍ ግንዛቤዎችን ያግኙ</translation>
 <translation id="2240256190924001613">የውቅረት መገለጫ ይገኛል</translation>
-<translation id="2244080985779413662">ይህ ድር ጣቢያ አንድን ፋይል ማውረድ እና በእርስዎ Wallet ውስጥ መክፈት ይፈልጋል።</translation>
 <translation id="2245007488813216650">በመተርጎም ላይ…</translation>
 <translation id="2246445006133863463">ይህ ድምፅዎን በመጠቀም ከGemini ጋር እንዲወያዩ ያስችልዎታል</translation>
 <translation id="2249119578464404734">በማያ ገፁ አናት ላይ የፍለጋ አዶውን መታ ያድርጉ</translation>
@@ -767,6 +768,7 @@
 <translation id="3350976670663926380">አርትዖቶች ተቀምጠዋል</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />። ይህ መለያ የሚተዳደር ነው።</translation>
 <translation id="3365529507898144230">ፎቶዎች ውስጥ አስቀምጥ</translation>
+<translation id="3371168305258344914">Gemini ልዩ ጥንቃቄ የሚያስፈልገው መረጃዎ ሊኖረው በሚችል ጣቢያ ላይ እርምጃ ሊወስድ ነው</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="3377063233124932127">አሁን የእርስዎ የተቀመጡ እልባቶች፣ የይለፍ ቃላት እና ሌሎችም ከላይ ናቸው።</translation>
 <translation id="3378214228000661758">ለሚከተለው የይለፍ ቁልፍ ይፍጠሩ</translation>
@@ -1002,7 +1004,6 @@
 <translation id="4133265950310064865">የላቀ ጥበቃ</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />፣ <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
-<translation id="4148023517926189160">ይህ ድር ጣቢያ አንድ ፋይል አውርዶ ወደ የቀን መቁጠሪያዎ ማከል ይፈልጋል።</translation>
 <translation id="4152011295694446843">የእርስዎን እልባቶች እዚህ ያገኛሉ</translation>
 <translation id="4154753961803534698">በካሜራ ፈልግ</translation>
 <translation id="4158491215857439601">የይለፍ ቃል አስተዳዳሪ</translation>
@@ -1510,6 +1511,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="567881659373499783">ስሪት <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="5684761169742812828">ይህ ይለፍ ቃል በይነመረብ ላይ የውሂብ ጥሰት ውስጥ ተጋልጧል። እሱን ለመለወጥ አሁን ጊዜ ከሌለዎት Google ይህን ማስጠንቀቂያ እንዲያቆዩት ይመክራል።</translation>
+<translation id="5691020463738411542">በመላው መሣሪያዎች ላይ የደኅንነት አሰሳ ምርጫዎችን ያሥምሩ</translation>
 <translation id="5694848685995373177">በDrive ውስጥ ለ<ph name="USER_EMAIL" /> ተቀምጧል።</translation>
 <translation id="570209299585559496">በቅንብሮች ከዚያ በይዘት ቅንብሮች ውስጥ የነባሪ ጣቢያ ዕይታውን ወደ ዴስክቶፕ መለወጥ ይችላሉ</translation>
 <translation id="5702108177581350218">የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል ቅጂ ሲያጋሩ የቤተሰብ አባልዎ Google የይለፍ ቃል አስተዳዳሪን በመጠቀም መሙላት ይችላሉ።</translation>
@@ -1588,6 +1590,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5948605885471592910">የከፈቱትን ነገር ሁሉ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="5952641243319721872">ምርጫዎችዎን ማስወገድ እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
 <translation id="5956112131836209882">የትር ቡድን ትር። <ph name="TAB_INDEX_IN_GROUP" /> ከ<ph name="NUMBER_OF_TABS_IN_GROUP" />።</translation>
+<translation id="595662449352471176">ተግባርን ጀምር</translation>
 <translation id="595769230373966252">በ<ph name="SEARCH_PROVIDER" /> ፈልግ</translation>
 <translation id="5963694076845073027">በሚቀጥለው ጊዜ አገናኞችን እዚህ ይክፈቱ</translation>
 <translation id="5963939892571022323">ወደ ድምቀቱ የሚወስድ አገናኝ ሊፈጠር አይችልም።</translation>
@@ -1808,6 +1811,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="656065428026159829">ተጨማሪ ይመልከቱ</translation>
 <translation id="6565899972286925956">ማንኛውንም ነገር ይፍጠሩ</translation>
 <translation id="6571070086367343653">ክሬዲት ካርድን አርትዕ</translation>
+<translation id="6571502147204686607">ራስዎን ደኅንነታቸው ካልተጠበቁ ጣቢያዎች ይጠብቁ</translation>
 <translation id="6574092468346088891">ለደህንነት ፍተሻ ማሳወቂያዎችን አብራ</translation>
 <translation id="6579867704846662339">ከሌሎች መተግበሪያዎች ላይ መጪ ዩአርኤሎችን በማንነት የማያሳውቅ ውስጥ ለመክፈት መምረጥ ይችላሉ።</translation>
 <translation id="6585618849026997638">ዕልባት በማከል ለእርስዎ አስፈላጊ ወደ ሆነ ገፅ መመለስ ይችላሉ</translation>
@@ -2248,6 +2252,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7921559948846049514">ለዳራዎ ገጽታ፣ ቀለም ወይም ሌላ ይምረጡ</translation>
 <translation id="792357691529995513">ምንም ችግሮች አልተገኙም</translation>
 <translation id="7925108652071887026">የራስ-ሙላ ውሂብ</translation>
+<translation id="7926290435065552539">የይለፍ ቃላትዎን ደኅንነት ይጠብቁ</translation>
 <translation id="7926975587469166629">የካርድ ቅጽል ስም</translation>
 <translation id="792762900715361006">ፎቶ አንሳ ወይም ቪድዮ ቅረጽ</translation>
 <translation id="7927711904086083099">አልተመረጠም</translation>
@@ -2666,6 +2671,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9144230693397287797">ላቀናበሯቸው አስታዋሾች እና ከሌሎች መሣሪያዎች ለመጡ ትሮች ዝማኔዎችን ይቀበሉ</translation>
 <translation id="914781932147356857">ሁሉንም ምልክት አድርግባቸው…</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
+<translation id="914964947703922647">ተግባርን ይገምግሙ</translation>
 <translation id="9149866541089851383">አርትዕ…</translation>
 <translation id="9152637745605628097">ከገጽታዎች፣ ቀለሞች ይምረጡ ወይም ምስል ይስቀሉ</translation>
 <translation id="9153159728062222866">መቅዳት እና መለጠፍን ይዝለሉ</translation>

@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">เลือกไฟล์แล้วกด <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{เปิดไฟล์ไม่ได้}other{เปิดไฟล์ไม่ได้}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{และอีก 1 รายการ}other{และอีก # รายการ}}</translation>
 <translation id="1283126956823499975">เกิดข้อผิดพลาดในการตั้งค่าอุปกรณ์</translation>
 <translation id="1285992161347843613">ระบุตำแหน่งของโทรศัพท์</translation>
 <translation id="1287002645302686982">มีเดสก์ชื่อ <ph name="DESK_TEMPLATE_NAME" /> ที่บันทึกไว้อยู่แล้ว</translation>
@@ -2184,6 +2185,7 @@
 <translation id="6249795363855770621">ทำเครื่องหมายว่าเสร็จสมบูรณ์ไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="625369703868467034">สถานภาพเครือข่าย</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{และอีก 1 ลิงก์}other{และอีก # ลิงก์}}</translation>
 <translation id="6259776178973198997">รีเฟรชข้อมูลเจ้าของ Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" /> <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" /> กำลังเปิดใช้งาน...</translation>

@@ -77,6 +77,7 @@
 <translation id="112840717907525620">ແຄຊ໌ນະໂຍບາຍໃຊ້ໄດ້</translation>
 <translation id="1131264053432022307">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
+<translation id="1132789342529761192">ບໍ່ແນະນຳໃຫ້ອັບໂຫຼດ</translation>
 <translation id="11370190534773372">ຕື່ມລາຍລະອຽດບັດແລ້ວ</translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">ເນື້ອຫາທີ່ບໍ່ປອດໄພ</translation>
 <translation id="2027465737841872819">ພລາສຕິກ</translation>
 <translation id="2027707238798802149">ບັດບໍ່ພ້ອມນຳໃຊ້</translation>
+<translation id="2028329426302356196">ບໍ່ແນະນຳໃຫ້ດາວໂຫຼດ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງພຣັອກຊີ ແລະ ໄຟຣ໌ວໍ<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">ອິນສະແຕນຂອງ Chrome ນີ້ກຳລັງເຮັດວຽກໂດຍມີການຕັ້ງຄ່າທຸງແຖວຄຳສັ່ງດ້ວຍຕົນເອງ. ກະລຸນາຮັບຊາບວ່າທຸງແຖວຄຳສັ່ງອາດມີການປ່ຽນແປງໄດ້ທຸກເວລາ ແລະ ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນ.</translation>
 <translation id="2033900728810589426">ທາງລັດຕ້ອງບໍ່ຄືກັບຄີເວີດຂອງຜູ້ໃຫ້ບໍລິການການຊອກຫາເລີ່ມຕົ້ນທີ່ກຳນົດໂດຍ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">ອັອບຕິຄອລດິສ (ຊາຕິນ)</translation>
 <translation id="3447661539832366887">ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​ນີ້​ປິດ​ເກມ​ໄດ​ໂນ​ເສົາ​ໄວ້.</translation>
 <translation id="3447884698081792621">ສະແດງໃບຮັບຮອງ (ທີ່ອອກໃຫ້ໂດຍ <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">ບໍ່ແນະນຳໃຫ້ພິມ</translation>
 <translation id="3450323514459570273">ສາມາດຂໍໃຫ້ຄວບຄຸມ ແລະ ຂຽນໂປຣແກຣມອຸປະກອນ MIDI ຂອງທ່ານຄືນໃໝ່ໄດ້</translation>
 <translation id="3452404311384756672">ເອົາໄລຍະ​ຫ່າງ​:</translation>
 <translation id="345268527248907593">ບໍ່ສາມາດເຂົ້າເຖິງເວັບໄຊນີ້ໄດ້</translation>
@@ -2793,7 +2796,6 @@
 <translation id="5619721953841297650">ພຣີເຊັດ</translation>
 <translation id="5624120631404540903">ຈັດການລະ​ຫັດ​ຜ່ານ​</translation>
 <translation id="5627344039351500898">ປ່ຽນເປັນສະຖານທີ່ແບບລະອຽດ</translation>
-<translation id="5628060911499153873">ບັນທຶກຂໍ້ມູນຂອງທ່ານເພື່ອເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນໃນຜະລິດຕະພັນຕ່າໆຂອງ Google. ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໄວ້ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">ໂຫຼດການຕັ້ງຄ່ານະໂຍບາຍບໍ່ສໍາເລັດ</translation>
 <translation id="5630981295558454585">ເປີດນຳໃຊ້ປຸ່ມຖາມ Google ກ່ຽວກັບໜ້ານີ້, ເພື່ອຖາມ Google ກ່ຽວກັບໜ້ານີ້</translation>
 <translation id="5631439013527180824">ກາໝາຍຄຸ້ມຄອງອຸປະກອນໃຊ້ບໍ່ໄດ້</translation>
@@ -2913,6 +2915,7 @@
 <translation id="5851548754964597211">ລາຍການແຖບ</translation>
 <translation id="5851868085455377790">ຜູ້ອອກ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">ບໍ່ແນະນຳໃຫ້ສຳເນົາ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
 <translation id="5862579898803147654">ສະແຕັກເກີ້ 8</translation>
 <translation id="5863515189965725638">ແກ້ໄຂ IBAN</translation>

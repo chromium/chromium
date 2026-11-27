@@ -518,6 +518,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1570990174567554976">Napravljen je folder obeleživača <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nema slabih lozinki ili lozinki koje koristite za više naloga</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
+<translation id="1571371559291327711">&amp;Pronađi, izmeni i druge alatke</translation>
 <translation id="1571738973904005196">Prikaži karticu: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gost)</translation>
 <translation id="1573127087832371028">Opišite problem</translation>
@@ -956,6 +957,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2051669996101374349">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju. Ne možete da promenite ovo podešavanje jer je omogućena Napredna zaštita.</translation>
+<translation id="2052353138844549871">Ne preporučuje se korišćenje Gemini Enterprise-a sa profilom kojim se ne upravlja</translation>
 <translation id="2052723746739622752">Otkači Gemini</translation>
 <translation id="2061366302742593739">Nema stavki za prikaz</translation>
 <translation id="2061589908388230480">Ako Chromium pronađe neku od lozinki u javnoj povredi podataka, Google menadžer lozinki može da vam ponudi da promeni lozinku kada se prijavite. <ph name="BEGIN_LINK" />Više o automatskoj promeni lozinke<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zatražena je dozvola. Pritisnite Ctrl + Forward da biste odgovorili</translation>
 <translation id="2349610121459545414">Nastavi da dozvoljavaš ovom sajtu da pristupa lokaciji</translation>
 <translation id="2350133097354918058">Učitano ponovo</translation>
+<translation id="2351165193188463938">Sada pregledate pomoću Gemini Enterprise-a</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
 <translation id="2353682139907904963">Zakači nove dodatke na traku s alatkama</translation>
@@ -1268,6 +1271,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2409709393952490731">Koristite telefon ili tablet</translation>
 <translation id="2410940059315936967">Sajt koji posećujete može da ugradi sadržaj sa drugih sajtova, na primer, slike, oglase i tekst. Kolačići koje postavljaju ovi drugi sajtovi nazivaju se kolačići treće strane.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Fokusirano je na 1 karticu}one{Fokusirano je na # karticu}few{Fokusirano je na # kartice}other{Fokusirano je na # kartica}}</translation>
 <translation id="2413009156320833859">Dodatno prilagodite pregledač pomoću dodataka iz <ph name="BEGIN_LINK1" />Chrome Web Store-a<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite sa pregledanjem za <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamna</translation>
@@ -1677,6 +1681,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2849926636739429924">Još opcija za grupu kartica <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Zatvoreno</translation>
 <translation id="2851291081585704741">Oflajn ste</translation>
+<translation id="2851527955600412545">Organizacija je ažurirala smernice za Gemini Enterprise u Chrome-u. Istorija četa se možda neće preneti.</translation>
 <translation id="285237063405807022">(učitavanje)</translation>
 <translation id="2853121255651601031">Lozinka je sačuvana</translation>
 <translation id="2855243985454069333">Briše istoriju sa svih sinhronizovanih uređaja</translation>
@@ -2626,6 +2631,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3810593934879994994"><ph name="ORIGIN" /> može da pregleda datoteke u direktorijumima u nastavku</translation>
 <translation id="3810770279996899697">Menadžer lozinki traži pristup MacOS Keychain-u</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3811424142236602772">Pregledajte pomoću Gemini-ja koji za posao podešava <ph name="DOMAIN" />. Postavljajte pitanja dok pregledate tako što ćete deliti kartice kao kontekst i dobijajte odgovore zasnovane na fajlovima i uslugama organizacije.</translation>
 <translation id="3812525830114410218">Neispravan sertifikat</translation>
 <translation id="3813296892522778813">Idite na <ph name="BEGIN_LINK_CHROMIUM" />stranicu pomoći za Google Chrome<ph name="END_LINK_CHROMIUM" /> ako ne možete da pronađete ono što tražite</translation>
 <translation id="3815509884387832993">Slušajte ovu stranicu kao da je podkast uz AI reprodukciju pomoću dugmeta Uključi AI reprodukciju na traci s alatkama režima za čitanje</translation>
@@ -3223,6 +3229,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="4500055235123625757">Gemini može da odgovori na pitanja o videu ili zvuku koji ste pustili na <ph name="LINK_BEGIN" />nekim veb-sajtovima<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Prevedi izbor na jezik <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Kliknite desnim tasterom na karticu i izaberite Dodaj karticu u novu grupu</translation>
+<translation id="450300557121092531">Kartice prema uređaju</translation>
 <translation id="4503362512377701151">Prikazuju vam se nedavno korišćene grupe kartica da biste lako nastavili tamo gde ste stali.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3275,6 +3282,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="4562155266774382038">Odbacite predlog</translation>
 <translation id="4563883094055457792">Vrati pod&amp;eljeni prikaz</translation>
 <translation id="456449593072900590">Izbriši pri izlazu</translation>
+<translation id="4564636746145660922">Proverite vezu, pa probajte ponovo.</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4565465014351935093">Prikazuj samo na stranici nove kartice</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
@@ -3448,6 +3456,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="475088594373173692">Prvi korisnik</translation>
 <translation id="4751925628341802838">Da biste preuzeli istoriju sa drugih uređaja, prijavite se i sinhronizujte istoriju i kartice sa <ph name="EMAIL" />. Moći ćete da preuzmete i dodatke i drugo na svim uređajima. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="4754590344707355551">Poboljšajte pregledač pomoću dodataka</translation>
+<translation id="4754903312643763797">Mogu da važe drugi uslovi privatnosti podataka</translation>
 <translation id="4756130875344525429">Da biste preuzeli istoriju sa uređaja <ph name="DEVICE" />, prijavite se i sinhronizujte istoriju i kartice sa <ph name="EMAIL" />. Moći ćete da pristupate i sačuvanim informacijama i drugom sadržaju na svim uređajima. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="4756378406049221019">Zaustavi/ponovo učitaj</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
@@ -4129,6 +4138,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="5509914365760201064">Izdavalac: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Preuzimaj opise slika sa Google-a</translation>
 <translation id="5512739112435045339">Oslobodite prostor na uređaju. Zatim ponovo probajte da preuzmete</translation>
+<translation id="5513121759801003159">Istorija četa se neće preneti</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Pogledajte još opcija za: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Je li ovo početna stranica koju ste očekivali?</translation>
@@ -4938,6 +4948,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6451861213630784801">Odjavljeni ste</translation>
 <translation id="6453191633103419909">Kvalitet projekcije za karticu/ekran</translation>
 <translation id="6453306703004115497">Prevedeno na <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Pretražite veštačku inteligenciju na uređaju</translation>
 <translation id="645433497989692531">Ovo će trajno izbrisati podatke pregledanja sa ovog uređaja. Da biste vratili podatke, prijavite se kao</translation>
 <translation id="6455264371803474013">Na određenim sajtovima</translation>
 <translation id="6455521402703088376">Isključeno • Programer je opozvao objavljivanje dodatka</translation>
@@ -5112,6 +5123,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="663569763553406962">Pogledajte koji dodaci mogu da čitaju ili menjaju sajt</translation>
 <translation id="6636258750460740634">Istorija</translation>
 <translation id="6636623428211296678">Istražite još podešavanja u nastavku ili završite</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Funkcija Veštine je trenutno onemogućena. Ažurirajte podešavanja Chrome-a da biste započeli.</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
 <translation id="6640268266988685324">Otvorena kartica</translation>
@@ -5245,6 +5257,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6785779729084003225">Koristite prečicu <ph name="FOCUS_TOGGLE_HOTKEY" /> da biste otvorili Gemini u Chrome-u</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu da se prevode samo podržani jezici titla uživo</translation>
+<translation id="6786498102134843646">Odgovori neće biti zasnovani na fajlovima ni uslugama kojima upravlja <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Dodaci</translation>
 <translation id="6786804673213172567">3. nivo: VISOKO</translation>
 <translation id="6787531944787756058">korisničko ime <ph name="USER_EMAIL" /> je sačuvano samo na ovom uređaju. Prikaži detalje</translation>
@@ -5407,6 +5420,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6941514251635934269">Postavite pitanje o ovom dokumentu</translation>
 <translation id="694168622559714949">Administrator je podesio podrazumevani jezik koji ne može da se menja.</translation>
 <translation id="6941953303876950920">Ponovno pokretanje je neophodno za nastavak pregledanja pomoću Gemini-ja</translation>
+<translation id="6943803108751887058">Pritisnite Escape da biste zatvorili</translation>
 <translation id="6944854424004126054">Vratite prozor</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="694592694773692225">Preusmeravanje je blokirano na ovoj stranici.</translation>
@@ -5733,6 +5747,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7293774463163321848">Istorija pretrage, Gemini istorija i lozinke mogu da se brišu u podešavanjima upravljanja</translation>
 <translation id="7296503797589217366">Izaberite folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Sačuvajte informacije u Google novčaniku sa stranica koje pregledate</translation>
+<translation id="7297535265731442945">Gemini Enterprise je ažuriran</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299515639584427954">Želite da promenite podrazumevanu aplikaciju za podržane linkove?</translation>
@@ -5754,6 +5769,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="731827437403763009">AI inovacije</translation>
 <translation id="7319983568955948908">Zaustavi deljenje</translation>
 <translation id="7321545336522791733">Server nije dostupan</translation>
+<translation id="7321838786611890851">Interakcije sa Gemini-jem možda nemaju zaštitne mere koje podešava <ph name="DOMAIN" /> i možda važe drugi uslovi privatnosti podataka</translation>
 <translation id="7322515217754205362">Dozvole za sajtove</translation>
 <translation id="7324020307732396723">Otvori podešavanja jezika</translation>
 <translation id="7325209047678309347">Papir je zaglavljen</translation>
@@ -6050,6 +6066,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7653354650639364202">{0,plural, =1{Zatvori izolovani prozor}one{Zatvori izolovane prozore (# prozor)}few{Zatvori izolovane prozore (# prozora)}other{Zatvori izolovane prozore (# prozora)}}</translation>
 <translation id="7654941827281939388">Ovaj nalog se već koristi na ovom računaru.</translation>
 <translation id="7655411746932645568">Sajtovi mogu da traže da se povezuju sa serijskim portovima</translation>
+<translation id="7656674791025857763">Prijavite se da biste koristili <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Male uštede</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Drugi oblici aktivnosti<ph name="END_LINK_GOOGLE" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
@@ -6261,6 +6278,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7904492297081735975">&amp;Otvori menadžer obeleživača</translation>
 <translation id="7907312522152480478">Da biste preuzeli kartice sa drugih uređaja, potvrdite identitet i sinhronizujte istoriju i kartice. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="7907837847548254634">Prikaži kratko isticanje fokusiranog objekta</translation>
+<translation id="7908205867885088429">Saznajte više o vraćanju podešavanja na podrazumevane vrednosti</translation>
 <translation id="7908835530772972485">Izbrišite podatke kada zatvorite sve prozore</translation>
 <translation id="7909324225945368569">Promenite ime profila</translation>
 <translation id="7909969815743704077">Preuzeto je u režimu bez arhiviranja</translation>
@@ -6652,6 +6670,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8323317289166663449">da čita i menja sve podatke na vašem računaru i svim veb-sajtovima</translation>
 <translation id="8323518750352551353">Želite da razdvojite pregledanje?</translation>
 <translation id="8323744572398547859">Da biste preuzeli kartice sa drugih uređaja, prijavite se i sinhronizujte istoriju. Moći ćete da pristupate i svojim lozinkama i drugom sadržaju na svim uređajima. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
+<translation id="8324035203198677529">Organizacija je isključila Gemini Enterprise u Chrome-u. Možete da nastavite da koristite Gemini u Chrome-u, ali on više neće pronalaziti informacije kojima upravlja organizacija niti će se pozivati na njih. Istorija četa se možda neće preneti.</translation>
 <translation id="8325413836429495820">Nije im dozvoljeno da vide privremenu memoriju</translation>
 <translation id="8326478304147373412">PKCS #7, lanac sertifikata</translation>
 <translation id="8327386430364625757">Matematički font</translation>
@@ -6858,6 +6877,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8552102814346875916">Sačuvajte na listi Uvek zadrži ove sajtove aktivnim</translation>
 <translation id="8552947739661397736">Preuzmi zadatak, Gemini trenutno ima kontrolu</translation>
+<translation id="8555042096950728024">Prevucite ili koristite tastere sa strelicama da biste promenili raspored</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – prikazuje se prošireni sadržaj</translation>
 <translation id="8557022314818157177">Nastavite da dodirujete bezbednosni ključ dok ne snimimo otisak prsta</translation>
 <translation id="8557100046150195444">Upotrebite Touch ID da biste nastavili</translation>
@@ -6950,6 +6970,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8651806635673244884">Možete da vratite kartice u vrh tako što ćete kliknuti desnim tasterom na bilo koju karticu i izabrati Prikaži kartice horizontalno</translation>
 <translation id="8652400352452647993">Greška u vezi sa pakovanjem dodatka</translation>
 <translation id="8654151524613148204">Datoteka je prevelika da bi je računar obradio. Žao nam je.</translation>
+<translation id="8654872240409864765">Vaša organizacija je podesila Gemini Enterprise u Chrome-u. Pitajte Gemini o bilo čemu dok pregledate i dobijajte odgovore zasnovane na fajlovima i uslugama iz cele organizacije.</translation>
 <translation id="8657393004602556571">Želite da odbacite povratne informacije?</translation>
 <translation id="865857184419171576">Prevedite titlove na:</translation>
 <translation id="865936634714975126">Dodajte parametar upita u URL da biste izabrali tipove pri učitavanju stranice. Primer: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7113,6 +7134,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8813937837706331325">Srednje uštede</translation>
 <translation id="8815742860876889867">Otvori link u i&amp;zolovanom prozoru</translation>
 <translation id="881799181680267069">Sakrij druge</translation>
+<translation id="8820301999480837183">Fokusirano je na grupu <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="8821206216942230957">Vaš nalog nema pristup Gemini-ju u Chrome-u</translation>
 <translation id="8823514049557262177">Kopiraj tek&amp;st linka</translation>
@@ -7152,6 +7174,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8863753581171631212">Otvori link u novom <ph name="APP" /> prozoru</translation>
 <translation id="8864055848767439877">Kartica <ph name="TAB_NAME" /> se deli sa aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Lozinka je sačuvana</translation>
+<translation id="8865924457197342642">Gemini Enterprise više nije dostupan</translation>
 <translation id="8866424952450451412">Upravljajte prilagođenim tokovima rada koje omogućava</translation>
 <translation id="8867102760244540173">Pretražite kartice…</translation>
 <translation id="8867568208303837180">Slanje...</translation>
@@ -7364,6 +7387,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9096776523567481218">nije lokalno instalirano</translation>
 <translation id="9099383880226822604">Prašuma</translation>
 <translation id="9100765901046053179">Napredna podešavanja</translation>
+<translation id="9100928301185810363">Fokusirano je na grupu bez naziva – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Da biste prebacivali, odobrite Chrome-u pristup u: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalna mreža &gt; Chrome</translation>
 <translation id="9103868373786083162">Pritisnite da biste se vratili ili otvorite kontekstualni meni da biste videli istoriju</translation>
 <translation id="9107096627210171112">Prevedi...</translation>

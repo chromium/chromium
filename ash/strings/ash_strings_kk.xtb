@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Файлды таңдап, <ph name="KEY" /> пернесін басыңыз</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлды ашу мүмкін емес}other{Файлдарды ашу мүмкін емес}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{және тағы 1}other{және тағы #}}</translation>
 <translation id="1283126956823499975">Құрылғы параметрлерін реттеуге қатысты бірдеңе дұрыс болмады</translation>
 <translation id="1285992161347843613">Телефонды табу</translation>
 <translation id="1287002645302686982">"<ph name="DESK_TEMPLATE_NAME" />" атты жұмыс үстелі бұрыннан бар.</translation>
@@ -2189,6 +2190,7 @@
 <translation id="6249795363855770621">Аяқталған деп белгілеу мүмкін емес. Онлайн болғанда қайталап көріңіз.</translation>
 <translation id="625369703868467034">Желі жағдайы</translation>
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{және тағы 1 сілтеме}other{және тағы # сілтеме}}</translation>
 <translation id="6259776178973198997">Wi-Fi Direct иелері туралы ақпаратты жаңарту</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: белсендірілуде…</translation>

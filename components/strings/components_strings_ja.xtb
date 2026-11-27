@@ -2801,7 +2801,6 @@
 <translation id="5619721953841297650">プリセット</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="5627344039351500898">正確な位置に切り替え</translation>
-<translation id="5628060911499153873">情報を保存すると、各種の Google サービスで簡単に入力できるようになります。情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されます。</translation>
 <translation id="5629630648637658800">ポリシー設定を読み込めませんでした</translation>
 <translation id="5630981295558454585">[このページについて Google に質問する] ボタンです。実行すると、このページについて Google に質問できます</translation>
 <translation id="5631439013527180824">無効なデバイス管理トークンです</translation>

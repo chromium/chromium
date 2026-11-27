@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Pasirinkite failą, tada paspauskite <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Nepavyksta atidaryti failo}one{Nepavyksta atidaryti failų}few{Nepavyksta atidaryti failų}many{Nepavyksta atidaryti failų}other{Nepavyksta atidaryti failų}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{Dar 1}one{Dar #}few{Dar #}many{Dar #}other{Dar #}}</translation>
 <translation id="1283126956823499975">Nustatant įrenginį kilo problema</translation>
 <translation id="1285992161347843613">Telefono vietos nustatymas</translation>
 <translation id="1287002645302686982">Išsaugotas darbalaukis pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
@@ -2195,6 +2196,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6249795363855770621">Nepavyko pažymėti kaip baigtos. Bandykite dar kartą, kai prisijungsite.</translation>
 <translation id="625369703868467034">Tinklo būsena</translation>
 <translation id="6254629735336163724">Užrakinta horizontali padėtis</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{Dar viena nuoroda}one{Dar # nuoroda}few{Dar # nuorodos}many{Dar # nuorodos}other{Dar # nuorodų}}</translation>
 <translation id="6259776178973198997">Atnaujinti „Wi-Fi Direct“ savininkų informaciją</translation>
 <translation id="6260038345397266744">„<ph name="TITLE" />“. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>

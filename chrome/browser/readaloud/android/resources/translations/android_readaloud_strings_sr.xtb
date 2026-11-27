@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек унапред</translation>
 <translation id="1984328900355667246">Репродукција није доступна</translation>
+<translation id="2009730553732772041">Садржај и URL странице на којој се налазите делиће се са Google-ом ради генерисања звука. Овај избор можете да ажурирате у подешавањима у било ком тренутку.</translation>
 <translation id="2019727681730021602">Стандардна репродукција</translation>
 <translation id="2224347680315897176">Уједначен</translation>
 <translation id="2575502321843437554">Није довољно интересантно</translation>
 <translation id="2611765907167846862">Спокојно</translation>
 <translation id="3023502830214299618">Нажалост, репродукција тренутно није доступна за ову страницу. Пробајте поново касније.</translation>
+<translation id="3431227249425330101">Да бисте наставили, желите да дозволите Chrome-у да користи садржај странице за функцију Слушајте ову страницу?</translation>
 <translation id="3493899379487634969">Шта није било у реду?</translation>
 <translation id="3730775656877876887">Генерише се AI репродукција</translation>
 <translation id="3778044272390020426">Мени са опцијама за негативне повратне информације</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Плејер Слушајте ову страницу</translation>
 <translation id="7051308646573997571">Корална</translation>
 <translation id="7138678301420049075">Друго</translation>
+<translation id="7161867604252594316">Функција Слушајте ову страницу је искључена</translation>
 <translation id="7221920857098237570">Дискретно</translation>
 <translation id="7237590978482584900">Са слабим ветром</translation>
 <translation id="7282547042039404307">Без прекида</translation>

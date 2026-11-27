@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">No se habilitarán las funciones que necesitan un micrófono.</translation>
 <translation id="1622717322707146952">Selecciona "Agregar al Calendario de Google" o "Agregar al Calendario de Apple".</translation>
 <translation id="1629162218487290695">Verificar tu identidad…</translation>
+<translation id="1633084385573994059">No usar este sitio</translation>
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Usar la función de navegación para obtener instrucciones paso a paso sobre cómo llegar a tu destino</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">No permitir que los sitios usen el micrófono</translation>
 <translation id="2104436223719117661">Tendencias de búsqueda</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
+<translation id="2113761902638026426">¿Quieres permitir que Gemini vaya a <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Cambia al modo Incógnito para mantener tu navegación en privado</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
 <translation id="2119962645034852864">Algunos servicios no están disponibles para tu cuenta</translation>
@@ -422,7 +424,6 @@
 <translation id="2236949375853147973">Mi actividad</translation>
 <translation id="2237869114829007407">Obtén un resumen y datos clave de cualquier página o tema</translation>
 <translation id="2240256190924001613">Perfil de configuración disponible</translation>
-<translation id="2244080985779413662">Este sitio web quiere descargar un archivo y abrirlo en tu Billetera.</translation>
 <translation id="2245007488813216650">Traduciendo…</translation>
 <translation id="2246445006133863463">Esto te permite chatear con Gemini usando tu voz</translation>
 <translation id="2249119578464404734">En la parte superior de la pantalla, presiona el ícono de Búsqueda</translation>
@@ -767,6 +768,7 @@
 <translation id="3350976670663926380">Se guardaron los cambios</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está administrada.</translation>
 <translation id="3365529507898144230">Guardar en Fotos</translation>
+<translation id="3371168305258344914">Gemini está a punto de realizar acciones en un sitio que puede contener tu información sensible</translation>
 <translation id="3371831930909698441">Está disponible la traducción. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus favoritos, contraseñas y otros elementos que guardaste están en la parte superior.</translation>
 <translation id="3378214228000661758">Crea una llave de acceso para</translation>
@@ -1002,7 +1004,6 @@
 <translation id="4133265950310064865">Protección mejorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
-<translation id="4148023517926189160">Este sitio web quiere descargar un archivo y agregarlo al calendario.</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4154753961803534698">Buscar con la cámara</translation>
 <translation id="4158491215857439601">Administrador de contraseñas</translation>
@@ -1510,6 +1511,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="5684761169742812828">Se expuso esta contraseña en una violación de la seguridad de los datos en Internet. Si no tienes tiempo para cambiarla en este momento, Google recomienda conservar esta advertencia para recordar hacerlo más adelante.</translation>
+<translation id="5691020463738411542">Sincroniza las preferencias de navegación segura en todos tus dispositivos</translation>
 <translation id="5694848685995373177">Se guardó en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Puedes cambiar la vista predeterminada de sitios a la versión de escritorio en la configuración y, luego, en la configuración de contenido</translation>
 <translation id="5702108177581350218">Si compartes una copia de tu nombre de usuario y contraseña, el miembro de tu familia podrá completarlos con el Administrador de contraseñas de Google.</translation>
@@ -1588,6 +1590,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5948605885471592910">Mira y administra todo lo que tienes abierto</translation>
 <translation id="5952641243319721872">¿Confirmas que quieres descartar los cambios?</translation>
 <translation id="5956112131836209882">Pestaña del grupo de pestañas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Iniciar tarea</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Abre vínculos aquí la próxima vez</translation>
 <translation id="5963939892571022323">No se puede crear un vínculo al texto destacado.</translation>
@@ -1808,6 +1811,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6565899972286925956">Crea lo que quieras</translation>
 <translation id="6571070086367343653">Editar tarjeta de crédito</translation>
+<translation id="6571502147204686607">Protégete de los sitios no seguros</translation>
 <translation id="6574092468346088891">Activar las notificaciones de la Verificación de seguridad</translation>
 <translation id="6579867704846662339">Puedes abrir las URLs entrantes de otras apps en el modo Incógnito.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
@@ -2248,6 +2252,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7921559948846049514">Elige un tema, un color o más para tu fondo</translation>
 <translation id="792357691529995513">No se encontraron problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
+<translation id="7926290435065552539">Protege tus contraseñas</translation>
 <translation id="7926975587469166629">Alias de la tarjeta</translation>
 <translation id="792762900715361006">Tomar una foto o grabar un video</translation>
 <translation id="7927711904086083099">Sin seleccionar</translation>
@@ -2666,6 +2671,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="9144230693397287797">Recibe actualizaciones de los recordatorios que configuraste y de las pestañas de otros dispositivos</translation>
 <translation id="914781932147356857">Marcar todas…</translation>
 <translation id="9148126808321036104">Volver a acceder</translation>
+<translation id="914964947703922647">Revisar tarea</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Elige entre temas y colores, o sube una imagen</translation>
 <translation id="9153159728062222866">Olvídate de copiar y pegar</translation>

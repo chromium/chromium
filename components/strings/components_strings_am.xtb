@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">እርስዎ የቀዱት ምስል</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ከሙሉ ገጽ ዕይታ ለመውጣት የላይኛውን ይጎትቱ እና የተመለስ አዝራሩን ይንኩ</translation>
 <translation id="1132789342529761192">መስቀል አይመከርም</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />፣ ምልክት የተደረገበት፣ የምናሌ ንጥል። ማጋራትን ለማጥፋት ይምረጡ</translation>
 <translation id="11370190534773372">የካርድ ዝርዝሮች ተሞልተዋል</translation>
 <translation id="1138458427267715730">በመላ ድሩ በማንኛውም ጣቢያ ላይ ዋጋው ሲቀንስ ማንቂያዎችን ያግኙ</translation>
 <translation id="1142713751288681188">የወረቀት ዓይነት</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">ይህን መተግበሪያ ለማሄድ ገለልተኛ የድር መተግበሪያ የገንቢ ሁነታን በድጋሚ ያንቁ</translation>
 <translation id="2526280916094749336">በመላው የGoogle ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2527451058878391043">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ፊት ለፊት ላይ ነው። ከላይ በስተቀኝ በኩል ከካርድዎ ቁጥር በላይ ባለ4 አሃዙ ኮድ ነው።</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />፣ ምልክት የተደረገበት</translation>
 <translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
 <translation id="2530042584066815841">የመዳፊት መቆለፊያ እና አጠቃቀም</translation>
 <translation id="2535585790302968248">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትርን ክፈት</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2666117266261740852">ሌሎች ትሮችን ወይም መተግበሪያዎችን ይዝጉ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />፣ የምናሌ ንጥል። ማጋራትን ለማብራት ይምረጡ</translation>
 <translation id="2672201172023654893">የእርስዎ አሳሽ አይተዳደርም።</translation>
 <translation id="2674170444375937751">እርግጠኛ ነዎት እነዚህን ገጾች ከታሪክዎ መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2675716371350192683">ይዘትዎ ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ አይውልም። ድርጅትዎ በማንኛውም ጊዜ እነዚህን ቅንብሮች ሊለውጥ ይችላል።</translation>
@@ -1991,6 +1994,7 @@
 <translation id="4297502707443874121">የገጽ <ph name="THUMBNAIL_PAGE" /> ድንክዬ</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> ተዘምኗል</translation>
 <translation id="4298148761711700950">ያለ QR ኮድ በቅጽበት ይክፈሉ</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">ለዚህ ጣቢያ ያሉ ኩኪዎች በመላ የእርስዎ የChromeOS መሣሪያ ላይ ሠምረዋል። የሚያሠምሩትን ነገር ለማስተዳደር ወደ <ph name="SYNC_SETTINGS" /> ይሂዱ።</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> ምንጭ <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">የአቋራጭ ስም ከሚፈቀደው ከፍተኛ የ<ph name="MAX_LENGTH" /> ቁምፊዎች ርዝመት ይበልጣል።</translation>
@@ -2200,6 +2204,7 @@
 <translation id="4682496302933121474">ገፅ ይተርጎም?</translation>
 <translation id="468314109939257734">የእርስዎን ምናባዊ ካርድ ቁጥር ይመልከቱ</translation>
 <translation id="4686942373615810936">አሁን የተፈጠረ</translation>
+<translation id="468826602575103388">ማጋራትን ለማጥፋት ይምረጡ</translation>
 <translation id="4690205240253392065">የበኋላ ላይ መክፈል አቅራቢ ይምረጡ</translation>
 <translation id="469028408546145398">ማንነትን የማያሳውቅ የመስኮት አዝራርን ይዝጉ፣ አሁን ክፍት የሆኑትን ሁሉንም ማንነት የማያሳውቁ መስኮቶች ለመዝጋት ያግብሩ</translation>
 <translation id="4692623383562244444">የፍለጋ ፕሮግራሞች</translation>
@@ -2795,7 +2800,6 @@
 <translation id="5619721953841297650">ቅድመ-ቅምጥ</translation>
 <translation id="5624120631404540903">የይለፍ ቃሎችን አስተዳድር</translation>
 <translation id="5627344039351500898">ወደ ትክክለኛ ለውጥ</translation>
-<translation id="5628060911499153873">በመላው Google ምርቶችዎ ላይ ነገሮችን በፍጥነት ለማከናወን መረጃዎን ያስቀምጡ። መረጃዎ ለ<ph name="ACCOUNT" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ላይ ተቀምጧል።</translation>
 <translation id="5629630648637658800">የመምሪያ ቅንብሮችን መጫን አልተሳካም</translation>
 <translation id="5630981295558454585">ስለ እዚህ ገፅ አዝራር Googleን ይጠይቁ፣ ስለ እዚህ ገፅ Googleን ለመጠየቅ ያግብሩ</translation>
 <translation id="5631439013527180824">ልክ ያልሆነ የመሣሪያ አስተዳደር ማስመሰያ</translation>
@@ -4172,6 +4176,7 @@
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7943397946612013052">ማውረድ ታግዷል</translation>
 <translation id="7943893128817522649">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ መጠየቅ ይችላል</translation>
+<translation id="7947144323420971076">ማጋራትን ለማብራት ይምረጡ</translation>
 <translation id="7947285636476623132">የእርስዎን የአገልግሎት ማብቂያ ዓመት ይመልከቱ እና እንደገና ይሞክሩ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ስለChrome ባህሪዎች ለማወቅ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="7947964969544524438">የታወቀ የተጓዥ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ያስቀምጡ</translation>
@@ -4299,6 +4304,7 @@
 <translation id="8172809706700703589">ለጉዞዬ የማሸጊያ ዝርዝር ፍጠር</translation>
 <translation id="8174047975335711832">የመሣሪያ መረጃ</translation>
 <translation id="8175053171643471349">የታማኝነት ካርዶችን ያስተዳድሩ</translation>
+<translation id="817536628389054635">የዕውቂያ መረጃ ተሞልቷል፦ <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">እርስዎ በመለያ ስለገቡ Chrome ወደ የእርስዎ የGoogle መለያ ለማስቀመጥ አማራጭ እያቀረበ ነው። ይህን ባህሪ በቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="8176440868214972690">የዚህ መሣሪያ አስተዳዳሪ እንደ ቅንብሮች ወይም መመሪያዎች ላሉት ለሚከተሉት ድር ጣቢያዎች የተወሰነ መረጃ ልኳል።</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> በይዘት ምክንያት ታግዷል}one{<ph name="FILE_COUNT" /> ፋይል በይዘት ምክንያት ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች በይዘት ምክንያት ታግደዋል}}</translation>

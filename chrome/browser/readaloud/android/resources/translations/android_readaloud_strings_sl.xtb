@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Previjanje naprej za <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="1984328900355667246">Predvajanje ni na voljo</translation>
+<translation id="2009730553732772041">Vsebina in URL strani, na kateri ste, se bosta delila z Googlom zaradi generiranja zvoka. To izbiro lahko kadar koli posodobite v nastavitvah.</translation>
 <translation id="2019727681730021602">Standardno predvajanje</translation>
 <translation id="2224347680315897176">Stabilen</translation>
 <translation id="2575502321843437554">Ni dovolj privlačno</translation>
 <translation id="2611765907167846862">Spokojen</translation>
 <translation id="3023502830214299618">Predvajanje za to stran trenutno ni na voljo. Poskusite znova pozneje.</translation>
+<translation id="3431227249425330101">Ali želite, da Chrome za nadaljevanje uporablja vsebino strani za funkcijo Poslušanje te strani?</translation>
 <translation id="3493899379487634969">Kaj je bilo narobe?</translation>
 <translation id="3730775656877876887">Generiranje predvajanja z umetno inteligenco</translation>
 <translation id="3778044272390020426">Meni z možnostmi za negativne povratne informacije</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Predvajalnik »Poslušanje te strani«</translation>
 <translation id="7051308646573997571">Koralna</translation>
 <translation id="7138678301420049075">Drugo</translation>
+<translation id="7161867604252594316">Funkcija »Poslušanje te strani« je izklopljena</translation>
 <translation id="7221920857098237570">Nežen</translation>
 <translation id="7237590978482584900">Svež</translation>
 <translation id="7282547042039404307">Tekoč</translation>

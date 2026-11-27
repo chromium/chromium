@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">માઇક્રોફોનની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>
 <translation id="1622717322707146952">“Google Calendarમાં ઉમેરો“ અથવા “Apple Calendar પર ઉમેરો“ પસંદ કરો.</translation>
 <translation id="1629162218487290695">આ તમે જ છો તેની ચકાસણી કરો…</translation>
+<translation id="1633084385573994059">આ સાઇટનો ઉપયોગ કરશો નહીં</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને વારા ફરતી માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2104436223719117661">વલણમાં છે એ શોધો</translation>
 <translation id="21133533946938348">ટૅબ પિન કરો</translation>
+<translation id="2113761902638026426">Geminiને <ph name="SITE_DOMAIN" /> પર જવા દઈએ?</translation>
 <translation id="2117650889962717098">છૂપા મોડ પર સ્વિચ કરીને તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
 <translation id="2119636449201577317">આમાં ખોલો…</translation>
 <translation id="2119962645034852864">તમારા એકાઉન્ટ માટે કેટલીક સેવાઓ ઉપલબ્ધ નથી</translation>
@@ -422,7 +424,6 @@
 <translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
 <translation id="2237869114829007407">કોઈપણ પેજ અથવા વિષય માટે ઓવરવ્યૂ અને મુખ્ય જાણકારીઓ મેળવો</translation>
 <translation id="2240256190924001613">કન્ફિગ્યુરેશન પ્રોફાઇલ ઉપલબ્ધ છે</translation>
-<translation id="2244080985779413662">આ વેબસાઇટ ફાઇલ ડાઉનલોડ કરવા અને તેને તમારા Walletમાં ખોલવા માગે છે.</translation>
 <translation id="2245007488813216650">અનુવાદ કરી રહ્યાં છીએ…</translation>
 <translation id="2246445006133863463">આ તમને તમારા વૉઇસનો ઉપયોગ કરીને Gemini સાથે ચૅટ કરવાની સુવિધા આપે છે</translation>
 <translation id="2249119578464404734">સ્ક્રીનની સૌથી ઉપર, 'શોધો' આઇકન પર ટૅપ કરો</translation>
@@ -767,6 +768,7 @@
 <translation id="3350976670663926380">ફેરફારો સાચવ્યા</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. આ એકાઉન્ટ મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3365529507898144230">Photosમાં સાચવો</translation>
+<translation id="3371168305258344914">Gemini એવી સાઇટ પર ઍક્શન લેવા જઈ રહ્યું છે, જેમાં તમારી સંવેદનશીલ માહિતી હોઈ શકે છે</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
 <translation id="3377063233124932127">હવે તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું સૌથી ઉપર રહે છે.</translation>
 <translation id="3378214228000661758">આના માટે પાસકી બનાવો</translation>
@@ -1002,7 +1004,6 @@
 <translation id="4133265950310064865">વધારેલું સંરક્ષણ</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
-<translation id="4148023517926189160">આ વેબસાઇટ ફાઇલ ડાઉનલોડ કરવા અને તેને તમારા કૅલેન્ડરમાં ઉમેરવા માગે છે.</translation>
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
 <translation id="4154753961803534698">કૅમેરા વડે શોધો</translation>
 <translation id="4158491215857439601">પાસવર્ડ મેનેજર</translation>
@@ -1510,6 +1511,7 @@
 <translation id="567881659373499783">વર્ઝન <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો.</translation>
 <translation id="5684761169742812828">આ પાસવર્ડ ઇન્ટરનેટ પર ડેટા ઉલ્લંઘનમાં જાહેર થઈ ગયો હતો. જો તમારી પાસે તેને અત્યારે જ બદલવાનો સમય નથી, તો Google તમારી જાતને ફરીથી યાદ અપાવવા માટે આ ચેતવણીને રાખી મૂકવાનો સુઝાવ આપે છે.</translation>
+<translation id="5691020463738411542">સમગ્ર ડિવાઇસ પર Safe Browsingની પસંદગીઓ સિંક કરો</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> માટે Driveમાં સાચવી.</translation>
 <translation id="570209299585559496">તમે સેટિંગ પછી કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="5702108177581350218">તમે તમારું વપરાશકર્તાનું નામ અને પાસવર્ડની એક કૉપિ શેર કરો ત્યારે, તમારા કુટુંબનો સભ્ય તેમને Google Password Managerનો ઉપયોગ કરીને ભરી શકે છે.</translation>
@@ -1588,6 +1590,7 @@
 <translation id="5948605885471592910">તમે જે કંઈ ખોલ્યું છે તે બધું જુઓ અને તેને મેનેજ કરો</translation>
 <translation id="5952641243319721872">શું તમે ખરેખર તમારી પસંદગીને કાઢી નાખવા માગો છો?</translation>
 <translation id="5956112131836209882">ટૅબનું ગ્રૂપ ટૅબ. <ph name="NUMBER_OF_TABS_IN_GROUP" />માંથી <ph name="TAB_INDEX_IN_GROUP" />.</translation>
+<translation id="595662449352471176">કાર્ય શરૂ કરો</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
 <translation id="5963694076845073027">આગલી વખતે લિંક અહીં ખોલો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
@@ -1808,6 +1811,7 @@
 <translation id="656065428026159829">વધુ જુઓ</translation>
 <translation id="6565899972286925956">કંઈપણ બનાવો</translation>
 <translation id="6571070086367343653">ક્રેડિટ કાર્ડ સંપાદિત કરો </translation>
+<translation id="6571502147204686607">અસુરક્ષિત સાઇટથી પોતાને સુરક્ષિત રાખો</translation>
 <translation id="6574092468346088891">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="6579867704846662339">અન્ય ઍપમાંના ઇનકમિંગ URLs તમે છૂપા મોડમાં ખોલવાનું પસંદ કરી શકો છો.</translation>
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
@@ -2248,6 +2252,7 @@
 <translation id="7921559948846049514">તમારા બૅકગ્રાઉન્ડ માટે થીમ, રંગ કે બીજું ઘણું પસંદ કરો</translation>
 <translation id="792357691529995513">કોઈ સમસ્યા મળી નથી</translation>
 <translation id="7925108652071887026">સ્વત:ભરણ ડેટા</translation>
+<translation id="7926290435065552539">તમારા પાસવર્ડને સુરક્ષિત રાખો</translation>
 <translation id="7926975587469166629">કાર્ડનું ઉપનામ</translation>
 <translation id="792762900715361006">ફોટો લો અથવા વીડિયો બનાવો</translation>
 <translation id="7927711904086083099">પસંદ કરેલું નથી</translation>
@@ -2666,6 +2671,7 @@
 <translation id="9144230693397287797">તમે સેટ કરેલા રિમાઇન્ડર અને અન્ય ડિવાઇસ પરથી ટૅબ માટે અપડેટ મેળવો</translation>
 <translation id="914781932147356857">તમામને માર્ક કરો…</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
+<translation id="914964947703922647">કાર્યનો રિવ્યૂ કરો</translation>
 <translation id="9149866541089851383">ફેરફાર કરો...</translation>
 <translation id="9152637745605628097">થીમ, રંગોમાંથી પસંદ કરો અથવા કોઈ છબી અપલોડ કરો</translation>
 <translation id="9153159728062222866">કૉપિ અને પેસ્ટ કરવાનું છોડો</translation>

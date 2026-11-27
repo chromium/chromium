@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">रुबी</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड फास्ट फर्वार्ड गर्नुहोस्</translation>
 <translation id="1984328900355667246">प्लेब्याक उपलब्ध छैन</translation>
+<translation id="2009730553732772041">अडियो जेनेरेट गर्ने प्रयोजनका लागि तपाईंले खोलिरहनुभएको पेजमा भएको कन्टेन्ट र सो पेजको URL Google सँग सेयर गरिने छ। तपाईं जुनसुकै बेला सेटिङमा गई यो रोजाइ बदल्न सक्नुहुन्छ।</translation>
 <translation id="2019727681730021602">डिफल्ट प्लेब्याक</translation>
 <translation id="2224347680315897176">स्थिर</translation>
 <translation id="2575502321843437554">हुनु पर्ने जति अन्तर्क्रियात्मक छैन</translation>
 <translation id="2611765907167846862">स्थिर</translation>
 <translation id="3023502830214299618">दुर्भाग्यवश, अहिले यो पेजमा प्लेब्याक उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3431227249425330101">जारी राख्न Chrome लाई "यो पेज सुन्नुहोस्" सुविधाका लागि पेजको कन्टेन्ट प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="3493899379487634969">के समस्या आयो?</translation>
 <translation id="3730775656877876887">AI प्लेब्याक जेनेरेट गरिँदै छ</translation>
 <translation id="3778044272390020426">नकारात्मक प्रतिक्रियाका विकल्पहरू भएको मेनु</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“यो पेजमा भएको सामग्री सुन्नुहोस्” प्लेयर</translation>
 <translation id="7051308646573997571">कोरल</translation>
 <translation id="7138678301420049075">अन्य</translation>
+<translation id="7161867604252594316">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” अफ छ</translation>
 <translation id="7221920857098237570">नम्र</translation>
 <translation id="7237590978482584900">फुर्तिलो</translation>
 <translation id="7282547042039404307">निर्बाध</translation>

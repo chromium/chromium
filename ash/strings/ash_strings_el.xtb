@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Επιλέξτε το αρχείο και έπειτα πατήστε <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Δεν είναι δυνατό το άνοιγμα του αρχείου}other{Δεν είναι δυνατό το άνοιγμα των αρχείων}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 ακόμη}other{+# ακόμη}}</translation>
 <translation id="1283126956823499975">Προέκυψε πρόβλημα με τη ρύθμιση της συσκευής</translation>
 <translation id="1285992161347843613">Εντοπισμός τηλεφώνου</translation>
 <translation id="1287002645302686982">Υπάρχει ήδη ένα γραφείο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -2189,6 +2190,7 @@
 <translation id="6249795363855770621">Δεν ήταν δυνατό να επισημανθεί ως ολοκληρωμένη. Δοκιμάστε ξανά μόλις συνδεθείτε στο διαδίκτυο.</translation>
 <translation id="625369703868467034">Υγεία δικτύου</translation>
 <translation id="6254629735336163724">Κλειδωμένη σε οριζόντια</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 ακόμη σύνδεσμος}other{+# ακόμη σύνδεσμοι}}</translation>
 <translation id="6259776178973198997">Ανανέωση πληροφοριών κατόχων Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ενεργοποίηση…</translation>

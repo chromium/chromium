@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Izaberite fajl, pa pritisnite <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Otvaranje fajla nije uspelo}one{Otvaranje fajlova nije uspelo}few{Otvaranje fajlova nije uspelo}other{Otvaranje fajlova nije uspelo}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{I još 1}one{I još #}few{I još #}other{I još #}}</translation>
 <translation id="1283126956823499975">Došlo je do greške pri podešavanju uređaja</translation>
 <translation id="1285992161347843613">Pronađi telefon</translation>
 <translation id="1287002645302686982">Sačuvana radna površina pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
@@ -2193,6 +2194,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6249795363855770621">Označavanje stavke kao da je dovršena nije uspelo. Probajte ponovo kada budete onlajn.</translation>
 <translation id="625369703868467034">Stanje mreže</translation>
 <translation id="6254629735336163724">Horizontalni prikaz je zaključan</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{I još 1 link}one{I još# link}few{I još# linka}other{I još# linkova}}</translation>
 <translation id="6259776178973198997">Osveži informacije o WiFi Direct vlasnicima</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje...</translation>

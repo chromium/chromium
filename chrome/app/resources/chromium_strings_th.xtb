@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1006344083777662909">คุณกำลังแชร์แท็บนี้กับ Search</translation>
 <translation id="1026101648481255140">ดำเนินการติดตั้งต่อ</translation>
 <translation id="1029669172902658969">เปิดอีกครั้งเพื่ออัปเดต &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ขอแนะนำให้คุณตรวจสอบส่วนขยายนี้</translation>
@@ -83,6 +84,7 @@
 <translation id="1880495786739455486">คุณสามารถเปิด Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="1880677175115548835">เลือกข้อความ</translation>
 <translation id="188102464690227119">ปุ่ม "Search ในแผงด้านข้าง" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ในแผงด้านข้าง</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - คุณกำลังแชร์แท็บนี้กับ Search</translation>
 <translation id="1896836275755235458">Chromium จะช่วยสงวนพลังงานแบตเตอรี่โดยการจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ เช่น การเลื่อนอย่างราบรื่นและอัตราเฟรมวิดีโอ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดประหยัดพลังงาน<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">บริการ Chromium Updater</translation>
 <translation id="1929939181775079593">Chromium ไม่ตอบสนอง เปิดใหม่เลยหรือไม่</translation>
@@ -102,6 +104,7 @@
 <translation id="2086476982681781442">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์มีการหลอกลวงและอาจทำการเปลี่ยนแปลงที่ไม่คาดคิดกับอุปกรณ์</translation>
 <translation id="208726765006323911">คุณจะเห็นข้อความแจ้งให้ลองใช้ <ph name="FEATURE_NAME" /> ในครั้งถัดไปที่เปิด Chromium บน iOS</translation>
 <translation id="2099452623287920103">ระบบจะนำรหัสผ่านและข้อมูลอื่นๆ ของ Chromium ที่คุณบันทึกไว้ในบัญชี Google ออกจากอุปกรณ์นี้ หากต้องการใช้ข้อมูลเหล่านี้ใน Chromium ให้ลงชื่อเข้าใช้อีกครั้ง</translation>
+<translation id="2104346008417283366">คุณสามารถเปลี่ยนไปใช้ Gemini ที่เชื่อมโยงกับบัญชี Google ของคุณตั้งแต่แรกและไม่ได้จัดการโดย <ph name="DOMAIN" /> ในการเปลี่ยนจะต้องเปิด Chromium อีกครั้ง</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{องค์กรจะลบข้อมูลการท่องเว็บโดยอัตโนมัติเมื่อไม่มีการใช้ Chromium เป็นเวลา 1 นาที ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด ทั้งนี้ แท็บจะยังคงเปิดอยู่}other{องค์กรจะลบข้อมูลการท่องเว็บโดยอัตโนมัติเมื่อไม่มีการใช้ Chromium เป็นเวลา # นาที ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด ทั้งนี้ แท็บจะยังคงเปิดอยู่}}</translation>
 <translation id="2126108037660393668">ไฟล์ที่ดาวน์โหลดไม่ผ่านการยืนยัน</translation>
 <translation id="2135919691573380097">รายงานเว็บไซต์นี้</translation>
@@ -269,6 +272,7 @@
 <translation id="3941890832296813527">ข้อผิดพลาดในการติดตั้ง: ชื่อไฟล์ของโปรแกรมติดตั้งไม่ถูกต้องหรือระบบไม่รองรับ</translation>
 <translation id="3945058413678539331">Chromium กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="3950481960271781644">ลงชื่อเข้าใช้ Chromium เพื่อเข้าถึงข้อมูลที่บันทึกไว้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="3956384805063254165">เบราว์เซอร์ที่มีการจัดการนี้สามารถใช้ Gemini ที่ <ph name="DOMAIN" /> ตั้งค่าไว้สำหรับการทำงาน โดยสามารถค้นหาข้อมูลและให้คำตอบที่อิงตามแหล่งข้อมูลจากไฟล์และบริการขององค์กร ในการเปลี่ยนจะต้องเปิด Chromium อีกครั้ง</translation>
 <translation id="395904275706073188">อ่านหน้าเว็บที่มีการป้องกันไม่ได้ โปรดลองใช้หน้าอื่น</translation>
 <translation id="3962647064319009959">ดูวิธีที่ Chromium ช่วยให้คุณปลอดภัย</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
@@ -361,6 +365,7 @@
 <translation id="494490797786467921">คลิกเพื่อปิดกล่องโต้ตอบการลงชื่อเข้าใช้ Chromium</translation>
 <translation id="4950660488495335294">โปรไฟล์ Chromium ช่วยให้คุณแยกข้อมูลต่างๆ ใน Chromium ออกจากกันได้ สร้างโปรไฟล์สำหรับเพื่อนและครอบครัว หรือแยกการทำงานออกจากความบันเทิง</translation>
 <translation id="4992938037305302429">บัญชีของคุณใน Chromium</translation>
+<translation id="5088350632679445418">เริ่มชุดข้อความใหม่ด้วย Search</translation>
 <translation id="5123973130450702873">Chromium ต้องการสิทธิ์ในการติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5141988424377517949">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และ<ph name="PERMISSION_3" />ออกแล้ว</translation>
 <translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>
@@ -399,6 +404,7 @@
 <translation id="5473971139929175403">Chromium อาจทำงานไม่ถูกต้องเพราะไม่รองรับใน Linux Distribution นี้แล้ว</translation>
 <translation id="5475924890392386523">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
 <translation id="5496810170689441661">Chromium กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{เลิกแชร์แท็บกับ Search}other{เลิกแชร์ # แท็บกับ Search}}</translation>
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">เปิด PDF ใน Chromium</translation>
 <translation id="5557035028197464376">ปักหมุด Search ใน Chrome ไว้ที่แถบเครื่องมือแล้ว</translation>
@@ -409,8 +415,10 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> อีกทั้งคุณยังรับข้อมูลที่บันทึกไว้และข้อมูลอื่นๆ จาก <ph name="DEVICE" /> ได้ด้วย</translation>
 <translation id="5579324208890605088">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ใช้ทั่วไป ไม่ใช่ในฐานะผู้ดูแลระบบ</translation>
 <translation id="5580770360767802657">ใช้ Chromium โดยค่าเริ่มต้นและปักหมุดไว้</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{แชร์แท็บกับ Search}other{แชร์ # แท็บกับ Search}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยกจะไม่เปิดขึ้นมาใหม่}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยก # หน้าต่างจะไม่เปิดขึ้นมาใหม่}}</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
+<translation id="5608863008645990586">เปลี่ยนมาใช้ Gemini Enterprise ที่จัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> พร้อมแล้ว คุณจะเปิดอีกครั้งตอนนี้ หรือตั้งค่าให้ Chromium อัปเดตในครั้งถัดไปที่หน้าจอเปิดอยู่และไม่มีการใช้งานเป็นเวลา <ph name="IDLE_DURATION" /> ก็ได้</translation>
 <translation id="5623402015214259806">{0,plural, =0{มีอัปเดต Chromium พร้อมให้ใช้งาน}=1{มีอัปเดต Chromium พร้อมให้ใช้งาน}other{อัปเดต Chromium พร้อมให้ใช้งานมาแล้ว # วัน}}</translation>
 <translation id="5643865575100044307">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chromium</translation>
@@ -504,6 +512,7 @@
 <translation id="6455857529632101747">ยินดีต้อนรับสู่โปรไฟล์ Chromium</translation>
 <translation id="6460614424172581323">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้กลุ่มแท็บ</translation>
 <translation id="6466344609055215035">นำบัญชีออกจาก Chromium</translation>
+<translation id="6475125381371849386">เริ่มชุดข้อความใหม่ด้วย Search</translation>
 <translation id="6475912303565314141">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chromium ด้วย</translation>
 <translation id="6510925080656968729">ถอนการติดตั้ง Chromium</translation>
 <translation id="651535675648445253">เปิดทางลัดใน Chromium</translation>
@@ -518,6 +527,7 @@
 <translation id="6598877126913850652">ไปที่การตั้งค่าการแจ้งเตือน Chromium</translation>
 <translation id="6600016381025017075">ค้นหาอะไรก็ได้ในหน้านี้</translation>
 <translation id="6613594504749178791">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณเปิด Chromium ขึ้นอีก</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{แชร์แท็บกับ Search}other{แชร์ # แท็บกับ Search}}</translation>
 <translation id="6637855549677695722">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้รับฟีเจอร์ความปลอดภัยที่ดีที่สุดของ Chromium</translation>
 <translation id="6637908313088374648">ตอนนี้ระบบจะเปิด Chromium เมื่อ Windows เริ่มทำงาน คุณจึงเริ่มท่องเว็บได้ทันที คุณปิดการดำเนินการนี้ได้ในการตั้งค่า</translation>
 <translation id="6644846457769259194">กำลังอัปเดตอุปกรณ์ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -532,6 +542,7 @@
 ฟีเจอร์บางประการอาจไม่มี โปรดระบุไดเรกทอรีโปรไฟล์อื่น หรือใช้ Chromium รุ่นใหม่</translation>
 <translation id="6729124504294600478">รวม Chromium ไว้ในกิจกรรมบนเว็บและแอป ตลอดจนบริการของ Google ที่ลิงก์ไว้เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="6734291798041940871">มีการติดตั้ง Chromium สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
+<translation id="6737759643107005803">เปลี่ยนกลับไปใช้ Gemini ที่ไม่ได้จัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="6742093177587589736">ลงชื่อเข้าใช้ Chromium เพื่อเข้าถึงรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชี Google หลังจากที่คุณลงชื่อเข้าใช้</translation>
 <translation id="674891594898436429">ปิดการค้นหากิจกรรมที่ใช้งานอยู่ในแท็บนี้</translation>
 <translation id="6751374565094704799">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้เปิดอยู่</translation>
@@ -727,6 +738,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8556055872671007529">ฟีเจอร์และส่วนขยายบางอย่างของ Chromium มาพร้อมทางลัด ซึ่งคุณเลือกเปิดใช้อีกครั้งได้</translation>
 <translation id="8556420416730706394">คุณสามารถปักหมุดการค้นหารูปภาพเพื่อให้เข้าถึงได้ง่าย โดยการคลิกปุ่ม "ปักหมุด" ที่ด้านบนของแผงด้านข้าง</translation>
 <translation id="856656450041460113">ค้นหารายการภาษา</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{เลิกแชร์แท็บกับ Search}other{เลิกแชร์ # แท็บกับ Search}}</translation>
 <translation id="8576826849825683917">องค์กรหลายแห่งจัดการ Chromium</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8619360774459241877">กำลังเปิด Chromium...</translation>

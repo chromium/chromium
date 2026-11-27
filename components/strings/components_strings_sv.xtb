@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Bilden som du kopierade</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Dra från toppen och tryck på bakåtknappen för att avsluta helskärmsläget</translation>
 <translation id="1132789342529761192">Uppladdning rekommenderas inte</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, markerat, menyalternativ. Välj för att inaktivera delning</translation>
 <translation id="11370190534773372">Kortuppgifter har fyllts i</translation>
 <translation id="1138458427267715730">Få aviseringar när priset sänks på någon webbplats på webben</translation>
 <translation id="1142713751288681188">Papperstyp</translation>
@@ -928,6 +929,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2526062290525841862">Aktivera utvecklarläget för isolerade webbappar igen om du vill köra appen</translation>
 <translation id="2526280916094749336">Du kan använda sparade adresser i Googles produkter. Den här adressen sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-koden finns på framsidan av kortet. Det är den fyrsiffriga koden uppe till höger ovanför kortnumret.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, markerat</translation>
 <translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
 <translation id="2530042584066815841">Låsa och använda musen</translation>
 <translation id="2535585790302968248">Öppna en ny inkognitoflik och surfa privat</translation>
@@ -1012,6 +1014,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2666117266261740852">Stäng andra flikar eller appar</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, menyalternativ. Välj för att aktivera delning</translation>
 <translation id="2672201172023654893">Din webbläsare är inte hanterad.</translation>
 <translation id="2674170444375937751">Vill du ta bort de här sidorna från historiken?</translation>
 <translation id="2675716371350192683">Ditt innehåll används inte för att förbättra AI. Din organisation kan ändra dessa inställningar när som helst.</translation>
@@ -1992,6 +1995,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> har uppdaterats</translation>
 <translation id="4298148761711700950">Betala direkt utan att ladda upp QR-kod</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Cookies för den här webbplatsen synkroniseras på dina ChromeOS-enheter. Gå till <ph name="SYNC_SETTINGS" /> om du vill hantera vad du synkroniserar.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" />-källa <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Namnet på genvägen överskrider den maximala tillåtna längden på <ph name="MAX_LENGTH" /> tecken.</translation>
@@ -2201,6 +2205,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="468314109939257734">Visa ditt virtuella kortnummer</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
+<translation id="468826602575103388">Välj för att inaktivera delning</translation>
 <translation id="4690205240253392065">Välj en leverantör för att betala senare</translation>
 <translation id="469028408546145398">Knappen Stäng inkognitofönster: aktivera om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
@@ -2796,7 +2801,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5619721953841297650">Förinställning</translation>
 <translation id="5624120631404540903">Hantera lösenord</translation>
 <translation id="5627344039351500898">Ändra till exakt</translation>
-<translation id="5628060911499153873">Spara dina uppgifter så att du kan få saker gjorda snabbare i Googles produkter. Din information sparas i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Det gick inte att läsa in policyinställningarna</translation>
 <translation id="5630981295558454585">Knappen Fråga Google om den här sidan – aktivera för att fråga Google om den här sidan</translation>
 <translation id="5631439013527180824">Ogiltig enhetshanteringstoken</translation>
@@ -4173,6 +4177,7 @@ Mer information.
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943397946612013052">Nedladdning blockeras</translation>
 <translation id="7943893128817522649">Får begära tillstånd att ladda ned flera filer automatiskt</translation>
+<translation id="7947144323420971076">Välj för att aktivera delning</translation>
 <translation id="7947285636476623132">Kontrollera utgångsår och försök igen</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill läsa mer om funktioner i Chrome</translation>
 <translation id="7947964969544524438">Spara ditt Known Traveler Number på ett säkert sätt</translation>
@@ -4300,6 +4305,7 @@ Mer information.
 <translation id="8172809706700703589">Skapa en packlista för min resa</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8175053171643471349">Hantera stamkundskort</translation>
+<translation id="817536628389054635">Kontaktuppgifter fylldes i: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Du erbjuds av Chrome att spara dina kort i Google-kontot eftersom du är inloggad. Du kan ändra detta i inställningarna.</translation>
 <translation id="8176440868214972690">Administratören för enheten har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> har blockerats på grund av innehåll}other{<ph name="FILE_COUNT" /> filer har blockerats på grund av innehåll}}</translation>

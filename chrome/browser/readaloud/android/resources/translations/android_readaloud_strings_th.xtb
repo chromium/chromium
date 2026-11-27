@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">ทับทิม</translation>
 <translation id="1921351128855867012">กรอไปข้างหน้า <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
 <translation id="1984328900355667246">เล่นเสียงไม่ได้</translation>
+<translation id="2009730553732772041">ระบบจะแชร์เนื้อหาและ URL ของหน้าที่คุณอยู่กับ Google เพื่อสร้างเสียง คุณสามารถอัปเดตตัวเลือกนี้ได้ในการตั้งค่าทุกเมื่อ</translation>
 <translation id="2019727681730021602">การเล่นมาตรฐาน</translation>
 <translation id="2224347680315897176">คงที่</translation>
 <translation id="2575502321843437554">ไม่น่าสนใจมากพอ</translation>
 <translation id="2611765907167846862">เรียบๆ</translation>
 <translation id="3023502830214299618">ขออภัย ไม่สามารถเล่นเสียงสำหรับหน้านี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="3431227249425330101">หากต้องการดำเนินการต่อ โปรดอนุญาตให้ Chrome ใช้เนื้อหาของหน้าเว็บสำหรับฟีเจอร์ฟังเสียงหน้านี้</translation>
 <translation id="3493899379487634969">เกิดข้อผิดพลาดอะไรขึ้น</translation>
 <translation id="3730775656877876887">กำลังสร้างการเล่นด้วย AI</translation>
 <translation id="3778044272390020426">เมนูตัวเลือกความคิดเห็นเชิงลบ</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">โปรแกรมเล่น "ฟังหน้านี้"</translation>
 <translation id="7051308646573997571">สีส้มอมชมพู</translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
+<translation id="7161867604252594316">"ฟังหน้านี้" ปิดอยู่</translation>
 <translation id="7221920857098237570">อ่อนโยน</translation>
 <translation id="7237590978482584900">สดชื่น</translation>
 <translation id="7282547042039404307">ราบรื่น</translation>

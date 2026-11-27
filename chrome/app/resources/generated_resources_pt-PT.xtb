@@ -539,6 +539,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1594703455918849716">Aceda à página Verificação</translation>
 <translation id="1596286373007273895">Disponível</translation>
 <translation id="1596780725094407793">– inclui subdomínios</translation>
+<translation id="1597359766734075461">Aceda aos marcadores no telemóvel</translation>
 <translation id="1598163867407640634">Use o <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">As atualizações estão desativadas pelo seu gestor.</translation>
 <translation id="1598293830962835699">Crie rapidamente uma vista dividida quando precisar</translation>
@@ -3220,6 +3221,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="4490798467014431984">As extensões não são permitidas neste site</translation>
 <translation id="4492265221907525667">Para usar esta nova funcionalidade experimental, inicie sessão.</translation>
 <translation id="449232563137139956">Normalmente, os sites mostram imagens para fornecer ilustrações, como fotos de lojas online ou artigos de notícias.</translation>
+<translation id="4492544090316143330">Aceda às palavras-passe no telemóvel</translation>
 <translation id="4493167769966437077">Remover <ph name="LANGUAGE_NAME" /> dos idiomas da opção Nunca disponibilizar tradução</translation>
 <translation id="4495002167047709180">Permitir esta extensão em <ph name="SITE" />?</translation>
 <translation id="4500055235123625757">O Gemini pode responder a perguntas sobre o vídeo ou o áudio que reproduziu em <ph name="LINK_BEGIN" />alguns Websites<ph name="LINK_END" />.</translation>

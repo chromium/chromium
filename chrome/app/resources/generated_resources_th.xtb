@@ -518,6 +518,7 @@
 <translation id="1570990174567554976">สร้างโฟลเดอร์บุ๊กมาร์ก "<ph name="BOOKMARK_TITLE" />" แล้ว</translation>
 <translation id="1571041387761170095">ไม่มีรหัสผ่านที่ไม่รัดกุมหรือรหัสผ่านที่ใช้ซ้ำ</translation>
 <translation id="1571304935088121812">คัดลอกชื่อผู้ใช้</translation>
+<translation id="1571371559291327711">ค้นหา แก้ไข และเครื่องมืออื่นๆ</translation>
 <translation id="1571738973904005196">ดูแท็บ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ผู้มาเยือน)</translation>
 <translation id="1573127087832371028">อธิบายปัญหา</translation>
@@ -956,6 +957,7 @@
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2051669996101374349">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS คุณเปลี่ยนการตั้งค่านี้ไม่ได้เนื่องจากเปิดใช้การปกป้องขั้นสูงอยู่</translation>
+<translation id="2052353138844549871">เราไม่แนะนำให้ใช้ Gemini Enterprise กับโปรไฟล์ที่ไม่มีการจัดการ</translation>
 <translation id="2052723746739622752">เลิกปักหมุด Gemini</translation>
 <translation id="2061366302742593739">ไม่มีอะไรแสดง</translation>
 <translation id="2061589908388230480">หาก Chromium พบรหัสผ่านของคุณในการละเมิดข้อมูลสาธารณะ เครื่องมือจัดการรหัสผ่านบน Google จะเสนอให้คุณเปลี่ยนรหัสผ่าน หากลงชื่อเข้าใช้ <ph name="BEGIN_LINK" />ข้อมูลเพิ่มเติมเกี่ยวกับการเปลี่ยนรหัสผ่านอัตโนมัติ<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - ขอสิทธิ์ กด Ctrl + ไปข้างหน้าเพื่อตอบกลับ</translation>
 <translation id="2349610121459545414">อนุญาตให้เว็บไซต์นี้เข้าถึงตำแหน่งของคุณต่อไป</translation>
 <translation id="2350133097354918058">โหลดซ้ำแล้ว</translation>
+<translation id="2351165193188463938">ตอนนี้คุณกำลังท่องเว็บด้วย Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">อนุญาตให้ใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="2353682139907904963">ปักหมุดส่วนขยายใหม่ไว้ในแถบเครื่องมือ</translation>
@@ -1268,6 +1271,7 @@
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2409709393952490731">ใช้โทรศัพท์หรือแท็บเล็ต</translation>
 <translation id="2410940059315936967">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เราเรียกคุกกี้ที่เว็บไซต์อื่นๆ ตั้งค่าไว้ว่าคุกกี้ของบุคคลที่สาม</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{โฟกัสที่ 1 แท็บ}other{โฟกัสที่ # แท็บ}}</translation>
 <translation id="2413009156320833859">ปรับแต่งเบราว์เซอร์ได้มากยิ่งขึ้นด้วยส่วนขยายจาก <ph name="BEGIN_LINK1" />Chrome เว็บสโตร์<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">เรียกดู <ph name="MODULE_TITLE" /> ต่อ</translation>
 <translation id="2414886740292270097">มืด</translation>
@@ -1677,6 +1681,7 @@
 <translation id="2849926636739429924">ตัวเลือกเพิ่มเติมสำหรับ <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">ปิดอยู่</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
+<translation id="2851527955600412545">องค์กรของคุณได้อัปเดตนโยบายสำหรับ Gemini Enterprise ใน Chrome ระบบอาจไม่ย้ายประวัติการแชทของคุณตามไปด้วย</translation>
 <translation id="285237063405807022">(กำลังโหลด)</translation>
 <translation id="2853121255651601031">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="2855243985454069333">ลบประวัติการเข้าชมจากอุปกรณ์ที่ซิงค์ทั้งหมด</translation>
@@ -2624,6 +2629,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ดูไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="3810770279996899697">เครื่องมือจัดการรหัสผ่านต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
 <translation id="3810973564298564668">จัดการ</translation>
+<translation id="3811424142236602772">ท่องเว็บด้วย Gemini ซึ่งตั้งค่าโดย <ph name="DOMAIN" /> สำหรับการทำงาน ถามคำถามขณะท่องเว็บโดยแชร์แท็บเป็นบริบท และรับคำตอบที่อิงตามแหล่งข้อมูลจากไฟล์และบริการขององค์กร</translation>
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
 <translation id="3813296892522778813">ไปที่<ph name="BEGIN_LINK_CHROMIUM" />ความช่วยเหลือของ Google Chrome<ph name="END_LINK_CHROMIUM" /> หากคุณไม่พบข้อมูลที่กำลังค้นหา</translation>
 <translation id="3815509884387832993">ฟังหน้านี้เหมือนฟังพอดแคสต์โดยใช้ปุ่ม "การเล่นด้วย AI" ในแถบเครื่องมือโหมดการอ่าน</translation>
@@ -3221,6 +3227,7 @@
 <translation id="4500055235123625757">Gemini สามารถตอบคำถามเกี่ยวกับวิดีโอหรือเสียงที่คุณเล่นใน<ph name="LINK_BEGIN" />บางเว็บไซต์<ph name="LINK_END" /></translation>
 <translation id="4500647907053779331">แปลรายการที่เลือกเป็นภาษา<ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
+<translation id="450300557121092531">แท็บแยกตามอุปกรณ์</translation>
 <translation id="4503362512377701151">คุณจะเห็นกลุ่มแท็บที่ใช้ล่าสุดเพื่อช่วยให้คุณกลับมาดูต่อจากที่ค้างไว้ได้ง่ายๆ
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3273,6 +3280,7 @@
 <translation id="4562155266774382038">ปิดคำแนะนำ</translation>
 <translation id="4563883094055457792">กู้คืนมุมมองแบบแยก</translation>
 <translation id="456449593072900590">ลบเมื่อออก</translation>
+<translation id="4564636746145660922">ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4565465014351935093">แสดงในหน้าแท็บใหม่เท่านั้น</translation>
 <translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
@@ -3446,6 +3454,7 @@
 <translation id="475088594373173692">ผู้ใช้แรก</translation>
 <translation id="4751925628341802838">ลงชื่อเข้าใช้และซิงค์ประวัติการเข้าชมและแท็บกับ <ph name="EMAIL" /> เพื่อรับประวัติการเข้าชมจากอุปกรณ์อื่นๆ นอกจากนี้ คุณยังรับส่วนขยายและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="4754590344707355551">เพิ่มประสิทธิภาพเบราว์เซอร์ด้วยส่วนขยาย</translation>
+<translation id="4754903312643763797">อาจมีข้อกำหนดด้านความเป็นส่วนตัวของข้อมูลที่แตกต่างกัน</translation>
 <translation id="4756130875344525429">ลงชื่อเข้าใช้และซิงค์ประวัติการเข้าชมและแท็บกับ <ph name="EMAIL" /> เพื่อรับประวัติการเข้าชมจาก <ph name="DEVICE" /> นอกจากนี้ คุณยังรับข้อมูลที่บันทึกไว้และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="4756378406049221019">หยุด/โหลดซ้ำ</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
@@ -4126,6 +4135,7 @@
 <translation id="5509914365760201064">ผู้ออก: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="5512739112435045339">เพิ่มพื้นที่ว่างในอุปกรณ์ แล้วลองดาวน์โหลดอีกครั้ง</translation>
+<translation id="5513121759801003159">ระบบจะไม่โอนประวัติการแชทของคุณ</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">ดูตัวเลือกเพิ่มเติมสำหรับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">นี่คือ "หน้าแรก" ที่คุณต้องการใช่ไหม</translation>
@@ -4931,6 +4941,7 @@
 <translation id="6451861213630784801">คุณออกจากระบบแล้ว</translation>
 <translation id="6453191633103419909">คุณภาพการฉายภาพของแท็บ/หน้าจอ</translation>
 <translation id="6453306703004115497">แปลเป็น <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">ค้นหา AI ในอุปกรณ์</translation>
 <translation id="645433497989692531">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ในชื่อ</translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455521402703088376">ปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
@@ -5101,6 +5112,7 @@
 <translation id="663569763553406962">ดูว่าส่วนขยายใดอ่านหรือเปลี่ยนแปลงเว็บไซต์ได้</translation>
 <translation id="6636258750460740634">ประวัติ</translation>
 <translation id="6636623428211296678">สำรวจดูการตั้งค่าเพิ่มเติมด้านล่างหรือสิ้นสุดการตรวจสอบเลย</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">ฟีเจอร์ทักษะปิดใช้อยู่ในขณะนี้ อัปเดตการตั้งค่า Chrome เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6639554308659482635">หน่วยความจำ SQLite</translation>
 <translation id="6640268266988685324">แท็บที่เปิดอยู่</translation>
@@ -5234,6 +5246,7 @@
 <translation id="6785779729084003225">ใช้ <ph name="FOCUS_TOGGLE_HOTKEY" /> เพื่อเปิด Gemini ใน Chrome</translation>
 <translation id="67862343314499040">ม่วงอมน้ำเงิน</translation>
 <translation id="6786480815699355166">แปลได้เฉพาะภาษาคำบรรยายสดที่รองรับ</translation>
+<translation id="6786498102134843646">คำตอบจะไม่อิงตามแหล่งข้อมูลจากไฟล์หรือบริการที่ <ph name="DOMAIN" /> จัดการ</translation>
 <translation id="6786747875388722282">ส่วนขยาย</translation>
 <translation id="6786804673213172567">ระดับ 3: สูง</translation>
 <translation id="6787531944787756058">ชื่อผู้ใช้ <ph name="USER_EMAIL" /> จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น ดูรายละเอียด</translation>
@@ -5396,6 +5409,7 @@
 <translation id="6941514251635934269">ถามเกี่ยวกับเอกสารนี้</translation>
 <translation id="694168622559714949">ผู้ดูแลระบบได้ตั้งค่าภาษาเริ่มต้นซึ่งแก้ไขไม่ได้</translation>
 <translation id="6941953303876950920">ต้องเปิดอีกครั้งเพื่อท่องเว็บต่อด้วย Gemini</translation>
+<translation id="6943803108751887058">กด Escape เพื่อปิด</translation>
 <translation id="6944854424004126054">กู้คืนหน้าต่าง</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="694592694773692225">มีการบล็อกการเปลี่ยนเส้นทางในหน้านี้</translation>
@@ -5722,6 +5736,7 @@
 <translation id="7293774463163321848">คุณลบประวัติการค้นหา ประวัติการใช้ Gemini และรหัสผ่านได้ในการตั้งค่าการจัดการ</translation>
 <translation id="7296503797589217366">เลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">บันทึกข้อมูลไปยัง Google Wallet จากหน้าเว็บที่คุณดู</translation>
+<translation id="7297535265731442945">อัปเดต Gemini Enterprise แล้ว</translation>
 <translation id="7297726121602187087">สีเขียวเข้ม</translation>
 <translation id="7298195798382681320">แนะนำ</translation>
 <translation id="7299515639584427954">เปลี่ยนแอปเริ่มต้นสำหรับลิงก์ที่รองรับใช่ไหม</translation>
@@ -5743,6 +5758,7 @@
 <translation id="731827437403763009">นวัตกรรม AI</translation>
 <translation id="7319983568955948908">หยุดการแชร์</translation>
 <translation id="7321545336522791733">ไม่สามารถเข้าถึงเซิร์ฟเวอร์</translation>
+<translation id="7321838786611890851">การโต้ตอบของคุณกับ Gemini อาจไม่มีการป้องกันที่ตั้งค่าโดย <ph name="DOMAIN" /> และอาจมีข้อกำหนดด้านความเป็นส่วนตัวของข้อมูลที่แตกต่างกัน</translation>
 <translation id="7322515217754205362">สิทธิ์ของเว็บไซต์</translation>
 <translation id="7324020307732396723">เปิดการตั้งค่าภาษา</translation>
 <translation id="7325209047678309347">กระดาษติด</translation>
@@ -6039,6 +6055,7 @@
 <translation id="7653354650639364202">{0,plural, =1{ปิดหน้าต่างแยก}other{ปิดหน้าต่างแยก (# หน้าต่าง)}}</translation>
 <translation id="7654941827281939388">ใช้บัญชีนี้ในคอมพิวเตอร์เครื่องนี้อยู่แล้ว</translation>
 <translation id="7655411746932645568">เว็บไซต์ขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
+<translation id="7656674791025857763">ลงชื่อเข้าใช้เพื่อใช้งาน <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">ประหยัดหน่วยความจำได้น้อย</translation>
 <translation id="7657218410916651670">ระบบอาจบันทึก<ph name="BEGIN_LINK_GOOGLE" />กิจกรรมรูปแบบอื่น<ph name="END_LINK_GOOGLE" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
@@ -6250,6 +6267,7 @@
 <translation id="7904492297081735975">&amp;เปิดการจัดการบุ๊กมาร์ก</translation>
 <translation id="7907312522152480478">หากต้องการรับแท็บจากอุปกรณ์อื่นๆ ให้ยืนยันตัวตน รวมถึงซิงค์ประวัติการเข้าชมและแท็บ คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="7907837847548254634">แสดงไฮไลต์เป็นระยะเวลาสั้นๆ บนวัตถุที่โฟกัส</translation>
+<translation id="7908205867885088429">ดูข้อมูลเพิ่มเติมเกี่ยวกับการคืนค่าการตั้งค่าเป็นค่าเริ่มต้น</translation>
 <translation id="7908835530772972485">ลบข้อมูลเมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="7909324225945368569">เปลี่ยนชื่อโปรไฟล์</translation>
 <translation id="7909969815743704077">ดาวน์โหลดในโหมดไม่ระบุตัวตนแล้ว</translation>
@@ -6641,6 +6659,7 @@
 <translation id="8323317289166663449">อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดของคุณในคอมพิวเตอร์และทุกเว็บไซต์</translation>
 <translation id="8323518750352551353">แยกการท่องเว็บไหม</translation>
 <translation id="8323744572398547859">ลงชื่อเข้าใช้และซิงค์ประวัติการเข้าชมเพื่อรับแท็บจากอุปกรณ์อื่นๆ นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
+<translation id="8324035203198677529">องค์กรของคุณปิด Gemini Enterprise ใน Chrome คุณสามารถใช้ Gemini ใน Chrome ต่อไปได้ แต่ Gemini จะไม่ค้นหาหรืออ้างอิงข้อมูลที่องค์กรของคุณจัดการอีกต่อไป ระบบอาจไม่ย้ายประวัติการแชทของคุณตามไปด้วย</translation>
 <translation id="8325413836429495820">ไม่ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="8326478304147373412">PKCS #7, กลุ่มใบรับรอง (Certificate Chain)</translation>
 <translation id="8327386430364625757">แบบอักษรทางคณิตศาสตร์</translation>
@@ -6847,6 +6866,7 @@
 <translation id="8551388862522347954">ใบอนุญาต</translation>
 <translation id="8552102814346875916">บันทึกไปยังรายการ "ให้เว็บไซต์เหล่านี้ทำงานอยู่เสมอ"</translation>
 <translation id="8552947739661397736">เข้าควบคุมงาน Gemini กำลังควบคุมอยู่</translation>
+<translation id="8555042096950728024">ลากหรือใช้แป้นลูกศรเพื่อจัดเรียงใหม่</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - แสดงเนื้อหาที่ขยายแล้ว</translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
 <translation id="8557100046150195444">Touch ID สำหรับดำเนินการต่อ</translation>
@@ -6939,6 +6959,7 @@
 <translation id="8651806635673244884">คุณสามารถย้ายแท็บกลับไปไว้ด้านบนได้โดยคลิกขวาที่แท็บใดก็ได้แล้วเลือก "แสดงแท็บในแนวนอน"</translation>
 <translation id="8652400352452647993">ข้อผิดพลาดเกี่ยวกับการรวมแพ็กเกจส่วนขยาย</translation>
 <translation id="8654151524613148204">ไฟล์มีขนาดใหญ่เกินกว่าที่คอมพิวเตอร์ของคุณจะจัดการได้ ขออภัย</translation>
+<translation id="8654872240409864765">องค์กรของคุณตั้งค่า Gemini Enterprise ใน Chrome ขอความช่วยเหลือจาก Gemini เกี่ยวกับสิ่งต่างๆ ขณะที่คุณท่องเว็บ และรับคำตอบที่อิงตามแหล่งข้อมูลจากไฟล์และบริการต่างๆ ทั่วทั้งองค์กร</translation>
 <translation id="8657393004602556571">ต้องการทิ้งความคิดเห็นใช่ไหม</translation>
 <translation id="865857184419171576">แปลคำบรรยายเป็น</translation>
 <translation id="865936634714975126">เพิ่มพารามิเตอร์การค้นหาใน URL เพื่อเลือกประเภทเมื่อโหลดหน้าเว็บ ตัวอย่างเช่น chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7102,6 +7123,7 @@
 <translation id="8813937837706331325">ประหยัดหน่วยความจำได้ปานกลาง</translation>
 <translation id="8815742860876889867">เปิดลิงก์ในหน้าต่างที่แยกต่างหาก</translation>
 <translation id="881799181680267069">ซ่อนรายการอื่นๆ</translation>
+<translation id="8820301999480837183">โฟกัสที่กลุ่ม <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8821206216942230957">บัญชีของคุณไม่มีสิทธิ์เข้าถึง Gemini ใน Chrome</translation>
 <translation id="8823514049557262177">คัดลอก&amp;ข้อความของลิงก์</translation>
@@ -7141,6 +7163,7 @@
 <translation id="8863753581171631212">เปิดลิงก์ใน <ph name="APP" /> ใหม่</translation>
 <translation id="8864055848767439877">กำลังแชร์ <ph name="TAB_NAME" /> กับ <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">บันทึกรหัสผ่านของคุณแล้ว</translation>
+<translation id="8865924457197342642">Gemini Enterprise ไม่พร้อมใช้งานอีกต่อไป</translation>
 <translation id="8866424952450451412">จัดการเวิร์กโฟลว์ที่กำหนดเองซึ่งขับเคลื่อนโดย</translation>
 <translation id="8867102760244540173">ค้นหาแท็บ...</translation>
 <translation id="8867568208303837180">กำลังส่ง...</translation>
@@ -7353,6 +7376,7 @@
 <translation id="9096776523567481218">ไม่ได้ติดตั้งไว้ในเครื่อง</translation>
 <translation id="9099383880226822604">ป่าฝน</translation>
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
+<translation id="9100928301185810363">โฟกัสที่กลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">หากต้องการแคสต์ โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; เครือข่าย LAN &gt; Chrome</translation>
 <translation id="9103868373786083162">กดเพื่อย้อนกลับไปที่เมนูตามบริบทเพื่อดูประวัติ</translation>
 <translation id="9107096627210171112">แปลภาษา...</translation>

@@ -424,7 +424,6 @@
 <translation id="2236949375853147973">내 활동</translation>
 <translation id="2237869114829007407">모든 페이지 또는 주제에 대한 개요 및 주요 통계 확인</translation>
 <translation id="2240256190924001613">구성 프로필 이용 가능</translation>
-<translation id="2244080985779413662">웹사이트에서 파일을 다운로드하여 월렛에서 열려고 합니다.</translation>
 <translation id="2245007488813216650">번역 중…</translation>
 <translation id="2246445006133863463">허용하면 음성으로 Gemini와 채팅할 수 있습니다.</translation>
 <translation id="2249119578464404734">화면 상단에서 검색 아이콘을 탭합니다.</translation>
@@ -1005,7 +1004,6 @@
 <translation id="4133265950310064865">향상된 보호 모드</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google 포토</translation>
-<translation id="4148023517926189160">웹사이트에서 파일을 다운로드하여 내 캘린더에 추가하려고 합니다.</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4154753961803534698">카메라로 검색</translation>
 <translation id="4158491215857439601">비밀번호 관리자</translation>

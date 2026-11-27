@@ -2570,6 +2570,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3771721161825963003">Pokaż karty w pionie</translation>
 <translation id="3771851622616482156">Wylogujemy Cię z tej strony, także na otwartych kartach</translation>
 <translation id="3772951945682043324">Brak ostatnio zamkniętych kart</translation>
+<translation id="3775389358290351377">Przełącz dostawcę (Tab)</translation>
 <translation id="3775432569830822555">Certyfikat serwera SSL</translation>
 <translation id="3776508619697147021">Strony mogą prosić o zgodę na automatyczne pobieranie wielu plików</translation>
 <translation id="3776796446459804932">To rozszerzenie narusza zasady Chrome Web Store.</translation>
@@ -3032,6 +3033,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="429530814437327574">Pokaż w stosie</translation>
 <translation id="4296632172536745000">Twoje pierwotne hasło do tej witryny zostało ujawnione w wyniku naruszenia bezpieczeństwa danych. <ph name="DATE" /> na Twoją prośbę narzędzie <ph name="BRAND" /> automatycznie zmieniło hasło.</translation>
 <translation id="42981349822642051">Rozwiń</translation>
+<translation id="4298381759837744019">Wyszukaj „<ph name="QUERY" />” w ustawieniach</translation>
 <translation id="4298660926525614540">Nazwy wymiennych urządzeń pamięci</translation>
 <translation id="4299022904780065004">Nowe okno &amp;incognito</translation>
 <translation id="4301231341924904092">Zmień za mnie</translation>
@@ -4264,6 +4266,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="5689516760719285838">Lokalizacja</translation>
 <translation id="568984110402742489">Nie można wysłać opinii</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
+<translation id="5693100627879528952">Więcej informacji o ustawieniach wyszukiwarki i wyszukiwania w witrynach</translation>
 <translation id="5693255400847650006">Mikrofon w użyciu</translation>
 <translation id="5693806089748511108">Twoje umiejętności</translation>
 <translation id="5694689722959820210">Utwórz grupę kart</translation>

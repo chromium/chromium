@@ -210,6 +210,7 @@
 <translation id="1820408774134375111">Bottom Sheet การลงชื่อเข้าใช้</translation>
 <translation id="1824902652744048041">แตะลบข้อมูลการท่องเว็บ</translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
+<translation id="1831587114257679402">สร้างขึ้นเพื่อความปลอดภัย คุณจึงท่องเว็บได้อย่างมั่นใจ</translation>
 <translation id="1832459821645506983">ได้สิ ตกลง</translation>
 <translation id="1845958458910716240">ให้ Chrome นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ</translation>
 <translation id="1851551847729706116">กำลังแชร์ <ph name="TAB_NAME" /> ไปยังแท็บนี้</translation>
@@ -2086,6 +2087,7 @@
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="886968456388055613">กรองตามผู้ที่เรียกดู</translation>
 <translation id="8872506776304248286">เปิดในแอป</translation>
+<translation id="8876112961028111440">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน ข้อมูลการป้อนข้อความอัตโนมัติ และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="8880275451109933094">ดูแบบ 2 หน้า</translation>
 <translation id="8890668505403261809">ค้นหาแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="8892234476517513962">คุณลงชื่อเข้าใช้แล้ว</translation>

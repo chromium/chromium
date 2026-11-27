@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Көшірілген сурет</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: толық экраннан шығу үшін жоғарыдан сүйреп, "Артқа" түймесін түртіңіз.</translation>
 <translation id="1132789342529761192">Жүктеп салу ұсынылмайды</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, белгіленген, мәзір элементі. Бөлісуді өшіру үшін таңдаңыз</translation>
 <translation id="11370190534773372">Карта мәліметтері толтырылды</translation>
 <translation id="1138458427267715730">Интернеттегі кез келген сайтта баға түскен кезде, хабарландырулар алыңыз.</translation>
 <translation id="1142713751288681188">Қағаз түрі</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">Бұл қолданбаны іске қосу үшін оқшау веб-қолданбаның әзірлеуші режимін қайта қосыңыз.</translation>
 <translation id="2526280916094749336">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады.</translation>
 <translation id="2527451058878391043">CVC коды картаңыздың алдыңғы жағында. Бұл – карта нөмірінің жоғарғы оң жағындағы 4 цифрлық код.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, белгіленген</translation>
 <translation id="2529899080962247600">Бұл өрістегі жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />. Қалған жазбалар еленбейтін болады.</translation>
 <translation id="2530042584066815841">Тінтуірді құлыптап пайдалану</translation>
 <translation id="2535585790302968248">Құпия шарлау үшін жаңа инкогнито қойындысын ашыңыз.</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">Жоғары</translation>
 <translation id="2666117266261740852">Басқа қойындыларды не қолданбаларды жабу</translation>
 <translation id="266935134738038806">Сайтқа кіру</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, мәзір элементі. Бөлісуді қосу үшін таңдаңыз</translation>
 <translation id="2672201172023654893">Браузеріңіз басқарылмайды.</translation>
 <translation id="2674170444375937751">Тарихыңыздан осы беттерді шынымен жою қажет пе?</translation>
 <translation id="2675716371350192683">Контентіңіз жасанды интеллектіні жақсарту үшін қолданылмайды. Ұйымыңыз бұл параметрлерді кез келген уақытта өзгерте алады.</translation>
@@ -1991,6 +1994,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> бетіне арналған нобай</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> жаңартылды</translation>
 <translation id="4298148761711700950">QR кодын жүктеп салмай бірден төлеңіз</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Бұл сайттағы cookie файлдары ChromeOS құрылғыларымен синхрондалады. Синхрондалатын ақпаратты реттеу үшін <ph name="SYNC_SETTINGS" /> бөліміне өтіңіз.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> қолданбасының <ph name="SOURCE_INDEX" />-дереккөзі</translation>
 <translation id="4299919199185766032">Жылдам пәрменнің атауы рұқсат етілген максималды <ph name="MAX_LENGTH" /> таңбадан асады.</translation>
@@ -2200,6 +2204,7 @@
 <translation id="4682496302933121474">Бет аударылсын ба?</translation>
 <translation id="468314109939257734">Виртуалдық карта нөмірін көру</translation>
 <translation id="4686942373615810936">Жаңа ғана жасалды.</translation>
+<translation id="468826602575103388">Бөлісуді өшіру үшін таңдаңыз</translation>
 <translation id="4690205240253392065">Кейін төлеуге арналған провайдер таңдау</translation>
 <translation id="469028408546145398">"Инкогнито терезелерін жабу" түймесі, қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін белсендіріңіз</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
@@ -2795,7 +2800,6 @@
 <translation id="5619721953841297650">Параметрлер жинағы</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
 <translation id="5627344039351500898">Нақты локацияға өзгерту</translation>
-<translation id="5628060911499153873">Google өнімдерінде жұмыстарды жылдам орындау үшін ақпаратыңызды сақтаңыз. Ақпаратыңыз <ph name="ACCOUNT" /> аккаунтына арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметіне сақталады.</translation>
 <translation id="5629630648637658800">Саясат параметрлерін жүктеу сәтсіз аяқталды</translation>
 <translation id="5630981295558454585">"Google-дан осы бет туралы сұрау" түймесі. Google-дан осы бет туралы сұрау үшін іске қосыңыз</translation>
 <translation id="5631439013527180824">Құрылғының басқару таңбалауышы жарамсыз</translation>
@@ -4171,6 +4175,7 @@
 <translation id="7942349550061667556">Қызыл</translation>
 <translation id="7943397946612013052">Жүктеп алуға тыйым салды</translation>
 <translation id="7943893128817522649">Автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады</translation>
+<translation id="7947144323420971076">Бөлісуді қосу үшін таңдаңыз</translation>
 <translation id="7947285636476623132">Жарамдылық мерзімі бітетін жылды тексеріп, әрекетті қайталаңыз</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome функциялары туралы білу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="7947964969544524438">Known Traveler Number нөмірін қауіпсіз сақтаңыз</translation>
@@ -4298,6 +4303,7 @@
 <translation id="8172809706700703589">Сапарға қажетті заттар тізімін жаса</translation>
 <translation id="8174047975335711832">Құрылғы туралы ақпарат</translation>
 <translation id="8175053171643471349">Тұрақты клиент карталарын реттеу</translation>
+<translation id="817536628389054635">Байланыс ақпараты толтырылды: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Сіз аккаунтқа кіргендіктен, Chrome браузері карталарыңызды Google аккаунтына сақтауды ұсынып отыр. Мұны параметрлерге кіріп өзгертуіңізге болады.</translation>
 <translation id="8176440868214972690">Бұл құрылғының әкімшісі келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="818254048113802060">{0,plural, =1{Саясатқа байланысты <ph name="FILE_NAME" /> файлына блок қойылған}other{Саясатқа байланысты <ph name="FILE_COUNT" /> файлға блок қойылған}}</translation>

@@ -518,6 +518,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1570990174567554976">Izrađena je mapa oznaka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nema slabih ili višestruko korištenih zaporki</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
+<translation id="1571371559291327711">&amp;Traženje, uređivanje i drugi alati</translation>
 <translation id="1571738973904005196">Prikaži karticu: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gost)</translation>
 <translation id="1573127087832371028">Opišite problem</translation>
@@ -956,6 +957,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="204914487372604757">Stvori prečac</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051669996101374349">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju. Ne možete promijeniti tu postavku jer je omogućena Napredna zaštita.</translation>
+<translation id="2052353138844549871">Ne preporučuje se upotreba Geminija Enterprise s neupravljanim profilom</translation>
 <translation id="2052723746739622752">Otkvači Gemini</translation>
 <translation id="2061366302742593739">Nema podataka za prikaz</translation>
 <translation id="2061589908388230480">Ako Chromium pronađe jednu od vaših zaporki u neovlaštenom pristupu javnim podacima, Google upravitelj zaporki može vam ponuditi da za vas promijeni zaporku ako ste prijavljeni. <ph name="BEGIN_LINK" />Više o automatiziranoj promjeni zaporke<ph name="END_LINK" /></translation>
@@ -1222,6 +1224,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zatraženo je dopuštenje. Da biste odgovorili, pritisnite Ctrl + naprijed</translation>
 <translation id="2349610121459545414">Omogućite ovoj web-lokaciji da i dalje pristupa vašoj lokaciji</translation>
 <translation id="2350133097354918058">Ponovno učitano</translation>
+<translation id="2351165193188463938">Sada pregledavate uz Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
 <translation id="2353297238722298836">Dopušteni su kamera i mikrofon</translation>
 <translation id="2353682139907904963">Prikvačite nova proširenja na alatnu traku</translation>
@@ -1269,6 +1272,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2409709393952490731">Upotrijebite telefon ili tablet</translation>
 <translation id="2410940059315936967">Web-lokacija koju posjetite može ugraditi sadržaj s drugih web-lokacija, primjerice slike, oglase i tekst. Kolačići koje postavljaju te druge web-lokacije nazivaju se kolačićima treće strane.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Fokusirano na 1 karticu}one{Fokusirano na # karticu}few{Fokusirano na # kartice}other{Fokusirano na # kartica}}</translation>
 <translation id="2413009156320833859">Dodatno prilagodite svoj preglednik pomoću proširenja iz <ph name="BEGIN_LINK1" />Chrome web-trgovine<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite pregledavati za modul <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamno</translation>
@@ -1678,6 +1682,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2849926636739429924">Više opcija za: <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Zatvoreno</translation>
 <translation id="2851291081585704741">Niste povezani s internetom</translation>
+<translation id="2851527955600412545">Vaša je organizacija ažurirala svoja pravila za Gemini Enterprise u Chromeu. Vaša se povijest razgovora možda neće prenijeti.</translation>
 <translation id="285237063405807022">(učitavanje)</translation>
 <translation id="2853121255651601031">Zaporka je spremljena</translation>
 <translation id="2855243985454069333">Briše povijest sa svih sinkroniziranih uređaja</translation>
@@ -2626,6 +2631,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3810593934879994994">Web-lokacija <ph name="ORIGIN" /> može pregledavati datoteke u sljedećim mapama</translation>
 <translation id="3810770279996899697">Upravitelj zaporki treba pristup MacOS Keychainu</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="3811424142236602772">Pregledavajte uz Gemini koji je organizacija <ph name="DOMAIN" /> postavila za rad. Postavljajte pitanja dok pregledavate tako da podijelite kartice kao kontekst i primajte odgovore utemeljene na datotekama i uslugama vaše organizacije.</translation>
 <translation id="3812525830114410218">Neispravan certifikat</translation>
 <translation id="3813296892522778813">Ako ne možete pronaći ono što tražite, otvorite <ph name="BEGIN_LINK_CHROMIUM" />pomoć za Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3815509884387832993">Poslušajte ovu stranicu kao da je podcast uz AI reprodukciju pomoću gumba Uključi AI reprodukciju na alatnoj traci prozora za čitanje</translation>
@@ -3223,6 +3229,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4500055235123625757">Gemini može odgovoriti na pitanja o videozapisu ili zvuku koji ste reproducirali na <ph name="LINK_BEGIN" />nekim web-lokacijama<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Prevedi odabir na <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Kliknite karticu desnom tipkom i odaberite Dodaj karticu u novu grupu</translation>
+<translation id="450300557121092531">Kartice po uređaju</translation>
 <translation id="4503362512377701151">Prikazuju vam se nedavno upotrijebljene grupe kartica da biste lakše nastavili tamo gdje ste stali.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3275,6 +3282,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4562155266774382038">Odbaci prijedlog</translation>
 <translation id="4563883094055457792">V&amp;rati podijeljeni prikaz</translation>
 <translation id="456449593072900590">Izbriši prilikom izlaza</translation>
+<translation id="4564636746145660922">Provjerite vezu i pokušajte ponovno.</translation>
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4565465014351935093">Prikaži samo na stranici Nova kartica</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
@@ -3448,6 +3456,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="475088594373173692">Prvi korisnik</translation>
 <translation id="4751925628341802838">Da bi se prikazala povijest s drugih uređaja, prijavite se i sinkronizirajte povijest i kartice s računom <ph name="EMAIL" />. Moći ćete pristupati svojim proširenjima i drugim podacima na svim svojim uređajima. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="4754590344707355551">Poboljšajte svoj preglednik pomoću proširenja</translation>
+<translation id="4754903312643763797">Mogu se primjenjivati različiti uvjeti privatnosti podataka</translation>
 <translation id="4756130875344525429">Da bi se prikazala povijest s uređaja <ph name="DEVICE" />, prijavite se i sinkronizirajte povijest i kartice s računom <ph name="EMAIL" />. Također ćete moći pristupati svojim spremljenim podacima i drugim podacima na svim svojim uređajima. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="4756378406049221019">Zaustavi / ponovno učitaj</translation>
 <translation id="4756388243121344051">&amp;Povijest</translation>
@@ -4128,6 +4137,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5509914365760201064">Izdavač: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Dohvati opise slika s Googlea</translation>
 <translation id="5512739112435045339">Oslobodite prostor na uređaju. Potom pokušajte ponoviti preuzimanje</translation>
+<translation id="5513121759801003159">Vaša se povijest razgovora neće prenijeti</translation>
 <translation id="5514315914873062345">Tabulator</translation>
 <translation id="5515048886012998157">Prikaži više opcija za proširenje: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Je li to početna stranica koju ste očekivali?</translation>
@@ -4933,6 +4943,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6451861213630784801">Odjavljeni ste</translation>
 <translation id="6453191633103419909">Kvaliteta projekcije kartice/zaslona</translation>
 <translation id="6453306703004115497">Prevedeno na <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Pretražite AI na uređaju</translation>
 <translation id="645433497989692531">Time će se trajno izbrisati podaci o pregledavanju s ovog uređaja. Da biste vratili te podatke, prijavite se kao</translation>
 <translation id="6455264371803474013">Na određenim web-lokacijama</translation>
 <translation id="6455521402703088376">Isključeno • Razvojni programer poništio je objavljivanje ovog proširenja</translation>
@@ -5107,6 +5118,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="663569763553406962">Pogledajte koja proširenja mogu čitati ili mijenjati web-lokaciju</translation>
 <translation id="6636258750460740634">Povijest</translation>
 <translation id="6636623428211296678">Istražite više postavki u nastavku ili završite odmah</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Značajka Vještine trenutačno je onemogućena. Da biste započeli, ažurirajte postavke Chromea.</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
 <translation id="6640268266988685324">Otvorite karticu</translation>
@@ -5240,6 +5252,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6785779729084003225">Upotrijebite <ph name="FOCUS_TOGGLE_HOTKEY" /> za otvaranje Geminija u Chromeu</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu se prevesti samo podržani jezici automatskih titlova</translation>
+<translation id="6786498102134843646">Odgovori se neće temeljiti na datotekama ili uslugama kojima upravlja organizacija <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Proširenja</translation>
 <translation id="6786804673213172567">Razina 3: VISOKO</translation>
 <translation id="6787531944787756058">Korisničko ime <ph name="USER_EMAIL" /> sprema se samo na ovaj uređaj. Prikaži pojedinosti</translation>
@@ -5402,6 +5415,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6941514251635934269">Postavite pitanje o ovom dokumentu</translation>
 <translation id="694168622559714949">Administrator je postavio zadani jezik koji se ne može promijeniti.</translation>
 <translation id="6941953303876950920">Za nastavak pregledavanja pomoću Geminija potrebno je ponovno pokretanje</translation>
+<translation id="6943803108751887058">Pritisnite Escape za zatvaranje</translation>
 <translation id="6944854424004126054">Vraćanje prozora</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="694592694773692225">Preusmjeravanje je blokirano na ovoj stranici.</translation>
@@ -5728,6 +5742,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7293774463163321848">Povijest pretraživanja, povijest na Geminiju i zaporke mogu se izbrisati u postavkama za upravljanje</translation>
 <translation id="7296503797589217366">Odabir mape <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Spremajte podatke sa stranica koje pregledavate u Google Wallet</translation>
+<translation id="7297535265731442945">Gemini Enterprise je ažuriran</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299515639584427954">Želite li promijeniti zadanu aplikaciju za podržane veze?</translation>
@@ -5749,6 +5764,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="731827437403763009">AI inovacije</translation>
 <translation id="7319983568955948908">Zaustavi dijeljenje</translation>
 <translation id="7321545336522791733">Poslužitelj nije dostupan</translation>
+<translation id="7321838786611890851">Vaše interakcije s Geminijem možda neće imati zaštite koje je postavila organizacija <ph name="DOMAIN" /> i mogu se primjenjivati različiti uvjeti privatnosti podataka</translation>
 <translation id="7322515217754205362">Dopuštenja za web-lokaciju</translation>
 <translation id="7324020307732396723">Otvori postavke jezika</translation>
 <translation id="7325209047678309347">Papir se zaglavio</translation>
@@ -6045,6 +6061,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7653354650639364202">{0,plural, =1{Zatvori izolirani prozor}one{Zatvori izolirani prozor (# prozor)}few{Zatvori izolirani prozor (# prozora)}other{Zatvori izolirani prozor (# prozora)}}</translation>
 <translation id="7654941827281939388">Ovaj se račun već upotrebljava na ovom računalu.</translation>
 <translation id="7655411746932645568">Web-lokacije mogu tražiti dopuštenje za povezivanje sa serijski spojenim priključcima</translation>
+<translation id="7656674791025857763">Prijavite se za upotrebu usluge <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Male uštede</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Ostali oblici aktivnosti<ph name="END_LINK_GOOGLE" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Uvijek ih možete izbrisati.</translation>
 <translation id="7658239707568436148">Odustani</translation>
@@ -6256,6 +6273,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7904492297081735975">&amp;Otvori upravitelj oznaka</translation>
 <translation id="7907312522152480478">Da bi se prikazale kartice s drugih uređaja, potvrdite svoj identitet te sinkronizirajte povijest i kartice. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="7907837847548254634">Prikaz kratkog isticanja fokusiranog objekta</translation>
+<translation id="7908205867885088429">Saznajte više o vraćanju postavki na zadano</translation>
 <translation id="7908835530772972485">Brisanje podataka nakon zatvaranja svih prozora</translation>
 <translation id="7909324225945368569">Preimenujte profil</translation>
 <translation id="7909969815743704077">Preuzeto u anonimnom načinu</translation>
@@ -6647,6 +6665,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8323317289166663449">Pročitajte i promijenite sve svoje podatke na svojem računalu i svim web-lokacijama</translation>
 <translation id="8323518750352551353">Želite li podijeljeno pregledavanje?</translation>
 <translation id="8323744572398547859">Da bi se prikazale kartice s drugih uređaja, prijavite se i sinkronizirajte povijest. Također ćete moći pristupati svojim zaporkama i drugim podacima na svim svojim uređajima. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
+<translation id="8324035203198677529">Vaša je organizacija isključila Gemini Enterprise u Chromeu. Možete nastaviti upotrebljavati Gemini u Chromeu, ali on više neće pronalaziti niti referencirati podatke kojima upravlja vaša organizacija. Vaša se povijest razgovora možda neće prenijeti.</translation>
 <translation id="8325413836429495820">Nije dopušten pregled međuspremnika</translation>
 <translation id="8326478304147373412">PKCS br. 7, lanac certifikata</translation>
 <translation id="8327386430364625757">Matematički font</translation>
@@ -6853,6 +6872,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8552102814346875916">Spremi na popis Neka ove web-lokacije uvijek budu aktivne</translation>
 <translation id="8552947739661397736">Preuzmi zadatak, Gemini trenutačno upravlja</translation>
+<translation id="8555042096950728024">Povucite ili upotrijebite tipke sa strelicama da biste promijenili raspored</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – prikazuje se prošireni sadržaj</translation>
 <translation id="8557022314818157177">Dodirujte sigurnosni ključ dok se otisak prsta ne spremi</translation>
 <translation id="8557100046150195444">Upotrijebite Touch ID za nastavak</translation>
@@ -6945,6 +6965,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8651806635673244884">Kartice možete vratiti na vrh tako da desnom tipkom kliknete bilo koju karticu i odaberete Prikaži kartice vodoravno</translation>
 <translation id="8652400352452647993">Pogreška proširenja paketa</translation>
 <translation id="8654151524613148204">Nažalost, datoteka je prevelika da bi ju vaše računalo obradilo.</translation>
+<translation id="8654872240409864765">Vaša je organizacija postavila Gemini Enterprise u Chromeu. Postavite Geminiju pitanje o bilo čemu dok pregledavate i primajte odgovore temeljene na datotekama i uslugama u vašoj organizaciji.</translation>
 <translation id="8657393004602556571">Želite li odbaciti povratne informacije?</translation>
 <translation id="865857184419171576">Prevedi titlove na</translation>
 <translation id="865936634714975126">Dodajte parametar upita u URL da biste odabrali vrste pri učitavanju stranice. Primjer: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7108,6 +7129,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8813937837706331325">Srednja ušteda</translation>
 <translation id="8815742860876889867">Otvori vezu u izoliranom prozoru</translation>
 <translation id="881799181680267069">Sakrij ostale</translation>
+<translation id="8820301999480837183">Fokusirano na grupu <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Oznake</translation>
 <translation id="8821206216942230957">Vaš račun nema pristup Geminiju u Chromeu</translation>
 <translation id="8823514049557262177">Kopiraj te&amp;kst veze</translation>
@@ -7147,6 +7169,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8863753581171631212">Otvori vezu u novom prozoru aplikacije <ph name="APP" /></translation>
 <translation id="8864055848767439877">Kartica <ph name="TAB_NAME" /> dijeli se s aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Zaporka je spremljena</translation>
+<translation id="8865924457197342642">Gemini Enterprise više nije dostupan</translation>
 <translation id="8866424952450451412">Upravljajte prilagođenim tijekovima rada koje omogućuje</translation>
 <translation id="8867102760244540173">Pretraži kartice...</translation>
 <translation id="8867568208303837180">Šaljemo...</translation>
@@ -7359,6 +7382,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9096776523567481218">nije instalirano lokalno</translation>
 <translation id="9099383880226822604">Prašuma</translation>
 <translation id="9100765901046053179">Napredne postavke</translation>
+<translation id="9100928301185810363">Fokusirano na neimenovanu grupu – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Da biste emitirali, odobrite Chromeu pristup ovdje: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalna mreža &gt; Chrome</translation>
 <translation id="9103868373786083162">Pritisnite za povratak, kontekstni izbornik za prikaz povijesti</translation>
 <translation id="9107096627210171112">Prevedi...</translation>

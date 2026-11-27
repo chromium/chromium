@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Лағыл</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секунд алға айналдыру</translation>
 <translation id="1984328900355667246">Ойнату қолжетімсіз.</translation>
+<translation id="2009730553732772041">Сіз ашып отырған беттің контенті мен URL мекенжайы аудио жасау үшін Google-ға жіберіледі. Бұл таңдауды параметрлерден кез келген уақытта жаңартуға болады.</translation>
 <translation id="2019727681730021602">Стандартты ойнату</translation>
 <translation id="2224347680315897176">Тұрақты</translation>
 <translation id="2575502321843437554">Онша қызық емес</translation>
 <translation id="2611765907167846862">Сабырлы</translation>
 <translation id="3023502830214299618">Өкінішке қарай, бұл бетте әзірше ойнату қолжетімді емес. Кейінірек қайталап көріңіз.</translation>
+<translation id="3431227249425330101">Жалғастыру мақсатында Chrome-ға "Бұл бетті тыңдау" функциясы үшін бет контентін пайдалануға рұқсат бересіз бе?</translation>
 <translation id="3493899379487634969">Не дұрыс болмады?</translation>
 <translation id="3730775656877876887">Жасанды интеллект аудиосы ойнатылайын деп жатыр</translation>
 <translation id="3778044272390020426">Теріс пікір опцияларының мәзірі</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">"Осы бетті тыңдау" ойнатқышы</translation>
 <translation id="7051308646573997571">Қызыл маржан</translation>
 <translation id="7138678301420049075">Басқа</translation>
+<translation id="7161867604252594316">"Осы бетті тыңдау" функциясы өшірулі.</translation>
 <translation id="7221920857098237570">Нәзік</translation>
 <translation id="7237590978482584900">Көңілді</translation>
 <translation id="7282547042039404307">Тегіc</translation>

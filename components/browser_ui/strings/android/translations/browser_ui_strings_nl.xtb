@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Toegestaan • Geschat</translation>
 <translation id="1323433172918577554">Meer tonen</translation>
 <translation id="1333965224356556482">Niet toestaan dat sites je locatie zien</translation>
+<translation id="1352358548984352201">Voeg tabbladen, afbeeldingen en meer toe als context om je zoekopdracht te verbeteren</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> toegevoegd</translation>
 <translation id="1371239764779356792">Toestaan dat een site gegevens op je apparaat opslaat</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Lettertype Sans Serif</translation>
 <translation id="1861244985839668297">Als deze optie aanstaat, kunnen sites vragen of ze HID-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen HID-apparaten gebruiken.</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
+<translation id="1871213582159462941">Vragen over een pagina of foto</translation>
 <translation id="1881806992065048905">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites vragen meestal toegang tot bestanden en mappen op je apparaat voor functies zoals het automatisch opslaan van je werk</translation>

@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="1132789342529761192">અપલોડ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, ચેક કરેલી, મેનૂ આઇટમ. શેરિંગ બંધ કરવા માટે પસંદ કરો</translation>
 <translation id="11370190534773372">કાર્ડની વિગતો ભરી</translation>
 <translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="1142713751288681188">પેપરનો પ્રકાર</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">આ ઍપ ચલાવવા માટે, આઇસોલેટેડ વેબ ઍપ ડેવલપર મોડને ફરીથી ચાલુ કરો</translation>
 <translation id="2526280916094749336">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામું તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">તમારો CVC તમારા કાર્ડની આગળના ભાગ પર હોય છે. તે તમારા કાર્ડ નંબરની ઉપર જમણી બાજુએ 4-અંકનો કોડ છે.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, ચેક કર્યું</translation>
 <translation id="2529899080962247600">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની તમામ એન્ટ્રી અવગણવામાં આવશે.</translation>
 <translation id="2530042584066815841">માઉસ લૉક અને તેનો ઉપયોગ</translation>
 <translation id="2535585790302968248">ખાનગી રીતે બ્રાઉઝ કરવા માટે, નવી છૂપી ટૅબ ખોલો</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">ઉપર</translation>
 <translation id="2666117266261740852">અન્ય ટૅબ અથવા ઍપ્લિકેશનો બંધ કરો</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, મેનૂ આઇટમ. શેરિંગ ચાલુ કરવા માટે પસંદ કરો</translation>
 <translation id="2672201172023654893">તમારું બ્રાઉઝર મેનેજ કરવામાં આવતું નથી.</translation>
 <translation id="2674170444375937751">શું તમે ખરેખર તમારા ઇતિહાસમાંથી આ પેજને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="2675716371350192683">તમારા કન્ટેન્ટનો ઉપયોગ AIને બહેતર બનાવવા માટે કરવામાં નહીં આવે. તમારી સંસ્થા કોઈપણ સમયે આ સેટિંગ બદલી શકે છે.</translation>
@@ -1992,6 +1995,7 @@
 <translation id="4297502707443874121">પેજ <ph name="THUMBNAIL_PAGE" /> માટે થંબનેલ</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> અપડેટ કર્યું</translation>
 <translation id="4298148761711700950">QR અપલોડ વિના તાત્કાલિક ચુકવણી કરો</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">આ સાઇટની કૂકીને તમારા સમગ્ર ChromeOS ડિવાઇસમાં સિંક કરવામાં આવી છે. તમે શું સિંક કરો છો તેને મેનેજ કરવા માટે, <ph name="SYNC_SETTINGS" /> પર જાઓ.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> સૉર્સ <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">શૉર્ટકટનું નામ <ph name="MAX_LENGTH" /> અક્ષરની મહત્તમ મંજૂર લંબાઈ કરતાં વધી જાય છે.</translation>
@@ -2201,6 +2205,7 @@
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="468314109939257734">તમારો વર્ચ્યુઅલ કાર્ડ નંબર જુઓ</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
+<translation id="468826602575103388">શેરિંગ બંધ કરવા માટે પસંદ કરો</translation>
 <translation id="4690205240253392065">પછીથી ચુકવણી કરવાની સુવિધાના પ્રદાતા પસંદ કરો</translation>
 <translation id="469028408546145398">'છૂપી વિન્ડો બંધ કરો' બટન, હાલમાં ખુલ્લી તમામ છૂપી વિન્ડો બંધ કરવા માટે સક્રિય કરો</translation>
 <translation id="4692623383562244444">શોધ એન્જિન</translation>
@@ -2796,7 +2801,6 @@
 <translation id="5619721953841297650">પ્રીસેટ</translation>
 <translation id="5624120631404540903">પાસવર્ડ્સનું સંચાલન કરો</translation>
 <translation id="5627344039351500898">સચોટ લોકેશન પર બદલો</translation>
-<translation id="5628060911499153873">Googleની સમગ્ર પ્રોડક્ટ પર, વધુ ઝડપથી કાર્યો પૂર્ણ કરવા માટે તમારી માહિતી સાચવો. <ph name="ACCOUNT" /> માટે તમારી માહિતી <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં સાચવવામાં આવી છે.</translation>
 <translation id="5629630648637658800">પૉલિસી સેટિંગ લોડ કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="5630981295558454585">આ પેજ વિશે Googleને પૂછો બટન, આ પેજ વિશે Googleને પૂછવા માટે ઍક્ટિવેટ કરો</translation>
 <translation id="5631439013527180824">અમાન્ય ડિવાઇસ સંચાલન ટોકન</translation>
@@ -4173,6 +4177,7 @@
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943397946612013052">ડાઉનલોડ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="7943893128817522649">એકથી વધારે ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનું પૂછી શકે છે</translation>
+<translation id="7947144323420971076">શેરિંગ ચાલુ કરવા માટે પસંદ કરો</translation>
 <translation id="7947285636476623132">તમારું સમાપ્તિ વર્ષ તપાસો અને ફરી પ્રયાસ કરો</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeની સુવિધાઓ વિશે જાણવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="7947964969544524438">જાણીતો ટ્રાવેલર નંબર સુરક્ષિત રીતે સાચવો</translation>
@@ -4300,6 +4305,7 @@
 <translation id="8172809706700703589">મારી ટ્રિપ માટે પૅકિંગની સૂચિ બનાવો</translation>
 <translation id="8174047975335711832">ઉપકરણ માહિતી</translation>
 <translation id="8175053171643471349">લૉયલ્ટિ કાર્ડ મેનેજ કરો</translation>
+<translation id="817536628389054635">સંપર્ક માહિતી ભરી: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">તમે સાઇન ઇન કરેલું છે તેથી Chrome તમને તમારા કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવાની ઑફર કરે છે. તમે સેટિંગમાં આ વર્તણૂકને બદલી શકો છો.</translation>
 <translation id="8176440868214972690">આ ડિવાઇસના વ્યવસ્થાપકે સેટિંગ અથવા પૉલિસી જેવી અમુક માહિતી નીચેની વેબસાઇટને મોકલી છે.</translation>
 <translation id="818254048113802060">{0,plural, =1{કન્ટેન્ટને કારણે <ph name="FILE_NAME" /> બ્લૉક કરવામાં આવી હતી}one{કન્ટેન્ટને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરવામાં આવી હતી}other{કન્ટેન્ટને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરવામાં આવી હતી}}</translation>

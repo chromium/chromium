@@ -210,6 +210,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1820408774134375111">Ark för inloggning på nedre delen av skärmen</translation>
 <translation id="1824902652744048041">Tryck på Radera webbinformation</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
+<translation id="1831587114257679402">Skapad för säkerhet så att du kan surfa tryggt</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1845958458910716240">Tillåt att Chrome tar bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> delas på den här fliken</translation>
@@ -2087,6 +2088,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="886968456388055613">Filtrera efter vem som surfade</translation>
 <translation id="8872506776304248286">Öppna i appen</translation>
+<translation id="8876112961028111440">Logga in om du vill få tillgång till dina bokmärken, lösenord, uppgifter från Autofyll med mera på alla dina enheter.</translation>
 <translation id="8880275451109933094">Dubbelsidig vy</translation>
 <translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
 <translation id="8892234476517513962">Du är redan inloggad</translation>

@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">റൂബി</translation>
 <translation id="1921351128855867012">വേഗത്തിൽ <ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് മുന്നോട്ട് നീക്കുക</translation>
 <translation id="1984328900355667246">പ്ലേബാക്ക് ലഭ്യമല്ല</translation>
+<translation id="2009730553732772041">ഓഡിയോ ജനറേറ്റ് ചെയ്യുന്നതിനായി നിങ്ങൾ നിലവിലുള്ള പേജിന്റെ ഉള്ളടക്കവും URL-ഉം Google-മായി പങ്കിടും. നിങ്ങൾക്ക് ഈ ചോയ്‌സ് ഏതുസമയത്തും ക്രമീകരണത്തിൽ അപ്‌ഡേറ്റ് ചെയ്യാം.</translation>
 <translation id="2019727681730021602">സ്റ്റാൻഡേർഡ് പ്ലേബാക്ക്</translation>
 <translation id="2224347680315897176">മാറ്റമില്ലാത്തത്</translation>
 <translation id="2575502321843437554">വേണ്ടത്ര ഇടപഴകുന്നില്ല</translation>
 <translation id="2611765907167846862">ശാന്തമായത്</translation>
 <translation id="3023502830214299618">നിർഭാഗ്യവശാൽ, ഈ പേജിന് ഇപ്പോൾ പ്ലേബാക്ക് ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="3431227249425330101">തുടരാൻ, 'ഈ പേജ് കേൾക്കുക' എന്നതിന് പേജ് ഉള്ളടക്കം ഉപയോഗിക്കാൻ Chrome-നെ അനുവദിക്കണോ?</translation>
 <translation id="3493899379487634969">എന്ത് കുഴപ്പമാണുണ്ടായത്?</translation>
 <translation id="3730775656877876887">AI പ്ലേബാക്ക് ജനറേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="3778044272390020426">നെഗറ്റീവ് ഫീഡ്‌ബാക്ക് ഓപ്ഷനുകൾ മെനു</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
+<translation id="7161867604252594316">“ഈ പേജ് കേൾക്കുക” ഓഫാണ്</translation>
 <translation id="7221920857098237570">സൗമ്യമായത്</translation>
 <translation id="7237590978482584900">പതുക്കെയുള്ളത്</translation>
 <translation id="7282547042039404307">സ്‌മൂത്ത്</translation>
