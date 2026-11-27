@@ -114,12 +114,23 @@ public class BinaryStatePermissionPreference extends ContainedRadioButtonGroupPr
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        @ContentSetting int newSetting = mSetting;
         if (assumeNonNull(mPositive).isChecked()) {
-            mSetting = mDefaultEnabledValue;
+            newSetting = mDefaultEnabledValue;
         } else if (assumeNonNull(mNegative).isChecked()) {
-            mSetting = mDefaultDisabledValue;
+            newSetting = mDefaultDisabledValue;
         }
-        callChangeListener(mSetting == mDefaultEnabledValue);
+        if (newSetting == mSetting) {
+            return;
+        }
+        if (!callChangeListener(newSetting == mDefaultEnabledValue)) {
+            RadioButtonWithDescription previousRadioButton = findRadioButton(mSetting);
+            if (previousRadioButton != null) {
+                previousRadioButton.setChecked(true);
+            }
+            return;
+        }
+        mSetting = newSetting;
     }
 
     public @Nullable RadioButtonWithDescription findRadioButton(@ContentSetting int setting) {

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 
 import android.content.Context;
@@ -1864,5 +1865,68 @@ public class SiteSettingsTest {
             }
             WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
         }
+    }
+
+    /**
+     * Tests that cancelling the site data disable confirmation dialog reverts the binary radio
+     * button selection back to the enabled state.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testSiteDataBlockCancelRevertsRadioButton() {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.SITE_DATA);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings preferences =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+                    BinaryStatePermissionPreference binaryRadioButton =
+                            (BinaryStatePermissionPreference)
+                                    preferences.findPreference(
+                                            SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                    assertNotNull(binaryRadioButton);
+                    Assert.assertTrue(binaryRadioButton.isChecked());
+                    Assert.assertEquals(
+                            ContentSetting.ALLOW, binaryRadioButton.getCheckedSetting());
+                });
+
+        // Tapping "Don't allow" triggers the confirmation dialog and returns false from
+        // SingleCategorySettings#onPreferenceChange.
+        onView(withId(R.id.negative)).perform(click());
+        waitForView(withText(R.string.website_settings_site_data_page_block_confirm_dialog_title));
+        onView(
+                        withText(
+                                R.string
+                                        .website_settings_site_data_page_block_confirm_dialog_cancel_button))
+                .perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings preferences =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+                    BinaryStatePermissionPreference binaryRadioButton =
+                            (BinaryStatePermissionPreference)
+                                    preferences.findPreference(
+                                            SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                    assertNotNull(binaryRadioButton);
+                    Assert.assertTrue(binaryRadioButton.isChecked());
+                    Assert.assertEquals(
+                            ContentSetting.ALLOW, binaryRadioButton.getCheckedSetting());
+                    assertNotNull(binaryRadioButton.findRadioButton(ContentSetting.ALLOW));
+                    assertNotNull(binaryRadioButton.findRadioButton(ContentSetting.BLOCK));
+                    Assert.assertTrue(
+                            binaryRadioButton.findRadioButton(ContentSetting.ALLOW).isChecked());
+                    Assert.assertFalse(
+                            binaryRadioButton.findRadioButton(ContentSetting.BLOCK).isChecked());
+                    Assert.assertTrue(
+                            WebsitePreferenceBridge.isCategoryEnabled(
+                                    SiteSettingsTestHelper.getBrowserContextHandle(),
+                                    ContentSettingsType.COOKIES));
+                });
+
+        settingsActivity.finish();
     }
 }
