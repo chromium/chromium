@@ -5570,20 +5570,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest,
   EXPECT_EQ("c.com", c2->GetLastCommittedURL().GetHost());
 
   // Verify that the isolated site is indeed isolated.
-  EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-            c1->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-            c2->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-            b->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-            d->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(a->GetProcess()->GetID(), c1->GetProcess()->GetID());
+  EXPECT_NE(a->GetProcess()->GetID(), c2->GetProcess()->GetID());
+  EXPECT_NE(a->GetProcess()->GetID(), b->GetProcess()->GetID());
+  EXPECT_NE(a->GetProcess()->GetID(), d->GetProcess()->GetID());
 
   // Verify that same-origin c1 and c2 frames share a process.  This is
   // necessary for correctness - otherwise c1 and c2 wouldn't be able to
   // synchronously script each other.
-  EXPECT_EQ(c1->GetProcess()->GetDeprecatedID(),
-            c2->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(c1->GetProcess()->GetID(), c2->GetProcess()->GetID());
 
   // Verify that same-origin c1 and c2 frames can script each other.
   EXPECT_TRUE(ExecJs(c1, "window.name = 'c1';"));
@@ -5599,21 +5594,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest,
   // number of renderer processes.  OTOH, consolidation might be undesirable
   // if we desire smaller renderer processes (even if it means more processes).
   if (!AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(b->GetProcess()->GetDeprecatedID(),
-              c1->GetProcess()->GetDeprecatedID());
-    EXPECT_EQ(b->GetProcess()->GetDeprecatedID(),
-              c2->GetProcess()->GetDeprecatedID());
-    EXPECT_EQ(b->GetProcess()->GetDeprecatedID(),
-              d->GetProcess()->GetDeprecatedID());
+    EXPECT_EQ(b->GetProcess()->GetID(), c1->GetProcess()->GetID());
+    EXPECT_EQ(b->GetProcess()->GetID(), c2->GetProcess()->GetID());
+    EXPECT_EQ(b->GetProcess()->GetID(), d->GetProcess()->GetID());
   } else {
-    EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-              c1->GetProcess()->GetDeprecatedID());
-    EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-              c2->GetProcess()->GetDeprecatedID());
-    EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-              d->GetProcess()->GetDeprecatedID());
-    EXPECT_EQ(c1->GetProcess()->GetDeprecatedID(),
-              c2->GetProcess()->GetDeprecatedID());
+    EXPECT_NE(b->GetProcess()->GetID(), c1->GetProcess()->GetID());
+    EXPECT_NE(b->GetProcess()->GetID(), c2->GetProcess()->GetID());
+    EXPECT_NE(b->GetProcess()->GetID(), d->GetProcess()->GetID());
+    EXPECT_EQ(c1->GetProcess()->GetID(), c2->GetProcess()->GetID());
   }
 }
 
@@ -5797,73 +5785,59 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, MainFrameNavigations) {
   // Do a renderer-initiated navigation in each of the existing three windows.
   // None of them should swap to a new process, since bar.com shouldn't be
   // isolated in those older BrowsingInstances.
-  int old_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  ChildProcessId old_process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), bar_url));
+  EXPECT_EQ(old_process_id,
+            web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
+
+  old_process_id =
+      shell2->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell2, bar_url));
   EXPECT_EQ(
       old_process_id,
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      shell2->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
 
-  old_process_id = shell2->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
-  EXPECT_TRUE(NavigateToURLFromRenderer(shell2, bar_url));
-  EXPECT_EQ(old_process_id, shell2->web_contents()
-                                ->GetPrimaryMainFrame()
-                                ->GetProcess()
-                                ->GetDeprecatedID());
-
-  old_process_id = shell3->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
+  old_process_id =
+      shell3->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(shell3, bar_url));
-  EXPECT_EQ(old_process_id, shell3->web_contents()
-                                ->GetPrimaryMainFrame()
-                                ->GetProcess()
-                                ->GetDeprecatedID());
+  EXPECT_EQ(
+      old_process_id,
+      shell3->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Now try the same in a new window and BrowsingInstance, and ensure that the
   // navigation to bar.com swaps processes in that case.
   Shell* shell4 = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(shell4, foo_url));
 
-  old_process_id = shell4->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
+  old_process_id =
+      shell4->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(shell4, bar_url));
-  EXPECT_NE(old_process_id, shell4->web_contents()
-                                ->GetPrimaryMainFrame()
-                                ->GetProcess()
-                                ->GetDeprecatedID());
+  EXPECT_NE(
+      old_process_id,
+      shell4->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Go back to foo.com in window 1, ensuring this stays in the same process.
   {
     old_process_id =
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
     TestNavigationObserver back_observer(web_contents());
     web_contents()->GetController().GoBack();
     back_observer.Wait();
-    EXPECT_EQ(
-        old_process_id,
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+    EXPECT_EQ(old_process_id,
+              web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   }
 
   // Go back to foo.com in window 4, ensuring this swaps processes.
   {
-    old_process_id = shell4->web_contents()
-                         ->GetPrimaryMainFrame()
-                         ->GetProcess()
-                         ->GetDeprecatedID();
+    old_process_id =
+        shell4->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
     TestNavigationObserver back_observer(shell4->web_contents());
     shell4->web_contents()->GetController().GoBack();
     back_observer.Wait();
-    EXPECT_NE(old_process_id, shell4->web_contents()
-                                  ->GetPrimaryMainFrame()
-                                  ->GetProcess()
-                                  ->GetDeprecatedID());
+    EXPECT_NE(
+        old_process_id,
+        shell4->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   }
 }
 
@@ -5973,15 +5947,12 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, IsolatedSubdomain) {
   // purposes of process assignment, and we should swap processes.
   Shell* new_shell = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(new_shell, foo_url));
-  int initial_process_id = new_shell->web_contents()
-                               ->GetPrimaryMainFrame()
-                               ->GetProcess()
-                               ->GetDeprecatedID();
+  ChildProcessId initial_process_id =
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(new_shell, sub_foo_url));
-  EXPECT_NE(initial_process_id, new_shell->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetProcess()
-                                    ->GetDeprecatedID());
+  EXPECT_NE(
+      initial_process_id,
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Repeat this, but now navigate a subframe on foo.com to sub.foo.com and
   // ensure that it is rendered in an OOPIF.
@@ -6929,20 +6900,14 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, MainFrameNavigation) {
   // (*) SiteInstances will be the same unless ProactivelySwapBrowsingInstances
   // is enabled for same-site navigations.
   EXPECT_TRUE(NavigateToURL(shell(), a_foo_url));
-  int a_foo_pid = shell()
-                      ->web_contents()
-                      ->GetPrimaryMainFrame()
-                      ->GetProcess()
-                      ->GetDeprecatedID();
+  ChildProcessId a_foo_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   scoped_refptr<SiteInstance> a_foo_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   EXPECT_TRUE(NavigateToURL(shell(), b_foo_url));
-  int b_foo_pid = shell()
-                      ->web_contents()
-                      ->GetPrimaryMainFrame()
-                      ->GetProcess()
-                      ->GetDeprecatedID();
+  ChildProcessId b_foo_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   scoped_refptr<SiteInstance> b_foo_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
@@ -6956,20 +6921,14 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, MainFrameNavigation) {
   }
 
   EXPECT_TRUE(NavigateToURL(shell(), a_isolated_url));
-  int a_isolated_pid = shell()
-                           ->web_contents()
-                           ->GetPrimaryMainFrame()
-                           ->GetProcess()
-                           ->GetDeprecatedID();
+  ChildProcessId a_isolated_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   scoped_refptr<SiteInstance> a_isolated_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   EXPECT_TRUE(NavigateToURL(shell(), b_isolated_url));
-  int b_isolated_pid = shell()
-                           ->web_contents()
-                           ->GetPrimaryMainFrame()
-                           ->GetProcess()
-                           ->GetDeprecatedID();
+  ChildProcessId b_isolated_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   scoped_refptr<SiteInstance> b_isolated_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
@@ -6984,20 +6943,14 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, MainFrameNavigation) {
   EXPECT_NE(a_isolated_instance, b_isolated_instance);
 
   EXPECT_TRUE(NavigateToURL(shell(), a_foo_url));
-  a_foo_pid = shell()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->GetDeprecatedID();
+  a_foo_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   a_foo_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   EXPECT_TRUE(NavigateToURL(shell(), b_foo_url));
-  b_foo_pid = shell()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->GetDeprecatedID();
+  b_foo_pid =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   b_foo_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
