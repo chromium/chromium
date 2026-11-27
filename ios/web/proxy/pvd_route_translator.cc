@@ -14,6 +14,7 @@
 #import "net/base/proxy_chain.h"
 #import "net/base/proxy_server.h"
 #import "net/proxy_resolution/proxy_config.h"
+#import "net/proxy_resolution/proxy_host_matching_rules.h"
 
 namespace web {
 
@@ -22,12 +23,14 @@ namespace {
 // Translates a single dynamic routing rule into a `ProxyRule`.
 //
 // Extracts the first HTTP CONNECT proxy (`HTTP` or `HTTPS` scheme) or direct
-// connection. Maps destination matchers straight into `match_domains` without
-// modification because Apple's native APIs accept domain suffixes, wildcards,
-// IPv4, and IPv6 addresses directly.
+// connection. Maps positive destination matchers straight into `match_domains`
+// (stripping `net::ProxyHostMatchingRules::kSubtractImplicitBypasses`) without
+// further modification because Apple's native APIs accept domain suffixes,
+// wildcards, IPv4, and IPv6 addresses directly.
 //
 // Returns `std::nullopt` if the rule specifies unsupported proxy schemes
-// (e.g. SOCKS only) and lacks a direct connection or HTTP fallback.
+// (e.g. SOCKS only) and lacks a direct connection or HTTP fallback, or if no
+// positive destination matchers remain.
 std::optional<ProxyRule> TranslateDynamicRoutingRule(
     const net::ProxyConfig::DynamicRoutingRule& dynamic_rule) {
   std::optional<net::ProxyServer> selected_proxy;
@@ -62,7 +65,20 @@ std::optional<ProxyRule> TranslateDynamicRoutingRule(
   std::vector<std::string> match_domains;
   match_domains.reserve(dynamic_rule.destination_matchers.rules().size());
   for (const auto& matcher_rule : dynamic_rule.destination_matchers.rules()) {
-    match_domains.push_back(matcher_rule->ToString());
+    std::string rule_str = matcher_rule->ToString();
+    // `Network.framework` has no equivalent of `<-loopback>`. It already
+    // connects directly to loopback and link-local IPs, but still proxies
+    // `localhost`.
+    // TODO(crbug.com/590869479): Exclude `localhost` natively.
+    if (rule_str == net::ProxyHostMatchingRules::kSubtractImplicitBypasses) {
+      continue;
+    }
+    match_domains.push_back(std::move(rule_str));
+  }
+  if (match_domains.empty()) {
+    LOG(WARNING) << "Ignoring dynamic routing rule: no positive destination "
+                    "matchers found.";
+    return std::nullopt;
   }
 
   ProxyRule web_rule;

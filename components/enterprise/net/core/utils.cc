@@ -34,6 +34,7 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -390,6 +391,40 @@ std::optional<GURL> StripTrailingDotFromHost(const GURL& destination_url) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+// Extracts valid trimmed string entries from `match_dict.Find(key)` into `out`,
+// setting `has_entries` if the list was non-empty in JSON. Returns `false` if
+// `key` is present in `match_dict` with a non-list value.
+bool ParseDestinationMatcherStrings(const base::DictValue& match_dict,
+                                    std::string_view key,
+                                    std::vector<std::string>& out,
+                                    bool& has_entries) {
+  const base::Value* field_value = match_dict.Find(key);
+  if (!field_value) {
+    return true;
+  }
+  const base::ListValue* list = field_value->GetIfList();
+  if (!list) {
+    return false;
+  }
+  has_entries |= !list->empty();
+  for (const auto& entry_value : *list) {
+    if (!entry_value.is_string()) {
+      continue;
+    }
+    // Reject empty entries, WinInet `<...>` special matcher tokens (such as
+    // `<-loopback>` and `<local>`, including `"*.<local>"`), and `,`/`;` list
+    // delimiters that `ProxyHostMatchingRules::ParseFromString()` would split
+    // into separate tokens when `RoutingRule` is copied.
+    std::string_view trimmed =
+        base::TrimWhitespaceASCII(entry_value.GetString(), base::TRIM_ALL);
+    if (!trimmed.empty() &&
+        trimmed.find_first_of("<>,;") == std::string_view::npos) {
+      out.emplace_back(trimmed);
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 std::string_view ProvisioningDomainStateToString(
@@ -433,22 +468,25 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     proxies.push_back(kDirectProxyId);
   }
 
+  bool has_destination_entries = false;
   std::vector<std::string> domains;
-  if (const base::ListValue* domains_list = match_dict.FindList(kDomainsKey)) {
-    for (const auto& domain_value : *domains_list) {
-      if (domain_value.is_string()) {
-        domains.push_back(domain_value.GetString());
-      }
-    }
+  std::vector<std::string> subnets;
+  if (!ParseDestinationMatcherStrings(match_dict, kDomainsKey, domains,
+                                      has_destination_entries) ||
+      !ParseDestinationMatcherStrings(match_dict, kSubnetsKey, subnets,
+                                      has_destination_entries)) {
+    LOG_POLICY(WARNING, ENTERPRISE_PROXY)
+        << "Ignoring proxy-match rule: `domains` or `subnets` is not a list.";
+    return std::nullopt;
   }
 
-  std::vector<std::string> subnets;
-  if (const base::ListValue* subnets_list = match_dict.FindList(kSubnetsKey)) {
-    for (const auto& subnet_value : *subnets_list) {
-      if (subnet_value.is_string()) {
-        subnets.push_back(subnet_value.GetString());
-      }
-    }
+  // Do not widen a rule whose `domains` or `subnets` list was non-empty in
+  // JSON into a global `"*"` catch-all when all of its entries were rejected.
+  if (has_destination_entries && domains.empty() && subnets.empty()) {
+    LOG_POLICY(WARNING, ENTERPRISE_PROXY)
+        << "Ignoring proxy-match rule: all `domains`/`subnets` entries were "
+           "invalid.";
+    return std::nullopt;
   }
 
   std::vector<uint16_t> ports;
@@ -530,6 +568,19 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
       }
     }
   }
+
+  if (destination_matchers.rules().empty()) {
+    LOG_POLICY(WARNING, ENTERPRISE_PROXY)
+        << "Ignoring proxy-match rule: no valid destination matchers were "
+           "parsed.";
+    return std::nullopt;
+  }
+
+  // `ProxyHostMatchingRules::Matches()` falls back to `MatchesImplicitRules()`
+  // (loopback, localhost, link-local, and unspecified IPs) because it is
+  // shared with proxy bypass lists. Subtract implicit rules so destination
+  // inclusion matchers do not steer local traffic to cloud proxies.
+  destination_matchers.AddRulesToSubtractImplicit();
 
   return ProvisioningDomainProxyConfig::RoutingRule(
       std::move(proxies), std::move(destination_matchers));
@@ -791,17 +842,23 @@ base::DictValue ProvisioningDomainProxyConfigToDict(
 
   base::ListValue rules_list;
   for (const auto& rule : proxy_config.routing_rules) {
+    base::ListValue matchers_list;
+    for (const auto& matcher_rule : rule.destination_matchers.rules()) {
+      std::string rule_str = matcher_rule->ToString();
+      if (rule_str != net::ProxyHostMatchingRules::kSubtractImplicitBypasses) {
+        matchers_list.Append(std::move(rule_str));
+      }
+    }
+    if (matchers_list.empty()) {
+      continue;
+    }
+
     base::DictValue rule_dict;
     base::ListValue proxies_list;
     for (const auto& proxy_id : rule.proxies) {
       proxies_list.Append(proxy_id);
     }
     rule_dict.Set(kProxiesKey, std::move(proxies_list));
-
-    base::ListValue matchers_list;
-    for (const auto& matcher_rule : rule.destination_matchers.rules()) {
-      matchers_list.Append(matcher_rule->ToString());
-    }
     rule_dict.Set(kDomainsKey, std::move(matchers_list));
     rules_list.Append(std::move(rule_dict));
   }

@@ -18,17 +18,6 @@ namespace {
 BASE_FEATURE(kBypassProxyForUnspecifiedIpAddresses,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The <-loopback> rule corresponds with "remove the implicitly added bypass
-// rules".
-//
-// The name <-loopback> is not a very precise name (as the implicit rules cover
-// more than strictly loopback addresses), however this is the name that is
-// used on Windows so re-used here.
-//
-// For platform-differences between implicit rules see
-// ProxyResolverRules::MatchesImplicitRules().
-const char kSubtractImplicitBypasses[] = "<-loopback>";
-
 // The <local> rule bypasses any hostname that has no dots (and is not
 // an IP literal). The name is misleading as it has nothing to do with
 // localhost/loopback addresses, and would have better been called
@@ -129,7 +118,9 @@ class SubtractImplicitBypassesRule : public SchemeHostPortMatcherRule {
                : SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  std::string ToString() const override { return kSubtractImplicitBypasses; }
+  std::string ToString() const override {
+    return ProxyHostMatchingRules::kSubtractImplicitBypasses;
+  }
 };
 
 std::unique_ptr<SchemeHostPortMatcherRule> ParseRule(
@@ -142,7 +133,8 @@ std::unique_ptr<SchemeHostPortMatcherRule> ParseRule(
   if (base::EqualsCaseInsensitiveASCII(raw, kBypassSimpleHostnames)) {
     return std::make_unique<BypassSimpleHostnamesRule>();
   }
-  if (base::EqualsCaseInsensitiveASCII(raw, kSubtractImplicitBypasses)) {
+  if (base::EqualsCaseInsensitiveASCII(
+          raw, ProxyHostMatchingRules::kSubtractImplicitBypasses)) {
     return std::make_unique<SubtractImplicitBypassesRule>();
   }
 

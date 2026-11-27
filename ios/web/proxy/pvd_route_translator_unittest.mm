@@ -262,6 +262,35 @@ TEST_F(PvDRouteTranslatorTest, PreservesRuleOrder) {
   EXPECT_EQ(web_config[2].match_domains[0], "direct.example.com");
 }
 
+// Test that the internal `<-loopback>` subtraction token appended by
+// `AddRulesToSubtractImplicit()` is stripped from `match_domains` before
+// passing patterns to Apple's `Network.framework`, and that a rule containing
+// only `<-loopback>` is omitted.
+TEST_F(PvDRouteTranslatorTest, StripsImplicitLoopbackSubtractionToken) {
+  net::ProxyConfig::DynamicRoutingConfig dynamic_config;
+
+  net::ProxyConfig::DynamicRoutingRule valid_rule;
+  valid_rule.proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, kTestHttpsHost, kTestHttpsPort));
+  valid_rule.destination_matchers.AddRuleFromString("*.corp.com");
+  valid_rule.destination_matchers.AddRulesToSubtractImplicit();
+  dynamic_config.routing_rules.push_back(std::move(valid_rule));
+
+  net::ProxyConfig::DynamicRoutingRule subtract_only_rule;
+  subtract_only_rule.proxy_list.AddProxyServer(
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              kTestHttpsHost, kTestHttpsPort));
+  subtract_only_rule.destination_matchers.AddRulesToSubtractImplicit();
+  dynamic_config.routing_rules.push_back(std::move(subtract_only_rule));
+
+  std::vector<ProxyRule> web_config =
+      TranslateProvisioningDomainRoutingConfig(dynamic_config);
+
+  ASSERT_EQ(web_config.size(), 1u);
+  EXPECT_EQ(web_config[0].match_domains,
+            std::vector<std::string>({"*.corp.com"}));
+}
+
 }  // namespace
 
 }  // namespace web

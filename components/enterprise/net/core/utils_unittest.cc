@@ -27,6 +27,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_config.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -469,6 +470,7 @@ TEST(ParseProvisioningDomainConfigTest, ParsesValidPvdResponse) {
     matchers1.AddRuleFromString(ExpectedPortMatcher(matcher, kTestPort));
   }
   matchers1.AddRuleFromString(ExpectedPortMatcher(kTestSubnet, kTestPort));
+  matchers1.AddRulesToSubtractImplicit();
   expected.routing_rules.push_back(
       MakeRoutingRule({kTestProxyIdentity1}, std::move(matchers1)));
 
@@ -477,6 +479,7 @@ TEST(ParseProvisioningDomainConfigTest, ParsesValidPvdResponse) {
        ExpectedDomainMatchers("multi.domain.com")) {
     matchers2.AddRuleFromString(matcher);
   }
+  matchers2.AddRulesToSubtractImplicit();
   expected.routing_rules.push_back(MakeRoutingRule(
       {kTestProxyIdentity1, kTestProxyIdentity2, kTestProxyIdentity3},
       std::move(matchers2)));
@@ -486,11 +489,13 @@ TEST(ParseProvisioningDomainConfigTest, ParsesValidPvdResponse) {
        ExpectedDomainMatchers("bypass.domain.com")) {
     matchers3.AddRuleFromString(matcher);
   }
+  matchers3.AddRulesToSubtractImplicit();
   expected.routing_rules.push_back(
       MakeRoutingRule({"DIRECT"}, std::move(matchers3)));
 
   net::ProxyHostMatchingRules matchers4;
   matchers4.AddRuleFromString("*");
+  matchers4.AddRulesToSubtractImplicit();
   expected.routing_rules.push_back(MakeRoutingRule(
       {kTestProxyIdentity2, kTestProxyIdentity3}, std::move(matchers4)));
 
@@ -768,6 +773,15 @@ TEST(FindMatchingProxyEndpointTest, FindsFirstMatchingEndpoint) {
   ASSERT_NE(nullptr, endpoint2);
   EXPECT_EQ(MakeHttpsProxyChain(kTestProxyHost2), endpoint2->proxy_chain);
 
+  // Loopback and link-local destinations must never match PvD rules (even a
+  // catch-all `*` rule).
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("http://localhost:8080/path"),
+                         MakeHttpsProxyChain(kTestProxyHost2)));
+  EXPECT_EQ(nullptr, FindMatchingProxyEndpoint(
+                         *config, GURL("http://127.0.0.1:8080/path"),
+                         MakeHttpsProxyChain(kTestProxyHost2)));
+
   // Request for a proxy chain that is not in any matching rule should return
   // nullptr.
   const auto* non_matching =
@@ -920,6 +934,54 @@ TEST(ProvisioningDomainProxyConfigToDictTest,
   }
 }
 
+TEST(ProvisioningDomainProxyConfigToDictTest,
+     SkipsRulesWithoutPositiveMatchers) {
+  ProvisioningDomainProxyConfig config;
+  config.pvd_id = kTestPvdId;
+  config.proxy_endpoints.insert(
+      {"proxy1", ProvisioningDomainProxyConfig::ProxyEndpoint(
+                     MakeHttpsProxyChain(kTestProxyHost1))});
+
+  // Programmatically constructed rules with empty or `<-loopback>`-only
+  // `destination_matchers` must not serialize as `"domains": []`, which would
+  // re-parse as a global `"*"` wildcard rule on cache reload.
+  config.routing_rules.push_back(
+      MakeRoutingRule({"proxy1"}, net::ProxyHostMatchingRules()));
+
+  net::ProxyHostMatchingRules subtract_only;
+  subtract_only.AddRulesToSubtractImplicit();
+  config.routing_rules.push_back(
+      MakeRoutingRule({"proxy1"}, std::move(subtract_only)));
+
+  net::ProxyHostMatchingRules valid_matchers;
+  for (const std::string& matcher : ExpectedDomainMatchers(kTestDomain)) {
+    valid_matchers.AddRuleFromString(matcher);
+  }
+  valid_matchers.AddRulesToSubtractImplicit();
+  config.routing_rules.push_back(
+      MakeRoutingRule({"proxy1"}, std::move(valid_matchers)));
+
+  base::DictValue dict = ProvisioningDomainProxyConfigToDict(config);
+  const base::ListValue* rules_list = dict.FindList("proxy-match");
+  ASSERT_TRUE(rules_list);
+  ASSERT_EQ(1u, rules_list->size());
+  const base::ListValue* serialized_domains =
+      (*rules_list)[0].GetDict().FindList("domains");
+  ASSERT_TRUE(serialized_domains);
+  EXPECT_THAT(*serialized_domains,
+              testing::Not(testing::Contains(
+                  net::ProxyHostMatchingRules::kSubtractImplicitBypasses)));
+
+  std::optional<ProvisioningDomainProxyConfig> roundtrip =
+      ParseProvisioningDomainConfig(dict);
+  ASSERT_TRUE(roundtrip.has_value());
+  ASSERT_EQ(1u, roundtrip->routing_rules.size());
+  EXPECT_TRUE(roundtrip->routing_rules[0].destination_matchers.Matches(
+      GURL(base::StrCat({"https://", kTestDomain, "/"}))));
+  EXPECT_FALSE(roundtrip->routing_rules[0].destination_matchers.Matches(
+      GURL("https://unmatched.example.com/")));
+}
+
 TEST(ParseRoutingRuleTest, WildcardApexDomainExpansion) {
   base::DictValue match_dict;
   base::ListValue domains;
@@ -943,6 +1005,120 @@ TEST(ParseRoutingRuleTest, WildcardApexDomainExpansion) {
       rule->destination_matchers.Matches(GURL("https://notifconfig.co/")));
   EXPECT_FALSE(
       rule->destination_matchers.Matches(GURL("https://otherdomain.co/")));
+}
+
+// Tests that parsed routing rules never match loopback, link-local, or
+// unspecified IP destinations, even when listed explicitly.
+TEST(ParseRoutingRuleTest, SubtractsImplicitLoopbackAndLinkLocalRules) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> domain_rule =
+      ParseRoutingRule(MakeDomainMatchDict({"corp.example.com"}));
+  ASSERT_TRUE(domain_rule.has_value());
+
+  base::DictValue wildcard_dict;
+  base::ListValue proxies;
+  proxies.Append("proxy1");
+  wildcard_dict.Set("proxies", std::move(proxies));
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> wildcard_rule =
+      ParseRoutingRule(wildcard_dict);
+  ASSERT_TRUE(wildcard_rule.has_value());
+
+  // Even if a PvD rule explicitly lists loopback or link-local entries, the
+  // trailing `<-loopback>` subtraction rule still excludes them.
+  base::DictValue explicit_local_dict =
+      MakeDomainMatchDict({"localhost", "corp.example.com"});
+  base::ListValue explicit_local_subnets;
+  explicit_local_subnets.Append("127.0.0.0/8");
+  explicit_local_subnets.Append("169.254.0.0/16");
+  explicit_local_dict.Set("subnets", std::move(explicit_local_subnets));
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule>
+      explicit_local_rule = ParseRoutingRule(explicit_local_dict);
+  ASSERT_TRUE(explicit_local_rule.has_value());
+  EXPECT_TRUE(explicit_local_rule->destination_matchers.Matches(
+      GURL("https://corp.example.com/")));
+
+  for (const char* local_url : {
+           "http://localhost:8080/",
+           "http://sub.localhost/",
+           "http://127.0.0.1:9222/",
+           "http://[::1]:8080/",
+           "http://169.254.169.254/latest/meta-data/",
+           "http://[fe80::1]:8080/",
+           "http://0.0.0.0:8000/",
+           "http://[::]:8000/",
+       }) {
+    SCOPED_TRACE(local_url);
+    EXPECT_FALSE(domain_rule->destination_matchers.Matches(GURL(local_url)));
+    EXPECT_FALSE(wildcard_rule->destination_matchers.Matches(GURL(local_url)));
+    EXPECT_FALSE(
+        explicit_local_rule->destination_matchers.Matches(GURL(local_url)));
+  }
+}
+
+// Tests that malformed `domains` and `subnets` matcher values (non-list fields,
+// special `<...>` WinInet tokens, `,`/`;` list delimiters, and unparsable
+// entries) are rejected without widening to a catch-all `*` rule or surviving
+// `RoutingRule` copies.
+TEST(ParseRoutingRuleTest, RejectsInvalidDestinationMatchers) {
+  // Non-list `domains` or `subnets` values must be rejected rather than
+  // widening the rule into a global `"*"` catch-all.
+  for (const char* non_list_json : {
+           R"({"domains": "corp.example.com", "proxies": ["proxy1"]})",
+           R"({"subnets": "10.0.0.0/8", "proxies": ["proxy1"]})",
+       }) {
+    SCOPED_TRACE(non_list_json);
+    std::optional<base::DictValue> dict =
+        base::JSONReader::ReadDict(non_list_json, base::JSON_PARSE_RFC);
+    ASSERT_TRUE(dict.has_value());
+    EXPECT_FALSE(ParseRoutingRule(*dict).has_value());
+  }
+
+  // Special WinInet `<...>` tokens (including `"*.<local>"`) and `,`/`;`
+  // delimiters are rejected from `domains` and `subnets`, and must not widen a
+  // rule into a global `"*"` catch-all or split into WinInet tokens on copy.
+  for (const char* invalid_domain : {
+           "<-loopback>",
+           " <-loopback> ",
+           "<local>",
+           "*.<local>",
+           "example.com;<local>",
+           ";<-loopback>",
+           "example.com,<local>",
+           "example.com:99999",
+           "example.com/invalid",
+       }) {
+    SCOPED_TRACE(invalid_domain);
+    EXPECT_FALSE(
+        ParseRoutingRule(MakeDomainMatchDict({invalid_domain})).has_value());
+  }
+
+  for (const char* invalid_subnet : {
+           "<-loopback>",
+           "<local>",
+           "10.0.0.0/8;<local>",
+           "10.0.0.0/8,<local>",
+       }) {
+    SCOPED_TRACE(invalid_subnet);
+    base::ListValue subnets;
+    subnets.Append(invalid_subnet);
+    base::ListValue subnet_proxies;
+    subnet_proxies.Append("proxy1");
+    base::DictValue subnet_dict;
+    subnet_dict.Set("subnets", std::move(subnets));
+    subnet_dict.Set("proxies", std::move(subnet_proxies));
+    EXPECT_FALSE(ParseRoutingRule(subnet_dict).has_value());
+  }
+
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> mixed_rule =
+      ParseRoutingRule(MakeDomainMatchDict(
+          {"<local>", "*.<local>", "example.com;<local>", "corp.example.com"}));
+  ASSERT_TRUE(mixed_rule.has_value());
+  // Copying `RoutingRule` round-trips `destination_matchers` through
+  // `ParseFromString(ToString())`; verify no injected WinInet tokens survive.
+  ProvisioningDomainProxyConfig::RoutingRule copied_rule = *mixed_rule;
+  EXPECT_FALSE(
+      copied_rule.destination_matchers.Matches(GURL("http://intranet/")));
+  EXPECT_TRUE(copied_rule.destination_matchers.Matches(
+      GURL("https://corp.example.com/")));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -1038,7 +1214,7 @@ TEST(ParseRoutingRuleTest, WidensPlainDomainToSubdomains) {
   ASSERT_TRUE(rule.has_value());
 
   EXPECT_THAT(MatcherStrings(rule->destination_matchers),
-              ElementsAre("*.example.com", "example.com"));
+              ElementsAre("*.example.com", "example.com", "<-loopback>"));
   EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://example.com/")));
   EXPECT_TRUE(
       rule->destination_matchers.Matches(GURL("https://sub.example.com/")));
@@ -1055,13 +1231,13 @@ TEST(ParseRoutingRuleTest, KeepsWildcardDomainsUnchanged) {
       ParseRoutingRule(MakeDomainMatchDict({"*.example.com"}));
   ASSERT_TRUE(wildcard_rule.has_value());
   EXPECT_THAT(MatcherStrings(wildcard_rule->destination_matchers),
-              ElementsAre("*.example.com", "example.com"));
+              ElementsAre("*.example.com", "example.com", "<-loopback>"));
 
   std::optional<ProvisioningDomainProxyConfig::RoutingRule> match_all_rule =
       ParseRoutingRule(MakeDomainMatchDict({"*"}));
   ASSERT_TRUE(match_all_rule.has_value());
   EXPECT_THAT(MatcherStrings(match_all_rule->destination_matchers),
-              ElementsAre("*"));
+              ElementsAre("*", "<-loopback>"));
 }
 
 // Test that subnets and IP literals, which reach `domains` when a cached
@@ -1072,9 +1248,9 @@ TEST(ParseRoutingRuleTest, DoesNotWidenSubnetsOrIpLiterals) {
           {"10.0.0.0/8", "2001:db8::/32", "10.1.2.3", "[2001:db8::1]"}));
   ASSERT_TRUE(rule.has_value());
 
-  EXPECT_THAT(
-      MatcherStrings(rule->destination_matchers),
-      ElementsAre("10.0.0.0/8", "2001:db8::/32", "10.1.2.3", "[2001:db8::1]"));
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("10.0.0.0/8", "2001:db8::/32", "10.1.2.3",
+                          "[2001:db8::1]", "<-loopback>"));
   EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://10.4.5.6/")));
   EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://10.1.2.3/")));
 }
@@ -1087,7 +1263,7 @@ TEST(ParseRoutingRuleTest, CollapsesPlainAndWildcardDomainPair) {
   ASSERT_TRUE(rule.has_value());
 
   EXPECT_THAT(MatcherStrings(rule->destination_matchers),
-              ElementsAre("*.example.com", "example.com"));
+              ElementsAre("*.example.com", "example.com", "<-loopback>"));
 }
 
 // Test that a plain and a wildcard form of a domain that differ only in case
@@ -1098,7 +1274,7 @@ TEST(ParseRoutingRuleTest, CollapsesDomainPairCaseInsensitively) {
   ASSERT_TRUE(rule.has_value());
 
   EXPECT_THAT(MatcherStrings(rule->destination_matchers),
-              ElementsAre("*.example.com", "example.com"));
+              ElementsAre("*.example.com", "example.com", "<-loopback>"));
 }
 
 // Test that empty and leading-dot entries are not widened into malformed
@@ -1109,7 +1285,7 @@ TEST(ParseRoutingRuleTest, DoesNotWidenEmptyOrLeadingDotDomains) {
   ASSERT_TRUE(rule.has_value());
 
   EXPECT_THAT(MatcherStrings(rule->destination_matchers),
-              ElementsAre("*.example.com"));
+              ElementsAre("*.example.com", "<-loopback>"));
 }
 
 // Test that an auth challenge for a subdomain of a plain PvD domain resolves to
@@ -1244,7 +1420,7 @@ TEST(ParseRoutingRuleTest, PlainDomainDoesNotMatchSubdomains) {
   ASSERT_TRUE(rule.has_value());
 
   EXPECT_THAT(MatcherStrings(rule->destination_matchers),
-              ElementsAre("example.com"));
+              ElementsAre("example.com", "<-loopback>"));
   EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://example.com/")));
   EXPECT_FALSE(
       rule->destination_matchers.Matches(GURL("https://sub.example.com/")));

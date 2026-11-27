@@ -116,6 +116,14 @@ class NET_EXPORT ProxyHostMatchingRules {
   // proxy bypass rules.
   constexpr static char kBypassListDelimeter[] = ";";
 
+  // The rule string used by `AddRulesToSubtractImplicit()` to cancel out the
+  // implicitly added loopback, link-local, and unspecified IP bypass rules
+  // (corresponding to WinInet's `<-loopback>` syntax). Unlike
+  // `GetRulesToSubtractImplicit()`, this does not include a trailing `;` list
+  // delimiter, matching individual `SchemeHostPortMatcherRule::ToString()`
+  // outputs.
+  static constexpr char kSubtractImplicitBypasses[] = "<-loopback>";
+
  private:
   SchemeHostPortMatcher matcher_;
 };

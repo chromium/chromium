@@ -1903,6 +1903,54 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest,
       base::Milliseconds(80), 1);
 }
 
+TEST_F(EnterpriseProxyServiceAuthChallengeTest,
+       IgnoresLoopbackAndLinkLocalDestinations) {
+  constexpr char kCatchAllPvdJson[] = R"({
+    "identifier": "domain2.example.com",
+    "expires": "Wed, 21 Oct 2030 07:28:00 GMT",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "proxy2",
+        "proxy": "proxy2.example.com:443",
+        "google_chrome": {
+          "auth": {
+            "type": "profile_bearer_token",
+            "scope": "cloud_secure_gateway"
+          }
+        }
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["proxy2"]
+      }
+    ]
+  })";
+  SetPolicyDomains({});
+  SetPolicyDomains({kTestDomain1, kTestDomain2});
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1));
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain2.example.com/.well-known/pvd", kCatchAllPvdJson));
+  ASSERT_FALSE(service_->IsRefreshInProgress());
+  ASSERT_EQ(2u, service_->GetDynamicRoutingConfig().routing_rules.size());
+
+  // External destinations match `domain2`'s catch-all rule.
+  EXPECT_EQ(Decision::kNeedsCredentials,
+            Classify(CreateProxyAuthChallengeInfo("proxy2.example.com"),
+                     GURL("https://other.corp.net/test"))
+                .decision);
+
+  // Loopback and link-local destinations must never match either PvD.
+  ExpectNotApplicable(CreateProxyAuthChallengeInfo("proxy1.example.com"),
+                      GURL("http://localhost:8080/test"));
+  ExpectNotApplicable(CreateProxyAuthChallengeInfo("proxy2.example.com"),
+                      GURL("http://127.0.0.1:8080/test"));
+  ExpectNotApplicable(CreateProxyAuthChallengeInfo("proxy2.example.com"),
+                      GURL("http://169.254.169.254/latest/meta-data/"));
+}
+
 // Fixture for a service that embeds the browser user agent in proxy
 // credentials, as on iOS.
 class EnterpriseProxyServiceUserAgentTest

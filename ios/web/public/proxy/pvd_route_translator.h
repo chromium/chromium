@@ -22,10 +22,13 @@ using ProvisioningDomainRoutingConfig = net::ProxyConfig::DynamicRoutingConfig;
 // For each `DynamicRoutingRule`:
 // - Extracts the first HTTP CONNECT proxy (`HTTP` or `HTTPS` scheme) or direct
 //   connection per rule.
-// - Maps each destination matcher directly to a plain string within
-//   `match_domains`, preserving wildcards (e.g., `*.apple.com`), domain
-//   suffixes, IPv4, and IPv6 addresses as accepted by Apple's native APIs.
-// - Omits rules that do not specify any supported proxy schemes.
+// - Maps each positive destination matcher directly to a plain string within
+//   `match_domains` (stripping
+//   `net::ProxyHostMatchingRules::kSubtractImplicitBypasses`), preserving
+//   wildcards (e.g., `*.apple.com`), domain suffixes, IPv4, and IPv6 addresses
+//   as accepted by Apple's native APIs.
+// - Omits rules that do not specify any supported proxy schemes or that have no
+//   remaining positive destination matchers.
 // - Strictly preserves the order of routing rules to maintain priority.
 std::vector<ProxyRule> TranslateProvisioningDomainRoutingConfig(
     const ProvisioningDomainRoutingConfig& config);
