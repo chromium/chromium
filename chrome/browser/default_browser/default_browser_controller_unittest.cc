@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "chrome/browser/default_browser/test_support/scoped_fake_default_browser_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +58,8 @@ class DefaultBrowserControllerTest : public testing::Test {
   void TearDown() override { setter_ = nullptr; }
 
   content::BrowserTaskEnvironment task_environment_;
+  // The controller hands setter results to the manager.
+  ScopedFakeDefaultBrowserManager default_browser_manager_;
 
   raw_ptr<StrictlyMockedDefaultBrowserSetter> setter_;
   std::unique_ptr<DefaultBrowserController> controller_;

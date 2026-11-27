@@ -33,9 +33,13 @@
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -292,6 +296,28 @@ void DefaultBrowserManager::OnMonitorDetectedChange() {
 
 void DefaultBrowserManager::NotifyObservers(DefaultBrowserState state) {
   observers_.Notify(state);
+}
+
+void DefaultBrowserManager::HandleSetterResult(
+    DefaultBrowserEntrypointType ui_entrypoint,
+    DefaultBrowserSetterType setter_type,
+    base::TimeDelta duration,
+    DefaultBrowserState state) {
+  const bool success = state == DefaultBrowserState::IS_DEFAULT;
+  RecordSetterResult(ui_entrypoint, setter_type, success, duration);
+
+  if (success) {
+    if (BrowserWindowInterface* browser =
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser()) {
+      if (ToastController* toast_controller = ToastController::From(browser)) {
+        toast_controller->MaybeShowToast(
+            ToastParams(ToastId::kDefaultBrowserUpdateSuccess));
+      }
+    }
+  } else {
+    TrackTimeAfterSetterFailure(ui_entrypoint, setter_type);
+    MaybeLaunchHatsSurvey(ui_entrypoint, setter_type);
+  }
 }
 
 void DefaultBrowserManager::TrackTimeAfterSetterFailure(

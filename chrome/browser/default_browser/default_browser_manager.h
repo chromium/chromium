@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
@@ -102,6 +103,13 @@ class DefaultBrowserManager {
   // For now, only Windows platform will notify when a change occur.
   base::CallbackListSubscription RegisterDefaultBrowserChanged(
       DefaultBrowserChangedCallback callback);
+
+  // Records the result of a setter run started from `ui_entrypoint`, then shows
+  // the success toast, or starts the failure tracker and survey.
+  void HandleSetterResult(DefaultBrowserEntrypointType ui_entrypoint,
+                          DefaultBrowserSetterType setter_type,
+                          base::TimeDelta duration,
+                          DefaultBrowserState state);
 
   // Starts tracking the asynchronous success of a default browser flow after
   // failure.

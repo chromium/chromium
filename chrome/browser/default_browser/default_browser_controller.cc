@@ -11,16 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/default_browser/default_browser_metrics.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -84,26 +81,12 @@ void DefaultBrowserController::OnSetterExecutionComplete(
     DefaultBrowserControllerCompletionCallback completion_callback,
     base::TimeTicks setter_execution_start_time,
     DefaultBrowserState default_browser_state) {
-  bool success = default_browser_state == DefaultBrowserState::IS_DEFAULT;
-  RecordSetterResult(ui_entrypoint_, GetSetterType(), success,
-                     base::TimeTicks::Now() - setter_execution_start_time);
-
-  if (success) {
-    BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-    if (browser) {
-      ToastController* toast_controller = ToastController::From(browser);
-      if (toast_controller) {
-        toast_controller->MaybeShowToast(
-            ToastParams(ToastId::kDefaultBrowserUpdateSuccess));
-      }
-    }
-
-  } else if (auto* manager = DefaultBrowserManager::From(g_browser_process)) {
-    manager->TrackTimeAfterSetterFailure(ui_entrypoint_, GetSetterType());
-    manager->MaybeLaunchHatsSurvey(ui_entrypoint_, GetSetterType());
+  if (auto* manager = DefaultBrowserManager::From(g_browser_process)) {
+    manager->HandleSetterResult(
+        ui_entrypoint_, GetSetterType(),
+        base::TimeTicks::Now() - setter_execution_start_time,
+        default_browser_state);
   }
-
   std::move(completion_callback).Run(default_browser_state);
 }
 
