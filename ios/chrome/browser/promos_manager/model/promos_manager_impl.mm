@@ -40,14 +40,15 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
                                         PrefService* pref_service) {
   DCHECK(pref_service);
 
-  ScopedListPrefUpdate update(pref_service, pref_path);
-
   std::string promo_name = promos_manager::NameForPromo(promo);
+  // Opening a `ScopedListPrefUpdate` notifies observers and schedules a prefs
+  // file write even if the list is unchanged, so skip it when `promo` is
+  // already registered.
+  if (pref_service->GetList(pref_path).contains(promo_name)) {
+    return;
+  }
 
-  // Erase `promo_name` if it already exists in `active_promos`; avoid polluting
-  // `active_promos` with duplicate `promo_name` entries.
-  update->EraseValue(base::Value(promo_name));
-
+  ScopedListPrefUpdate update(pref_service, pref_path);
   update->Append(promo_name);
 }
 
@@ -182,20 +183,28 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
 void PromosManagerImpl::DeregisterPromoInternal(promos_manager::Promo promo) {
   DCHECK(pref_service_);
 
-  ScopedListPrefUpdate active_promos_update(
-      pref_service_, prefs::kIosPromosManagerActivePromos);
-  ScopedListPrefUpdate single_display_promos_update(
-      pref_service_, prefs::kIosPromosManagerSingleDisplayActivePromos);
-  ScopedDictPrefUpdate pending_promos_update(
-      pref_service_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
-
   std::string promo_name = promos_manager::NameForPromo(promo);
 
-  // Erase `promo_name` from the single-display and continuous-display active
-  // promos lists.
-  active_promos_update->EraseValue(base::Value(promo_name));
-  single_display_promos_update->EraseValue(base::Value(promo_name));
-  pending_promos_update->Remove(promo_name);
+  // Only open pref updates for prefs that contain `promo_name`, since each
+  // update notifies observers and schedules a prefs file write even if nothing
+  // changes.
+  if (pref_service_->GetList(prefs::kIosPromosManagerActivePromos)
+          .contains(promo_name)) {
+    ScopedListPrefUpdate(pref_service_, prefs::kIosPromosManagerActivePromos)
+        ->EraseValue(base::Value(promo_name));
+  }
+  if (pref_service_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .contains(promo_name)) {
+    ScopedListPrefUpdate(pref_service_,
+                         prefs::kIosPromosManagerSingleDisplayActivePromos)
+        ->EraseValue(base::Value(promo_name));
+  }
+  if (pref_service_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
+          .contains(promo_name)) {
+    ScopedDictPrefUpdate(pref_service_,
+                         prefs::kIosPromosManagerSingleDisplayPendingPromos)
+        ->Remove(promo_name);
+  }
 
   active_promos_ = ActivePromos(
       pref_service_->GetList(prefs::kIosPromosManagerActivePromos));

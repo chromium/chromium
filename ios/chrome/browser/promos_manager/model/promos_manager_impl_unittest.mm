@@ -11,12 +11,14 @@
 #import <vector>
 
 #import "base/json/values_util.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -556,10 +558,10 @@ TEST_F(PromosManagerImplTest,
       promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
 }
 
-// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
-// an already-registered promo for continuous display by first erasing, and then
-// re-writing, the promo's name to the pref `kIosPromosManagerActivePromos`;
-// tests no duplicate entries are created.
+// Tests `PromosManager::RegisterPromoForContinuousDisplay()` leaves the pref
+// `kIosPromosManagerActivePromos` untouched when re-registering an
+// already-registered promo, so no duplicate entries are created and no pref
+// update is reported.
 TEST_F(PromosManagerImplTest,
        RegistersAlreadyRegisteredPromoForContinuousDisplay) {
   CreatePromosManager();
@@ -574,24 +576,30 @@ TEST_F(PromosManagerImplTest,
   EXPECT_EQ(pref_service_->GetList(prefs::kIosPromosManagerActivePromos).size(),
             (size_t)2);
 
+  int pref_change_count = 0;
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(prefs::kIosPromosManagerActivePromos,
+                base::BindLambdaForTesting([&] { ++pref_change_count; }));
+
   // Register existing promo.
   promos_manager_->RegisterPromoForContinuousDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
+  EXPECT_EQ(0, pref_change_count);
   EXPECT_EQ(pref_service_->GetList(prefs::kIosPromosManagerActivePromos).size(),
             (size_t)2);
-  EXPECT_EQ(
-      pref_service_->GetList(prefs::kIosPromosManagerActivePromos)[0],
-      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
-  EXPECT_EQ(pref_service_->GetList(prefs::kIosPromosManagerActivePromos)[1],
+  EXPECT_EQ(pref_service_->GetList(prefs::kIosPromosManagerActivePromos)[0],
             promos_manager::NameForPromo(
                 promos_manager::Promo::CredentialProviderExtension));
+  EXPECT_EQ(
+      pref_service_->GetList(prefs::kIosPromosManagerActivePromos)[1],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
 }
 
-// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
-// an already-registered promo for continuous display—for the very first time—by
-// first erasing, and then re-writing, the promo's name to the pref
-// `kIosPromosManagerActivePromos`; tests no duplicate entries are created.
+// Tests `PromosManager::RegisterPromoForContinuousDisplay()` does not create a
+// duplicate entry in the pref `kIosPromosManagerActivePromos` when a promo is
+// registered twice in a row.
 TEST_F(
     PromosManagerImplTest,
     RegistersAlreadyRegisteredPromoForContinuousDisplayForEmptyActivePromos) {
@@ -780,11 +788,10 @@ TEST_F(PromosManagerImplTest,
       promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
 }
 
-// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
-// an already-registered promo for single display by first erasing, and then
-// re-writing, the promo's name to the pref
-// `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
-// created.
+// Tests `PromosManager::RegisterPromoForSingleDisplay()` leaves the pref
+// `kIosPromosManagerSingleDisplayActivePromos` untouched when re-registering an
+// already-registered promo, so no duplicate entries are created and no pref
+// update is reported.
 TEST_F(PromosManagerImplTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -801,29 +808,34 @@ TEST_F(PromosManagerImplTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
           .size(),
       (size_t)2);
 
+  int pref_change_count = 0;
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(prefs::kIosPromosManagerSingleDisplayActivePromos,
+                base::BindLambdaForTesting([&] { ++pref_change_count; }));
+
   // Register existing promo.
   promos_manager_->RegisterPromoForSingleDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
+  EXPECT_EQ(0, pref_change_count);
   EXPECT_EQ(
       pref_service_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
           .size(),
       (size_t)2);
-  EXPECT_EQ(
-      pref_service_->GetList(
-          prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
-      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
   EXPECT_EQ(pref_service_->GetList(
-                prefs::kIosPromosManagerSingleDisplayActivePromos)[1],
+                prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
             promos_manager::NameForPromo(
                 promos_manager::Promo::CredentialProviderExtension));
+  EXPECT_EQ(
+      pref_service_->GetList(
+          prefs::kIosPromosManagerSingleDisplayActivePromos)[1],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
 }
 
-// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
-// an already-registered promo for single display—for the very first time—by
-// first erasing, and then re-writing, the promo's name to the pref
-// `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
-// created.
+// Tests `PromosManager::RegisterPromoForSingleDisplay()` does not create a
+// duplicate entry in the pref `kIosPromosManagerSingleDisplayActivePromos` when
+// a promo is registered twice in a row.
 TEST_F(PromosManagerImplTest,
        RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos) {
   CreatePromosManager();
@@ -1011,6 +1023,36 @@ TEST_F(PromosManagerImplTest, DeregistersNonExistentPromo) {
       pref_service_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
           .size(),
       (size_t)0);
+}
+
+// Tests that deregistering a promo that is not registered anywhere leaves all
+// promos manager prefs untouched and reports no pref update.
+TEST_F(PromosManagerImplTest,
+       DeregisteringUnregisteredPromoDoesNotUpdatePrefs) {
+  CreatePromosManager();
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::AppStoreRating);
+
+  int pref_change_count = 0;
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  for (const char* pref :
+       {prefs::kIosPromosManagerActivePromos,
+        prefs::kIosPromosManagerSingleDisplayActivePromos,
+        prefs::kIosPromosManagerSingleDisplayPendingPromos}) {
+    registrar.Add(pref,
+                  base::BindLambdaForTesting([&] { ++pref_change_count; }));
+  }
+
+  promos_manager_->DeregisterPromo(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(0, pref_change_count);
+  ASSERT_EQ(
+      1u, pref_service_->GetList(prefs::kIosPromosManagerActivePromos).size());
+  EXPECT_EQ(
+      pref_service_->GetList(prefs::kIosPromosManagerActivePromos)[0],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
 }
 
 // Tests a given single-display promo is automatically deregistered correctly.
