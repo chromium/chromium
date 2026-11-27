@@ -212,9 +212,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillAmountExtractionAiTermsSeen, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  registry->RegisterIntegerPref(kAutofillAtMemoryShortcutPromoImpressionCount,
-                                0);
-
   registry->RegisterDictionaryPref(
       kAutofillHomeMetadata,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
