@@ -285,9 +285,11 @@ bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
                              const AutofillField* autofill_field) {
   // Autofill does not parse password-related autocomplete attributes into
   // `HtmlFieldType` (they map to `HtmlFieldType::kUnrecognized`), so check for
-  // them directly on the attribute string.
-  if (field.autocomplete_attribute().contains("current-password") ||
-      field.autocomplete_attribute().contains("new-password")) {
+  // them directly on the attribute string (case-insensitively).
+  const std::string lowercase_autocomplete =
+      base::ToLowerASCII(field.autocomplete_attribute());
+  if (lowercase_autocomplete.contains("current-password") ||
+      lowercase_autocomplete.contains("new-password")) {
     return false;
   }
   return (!field.parsed_autocomplete() ||
