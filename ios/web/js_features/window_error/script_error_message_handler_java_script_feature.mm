@@ -4,11 +4,16 @@
 
 #import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 
+#import <cstddef>
+#import <string>
+
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/location.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/numerics/safe_conversions.h"
+#import "base/values.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_features/window_error/script_error_details.h"
 #import "ios/web/js_features/window_error/web_js_error_report_processor.h"
@@ -24,6 +29,13 @@ static const char kScriptMessageResponseLineNumberKey[] = "line_number";
 static const char kScriptMessageResponseMessageKey[] = "message";
 static const char kScriptMessageResponseStackKey[] = "stack";
 static const char kScriptMessageResponseCrashKeys[] = "crashKeys";
+
+// Bounds for crash keys accepted from untrusted script messages to avoid
+// unbounded allocations or oversized crash upload requests. Length bounds are
+// in UTF-8 bytes.
+constexpr size_t kMaxCrashKeyCount = 64;
+constexpr size_t kMaxCrashKeyNameLength = 256;
+constexpr size_t kMaxCrashKeyValueLength = 1024;
 
 }  // namespace
 
@@ -60,7 +72,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   auto line_number =
       script_dict->FindDouble(kScriptMessageResponseLineNumberKey);
   if (line_number) {
-    details.line_number = static_cast<int>(line_number.value());
+    details.line_number = base::saturated_cast<int>(line_number.value());
   }
 
   const std::string* log_message =
@@ -88,8 +100,18 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   const base::DictValue* crash_keys =
       script_dict->FindDict(kScriptMessageResponseCrashKeys);
   if (crash_keys) {
-    for (auto ck = crash_keys->begin(); ck != crash_keys->end(); ++ck) {
-      details.crash_keys.insert({ck->first, ck->second.GetString()});
+    for (const auto [key, value] : *crash_keys) {
+      if (details.crash_keys.size() >= kMaxCrashKeyCount) {
+        break;
+      }
+      // Untrusted webpages can send non-string, empty-key, or oversized entries
+      // in `crashKeys`. Skip them rather than calling unchecked `GetString()`.
+      const std::string* value_str = value.GetIfString();
+      if (!value_str || key.empty() || key.size() > kMaxCrashKeyNameLength ||
+          value_str->size() > kMaxCrashKeyValueLength) {
+        continue;
+      }
+      details.crash_keys.try_emplace(key, *value_str);
     }
   }
 
