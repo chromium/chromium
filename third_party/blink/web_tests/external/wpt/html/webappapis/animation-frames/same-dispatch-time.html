@@ -10,20 +10,24 @@
     <div id="log"></div>
     <script>
       async_test(function (t) {
-        var a = 0, b = 0;
+        requestAnimationFrame(t.step_func(function (outerTimestamp) {
+          assert_greater_than_equal(outerTimestamp, 0);
+          let a, b;
 
-        /* REASONING:
-        * These two methods that will be called with a timestamp. Because
-        * they execute right after eachother, they're added to the same
-        * queue and SHOULD be timestamped with the same value.
-        */
-        requestAnimationFrame(t.step_func(function() { a = arguments[0]; }));
-        requestAnimationFrame(t.step_func(function() {
-          b = arguments[0];
-          assert_not_equals(a, 0);
-          assert_not_equals(b, 0);
-          assert_equals(a, b);
-          t.done();
+          /* REASONING:
+          * These two methods will be called with a timestamp. Because
+          * they execute right after each other, they're added to the same
+          * queue and SHOULD be timestamped with the same value.
+          */
+          requestAnimationFrame(t.step_func(function (timestamp) {
+            a = timestamp;
+          }));
+          requestAnimationFrame(t.step_func(function (timestamp) {
+            b = timestamp;
+            assert_greater_than(a, outerTimestamp);
+            assert_equals(a, b);
+            t.done();
+          }));
         }));
       }, "requestAnimationFrame will timestamp events in the same queue with the same time");
     </script>
