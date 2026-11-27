@@ -21,9 +21,9 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager_test_api.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
-#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
@@ -65,7 +65,9 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
       return checker;
     });
   }
-  ~TestAutofillClientForAccessManager() override = default;
+  ~TestAutofillClientForAccessManager() override {
+    GetAutofillDriverFactory().DeleteAll();
+  }
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) const override {
@@ -113,15 +115,10 @@ class AutofillAiAccessManagerTest : public testing::Test {
         /*variation_country_code=*/GeoIpCountryCode("US")));
     client_.SetUpPrefsAndIdentityForAutofillAi();
 
-    driver_ = std::make_unique<TestAutofillDriver>(&client_);
-    manager_ = std::make_unique<TestBrowserAutofillManager>(driver_.get());
+    client_.GetAutofillDriverFactory().CreateAndActivate();
   }
   ~AutofillAiAccessManagerTest() override {
     client_.set_personal_context_access_manager(nullptr);
-    if (driver_) {
-      test_api(*driver_).SetLifecycleState(
-          AutofillDriver::LifecycleState::kPendingDeletion);
-    }
   }
 
   void AddOrUpdateEntityInstance(EntityInstance entity) {
@@ -147,7 +144,9 @@ class AutofillAiAccessManagerTest : public testing::Test {
     return *personal_context_manager_;
   }
   AutofillAiAccessManager& access_manager() {
-    return manager_->GetAutofillAiAccessManager();
+    TestAutofillDriver& driver = *client_.GetAutofillDriverFactory().driver();
+    return static_cast<TestBrowserAutofillManager&>(driver.GetAutofillManager())
+        .GetAutofillAiAccessManager();
   }
 
   url::Origin form_origin() const {
@@ -164,10 +163,8 @@ class AutofillAiAccessManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_environment_;
   std::unique_ptr<MockAutofillAiPersonalContextAccessManager>
       personal_context_manager_;
-  TestAutofillClientForAccessManager client_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
-  std::unique_ptr<TestAutofillDriver> driver_;
-  std::unique_ptr<TestBrowserAutofillManager> manager_;
+  TestAutofillClientForAccessManager client_;
 };
 
 // Test fixture parameterized by whether `kDeviceReauthRefactor` is enabled.

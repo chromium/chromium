@@ -18,9 +18,11 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -917,16 +919,8 @@ TEST_F(GmailOtpSourceTest, RecordsSenderDomainMatchUkmAgainstPage) {
       std::make_unique<one_time_tokens::GmailOtpServiceImpl>(
           &backend, &affiliation_service, std::nullopt));
 
-  auto owned_driver = std::make_unique<TestAutofillDriver>(&client_);
-  owned_driver->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(owned_driver.get()));
-  TestAutofillDriverFactory& factory = client_.GetAutofillDriverFactory();
-  TestAutofillDriver& driver = [&]() -> TestAutofillDriver& {
-    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
-    TestAutofillDriver& d = factory.TakeOwnership(std::move(owned_driver));
-    factory.Activate(d);
-    return d;
-  }();
+  TestAutofillDriver& driver =
+      client_.GetAutofillDriverFactory().CreateAndActivate();
 
   {
     GmailOtpSource source(client_);
@@ -1060,9 +1054,12 @@ TEST_F(GmailOtpSourceTest,
 
 class GetParentCountingAutofillDriver : public TestAutofillDriver {
  public:
-  GetParentCountingAutofillDriver(TestAutofillClient* client,
-                                  ukm::SourceId page_ukm_source_id)
-      : TestAutofillDriver(client), page_ukm_source_id_(page_ukm_source_id) {}
+  GetParentCountingAutofillDriver(
+      TestAutofillClient* client,
+      base::PassKey<TestAutofillDriverFactory> pass_key,
+      ukm::SourceId page_ukm_source_id)
+      : TestAutofillDriver(client, pass_key),
+        page_ukm_source_id_(page_ukm_source_id) {}
 
   TestAutofillDriver* GetParent() override {
     ++get_parent_calls_;
@@ -1098,40 +1095,22 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
   // `GetParentCountingAutofillDriver`.
   TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
 
-  auto inactive_driver = std::make_unique<GetParentCountingAutofillDriver>(
-      &client_, ukm::UkmRecorder::GetNewSourceID());
-  inactive_driver->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(inactive_driver.get()));
-  GetParentCountingAutofillDriver* inactive_driver_ptr = inactive_driver.get();
-  client_.GetAutofillDriverFactory().TakeOwnership(std::move(inactive_driver));
+  auto& inactive_driver = factory.Create<GetParentCountingAutofillDriver>(
+      ukm::UkmRecorder::GetNewSourceID());
 
-  auto embedded_driver = std::make_unique<GetParentCountingAutofillDriver>(
-      &client_, ukm::UkmRecorder::GetNewSourceID());
-  embedded_driver->SetIsEmbedded(true);
-  embedded_driver->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(embedded_driver.get()));
-  GetParentCountingAutofillDriver* embedded_driver_ptr = embedded_driver.get();
-  client_.GetAutofillDriverFactory().TakeOwnership(std::move(embedded_driver));
-  client_.GetAutofillDriverFactory().Activate(*embedded_driver_ptr);
+  auto& embedded_driver = factory.Create<GetParentCountingAutofillDriver>(
+      ukm::UkmRecorder::GetNewSourceID());
+  embedded_driver.SetIsEmbedded(true);
+  factory.Activate(embedded_driver);
 
-  auto active_child_driver = std::make_unique<GetParentCountingAutofillDriver>(
-      &client_, expected_source_id);
-  active_child_driver->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(active_child_driver.get()));
-  GetParentCountingAutofillDriver* active_child_driver_ptr =
-      active_child_driver.get();
-  client_.GetAutofillDriverFactory().TakeOwnership(
-      std::move(active_child_driver));
+  auto& active_child_driver =
+      factory.Create<GetParentCountingAutofillDriver>(expected_source_id);
 
-  auto main_driver = std::make_unique<GetParentCountingAutofillDriver>(
-      &client_, expected_source_id);
-  main_driver->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(main_driver.get()));
-  GetParentCountingAutofillDriver* main_driver_ptr = main_driver.get();
-  client_.GetAutofillDriverFactory().TakeOwnership(std::move(main_driver));
-  client_.GetAutofillDriverFactory().Activate(*main_driver_ptr);
-  active_child_driver_ptr->SetParent(main_driver_ptr);
-  client_.GetAutofillDriverFactory().Activate(*active_child_driver_ptr);
+  auto& main_driver =
+      factory.CreateAndActivate<GetParentCountingAutofillDriver>(
+          expected_source_id);
+  active_child_driver.SetParent(&main_driver);
+  factory.Activate(active_child_driver);
 
   {
     GmailOtpSource source(client_);
@@ -1152,10 +1131,10 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
                 Optional(ValueIs(IsGmailCandidate(target.origin, "654321"))));
   }
 
-  EXPECT_EQ(inactive_driver_ptr->get_parent_calls(), 0u);
-  EXPECT_EQ(embedded_driver_ptr->get_parent_calls(), 0u);
-  EXPECT_EQ(active_child_driver_ptr->get_parent_calls(), 0u);
-  EXPECT_EQ(main_driver_ptr->get_parent_calls(), 0u);
+  EXPECT_EQ(inactive_driver.get_parent_calls(), 0u);
+  EXPECT_EQ(embedded_driver.get_parent_calls(), 0u);
+  EXPECT_EQ(active_child_driver.get_parent_calls(), 0u);
+  EXPECT_EQ(main_driver.get_parent_calls(), 0u);
 
   auto entries =
       client_.GetUkmRecorder()->GetEntriesByName(UkmEntry::kEntryName);
@@ -1164,8 +1143,8 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
 
   // Clear `parent_` before `TestAutofillDriverFactory::DeleteAll()` destroys
   // `main_driver` (LIFO) ahead of `active_child_driver`.
-  factory.Deactivate(*active_child_driver_ptr);
-  active_child_driver_ptr->SetParent(nullptr);
+  factory.Deactivate(active_child_driver);
+  active_child_driver.SetParent(nullptr);
   client_.set_gmail_otp_service(nullptr);
 }
 

@@ -12,10 +12,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -45,7 +48,10 @@ TestAutofillDriverFactory::ScopedValidationSuppressor::
   }
 }
 
-TestAutofillDriverFactory::TestAutofillDriverFactory() = default;
+TestAutofillDriverFactory::TestAutofillDriverFactory(
+    TestAutofillClientBase* client,
+    base::PassKey<TestAutofillClientBase>)
+    : client_(CHECK_DEREF(client)) {}
 
 TestAutofillDriverFactory::~TestAutofillDriverFactory() {
   for (auto& observer : AutofillDriverFactory::observers()) {
@@ -64,15 +70,26 @@ bool TestAutofillDriverFactory::Owns(const TestAutofillDriver& driver) const {
                                &ToPointer<const TestAutofillDriver>);
 }
 
-TestAutofillDriver& TestAutofillDriverFactory::TakeOwnership(
+TestAutofillClient& TestAutofillDriverFactory::client() {
+  // Only TestAutofillClient can construct a TestAutofillClientBase.
+  return static_cast<TestAutofillClient&>(*client_);
+}
+
+void TestAutofillDriverFactory::Adopt(
     std::unique_ptr<TestAutofillDriver> driver) {
   TestAutofillDriver& raw_driver = *driver;
   drivers_.push_back(std::move(driver));
   for (auto& observer : observers()) {
     observer.OnAutofillDriverCreated(*this, raw_driver);
   }
-  CheckValidFrameTree();
-  return raw_driver;
+}
+
+TestAutofillDriver& TestAutofillDriverFactory::Create() {
+  return Create<TestAutofillDriver, TestBrowserAutofillManager>();
+}
+
+TestAutofillDriver& TestAutofillDriverFactory::CreateAndActivate() {
+  return CreateAndActivate<TestAutofillDriver, TestBrowserAutofillManager>();
 }
 
 void TestAutofillDriverFactory::Activate(TestAutofillDriver& driver) {

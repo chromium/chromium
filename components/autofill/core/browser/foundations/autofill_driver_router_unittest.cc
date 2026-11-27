@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
@@ -31,23 +32,29 @@ class FakeAutofillDriver : public TestAutofillDriver {
  public:
   enum class AutofillPermissionPolicy { kDefault, kEnabled, kDisabled };
 
-  static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
-      TestAutofillClient* client,
+  // Creates and activates a driver that is owned by `factory`.
+  static FakeAutofillDriver& CreateChildFrame(
+      TestAutofillDriverFactory& factory,
       const url::Origin& origin,
       FakeAutofillDriver* parent,
       AutofillPermissionPolicy autofill_policy) {
-    auto driver = base::WrapUnique(new FakeAutofillDriver(client, origin));
-    driver->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(driver.get()));
-    driver->SetParent(parent);
-    driver->set_frame_token(test::MakeLocalFrameToken());
-    if (parent && driver->origin() != parent->origin()) {
+    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
+    FakeAutofillDriver& driver =
+        factory.CreateAndActivate<FakeAutofillDriver>(origin);
+    driver.SetParent(parent);
+    driver.set_frame_token(test::MakeLocalFrameToken());
+    if (parent && driver.origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),
-                                  driver->GetFrameToken());
+                                  driver.GetFrameToken());
     }
-    driver->SetAutofillPermissionPolicy(autofill_policy);
+    driver.SetAutofillPermissionPolicy(autofill_policy);
     return driver;
   }
+
+  FakeAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key,
+                     const url::Origin& origin)
+      : TestAutofillDriver(client, pass_key), origin_(origin) {}
 
   const url::Origin& main_origin() {
     auto* driver = this;
@@ -93,10 +100,6 @@ class FakeAutofillDriver : public TestAutofillDriver {
   }
 
  private:
-  explicit FakeAutofillDriver(TestAutofillClient* client,
-                              const url::Origin& origin)
-      : TestAutofillDriver(client), origin_(origin) {}
-
   const url::Origin origin_;
 };
 
@@ -111,13 +114,8 @@ class AutofillDriverRouterTest : public testing::Test {
       FakeAutofillDriver* parent = nullptr,
       FakeAutofillDriver::AutofillPermissionPolicy policy =
           FakeAutofillDriver::AutofillPermissionPolicy::kDefault) {
-    TestAutofillDriverFactory& factory = client_.GetAutofillDriverFactory();
-    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
-    auto& driver = static_cast<FakeAutofillDriver&>(
-        factory.TakeOwnership(FakeAutofillDriver::CreateChildFrame(
-            &client_, origin, parent, policy)));
-    factory.Activate(driver);
-    return driver;
+    return FakeAutofillDriver::CreateChildFrame(
+        client_.GetAutofillDriverFactory(), origin, parent, policy);
   }
 
   void RegisterDriver(FakeAutofillDriver& driver) {

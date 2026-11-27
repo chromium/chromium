@@ -21,11 +21,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/foundations/form_forest_test_api.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -248,21 +250,27 @@ class FakeAutofillDriver : public TestAutofillDriver {
   // See SetAutofillPermissionPolicy() for the semantics.
   enum class AutofillPermissionPolicy { kDefault, kEnabled, kDisabled };
 
-  static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
-      TestAutofillClient* client,
+  FakeAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key,
+                     const url::Origin& origin)
+      : TestAutofillDriver(client, pass_key), origin_(origin) {}
+
+  // Creates and activates a driver that is owned by `factory`.
+  static FakeAutofillDriver& CreateChildFrame(
+      TestAutofillDriverFactory& factory,
       const url::Origin& origin,
       FakeAutofillDriver* parent,
       AutofillPermissionPolicy autofill_policy) {
-    auto driver = base::WrapUnique(new FakeAutofillDriver(client, origin));
-    driver->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(driver.get()));
-    driver->SetParent(parent);
-    driver->set_frame_token(test::MakeLocalFrameToken());
-    if (parent && driver->origin() != parent->origin()) {
+    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
+    FakeAutofillDriver& driver =
+        factory.CreateAndActivate<FakeAutofillDriver>(origin);
+    driver.SetParent(parent);
+    driver.set_frame_token(test::MakeLocalFrameToken());
+    if (parent && driver.origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),
-                                  driver->GetFrameToken());
+                                  driver.GetFrameToken());
     }
-    driver->SetAutofillPermissionPolicy(autofill_policy);
+    driver.SetAutofillPermissionPolicy(autofill_policy);
     return driver;
   }
 
@@ -344,10 +352,6 @@ class FakeAutofillDriver : public TestAutofillDriver {
   bool is_sub_root() const { return is_sub_root_; }
 
  private:
-  explicit FakeAutofillDriver(TestAutofillClient* client,
-                              const url::Origin& origin)
-      : TestAutofillDriver(client), origin_(origin) {}
-
   const url::Origin origin_;
   bool is_sub_root_ = false;
 };
@@ -417,16 +421,9 @@ class FormForestTestWithMockedTree : public FormForestTest {
     GURL url(!frame_info.url.empty() ? frame_info.url
              : !parent_driver        ? kMainUrl
                                      : kIframeUrl);
-    TestAutofillDriverFactory& factory = client_.GetAutofillDriverFactory();
-    FakeAutofillDriver& driver = [&]() -> FakeAutofillDriver& {
-      TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
-      auto& d = static_cast<FakeAutofillDriver&>(
-          factory.TakeOwnership(FakeAutofillDriver::CreateChildFrame(
-              &client_, Origin(url), /*parent=*/parent_driver,
-              /*autofill_policy=*/frame_info.policy)));
-      factory.Activate(d);
-      return d;
-    }();
+    FakeAutofillDriver& driver = FakeAutofillDriver::CreateChildFrame(
+        client_.GetAutofillDriverFactory(), Origin(url),
+        /*parent=*/parent_driver, /*autofill_policy=*/frame_info.policy);
 
     std::vector<FormData> forms;
     for (const FormInfo& form_info : frame_info.forms) {

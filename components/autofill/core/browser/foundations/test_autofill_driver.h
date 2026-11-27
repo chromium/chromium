@@ -126,7 +126,11 @@ class TestAutofillDriverTemplate : public T {
 // Consider using TestAutofillDriverInjector in browser tests.
 class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
  public:
-  explicit TestAutofillDriver(TestAutofillClient* client);
+  // Only TestAutofillDriverFactory::Create() can construct TestAutofillDrivers.
+  // This guarantees that every TestAutofillDriver is owned by the
+  // TestAutofillDriverFactory of its `client`.
+  TestAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key);
   ~TestAutofillDriver() override;
 
   // AutofillDriver:
@@ -152,7 +156,8 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
                     const url::Origin& main_origin,
                     const url::Origin& trigger_origin) const override;
 
-  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
+  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager,
+                            base::PassKey<TestAutofillDriverFactory>) {
     autofill_manager_ = std::move(autofill_manager);
   }
 

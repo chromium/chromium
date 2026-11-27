@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
@@ -36,7 +37,8 @@ namespace autofill {
 // Autofill Actor service.
 class TestActorAutofillDriver : public TestAutofillDriver {
  public:
-  explicit TestActorAutofillDriver(TestAutofillClient* client);
+  TestActorAutofillDriver(TestAutofillClient* client,
+                          base::PassKey<TestAutofillDriverFactory> pass_key);
   ~TestActorAutofillDriver() override;
 
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));

@@ -111,20 +111,24 @@ class WithTestAutofillClientDriverManager {
   // inactive (`AutofillDriver::LifecycleState::kInactive`). Most tests should
   // prefer `CreateAndActivateAutofillDriver()`.
   //
-  // TestAutofillDriverFactory validates the frame tree when it takes ownership
-  // of the new driver. Therefore, this function CHECK-fails if there is no
-  // active primary main frame afterwards. In particular, it cannot be used to
-  // create the first driver unless
+  // TestAutofillDriverFactory validates the frame tree when it creates the new
+  // driver. Therefore, this function CHECK-fails if there is no active primary
+  // main frame afterwards. In particular, it cannot be used to create the first
+  // driver unless
   // - a TestAutofillDriverFactory::ScopedValidationSuppressor is alive, or
   // - TestAutofillDriverFactory::RequirePrimaryMainFrame(false) was called.
-  void CreateAutofillDriver() { CreateAutofillDriverImpl(); }
+  void CreateAutofillDriver() {
+    autofill_client()
+        .GetAutofillDriverFactory()
+        .template Create<Driver, Manager>();
+  }
 
   // Creates a new AutofillDriver and its owned AutofillManager, and activates
   // the newly created driver via `ActivateAutofillDriver()`.
   void CreateAndActivateAutofillDriver() {
-    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(
-        autofill_client().GetAutofillDriverFactory());
-    ActivateAutofillDriver(CreateAutofillDriverImpl());
+    autofill_client()
+        .GetAutofillDriverFactory()
+        .template CreateAndActivate<Driver, Manager>();
   }
 
   Client& autofill_client() {
@@ -172,16 +176,6 @@ class WithTestAutofillClientDriverManager {
   }
 
  private:
-  Driver& CreateAutofillDriverImpl() {
-    auto driver = std::make_unique<Driver>(&autofill_client());
-    auto manager = std::make_unique<Manager>(driver.get());
-    driver->set_autofill_manager(std::move(manager));
-    Driver& raw_driver = *driver;
-    autofill_client().GetAutofillDriverFactory().TakeOwnership(
-        std::move(driver));
-    return raw_driver;
-  }
-
   std::optional<Client> client_;
 };
 

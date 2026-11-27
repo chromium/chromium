@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -62,8 +63,9 @@ using ApcFetchCallback = base::OnceCallback<void(
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  explicit MockAutofillDriver(TestAutofillClient* autofill_client)
-      : TestAutofillDriver(autofill_client) {}
+  MockAutofillDriver(TestAutofillClient* autofill_client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key)
+      : TestAutofillDriver(autofill_client, pass_key) {}
 
   MOCK_METHOD(void,
               ExtractLabeledTextNodeValue,

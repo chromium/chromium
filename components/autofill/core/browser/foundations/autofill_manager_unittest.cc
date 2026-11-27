@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -64,8 +65,9 @@ using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  explicit MockAutofillDriver(TestAutofillClient* client)
-      : TestAutofillDriver(client) {
+  MockAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key)
+      : TestAutofillDriver(client, pass_key) {
     ON_CALL(*this, TriggerFormExtractionInAllFrames)
         .WillByDefault([this](bool force,
                               base::OnceCallback<void(bool)>

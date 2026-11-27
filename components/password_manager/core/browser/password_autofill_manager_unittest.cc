@@ -37,9 +37,9 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
-#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -461,9 +461,7 @@ class PasswordAutofillManagerTest : public testing::Test {
  protected:
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
 
@@ -475,9 +473,8 @@ class PasswordAutofillManagerTest : public testing::Test {
   std::u16string backup_password_;
 
  private:
-  // The TestAutofillDriver uses a SequencedWorkerPool which expects the
-  // existence of a MessageLoop.
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  // The AutofillManager of a TestAutofillDriver posts tasks to the thread pool.
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
@@ -3100,23 +3097,22 @@ TEST_F(PasswordAutofillManagerTest,
 class PasswordAutofillManagerTrustedVaultTest
     : public PasswordAutofillManagerTest {
  protected:
-  ~PasswordAutofillManagerTrustedVaultTest() override {
-    autofill::test_api(autofill_driver_)
-        .SetLifecycleState(
-            autofill::AutofillDriver::LifecycleState::kPendingDeletion);
-  }
-
   void SetUp() override {
     PasswordAutofillManagerTest::SetUp();
-    autofill_driver_.set_frame_token(frame_token_);
+    autofill_client_.GetAutofillDriverFactory().CreateAndActivate();
+    autofill_driver().set_frame_token(frame_token_);
     client_.mock_driver()->set_last_committed_url(GURL(kMainFrameUrl));
     ON_CALL(*client_.mock_driver(), GetAutofillDriver)
-        .WillByDefault(Return(&autofill_driver_));
+        .WillByDefault(Return(&autofill_driver()));
     ON_CALL(client_, GetPasswordManager)
         .WillByDefault(Return(&password_manager_));
     client_.test_sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(
         true);
     InitializePasswordAutofillManager(&client_, nullptr);
+  }
+
+  autofill::TestAutofillDriver& autofill_driver() {
+    return *autofill_client_.GetAutofillDriverFactory().driver();
   }
 
   base::test::ScopedFeatureList feature_list_{
@@ -3127,7 +3123,6 @@ class PasswordAutofillManagerTrustedVaultTest
   const autofill::FieldRendererId password_renderer_id_{11};
   const autofill::FieldRendererId other_renderer_id_{12};
   NiceMock<MockAutofillClient> autofill_client_;
-  autofill::TestAutofillDriver autofill_driver_{&autofill_client_};
   NiceMock<TestPasswordManagerClient> client_;
   NiceMock<MockPasswordManager> password_manager_;
 };

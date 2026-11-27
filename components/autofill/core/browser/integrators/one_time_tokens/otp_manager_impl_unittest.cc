@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -90,8 +91,9 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  explicit MockAutofillDriver(TestAutofillClient* client)
-      : TestAutofillDriver(client) {}
+  MockAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key)
+      : TestAutofillDriver(client, pass_key) {}
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   ~MockAutofillDriver() override = default;

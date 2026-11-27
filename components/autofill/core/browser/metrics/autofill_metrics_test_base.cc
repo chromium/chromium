@@ -87,8 +87,10 @@ MockCreditCardAccessManager::MockCreditCardAccessManager(
 
 MockCreditCardAccessManager::~MockCreditCardAccessManager() = default;
 
-MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
-    : TestAutofillDriver(client) {
+MockAutofillDriver::MockAutofillDriver(
+    TestAutofillClient* client,
+    base::PassKey<TestAutofillDriverFactory> pass_key)
+    : TestAutofillDriver(client, pass_key) {
   ON_CALL(*this, ApplyFormAction)
       .WillByDefault(
           [this](mojom::FormActionType action_type,

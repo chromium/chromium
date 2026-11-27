@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
@@ -70,8 +71,10 @@ PageContext::FormFieldAutofillSignature GetSignature(const FormData& form_data,
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
  public:
-  explicit MockAutofillDriver(autofill::TestAutofillClient* client)
-      : autofill::TestAutofillDriver(client) {}
+  MockAutofillDriver(
+      autofill::TestAutofillClient* client,
+      base::PassKey<autofill::TestAutofillDriverFactory> pass_key)
+      : autofill::TestAutofillDriver(client, pass_key) {}
   MOCK_METHOD(void,
               ApplyFieldAction,
               (autofill::mojom::FieldActionType action_type,

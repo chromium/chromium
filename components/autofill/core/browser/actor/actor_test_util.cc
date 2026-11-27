@@ -15,8 +15,10 @@
 
 namespace autofill {
 
-TestActorAutofillDriver::TestActorAutofillDriver(TestAutofillClient* client)
-    : TestAutofillDriver(client) {}
+TestActorAutofillDriver::TestActorAutofillDriver(
+    TestAutofillClient* client,
+    base::PassKey<TestAutofillDriverFactory> pass_key)
+    : TestAutofillDriver(client, pass_key) {}
 
 TestActorAutofillDriver::~TestActorAutofillDriver() = default;
 

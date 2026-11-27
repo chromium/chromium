@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -78,7 +79,8 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  explicit MockAutofillDriver(TestAutofillClient* client);
+  MockAutofillDriver(TestAutofillClient* client,
+                     base::PassKey<TestAutofillDriverFactory> pass_key);
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   ~MockAutofillDriver() override;

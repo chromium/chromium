@@ -36,7 +36,9 @@ LocalFrameToken NextDefaultFrameToken() {
 
 }  // namespace
 
-TestAutofillDriver::TestAutofillDriver(TestAutofillClient* client)
+TestAutofillDriver::TestAutofillDriver(
+    TestAutofillClient* client,
+    base::PassKey<TestAutofillDriverFactory> pass_key)
     : frame_token_(NextDefaultFrameToken()),
       autofill_client_(CHECK_DEREF(client)) {}
 
@@ -73,23 +75,17 @@ bool TestAutofillDriver::IsEmbedded() const {
 
 void TestAutofillDriver::set_frame_token(LocalFrameToken frame_token) {
   frame_token_ = frame_token;
-  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
-    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
-  }
+  autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
 }
 
 void TestAutofillDriver::SetParent(TestAutofillDriver* parent) {
   parent_ = parent;
-  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
-    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
-  }
+  autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
 }
 
 void TestAutofillDriver::SetIsEmbedded(bool is_embedded) {
   is_embedded_ = is_embedded;
-  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
-    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
-  }
+  autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
 }
 
 TestAutofillClient& TestAutofillDriver::GetAutofillClient() {

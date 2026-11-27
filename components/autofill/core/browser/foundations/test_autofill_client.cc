@@ -9,7 +9,8 @@
 namespace autofill {
 
 TestAutofillClientBase::TestAutofillClientBase(
-    base::PassKey<TestAutofillClient>) {}
+    base::PassKey<TestAutofillClient>)
+    : autofill_driver_factory_(this, /*pass_key=*/{}) {}
 
 TestAutofillClientBase::~TestAutofillClientBase() = default;
 
