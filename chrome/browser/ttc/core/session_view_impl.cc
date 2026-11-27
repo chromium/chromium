@@ -13,6 +13,7 @@
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/hold_to_speak_controller.h"
 #include "chrome/browser/ttc/core/overlay_controller.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -49,6 +50,16 @@ ToastId GetToastIdForError(ErrorCode error) {
       return ToastId::kTtcPermissionDenied;
   }
 
+  NOTREACHED();
+}
+
+ToastId GetToastIdForSpeakerVolumeWarning(SpeakerVolumeWarning warning) {
+  switch (warning) {
+    case SpeakerVolumeWarning::kMuted:
+      return ToastId::kTtcSpeakerMuted;
+    case SpeakerVolumeWarning::kLow:
+      return ToastId::kTtcSpeakerVolumeLow;
+  }
   NOTREACHED();
 }
 
@@ -96,6 +107,10 @@ void SessionViewImpl::OnSystemMicMuteChanged(bool muted, bool at_stream_start) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ShowToast(ToastId::kTtcMicrophoneMuted);
+}
+
+void SessionViewImpl::OnSpeakerVolumeWarning(SpeakerVolumeWarning warning) {
+  ShowToast(GetToastIdForSpeakerVolumeWarning(warning));
 }
 
 void SessionViewImpl::OnPointerLocationsReported(

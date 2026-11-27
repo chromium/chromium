@@ -5,14 +5,20 @@
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/output_volume_monitor.h"
 #include "chrome/browser/ttc/core/overlay_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -24,6 +30,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 #include "chrome/browser/ui/views/voice/waveform_mode.h"
@@ -429,6 +437,80 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnSystemMicMuted) {
             /*muted=*/true, /*at_stream_start=*/false);
       }),
       WaitForShow(toasts::ToastView::kToastViewId)
+  );
+  // clang-format on
+}
+
+// Stands in for the platform's output volume monitor, so the test can mute the
+// speaker.
+class SessionViewImplSpeakerVolumeBrowserTest
+    : public SessionViewImplBrowserTest {
+ public:
+  class FakeOutputVolumeMonitor : public OutputVolumeMonitor {
+   public:
+    FakeOutputVolumeMonitor(SessionViewImplSpeakerVolumeBrowserTest& test,
+                            StateChangedCallback callback)
+        : test_(test), callback_(std::move(callback)) {
+      test_->monitor_ = this;
+    }
+    ~FakeOutputVolumeMonitor() override { test_->monitor_ = nullptr; }
+
+    std::optional<OutputVolumeState> GetState() const override {
+      return state_;
+    }
+
+    void SetMuted(bool muted) {
+      state_.muted = muted;
+      callback_.Run(state_);
+    }
+
+   private:
+    const raw_ref<SessionViewImplSpeakerVolumeBrowserTest> test_;
+    OutputVolumeState state_{.muted = false, .level = 0.5f};
+    const StateChangedCallback callback_;
+  };
+
+  SessionViewImplSpeakerVolumeBrowserTest() {
+    feature_list_.InitAndEnableFeature(kTtcSpeakerVolumeWarning);
+  }
+
+ protected:
+  StepBuilder SetSpeakerMuted(bool muted) {
+    return Do([this, muted]() {
+      ASSERT_TRUE(monitor_);
+      monitor_->SetMuted(muted);
+    });
+  }
+
+  std::unique_ptr<OutputVolumeMonitor> CreateMonitor(
+      OutputVolumeMonitor::StateChangedCallback callback) {
+    return std::make_unique<FakeOutputVolumeMonitor>(*this,
+                                                     std::move(callback));
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  // The session's monitor, while there is a session.
+  raw_ptr<FakeOutputVolumeMonitor> monitor_ = nullptr;
+  OutputVolumeMonitor::ScopedFactoryForTesting factory_{base::BindRepeating(
+      &SessionViewImplSpeakerVolumeBrowserTest::CreateMonitor,
+      base::Unretained(this))};
+};
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplSpeakerVolumeBrowserTest,
+                       ToastShowsOnSpeakerMuted) {
+  // clang-format off
+  RunTestSequence(
+      StartSession(),
+      SetSessionLifecycle(SessionLifecycle::kLive),
+      SetSpeakerMuted(false),
+      EnsureNotPresent(toasts::ToastView::kToastViewId),
+      SetSpeakerMuted(true),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckResult(
+          [this]() {
+            return ToastController::From(browser())->GetCurrentToastId();
+          },
+          std::optional<ToastId>(ToastId::kTtcSpeakerMuted))
   );
   // clang-format on
 }

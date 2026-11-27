@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,13 @@ TEST(SessionViewImplTest, ErrorsMapToToasts) {
     SCOPED_TRACE(static_cast<int>(test_case.error));
     EXPECT_EQ(GetToastIdForError(test_case.error), test_case.expected_toast);
   }
+}
+
+TEST(SessionViewImplTest, SpeakerVolumeWarningsMapToToasts) {
+  EXPECT_EQ(GetToastIdForSpeakerVolumeWarning(SpeakerVolumeWarning::kMuted),
+            ToastId::kTtcSpeakerMuted);
+  EXPECT_EQ(GetToastIdForSpeakerVolumeWarning(SpeakerVolumeWarning::kLow),
+            ToastId::kTtcSpeakerVolumeLow);
 }
 
 }  // namespace

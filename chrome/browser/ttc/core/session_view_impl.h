@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -28,6 +29,7 @@ class OverlayController;
 class SessionViewDelegate;
 
 ToastId GetToastIdForError(ErrorCode error);
+ToastId GetToastIdForSpeakerVolumeWarning(SpeakerVolumeWarning warning);
 
 class SessionViewImpl : public SessionView, public TtcViewDelegate {
  public:
@@ -41,6 +43,7 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   void OnUserAudioLevelUpdate(float audio_level) override;
   void OnMicCaptureChanged(bool capturing) override;
   void OnSystemMicMuteChanged(bool muted, bool at_stream_start) override;
+  void OnSpeakerVolumeWarning(SpeakerVolumeWarning warning) override;
   void OnPointerLocationsReported(base::span<const gfx::Point> points) override;
 
   // TtcViewDelegate:
