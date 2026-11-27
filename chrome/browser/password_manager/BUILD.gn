@@ -566,6 +566,7 @@ if (!is_android) {
 
     sources = [
       "credential_manager_browsertest.cc",
+      "password_change/detached_web_contents_browsertest.cc",
       "password_change_browsertest.cc",
       "password_change_from_checkup_browsertest.cc",
       "password_manager_browsertest.cc",
