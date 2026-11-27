@@ -72,12 +72,6 @@ enum class PasskeyUserVerificationStatus {
   kCompleted,
 };
 
-// Helper types representing a key and a list of key respectively.
-// TODO(crbug.com/588274186): Remove once all callers migrate to
-// `trusted_vault::TrustedVaultKeyAndVersion`.
-using SharedKey = std::vector<uint8_t>;
-using SharedKeyList = std::vector<SharedKey>;
-
 // Callback to be called once trusted vault keys and their versions are fetched
 // by `PasskeyKeychainProvider`.
 using KeysWithVersionsFetchedCallback = base::OnceCallback<
