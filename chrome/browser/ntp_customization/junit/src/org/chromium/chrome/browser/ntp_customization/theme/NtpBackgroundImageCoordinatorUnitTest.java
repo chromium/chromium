@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -153,11 +154,13 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testDestroy() {
         mCoordinator.setBackground(
                 mBitmap, mBackgroundImageInfo, NtpBackgroundType.THEME_COLLECTION);
+        assertNotNull(mCoordinator.getOriginalBitmapForTesting());
         verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
         mCoordinator.destroy();
 
         // Verify that UiConfig.removeObserver() was called with the exact same observer instance.
         verify(mUiConfig).removeObserver(eq(mDisplayStyleObserverArgumentCaptor.getValue()));
+        assertNull(mCoordinator.getOriginalBitmapForTesting());
     }
 
     @Test

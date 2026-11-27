@@ -116,6 +116,7 @@ public class NtpBackgroundImageCoordinator {
         mUiConfig = null;
         mCachedBackgroundImageInfo = null;
         mBackgroundImageInfo = null;
+        mOriginalBitmap = null;
     }
 
     /**
@@ -233,5 +234,10 @@ public class NtpBackgroundImageCoordinator {
 
     public @Nullable BackgroundImageInfo getCachedBackgroundImageInfoForTesting() {
         return mCachedBackgroundImageInfo;
+    }
+
+    /** Returns the original bitmap for testing. */
+    public @Nullable Bitmap getOriginalBitmapForTesting() {
+        return mOriginalBitmap;
     }
 }
