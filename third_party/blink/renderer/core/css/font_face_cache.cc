@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_algorithm.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -64,8 +65,16 @@ void FontFaceCache::SegmentedFacesByFamily::AddFontFace(FontFace* font_face,
 }
 
 void FontFaceCache::AddFontFace(FontFace* font_face, bool css_connected) {
-  DCHECK(font_face->GetFontSelectionCapabilities().IsValid() &&
-         !font_face->GetFontSelectionCapabilities().IsHashTableDeletedValue());
+  if (RuntimeEnabledFeatures::FontFaceCapabilitiesRangeValidationEnabled()) {
+    const FontSelectionCapabilities capabilities =
+        font_face->GetFontSelectionCapabilities();
+    DCHECK(capabilities.IsValid() && !capabilities.IsHashTableDeletedValue() &&
+           capabilities != FontSelectionCapabilities());
+  } else {
+    DCHECK(
+        font_face->GetFontSelectionCapabilities().IsValid() &&
+        !font_face->GetFontSelectionCapabilities().IsHashTableDeletedValue());
+  }
 
   segmented_faces_.AddFontFace(font_face, css_connected);
 
@@ -83,6 +92,20 @@ void FontFaceCache::FontSelectionQueryCache::Remove(
 
 void FontFaceCache::CapabilitiesSet::AddFontFace(FontFace* font_face,
                                                  bool css_connected) {
+  if (RuntimeEnabledFeatures::FontFaceCapabilitiesRangeValidationEnabled()) {
+    const FontSelectionCapabilities capabilities =
+        font_face->GetFontSelectionCapabilities();
+    CHECK(capabilities != FontSelectionCapabilities());
+    const auto result = map_.insert(capabilities, nullptr);
+    if (result.is_new_entry) {
+      result.stored_value->value =
+          MakeGarbageCollected<CSSSegmentedFontFace>(capabilities);
+    }
+
+    result.stored_value->value->AddFontFace(font_face, css_connected);
+    return;
+  }
+
   const auto result =
       map_.insert(font_face->GetFontSelectionCapabilities(), nullptr);
   if (result.is_new_entry) {
