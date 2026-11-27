@@ -123,7 +123,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/compile_java",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/compile_java.py",
+            "command_prefix": platform.python_bin + " obj/build/android/compile_java.pyz",
             "handler": "android_compile_java",
             "exclude_input_patterns": [
                 "*.a",

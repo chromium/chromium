@@ -3382,15 +3382,7 @@ if (enable_java_templates) {
   # [1] https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html
   #
   template("compile_java") {
-    if (invoker.use_turbine || invoker.enable_errorprone) {
-      _target_type = "python_action"
-    } else {
-      # TODO(crbug.com/582287459): Switch compile_java.py to python_action once
-      # `siso query ideanalysis` recognizes compile_java.pyz.
-      _target_type = "action_with_pydeps"
-    }
-
-    target(_target_type, target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              [ "validations" ] + TESTONLY_AND_VISIBILITY)
 
@@ -3451,7 +3443,7 @@ if (enable_java_templates) {
           inputs += java_paths_for_inputs
         }
       } else {
-        script = "//build/android/gyp/compile_java.py"
+        python_binary = "//build/android:compile_java"
         inputs = jdk_tools_paths_for_inputs
       }
 

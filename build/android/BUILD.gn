@@ -276,6 +276,10 @@ python_binary("check_for_missing_direct_deps") {
   script = "gyp/check_for_missing_direct_deps.py"
 }
 
+python_binary("compile_java") {
+  script = "gyp/compile_java.py"
+}
+
 python_binary("compile_kt") {
   script = "gyp/compile_kt.py"
 }

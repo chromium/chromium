@@ -65,103 +65,6 @@ template("python_library") {
   }
 }
 
-# A template used for actions that execute a Python script, which has an
-# associated .pydeps file. In other words:
-#
-# - This is very similar to just an action(), except that |script| must point
-#   to a Python script (e.g. "//build/.../foo.py") that has a corresponding
-#   .pydeps file in the source tree (e.g. "//build/.../foo.pydeps").
-#
-# - The .pydeps file contains a list of python dependencies (imports really)
-#   and is generated _manually_ by using a command like:
-#
-#     build/print_python_deps.py --inplace build/android/gyp/foo.py
-#
-# Example
-#   action_with_pydeps("create_foo") {
-#     script = "myscript.py"
-#     args = [...]
-#   }
-template("action_with_pydeps") {
-  action(target_name) {
-    # Ensure that testonly and visibility are forwarded
-    # explicitly, since this performs recursive scope lookups, which is
-    # required to ensure their definition from scopes above the caller are
-    # properly handled. All other variables are forwarded with "*", which
-    # doesn't perform recursive lookups at all. See https://crbug.com/862232
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    # Read and filter out comments.
-    # Happens every time the template is instantiated, but benchmarking shows no
-    # perceivable impact on overall 'gn gen' speed.
-    _pydeps_file = invoker.script + "deps"
-
-    _pydeps_lines =
-        read_file(_pydeps_file, "list lines")  # https://crbug.com/1102058
-    _pydeps_entries = filter_exclude(_pydeps_lines, [ "#*" ])
-
-    if (!defined(inputs)) {
-      inputs = []
-    }
-
-    # Dependencies are listed relative to the script directory, but inputs
-    # expects paths that are relative to the current BUILD.gn
-    _script_dir = get_path_info(_pydeps_file, "dir")
-    inputs += rebase_path(_pydeps_entries, ".", _script_dir)
-  }
-}
-
-template("action_foreach_with_pydeps") {
-  action_foreach(target_name) {
-    # Ensure that testonly and visibility are forwarded
-    # explicitly, since this performs recursive scope lookups, which is
-    # required to ensure their definition from scopes above the caller are
-    # properly handled. All other variables are forwarded with "*", which
-    # doesn't perform recursive lookups at all. See https://crbug.com/862232
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    # Read and filter out comments.
-    # Happens every time the template is instantiated, but benchmarking shows no
-    # perceivable impact on overall 'gn gen' speed.
-    if (defined(invoker.deps_file)) {
-      _pydeps_file = invoker.deps_file
-    } else {
-      _pydeps_file = invoker.script + "deps"
-    }
-    _pydeps_lines = read_file(_pydeps_file, "list lines")
-    _pydeps_entries = filter_exclude(_pydeps_lines, [ "#*" ])
-
-    if (!defined(inputs)) {
-      inputs = []
-    }
-
-    # Dependencies are listed relative to the script directory, but inputs
-    # expects paths that are relative to the current BUILD.gn
-    _script_dir = get_path_info(script, "dir")
-    inputs += rebase_path(_pydeps_entries, ".", _script_dir)
-  }
-}
-
 # Creates a .pyz archive at "$target_out_dir/$target_name.pyz" in
 # $default_toolchain containing precompiled .pyc files for |script| and its
 # module dependencies. Evaluated as a no-op in secondary toolchains so callers
@@ -184,8 +87,10 @@ template("action_foreach_with_pydeps") {
 #     script = "my_tool.py"
 #   }
 template("python_binary") {
-  if (current_toolchain == default_toolchain) {
-    action_with_pydeps(target_name) {
+  if ((defined(invoker._in_current_toolchain) &&
+       invoker._in_current_toolchain) ||
+      current_toolchain == default_toolchain) {
+    action(target_name) {
       forward_variables_from(invoker,
                              [
                                "deps",
@@ -197,7 +102,14 @@ template("python_binary") {
 
       script = "//build/create_pyz.py"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = [ invoker.script ]
+
+      # Read .pydeps directly since python_binary() cannot itself use
+      # python_binary() / action_with_pydeps().
+      _create_pyz_pydeps =
+          filter_exclude(read_file("//build/create_pyz.pydeps", "list lines"),
+                         [ "#*" ])
+      inputs =
+          [ invoker.script ] + rebase_path(_create_pyz_pydeps, ".", "//build")
       outputs = [ _output ]
 
       args = [
@@ -296,5 +208,50 @@ template("python_action_foreach") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     _action_type = "action_foreach"
+  }
+}
+
+# A template used for one-off actions that execute a Python script with an
+# associated .pydeps file, packaging it into a .pyz via python_binary().
+# For scripts invoked multiple times (e.g. from a template), define a shared
+# python_binary() and use python_action() / python_action_foreach() instead.
+#
+# - |script| must point to a Python script (e.g. "//build/.../foo.py") that has
+#   a corresponding .pydeps file in the source tree (e.g.
+#   "//build/.../foo.pydeps").
+#
+# - The .pydeps file contains a list of python dependencies (imports really)
+#   and is generated _manually_ by using a command like:
+#
+#     build/print_python_deps.py --inplace build/android/gyp/foo.py
+#
+# Example
+#   action_with_pydeps("create_foo") {
+#     script = "myscript.py"
+#     args = [...]
+#   }
+template("action_with_pydeps") {
+  _main_target_name = target_name
+  _pyz_target = "${target_name}__pyz"
+
+  # Build in current_toolchain rather than default_toolchain so callers inside
+  # toolchain-conditional blocks (e.g. host_toolchain) still define the target.
+  python_binary(_pyz_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    visibility = [ ":$_main_target_name" ]
+    script = invoker.script
+    _in_current_toolchain = true
+  }
+
+  action(target_name) {
+    # Ensure that testonly and visibility are forwarded explicitly so recursive
+    # lookups find enclosing-scope definitions. See https://crbug.com/862232
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "script" ])
+    script = "$target_out_dir/$_pyz_target.pyz"
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ ":$_pyz_target" ]
   }
 }
