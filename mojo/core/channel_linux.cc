@@ -624,6 +624,15 @@ void ChannelLinux::Write(MessagePtr message) {
 }
 
 void ChannelLinux::OfferSharedMemUpgrade() {
+  // Each side of a channel offers at most one upgrade. The offer only concerns
+  // the outgoing direction. The memfd and eventfd it creates are used for
+  // writing by this side and for reading by the remote side.
+  //
+  // It is safe for both sides to offer at the same time. Offers from two
+  // non-brokers may race with the reciprocal offer made from
+  // OnControlMessage(UPGRADE_OFFER) on the IO thread. The |offered_| ensures
+  // that exactly one of the callers proceeds and that caller completes the
+  // offer, so an offer is never lost or duplicated.
   if (!offered_.test_and_set() && UpgradesEnabled()) {
     // Before we offer we need to make sure we can send handles, if we can't
     // then no point in trying.
@@ -703,8 +712,6 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
-      read_notifier_ = std::move(read_notifier);
-
       std::unique_ptr<SharedBuffer> read_sb = SharedBuffer::Create(
           std::move(memfd), msg->num_pages * base::GetPageSize());
       if (!read_sb || !read_sb->is_valid()) {
@@ -712,6 +719,9 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
+      // Install the notifier and the buffer together to make sure
+      // SharedMemReadReady() never observes one without the other.
+      read_notifier_ = std::move(read_notifier);
       shared_read_buffer_ = std::move(read_sb);
 
       read_buf_.resize(shared_read_buffer_->usable_len());
@@ -969,6 +979,14 @@ void ChannelLinux::SetSharedMemParameters(bool enabled, uint32_t num_pages) {
   g_params_set.store(true);
   g_use_shared_mem.store(enabled);
   g_shared_mem_pages.store(num_pages);
+}
+
+// static
+bool ChannelLinux::UpgradesBetweenNonBrokersEnabled() {
+  // Query the feature only when upgrades are enabled to avoid activating the
+  // field trial in processes where it would have no effect.
+  return UpgradesEnabled() &&
+         base::FeatureList::IsEnabled(kMojoUseEventFdBetweenNonBrokers);
 }
 
 bool ChannelLinux::IsSharedMemWriterForTesting() {

@@ -49,6 +49,11 @@
 #include "base/win/scoped_handle.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "mojo/core/channel.h"
+#include "mojo/core/channel_linux.h"
+#endif
+
 namespace mojo::core::ipcz_driver {
 namespace {
 
@@ -1630,6 +1635,69 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrusted) {
         listener.WaitForDisconnect();
       });
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MojoIpczTransportUpgradeTest : public MojoIpczTransportTest {
+ protected:
+  void SetUp() override {
+    MojoIpczTransportTest::SetUp();
+    if (!Channel::SupportsMultipleNotifiers() ||
+        !ChannelLinux::KernelSupportsUpgradeRequirements()) {
+      GTEST_SKIP() << "Channel upgrades are not supported.";
+    }
+    // Make ChannelLinux consult the FeatureList, like after InitFeatures().
+    ChannelLinux::SetSharedMemParameters(/*enabled=*/true, /*num_pages=*/4);
+  }
+
+  static bool IsSharedMemWriter(Transport& transport) {
+    scoped_refptr<Channel> channel = transport.GetChannelForTesting();
+    CHECK(channel);
+    return static_cast<ChannelLinux*>(channel.get())
+        ->IsSharedMemWriterForTesting();
+  }
+
+  // Activates both ends of a NonBroker <-> NonBroker transport pair. Exchanges
+  // messages until both directions complete upgrades. Returns whether each side
+  // writes via shared memory.
+  static std::pair<bool, bool> ActivateNonBrokerPairAndExchangeMessages() {
+    // Each round establishes happens-before between the sides, two rounds
+    // complete an upgrade. See ChannelUpgradeTest for details.
+    constexpr int kMaxRounds = 8;
+    auto [transport_a, transport_b] =
+        Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+    TransportListener listener_a(*transport_a);
+    TransportListener listener_b(*transport_b);
+    for (int round = 0; round < kMaxRounds; ++round) {
+      TestMessage(kMessage1).Transmit(*transport_a);
+      EXPECT_EQ(kMessage1, listener_b.WaitForNextMessage().as_string());
+      TestMessage(kMessage2).Transmit(*transport_b);
+      EXPECT_EQ(kMessage2, listener_a.WaitForNextMessage().as_string());
+      if (IsSharedMemWriter(*transport_a) && IsSharedMemWriter(*transport_b)) {
+        break;
+      }
+    }
+    return {IsSharedMemWriter(*transport_a), IsSharedMemWriter(*transport_b)};
+  }
+};
+
+TEST_F(MojoIpczTransportUpgradeTest, NonBrokersUpgradeWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kMojoUseEventFd, kMojoUseEventFdBetweenNonBrokers}, {});
+  auto [a_upgraded, b_upgraded] = ActivateNonBrokerPairAndExchangeMessages();
+  EXPECT_TRUE(a_upgraded);
+  EXPECT_TRUE(b_upgraded);
+}
+
+TEST_F(MojoIpczTransportUpgradeTest, NonBrokersRequireMojoUseEventFd) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kMojoUseEventFdBetweenNonBrokers},
+                                {kMojoUseEventFd});
+  auto [a_upgraded, b_upgraded] = ActivateNonBrokerPairAndExchangeMessages();
+  EXPECT_FALSE(a_upgraded);
+  EXPECT_FALSE(b_upgraded);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace mojo::core::ipcz_driver

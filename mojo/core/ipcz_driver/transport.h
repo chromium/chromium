@@ -235,6 +235,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // Allow tests to nerf serialized handles to validate recipient behavior.
   static size_t FirstHandleOffsetForTesting();
 
+  // Returns the Channel used by this Transport, or null if not active.
+  scoped_refptr<Channel> GetChannelForTesting();
+
  private:
   struct PendingTransmission {
     PendingTransmission();

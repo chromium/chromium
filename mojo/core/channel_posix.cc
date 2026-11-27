@@ -551,6 +551,12 @@ bool Channel::SupportsChannelUpgrade() {
          ChannelLinux::UpgradesEnabled();
 }
 
+// static
+bool Channel::SupportsChannelUpgradeBetweenNonBrokers() {
+  return SupportsChannelUpgrade() &&
+         ChannelLinux::UpgradesBetweenNonBrokersEnabled();
+}
+
 void Channel::OfferChannelUpgrade() {
   if (!SupportsChannelUpgrade()) {
     return;

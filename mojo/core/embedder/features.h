@@ -23,6 +23,12 @@ extern const base::FeatureParam<int> kMojoUseEventFdPages;
 
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const char kSuppressEventfdUpgradeForWebview[];
+
+// When enabled together with kMojoUseEventFd, channels between two non-broker
+// processes (e.g. Renderer <-> GPU) are also offered the shared memory +
+// eventfd upgrade. Without it only Broker <-> NonBroker channels are upgraded.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+BASE_DECLARE_FEATURE(kMojoUseEventFdBetweenNonBrokers);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

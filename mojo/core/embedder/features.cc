@@ -22,6 +22,9 @@ const base::FeatureParam<int> kMojoUseEventFdPages{&kMojoUseEventFd,
                                                    "MojoUseEventFdPages", 4};
 const char kSuppressEventfdUpgradeForWebview[] =
     "suppress-eventfd-upgrade-for-webview";
+
+BASE_FEATURE(kMojoUseEventFdBetweenNonBrokers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

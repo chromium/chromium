@@ -265,6 +265,11 @@ size_t Transport::FirstHandleOffsetForTesting() {
   return sizeof(ObjectHeader);
 }
 
+scoped_refptr<Channel> Transport::GetChannelForTesting() {
+  base::AutoLock lock(lock_);
+  return channel_;
+}
+
 Transport::Transport(EndpointTypes endpoint_types,
                      PlatformChannelEndpoint endpoint,
                      base::Process remote_process,
@@ -375,9 +380,19 @@ bool Transport::Activate(IpczHandle transport,
   // lock.
   channel->Start();
 
-  if (channel->SupportsChannelUpgrade() &&
-      source_type() == EndpointType::kBroker &&
-      destination_type() == EndpointType::kNonBroker) {
+  // Broker-to-NonBroker channels are upgraded by the broker offering first. In
+  // this case the non-broker reciprocates when it receives the offer. Channels
+  // between two non-brokers are symmetric. When enabled, both sides offer
+  // independently. Every side offers only for its own outgoing direction and at
+  // most once.
+  const bool should_offer_upgrade =
+      (source_type() == EndpointType::kBroker &&
+       destination_type() == EndpointType::kNonBroker &&
+       Channel::SupportsChannelUpgrade()) ||
+      (source_type() == EndpointType::kNonBroker &&
+       destination_type() == EndpointType::kNonBroker &&
+       Channel::SupportsChannelUpgradeBetweenNonBrokers());
+  if (should_offer_upgrade) {
     base::AutoLock lock(lock_);
     channel->OfferChannelUpgrade();
   }

@@ -1308,6 +1308,12 @@ MOJO_SYSTEM_IMPL_EXPORT bool Channel::SupportsChannelUpgrade() {
   return false;
 }
 
+// static
+MOJO_SYSTEM_IMPL_EXPORT bool
+Channel::SupportsChannelUpgradeBetweenNonBrokers() {
+  return false;
+}
+
 MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
   NOTREACHED();
 }

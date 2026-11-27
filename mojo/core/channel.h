@@ -419,6 +419,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // upgraded.
   static bool SupportsChannelUpgrade();
 
+  // Returns true if, in addition to SupportsChannelUpgrade(), an upgrade should
+  // also be offered on channels connecting two non-broker nodes. In that case
+  // both sides offer an upgrade for their outgoing direction.
+  static bool SupportsChannelUpgradeBetweenNonBrokers();
+
   // OfferChannelUpgrade will inform this channel that it should offer an
   // upgrade to the remote.
   void OfferChannelUpgrade();
