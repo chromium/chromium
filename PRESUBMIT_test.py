@@ -4491,9 +4491,8 @@ class StringTest(unittest.TestCase):
     REMOVE_SIGNATURES_MESSAGE = ('You removed strings associated with these '
                                  'files. Remove:')
     ICU_SYNTAX_ERROR_MESSAGE = (
-        'ICU syntax errors were found in the following '
-        'strings (problems or feedback? Contact '
-        'rainhard@chromium.org):')
+        'ICU syntax errors were found in the following strings:'
+    )
     SHA1_FORMAT_MESSAGE = (
         'The following files do not seem to contain valid sha1 '
         'hashes. Make sure they contain hashes created by '
