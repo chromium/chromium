@@ -1855,6 +1855,42 @@ TEST_F(AutocompleteHistoryManagerTest,
                                                     &form_structure);
 }
 
+// Tests that fields with a password type in a secondary `server_predictions()`
+// slot (beyond index 0, which Password Manager still inspects) are not saved in
+// autocomplete history even when the primary server prediction is saveable.
+TEST_F(AutocompleteHistoryManagerTest,
+       PredictedTypeBasedFiltering_SecondaryServerPasswordPrediction) {
+  FormData form = test::GetFormData(
+      {.fields = {{.name = u"f0", .value = u"secret_pwd"},
+                  {.name = u"f1", .value = u"account_creation_pwd"},
+                  {.name = u"f2", .value = u"confirm_pwd"},
+                  {.name = u"f3", .value = u"Jane Doe"}}});
+  FormStructure form_structure{form};
+  ASSERT_EQ(4u, form_structure.field_count());
+
+  auto make_prediction = [](FieldType type) {
+    FieldPrediction prediction;
+    prediction.set_type(type);
+    prediction.set_source(FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
+    return prediction;
+  };
+  form_structure.field(0)->set_server_predictions(
+      {make_prediction(UNKNOWN_TYPE), make_prediction(PASSWORD)});
+  form_structure.field(1)->set_server_predictions(
+      {make_prediction(USERNAME), make_prediction(ACCOUNT_CREATION_PASSWORD)});
+  form_structure.field(2)->set_server_predictions(
+      {make_prediction(NAME_FIRST), make_prediction(CONFIRMATION_PASSWORD)});
+  form_structure.field(3)->set_server_predictions(
+      {make_prediction(NAME_FULL), make_prediction(USERNAME)});
+
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"Jane Doe"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
+}
+
 // Tests that fields dynamically injected into an already cached form right
 // before submission (`form` is non-null, `autofill_field` is null) still have
 // their HTML `autocomplete` attribute validated.
