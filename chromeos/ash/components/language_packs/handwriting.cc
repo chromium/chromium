@@ -53,12 +53,11 @@ std::optional<std::string_view> HandwritingLocaleToDlc(
 std::optional<std::string_view> DlcToHandwritingLocale(
     std::string_view dlc_id) {
   static constexpr auto kHandwritingLocaleFromDlc =
-      []<size_t... Is>(std::index_sequence<Is...>) {
-        return base::MakeFixedFlatMap<std::string_view, std::string_view>({
-            {kHandwritingDlcIds.begin()[Is].second,
-             kHandwritingDlcIds.begin()[Is].first}...,
-        });
-      }(std::make_index_sequence<kHandwritingDlcIds.size()>{});
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          kHandwritingDlcIds,
+          /*comp=*/{}, [](const auto& entry) {
+            return std::pair(entry.second, entry.first);
+          });
 
   const auto it = kHandwritingLocaleFromDlc.find(dlc_id);
   if (it == kHandwritingLocaleFromDlc.end()) {
