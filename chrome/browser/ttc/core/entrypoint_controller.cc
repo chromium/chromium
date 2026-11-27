@@ -8,8 +8,10 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/prefs.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -88,6 +90,10 @@ void EntrypointController::StartSession() {
 }
 
 bool EntrypointController::NeedsFre() const {
+  // TODO(b/590824408): Remove the flag check once the FRE is complete.
+  if (!base::FeatureList::IsEnabled(kTtcFre)) {
+    return false;
+  }
   return CHECK_DEREF(browser_->GetProfile()->GetPrefs())
              .GetInteger(prefs::kTtcFreAcceptedVersion) <
          prefs::kCurrentFreVersion;

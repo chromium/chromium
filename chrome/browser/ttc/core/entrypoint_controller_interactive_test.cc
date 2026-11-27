@@ -11,6 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/entrypoint_controller.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/prefs.h"
 #include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -373,9 +374,43 @@ IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
   // clang-format on
 }
 
+class EntrypointControllerFreDisabledInteractiveTest
+    : public EntrypointControllerInteractiveTest {
+ public:
+  EntrypointControllerFreDisabledInteractiveTest() {
+    fre_feature_list_.InitAndDisableFeature(kTtcFre);
+  }
+  ~EntrypointControllerFreDisabledInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    EntrypointControllerInteractiveTest::SetUpOnMainThread();
+    profile()->GetPrefs()->ClearPref(prefs::kTtcFreAcceptedVersion);
+  }
+
+ private:
+  base::test::ScopedFeatureList fre_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreDisabledInteractiveTest,
+                       StartsSessionWithoutFre) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    CheckHasSession(true),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+    CheckFreAcceptedVersion(0)
+  );
+  // clang-format on
+}
+
 class EntrypointControllerFreInteractiveTest
     : public EntrypointControllerInteractiveTest {
  public:
+  EntrypointControllerFreInteractiveTest() {
+    fre_feature_list_.InitAndEnableFeature(kTtcFre);
+  }
+  ~EntrypointControllerFreInteractiveTest() override = default;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EntrypointControllerInteractiveTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
@@ -386,6 +421,9 @@ class EntrypointControllerFreInteractiveTest
     EntrypointControllerInteractiveTest::SetUpOnMainThread();
     profile()->GetPrefs()->ClearPref(prefs::kTtcFreAcceptedVersion);
   }
+
+ private:
+  base::test::ScopedFeatureList fre_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
