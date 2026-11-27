@@ -564,8 +564,9 @@ void DialogDelegate::AcceptDialog() {
   // Copy the dialog widget name onto the stack so it appears in crash dumps.
   DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
 
-  CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/589762073): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // Widget (and maybe this delegate) may get destroyed from the Accept() call
   // below. This will detect that condition.
