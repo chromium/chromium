@@ -289,6 +289,33 @@ class ServiceWorkerBasedBackgroundTestWithNotification
         NotificationHandler::Type::WEB_PERSISTENT);
   }
 
+  // Waits until at least `expected_count` persistent notifications are
+  // displayed by the notification display service.
+  std::vector<message_center::Notification> WaitForDisplayedNotifications(
+      size_t expected_count = 1u) {
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    if (notifications.size() >= expected_count) {
+      return notifications;
+    }
+
+    base::RunLoop run_loop;
+    display_service_tester_->SetNotificationAddedClosure(base::BindRepeating(
+        [](const ServiceWorkerBasedBackgroundTestWithNotification* test,
+           size_t count, base::RunLoop* loop) {
+          if (test->GetDisplayedNotifications().size() >= count) {
+            loop->Quit();
+          }
+        },
+        base::Unretained(this), expected_count, base::Unretained(&run_loop)));
+    run_loop.Run();
+
+    // Clear the closure before `run_loop` is destroyed so it cannot dangle.
+    display_service_tester_->SetNotificationAddedClosure(
+        base::RepeatingClosure());
+    return GetDisplayedNotifications();
+  }
+
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
@@ -3174,7 +3201,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTestWithNotification,
   // Click on the Service Worker notification.
   {
     std::vector<message_center::Notification> notifications =
-        GetDisplayedNotifications();
+        WaitForDisplayedNotifications();
     ASSERT_EQ(1u, notifications.size());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
