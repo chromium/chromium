@@ -224,6 +224,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean shouldBlockUnhandledExternalProtocolNavigation() {
+        return true;
+    }
+
+    @Override
     public void startReparentingTask() {
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

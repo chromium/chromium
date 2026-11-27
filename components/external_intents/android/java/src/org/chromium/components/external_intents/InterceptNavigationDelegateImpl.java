@@ -327,7 +327,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
-                if (isExternalProtocol) {
+                if (isExternalProtocol
+                        && mClient.shouldBlockUnhandledExternalProtocolNavigation()) {
                     logBlockedNavigationToDevToolsConsole(url);
                     shouldIgnore = true;
                     break;

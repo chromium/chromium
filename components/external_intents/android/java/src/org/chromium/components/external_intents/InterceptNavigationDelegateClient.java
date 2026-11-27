@@ -74,6 +74,12 @@ public interface InterceptNavigationDelegateClient {
     boolean isInDesktopWindowingMode();
 
     /**
+     * Returns whether to block a main frame navigation to an external protocol that isn't
+     * overridden. Embedders that can load such URLs themselves can return false.
+     */
+    boolean shouldBlockUnhandledExternalProtocolNavigation();
+
+    /**
      * Starts the reparenting process for this Tab. Reparenting is an async task that "moves" an
      * existing tab into a separate Task. Currently, only reparenting towards Chrome browser is
      * supported.
