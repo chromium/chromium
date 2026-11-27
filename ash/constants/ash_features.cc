@@ -1442,7 +1442,7 @@ BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use direct XKB layout for Thai Kedmanee input method.
 BASE_FEATURE(kUseDirectXkbLayoutForThaiKedmaneeInputMethod,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use direct XKB layout for Thai TIS 820-2531 input method.
 BASE_FEATURE(kUseDirectXkbLayoutForThaiTisInputMethod,
