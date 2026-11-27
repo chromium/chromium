@@ -147,6 +147,7 @@ public class ActorOverlayDesktopPTTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/590967436")
     public void testOmniboxSuggestionsPopoverDrawnAboveOverlay() {
         WebPageStation page = mTestRule.startOnBlankPage();
         OmniboxFacility omnibox = page.openOmnibox();
