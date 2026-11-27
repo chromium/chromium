@@ -724,6 +724,7 @@ if (is_android) {
       "//chrome/browser/password_manager/android:test_support",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/payments:browser_tests",
+      "//chrome/browser/performance_manager:browser_tests",
       "//chrome/browser/policy:android_browsertests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",

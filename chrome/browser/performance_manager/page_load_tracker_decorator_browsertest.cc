@@ -6,18 +6,15 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/base/page_transition_types.h"
 
 namespace performance_manager {
 
@@ -101,7 +98,7 @@ class PageLoadingStateObserver : public PageNodeObserver,
 
 }  // namespace
 
-using PageLoadTrackerDecoratorTest = InProcessBrowserTest;
+using PageLoadTrackerDecoratorTest = PlatformBrowserTest;
 
 // Integration test verifying that everything is hooked up in Chrome to update
 // PageNode::GetLoadingState() is updated on navigation. See
@@ -109,9 +106,10 @@ using PageLoadTrackerDecoratorTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(PageLoadTrackerDecoratorTest, PageNodeLoadingState) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
   base::WeakPtr<PageNode> page_node =
-      PerformanceManager::GetPrimaryPageNodeForWebContents(
-          browser()->GetTabStripModel()->GetActiveWebContents());
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
 
   // Wait until GetLoadingState() is LoadingState::kLoadedIdle (the initial
   // navigation may or may not be ongoing).
@@ -127,11 +125,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadTrackerDecoratorTest, PageNodeLoadingState) {
                                     /* exit_if_already_loaded_idle=*/false);
 
   // Navigate.
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         embedded_test_server()->GetURL("/empty.html"),
-                         ui::mojom::WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/empty.html")));
 
   // Wait until GetLoadingState() transitions to LoadingState::kLoadedIdle.
   observer.Wait();

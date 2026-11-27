@@ -461,19 +461,32 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
+  sources = [ "page_load_tracker_decorator_browsertest.cc" ]
+
+  deps = [
+    ":performance_manager",
+    "//base",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/performance_manager/test_support:test_support_common",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
       "background_tab_loading_policy_browsertest.cc",
       "decorators/helpers/page_live_state_decorator_helper_browsertest.cc",
       "frame_node_impl_browsertest.cc",
       "mechanisms/page_discarder_browsertest.cc",
       "observers/page_load_metrics_observer_browsertest.cc",
-      "page_load_tracker_decorator_browsertest.cc",
       "page_node_browsertest.cc",
       "persistence/site_data/site_data_cache_facade_browsertest.cc",
       "policies/discard_eligibility_policy_browsertest.cc",
@@ -483,19 +496,12 @@ if (!is_android) {
       "user_tuning/performance_detection_manager_browsertest.cc",
     ]
 
-    deps = [
-      ":performance_manager",
-      "//base",
+    deps += [
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/resource_coordinator:utils",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/test:test_support",
-      "//components/performance_manager/test_support:test_support_common",
-      "//content/test:browsertest_support",
-      "//content/test:test_support",
-      "//testing/gtest",
 
       # Inherits -Wno-sign-compare via fuzztest_public_config. See
       # crbug.com/527094632.
