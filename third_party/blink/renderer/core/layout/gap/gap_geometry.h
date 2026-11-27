@@ -140,6 +140,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // overlap windows. Used for ink overflow computation.
   LayoutUnit MaxInsetWidthBound(GridTrackSizingDirection direction) const;
 
+  // Returns true if a rule endpoint can be an interior cap. An interior cap is
+  // a dangling endpoint whose crossing rule segment is removed by
+  // `rule-visibility-items: between`. Only grid and multicol have them.
+  bool CanHaveInteriorCaps() const {
+    return container_type_ == ContainerType::kGrid ||
+           container_type_ == ContainerType::kMultiColumn;
+  }
+
+  // Returns the only nonzero percentage basis that a cap inset in `direction`
+  // can have: the width of the crossing gutter at an interior cap. All other
+  // caps have a basis of 0. Returns 0 if the container cannot have interior
+  // caps.
+  LayoutUnit MaxCapInsetWidthBound(GridTrackSizingDirection direction) const {
+    return CanHaveInteriorCaps() ? MaxInsetWidthBound(direction) : LayoutUnit();
+  }
+
   ContainerType GetContainerType() const { return container_type_; }
 
   // Returns true when row gaps span multiple fragments.

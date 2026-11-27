@@ -268,9 +268,7 @@ bool CSSGapDecorationUtils::HasCrossGapSegment(
     RuleVisibilityItems cross_rule_visibility,
     const GapGeometry& gap_geometry,
     const Vector<GapIntersection>& intersections) {
-  if ((gap_geometry.GetContainerType() != GapGeometry::ContainerType::kGrid &&
-       gap_geometry.GetContainerType() !=
-           GapGeometry::ContainerType::kMultiColumn) ||
+  if (!gap_geometry.CanHaveInteriorCaps() ||
       rule_visibility != RuleVisibilityItems::kBetween) {
     return true;
   }

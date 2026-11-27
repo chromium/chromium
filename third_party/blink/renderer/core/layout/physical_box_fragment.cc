@@ -1144,26 +1144,11 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
 
     GapGeometry::GapDecorationInkOutsets outsets;
 
-    // Only Grid and Multicol can have caps with a nonzero percentage basis.
-    // In both, the junction inset width bound is the exact crossing gutter
-    // width. This check must match the container check in
-    // `CSSGapDecorationUtils::HasCrossGapSegment()` and the cap classification
-    // in `GapGeometry::IsCapIntersection()`.
-    // TODO(javiercon): Add a `GapGeometry` API that returns the cap inset
-    // width bound for a direction, and use it in both the overflow and the
-    // paint code.
-    const GapGeometry::ContainerType container_type =
-        gap_geometry->GetContainerType();
-    const bool can_have_nonzero_cap_basis =
-        container_type == GapGeometry::ContainerType::kGrid ||
-        container_type == GapGeometry::ContainerType::kMultiColumn;
-
     // Column rule insets extend the block axis.
+    const LayoutUnit col_cap_inset_width =
+        gap_geometry->MaxCapInsetWidthBound(kForColumns);
     const LayoutUnit col_junction_inset_width_bound =
         gap_geometry->MaxInsetWidthBound(kForColumns);
-    const LayoutUnit col_cap_inset_width = can_have_nonzero_cap_basis
-                                               ? col_junction_inset_width_bound
-                                               : LayoutUnit();
     outsets.block_start = MaxGapDecorationInsetOutset(
         style.ColumnRuleInsetCapStart(), style.ColumnRuleInsetJunctionStart(),
         col_cap_inset_width, col_junction_inset_width_bound);
@@ -1172,11 +1157,10 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
         col_cap_inset_width, col_junction_inset_width_bound);
 
     // Row rule insets extend the inline axis.
+    const LayoutUnit row_cap_inset_width =
+        gap_geometry->MaxCapInsetWidthBound(kForRows);
     const LayoutUnit row_junction_inset_width_bound =
         gap_geometry->MaxInsetWidthBound(kForRows);
-    const LayoutUnit row_cap_inset_width = can_have_nonzero_cap_basis
-                                               ? row_junction_inset_width_bound
-                                               : LayoutUnit();
     outsets.inline_start = MaxGapDecorationInsetOutset(
         style.RowRuleInsetCapStart(), style.RowRuleInsetJunctionStart(),
         row_cap_inset_width, row_junction_inset_width_bound);
