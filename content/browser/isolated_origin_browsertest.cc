@@ -3591,16 +3591,16 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, SubframesAreIsolated) {
   // Make sure we have three separate processes.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHost* main_frame = root->current_frame_host();
-  int main_frame_id = main_frame->GetProcess()->GetDeprecatedID();
+  ChildProcessId main_frame_id = main_frame->GetProcess()->GetID();
   RenderFrameHost* child_frame0 = root->child_at(0)->current_frame_host();
   RenderFrameHost* child_frame1 = root->child_at(1)->current_frame_host();
   RenderFrameHost* child_frame2 = root->child_at(2)->current_frame_host();
   RenderFrameHost* grandchild_frame0 =
       root->child_at(1)->child_at(0)->current_frame_host();
-  EXPECT_NE(main_frame_id, child_frame0->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(main_frame_id, child_frame1->GetProcess()->GetDeprecatedID());
-  EXPECT_EQ(main_frame_id, child_frame2->GetProcess()->GetDeprecatedID());
-  EXPECT_EQ(main_frame_id, grandchild_frame0->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(main_frame_id, child_frame0->GetProcess()->GetID());
+  EXPECT_NE(main_frame_id, child_frame1->GetProcess()->GetID());
+  EXPECT_EQ(main_frame_id, child_frame2->GetProcess()->GetID());
+  EXPECT_EQ(main_frame_id, grandchild_frame0->GetProcess()->GetID());
 
   EXPECT_EQ(GetStrictProcessLockForHost("foo.com"),
             main_frame->GetProcess()->GetProcessLock());
@@ -3623,8 +3623,8 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, SubframesAreIsolated) {
   // The old RenderFrameHost for subframe3 will no longer be valid, so get the
   // new one.
   child_frame2 = root->child_at(2)->current_frame_host();
-  EXPECT_NE(main_frame->GetProcess()->GetDeprecatedID(),
-            child_frame2->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(main_frame->GetProcess()->GetID(),
+            child_frame2->GetProcess()->GetID());
   EXPECT_EQ(expected_foo_lock, child_frame2->GetProcess()->GetProcessLock());
 }
 
@@ -5178,8 +5178,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginLongListTest, Test) {
   // should stay in the same process, unless --site-per-process has also been
   // specified.
   if (!AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(main_frame->GetProcess()->GetDeprecatedID(),
-              subframe3->GetProcess()->GetDeprecatedID());
+    EXPECT_EQ(main_frame->GetProcess()->GetID(),
+              subframe3->GetProcess()->GetID());
     if (AreStrictSiteInstancesEnabled()) {
       EXPECT_NE(main_frame->GetSiteInstance(), subframe3->GetSiteInstance());
     } else {
@@ -5189,14 +5189,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginLongListTest, Test) {
 
   // isolated.foo.com and foo999.com are on the list of origins to isolate -
   // they should be isolated from everything else.
-  EXPECT_NE(main_frame->GetProcess()->GetDeprecatedID(),
-            subframe1->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(main_frame->GetProcess()->GetID(),
+            subframe1->GetProcess()->GetID());
   EXPECT_NE(main_frame->GetSiteInstance(), subframe1->GetSiteInstance());
-  EXPECT_NE(main_frame->GetProcess()->GetDeprecatedID(),
-            subframe2->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(main_frame->GetProcess()->GetID(),
+            subframe2->GetProcess()->GetID());
   EXPECT_NE(main_frame->GetSiteInstance(), subframe2->GetSiteInstance());
-  EXPECT_NE(subframe1->GetProcess()->GetDeprecatedID(),
-            subframe2->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(subframe1->GetProcess()->GetID(), subframe2->GetProcess()->GetID());
   EXPECT_NE(subframe1->GetSiteInstance(), subframe2->GetSiteInstance());
 }
 
@@ -5318,18 +5317,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
   EXPECT_EQ("www.foo.com", d->GetLastCommittedURL().GetHost());
 
   // Verify that the isolated site is indeed isolated.
-  EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-            a->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-            c->GetProcess()->GetDeprecatedID());
-  EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-            d->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(b->GetProcess()->GetID(), a->GetProcess()->GetID());
+  EXPECT_NE(b->GetProcess()->GetID(), c->GetProcess()->GetID());
+  EXPECT_NE(b->GetProcess()->GetID(), d->GetProcess()->GetID());
 
   // Verify that same-origin a and d frames share a process.  This is
   // necessary for correctness - otherwise a and d wouldn't be able to
   // synchronously script each other.
-  EXPECT_EQ(a->GetProcess()->GetDeprecatedID(),
-            d->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(a->GetProcess()->GetID(), d->GetProcess()->GetID());
 
   // Verify that same-origin a and d frames can script each other.
   EXPECT_TRUE(ExecJs(a, "window.name = 'a';"));
@@ -5345,12 +5340,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
   if (AreAllSitesIsolatedForTesting()) {
     // All sites are isolated so we expect foo.com, isolated.foo.com and c.com
     // to all be in their own processes.
-    EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-              b->GetProcess()->GetDeprecatedID());
-    EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-              c->GetProcess()->GetDeprecatedID());
-    EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
-              c->GetProcess()->GetDeprecatedID());
+    EXPECT_NE(a->GetProcess()->GetID(), b->GetProcess()->GetID());
+    EXPECT_NE(a->GetProcess()->GetID(), c->GetProcess()->GetID());
+    EXPECT_NE(b->GetProcess()->GetID(), c->GetProcess()->GetID());
 
     EXPECT_NE(a->GetSiteInstance(), b->GetSiteInstance());
     EXPECT_NE(a->GetSiteInstance(), c->GetSiteInstance());
@@ -5363,10 +5355,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
   } else {
     // All sites that are not isolated should be in the same default
     // SiteInstance process.
-    EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-              b->GetProcess()->GetDeprecatedID());
-    EXPECT_EQ(a->GetProcess()->GetDeprecatedID(),
-              c->GetProcess()->GetDeprecatedID());
+    EXPECT_NE(a->GetProcess()->GetID(), b->GetProcess()->GetID());
+    EXPECT_EQ(a->GetProcess()->GetID(), c->GetProcess()->GetID());
 
     EXPECT_NE(a->GetSiteInstance(), b->GetSiteInstance());
     if (ShouldUseDefaultSiteInstanceGroup()) {
