@@ -4,11 +4,12 @@
 
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 
-#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
@@ -28,7 +29,11 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Matcher;
+using ::testing::Mock;
 using ::testing::Pointee;
+using ::testing::SizeIs;
 
 class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
  public:
@@ -84,6 +89,20 @@ class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
                             const std::string& option_id) {
     Focus(input_id.c_str());
     SimulateElementClickAndWait(option_id.c_str());
+  }
+
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& js_logs() {
+    return test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+        .js_logs();
+  }
+
+  Matcher<JavaScriptAutofillTracker::LogRecord> IsLogRecord(
+      std::string_view id,
+      const std::u16string& previous_value) {
+    return AllOf(Field(&JavaScriptAutofillTracker::LogRecord::field_id,
+                       form_util::GetFieldRendererId(GetWebElementById(id))),
+                 Field(&JavaScriptAutofillTracker::LogRecord::previous_value,
+                       previous_value));
   }
 
   auto HasFieldId(std::string_view id) {
@@ -175,10 +194,8 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
         <input type="button" id="button_id">
       </form>)");
 
-  blink::WebFormControlElement text1 =
+  const blink::WebFormControlElement text1 =
       GetWebElementById("text_1").DynamicTo<blink::WebFormControlElement>();
-  blink::WebFormControlElement text2 =
-      GetWebElementById("text_2").DynamicTo<blink::WebFormControlElement>();
 
   // Helper to trigger JS set value.
   auto js_set_value = [this](const char* id, const char* value) {
@@ -186,21 +203,15 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
         R"(document.getElementById('%s').value = '%s';)", id, value));
   };
 
-  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
-      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
-          .js_logs();
-
   // 1. JS change without user activation -> should not log.
   js_set_value("text_1", "js_val_1");
-  EXPECT_TRUE(logs.empty());
+  EXPECT_THAT(js_logs(), IsEmpty());
 
   // 2. JS change with user activation and mousedown -> should log.
   AttachCustomDropdownOption("text_1", "opt_1", {{"text_1", "js_val_2"}});
   SelectDropdownOption("text_1", "opt_1");
 
-  ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0].previous_value, u"js_val_1");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_1", u"js_val_1")));
 
   // Clear logs by waiting for timer.
   EXPECT_CALL(
@@ -211,21 +222,21 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
               "text_1", mojom::JavaScriptModificationType::kReassignment)),
           _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  ASSERT_TRUE(logs.empty());
+  ASSERT_THAT(js_logs(), IsEmpty());
 
   // 3. JS change with user activation but NO focused element -> should not log.
   ExecuteJavaScriptForTests(R"(document.activeElement.blur();)");
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
   js_set_value("text_1", "js_val_3");
-  EXPECT_TRUE(logs.empty());
+  EXPECT_THAT(js_logs(), IsEmpty());
 
   // 4. JS change with user activation and focused element, but modified
   // element is NOT autofillable (button) -> should not log.
   AttachCustomDropdownOption("text_1", "opt_btn",
                              {{"button_id", "js_val_button"}});
   SelectDropdownOption("text_1", "opt_btn");
-  EXPECT_TRUE(logs.empty());
+  EXPECT_THAT(js_logs(), IsEmpty());
 
   // 5. JS change to the SAME value on `text_1` accompanied by a non-empty write
   // on `text_2` -> should log `kTrivial` for `text_1`.
@@ -233,11 +244,8 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
                              {{"text_1", "js_val_3"}, {"text_2", "aux_1"}});
   SelectDropdownOption("text_1", "opt_same");
 
-  ASSERT_EQ(logs.size(), 2u);
-  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0].previous_value, u"js_val_3");
-  EXPECT_EQ(logs[1].field_id, form_util::GetFieldRendererId(text2));
-  EXPECT_EQ(logs[1].previous_value, u"");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_1", u"js_val_3"),
+                                     IsLogRecord("text_2", u"")));
 
   // 6. JS change to a prefix completion -> should log kPrefixCompletion.
   EXPECT_CALL(
@@ -255,8 +263,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   AttachCustomDropdownOption("text_1", "opt_prefix",
                              {{"text_1", "js_val_3_more"}});
   SelectDropdownOption("text_1", "opt_prefix");
-  ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].previous_value, u"js_val_3");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_1", u"js_val_3")));
 
   // 7. JS change to a non-prefix substring completion -> should log
   // kSubstringCompletion.
@@ -271,8 +278,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   AttachCustomDropdownOption("text_1", "opt_substring",
                              {{"text_1", "prefix_js_val_3_more"}});
   SelectDropdownOption("text_1", "opt_substring");
-  ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].previous_value, u"js_val_3_more");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_1", u"js_val_3_more")));
 
   // 8. JS change from non-empty to empty on `text_1` accompanied by a non-empty
   // write on `text_2` -> should log kClearing for `text_1`.
@@ -287,11 +293,9 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   AttachCustomDropdownOption("text_1", "opt_clear",
                              {{"text_1", ""}, {"text_2", "aux_2"}});
   SelectDropdownOption("text_1", "opt_clear");
-  ASSERT_EQ(logs.size(), 2u);
-  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0].previous_value, u"prefix_js_val_3_more");
-  EXPECT_EQ(logs[1].field_id, form_util::GetFieldRendererId(text2));
-  EXPECT_EQ(logs[1].previous_value, u"aux_1");
+  EXPECT_THAT(js_logs(),
+              ElementsAre(IsLogRecord("text_1", u"prefix_js_val_3_more"),
+                          IsLogRecord("text_2", u"aux_1")));
 
   // 9. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
   EXPECT_CALL(
@@ -307,8 +311,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_new", {{"text_1", "new_val"}});
   SelectDropdownOption("text_1", "opt_new");
-  ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].previous_value, u"");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_1", u"")));
 
   EXPECT_CALL(
       autofill_driver(),
@@ -346,23 +349,21 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
 
-  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
-      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
-          .js_logs();
-
   // Focus text_1_1 in form_1 and click option_1_1 (which modifies form_2) ->
   // ignored.
   SelectDropdownOption("text_1_1", "option_1_1");
 
-  ASSERT_EQ(logs.size(), 3u);
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_2_1", u""),
+                                     IsLogRecord("text_2_2", u""),
+                                     IsLogRecord("text_2_3", u"")));
 
   // Fast forward time so the timer fires. Because the focused field belongs to
   // form_1 while the modified fields belong to form_2,
   // DidDetectJavaScriptAutofill() should not be called and logs should be
   // cleared.
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  EXPECT_TRUE(logs.empty());
-  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  EXPECT_THAT(js_logs(), IsEmpty());
+  Mock::VerifyAndClearExpectations(&autofill_driver());
 
   // Focus text_2_1 in form_2 and click option_2_1 (which modifies form_2) ->
   // should trigger.
@@ -370,10 +371,12 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 
   SelectDropdownOption("text_2_1", "option_2_1");
 
-  ASSERT_EQ(logs.size(), 3u);
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("text_2_1", u"val_1"),
+                                     IsLogRecord("text_2_2", u"val_2"),
+                                     IsLogRecord("text_2_3", u"val_3")));
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  EXPECT_TRUE(logs.empty());
+  EXPECT_THAT(js_logs(), IsEmpty());
 }
 
 // Test that if JS copies values to hidden fields (e.g. billing section hidden
@@ -391,15 +394,11 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
                               {"shipping_state", "CA"},
                               {"shipping_zip", "94043"}});
 
-  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
-      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
-          .js_logs();
-
   // Click shipping address option while same_as_shipping is checked.
   // JS sets all 8 fields, which are all initially logged, and only the 4
   // visible shipping fields are kept when the detection timer fires.
   SelectDropdownOption("shipping_street", "shipping_option");
-  ASSERT_EQ(logs.size(), 8u);
+  EXPECT_THAT(js_logs(), SizeIs(8));
 
   EXPECT_CALL(
       autofill_driver(),
@@ -412,7 +411,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
           _));
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  EXPECT_TRUE(logs.empty());
+  EXPECT_THAT(js_logs(), IsEmpty());
 }
 
 // Test that fields dynamically created in JS, populated while still
@@ -574,7 +573,7 @@ TEST_F(JavaScriptAutofillTrackerTest, DetectButtonWithOptionRole) {
                   _));
   SelectDropdownOption("street", "option_btn_1");
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  Mock::VerifyAndClearExpectations(&autofill_driver());
 
   // 2. Default `<button>` (no `type` attribute) inside `role="listbox"` ->
   // detected.
@@ -586,7 +585,7 @@ TEST_F(JavaScriptAutofillTrackerTest, DetectButtonWithOptionRole) {
                   _));
   SelectDropdownOption("street", "option_btn_2");
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  Mock::VerifyAndClearExpectations(&autofill_driver());
 
   // 3. Explicit `<button type="submit">` -> ignored even with `role="option"`.
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
@@ -648,14 +647,9 @@ TEST_F(JavaScriptAutofillTrackerTest,
   AttachCustomDropdownOption("state", "option",
                              {{"state", ""}, {"state", "California"}});
 
-  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
-      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
-          .js_logs();
-
   SelectDropdownOption("state", "option");
-  ASSERT_EQ(logs.size(), 2u);
-  EXPECT_EQ(logs[0].previous_value, u"Cal");
-  EXPECT_EQ(logs[1].previous_value, u"");
+  EXPECT_THAT(js_logs(), ElementsAre(IsLogRecord("state", u"Cal"),
+                                     IsLogRecord("state", u"")));
 
   EXPECT_CALL(
       autofill_driver(),
@@ -696,7 +690,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreAllTrivialOrClearingModifications) {
                              {{"street", ""}, {"line2", ""}, {"city", ""}});
   SelectDropdownOption("street", "clear_link");
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  Mock::VerifyAndClearExpectations(&autofill_driver());
 
   // 3. Selecting an option that sets `line2` first, then switching to an
   // option without `line2`: `line2` is `kClearing`, while `street` and `city`
