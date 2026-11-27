@@ -798,13 +798,9 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     editor_mediator_->OnActivateIme(engine_id);
   }
 
-  // TODO(b/181077907): Always launch the IME service and let IME service
-  // decide whether it should shutdown or not.
   if (HasXkbPrefix(engine_id) &&
       ShouldHandleWithoutExtension(use_ime_service_, engine_id) &&
-      // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
-      // ... or if predictive writing is enabled.
       !IsPredictiveWritingEnabled(prefs_, engine_id)) {
     connection_factory_.reset();
     remote_manager_.reset();
@@ -814,8 +810,6 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   }
 
   if (IsFirstPartyVietnameseEngine(engine_id)) {
-    // TODO(b/251679480): Make this part of ShouldHandleWithoutExtension
-    // logic once flag is baked in.
     ConnectToImeService(engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
@@ -828,7 +822,6 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ConnectToImeService(engine_id);
   } else {
     // Release the IME service.
-    // TODO(b/147709499): A better way to cleanup all.
     connection_factory_.reset();
     remote_manager_.reset();
     input_method_.reset();
