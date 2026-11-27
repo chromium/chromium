@@ -229,6 +229,7 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
   CreateAutofillDriver();
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
   ActivateAutofillDriver(autofill_driver(0));
+  autofill_driver(1).SetParent(&autofill_driver(0));
   ActivateAutofillDriver(autofill_driver(1));
 
   FormStructure* form = AddForm({
@@ -262,10 +263,12 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
               FieldsAre(nullptr, nullptr));
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
-  // Marking the reactivated child frame as embedded also suppresses it.
-  ActivateAutofillDriver(autofill_driver(1));
-  autofill_driver(1).SetIsActive(true);
+  // Marking the reactivated driver as an embedded frame tree root also
+  // suppresses it.
+  autofill_driver(1).SetParent(nullptr);
   autofill_driver(1).SetIsEmbedded(true);
+  autofill_driver(1).SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver(1));
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
               FieldsAre(nullptr, nullptr));
   EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
@@ -275,7 +278,10 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
   // Restoring active, non-embedded state makes the child-frame field eligible
   // again until the child driver transitions to `kPendingDeletion` and is
   // removed from `AutofillDriverFactory`.
+  DeactivateAutofillDriver(autofill_driver(1));
   autofill_driver(1).SetIsEmbedded(false);
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
               FieldsAre(form, form->field(1)));
   DeleteAutofillDriver(autofill_driver(1));
