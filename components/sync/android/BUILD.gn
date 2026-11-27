@@ -60,3 +60,17 @@ java_cpp_strings("java_prefs") {
   sources = [ "//components/sync/base/pref_names.h" ]
   class_name = "org.chromium.components.sync.internal.SyncPrefNames"
 }
+
+robolectric_library("junit") {
+  sources =
+      [ "junit/src/org/chromium/components/sync/SyncServiceImplTest.java" ]
+  deps = [
+    ":sync_java",
+    "//base:base_junit_test_support",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//google_apis/gaia/android:java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

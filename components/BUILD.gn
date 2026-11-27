@@ -1549,6 +1549,7 @@ if (is_android) {
       "//components/stylus_handwriting/android:stylus_handwriting_junit_tests",
       "//components/subresource_filter/android:junit",
       "//components/supervised_user/android:junit",
+      "//components/sync/android:junit",
       "//components/sync_preferences/synced_set_up/android:junit",
       "//components/tab_groups:junit",
       "//components/thin_webview/internal:junit",

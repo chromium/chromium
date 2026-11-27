@@ -50,8 +50,9 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
+    @VisibleForTesting
     @CalledByNative
-    private SyncServiceImpl(long ptr) {
+    SyncServiceImpl(long ptr) {
         mThreadChecker.assertOnValidThread();
         assert ptr != 0;
         mSyncServiceAndroidBridge = ptr;
@@ -67,8 +68,9 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     /** Signals the native SyncService is being shutdown and this object mustn't be used anymore. */
+    @VisibleForTesting
     @CalledByNative
-    private void destroy() {
+    void destroy() {
         AccountManagerFacadeProvider.getInstance().removeObserver(this);
         mSyncServiceAndroidBridge = 0;
     }
