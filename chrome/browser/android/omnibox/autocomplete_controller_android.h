@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/gurl.h"
@@ -81,9 +82,13 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       int64_t elapsed_time_since_first_modified,
       int32_t completed_length,
       int64_t omnibox_action_ptr);
-  bool OnSuggestionTouchDown(content::WebContents* web_contents,
-                             uintptr_t match_ptr,
-                             int match_index);
+  // Starts a navigation-likely prefetch for the match at `match_ptr`, which is
+  // about to be opened as signaled by `navigation_predictor`.
+  bool OnNavigationLikely(
+      content::WebContents* web_contents,
+      uintptr_t match_ptr,
+      int match_index,
+      omnibox::mojom::NavigationPredictor navigation_predictor);
   void DeleteMatch(uintptr_t match_ptr);
   void DeleteMatchElement(uintptr_t match_ptr, int32_t element_index);
   GURL UpdateMatchDestinationURLWithAdditionalSearchboxStats(

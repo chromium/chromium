@@ -9,7 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +48,11 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -254,6 +262,29 @@ public class AutocompleteCoordinatorUnitTest {
         assertNull(overlay.getParent());
         overlay.getInputThreadForTesting().join();
         assertFalse(overlay.getInputThreadForTesting().isAlive());
+    }
+
+    @Test
+    public void testPrefetchDefaultMatch() {
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .build();
+        doReturn(match).when(mAutocompleteMediator).getDefaultMatch();
+
+        mAutocompleteCoordinator.prefetchDefaultMatch(1234L, NavigationPredictor.ENTER_KEY_DOWN);
+
+        verify(mAutocompleteMediator)
+                .onNavigationLikely(match, 0, 1234L, NavigationPredictor.ENTER_KEY_DOWN);
+    }
+
+    @Test
+    public void testPrefetchDefaultMatch_noDefaultMatch() {
+        doReturn(null).when(mAutocompleteMediator).getDefaultMatch();
+
+        mAutocompleteCoordinator.prefetchDefaultMatch(1234L, NavigationPredictor.ENTER_KEY_DOWN);
+
+        verify(mAutocompleteMediator, never())
+                .onNavigationLikely(any(), anyInt(), anyLong(), anyInt());
     }
 
     private AutocompleteCoordinator createCoordinatorWithSuggestionsStub() {

@@ -32,6 +32,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -344,21 +345,30 @@ public class AutocompleteController {
     }
 
     /**
-     * Called when the user touches down on a suggestion. Only called for search suggestions.
+     * Signals that the user is likely about to navigate to a suggestion (non-search matches are
+     * ignored natively).
      *
-     * @param webContents the web contents for the tab where the selected suggestion will be shown
-     * @param match the match that received the touch
+     * @param webContents the web contents for the tab where the suggestion will be shown
+     * @param match the match that is about to be opened
      * @param matchIndex the vertical position at which the match is located
+     * @param navigationPredictor the user interaction that triggered this signal
      * @return whether or not a prefetch was started
      */
-    public boolean onSuggestionTouchDown(
-            @Nullable WebContents webContents, AutocompleteMatch match, int matchIndex) {
+    boolean onNavigationLikely(
+            @Nullable WebContents webContents,
+            AutocompleteMatch match,
+            int matchIndex,
+            @NavigationPredictor.EnumType int navigationPredictor) {
         if (mNativeController == 0) return false;
         if (!hasValidNativeObjectRef(match, VerificationPoint.ON_TOUCH_MATCH)) return false;
 
         return AutocompleteControllerJni.get()
-                .onSuggestionTouchDown(
-                        mNativeController, webContents, match.getNativeObjectRef(), matchIndex);
+                .onNavigationLikely(
+                        mNativeController,
+                        webContents,
+                        match.getNativeObjectRef(),
+                        matchIndex,
+                        navigationPredictor);
     }
 
     public void setComposeboxQueryControllerBridge(
@@ -495,11 +505,13 @@ public class AutocompleteController {
                 int completedLength,
                 long nativeOmniboxAction);
 
-        boolean onSuggestionTouchDown(
+        boolean onNavigationLikely(
                 long nativeAutocompleteControllerAndroid,
                 @Nullable @JniType("content::WebContents*") WebContents webContents,
                 long nativeAutocompleteMatch,
-                int matchIndex);
+                int matchIndex,
+                @NavigationPredictor.EnumType @JniType("omnibox::mojom::NavigationPredictor")
+                        int navigationPredictor);
 
         void onOmniboxFocused(
                 long nativeAutocompleteControllerAndroid,

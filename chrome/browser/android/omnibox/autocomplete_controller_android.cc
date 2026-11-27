@@ -443,27 +443,31 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   autocomplete_controller_->MaybeProcessInlineLocationSuggestionMatch(match);
 }
 
-bool AutocompleteControllerAndroid::OnSuggestionTouchDown(
+bool AutocompleteControllerAndroid::OnNavigationLikely(
     content::WebContents* web_contents,
     uintptr_t match_ptr,
-    int match_index) {
+    int match_index,
+    omnibox::mojom::NavigationPredictor navigation_predictor) {
+  CHECK(navigation_predictor ==
+            omnibox::mojom::NavigationPredictor::kTouchDown ||
+        navigation_predictor ==
+            omnibox::mojom::NavigationPredictor::kEnterKeyDown);
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
 
   bool started = false;
   if (SearchPrefetchService* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     started = search_prefetch_service->OnNavigationLikely(
-        match_index, match, omnibox::mojom::NavigationPredictor::kTouchDown,
-        web_contents);
+        match_index, match, navigation_predictor, web_contents);
   } else if (SearchPreloadService* search_preload_service =
                  SearchPreloadServiceFactory::GetForProfile(profile_)) {
     started = search_preload_service->OnNavigationLikely(
-        match_index, match, omnibox::mojom::NavigationPredictor::kTouchDown,
-        web_contents);
+        match_index, match, navigation_predictor, web_contents);
   }
 
   TRACE_EVENT("omnibox", "AutocompleteControllerAndroid::OnNavigationLikely",
-              "url", match.destination_url, "started", started);
+              "url", match.destination_url, "navigation_predictor",
+              navigation_predictor, "started", started);
   return started;
 }
 

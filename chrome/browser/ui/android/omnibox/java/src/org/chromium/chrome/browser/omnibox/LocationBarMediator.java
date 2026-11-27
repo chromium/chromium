@@ -140,6 +140,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -2885,7 +2886,8 @@ public class LocationBarMediator
             if (KeyNavigationUtil.isEnter(event)
                     && mSelectionController.getSelectedView() == mUrlBarSelectableView
                     && OmniboxFeatures.sOmniboxSearchPrefetchOnEnterKeyDown.isEnabled()) {
-                mAutocompleteCoordinator.prefetchDefaultMatch(event.getEventTime());
+                mAutocompleteCoordinator.prefetchDefaultMatch(
+                        event.getEventTime(), NavigationPredictor.ENTER_KEY_DOWN);
             }
             mSelectionController.getSelectedView().handleActivationEvent(event);
             return true;

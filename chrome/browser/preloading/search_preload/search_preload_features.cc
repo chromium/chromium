@@ -94,6 +94,8 @@ bool DsePreload2OnPressIsPredictorEnabled(
     case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
       return kDsePreload2OnPressUpOrDownArrowButton.Get();
     case omnibox::mojom::NavigationPredictor::kTouchDown:
+    // `kEnterKeyDown` shares the touch down configuration.
+    case omnibox::mojom::NavigationPredictor::kEnterKeyDown:
       return kDsePreload2OnPressTouchDown.Get();
   }
 }

@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
+  generate_java = true
   sources = [ "composebox_query.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 

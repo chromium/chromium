@@ -688,6 +688,8 @@ bool SearchPrefetchService::OnNavigationLikely(
       case NavigationPredictor::kUpOrDownArrowButton:
         return IsUpOrDownArrowPrefetchEnabled();
       case NavigationPredictor::kTouchDown:
+      // `kEnterKeyDown` reuses the touch down prefetch path.
+      case NavigationPredictor::kEnterKeyDown:
         return IsTouchDownPrefetchEnabled();
     }
   };
@@ -765,6 +767,9 @@ bool SearchPrefetchService::OnNavigationLikely(
           case NavigationPredictor::kUpOrDownArrowButton:
             return chrome_preloading_predictor::kOmniboxSearchPredictor;
           case NavigationPredictor::kTouchDown:
+          // See the comment on `kOmniboxTouchDownPredictor` for why
+          // `kEnterKeyDown` shares it.
+          case NavigationPredictor::kEnterKeyDown:
             return chrome_preloading_predictor::kOmniboxTouchDownPredictor;
         }
       };
@@ -788,6 +793,7 @@ bool SearchPrefetchService::OnNavigationLikely(
     switch (navigation_predictor) {
       case NavigationPredictor::kMouseDown:
       case NavigationPredictor::kTouchDown:
+      case NavigationPredictor::kEnterKeyDown:
         return true;
       case NavigationPredictor::kUpOrDownArrowButton:
         return false;

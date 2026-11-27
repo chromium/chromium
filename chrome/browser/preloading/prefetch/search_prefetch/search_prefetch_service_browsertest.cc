@@ -4275,6 +4275,41 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   }
 }
 
+// Enter key-down uses the touch down prefetch path, including the shared
+// `kOmniboxTouchDownPredictor`.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
+                       NavigationPrefetchStartedEnterKeyDown) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      "terms of service", "terms of service", false);
+  EXPECT_TRUE(search_prefetch_service->OnNavigationLikely(
+      0, autocomplete_match, NavigationPredictor::kEnterKeyDown,
+      GetWebContents()));
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(autocomplete_match.destination_url),
+      SearchPrefetchStatus::kComplete);
+
+  // Navigate to flush the PreloadingPrediction UKM.
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch("terms of service");
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
+      Preloading_Prediction::kEntryName,
+      content::test::GetPreloadingPredictionUkmMetrics());
+  ASSERT_EQ(prediction_ukm_entries.size(), 1u);
+  EXPECT_EQ(
+      prediction_ukm_entries[0].metrics.at(
+          Preloading_Prediction::kPreloadingPredictorName),
+      chrome_preloading_predictor::kOmniboxTouchDownPredictor.ukm_value());
+}
+
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedTouchDown) {
   SetDSEWithURL(

@@ -128,6 +128,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -290,7 +291,7 @@ public class AutocompleteMediatorUnitTest {
         lenient().doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         lenient().doReturn("").when(mTextStateProvider).getTextWithAutocomplete();
         lenient()
-                .when(mAutocompleteController.onSuggestionTouchDown(any(), any(), anyInt()))
+                .when(mAutocompleteController.onNavigationLikely(any(), any(), anyInt(), anyInt()))
                 .thenReturn(true);
         setUpLocationBarDataProvider(
                 JUnitTestGURLs.NTP_URL,
@@ -2021,6 +2022,25 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onNavigationLikely_enterKeyDown() {
+        setSuggestionNativeObjectRef();
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+
+        mMediator.onNavigationLikely(
+                mSuggestionsList.get(0),
+                /* matchIndex= */ 0,
+                /* eventTime= */ 0,
+                NavigationPredictor.ENTER_KEY_DOWN);
+
+        verify(mAutocompleteController)
+                .onNavigationLikely(
+                        null, mSuggestionsList.get(0), 0, NavigationPredictor.ENTER_KEY_DOWN);
+        verify(mAutocompleteController, never())
+                .onNavigationLikely(any(), any(), anyInt(), eq(NavigationPredictor.TOUCH_DOWN));
+    }
+
+    @Test
     public void touchDownForPrefetch_PrefetchHit() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -2042,7 +2062,9 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController)
+                .onNavigationLikely(
+                        null, mSuggestionsList.get(0), 0, NavigationPredictor.TOUCH_DOWN);
 
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -2080,7 +2102,9 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController)
+                .onNavigationLikely(
+                        null, mSuggestionsList.get(0), 0, NavigationPredictor.TOUCH_DOWN);
 
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -2114,7 +2138,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // This will simulate the touch down trigger not starting a prefetch.
-        when(mAutocompleteController.onSuggestionTouchDown(any(), any(), anyInt()))
+        when(mAutocompleteController.onNavigationLikely(any(), any(), anyInt(), anyInt()))
                 .thenReturn(false);
 
         // Simulate a suggestion being touched down.
@@ -2122,7 +2146,9 @@ public class AutocompleteMediatorUnitTest {
                 mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController).onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController)
+                .onNavigationLikely(
+                        null, mSuggestionsList.get(0), 0, NavigationPredictor.TOUCH_DOWN);
 
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
@@ -2167,7 +2193,7 @@ public class AutocompleteMediatorUnitTest {
         verify(
                         mAutocompleteController,
                         times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
-                .onSuggestionTouchDown(any(), any(), anyInt());
+                .onNavigationLikely(any(), any(), anyInt(), eq(NavigationPredictor.TOUCH_DOWN));
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.endInput();
@@ -2179,7 +2205,7 @@ public class AutocompleteMediatorUnitTest {
         verify(
                         mAutocompleteController,
                         times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
-                .onSuggestionTouchDown(any(), any(), anyInt());
+                .onNavigationLikely(any(), any(), anyInt(), eq(NavigationPredictor.TOUCH_DOWN));
         mMediator.endInput();
 
         histogramWatcher.assertExpected();

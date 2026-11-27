@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -441,11 +442,18 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         return mMediator.getSuggestionAtForTest(index);
     }
 
-    /** Triggers a prefetch for the default (first) autocomplete suggestion, if available. */
-    public void prefetchDefaultMatch(long eventTime) {
+    /**
+     * Triggers a prefetch for the default (first) autocomplete suggestion, if available.
+     *
+     * @param eventTime Uptime of the triggering input event in milliseconds.
+     * @param navigationPredictor The user interaction that triggered this signal.
+     */
+    public void prefetchDefaultMatch(
+            long eventTime, @NavigationPredictor.EnumType int navigationPredictor) {
         AutocompleteMatch suggestion = mMediator.getDefaultMatch();
         if (suggestion != null) {
-            mMediator.onSuggestionTouchDown(suggestion, 0, eventTime);
+            mMediator.onNavigationLikely(
+                    suggestion, /* matchIndex= */ 0, eventTime, navigationPredictor);
         }
     }
 

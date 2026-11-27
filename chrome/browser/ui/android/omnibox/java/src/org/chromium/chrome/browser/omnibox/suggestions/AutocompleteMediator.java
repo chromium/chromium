@@ -100,6 +100,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -854,6 +855,23 @@ class AutocompleteMediator
     @Override
     public void onSuggestionTouchDown(
             AutocompleteMatch suggestion, int matchIndex, long eventTime) {
+        onNavigationLikely(suggestion, matchIndex, eventTime, NavigationPredictor.TOUCH_DOWN);
+    }
+
+    /**
+     * Signals that the user is likely about to navigate to a suggestion (non-search matches are
+     * ignored natively).
+     *
+     * @param suggestion The AutocompleteMatch that is about to be opened.
+     * @param matchIndex Position of the suggestion in the drop down view.
+     * @param eventTime Uptime of the triggering input event in milliseconds.
+     * @param navigationPredictor The user interaction that triggered this signal.
+     */
+    void onNavigationLikely(
+            AutocompleteMatch suggestion,
+            int matchIndex,
+            long eventTime,
+            @NavigationPredictor.EnumType int navigationPredictor) {
         if (!isInInputSession()) return;
         if (mNumTouchDownEventForwardedInOmniboxSession
                 >= OmniboxFeatures.getMaxPrefetchesPerOmniboxSession()) {
@@ -864,9 +882,10 @@ class AutocompleteMediator
         OmniboxMetrics.recordSuggestionTouchDownDelay(
                 new UptimeMillisTimer(eventTime).getElapsedMillis());
 
+        @Nullable WebContents webContents = mSessionState.getContextualTasksWebContents();
         boolean wasPrefetchStarted =
-                mAutocomplete.onSuggestionTouchDown(
-                        mSessionState.getContextualTasksWebContents(), suggestion, matchIndex);
+                mAutocomplete.onNavigationLikely(
+                        webContents, suggestion, matchIndex, navigationPredictor);
         if (wasPrefetchStarted) {
             mNumPrefetchesStartedInOmniboxSession++;
             mLastPrefetchStartedSuggestion = suggestion;

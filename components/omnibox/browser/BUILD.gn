@@ -1142,6 +1142,7 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 }
 
 mojom("mojo_bindings") {
+  generate_java = true
   sources = [ "omnibox.mojom" ]
   webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
 
@@ -1149,6 +1150,7 @@ mojom("mojo_bindings") {
     "//components/omnibox/composebox:mojo_bindings",
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
+    "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -1167,6 +1169,7 @@ mojom("mojo_bindings") {
 
 if (!is_ios) {
   mojom("fusebox_action_mojo_bindings") {
+    generate_java = true
     sources = [ "fusebox_action.mojom" ]
     webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
     public_deps = [ "//components/omnibox/composebox:mojo_bindings" ]
@@ -1186,6 +1189,7 @@ if (!is_ios) {
   }
 
   mojom("suggest_template_info_mojo_bindings") {
+    generate_java = true
     sources = [ "suggest_template_info.mojom" ]
     webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
     public_deps = [

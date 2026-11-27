@@ -32,7 +32,7 @@ class TemplateURLService;
 // content-internal definitions. Both the value and the name should be unique
 // across all the namespaces.
 //
-// LINT.IfChange
+// LINT.IfChange(PreloadingPredictor)
 namespace chrome_preloading_predictor {
 // When the preloading URL is predicted from the Omnibox Direct URL Input
 // (DUI). This is used to perform various preloading operations like prefetch
@@ -106,17 +106,16 @@ inline constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
     "MouseHoverOnNewTabPage");
 
 // When the preloading URL is predicted from the default search suggest due to
-// the user touching down on a Omnibox Search suggestion.
+// the user touching down on an Omnibox Search suggestion or pressing the Enter
+// key down to open the default suggestion (`NavigationPredictor::kTouchDown`
+// and `kEnterKeyDown`).
 //
-// This is currently used for both TouchDown and EnterKey.
-//
-// TODO(crbug.com/532219992): Add an ADR documenting:
-//
-// - The rationale and ongoing discussion for sharing this predictor between
-//   TouchDown and EnterKey instead of adding separate predictors.
-// - The effects on existing UMA/UKM metrics.
-// - How `PreloadingPredictor` granularity and ideal metrics aggregation should
-//   be designed in the future.
+// Sharing this predictor introduces semantic distortion by reporting Enter key
+// down under TouchDown, which is accepted as a pragmatic compromise to preserve
+// histogram continuity without overhauling `PreloadingAttempt` (see
+// crbug.com/532219992). Use `PreloadServingMetrics.OmniboxDefaultSearchEngine`
+// rather than `Preloading.Prefetch.Attempt.*.Recall` for end-to-end serving
+// coverage.
 inline constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
     111,
     "OmniboxTouchDownPredirector");
@@ -157,8 +156,6 @@ inline constexpr content::PreloadingPredictor kPrewarmDefaultSearchEngine(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
-// LINT.IfChange
 enum class ChromePreloadingEligibility {
   // Numbering starts from `kPreloadingEligibilityContentEnd` defined in
   // //content/public/preloading.h . Advance numbering by +1 when adding a new
@@ -215,7 +212,6 @@ enum class ChromePreloadingEligibility {
 
   kMaxValue = KDisallowSearchUrl,
 };
-// LINT.ThenChange()
 
 // Helper method to convert ChromePreloadingEligibility to
 // content::PreloadingEligibility to avoid casting.

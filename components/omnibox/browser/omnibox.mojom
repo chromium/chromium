@@ -8,7 +8,9 @@ module omnibox.mojom;
 enum NavigationPredictor {
   kMouseDown = 1,            // The user pushed the mouse button down.
   kUpOrDownArrowButton = 2,  // The user pushed the down or up arrow button.
-  kTouchDown = 3             // The user touched down on a suggestion.
+  kTouchDown = 3,            // The user touched down on a suggestion.
+  kEnterKeyDown = 4          // The user pressed the Enter key down to open the
+                             // default suggestion.
 };
 
 // The type of page for which suggestions are fetched from the server.

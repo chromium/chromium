@@ -160,6 +160,7 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.omnibox.mojom.NavigationPredictor;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.PageTransition;
@@ -1827,7 +1828,8 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
 
         // Verify prefetch is triggered.
-        verify(mAutocompleteCoordinator).prefetchDefaultMatch(eq(9999L));
+        verify(mAutocompleteCoordinator)
+                .prefetchDefaultMatch(eq(9999L), eq(NavigationPredictor.ENTER_KEY_DOWN));
 
         // Verify navigation is triggered.
         verify(mAutocompleteCoordinator)
@@ -1843,7 +1845,7 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
 
         // Verify prefetch is NOT triggered.
-        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong());
+        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong(), anyInt());
 
         // Verify navigation is triggered.
         verify(mAutocompleteCoordinator)
@@ -1879,9 +1881,31 @@ public class LocationBarMediatorUnitTest {
         verify(mDeleteButton).performClick();
 
         // Verify prefetch was NOT triggered.
-        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong());
+        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong(), anyInt());
 
         // Verify UrlBar navigation was NOT triggered.
+        verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN)
+    public void testOnKey_enter_suggestionSelected() {
+        setUpMediatorAndCoordinator();
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+        doReturn(true).when(mAutocompleteCoordinator).handleKeyEvent(anyInt(), any());
+
+        // 1. Select a suggestion in the dropdown via DPAD_DOWN.
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        doReturn(KeyEvent.KEYCODE_DPAD_DOWN).when(mKeyEvent).getKeyCode();
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_DPAD_DOWN, mKeyEvent));
+
+        // 2. Press ENTER while the dropdown suggestion is selected.
+        setUpEnterKeyEvent(9999L);
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
+
+        // Verify Enter is handled by the dropdown rather than prefetching the default match.
+        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent);
+        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong(), anyInt());
         verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
     }
 

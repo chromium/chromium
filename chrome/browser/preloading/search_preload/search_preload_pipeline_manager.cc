@@ -441,6 +441,9 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
             case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
               return chrome_preloading_predictor::kOmniboxSearchPredictor;
             case omnibox::mojom::NavigationPredictor::kTouchDown:
+            // See the comment on `kOmniboxTouchDownPredictor` for why
+            // `kEnterKeyDown` shares it.
+            case omnibox::mojom::NavigationPredictor::kEnterKeyDown:
               return chrome_preloading_predictor::kOmniboxTouchDownPredictor;
           }
         }(navigation_predictor);
@@ -458,15 +461,17 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
       switch (navigation_predictor) {
         case omnibox::mojom::NavigationPredictor::kMouseDown:
         case omnibox::mojom::NavigationPredictor::kTouchDown:
+        case omnibox::mojom::NavigationPredictor::kEnterKeyDown:
           return true;
         case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
           return false;
       }
     }();
 
-    // Mouse down and touch down mean that the user is already pressing the
-    // suggestion, i.e. the navigation is almost certain to happen soon. On the
-    // other hand, up-or-down arrow key predictions have lower confidence.
+    // Mouse down, touch down, and Enter key down mean that the user is already
+    // activating the suggestion, i.e. the navigation is almost certain to
+    // happen soon. On the other hand, up-or-down arrow key predictions have
+    // lower confidence.
     const bool is_ahead_of_imminent_navigation = [&] {
       if (!features::IsDsePreload2AheadOfImminentNavigationEnabled()) {
         return false;
@@ -475,6 +480,7 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
       switch (navigation_predictor) {
         case omnibox::mojom::NavigationPredictor::kMouseDown:
         case omnibox::mojom::NavigationPredictor::kTouchDown:
+        case omnibox::mojom::NavigationPredictor::kEnterKeyDown:
           return true;
         case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
           return false;

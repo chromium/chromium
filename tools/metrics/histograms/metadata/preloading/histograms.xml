@@ -83,6 +83,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SizeExceeded" summary=""/>
 </variants>
 
+<!-- LINT.IfChange(PreloadingPredictor) -->
+
 <variants name="PreloadingPredictor">
   <variant name="BackButtonHover"
       summary="When the user hovers their mouse over the back button."/>
@@ -127,6 +129,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OmniboxTouchDownPredirector"
       summary="When the preloading URL is predicted from the default search
                suggest due to the user touching down on an Omnibox Search
+               suggestion or pressing the Enter key down to open the default
                suggestion."/>
   <variant name="PointerDownOnAnchor"
       summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
@@ -159,6 +162,8 @@ chromium-metrics-reviews@google.com.
       summary="When preloading is triggered by a deterministic viewport-based
                heuristic."/>
 </variants>
+
+<!-- LINT.ThenChange() -->
 
 <variants name="PreloadingType">
   <variant name="NoStatePrefetch" summary=""/>

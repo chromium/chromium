@@ -2799,6 +2799,61 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfImminentNavigation,
       {alternative_content::PredictorConfusionMatrix::kTruePositive});
 }
 
+// `OnNavigationLikely()` with `kEnterKeyDown` triggers a prefetch that is
+// matched by the No-Vary-Search header without a hint.
+//
+// Scenario: Same as `OnNavigationLikely_TouchDown_MatchedByHeader`, but
+// triggered by Enter key down (`kEnterKeyDown`).
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfImminentNavigation,
+                       OnNavigationLikely_EnterKeyDown_MatchedByHeader) {
+  HistogramTesterWrapper uma_tester;
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  delay_injector().SetResponseDelay(base::Milliseconds(300));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kEnterKeyDown,
+          &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+  uma_tester.ExpectUma("Preloading.Predictor.DefaultSearchEngine.Precision",
+                       {});
+  uma_tester.ExpectUma(
+      "Preloading.Predictor.DefaultSearchEngine.Recall",
+      {alternative_content::PredictorConfusionMatrix::kFalseNegative});
+  uma_tester.ExpectUma(
+      "Preloading.Predictor.OmniboxTouchDownPredirector.Precision",
+      {alternative_content::PredictorConfusionMatrix::kTruePositive});
+  uma_tester.ExpectUma(
+      "Preloading.Predictor.OmniboxTouchDownPredirector.Recall",
+      {alternative_content::PredictorConfusionMatrix::kTruePositive});
+}
+
 // `OnNavigationLikely()` with `kUpOrDownArrowButton` is not marked as ahead of
 // imminent navigation, so it is not matched by the No-Vary-Search header
 // without a hint even when `kDsePreload2AheadOfImminentNavigation` is enabled.
