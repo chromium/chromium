@@ -13,6 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+// TODO(crbug.com/438315645): Remove this transitional include, after the
+// callers of the functions moved to the header include it directly.
+#include "chromeos/ash/components/file_manager/path_util.h"  // IWYU pragma: export
 #include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
@@ -81,24 +84,6 @@ extern const char kShareCacheMountPointName[];
 // chrome:// URL or the legacy Chrome App chrome-extension:// URL.
 const url::Origin& GetFilesAppOrigin();
 
-// Returns the default downloads directory used on linux-chromeos, i.e. when
-// not running on a ChromeOS device. There, this is used as the MyFiles and
-// Downloads folder of the primary user, unless
-// --use-myfiles-in-user-data-dir-for-testing is specified.
-// This is computed from the XDG user directory and base::DIR_HOME, and should
-// be the same as DownloadPrefs::GetDefaultDownloadDirectory().
-const base::FilePath& GetDefaultDownloadDirectoryForLinuxChromeOS();
-
-// Gets the absolute path for the 'Downloads' folder for the `user`.
-// The `user`'s home directory must be mounted, i.e., `user.username_hash()`
-// must not be empty.
-base::FilePath GetDownloadsFolder(const user_manager::User& user);
-
-// Gets the absolute path for the 'MyFiles' folder for the `user`.
-// The `user`'s home directory must be mounted, i.e., `user.username_hash()`
-// must not be empty.
-base::FilePath GetMyFilesFolder(const user_manager::User& user);
-
 // DEPRECATED: Use GetDownloadsFolder(const user_manager::User&) instead.
 // Gets the absolute path for the 'Downloads' folder for the |profile|.
 base::FilePath GetDownloadsFolderForProfile(Profile* profile);
@@ -143,16 +128,10 @@ bool MigrateToDriveFs(Profile* profile,
                       const base::FilePath& old_path,
                       base::FilePath* new_path);
 
-// The canonical mount point name for "Downloads" folder of the `user`.
-std::string GetDownloadsMountPointName(const user_manager::User& user);
-
 // DEPRECATED: Use GetDownloadsMountPointName(const user_manager::User&)
 // instead.
 // The canonical mount point name for "Downloads" folder.
 std::string GetDownloadsMountPointName(Profile* profile);
-
-// The canonical mount point name for "ShareCache" folder of the `user`.
-std::string GetShareCacheMountPointName(const user_manager::User& user);
 
 // DEPRECATED: Use GetShareCacheMountPointName(const user_manager::User&)
 // instead.

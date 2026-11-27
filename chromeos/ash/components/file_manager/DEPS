@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/session_manager/core",
+  "+components/user_manager",
+  "+storage/browser/file_system/external_mount_points.h",
+]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+components/account_id/account_id_literal.h",
+    "+components/session_manager/test/user_session_test_environment.h",
+    "+storage/common/file_system/file_system_mount_option.h",
+    "+storage/common/file_system/file_system_types.h",
+  ],
+}

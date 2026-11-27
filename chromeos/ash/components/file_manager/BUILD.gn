@@ -16,6 +16,27 @@ component("file_manager") {
   ]
 }
 
+# Utilities for the paths of the user's folders used by the Files app, such
+# as MyFiles and Downloads.
+component("path_util") {
+  output_name = "file_manager_path_util"
+  defines = [ "IS_FILE_MANAGER_PATH_UTIL_IMPL" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//components/account_id",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//storage/browser",
+  ]
+
+  sources = [
+    "path_util.cc",
+    "path_util.h",
+  ]
+}
+
 static_library("constants") {
   sources = [ "app_id.h" ]
 }
@@ -24,10 +45,23 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":file_manager",
+    ":path_util",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//components/account_id",
+    "//components/account_id:test_support",
+    "//components/prefs:test_support",
+    "//components/session_manager/test:test_support",
+    "//components/user_manager",
+    "//google_apis",
+    "//storage/browser",
+    "//storage/common",
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "speedometer_unittest.cc" ]
+  sources = [
+    "path_util_unittest.cc",
+    "speedometer_unittest.cc",
+  ]
 }
