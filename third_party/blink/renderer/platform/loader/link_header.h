@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -92,7 +93,7 @@ class PLATFORM_EXPORT LinkHeaderSet {
   STACK_ALLOCATED();
 
  public:
-  LinkHeaderSet(const String& header);
+  LinkHeaderSet(const StringView& header);
 
   Vector<LinkHeader>::const_iterator begin() const {
     return header_set_.begin();

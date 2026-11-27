@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/link_header_util/link_header_util.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -133,12 +134,15 @@ LinkHeader::LinkHeader(Iterator begin, Iterator end) : is_valid_(true) {
     is_valid_ = false;
 }
 
-LinkHeaderSet::LinkHeaderSet(const String& header) {
-  if (header.IsNull())
+LinkHeaderSet::LinkHeaderSet(const StringView& header) {
+  if (header.empty()) {
     return;
+  }
 
   DCHECK(header.Is8Bit()) << "Headers should always be 8 bit";
-  std::string header_string = header.Latin1();
+  std::string header_string =
+      header.Is8Bit() ? std::string(base::as_string_view(header.Span8()))
+                      : header.ToString().Latin1();
   for (const auto& value : link_header_util::SplitLinkHeader(header_string))
     header_set_.push_back(LinkHeader(value.first, value.second));
 }

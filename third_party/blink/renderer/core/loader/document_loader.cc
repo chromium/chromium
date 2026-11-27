@@ -984,7 +984,7 @@ void DocumentLoader::DispatchLcppFontPreloads(
     fonts_link.Append(">; rel=\"preload\"; as=\"font\"");
   }
   PreloadHelper::LoadLinksFromHeader(
-      fonts_link.ToString(), GetResponse().CurrentRequestUrl(), *frame_,
+      fonts_link, GetResponse().CurrentRequestUrl(), *frame_,
       frame_->GetDocument(), mode, viewport,
       nullptr /* alternate_resource_info */,
       nullptr /* recursive_prefetch_token */, nullptr /* initiator_world */);

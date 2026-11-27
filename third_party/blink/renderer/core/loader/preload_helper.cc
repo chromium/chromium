@@ -865,7 +865,7 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
 }
 
 void PreloadHelper::LoadLinksFromHeader(
-    const String& header_value,
+    const StringView& header_value,
     const KURL& base_url,
     LocalFrame& frame,
     Document* document,

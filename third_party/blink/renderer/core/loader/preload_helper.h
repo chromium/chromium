@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -63,7 +64,7 @@ class PreloadHelper final {
   // network hints triggered by isolated world requests (e.g. by an extension
   // content script's fetch()) from being exposed to the page.
   static void LoadLinksFromHeader(
-      const String& header_value,
+      const StringView& header_value,
       const KURL& base_url,
       LocalFrame&,
       Document*,  // can be nullptr
