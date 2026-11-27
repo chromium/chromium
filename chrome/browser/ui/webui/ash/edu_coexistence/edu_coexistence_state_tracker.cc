@@ -37,7 +37,9 @@ void EduCoexistenceStateTracker::SetEduConsentCallback(
     const content::WebUI* web_ui,
     const std::string& account_email,
     base::OnceCallback<void(bool)> consent_logged_callback) {
-  CHECK(state_tracker_.contains(web_ui), base::NotFatalUntil::M162);
+  // TODO(crbug.com/590839886): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(state_tracker_.contains(web_ui));
   FlowState& state = state_tracker_[web_ui];
 
   if (state.received_consent) {
