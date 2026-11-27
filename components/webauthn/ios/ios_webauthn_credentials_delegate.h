@@ -39,10 +39,12 @@ class IOSWebAuthnCredentialsDelegate
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 
   // Method for providing a list of WebAuthn credentials that can be provided
-  // as autofill suggestions.
+  // as autofill suggestions. `is_conditional` indicates whether the credentials
+  // belong to a conditional mediation request (as opposed to a modal request).
   void OnCredentialsReceived(
       std::vector<password_manager::PasskeyCredential> credentials,
-      const std::string& passkey_request_id);
+      const std::string& passkey_request_id,
+      bool is_conditional);
 
   // Clears stored passkeys and request state if `passkey_request_id_` matches
   // `passkey_request_id`.
@@ -69,10 +71,11 @@ class IOSWebAuthnCredentialsDelegate
 
   // Set to true when an autofill surface that could have contained passkeys
   // has been displayed for the current page. Used for the
-  // PasskeysArrivedAfterAutofillDisplay metric.
+  // `PasswordManager.PasskeysArrivedAfterAutofillDisplay` metric.
   bool passkey_display_has_happened_ = false;
 
-  // Set to true when the PasskeysArrivedAfterAutofillDisplay metric has been
+  // Set to true when the
+  // `PasswordManager.PasskeysArrivedAfterAutofillDisplay` metric has been
   // recorded.
   bool passkeys_after_fill_recorded_ = false;
 

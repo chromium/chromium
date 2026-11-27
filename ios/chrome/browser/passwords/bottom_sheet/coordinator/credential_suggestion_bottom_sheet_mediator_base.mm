@@ -279,6 +279,16 @@
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
 }
 
+- (void)logSecondaryAction {
+}
+
+- (void)logSuggestionAccepted:(FormSuggestion*)suggestion
+                      atIndex:(NSInteger)index {
+}
+
+- (void)logDetailsValidCredential:(BOOL)isValid {
+}
+
 - (void)onDismissWithoutAnyCredentialAction {
   [self deferPasskeyRequestToRenderer];
 }

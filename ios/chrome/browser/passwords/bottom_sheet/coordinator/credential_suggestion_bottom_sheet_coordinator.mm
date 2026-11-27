@@ -7,9 +7,9 @@
 #import <optional>
 
 #import "base/apple/foundation_util.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "base/task/thread_pool.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -46,6 +46,7 @@ using PasswordSuggestionBottomSheetExitReason::kCouldNotPresent;
 using PasswordSuggestionBottomSheetExitReason::kDismissal;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
+using PasswordSuggestionBottomSheetExitReason::kUsePasskeySuggestion;
 using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 @interface CredentialSuggestionBottomSheetCoordinator ()
@@ -57,6 +58,10 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 @implementation CredentialSuggestionBottomSheetCoordinator {
   // Currently in the process of dismissing the bottom sheet.
   bool _dismissing;
+
+  // Whether the user tapped the secondary action button ("Use Keyboard",
+  // "More Passkeys", or "Cancel") to dismiss the bottom sheet.
+  BOOL _secondaryButtonTapped;
 
   // This mediator is used to fetch data related to the bottom sheet.
   CredentialSuggestionBottomSheetMediatorBase* _mediator;
@@ -256,12 +261,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   _viewController = nil;
   _suggestions = nil;
   _activeIndex = 0;
+  _secondaryButtonTapped = NO;
   [super stop];
 }
 
 #pragma mark - CredentialSuggestionBottomSheetHandler
 
 - (void)displayPasswordManager {
+  if (_dismissing || _secondaryButtonTapped) {
+    return;
+  }
+  _viewController.view.userInteractionEnabled = NO;
   _dismissing = YES;
   [_mediator logExitReason:kShowPasswordManager];
 
@@ -276,11 +286,16 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 - (void)displayPasswordDetailsForFormSuggestion:
     (FormSuggestion*)formSuggestion {
+  if (_dismissing || _secondaryButtonTapped) {
+    return;
+  }
+  _viewController.view.userInteractionEnabled = NO;
   _dismissing = YES;
 
   [_mediator logExitReason:kShowPasswordDetails];
   std::optional<password_manager::CredentialUIEntry> credential =
       [_mediator getCredentialForFormSuggestion:formSuggestion];
+  [_mediator logDetailsValidCredential:credential.has_value()];
 
   __weak __typeof(self) weakSelf = self;
   [_navigationController.presentingViewController
@@ -291,16 +306,13 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                                  showPasswordDetailsForCredential:credential
                                                                       .value()];
                            }
-                           base::UmaHistogramBoolean("IOS.PasswordBottomSheet."
-                                                     "Details.ValidCredential",
-                                                     credential.has_value());
                            [weakSelf dismissCredentialSuggestions];
                          }];
 }
 
 - (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
                                  atIndex:(NSInteger)index {
-  if (_dismissing) {
+  if (_dismissing || _secondaryButtonTapped) {
     // Do not handle an action if the view controller is already being
     // dismissed. Only one action is allowed on the sheet.
     return;
@@ -310,7 +322,12 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   _viewController.view.userInteractionEnabled = NO;
 
   _dismissing = YES;
-  [_mediator logExitReason:kUsePasswordSuggestion];
+  PasswordSuggestionBottomSheetExitReason exitReason =
+      formSuggestion.type == autofill::SuggestionType::kWebauthnCredential
+          ? kUsePasskeySuggestion
+          : kUsePasswordSuggestion;
+  [_mediator logExitReason:exitReason];
+  [_mediator logSuggestionAccepted:formSuggestion atIndex:index];
   __weak __typeof(self) weakSelf = self;
 
   if (password_manager::features::kAutoSubmissionTypeParam.Get() ==
@@ -347,17 +364,26 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Records the usage of password autofill. This notifies the Tips Manager,
   // which may trigger tips or guidance related to password management features.
-  TipsManagerIOS* tipsManager =
-      TipsManagerIOSFactory::GetForProfile(self.profile);
+  // Skip for modal passkey suggestion sheets, which are not password autofill.
+  if (!base::apple::ObjCCast<PasskeySuggestionBottomSheetMediator>(_mediator)) {
+    TipsManagerIOS* tipsManager =
+        TipsManagerIOSFactory::GetForProfile(self.profile);
 
-  if (tipsManager) {
-    tipsManager->NotifySignal(
-        segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);
+    if (tipsManager) {
+      tipsManager->NotifySignal(
+          segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);
+    }
   }
 }
 
 - (void)secondaryButtonTapped {
-  // "Use Keyboard" button, which dismisses the bottom sheet.
+  if (_dismissing || _secondaryButtonTapped) {
+    return;
+  }
+  _secondaryButtonTapped = YES;
+  _viewController.view.userInteractionEnabled = NO;
+  // "Use Keyboard" / "More Passkeys" / "Cancel" button, which dismisses the
+  // bottom sheet.
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -382,7 +408,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     [credentialSuggestionBottomSheetMediator refocus];
   }
 
-  [_mediator logExitReason:kDismissal];
+  if (_secondaryButtonTapped) {
+    [_mediator logSecondaryAction];
+  } else {
+    [_mediator logExitReason:kDismissal];
+  }
   [_mediator onDismissWithoutAnyCredentialAction];
 
   // Disconnect as a last step of cleaning up the presentation. This should

@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -46,6 +47,7 @@
 #import "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -346,7 +348,8 @@ class SharedPasswordControllerTest : public PlatformTest {
             &web_state_);
     webauthn::IOSWebAuthnCredentialsDelegate* delegate =
         factory->GetDelegateForFrameId(SysNSStringToUTF8(kTestFrameID));
-    delegate->OnCredentialsReceived(CreateCredential(), "request-id");
+    delegate->OnCredentialsReceived(CreateCredential(), "request-id",
+                                    /*is_conditional=*/true);
   }
 
   web::ScopedTestingWebClient web_client_;
@@ -1082,8 +1085,11 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
 }
 
 // Tests that selecting a passkey suggestion invokes the
-// WebAuthnCredentialsDelegate.
+// `WebAuthnCredentialsDelegate` and logs dropdown selection metrics.
 TEST_F(SharedPasswordControllerTest, SelectPasskeySuggestion) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
   // Set up the frame.
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
@@ -1109,6 +1115,68 @@ TEST_F(SharedPasswordControllerTest, SelectPasskeySuggestion) {
                            frameID:kTestFrameID
                  completionHandler:^{
                  }];
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownItemSelected",
+      password_manager::metrics_util::PasswordDropdownSelectedOption::kWebAuthn,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ItemSelected.OffTheRecord", false, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PasswordManager.PasswordDropdownSelected.Passkey"));
+}
+
+// Tests that retrieving suggestions notifies the `WebAuthnCredentialsDelegate`
+// that autofill display has occurred so late-arriving conditional passkeys are
+// recorded accurately.
+TEST_F(SharedPasswordControllerTest,
+       RetrieveSuggestionsNotifiesPasskeyDisplay) {
+  base::HistogramTester histogram_tester;
+
+  const std::string web_frame_id = SysNSStringToUTF8(kTestFrameID);
+  auto web_frame =
+      web::FakeWebFrame::Create(web_frame_id,
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:autofill::FormRendererId(1)
+       fieldIdentifier:@"field"
+       fieldRendererID:autofill::FieldRendererId(2)
+             fieldType:FieldType::kObfuscated
+                  type:ActivityType::kFocus
+            typedValue:@""
+               frameID:kTestFrameID
+          onlyPassword:NO];
+
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[]);
+  OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
+  EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
+      .WillOnce(Return(false));
+
+  base::test::TestFuture<NSArray<FormSuggestion*>*, id<FormSuggestionProvider>>
+      future;
+  [controller_
+      retrieveSuggestionsForForm:form_query
+                        webState:&web_state_
+               completionHandler:base::CallbackToBlock(future.GetCallback())];
+  EXPECT_TRUE(future.Wait());
+
+  // Conditional passkeys arriving after autofill display should record true.
+  webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
+      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(&web_state_);
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      factory->GetDelegateForFrameId(web_frame_id);
+  delegate->OnCredentialsReceived(CreateCredential(), "request-id",
+                                  /*is_conditional=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasskeysArrivedAfterAutofillDisplay", true, 1);
 }
 
 // Tests that selecting a password suggestion with auto submission set to true

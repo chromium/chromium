@@ -9,6 +9,8 @@
 #import "base/rand_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -49,6 +51,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -476,13 +479,15 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
             password_manager::PasskeyCredential::UserId(user_id),
             password_manager::PasskeyCredential::Username(username),
             password_manager::PasskeyCredential::DisplayName(display_name))};
-    delegate->OnCredentialsReceived(std::move(passkeys), "request_id");
+    delegate->OnCredentialsReceived(std::move(passkeys), "request_id",
+                                    /*is_conditional=*/true);
   }
 
-  // Stubs retrieveSuggestionsForForm: on the SharedPasswordController to return
-  // the specified `suggestions` and initializes the bottom sheet mediator.
-  // Returns the mock controller object.
-  id SetupSuggestionsMockAndInitialize(NSArray<FormSuggestion*>* suggestions) {
+  // Stubs `-retrieveSuggestionsForForm:` on the `SharedPasswordController` to
+  // return the specified `suggestions` and initializes the bottom sheet
+  // mediator. Returns the mock controller object.
+  OCMockObject* SetupSuggestionsMockAndInitialize(
+      NSArray<FormSuggestion*>* suggestions) {
     SharedPasswordController* controller =
         PasswordTabHelper::FromWebState(web_state_ptr_)
             ->GetSharedPasswordController();
@@ -743,7 +748,7 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
 
   SetUpMockPasskeyDelegate(credentialId, {5, 6, 7, 8}, kTestUsername1,
                            kTestDisplayName1);
-  id mockController = SetupSuggestionsMockAndInitialize(
+  OCMockObject* mockController = SetupSuggestionsMockAndInitialize(
       @[ passkeySuggestion1, passwordSuggestion1, passwordSuggestion2 ]);
 
   OCMExpect([consumer_
@@ -968,7 +973,8 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest, FetchesPasskeyCredentials) {
 
   SetUpMockPasskeyDelegate(credentialId, userId, kTestUsername1,
                            kTestDisplayName1);
-  id mockController = SetupSuggestionsMockAndInitialize(@[ passkeySuggestion ]);
+  OCMockObject* mockController =
+      SetupSuggestionsMockAndInitialize(@[ passkeySuggestion ]);
 
   password_manager::CredentialUIEntry expectedCredential(
       password_manager::PasskeyCredential(
@@ -1045,4 +1051,149 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
       [mediator_ getCredentialForFormSuggestion:passwordSuggestion];
   ASSERT_TRUE(matchedPassword.has_value());
   EXPECT_EQ(*matchedPassword, passwordCredential);
+}
+
+// Tests that `PasswordManager.TouchToFill.SubmissionReadiness` uses the first
+// password suggestion's readiness rather than a prepended passkey suggestion's
+// default `kNoInformation`.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       SubmissionReadinessSkipsPrependedPasskeys) {
+  std::vector<uint8_t> credential_id = {1, 2, 3, 4};
+  FormSuggestion* passkey_suggestion = [FormSuggestion
+      suggestionWithValue:base::SysUTF8ToNSString(kTestDisplayName1)
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Guid(
+                              base::Base64Encode(credential_id))
+           requiresReauth:YES];
+
+  FormSuggestionMetadata password_metadata;
+  password_metadata.submission_readiness =
+      password_manager::SubmissionReadinessState::kTwoFields;
+  FormSuggestion* password_suggestion = [FormSuggestion
+             suggestionWithValue:base::SysUTF8ToNSString(kTestUsername2)
+              displayDescription:nil
+                            icon:nil
+                            type:autofill::SuggestionType::kPasswordEntry
+                         payload:autofill::Suggestion::Payload()
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:nil
+                        metadata:password_metadata];
+
+  SetUpMockPasskeyDelegate(credential_id, {5, 6, 7, 8}, kTestUsername1,
+                           kTestDisplayName1);
+
+  base::HistogramTester histogram_tester;
+  OCMockObject* mock_controller = SetupSuggestionsMockAndInitialize(
+      @[ passkey_suggestion, password_suggestion ]);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SubmissionReadiness",
+      password_manager::SubmissionReadinessState::kTwoFields, 1);
+
+  [mock_controller stopMocking];
+}
+
+// Tests that `PasswordManager.TouchToFill.SubmissionReadiness` is not recorded
+// when the conditional sheet contains only passkey suggestions.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       SubmissionReadinessSkippedForPasskeyOnlySuggestions) {
+  std::vector<uint8_t> credential_id = {1, 2, 3, 4};
+  FormSuggestion* passkey_suggestion = [FormSuggestion
+      suggestionWithValue:base::SysUTF8ToNSString(kTestDisplayName1)
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Guid(
+                              base::Base64Encode(credential_id))
+           requiresReauth:YES];
+
+  SetUpMockPasskeyDelegate(credential_id, {5, 6, 7, 8}, kTestUsername1,
+                           kTestDisplayName1);
+
+  base::HistogramTester histogram_tester;
+  OCMockObject* mock_controller =
+      SetupSuggestionsMockAndInitialize(@[ passkey_suggestion ]);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TouchToFill.SubmissionReadiness", 0);
+
+  [mock_controller stopMocking];
+}
+
+// Tests that suggestion acceptance and exit reason metrics are recorded by the
+// conditional/password bottom sheet mediator, distinguishing passkey, password,
+// and backup password suggestions.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       LogSuggestionAcceptedAndExitReasonMetrics) {
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
+
+  FormSuggestion* passkey_suggestion = [FormSuggestion
+      suggestionWithValue:@"passkey_user"
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Guid("cred_id")
+           requiresReauth:YES];
+  FormSuggestion* password_suggestion = [FormSuggestion
+      suggestionWithValue:@"user1"
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kPasswordEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  FormSuggestion* backup_suggestion = [FormSuggestion
+      suggestionWithValue:@"user1"
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kBackupPasswordEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  mediator_.suggestions =
+      @[ passkey_suggestion, password_suggestion, backup_suggestion ];
+
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  [mediator_ logSuggestionAccepted:passkey_suggestion atIndex:0];
+  [mediator_ logSuggestionAccepted:password_suggestion atIndex:1];
+  [mediator_ logSuggestionAccepted:backup_suggestion atIndex:2];
+  [mediator_ logExitReason:PasswordSuggestionBottomSheetExitReason::
+                               kUsePasskeySuggestion];
+  [mediator_ logSecondaryAction];
+  [mediator_ logDetailsValidCredential:YES];
+  [mediator_ logDetailsValidCredential:NO];
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "BottomSheet_Passkey_SuggestionAccepted"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "BottomSheet_Password_SuggestionAccepted"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "BottomSheet_Password_SuggestionAccepted_Backup"));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.UserAcceptedSuggestionAtIndex.Passkey.BottomSheet", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", 2);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TouchToFill.CredentialIndex", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TouchToFill.CredentialIndex", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.TouchToFill.CredentialIndex", 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.PasswordBottomSheet.ExitReason",
+      PasswordSuggestionBottomSheetExitReason::kUsePasskeySuggestion, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.PasswordBottomSheet.ExitReason",
+      PasswordSuggestionBottomSheetExitReason::kDismissal, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.PasswordBottomSheet.Details.ValidCredential", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.PasswordBottomSheet.Details.ValidCredential", false, 1);
 }

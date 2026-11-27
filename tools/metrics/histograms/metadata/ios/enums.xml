@@ -2657,6 +2657,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_exit_reason.h:PasskeyCreationBottomSheetExitReason) -->
 
+<!-- LINT.IfChange(PasskeySuggestionBottomSheetExitReason) -->
+
+<enum name="PasskeySuggestionBottomSheetExitReason">
+  <int value="0" label="Bottom Sheet dismissed"/>
+  <int value="1" label="Used passkey suggestion"/>
+  <int value="2" label="Tapped More Passkeys (deferred to OS)"/>
+  <int value="3" label="Accessed Password Manager through the long press menu"/>
+  <int value="4" label="Accessed Passkey Details through the long press menu"/>
+  <int value="5"
+      label="Bottom Sheet couldn't be presented for various reasons"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_exit_reason.h:PasskeySuggestionBottomSheetExitReason) -->
+
+<!-- LINT.IfChange(PasswordSuggestionBottomSheetExitReason) -->
+
 <enum name="PasswordSuggestionBottomSheetExitReason">
   <int value="0" label="Bottom Sheet dismissed"/>
   <int value="1" label="Used password suggestion"/>
@@ -2665,7 +2681,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The suggestion provider's type was incorrect"/>
   <int value="5"
       label="Bottom Sheet couldn't be presented for various reasons"/>
+  <int value="6" label="Used passkey suggestion"/>
 </enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h:PasswordSuggestionBottomSheetExitReason) -->
 
 <!-- LINT.IfChange(PaymentsBottomSheetUserGestureStatus) -->
 

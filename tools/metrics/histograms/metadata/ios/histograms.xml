@@ -6431,6 +6431,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasskeySuggestionBottomSheet.ExitReason"
+    enum="PasskeySuggestionBottomSheetExitReason" expires_after="2027-04-11">
+  <owner>sugoi@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Tracks the exit reason for the modal passkey suggestion bottom sheet
+    (dismissal, passkey selection, More Passkeys fallback, long press menu
+    actions, or presentation failure). Recorded at most once per sheet instance.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordBottomSheet.Details.ValidCredential"
     enum="Boolean" expires_after="2027-04-11">
   <owner>sugoi@chromium.org</owner>
@@ -6446,8 +6457,8 @@ chromium-metrics-reviews@google.com.
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
-    Tracks the bottom sheet dismissal, use of a password suggestion and long
-    press menu events.
+    Tracks the autofill/conditional credential bottom sheet dismissal, use of a
+    password or conditional passkey suggestion, and long press menu events.
   </summary>
 </histogram>
 

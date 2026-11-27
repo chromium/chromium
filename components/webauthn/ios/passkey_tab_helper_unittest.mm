@@ -119,7 +119,9 @@ AssertionRequestParams BuildTestAssertionRequestParams(
         device::UserVerificationRequirement::kPreferred,
     std::string request_id = kFakeRequestId,
     std::string frame_id = web::kMainFakeFrameId,
-    std::optional<std::string> remote_frame_token = std::nullopt) {
+    std::optional<std::string> remote_frame_token = std::nullopt,
+    PasskeyRequestParams::RequestType request_type =
+        PasskeyRequestParams::RequestType::kModal) {
   std::optional<autofill::RemoteFrameToken> remote_token;
   if (remote_frame_token && !remote_frame_token->empty()) {
     std::optional<base::UnguessableToken> deserialized =
@@ -133,8 +135,6 @@ AssertionRequestParams BuildTestAssertionRequestParams(
                                              remote_token);
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
-  PasskeyRequestParams::RequestType request_type =
-      PasskeyRequestParams::RequestType::kModal;
   PasskeyExtensionData extension_data;
   PasskeyRequestParams request_params(
       std::move(request_info), std::move(rp_entity), std::move(challenge),
@@ -2695,6 +2695,76 @@ TEST_F(PasskeyTabHelperTest,
 
   EXPECT_TRUE(cancel_callback_called);
   EXPECT_TRUE(GetLastJavaScriptCall().empty());
+}
+
+// Tests that conditional passkeys arriving before autofill display record false
+// for `PasswordManager.PasskeysArrivedAfterAutofillDisplay`.
+TEST_F(PasskeyTabHelperTest,
+       ConditionalPasskeysArrivedBeforeAutofillDisplayLogsFalse) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  AddValidPasskey();
+
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId,
+      PasskeyRequestParams::RequestType::kConditionalGet);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasskeysArrivedAfterAutofillDisplay", false, 1);
+}
+
+// Tests that conditional passkeys arriving after autofill display record true
+// for `PasswordManager.PasskeysArrivedAfterAutofillDisplay`.
+TEST_F(PasskeyTabHelperTest,
+       ConditionalPasskeysArrivedAfterAutofillDisplayLogsTrue) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  AddValidPasskey();
+
+  IOSWebAuthnCredentialsDelegate* delegate =
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(&fake_web_state_)
+          ->GetDelegateForFrameId(web::kMainFakeFrameId);
+  delegate->NotifyForPasskeysDisplay();
+
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId,
+      PasskeyRequestParams::RequestType::kConditionalGet);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasskeysArrivedAfterAutofillDisplay", true, 1);
+}
+
+// Tests that modal passkey requests do not record
+// `PasswordManager.PasskeysArrivedAfterAutofillDisplay`.
+TEST_F(PasskeyTabHelperTest,
+       ModalPasskeyRequestDoesNotLogPasskeysArrivedAfterAutofillDisplay) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  AddValidPasskey();
+
+  IOSWebAuthnCredentialsDelegate* delegate =
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(&fake_web_state_)
+          ->GetDelegateForFrameId(web::kMainFakeFrameId);
+  delegate->NotifyForPasskeysDisplay();
+
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId,
+      PasskeyRequestParams::RequestType::kModal);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.PasskeysArrivedAfterAutofillDisplay", 0);
 }
 
 // Tests that device authorization keys aren't fetched for passkeys in the

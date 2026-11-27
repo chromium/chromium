@@ -73,6 +73,17 @@ enum class PasswordSuggestionBottomSheetExitReason;
 // credential.
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
 
+// Logs the exit reason when the user taps the bottom sheet's secondary action
+// button (e.g. "Use Keyboard" or "More Passkeys").
+- (void)logSecondaryAction;
+
+// Logs metrics when `suggestion` is accepted from the bottom sheet at `index`.
+- (void)logSuggestionAccepted:(FormSuggestion*)suggestion
+                      atIndex:(NSInteger)index;
+
+// Logs whether the credential retrieved for showing details was valid.
+- (void)logDetailsValidCredential:(BOOL)isValid;
+
 // Handler called to perform operations when the sheet was dismissed without
 // using any credential action.
 - (void)onDismissWithoutAnyCredentialAction;

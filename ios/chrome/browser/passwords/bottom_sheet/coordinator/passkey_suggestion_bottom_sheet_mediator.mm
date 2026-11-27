@@ -6,19 +6,26 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation PasskeySuggestionBottomSheetMediator
+@implementation PasskeySuggestionBottomSheetMediator {
+  // Ensures at most one exit reason is logged per bottom sheet instance.
+  BOOL _exitReasonLogged;
+}
 
 - (instancetype)
     initWithWebStateList:(WebStateList*)webStateList
@@ -72,6 +79,53 @@
                  completion:(ProceduralBlock)completion {
   CHECK_EQ(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
   [super didSelectSuggestion:suggestion atIndex:index completion:completion];
+}
+
+- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
+  switch (exitReason) {
+    case PasswordSuggestionBottomSheetExitReason::kDismissal:
+      [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                     kDismissal];
+      break;
+    case PasswordSuggestionBottomSheetExitReason::kUsePasskeySuggestion:
+      [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                     kUsePasskey];
+      break;
+    case PasswordSuggestionBottomSheetExitReason::kShowPasswordManager:
+      [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                     kShowPasswordManager];
+      break;
+    case PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails:
+      [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                     kShowPasswordDetails];
+      break;
+    case PasswordSuggestionBottomSheetExitReason::kCouldNotPresent:
+      [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                     kCouldNotPresent];
+      break;
+    case PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion:
+    case PasswordSuggestionBottomSheetExitReason::kBadProvider:
+      NOTREACHED();
+  }
+}
+
+- (void)logSecondaryAction {
+  [self logPasskeyExitReason:PasskeySuggestionBottomSheetExitReason::
+                                 kMorePasskeys];
+}
+
+#pragma mark - Private
+
+// Logs the exit reason for the modal passkey suggestion bottom sheet. At most
+// one exit reason is recorded per mediator instance.
+- (void)logPasskeyExitReason:
+    (PasskeySuggestionBottomSheetExitReason)exitReason {
+  if (_exitReasonLogged) {
+    return;
+  }
+  _exitReasonLogged = YES;
+  base::UmaHistogramEnumeration("IOS.PasskeySuggestionBottomSheet.ExitReason",
+                                exitReason);
 }
 
 #pragma mark - Subclassing

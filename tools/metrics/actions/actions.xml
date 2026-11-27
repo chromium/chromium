@@ -7787,6 +7787,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BottomSheet_Passkey_SuggestionAccepted">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Continue&quot; button from the Credential
+    Suggestion Bottom Sheet to sign in with the selected conditional passkey
+    suggestion. iOS only.
+  </description>
+</action>
+
 <action name="BottomSheet_Password_SuggestionAccepted">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>

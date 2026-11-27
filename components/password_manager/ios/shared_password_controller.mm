@@ -794,6 +794,10 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
       return;
     }
     case autofill::SuggestionType::kWebauthnCredential: {
+      password_manager::metrics_util::LogPasswordSuggestionSelected(
+          password_manager::metrics_util::PasswordDropdownSelectedOption::
+              kWebAuthn,
+          [self IsOffTheRecord]);
       WebAuthnCredentialsDelegate* webAuthnCredentialsDelegate =
           [self retrieveWebAuthnCredentialsDelegateForFrame:frame];
       CHECK(webAuthnCredentialsDelegate);
@@ -1391,6 +1395,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     return @[];
   }
 
+  webAuthnCredentialsDelegate->NotifyForPasskeysDisplay();
   base::expected<const std::vector<password_manager::PasskeyCredential>*,
                  WebAuthnCredentialsDelegate::PasskeysUnavailableReason>
       passkeys = webAuthnCredentialsDelegate->GetPasskeys();

@@ -7,8 +7,7 @@
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Must be in sync with PasswordSuggestionBottomSheetExitReason enum in
-// tools/metrics/histograms/enums.xml.
+// LINT.IfChange(PasswordSuggestionBottomSheetExitReason)
 enum class PasswordSuggestionBottomSheetExitReason {
   kDismissal = 0,
   kUsePasswordSuggestion = 1,
@@ -18,7 +17,9 @@ enum class PasswordSuggestionBottomSheetExitReason {
   // Could not present the view controller for the bottom sheet as a modal for
   // other reasons.
   kCouldNotPresent = 5,
-  kMaxValue = kCouldNotPresent,
+  kUsePasskeySuggestion = 6,
+  kMaxValue = kUsePasskeySuggestion,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:PasswordSuggestionBottomSheetExitReason)
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_PASSWORD_SUGGESTION_BOTTOM_SHEET_EXIT_REASON_H_

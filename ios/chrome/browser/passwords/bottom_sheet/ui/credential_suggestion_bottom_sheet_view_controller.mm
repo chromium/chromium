@@ -6,8 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/metrics/user_metrics.h"
-#import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -54,25 +52,6 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
              ? l10n_util::GetNSString(
                    IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME)
              : username;
-}
-
-// Logs the relevant metrics for when a password suggestion is accepted from the
-// bottom sheet.
-void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
-                                  NSInteger index,
-                                  NSUInteger suggestion_count) {
-  const char* backup_string = is_backup_suggestion ? "_Backup" : "";
-  std::string user_action =
-      base::StrCat({"BottomSheet_Password_SuggestionAccepted", backup_string});
-  base::RecordAction(base::UserMetricsAction(user_action.c_str()));
-
-  base::UmaHistogramSparse(
-      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", index);
-
-  if (suggestion_count > 1) {
-    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
-                                (int)index);
-  }
 }
 
 }  // namespace
@@ -278,10 +257,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 - (void)confirmationAlertPrimaryAction {
   NSInteger index = [self selectedRow];
   FormSuggestion* suggestion = _suggestions[index];
-  BOOL isBackupSuggestion =
-      suggestion.type == SuggestionType::kBackupPasswordEntry;
-
-  LogSuggestionAcceptedMetrics(isBackupSuggestion, index, [self rowCount]);
 
   [self.handler primaryButtonTappedForSuggestion:suggestion atIndex:index];
 }

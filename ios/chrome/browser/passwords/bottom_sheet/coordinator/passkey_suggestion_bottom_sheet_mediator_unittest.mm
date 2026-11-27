@@ -6,6 +6,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -21,6 +23,8 @@
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "components/webauthn/ios/passkey_test_util.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -162,8 +166,8 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
 // Tests that the consumer is notified with the available passkey suggestions.
 TEST_F(PasskeySuggestionBottomSheetMediatorTest, InitializeSuggestions) {
   std::vector<PasskeyCredential> credentials = {CreatePasskeyCredential()};
-  webauthn_credentials_delegate_->OnCredentialsReceived(credentials,
-                                                        kRequestId);
+  webauthn_credentials_delegate_->OnCredentialsReceived(
+      credentials, kRequestId, /*is_conditional=*/false);
 
   CreateMediator();
 
@@ -194,8 +198,8 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, InitializeSuggestions) {
 // suggestions to present.
 TEST_F(PasskeySuggestionBottomSheetMediatorTest, HandleEmptySuggestions) {
   std::vector<PasskeyCredential> credentials;
-  webauthn_credentials_delegate_->OnCredentialsReceived(credentials,
-                                                        kRequestId);
+  webauthn_credentials_delegate_->OnCredentialsReceived(
+      credentials, kRequestId, /*is_conditional=*/false);
 
   CreateMediator();
 
@@ -257,7 +261,8 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, DismissDefersToRenderer) {
 // suggestion.
 TEST_F(PasskeySuggestionBottomSheetMediatorTest, FetchesPasskeyCredentials) {
   PasskeyCredential passkey = CreatePasskeyCredential();
-  webauthn_credentials_delegate_->OnCredentialsReceived({passkey}, kRequestId);
+  webauthn_credentials_delegate_->OnCredentialsReceived(
+      {passkey}, kRequestId, /*is_conditional=*/false);
 
   CreateMediator();
 
@@ -285,4 +290,95 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, FetchesPasskeyCredentials) {
       [mediator_ getCredentialForFormSuggestion:passkeySuggestion];
   ASSERT_TRUE(credential.has_value());
   EXPECT_EQ(credential.value(), password_manager::CredentialUIEntry(passkey));
+}
+
+// Tests that exit reasons map to
+// `IOS.PasskeySuggestionBottomSheet.ExitReason` without emitting
+// `IOS.PasswordBottomSheet.ExitReason`, and emit at most once per mediator
+// instance.
+TEST_F(PasskeySuggestionBottomSheetMediatorTest,
+       LogExitReasonLogsPasskeySuggestionHistogramOnce) {
+  struct TestCase {
+    PasswordSuggestionBottomSheetExitReason input;
+    PasskeySuggestionBottomSheetExitReason expected;
+  };
+  const TestCase test_cases[] = {
+      {PasswordSuggestionBottomSheetExitReason::kDismissal,
+       PasskeySuggestionBottomSheetExitReason::kDismissal},
+      {PasswordSuggestionBottomSheetExitReason::kUsePasskeySuggestion,
+       PasskeySuggestionBottomSheetExitReason::kUsePasskey},
+      {PasswordSuggestionBottomSheetExitReason::kShowPasswordManager,
+       PasskeySuggestionBottomSheetExitReason::kShowPasswordManager},
+      {PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails,
+       PasskeySuggestionBottomSheetExitReason::kShowPasswordDetails},
+      {PasswordSuggestionBottomSheetExitReason::kCouldNotPresent,
+       PasskeySuggestionBottomSheetExitReason::kCouldNotPresent},
+  };
+
+  for (const TestCase& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    CreateMediator();
+
+    [mediator_ logExitReason:test_case.input];
+    // Subsequent exit reason calls on the same instance must be ignored.
+    [mediator_ logSecondaryAction];
+
+    histogram_tester.ExpectUniqueSample(
+        "IOS.PasskeySuggestionBottomSheet.ExitReason", test_case.expected, 1);
+    histogram_tester.ExpectTotalCount("IOS.PasswordBottomSheet.ExitReason", 0);
+
+    [mediator_ disconnect];
+    mediator_ = nil;
+  }
+}
+
+// Tests that `-logSecondaryAction` records `kMorePasskeys` on the modal passkey
+// suggestion bottom sheet.
+TEST_F(PasskeySuggestionBottomSheetMediatorTest,
+       LogSecondaryActionLogsMorePasskeys) {
+  base::HistogramTester histogram_tester;
+  CreateMediator();
+
+  [mediator_ logSecondaryAction];
+  [mediator_ logExitReason:PasswordSuggestionBottomSheetExitReason::kDismissal];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PasskeySuggestionBottomSheet.ExitReason",
+      PasskeySuggestionBottomSheetExitReason::kMorePasskeys, 1);
+  histogram_tester.ExpectTotalCount("IOS.PasswordBottomSheet.ExitReason", 0);
+}
+
+// Tests that accepting a suggestion on the modal passkey sheet does not record
+// password bottom sheet acceptance histograms or user actions.
+TEST_F(PasskeySuggestionBottomSheetMediatorTest,
+       LogSuggestionAcceptedDoesNotLogPasswordMetrics) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  CreateMediator();
+
+  FormSuggestion* passkey_suggestion = [FormSuggestion
+      suggestionWithValue:base::SysUTF8ToNSString(kDisplayName)
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Guid("cred_id")
+           requiresReauth:YES];
+
+  [mediator_ logSuggestionAccepted:passkey_suggestion atIndex:0];
+  [mediator_ logDetailsValidCredential:YES];
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "BottomSheet_Passkey_SuggestionAccepted"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "BottomSheet_Password_SuggestionAccepted"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "BottomSheet_Password_SuggestionAccepted_Backup"));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.UserAcceptedSuggestionAtIndex.Passkey.BottomSheet", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.TouchToFill.CredentialIndex", 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.PasswordBottomSheet.Details.ValidCredential", 0);
 }

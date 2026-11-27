@@ -338,16 +338,19 @@ void PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved(
           GetFilteredPasskeys(params));
 
   const std::string& passkey_request_id = params.RequestId();
+  PasskeyRequestParams::RequestType request_type = params.Type();
+  CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalGet ||
+        request_type == PasskeyRequestParams::RequestType::kModal);
+
   // Send available passkeys to the WebAuthnCredentialsDelegate.
-  delegate->OnCredentialsReceived(std::move(filtered_passkeys),
-                                  passkey_request_id);
+  delegate->OnCredentialsReceived(
+      std::move(filtered_passkeys), passkey_request_id,
+      /*is_conditional=*/request_type ==
+          PasskeyRequestParams::RequestType::kConditionalGet);
 
   // Open the suggestion bottom sheet. The delegate's suggestions will be
   // presented in it and will be selectable by the user.
   IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
-  PasskeyRequestParams::RequestType request_type = params.Type();
-  CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalGet ||
-        request_type == PasskeyRequestParams::RequestType::kModal);
 
   assertion_requests_.emplace(passkey_request_id, std::move(params));
   assertion_request_delegates_.emplace(passkey_request_id,

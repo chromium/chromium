@@ -10,7 +10,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -198,6 +202,40 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
   }
 
   return filteredSuggestions;
+}
+
+// Logs the relevant metrics for when a credential suggestion is accepted from
+// the autofill/conditional bottom sheet.
+void LogSuggestionAcceptedMetrics(autofill::SuggestionType suggestion_type,
+                                  NSInteger index,
+                                  NSUInteger suggestion_count) {
+  switch (suggestion_type) {
+    case autofill::SuggestionType::kWebauthnCredential:
+      base::RecordAction(
+          base::UserMetricsAction("BottomSheet_Passkey_SuggestionAccepted"));
+      break;
+    case autofill::SuggestionType::kBackupPasswordEntry:
+      base::RecordAction(base::UserMetricsAction(
+          "BottomSheet_Password_SuggestionAccepted_Backup"));
+      break;
+    default:
+      base::RecordAction(
+          base::UserMetricsAction("BottomSheet_Password_SuggestionAccepted"));
+      break;
+  }
+
+  autofill::FillingProduct filling_product =
+      autofill::GetFillingProductFromSuggestionType(suggestion_type);
+  base::UmaHistogramSparse(
+      base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",
+                    autofill::FillingProductToString(filling_product),
+                    ".BottomSheet"}),
+      index);
+
+  if (suggestion_count > 1) {
+    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
+                                static_cast<int>(index));
+  }
 }
 
 }  // namespace
@@ -489,6 +527,20 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
                                 exitReason);
 }
 
+- (void)logSecondaryAction {
+  [self logExitReason:PasswordSuggestionBottomSheetExitReason::kDismissal];
+}
+
+- (void)logSuggestionAccepted:(FormSuggestion*)suggestion
+                      atIndex:(NSInteger)index {
+  LogSuggestionAcceptedMetrics(suggestion.type, index, self.suggestions.count);
+}
+
+- (void)logDetailsValidCredential:(BOOL)isValid {
+  base::UmaHistogramBoolean("IOS.PasswordBottomSheet.Details.ValidCredential",
+                            isValid);
+}
+
 - (void)onDismissWithoutAnyCredentialAction {
   [self incrementDismissCount];
   [self markSharedPasswordNotificationsDisplayed];
@@ -579,25 +631,36 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
 
 // Logs the SubmissionReadiness metric when suggestions are successfully loaded.
 - (void)logSubmissionReadinessMetrics:(NSArray<FormSuggestion*>*)suggestions {
-  if (suggestions.count > 0) {
-    // Log submission readiness only when the bottom sheet is actually shown to
-    // the user (which is confirmed by suggestions being successfully loaded and
-    // passed to the consumer). Logging this earlier (e.g., during form
-    // analysis) would skew metrics with forms where the bottom sheet was never
-    // presented.
-    password_manager::SubmissionReadinessState readiness =
-        suggestions.firstObject.metadata.submission_readiness;
-    base::UmaHistogramEnumeration(
-        "PasswordManager.TouchToFill.SubmissionReadiness", readiness);
-
-    web::WebState* activeWebState = [self activeWebState];
-    if (activeWebState) {
-      ukm::SourceId source_id =
-          ukm::GetSourceIdForWebStateDocument(activeWebState);
-      ukm::builders::TouchToFill_SubmissionReadiness(source_id)
-          .SetSubmissionReadiness(static_cast<int64_t>(readiness))
-          .Record(ukm::UkmRecorder::Get());
+  // Passkey suggestions are prepended without form metadata and do not fill or
+  // auto-submit a form, so locate the first password suggestion.
+  FormSuggestion* passwordSuggestion = nil;
+  for (FormSuggestion* suggestion in suggestions) {
+    if (suggestion.type == autofill::SuggestionType::kPasswordEntry ||
+        suggestion.type == autofill::SuggestionType::kBackupPasswordEntry) {
+      passwordSuggestion = suggestion;
+      break;
     }
+  }
+  if (!passwordSuggestion) {
+    return;
+  }
+
+  // Log submission readiness only when the bottom sheet is actually shown to
+  // the user (which is confirmed by suggestions being successfully loaded and
+  // passed to the consumer). Logging this earlier (e.g., during form analysis)
+  // would skew metrics with forms where the bottom sheet was never presented.
+  password_manager::SubmissionReadinessState readiness =
+      passwordSuggestion.metadata.submission_readiness;
+  base::UmaHistogramEnumeration(
+      "PasswordManager.TouchToFill.SubmissionReadiness", readiness);
+
+  web::WebState* activeWebState = [self activeWebState];
+  if (activeWebState) {
+    ukm::SourceId source_id =
+        ukm::GetSourceIdForWebStateDocument(activeWebState);
+    ukm::builders::TouchToFill_SubmissionReadiness(source_id)
+        .SetSubmissionReadiness(static_cast<int64_t>(readiness))
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

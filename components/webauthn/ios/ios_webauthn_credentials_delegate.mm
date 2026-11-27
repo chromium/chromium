@@ -114,8 +114,10 @@ IOSWebAuthnCredentialsDelegate::GetWeakPtr() {
 
 void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<password_manager::PasskeyCredential> credentials,
-    const std::string& passkey_request_id) {
-  if (!credentials.empty() && !passkeys_after_fill_recorded_) {
+    const std::string& passkey_request_id,
+    bool is_conditional) {
+  if (is_conditional && !credentials.empty() &&
+      !passkeys_after_fill_recorded_) {
     passkeys_after_fill_recorded_ = true;
     base::UmaHistogramBoolean(
         "PasswordManager.PasskeysArrivedAfterAutofillDisplay",
