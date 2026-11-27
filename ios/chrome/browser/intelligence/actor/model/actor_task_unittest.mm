@@ -1996,8 +1996,8 @@ TEST_F(ActorTaskTest, ActAfterPauseAndResumeRepliesPausedOnce) {
 }
 
 // Tests that pausing while a confirmation is shown holds its reply, ignores a
-// late confirmation, and replies `kUserPaused` once the user resumes.
-TEST_F(ActorTaskTest, PauseWhileConfirmingRepliesUserPausedOnResume) {
+// late confirmation, and replies `kPausedAndResumed` once the user resumes.
+TEST_F(ActorTaskTest, PauseWhileConfirmingRepliesPausedAndResumedOnResume) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
@@ -2019,12 +2019,12 @@ TEST_F(ActorTaskTest, PauseWhileConfirmingRepliesUserPausedOnResume) {
   task_->Resume();
   EXPECT_EQ(ActorTaskState::kReflecting, response.Get<0>());
   ASSERT_TRUE(response.Get<1>().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused,
+  EXPECT_EQ(InterruptResponse::kPausedAndResumed,
             response.Get<1>().value().response());
 }
 
 // Tests that an `Interrupt` received while paused is held without prompting,
-// and replied `kUserPaused` once the user resumes, and that the next one
+// and replied `kPausedAndResumed` once the user resumes, and that the next one
 // prompts.
 TEST_F(ActorTaskTest, InterruptWhilePausedIsHeldUntilResume) {
   FakeActorTaskInterventionDelegate* delegate =
@@ -2040,7 +2040,8 @@ TEST_F(ActorTaskTest, InterruptWhilePausedIsHeldUntilResume) {
 
   task_->Resume();
   ASSERT_TRUE(result.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused, result.Get().value().response());
+  EXPECT_EQ(InterruptResponse::kPausedAndResumed,
+            result.Get().value().response());
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
   // The held reply carried the pause notice, so the next `Interrupt` prompts.
@@ -2135,9 +2136,9 @@ TEST_F(ActorTaskTest, PauseDuringDeferredActCompletionHoldsReply) {
 }
 
 // Tests that after a pause and resume without a pending request, the next
-// `Interrupt` is replied `kUserPaused` without prompting, and the following
-// one prompts.
-TEST_F(ActorTaskTest, InterruptAfterPauseAndResumeRepliesUserPausedOnce) {
+// `Interrupt` is replied `kPausedAndResumed` without prompting, and the
+// following one prompts.
+TEST_F(ActorTaskTest, InterruptAfterPauseAndResumeRepliesPausedAndResumedOnce) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
@@ -2149,7 +2150,7 @@ TEST_F(ActorTaskTest, InterruptAfterPauseAndResumeRepliesUserPausedOnce) {
   task_->Interrupt(MakeConfirmation("Please confirm"),
                    first_result.GetCallback());
   ASSERT_TRUE(first_result.Get().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused,
+  EXPECT_EQ(InterruptResponse::kPausedAndResumed,
             first_result.Get().value().response());
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
@@ -2346,8 +2347,8 @@ TEST_F(ActorTaskTest, ConfirmationDelegateErrorRepliesErrorAndResumes) {
 }
 
 // Tests that pausing while a clarification is asked holds its reply, ignores a
-// late answer, and replies `kUserPaused` once the user resumes.
-TEST_F(ActorTaskTest, PauseWhileClarifyingRepliesUserPausedOnResume) {
+// late answer, and replies `kPausedAndResumed` once the user resumes.
+TEST_F(ActorTaskTest, PauseWhileClarifyingRepliesPausedAndResumedOnResume) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
@@ -2369,7 +2370,7 @@ TEST_F(ActorTaskTest, PauseWhileClarifyingRepliesUserPausedOnResume) {
   task_->Resume();
   EXPECT_EQ(ActorTaskState::kReflecting, response.Get<0>());
   ASSERT_TRUE(response.Get<1>().has_value());
-  EXPECT_EQ(InterruptResponse::kUserPaused,
+  EXPECT_EQ(InterruptResponse::kPausedAndResumed,
             response.Get<1>().value().response());
   EXPECT_TRUE(response.Get<1>().value().answer().empty());
 }

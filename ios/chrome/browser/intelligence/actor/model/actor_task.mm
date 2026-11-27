@@ -366,7 +366,7 @@ void ActorTask::Resume() {
   } else if (pending_interrupt_) {
     owes_pause_notice_ = false;
     PostInterruptReply(std::move(pending_interrupt_),
-                       InterruptReply::UserPaused());
+                       InterruptReply::PausedAndResumed());
   }
   SetState(ActorTaskState::kReflecting);
 }
@@ -401,7 +401,8 @@ void ActorTask::Interrupt(
   }
   if (owes_pause_notice_) {
     owes_pause_notice_ = false;
-    PostInterruptReply(std::move(on_response), InterruptReply::UserPaused());
+    PostInterruptReply(std::move(on_response),
+                       InterruptReply::PausedAndResumed());
     return;
   }
   std::visit(

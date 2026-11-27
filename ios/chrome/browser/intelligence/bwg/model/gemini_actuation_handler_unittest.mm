@@ -839,10 +839,10 @@ TEST_F(GeminiActuationHandlerTest,
   ExpectConfirmedResponse(future.Get());
 }
 
-// Tests that a confirmation held through a user pause is answered
-// `kTaskPaused`, with an observation, once the user resumes.
+// Tests that a confirmation held through a user pause is answered `kOk` with
+// no user response and a fresh observation once the user resumes.
 TEST_F(GeminiActuationHandlerTest,
-       DispatchGeminiActuationRequest_Yield_Confirmation_UserPaused) {
+       DispatchGeminiActuationRequest_Yield_Confirmation_PausedAndResumed) {
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
   base::test::TestFuture<GeminiActuationResponse*> future;
@@ -860,30 +860,36 @@ TEST_F(GeminiActuationHandlerTest,
 
   GeminiActuationResponse* response = future.Get();
   ASSERT_NE(nil, response);
-  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskPaused, response.resultCode);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
   EXPECT_EQ(nil, response.userResponse);
+  ASSERT_NE(nil, response.serializedActionsResult);
   optimization_guide::proto::ActionsResult actions_result;
   ASSERT_TRUE(
       actions_result.ParseFromArray([response.serializedActionsResult bytes],
                                     [response.serializedActionsResult length]));
-  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kTaskPaused),
+  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kOk),
             actions_result.action_result());
+  EXPECT_FALSE(actions_result.has_index_of_failed_action());
+  EXPECT_FALSE(actions_result.has_error_message());
   ASSERT_EQ(1, actions_result.tabs_size());
   EXPECT_EQ(kFakeWebStateID, actions_result.tabs(0).id());
 }
 
-// Tests that actions held through a user pause are answered `kTaskPaused`, with
-// an observation and without a failed action index, once the task resumes.
+// Tests that actions held through a user pause are skipped and answered `kOk`
+// with a fresh observation and without error details once the task resumes.
 TEST_F(GeminiActuationHandlerTest,
-       DispatchGeminiActuationRequest_PerformActions_UserPaused) {
+       DispatchGeminiActuationRequest_PerformActions_PausedAndResumed) {
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = CreateTask(handler);
   actor_service_->PauseTask(task_id);
 
-  GeminiActuationRequest* request =
-      [[GeminiActuationRequest alloc] initWithActionProtos:@[]
-                                                taskUpdate:@"Update"
-                                               yieldAction:nil];
+  // Use an unset action that fails with `kToolUnknown` if executed, proving
+  // the action is skipped while paused and `kTaskPaused` maps to `kOk`.
+  optimization_guide::proto::Action action;
+  GeminiActuationRequest* request = [[GeminiActuationRequest alloc]
+      initWithActionProtos:@[ SerializeProtoToNSData(action) ]
+                taskUpdate:@"Update"
+               yieldAction:nil];
   base::test::TestFuture<GeminiActuationResponse*> future;
   [handler dispatchActuationRequest:request
                           forTaskID:task_id
@@ -898,16 +904,55 @@ TEST_F(GeminiActuationHandlerTest,
   actor_service_->ResumeTask(task_id);
   GeminiActuationResponse* response = future.Get();
   ASSERT_NE(nil, response);
-  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskPaused, response.resultCode);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
+  EXPECT_EQ(nil, response.userResponse);
+  ASSERT_NE(nil, response.serializedActionsResult);
   optimization_guide::proto::ActionsResult actions_result;
   ASSERT_TRUE(
       actions_result.ParseFromArray([response.serializedActionsResult bytes],
                                     [response.serializedActionsResult length]));
-  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kTaskPaused),
+  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kOk),
             actions_result.action_result());
   EXPECT_FALSE(actions_result.has_index_of_failed_action());
+  EXPECT_FALSE(actions_result.has_error_message());
   ASSERT_EQ(1, actions_result.tabs_size());
   EXPECT_EQ(kFakeWebStateID, actions_result.tabs(0).id());
+}
+
+// Tests that a paused `PerformActions` request whose actuated tab is closed
+// before resuming fails with `kTabWentAway`.
+TEST_F(
+    GeminiActuationHandlerTest,
+    DispatchGeminiActuationRequest_PerformActions_PausedAndResumed_TabClosed) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = CreateTask(handler);
+  actor_service_->PauseTask(task_id);
+
+  optimization_guide::proto::Action action;
+  GeminiActuationRequest* request = [[GeminiActuationRequest alloc]
+      initWithActionProtos:@[ SerializeProtoToNSData(action) ]
+                taskUpdate:@"Update"
+               yieldAction:nil];
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  [handler dispatchActuationRequest:request
+                          forTaskID:task_id
+                    completionBlock:GetCompletionBlock(future)];
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_service_->GetActiveTaskState() ==
+           actor::ActorTaskState::kPausedByUser;
+  }));
+  actor::FlushCurrentSequence();
+  EXPECT_FALSE(future.IsReady());
+
+  // Close the actuated tab while the task is paused.
+  fake_web_state_ = nullptr;
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kUserAction);
+
+  actor_service_->ResumeTask(task_id);
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTabWentAway, response.resultCode);
 }
 
 // Tests that disconnecting ends a pending confirmation with `kTaskWentAway`.

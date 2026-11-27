@@ -84,8 +84,8 @@ InterruptReply InterruptReply::Answered(std::string answer) {
   return InterruptReply(InterruptResponse::kAnswered, std::move(answer));
 }
 
-InterruptReply InterruptReply::UserPaused() {
-  return InterruptReply(InterruptResponse::kUserPaused, std::string());
+InterruptReply InterruptReply::PausedAndResumed() {
+  return InterruptReply(InterruptResponse::kPausedAndResumed, std::string());
 }
 
 InterruptReply::InterruptReply(InterruptResponse response, std::string answer)

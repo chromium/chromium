@@ -177,10 +177,9 @@ void PopulateTabObservationFromResponse(
   }
 }
 
-// Returns the response for an answered interrupt with `resultCode` and
-// `userResponse`, carrying `observation` of the actuated tab.
+// Returns a `kOk` response (or `kTabWentAway` if `observation` is null) for
+// an interrupt with `userResponse`, carrying `observation` of the actuated tab.
 GeminiActuationResponse* MakeObservedInterruptResponse(
-    actor::mojom::ActionResultCode resultCode,
     NSString* userResponse,
     const actor::TabObservationResponse* observation) {
   if (!observation) {
@@ -189,10 +188,11 @@ GeminiActuationResponse* MakeObservedInterruptResponse(
     return MakeTabWentAwayResponse();
   }
   optimization_guide::proto::ActionsResult actions_result;
-  actions_result.set_action_result(static_cast<int32_t>(resultCode));
+  actions_result.set_action_result(
+      static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
   PopulateTabObservationFromResponse(actions_result.add_tabs(), *observation);
   return [[GeminiActuationResponse alloc]
-           initWithResultCode:resultCode
+           initWithResultCode:actor::mojom::ActionResultCode::kOk
                  userResponse:userResponse
       serializedActionsResult:SerializeProtoToNSData(actions_result)];
 }
@@ -202,17 +202,15 @@ GeminiActuationResponse* MakeConfirmationResponse(
     const actor::InterruptTaskResult& result) {
   switch (result.reply.response()) {
     case actor::InterruptResponse::kConfirmed:
-      return MakeObservedInterruptResponse(actor::mojom::ActionResultCode::kOk,
-                                           kConfirmationUserResponse,
+      return MakeObservedInterruptResponse(kConfirmationUserResponse,
                                            result.observation.get());
     case actor::InterruptResponse::kAnswered:
       // Only a `ClarificationInterrupt` is answered, and none is sent yet.
       // TODO(crbug.com/567036896): Return the answer as the user response.
       NOTREACHED();
-    case actor::InterruptResponse::kUserPaused:
-      return MakeObservedInterruptResponse(
-          actor::mojom::ActionResultCode::kTaskPaused, /*userResponse=*/nil,
-          result.observation.get());
+    case actor::InterruptResponse::kPausedAndResumed:
+      return MakeObservedInterruptResponse(/*userResponse=*/nil,
+                                           result.observation.get());
   }
   NOTREACHED();
 }
@@ -221,7 +219,6 @@ GeminiActuationResponse* MakeConfirmationResponse(
 // than reporting the failure of one of its actions.
 bool IsWholeRequestResultCode(actor::mojom::ActionResultCode code) {
   switch (code) {
-    case actor::mojom::ActionResultCode::kTaskPaused:
     case actor::mojom::ActionResultCode::kTaskWentAway:
     case actor::mojom::ActionResultCode::kExecutionEngineExistingAction:
     case actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy:
@@ -231,29 +228,37 @@ bool IsWholeRequestResultCode(actor::mojom::ActionResultCode code) {
   }
 }
 
-// Populates an `ActionsResult` proto from `result` and sets `outResultCode`.
-optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
-    const actor::PerformActionsResult& result,
-    actor::mojom::ActionResultCode& outResultCode) {
+// Returns the response for the `result` of an act.
+GeminiActuationResponse* MakePerformActionsResponse(
+    const actor::PerformActionsResult& result) {
   optimization_guide::proto::ActionsResult actionsResult;
 
   // Record the first failing action index and error message.
   std::optional<size_t> failedActionIndex;
-  outResultCode = actor::mojom::ActionResultCode::kOk;
+  bool was_paused = false;
+  actor::mojom::ActionResultCode result_code =
+      actor::mojom::ActionResultCode::kOk;
   for (size_t i = 0; i < result.action_results.size(); ++i) {
     const auto& actionResult = result.action_results[i];
     if (!actionResult.tool_result.IsOk()) {
+      // `kTaskPaused` is delivered once the user resumes. Report `kOk` with
+      // the fresh observation so the planner continues instead of treating the
+      // task as still paused.
+      if (actionResult.tool_result.code() ==
+          actor::mojom::ActionResultCode::kTaskPaused) {
+        was_paused = true;
+        break;
+      }
       failedActionIndex = i;
-      outResultCode = actionResult.tool_result.code();
+      result_code = actionResult.tool_result.code();
       actionsResult.set_error_message(
           actor::GetToolExecutionResultMessage(actionResult.tool_result));
       break;
     }
   }
 
-  actionsResult.set_action_result(static_cast<int32_t>(outResultCode));
-  if (failedActionIndex.has_value() &&
-      !IsWholeRequestResultCode(outResultCode)) {
+  actionsResult.set_action_result(static_cast<int32_t>(result_code));
+  if (failedActionIndex.has_value() && !IsWholeRequestResultCode(result_code)) {
     actionsResult.set_index_of_failed_action(
         static_cast<int32_t>(*failedActionIndex));
   }
@@ -268,20 +273,17 @@ optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
                                        *observationResponse);
   }
 
-  // TODO(crbug.com/504704411): Populate WindowObservation here.
-  return actionsResult;
-}
+  if (was_paused && actionsResult.tabs_size() == 0) {
+    // TODO(crbug.com/510404682): Handle tab closure during task execution
+    // gracefully rather than failing the request.
+    return MakeTabWentAwayResponse();
+  }
 
-// Returns the response for the `result` of an act.
-GeminiActuationResponse* MakePerformActionsResponse(
-    const actor::PerformActionsResult& result) {
-  actor::mojom::ActionResultCode result_code;
-  optimization_guide::proto::ActionsResult actions_result =
-      ActionsResultFromPerformActionsResult(result, result_code);
+  // TODO(crbug.com/504704411): Populate WindowObservation here.
   return [[GeminiActuationResponse alloc]
            initWithResultCode:result_code
                  userResponse:nil
-      serializedActionsResult:SerializeProtoToNSData(actions_result)];
+      serializedActionsResult:SerializeProtoToNSData(actionsResult)];
 }
 
 // Returns the response for the `result` of a confirmation interrupt.

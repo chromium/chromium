@@ -125,7 +125,7 @@ class ActorService : public KeyedService {
 
   // Enqueues a resume of a task paused by `PauseTask()`. The held request, if
   // any, is answered with a fresh observation and `kTaskPaused` for
-  // `PerformActions()` or `kUserPaused` for `InterruptTask()`.
+  // `PerformActions()` or `kPausedAndResumed` for `InterruptTask()`.
   void ResumeTask(ActorTaskId task_id);
 
   // Sets the intervention delegate for UI interaction on the given task.
@@ -143,9 +143,10 @@ class ActorService : public KeyedService {
   // once, asynchronously and never after `Shutdown()`: with the user's answer
   // and an observation of the task's tab, `kTaskRejected` if the task cannot
   // take the interrupt, `kTaskWentAway` if the task does not exist or stops
-  // first, or the intervention delegate's error. The answer is `kUserPaused` if
-  // the user paused the task since the last reply, once the task resumes. When
-  // `callback` runs with an answer or a delegate error, the task has resumed.
+  // first, or the intervention delegate's error. The answer is
+  // `kPausedAndResumed` if the user paused the task since the last reply, once
+  // the task resumes. When `callback` runs with an answer or a delegate error,
+  // the task has resumed.
   void InterruptTask(ActorTaskId task_id,
                      InterruptRequest request,
                      InterventionResultCallback<InterruptTaskResult> callback);

@@ -198,9 +198,9 @@ enum class InterruptResponse {
   kConfirmed,
   // The user answered a `ClarificationInterrupt`.
   kAnswered,
-  // The user paused the task since the last reply, so the interrupt went
-  // unanswered.
-  kUserPaused,
+  // The user paused and then resumed the task since the last reply, so the
+  // interrupt went unanswered.
+  kPausedAndResumed,
 };
 
 // Reply of a task to an interrupt.
@@ -212,8 +212,9 @@ class InterruptReply {
   // Returns a reply for an answered `ClarificationInterrupt`. `answer` must
   // be non-empty.
   static InterruptReply Answered(std::string answer);
-  // Returns a reply indicating the user paused the task before answering.
-  static InterruptReply UserPaused();
+  // Returns a reply indicating the user paused and resumed the task before
+  // answering.
+  static InterruptReply PausedAndResumed();
 
   InterruptReply(const InterruptReply&);
   InterruptReply& operator=(const InterruptReply&);

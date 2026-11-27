@@ -147,7 +147,7 @@ class ActorTask : public web::WebStateObserver,
   void Pause();
 
   // Resumes the task paused by `Pause()`: answers the held operation, if any,
-  // with `kTaskPaused` or `kUserPaused` and transitions to `kReflecting`.
+  // with `kTaskPaused` or `kPausedAndResumed` and transitions to `kReflecting`.
   // No-op unless the task is in `kPausedByUser`.
   void Resume();
 
@@ -156,7 +156,7 @@ class ActorTask : public web::WebStateObserver,
 
   // Interrupts the task as described by `request` and prompts the user.
   // `on_response` is posted at most once with:
-  // - the user's answer once the task has resumed (`kUserPaused`, without
+  // - the user's answer once the task has resumed (`kPausedAndResumed`, without
   //   prompting, if the user paused the task since the last reply; waits until
   //   resumed while paused),
   // - `kTaskRejected` if the task cannot take the interrupt,
