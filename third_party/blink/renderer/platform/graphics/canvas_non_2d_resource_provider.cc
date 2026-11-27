@@ -223,8 +223,17 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  sk_sp<SkSurface> surface =
-      CreateSkSurface(size, format, alpha_type, color_space);
+  sk_sp<SkSurface> surface;
+  {
+    TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::CreateSkSurface");
+    const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
+    const auto props =
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+    const auto info = SkImageInfo::Make(
+        size.width(), size.height(), viz::ToClosestSkColorType(format),
+        alpha_type, color_space.ToSkColorSpace());
+    surface = SkSurfaces::Raster(info, &props);
+  }
   if (!surface) {
     return nullptr;
   }
@@ -815,26 +824,6 @@ size_t CanvasNon2DResourceProvider::GetSize() const {
   }
   SkImageInfo info = surface_->imageInfo();
   return info.computeByteSize(info.minRowBytes());
-}
-
-SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps(
-    SkAlphaType alpha_type) {
-  const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
-  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-sk_sp<SkSurface> CanvasNon2DResourceProvider::CreateSkSurface(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space) {
-  TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::CreateSkSurface");
-
-  const auto props = GetSkSurfaceProps(alpha_type);
-  const auto info = SkImageInfo::Make(size.width(), size.height(),
-                                      viz::ToClosestSkColorType(format),
-                                      alpha_type, color_space.ToSkColorSpace());
-  return SkSurfaces::Raster(info, &props);
 }
 
 }  // namespace blink

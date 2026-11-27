@@ -159,17 +159,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-  static SkSurfaceProps GetSkSurfaceProps(SkAlphaType alpha_type);
-
   scoped_refptr<Resource> NewOrRecycledResource();
 
   // FlushForImageObserver implementation:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-
-  static sk_sp<SkSurface> CreateSkSurface(gfx::Size size,
-                                          viz::SharedImageFormat format,
-                                          SkAlphaType alpha_type,
-                                          const gfx::ColorSpace& color_space);
 
   base::WeakPtr<CanvasNon2DResourceProvider> CreateWeakPtr();
 
