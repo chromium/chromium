@@ -14,10 +14,11 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/version_info/version_info.h"
@@ -468,7 +469,8 @@ class AddingSupervisionTest : public SupervisedUserExtensionsManagerTestBase,
 TEST_P(AddingSupervisionTest,
        DisableExistingExtensionsOnProfileBecomingSupervised) {
   MaybeMarkLocalApprovalMigrationDone();
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+  supervised_user::SupervisedUserTestEnvironment::EnableRegularAccount(
+      IdentityManagerFactory::GetForProfile(profile()));
   ASSERT_TRUE(!profile()->IsChild());
 
   scoped_refptr<const Extension> existing_extension =
@@ -502,7 +504,8 @@ TEST_P(AddingSupervisionTest,
       registry()->enabled_extensions().Contains(existing_extension->id()));
 
   // Make the user supervised.
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      IdentityManagerFactory::GetForProfile(profile()));
   ASSERT_TRUE(profile()->IsChild());
 
   const base::DictValue& local_approved_extensions_pref_post_migr =
