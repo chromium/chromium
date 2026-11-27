@@ -114,6 +114,10 @@ source_set("popup_impl") {
     "//ui/views",
   ]
 
+  if (use_aura) {
+    deps += [ ":html_form_popup_observer" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -564,10 +568,13 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base:ui_test_utils",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/input",
     "//content/public/browser",
     "//content/test:test_support",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
     "//ui/views",
     "//ui/views:test_support",

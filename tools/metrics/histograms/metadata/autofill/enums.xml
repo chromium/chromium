@@ -4727,6 +4727,9 @@ Called by update_autofill_enums.py.-->
   <int value="29"
       label="An HTML form popup was already open when trying to show the
              autofill popup."/>
+  <int value="30"
+      label="An HTML form popup was opened after the autofill popup, which
+             could overlap with the autofill popup."/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_hiding_reason.h:SuggestionHidingReason) -->

@@ -85,7 +85,10 @@ enum class SuggestionHidingReason {
   // An HTML form popup (e.g., date/color picker or <select> menu) was
   // already open when trying to show the autofill popup.
   kOverlappingWithHtmlFormPopup = 29,
-  kMaxValue = kOverlappingWithHtmlFormPopup
+  // An HTML form popup was opened after the autofill popup, which could
+  // overlap with the autofill popup.
+  kHtmlFormPopupOpened = 30,
+  kMaxValue = kHtmlFormPopupOpened
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionHidingReason)
 

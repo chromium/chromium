@@ -1033,7 +1033,8 @@ BASE_FEATURE(kAutofillPolicyControlledFeatureManualText,
 
 // If enabled, Autofill popups will not open while a renderer-owned HTML form
 // popup (e.g., date/color picker or Aura <select> menu) is showing anywhere in
-// the same outermost `WebContents` tree.
+// the same outermost `WebContents` tree, and already-open Autofill popups will
+// hide if an HTML form popup opens (on Aura platforms).
 // TODO(crbug.com/575312381): Remove when launched.
 BASE_FEATURE(kAutofillPopupDisallowSimultaneousHtmlFormPopup,
              base::FEATURE_DISABLED_BY_DEFAULT);

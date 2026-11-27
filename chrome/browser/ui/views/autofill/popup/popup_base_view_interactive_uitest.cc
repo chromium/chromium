@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -32,6 +33,20 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+#if defined(USE_AURA)
+#include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#endif
 
 namespace autofill {
 namespace {
@@ -90,6 +105,9 @@ class PopupBaseViewInteractiveUiTestBase : public InProcessBrowserTest {
   ~PopupBaseViewInteractiveUiTestBase() override = default;
 
   void SetUpOnMainThread() override {
+#if defined(USE_AURA)
+    host_resolver()->AddRule("*", "127.0.0.1");
+#endif
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     content::WebContents* web_contents =
         browser()->GetTabStripModel()->GetActiveWebContents();
@@ -219,6 +237,109 @@ IN_PROC_BROWSER_TEST_F(PopupBaseViewInteractiveUiTestFeatureDisabled,
   HideView();
   destroyed_waiter.Wait();
 }
+
+#if defined(USE_AURA)
+// Regression test for crbug.com/575312381: an already-open Autofill popup must
+// hide when an HTML form popup opens in the same WebContents, even at
+// non-overlapping coordinates.
+IN_PROC_BROWSER_TEST_F(PopupBaseViewInteractiveUiTest,
+                       HideOnHtmlFormPopupShownAfterPopup) {
+  content::WebContents* web_contents = mock_delegate().GetWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<input id='d' type='date' "
+                      "style='position:fixed;left:0;top:0'>")));
+
+  gfx::Rect web_bounds = web_contents->GetViewBounds();
+  gfx::RectF bounds(web_bounds.right() - 100, web_bounds.bottom() - 100, 10,
+                    10);
+  ON_CALL(mock_delegate(), element_bounds()).WillByDefault(ReturnRef(bounds));
+
+  ASSERT_TRUE(ShowView());
+  ASSERT_TRUE(view()->GetWidget());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(view()->GetWidget());
+
+  EXPECT_CALL(mock_delegate(), Hide(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_delegate(),
+              Hide(SuggestionHidingReason::kHtmlFormPopupOpened))
+      .WillOnce([this] { HideView(); });
+
+  content::ShowPopupWidgetWaiter waiter(web_contents,
+                                        web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.getElementById('d').showPicker();"));
+  waiter.Wait();
+  ASSERT_FALSE(web_contents->GetPopupWidgets().empty());
+  ASSERT_TRUE(web_contents->GetPopupWidgets()[0]->IsShowing());
+
+  destroyed_waiter.Wait();
+}
+
+// Regression test for crbug.com/575312381: an already-open Autofill popup must
+// hide when a cross-site OOPIF opens a <select> popup.
+IN_PROC_BROWSER_TEST_F(PopupBaseViewInteractiveUiTest,
+                       HideOnOopifSelectPopupShownAfterPopup) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](net::EmbeddedTestServer* server,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content_type("text/html");
+        if (request.GetURL().path() == "/main.html") {
+          response->set_content(base::StringPrintf(
+              "<iframe src='%s' style='position:fixed;left:0;top:0;"
+              "width:200px;height:100px'></iframe>",
+              server->GetURL("b.test", "/iframe.html").spec().c_str()));
+          return response;
+        }
+        if (request.GetURL().path() == "/iframe.html") {
+          response->set_content(
+              "<select id='s'><option>One</option><option>Two</option>"
+              "</select>");
+          return response;
+        }
+        return nullptr;
+      },
+      embedded_test_server()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents = mock_delegate().GetWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/main.html")));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+  ASSERT_TRUE(
+      content::ExecJs(subframe, "document.getElementById('s').focus();"));
+
+  gfx::Rect web_bounds = web_contents->GetViewBounds();
+  gfx::RectF bounds(web_bounds.right() - 100, web_bounds.bottom() - 100, 10,
+                    10);
+  ON_CALL(mock_delegate(), element_bounds()).WillByDefault(ReturnRef(bounds));
+
+  ASSERT_TRUE(ShowView());
+  ASSERT_TRUE(view()->GetWidget());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(view()->GetWidget());
+
+  EXPECT_CALL(mock_delegate(), Hide(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_delegate(),
+              Hide(SuggestionHidingReason::kHtmlFormPopupOpened))
+      .WillOnce([this] { HideView(); });
+
+  content::ShowPopupWidgetWaiter waiter(web_contents, subframe);
+  input::NativeWebKeyboardEvent space_event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  space_event.text[0] = ' ';
+  subframe->GetRenderWidgetHost()->ForwardKeyboardEvent(space_event);
+  waiter.Wait();
+  ASSERT_FALSE(web_contents->GetPopupWidgets().empty());
+  ASSERT_TRUE(web_contents->GetPopupWidgets()[0]->IsShowing());
+
+  destroyed_waiter.Wait();
+}
+#endif  // defined(USE_AURA)
 
 }  // namespace
 }  // namespace autofill

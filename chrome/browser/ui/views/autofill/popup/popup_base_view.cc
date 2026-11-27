@@ -47,6 +47,11 @@
 #include "base/containers/fixed_flat_set.h"
 #endif
 
+#if defined(USE_AURA)
+#include "base/functional/bind.h"
+#include "chrome/browser/ui/views/autofill/popup/html_form_popup_observer.h"
+#endif
+
 namespace autofill {
 
 namespace {
@@ -324,13 +329,29 @@ bool PopupBaseView::DoShow() {
     return false;
   }
 
-  if (GetWebContents()) {
-    custom_cursor_suppressor_.Start(
-        /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
-  } else {
+  if (!GetWebContents()) {
     // `delegate_` is already gone and `WebContents` is destroying itself.
     return false;
   }
+
+  custom_cursor_suppressor_.Start(
+      /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+  // On macOS (non-Aura), `PopupBaseView::Widget` uses
+  // `ui::ZOrderLevel::kSecuritySurface`, which already stacks above renderer
+  // popups (`NSPopUpMenuWindowLevel`).
+#if defined(USE_AURA)
+  if (!html_form_popup_observer_ &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillPopupDisallowSimultaneousHtmlFormPopup)) {
+    // `base::Unretained(this)` is safe because `this` owns
+    // `html_form_popup_observer_`, which cancels pending tasks on
+    // destruction.
+    html_form_popup_observer_ = std::make_unique<HtmlFormPopupObserver>(
+        *GetWebContents(),
+        base::BindRepeating(&PopupBaseView::OnHtmlFormPopupShown,
+                            base::Unretained(this)));
+  }
+#endif
 
   GetWidget()->Show();
 
@@ -351,6 +372,10 @@ void PopupBaseView::DoHide() {
     }
     is_hiding_ = true;
   }
+
+#if defined(USE_AURA)
+  html_form_popup_observer_.reset();
+#endif
 
   if (is_ax_menu_start_event_fired_) {
     // Fire menu end event.
@@ -490,6 +515,9 @@ void PopupBaseView::RemoveWidgetObservers() {
     widget->RemoveObserver(this);
   }
   focus_observation_.Reset();
+#if defined(USE_AURA)
+  html_form_popup_observer_.reset();
+#endif
 }
 
 void PopupBaseView::UpdateClipPath() {
@@ -682,6 +710,15 @@ PopupBaseView::GetOverlappingPromptHidingReason(
 
   return std::nullopt;
 }
+
+#if defined(USE_AURA)
+void PopupBaseView::OnHtmlFormPopupShown() {
+  if (is_hiding_ || !delegate_ || !GetWidget() || GetWidget()->IsClosed()) {
+    return;
+  }
+  HideController(SuggestionHidingReason::kHtmlFormPopupOpened);
+}
+#endif
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
   // TODO(crbug.com/330303918): The focus change is triggered sometimes

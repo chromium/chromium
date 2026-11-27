@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -36,6 +37,10 @@ class DeleteHelper;
 class BrowserWindowInterface;
 
 namespace autofill {
+
+#if defined(USE_AURA)
+class HtmlFormPopupObserver;
+#endif
 
 // Class that deals with the event handling for Autofill-style popups. This
 // class should only be instantiated by sub-classes.
@@ -139,6 +144,12 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
+#if defined(USE_AURA)
+  // Called when a renderer-owned HTML form popup is attached inside the same
+  // outermost `WebContents` tree.
+  void OnHtmlFormPopupShown();
+#endif
+
   // Stop observing the widget.
   void RemoveWidgetObservers();
 
@@ -174,6 +185,13 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // Responsible for blocking (and re-enabling) custom cursors across all
   // browser windows.
   CustomCursorSuppressor custom_cursor_suppressor_;
+
+#if defined(USE_AURA)
+  // Observes Aura transient window additions to hide this popup if a
+  // renderer-owned HTML form popup is opened in the same outermost
+  // `WebContents` tree.
+  std::unique_ptr<HtmlFormPopupObserver> html_form_popup_observer_;
+#endif
 };
 
 }  // namespace autofill

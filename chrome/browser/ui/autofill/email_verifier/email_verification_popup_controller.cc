@@ -36,6 +36,7 @@ EmailVerificationPermissionUiStatus MapReasonToStatus(
     case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
     case SuggestionHidingReason::kOverlappingWithHtmlFormPopup:
     case SuggestionHidingReason::kContextMenuOpened:
+    case SuggestionHidingReason::kHtmlFormPopupOpened:
       return EmailVerificationPermissionUiStatus::kOverlappingPrompt;
     case SuggestionHidingReason::kAcceptSuggestion:
     case SuggestionHidingReason::kAttachInterstitialPage:
@@ -178,6 +179,7 @@ void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
       case SuggestionHidingReason::kFieldValueChanged:
       case SuggestionHidingReason::kFocusChanged:
       case SuggestionHidingReason::kHiddenByCaller:
+      case SuggestionHidingReason::kHtmlFormPopupOpened:
       case SuggestionHidingReason::kInsufficientSpace:
       case SuggestionHidingReason::kMouseLocked:
       case SuggestionHidingReason::kNoFrameHasFocus:
