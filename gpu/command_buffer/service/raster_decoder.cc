@@ -502,7 +502,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   ServiceTransferCache* GetTransferCacheForTest() override;
   void SetUpForRasterCHROMIUMForTest() override;
   void SetOOMErrorForTest() override;
-  void DisableFlushWorkaroundForTest() override;
   cc::SharedImageProvider* GetSharedImageProviderForTest() const override;
   gles2::GLES2Util* GetGLES2Util() override { return &util_; }
 
@@ -658,32 +657,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   // and CheckResetStatus() are implemented above.
   const GpuDriverBugWorkarounds& workarounds() const override;
   void DoFinish() override;
-
-  void FlushToWorkAroundMacCrashes() {
-    // The workaround is not needed for arm based macs (because they don't have
-    // the bug).
-#if BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64)
-    // The workaround is also not needed for Graphite, which always uses Metal
-    // drivers (via Dawn).
-    if (!shared_context_state_->GrContextIsGL()) {
-      return;
-    }
-    // This function does aggressive flushes to work around crashes in the
-    // macOS OpenGL driver.
-    // https://crbug.com/906453
-    if (!flush_workaround_disabled_for_test_) {
-      TRACE_EVENT0("gpu", "RasterDecoderImpl::FlushToWorkAroundMacCrashes");
-      if (gr_context())
-        gr_context()->flushAndSubmit(GrSyncCpu::kNo);
-
-      gl::GLApi* const api = gl::g_current_gl_context;
-      api->glFlushFn();
-
-      // Flushes can be expensive, yield to allow interruption after each flush.
-      ExitCommandProcessingEarly();
-    }
-#endif
-  }
 
   const gl::GLVersionInfo& gl_version_info() {
     return feature_info()->gl_version_info();
@@ -926,9 +899,6 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;
-
-  // Workaround for https://crbug.com/906453
-  bool flush_workaround_disabled_for_test_ = false;
 
   bool in_copy_sub_texture_ = false;
   bool reset_texture_state_ = false;
@@ -1555,11 +1525,6 @@ error::Error RasterDecoderImpl::DoCommandsImpl(unsigned int num_commands,
       process_pos += size;
       UNSAFE_TODO(cmd_data += size);
     }
-
-    // Workaround for https://crbug.com/906453: Flush after every command that
-    // is not between a BeginRaster and EndRaster.
-    if (!sk_surface_)
-      FlushToWorkAroundMacCrashes();
   }
 
   *entries_processed = process_pos;
@@ -1672,10 +1637,6 @@ void RasterDecoderImpl::SetUpForRasterCHROMIUMForTest() {
 void RasterDecoderImpl::SetOOMErrorForTest() {
   LOCAL_SET_GL_ERROR(GL_OUT_OF_MEMORY, "SetOOMErrorForTest",
                      "synthetic out of memory");
-}
-
-void RasterDecoderImpl::DisableFlushWorkaroundForTest() {
-  flush_workaround_disabled_for_test_ = true;
 }
 
 cc::SharedImageProvider* RasterDecoderImpl::GetSharedImageProviderForTest() const {
@@ -2732,9 +2693,6 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
                                               GLfloat hdr_headroom,
                                               const volatile GLbyte* key) {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoBeginRasterCHROMIUM");
-  // Workaround for https://crbug.com/906453: Flush before BeginRaster (the
-  // commands between BeginRaster and EndRaster will not flush).
-  FlushToWorkAroundMacCrashes();
 
   performed_raster_ = true;
 

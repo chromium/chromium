@@ -94,7 +94,6 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
 
   virtual void SetUpForRasterCHROMIUMForTest() = 0;
   virtual void SetOOMErrorForTest() = 0;
-  virtual void DisableFlushWorkaroundForTest() = 0;
 
   virtual cc::SharedImageProvider* GetSharedImageProviderForTest() const = 0;
 

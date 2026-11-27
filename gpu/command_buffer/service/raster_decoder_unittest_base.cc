@@ -156,7 +156,6 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
       gpu_preferences_, /*memory_tracker=*/nullptr, &shared_image_manager_,
       shared_context_state_, /*is_privileged=*/true);
   decoder_->SetIgnoreCachedStateForTest(ignore_cached_state_for_test_);
-  decoder_->DisableFlushWorkaroundForTest();
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
   ASSERT_EQ(decoder_->Initialize(), gpu::ContextResult::kSuccess);
