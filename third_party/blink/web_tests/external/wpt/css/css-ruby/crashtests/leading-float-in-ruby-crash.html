@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<link rel="help" href="https://issues.chromium.org/issues/589800513">
+<style>
+#m { columns: 3; column-fill: auto; height: 100px; width: 750px; gap: 0 }
+#f { float: left; width: 78% }
+#d { container: d / inline-size }
+#cut { display: contents }
+@container d (max-width: 149px) { #cut { display: block; height: 300px } }
+#h { float: left; width: 5px; height: 5px }
+</style>
+<div id="m">
+  <div style="display: flow-root">
+    <ruby><fieldset id="g" style="display: contents"><div id="f"><div id="d"><div id="cut"><div></div></div></div></div></fieldset><rt></rt></ruby><div id="h"></div>text
+  </div>
+</div>

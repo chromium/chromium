@@ -5488,6 +5488,13 @@
       status: "stable",
     },
     {
+      // Prevents PositionLeadingFloats from positioning floats inside ruby
+      // columns, and verifies leading float item indices match in
+      // LineBreaker::HandleFloat. https://crbug.com/589800513
+      name: "RubySkipLeadingFloats",
+      status: "stable",
+    },
+    {
       // Runs a microtask checkpoint before prepare script in
       // XML Parser. This was added in M148 and can be removed
       // after M150.
