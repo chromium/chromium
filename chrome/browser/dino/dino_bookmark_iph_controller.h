@@ -8,9 +8,27 @@
 class BrowserWindowInterface;
 class Profile;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace dino {
 
 inline constexpr char kDinoUrl[] = "chrome://dino/";
+
+// Returns true if `web_contents` satisfies the arm-neutral browser-side
+// eligibility conditions for the offline Dino game-over bookmark IPH
+// (enterprise promotions policy enabled, visible offline error page, non-OTR
+// profile, bookmarks editable, and `chrome://dino/` not already bookmarked).
+// Intentionally does not check `kDinoDelight` or the treatment-only show
+// counter so eligibility can be evaluated identically across experiment arms.
+bool CanShowDinoBookmarkPrompt(content::WebContents* web_contents);
+
+// Checks `kDinoDelight`, `CanShowDinoBookmarkPrompt()`, and the per-profile
+// `kDinoBookmarkPromptMaxTimesShownCounter` cap, and if all pass, requests User
+// Education to show `kIPHDelightDinoBookmarkFeature`. Increments
+// `kDinoBookmarkPromptMaxTimesShownCounter` when the promo is actually shown.
+void MaybeTriggerDinoBookmarkPrompt(content::WebContents* web_contents);
 
 // Saves `chrome://dino/` to the profile's bookmarks bar (preferring account
 // bookmarks when available) when `kDinoDelight` is enabled.

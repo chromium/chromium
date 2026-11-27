@@ -35,15 +35,19 @@ source_set("dino") {
     ]
     deps = [
       "//chrome/app:branded_strings",
+      "//chrome/browser:browser_process",
       "//chrome/browser/bookmarks",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/user_education",
+      "//chrome/common:constants",
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/feature_engagement/public",
       "//components/pref_registry",
       "//components/prefs",
       "//components/user_education/common",
+      "//content/public/browser",
+      "//content/public/common",
       "//url",
     ]
   }
@@ -71,14 +75,18 @@ source_set("unit_tests") {
     deps += [
       "//base",
       "//chrome/browser/bookmarks",
+      "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/bookmarks/test",
       "//components/pref_registry",
       "//components/prefs",
       "//components/sync_preferences:test_support",
+      "//content/public/browser",
       "//content/test:test_support",
+      "//net",
       "//url",
     ]
   }
