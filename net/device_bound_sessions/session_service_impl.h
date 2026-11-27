@@ -5,6 +5,7 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_SERVICE_IMPL_H_
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_SERVICE_IMPL_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
@@ -33,6 +34,7 @@
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/origin.h"
 
 namespace net {
 class URLRequest;
@@ -419,6 +421,22 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SessionKey& session_key,
       base::WeakPtr<RegistrationFetcher> fetcher,
       std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
+
+  // Continues `HandleGenerateKeyHeader()` after the store restored the
+  // attestation key (AIK) of the IdP session `idp_session_key`. Writes the AIK
+  // back to the session (even if the in-flight request was already cancelled
+  // or cleared) and passes the AIK or an error to `deliver_aik`:
+  // 1. The session was deleted: `kSigningKeyGenerationError`.
+  // 2. The restore failed: `kFailedToUnwrapKey`. A restore that failed for
+  //    good also clears the AIK of a session that still waits for it, so that
+  //    later requests don't try again.
+  // 3. The session neither waits for the restored AIK nor holds it (for
+  //    example, a new registration replaced it): `kSigningKeyGenerationError`.
+  void OnAttestationKeyRestoredForGenerateKey(
+      const SessionKey& idp_session_key,
+      SingleSignOnKeyManager::AttestationKeyCallback deliver_aik,
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableAttestationKeyId> restored_aik);
 
   // Creates and starts the refresh fetcher. If `key_id` is std::nullopt, the
   // session binding key is still being restored and must be passed to the

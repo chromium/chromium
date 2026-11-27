@@ -17,7 +17,11 @@ handle it being gone. Don't make such calls while iterating
 `unpartitioned_sessions_`, `deferred_requests_` or `proactive_requests_`;
 collect the keys or `extract()` the entries first, then act. Across asynchronous
 steps (key restoration, signing, fetches, cookie reads), bind the `SessionKey`
-by value and look the session up again when the step completes.
+by value and look the session up again when the step completes. That session can
+be a different `Session` under the same key (after a new registration or a
+refresh), so check that the state the step relied on still holds (for example,
+that the session still waits for, or already holds, the attestation key the step
+restored) before using it.
 
 **Why.** Deleting a session frees it, so a pointer, reference or iterator kept
 across one of these calls can dangle, and erasing from a map while iterating it

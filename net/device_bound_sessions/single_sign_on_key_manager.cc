@@ -28,6 +28,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/unexportable_key.h"
 #include "net/base/schemeful_site.h"
@@ -83,12 +84,10 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
 
   explicit GenerateKeyRequest(
       unexportable_keys::UnexportableKeyService& key_service,
-      unexportable_keys::UnexportableAttestationKeyId idp_aik,
       GenerateKeyParam param,
       url::Origin provider_origin,
       SessionService::KeyBindingCallback callback)
       : key_service_(key_service),
-        idp_aik_(idp_aik),
         param_(std::move(param)),
         provider_origin_(std::move(provider_origin)),
         callback_(std::move(callback)) {}
@@ -98,7 +97,8 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
 
   // Deletes the RP key unless it was handed to the `DoneCallback`. This also
   // covers the manager being destroyed while certify or the posted result is
-  // pending. A key that is only generated after that is deleted in
+  // pending. A key that arrives after `Finish()` or after `this` is destroyed
+  // is deleted in `OnGenerateSigningKeyDone()` or
   // `OnGenerateSigningKeyDoneOrDelete()`.
   ~GenerateKeyRequest() {
     if (rp_key_id_) {
@@ -110,8 +110,13 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   const url::Origin& rp_origin() const { return param_.target_origin; }
 
   // Records that the RP's site data was cleared while the request was running,
-  // so its key must not be stored.
-  void MarkSiteDataCleared() { site_data_cleared_ = true; }
+  // so its key must not be stored, and fails the request now (asynchronously
+  // via `Finish()`). Keeps `site_data_cleared_` set in case a success result is
+  // already posted.
+  void OnSiteDataCleared() {
+    site_data_cleared_ = true;
+    Finish(base::unexpected(SessionError::kSigningKeyGenerationError));
+  }
 
   // Returns true once the key must not be stored, because the caller cancelled
   // its callback or the RP's site data was cleared.
@@ -125,7 +130,8 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
     return std::move(callback_);
   }
 
-  void Start(DoneCallback on_done) {
+  AttestationKeyCallback Start(DoneCallback on_done) {
+    on_done_ = std::move(on_done);
     // A static function rather than a weak method, so it still runs, and
     // deletes the key, if the request is gone by the time the key exists.
     key_service_->GenerateSigningKeySlowlyAsync(
@@ -133,8 +139,23 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
         unexportable_keys::BackgroundTaskPriority::kUserBlocking,
         base::BindOnce(&GenerateKeyRequest::OnGenerateSigningKeyDoneOrDelete,
                        weak_factory_.GetWeakPtr(),
-                       base::UnsafeDangling(&key_service_.get()),
-                       std::move(on_done)));
+                       base::UnsafeDangling(&key_service_.get())));
+    // Fail the request if the caller destroys the returned callback without
+    // running it. `Finish()` posts, so destruction never re-enters.
+    base::ScopedClosureRunner on_dropped(base::BindOnce(
+        &GenerateKeyRequest::OnAttestationKey, weak_factory_.GetWeakPtr(),
+        base::unexpected(SessionError::kSigningKeyGenerationError)));
+    return base::BindOnce(
+        [](base::WeakPtr<GenerateKeyRequest> request,
+           base::ScopedClosureRunner on_dropped,
+           SessionErrorOr<unexportable_keys::UnexportableAttestationKeyId>
+               result) {
+          on_dropped.ReplaceClosure(base::NullCallback());
+          if (request) {
+            request->OnAttestationKey(std::move(result));
+          }
+        },
+        weak_factory_.GetWeakPtr(), std::move(on_dropped));
   }
 
  private:
@@ -143,11 +164,10 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   static void OnGenerateSigningKeyDoneOrDelete(
       base::WeakPtr<GenerateKeyRequest> request,
       MayBeDangling<unexportable_keys::UnexportableKeyService> key_service,
-      DoneCallback on_done,
       unexportable_keys::ServiceErrorOr<
           unexportable_keys::UnexportableSigningKeyId> result) {
     if (request) {
-      request->OnGenerateSigningKeyDone(std::move(on_done), std::move(result));
+      request->OnGenerateSigningKeyDone(std::move(result));
       return;
     }
     // The key service also runs callbacks with an error after it was
@@ -158,17 +178,20 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   }
 
   void OnGenerateSigningKeyDone(
-      DoneCallback on_done,
       unexportable_keys::ServiceErrorOr<
           unexportable_keys::UnexportableSigningKeyId> result) {
+    if (!on_done_) {
+      if (result) {
+        DeleteSigningKeys(*key_service_, {*result});
+      }
+      return;
+    }
     ASSIGN_OR_RETURN(rp_key_id_, std::move(result), [&](auto) {
-      Finish(std::move(on_done),
-             base::unexpected(SessionError::kSigningKeyGenerationError));
+      Finish(base::unexpected(SessionError::kSigningKeyGenerationError));
     });
     // Skip the slow certify call if its result would be thrown away anyway.
     if (ShouldStop()) {
-      Finish(std::move(on_done),
-             base::unexpected(SessionError::kSigningKeyGenerationError));
+      Finish(base::unexpected(SessionError::kSigningKeyGenerationError));
       return;
     }
 
@@ -176,37 +199,61 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
     // skips the slow certify call.
     ASSIGN_OR_RETURN(
         thumbprint_, GetJwkThumbprint(*key_service_, *rp_key_id_), [&] {
-          Finish(std::move(on_done),
-                 base::unexpected(SessionError::kSigningKeyGenerationError));
+          Finish(base::unexpected(SessionError::kSigningKeyGenerationError));
         });
 
+    MaybeStartCertify();
+  }
+
+  void OnAttestationKey(
+      SessionErrorOr<unexportable_keys::UnexportableAttestationKeyId> result) {
+    if (!on_done_) {
+      return;
+    }
+    ASSIGN_OR_RETURN(idp_aik_, std::move(result),
+                     [&](SessionError::ErrorType error) {
+                       Finish(base::unexpected(error));
+                     });
+    MaybeStartCertify();
+  }
+
+  void MaybeStartCertify() {
+    if (!rp_key_id_ || !idp_aik_) {
+      return;
+    }
+    // Skip the slow certify call if its result would be thrown away anyway.
+    if (ShouldStop()) {
+      Finish(base::unexpected(SessionError::kSigningKeyGenerationError));
+      return;
+    }
     key_service_->CertifySlowlyAsync(
-        idp_aik_, *rp_key_id_, base::as_byte_span(param_.challenge),
+        *idp_aik_, *rp_key_id_, base::as_byte_span(param_.challenge),
         unexportable_keys::BackgroundTaskPriority::kUserBlocking,
         base::BindOnce(&GenerateKeyRequest::OnCertifySlowlyDone,
-                       weak_factory_.GetWeakPtr(), std::move(on_done)));
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnCertifySlowlyDone(
-      DoneCallback on_done,
       unexportable_keys::ServiceErrorOr<crypto::AttestationStatement> result) {
     Finish(
-        std::move(on_done),
         base::OptionalToExpected(base::OptionalFromExpected(std::move(result))
                                      .and_then(SerializeBindingStatement),
                                  SessionError::kAttestationCertificationError));
   }
 
-  // Runs `on_done` from a posted task rather than right away. The key service
-  // may reply inline (e.g. `CertifySlowlyAsync()` fails synchronously for an
-  // unknown AIK), and posting guarantees that the caller's callback never runs
-  // before `GenerateKey()` returns.
-  void Finish(DoneCallback on_done,
-              SessionErrorOr<std::string> binding_statement) {
+  // Runs `on_done_` from a posted task rather than right away. The key service
+  // or the AIK callback may reply inline (e.g. `CertifySlowlyAsync()` fails
+  // synchronously for an unknown AIK), and posting guarantees that the
+  // caller's callback never runs before `GenerateKey()` returns or
+  // synchronously from the AIK callback.
+  void Finish(SessionErrorOr<std::string> binding_statement) {
+    if (!on_done_) {
+      return;
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&GenerateKeyRequest::RunDoneCallback,
-                       weak_factory_.GetWeakPtr(), std::move(on_done),
+                       weak_factory_.GetWeakPtr(), std::move(on_done_),
                        std::move(binding_statement)));
   }
 
@@ -225,11 +272,13 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   }
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
-  const unexportable_keys::UnexportableAttestationKeyId idp_aik_;
   GenerateKeyParam param_;
   url::Origin provider_origin_;
   // The caller's callback. Destroying the request drops it.
   SessionService::KeyBindingCallback callback_;
+  // Non-null until `Finish()` is called.
+  DoneCallback on_done_;
+  std::optional<unexportable_keys::UnexportableAttestationKeyId> idp_aik_;
   std::optional<unexportable_keys::UnexportableSigningKeyId> rp_key_id_;
   // JWK thumbprint of `rp_key_id_`, set right after keygen.
   std::string thumbprint_;
@@ -262,8 +311,8 @@ bool SingleSignOnKeyManager::CanGenerateKey(
                                     rp_origin);
 }
 
-void SingleSignOnKeyManager::GenerateKey(
-    unexportable_keys::UnexportableAttestationKeyId idp_aik,
+SingleSignOnKeyManager::AttestationKeyCallback
+SingleSignOnKeyManager::GenerateKey(
     GenerateKeyParam param,
     url::Origin provider_origin,
     SessionService::KeyBindingCallback callback) {
@@ -271,14 +320,15 @@ void SingleSignOnKeyManager::GenerateKey(
   GenerateKeyRequest* request =
       generate_key_requests_
           .insert(std::make_unique<GenerateKeyRequest>(
-              *key_service_, idp_aik, std::move(param),
-              std::move(provider_origin), std::move(callback)))
+              *key_service_, std::move(param), std::move(provider_origin),
+              std::move(callback)))
           .first->get();
   // `request` posts its result, so the caller's callback never runs before
   // `GenerateKey()` returns. `base::Unretained` is safe because `this` owns
   // `request`, which only calls `OnGenerateKeyDone()` while it is alive.
-  request->Start(base::BindOnce(&SingleSignOnKeyManager::OnGenerateKeyDone,
-                                base::Unretained(this), request));
+  return request->Start(
+      base::BindOnce(&SingleSignOnKeyManager::OnGenerateKeyDone,
+                     base::Unretained(this), request));
 }
 
 bool SingleSignOnKeyManager::AddPreProvisionedKey(
@@ -362,7 +412,7 @@ void SingleSignOnKeyManager::ClearPreProvisionedKeys(
   // asynchronously, so nothing re-enters the caller.
   for (const auto& request : generate_key_requests_) {
     if (matches_rp(request->rp_origin())) {
-      request->MarkSiteDataCleared();
+      request->OnSiteDataCleared();
     }
   }
 }

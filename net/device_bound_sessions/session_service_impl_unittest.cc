@@ -18,6 +18,7 @@
 
 #include "base/base64url.h"
 #include "base/cancelable_callback.h"
+#include "base/check.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -30,6 +31,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -65,6 +67,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/dbsc_request.h"
+#include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
@@ -76,6 +79,7 @@
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
@@ -100,8 +104,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::RunOnceCallback;
+using base::test::ValueIs;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -486,6 +492,9 @@ class SessionServiceImplTest : public ::testing::Test,
   }
 
   void TearDown() override {
+    // Wait for in-flight `UnexportableKeyTaskManager` background tasks.
+    // `task_manager_` is destroyed before the base class's `TaskEnvironment`.
+    base::ThreadPoolInstance::Get()->FlushForTesting();
     // Reset the `network_delegate_` to avoid a dangling pointer.
     network_delegate_ = nullptr;
     net::URLRequestFilter::GetInstance()->ClearHandlers();
@@ -528,10 +537,12 @@ class SessionServiceImplTest : public ::testing::Test,
  private:
   raw_ptr<TestNetworkDelegate> network_delegate_;
   std::unique_ptr<URLRequestContext> context_;
+  // Installed before the key service, which may use the provider during
+  // construction and teardown.
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<SessionServiceImpl> service_;
 };
 
@@ -3238,7 +3249,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
  public:
-  SessionServiceImplWithStoreTest()
+  explicit SessionServiceImplWithStoreTest(
+      SessionService::CookieAccessCallback has_cookie_access_cb =
+          base::NullCallback())
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         context_(CreateTestURLRequestContextBuilder()->Build()),
@@ -3247,7 +3260,7 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
                  context_.get(),
                  store_.get(),
                  /*restricted_sites=*/std::vector<SchemefulSite>(),
-                 /*has_cookie_access_cb=*/base::NullCallback(),
+                 std::move(has_cookie_access_cb),
                  /*client_cert_handler=*/base::DoNothing()) {
     AddScopedFeatureList().InitAndEnableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
@@ -3255,6 +3268,9 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
 
   SessionServiceImpl& service() { return service_; }
   StrictMock<SessionStoreMock>& store() { return *store_; }
+  SingleSignOnKeyManager& sso_key_manager() {
+    return service().sso_key_manager_;
+  }
 
   crypto::ScopedMockUnexportableKeyProvider& SwitchToMockKeyProvider() {
     // Using `emplace()` to destroy the existing scoped object before
@@ -3492,6 +3508,9 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   }
 
   void TearDown() override {
+    // Wait for in-flight `UnexportableKeyTaskManager` background tasks.
+    // `task_manager_` is destroyed before the base class's `TaskEnvironment`.
+    base::ThreadPoolInstance::Get()->FlushForTesting();
     net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
@@ -3502,12 +3521,14 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   }
 
  private:
-  unexportable_keys::UnexportableKeyTaskManager task_manager_;
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
+  // Installed before the key service, which may use the provider during
+  // construction and teardown.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<StrictMock<SessionStoreMock>> store_;
   SessionServiceImpl service_;
@@ -7897,5 +7918,494 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   EXPECT_FALSE(HasPreProvisionedKeys());
   // The quota unit is not refunded.
   ExhaustProviderSigningQuota(service(), 5);
+}
+
+class SessionServiceImplWithStoreSingleSignOnTest
+    : public SessionServiceImplWithStoreTest {
+ public:
+  using RestoreCallback = SessionStore::RestoreSessionAttestationKeyCallback;
+  using RestoreResult = unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableAttestationKeyId>;
+
+  SessionServiceImplWithStoreSingleSignOnTest()
+      : SessionServiceImplWithStoreTest(base::BindLambdaForTesting(
+            [this](const CookieAccessCheckParams& params) {
+              return cookie_access_cb_.Run(params);
+            })) {
+    AddScopedFeatureList().InitAndEnableFeature(
+        net::features::kDeviceBoundSessionsForSingleSignOn);
+  }
+
+  void SetUp() override {
+    SessionServiceImplWithStoreTest::SetUp();
+    LoadProviderSessionWithUnrestoredAttestationKey();
+  }
+
+  void TearDown() override {
+    // Drain main-thread continuations (e.g. `BackgroundLongTaskScheduler`
+    // scheduling its next task) before flushing the thread pool.
+    RunUntilIdle();
+    SessionServiceImplWithStoreTest::TearDown();
+  }
+
+  void SetCookieAccessCallback(SessionService::CookieAccessCallback callback) {
+    cookie_access_cb_ = std::move(callback);
+  }
+
+  static SessionKey IdpSessionKey() {
+    return SessionKey{SchemefulSite(GURL(kIdentityProviderOrigin)),
+                      Session::Id("SessionWithAik")};
+  }
+
+  Session& IdpSession() {
+    Session* session = service().GetSession(IdpSessionKey());
+    CHECK(session);
+    return *session;
+  }
+
+  unexportable_keys::UnexportableAttestationKeyId GenerateAttestationKey() {
+    base::test::TestFuture<RestoreResult> aik_future;
+    key_service()->GenerateAttestationKeySlowlyAsync(
+        {crypto::sign::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+        aik_future.GetCallback());
+    return aik_future.Take().value();
+  }
+
+  // Expects one restore of the IdP session's AIK and hands the store's
+  // callback to `held`, so the test decides when the restore completes.
+  void HoldRestore(base::test::TestFuture<RestoreCallback>& held) {
+    EXPECT_CALL(
+        store(),
+        RestoreSessionAttestationKey(
+            IdpSessionKey(),
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+        .WillOnce([&held](const SessionKey&,
+                          unexportable_keys::BackgroundTaskPriority,
+                          RestoreCallback callback) {
+          held.SetValue(std::move(callback));
+        })
+        .RetiresOnSaturation();
+  }
+
+  // Expects one restore of the IdP session's AIK that completes with `result`.
+  void ExpectRestore(RestoreResult result) {
+    EXPECT_CALL(
+        store(),
+        RestoreSessionAttestationKey(
+            IdpSessionKey(),
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+        .WillOnce(RunOnceCallback<2>(std::move(result)));
+  }
+
+  bool StartGenerateKey(
+      SessionService::KeyBindingCallback callback,
+      SessionService::OnAccessCallback access_callback = base::NullCallback()) {
+    std::unique_ptr<URLRequest> request =
+        CreateAllowedRequest(context(), GURL("https://provider.test/auth"));
+    if (access_callback) {
+      request->SetDeviceBoundSessionAccessCallback(std::move(access_callback));
+    }
+    DbscRequest dbsc_request(request.get());
+    return service().HandleGenerateKeyHeader(
+        dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+        std::move(callback));
+  }
+
+ private:
+  // Loads an origin-scoped provider session ("SessionWithAik") for
+  // https://provider.test from the store with an unrestored wrapped
+  // attestation key (`ServiceError::kKeyNotReady`).
+  void LoadProviderSessionWithUnrestoredAttestationKey() {
+    EXPECT_CALL(store(), LoadSessions).Times(1);
+    service().LoadSessionsAsync();
+
+    proto::Session session_proto =
+        CreateSessionProto("SessionWithAik", "https://provider.test/refresh");
+    session_proto.mutable_session_inclusion_rules()->set_origin(
+        kIdentityProviderOrigin);
+    session_proto.mutable_cookie_cravings(0)->set_domain("provider.test");
+    session_proto.set_wrapped_attestation_key("mock_wrapped_attestation_key");
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                         Session::CreateFromProto(session_proto));
+    ASSERT_TRUE(session);
+    ASSERT_THAT(session->maybe_unexportable_attestation_key_id(),
+                ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+
+    SessionStore::SessionsMap session_map;
+    session_map.insert({IdpSessionKey(), std::move(session)});
+    FinishLoadingSessions(std::move(session_map));
+  }
+
+  SessionService::CookieAccessCallback cookie_access_cb_ =
+      base::BindRepeating([](const CookieAccessCheckParams&) { return true; });
+};
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_RestoresAttestationKeyOnUse) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+  ExpectRestore(base::ok(aik_id));
+
+  std::optional<url::Origin> captured_provider_origin;
+  SetCookieAccessCallback(base::BindLambdaForTesting(
+      [&captured_provider_origin](const CookieAccessCheckParams& params) {
+        captured_provider_origin = *params.provider_origin;
+        return true;
+      }));
+
+  FakeDeviceBoundSessionObserver access_observer;
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback(),
+                               access_observer.GetCallback()));
+  EXPECT_THAT(access_observer.notifications(),
+              ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                        IdpSessionKey()}));
+
+  // The key stored for the RP is the one that the binding statement certifies.
+  ASSERT_OK_AND_ASSIGN(std::string binding_statement,
+                       key_binding_future.Take());
+  ASSERT_OK_AND_ASSIGN(std::string thumbprint,
+                       GetSubjectKeyThumbprint(binding_statement));
+  // The lookup checks cookie access for the provider origin that
+  // `HandleGenerateKeyHeader()` passed to the key manager.
+  captured_provider_origin.reset();
+  EXPECT_THAT(sso_key_manager().FindPreProvisionedKey(
+                  thumbprint, url::Origin::Create(GURL(kRelyingPartyOrigin))),
+              HasValue());
+  EXPECT_EQ(captured_provider_origin,
+            url::Origin::Create(GURL(kIdentityProviderOrigin)));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(aik_id));
+
+  // A later request uses the restored AIK without another restore: the store
+  // mock allows only the one above.
+  base::test::TestFuture<SessionErrorOr<std::string>> second_future;
+  ASSERT_TRUE(StartGenerateKey(second_future.GetCallback()));
+  EXPECT_THAT(second_future.Take(), HasValue());
+
+  // Each `HandleGenerateKeyHeader()` call consumed 1 unit of the 6-unit
+  // quota, on the restore path and on the direct path.
+  ExhaustProviderSigningQuota(service(), 4);
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_SigningQuotaExceededOnRestore) {
+  EXPECT_CALL(store(), RestoreSessionAttestationKey).Times(0);
+
+  // Use up the quota without a refusal, so that the GenerateKey refusal below
+  // is the first of its out-of-quota episode and gets recorded.
+  for (size_t i = 0; i < 6; ++i) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        IdpSessionKey().site, SigningQuotaOperation::kRefresh));
+  }
+  base::HistogramTester histogram_tester;
+
+  FakeDeviceBoundSessionObserver access_observer;
+  EXPECT_FALSE(StartGenerateKey(KeyBindingCallbackNotRun(),
+                                access_observer.GetCallback()));
+  EXPECT_THAT(access_observer.notifications(), IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.GenerateKey"),
+      BucketsAre(base::Bucket(7, 1)));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_RestoreAttestationKeyFailure) {
+  ExpectRestore(
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+  EXPECT_FALSE(key_binding_future.IsReady());
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kFailedToUnwrapKey));
+
+  // The session itself remains valid, and its attestation key is cleared so
+  // subsequent requests don't repeatedly hit the store on persistent failure.
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(std::nullopt));
+  EXPECT_FALSE(StartGenerateKey(KeyBindingCallbackNotRun()));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_TransientRestoreFailureKeepsAttestationKey) {
+  ExpectRestore(
+      base::unexpected(unexportable_keys::ServiceError::kOperationCancelled));
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+  EXPECT_FALSE(key_binding_future.IsReady());
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kFailedToUnwrapKey));
+  // `kOperationCancelled` is not persistent, so the wrapped AIK stays.
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_SessionDeletedDuringRestore) {
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+  EXPECT_CALL(store(), DeleteSession(IdpSessionKey())).Times(1);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  service().DeleteSessionAndNotify(DeletionReason::kClearBrowsingData,
+                                   IdpSessionKey(), base::NullCallback());
+  restore.Take().Run(base::ok(GenerateAttestationKey()));
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kSigningKeyGenerationError));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_AttestationKeyClearedDuringRestore) {
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  IdpSession().set_unexportable_attestation_key_id(std::nullopt);
+  restore.Take().Run(base::ok(GenerateAttestationKey()));
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(std::nullopt));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_AttestationKeyReplacedDuringRestore) {
+  unexportable_keys::UnexportableAttestationKeyId first_aik =
+      GenerateAttestationKey();
+  unexportable_keys::UnexportableAttestationKeyId second_aik =
+      GenerateAttestationKey();
+  ASSERT_NE(second_aik, first_aik);
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  IdpSession().set_unexportable_attestation_key_id(second_aik);
+  restore.Take().Run(base::ok(first_aik));
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(second_aik));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_SessionRefreshedDuringRestore) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+  // The key manager already has the request while the restore is pending.
+  EXPECT_TRUE(sso_key_manager().HasGenerateKeyRequestsForTesting());
+
+  // A refresh puts a new `Session` under the same key. It still waits for the
+  // same wrapped AIK, so the restored key goes to the new `Session`.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> refreshed_session,
+                       Session::CreateIfValid(SessionParams{
+                           .session_id = "SessionWithAik",
+                           .fetcher_url = GURL("https://provider.test/refresh"),
+                           .refresh_url = "https://provider.test/refresh",
+                           .scope = {.origin = kIdentityProviderOrigin},
+                       }));
+  const Session* refreshed_session_ptr = refreshed_session.get();
+  EXPECT_CALL(store(), SaveSession(IdpSessionKey().site, _,
+                                   SessionStore::SaveSessionMode::kRefresh));
+  EXPECT_EQ(OnRefreshRequestCompletionInternal(
+                base::NullCallback(), IdpSessionKey(), /*fetcher=*/nullptr,
+                RegistrationResult(std::move(refreshed_session),
+                                   /*maybe_stored_cookies=*/{})),
+            SessionError::kSuccess);
+  ASSERT_EQ(&IdpSession(), refreshed_session_ptr);
+  restore.Take().Run(base::ok(aik_id));
+
+  EXPECT_THAT(key_binding_future.Take(), HasValue());
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(aik_id));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_SessionRegisteredAgainDuringRestore) {
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  // A new registration under the same key replaces the stored session. It has
+  // no AIK, so it doesn't wait for the one being restored.
+  EXPECT_CALL(store(), DeleteSession(IdpSessionKey()));
+  EXPECT_CALL(store(), SaveSession(IdpSessionKey().site, _,
+                                   SessionStore::SaveSessionMode::kNewSession));
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "SessionWithAik", "https://provider.test/refresh",
+      kIdentityProviderOrigin);
+  service().RegisterBoundSession(
+      base::DoNothing(),
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          GURL("https://provider.test/refresh"), {crypto::sign::ECDSA_SHA256},
+          "challenge", /*authorization=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return IdpSession().maybe_unexportable_attestation_key_id().has_value();
+  }));
+  restore.Take().Run(base::ok(GenerateAttestationKey()));
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(std::nullopt));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_FailedRestoreKeepsReplacedAttestationKey) {
+  unexportable_keys::UnexportableAttestationKeyId second_aik =
+      GenerateAttestationKey();
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  IdpSession().set_unexportable_attestation_key_id(second_aik);
+  restore.Take().Run(
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kFailedToUnwrapKey));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(second_aik));
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_SiteDataClearedDuringRestore) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  // Clear the RP's site data while the restore is pending. The IdP session
+  // doesn't match and stays.
+  base::test::TestFuture<void> cleared;
+  service().DeleteAllSessions(
+      DeletionReason::kClearBrowsingData, /*created_after_time=*/std::nullopt,
+      /*created_before_time=*/std::nullopt,
+      base::BindRepeating([](const url::Origin& origin, const SchemefulSite&) {
+        return origin == url::Origin::Create(GURL(kRelyingPartyOrigin));
+      }),
+      cleared.GetCallback());
+  ASSERT_TRUE(cleared.Wait());
+  // Clearing fails the request without waiting for the restore; the restored
+  // AIK is still kept for later requests and no key is stored.
+  EXPECT_THAT(key_binding_future.Take(),
+              ErrorIs(SessionError::kSigningKeyGenerationError));
+  restore.Take().Run(base::ok(aik_id));
+
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(aik_id));
+  EXPECT_FALSE(sso_key_manager().HasPreProvisionedKeysForTesting());
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_UnrelatedSiteDataClearedDuringRestore) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(StartGenerateKey(key_binding_future.GetCallback()));
+
+  // Clear the data of a site that is neither the RP nor the IdP.
+  base::test::TestFuture<void> cleared;
+  service().DeleteAllSessions(
+      DeletionReason::kClearBrowsingData, /*created_after_time=*/std::nullopt,
+      /*created_before_time=*/std::nullopt,
+      base::BindRepeating([](const url::Origin& origin, const SchemefulSite&) {
+        return origin == url::Origin::Create(GURL("https://unrelated.test"));
+      }),
+      cleared.GetCallback());
+  ASSERT_TRUE(cleared.Wait());
+  restore.Take().Run(base::ok(aik_id));
+
+  // Clearing an unrelated origin doesn't affect the in-flight request.
+  EXPECT_THAT(key_binding_future.Take(), HasValue());
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(aik_id));
+  EXPECT_TRUE(sso_key_manager().HasPreProvisionedKeysForTesting());
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_OverlappingRestoresBothSucceed) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+
+  base::test::TestFuture<RestoreCallback> restore1;
+  base::test::TestFuture<RestoreCallback> restore2;
+  {
+    InSequence seq;
+    HoldRestore(restore1);
+    HoldRestore(restore2);
+  }
+
+  base::test::TestFuture<SessionErrorOr<std::string>> future1;
+  base::test::TestFuture<SessionErrorOr<std::string>> future2;
+  ASSERT_TRUE(StartGenerateKey(future1.GetCallback()));
+  ASSERT_TRUE(StartGenerateKey(future2.GetCallback()));
+
+  restore1.Take().Run(base::ok(aik_id));
+  restore2.Take().Run(base::ok(aik_id));
+
+  EXPECT_THAT(future1.Take(), HasValue());
+  EXPECT_THAT(future2.Take(), HasValue());
+}
+
+TEST_F(SessionServiceImplWithStoreSingleSignOnTest,
+       HandleGenerateKeyHeader_CancelledDuringRestore) {
+  unexportable_keys::UnexportableAttestationKeyId aik_id =
+      GenerateAttestationKey();
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      KeyBindingCallbackNotRun());
+
+  base::test::TestFuture<RestoreCallback> restore;
+  HoldRestore(restore);
+
+  ASSERT_TRUE(StartGenerateKey(key_callback.callback()));
+
+  key_callback.Cancel();
+  // Let keygen finish so the cancelled request completes before the restore
+  // replies; the restored AIK is still written back to the session.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !sso_key_manager().HasGenerateKeyRequestsForTesting(); }));
+  restore.Take().Run(base::ok(aik_id));
+  EXPECT_THAT(IdpSession().maybe_unexportable_attestation_key_id(),
+              ValueIs(aik_id));
+  EXPECT_FALSE(sso_key_manager().HasPreProvisionedKeysForTesting());
 }
 }  // namespace net::device_bound_sessions

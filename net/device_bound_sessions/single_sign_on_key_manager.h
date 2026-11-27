@@ -35,6 +35,11 @@ namespace net::device_bound_sessions {
 // on Secure-Session-GenerateKey certified with the IdP's attestation key (AIK).
 class NET_EXPORT SingleSignOnKeyManager {
  public:
+  // Callback used to deliver the IdP session's attestation key (AIK), or an
+  // error if obtaining it failed, to an in-flight `GenerateKey()` request.
+  using AttestationKeyCallback = base::OnceCallback<void(
+      SessionErrorOr<unexportable_keys::UnexportableAttestationKeyId>)>;
+
   // `key_service` must outlive `this`.
   explicit SingleSignOnKeyManager(
       unexportable_keys::UnexportableKeyService& key_service,
@@ -53,18 +58,31 @@ class NET_EXPORT SingleSignOnKeyManager {
   bool CanGenerateKey(const url::Origin& provider_origin,
                       const url::Origin& rp_origin) const;
 
-  // Generates an RP signing key, certifies it with the IdP's AIK `idp_aik` and
-  // stores it as a pre-provisioned key. Call only after `CanGenerateKey()`
-  // returned true. `callback` receives the serialized binding statement or an
-  // error, and never runs before `GenerateKey()` returns. If `this` is
-  // destroyed before the request finishes, `callback` is dropped. If
-  // `callback` is cancelled, the request stops early and deletes its key.
-  // Cancellation is detected via `callback.IsCancelled()`, so bind `callback`
-  // to a `WeakPtr` and don't wrap it in another callback.
-  void GenerateKey(unexportable_keys::UnexportableAttestationKeyId idp_aik,
-                   GenerateKeyParam param,
-                   url::Origin provider_origin,
-                   SessionService::KeyBindingCallback callback);
+  // Starts generating an RP signing key and returns a callback through which
+  // the caller delivers the IdP's AIK (or an error). Once both the RP key and
+  // the AIK are available, certifies the RP key with the AIK and stores it as
+  // a pre-provisioned key. Call only after `CanGenerateKey()` returned true.
+  //
+  // Dropping the returned callback without running it fails the request with
+  // `kSigningKeyGenerationError`. Keeping it alive without running it leaves
+  // the request (and any generated RP key) pending until keygen fails, `this`
+  // is destroyed, the RP's site data is cleared, or keygen finishes after
+  // cancellation. Running the returned callback after the request has finished
+  // or `this` has been destroyed is a no-op. If the AIK is already available,
+  // run the returned callback right away.
+  //
+  // `callback` receives the serialized binding statement or an error, and
+  // never runs before `GenerateKey()` returns (or synchronously from the
+  // returned callback). If `this` is destroyed before the request finishes,
+  // `callback` is dropped. If `callback` is cancelled, the request stops once
+  // keygen is done (at keygen completion, a later AIK delivery, or certify
+  // completion) and deletes its key instead of storing it. Cancellation is
+  // detected via `callback.IsCancelled()`, so bind `callback` to a `WeakPtr`
+  // and don't wrap it in another callback.
+  [[nodiscard]] AttestationKeyCallback GenerateKey(
+      GenerateKeyParam param,
+      url::Origin provider_origin,
+      SessionService::KeyBindingCallback callback);
 
   // Adds a pre-provisioned key to the in-memory store.
   //

@@ -4,15 +4,18 @@
 
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64url.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -28,6 +31,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -36,6 +40,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/sign.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/generate_key_param.h"
@@ -139,20 +144,36 @@ class SingleSignOnKeyManagerTest : public testing::Test {
                           callback) {
           unexportable_key_service_.GenerateSigningKeySlowlyAsync(
               acceptable_algorithms, priority,
-              base::BindLambdaForTesting(
-                  [this, &generated, callback = std::move(callback)](
-                      unexportable_keys::ServiceErrorOr<
-                          unexportable_keys::UnexportableSigningKeyId>
-                          result) mutable {
-                    ASSERT_OK_AND_ASSIGN(
-                        unexportable_keys::UnexportableSigningKeyId id, result);
-                    ASSERT_OK_AND_ASSIGN(
-                        std::string thumbprint,
-                        GetJwkThumbprint(unexportable_key_service_, id));
-                    generated.SetValue(CapturedRpKey{
-                        .id = id, .thumbprint = std::move(thumbprint)});
-                    std::move(callback).Run(std::move(result));
-                  }));
+              CaptureGeneratedRpKey(generated, std::move(callback)));
+        });
+  }
+
+  // Forwards the next `GenerateSigningKeySlowlyAsync()` call to the real key
+  // service, captures the generated key in `generated`, and holds its reply in
+  // `held` until the test invokes it.
+  void HoldKeygenReply(TestFuture<base::OnceClosure>& held,
+                       TestFuture<CapturedRpKey>& generated) {
+    EXPECT_CALL(mock_key_service_, GenerateSigningKeySlowlyAsync)
+        .WillOnce([this, &held, &generated](
+                      base::span<const crypto::sign::SignatureKind>
+                          acceptable_algorithms,
+                      unexportable_keys::BackgroundTaskPriority priority,
+                      base::OnceCallback<void(
+                          unexportable_keys::ServiceErrorOr<
+                              unexportable_keys::UnexportableSigningKeyId>)>
+                          callback) {
+          unexportable_key_service_.GenerateSigningKeySlowlyAsync(
+              acceptable_algorithms, priority,
+              CaptureGeneratedRpKey(
+                  generated,
+                  base::BindLambdaForTesting(
+                      [&held, callback = std::move(callback)](
+                          unexportable_keys::ServiceErrorOr<
+                              unexportable_keys::UnexportableSigningKeyId>
+                              result) mutable {
+                        held.SetValue(base::BindOnce(std::move(callback),
+                                                     std::move(result)));
+                      })));
         });
   }
 
@@ -221,6 +242,27 @@ class SingleSignOnKeyManagerTest : public testing::Test {
   }
 
  private:
+  base::OnceCallback<void(unexportable_keys::ServiceErrorOr<
+                          unexportable_keys::UnexportableSigningKeyId>)>
+  CaptureGeneratedRpKey(
+      TestFuture<CapturedRpKey>& generated,
+      base::OnceCallback<void(unexportable_keys::ServiceErrorOr<
+                              unexportable_keys::UnexportableSigningKeyId>)>
+          callback) {
+    return base::BindLambdaForTesting(
+        [this, &generated, callback = std::move(callback)](
+            unexportable_keys::ServiceErrorOr<
+                unexportable_keys::UnexportableSigningKeyId> result) mutable {
+          ASSERT_OK_AND_ASSIGN(unexportable_keys::UnexportableSigningKeyId id,
+                               result);
+          ASSERT_OK_AND_ASSIGN(std::string thumbprint,
+                               GetJwkThumbprint(unexportable_key_service_, id));
+          generated.SetValue(
+              CapturedRpKey{.id = id, .thumbprint = std::move(thumbprint)});
+          std::move(callback).Run(std::move(result));
+        });
+  }
+
   base::test::TaskEnvironment task_environment_;
   bool allow_cookie_access_ = true;
   std::optional<url::Origin> allowed_provider_origin_;
@@ -711,8 +753,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest, ValidParamStoresKey) {
                   unexportable_keys::BackgroundTaskPriority::kUserBlocking, _));
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
 
   ASSERT_OK_AND_ASSIGN(std::string serialized_statement, future.Take());
   ASSERT_OK_AND_ASSIGN(
@@ -747,8 +791,9 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest, NoSupportedAlgosReturnsError) {
   EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), std::move(param), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(std::move(param), ProviderOrigin(), future.GetCallback())
+      .Run(aik_id());
   // The result is always posted, even if the key service replies inline.
   EXPECT_FALSE(future.IsReady());
 
@@ -767,8 +812,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   // `CertifySlowlyAsync()` replies inline for an unknown AIK, but the result
   // is still posted.
   EXPECT_FALSE(future.IsReady());
@@ -794,8 +841,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
 
   EXPECT_THAT(future.Take(), ErrorIs(SessionError::kSigningKeyGenerationError));
   EXPECT_TRUE(deleted.Wait());
@@ -814,8 +863,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest, CancelledDuringKeygenDeletesKey) {
   // cancellation.
   EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
 
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        key_callback.callback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   key_callback.callback())
+      .Run(aik_id());
   // Cancel before keygen replies.
   key_callback.Cancel();
 
@@ -839,8 +890,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   TestFuture<void> delete_future;
   ExpectRpKeyDeleted(delete_future);
 
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        key_callback.callback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   key_callback.callback())
+      .Run(aik_id());
   base::OnceClosure release_certify = certify.Take();
   key_callback.Cancel();
   std::move(release_certify).Run();
@@ -863,8 +916,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   manager().ClearPreProvisionedKeys(base::BindRepeating(
       [](const url::Origin& origin, const SchemefulSite& site) {
         return origin.host() == "rp.test";
@@ -884,8 +939,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   // A null matcher clears everything, including in-flight requests.
   manager().ClearPreProvisionedKeys(base::NullCallback());
 
@@ -900,8 +957,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest, OtherSiteDataClearedStoresKey) {
   ExpectRpKeyGenerated(generated);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   manager().ClearPreProvisionedKeys(base::BindRepeating(
       [](const url::Origin& origin, const SchemefulSite& site) {
         return origin.host() == "other-rp.test";
@@ -919,8 +978,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   // Revoke access while the request runs, so storing the key fails.
   SetCookieAccess(false);
 
@@ -941,8 +1002,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
 
   // Destroy the manager while keygen is pending.
   reset_manager();
@@ -965,8 +1028,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   ASSERT_TRUE(keygen_callback);
 
   reset_manager();
@@ -986,8 +1051,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   ASSERT_TRUE(certify.Wait());
 
   reset_manager();
@@ -1025,8 +1092,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
           });
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
 
   EXPECT_TRUE(deleted.Wait());
   EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
@@ -1044,8 +1113,10 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
   ExpectRpKeyDeleted(deleted);
 
   TestFuture<SessionErrorOr<std::string>> future;
-  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-                        future.GetCallback());
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
   base::OnceClosure release_certify = certify.Take();
   manager().ClearPreProvisionedKeys(base::BindRepeating(
       [](const url::Origin& origin, const SchemefulSite& site) {
@@ -1062,18 +1133,65 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
               ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 }
 
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       SiteDataClearedWhileResultIsPostedDeletesKeyAndReturnsError) {
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+  // Clear site data right after certify replied, while the success result is
+  // posted and `on_done_` has already been consumed.
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync)
+      .WillOnce([this](
+                    unexportable_keys::UnexportableAttestationKeyId aik_id,
+                    unexportable_keys::UnexportableSigningKeyId key_id,
+                    base::span<const uint8_t> challenge,
+                    unexportable_keys::BackgroundTaskPriority priority,
+                    base::OnceCallback<void(unexportable_keys::ServiceErrorOr<
+                                            crypto::AttestationStatement>)>
+                        callback) {
+        key_service().CertifySlowlyAsync(
+            aik_id, key_id, challenge, priority,
+            base::BindLambdaForTesting(
+                [this, callback = std::move(callback)](
+                    unexportable_keys::ServiceErrorOr<
+                        crypto::AttestationStatement> result) mutable {
+                  std::move(callback).Run(std::move(result));
+                  manager().ClearPreProvisionedKeys(base::BindRepeating(
+                      [](const url::Origin& origin, const SchemefulSite& site) {
+                        return origin.host() == "rp.test";
+                      }));
+                }));
+      });
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  manager()
+      .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                   future.GetCallback())
+      .Run(aik_id());
+
+  EXPECT_THAT(future.Take(), ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
 // `OnGenerateKeyDone()` runs the callback last, so it may destroy the manager
 // or start a new request.
 TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
        ManagerDestroyedInCallbackDoesNotCrash) {
   TestFuture<void> callback_ran;
-  manager().GenerateKey(
-      aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-      base::BindLambdaForTesting([&](SessionErrorOr<std::string> result) {
-        // Synchronously destroy manager from within the callback.
-        reset_manager();
-        callback_ran.SetValue();
-      }));
+  manager()
+      .GenerateKey(
+          CreateGenerateKeyParam(), ProviderOrigin(),
+          base::BindLambdaForTesting([&](SessionErrorOr<std::string> result) {
+            // Synchronously destroy manager from within the callback.
+            reset_manager();
+            callback_ran.SetValue();
+          }))
+      .Run(aik_id());
 
   EXPECT_TRUE(callback_ran.Wait());
 }
@@ -1081,19 +1199,262 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
 TEST_F(SingleSignOnKeyManagerGenerateKeyTest, NewRequestInCallbackSucceeds) {
   TestFuture<SessionErrorOr<std::string>> future2;
   bool first_callback_ran = false;
-  manager().GenerateKey(
-      aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
-      base::BindLambdaForTesting([&](SessionErrorOr<std::string> result) {
-        EXPECT_THAT(result, HasValue());
-        first_callback_ran = true;
-        // Start a second request synchronously from within the first callback.
-        manager().GenerateKey(aik_id(), CreateGenerateKeyParam(),
-                              ProviderOrigin(), future2.GetCallback());
-      }));
+  manager()
+      .GenerateKey(
+          CreateGenerateKeyParam(), ProviderOrigin(),
+          base::BindLambdaForTesting([&](SessionErrorOr<std::string> result) {
+            EXPECT_THAT(result, HasValue());
+            first_callback_ran = true;
+            // Start a second request synchronously from within the first
+            // callback.
+            manager()
+                .GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                             future2.GetCallback())
+                .Run(aik_id());
+          }))
+      .Run(aik_id());
 
   ASSERT_OK_AND_ASSIGN(std::string statement2, future2.Take());
   EXPECT_TRUE(first_callback_ran);
   EXPECT_FALSE(statement2.empty());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       AttestationKeyDeliveredAfterKeygenStoresKey) {
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+
+  const CapturedRpKey& key = generated.Get();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(manager().HasGenerateKeyRequestsForTesting());
+
+  std::move(deliver_aik).Run(aik_id());
+  EXPECT_THAT(future.Take(), HasValue());
+  EXPECT_THAT(FindGeneratedKey(key), ValueIs(key.id));
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       AttestationKeyDeliveredBeforeKeygenStoresKey) {
+  EXPECT_CALL(mock_key_service(), DeleteKeysSlowlyAsync).Times(0);
+  TestFuture<base::OnceClosure> keygen_reply;
+  TestFuture<CapturedRpKey> generated;
+  HoldKeygenReply(keygen_reply, generated);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+  base::OnceClosure deliver_keygen = keygen_reply.Take();
+
+  std::move(deliver_aik).Run(aik_id());
+  EXPECT_FALSE(future.IsReady());
+
+  std::move(deliver_keygen).Run();
+  EXPECT_THAT(future.Take(), HasValue());
+  const CapturedRpKey& key = generated.Get();
+  EXPECT_THAT(FindGeneratedKey(key), ValueIs(key.id));
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       AttestationKeyErrorAfterKeygenDeletesKeyAndReturnsError) {
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+  const CapturedRpKey& key = generated.Get();
+
+  std::move(deliver_aik)
+      .Run(base::unexpected(SessionError::kFailedToUnwrapKey));
+  // The result is still posted, not run inline from the AIK callback.
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_THAT(future.Take(), ErrorIs(SessionError::kFailedToUnwrapKey));
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(key.id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(key),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       AttestationKeyErrorBeforeKeygenDeletesKeyAndReturnsError) {
+  TestFuture<base::OnceClosure> keygen_reply;
+  TestFuture<CapturedRpKey> generated;
+  HoldKeygenReply(keygen_reply, generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+  base::OnceClosure deliver_keygen = keygen_reply.Take();
+
+  std::move(deliver_aik)
+      .Run(base::unexpected(SessionError::kFailedToUnwrapKey));
+  EXPECT_FALSE(future.IsReady());
+
+  // Keygen completes before the posted done-callback destroys the request.
+  std::move(deliver_keygen).Run();
+  // `OnGenerateSigningKeyDone()` deletes the late key right away, before the
+  // posted done-callback runs and destroys the request.
+  EXPECT_TRUE(deleted.IsReady());
+  EXPECT_THAT(future.Take(), ErrorIs(SessionError::kFailedToUnwrapKey));
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       AttestationKeyCallbackDroppedDeletesKeyAndReturnsError) {
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  {
+    SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+        manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                              future.GetCallback());
+    ASSERT_TRUE(generated.Wait());
+    // Dropping `deliver_aik` without running it fails the request instead of
+    // leaving it pending.
+  }
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_THAT(future.Take(), ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_FALSE(manager().HasGenerateKeyRequestsForTesting());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       SiteDataClearedWhileWaitingForAttestationKeyDeletesKey) {
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+  const CapturedRpKey& key = generated.Get();
+
+  manager().ClearPreProvisionedKeys(base::BindRepeating(
+      [](const url::Origin& origin, const SchemefulSite& site) {
+        return origin.host() == "rp.test";
+      }));
+  // Clearing fails the request asynchronously without waiting for the AIK.
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_THAT(future.Take(), ErrorIs(SessionError::kSigningKeyGenerationError));
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(key.id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(key),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_FALSE(manager().HasGenerateKeyRequestsForTesting());
+
+  // Delivering the AIK after the request already failed is a no-op.
+  std::move(deliver_aik).Run(aik_id());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       CancelledBeforeKeygenWhileWaitingForAttestationKeyDeletesKey) {
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      base::DoNothing());
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  // Keep `deliver_aik` alive without running it so the stop is caught when
+  // keygen finishes, not on AIK delivery or callback destruction.
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            key_callback.callback());
+  key_callback.Cancel();
+
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_FALSE(manager().HasGenerateKeyRequestsForTesting());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       CancelledWhileWaitingForAttestationKeyDeletesKey) {
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      base::DoNothing());
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            key_callback.callback());
+  const CapturedRpKey& key = generated.Get();
+
+  key_callback.Cancel();
+  std::move(deliver_aik).Run(aik_id());
+
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(key.id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(key),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+  EXPECT_FALSE(manager().HasGenerateKeyRequestsForTesting());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       ManagerDestroyedWhileWaitingForAttestationKeyDeletesKey) {
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+  TestFuture<void> deleted;
+  ExpectRpKeyDeleted(deleted);
+
+  TestFuture<SessionErrorOr<std::string>> future;
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      manager().GenerateKey(CreateGenerateKeyParam(), ProviderOrigin(),
+                            future.GetCallback());
+  const CapturedRpKey& key = generated.Get();
+
+  reset_manager();
+
+  EXPECT_TRUE(deleted.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(key.id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_FALSE(future.IsReady());
+
+  // Delivering the AIK after the manager was destroyed is a no-op.
+  std::move(deliver_aik).Run(aik_id());
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace

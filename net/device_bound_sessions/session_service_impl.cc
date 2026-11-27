@@ -5,6 +5,7 @@
 #include "net/device_bound_sessions/session_service_impl.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -25,6 +26,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
@@ -51,6 +53,7 @@
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/session_store.h"
+#include "net/device_bound_sessions/single_sign_on_key_manager.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -250,6 +253,49 @@ void LogProactiveRefreshAttempt(
     SessionServiceImpl::ProactiveRefreshAttempt attempt) {
   base::UmaHistogramEnumeration(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt", attempt);
+}
+
+// Sets the attestation key (AIK) that the store restored for `session` on it
+// and returns the AIK. Returns an error if `restored_aik` can't be used with
+// `session`: the restore failed, or `session` neither waits for this key nor
+// already holds it.
+SessionErrorOr<unexportable_keys::UnexportableAttestationKeyId>
+ApplyRestoredAttestationKey(
+    Session& session,
+    const unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableAttestationKeyId>& restored_aik) {
+  const bool awaits_restore =
+      session.maybe_unexportable_attestation_key_id() ==
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
+
+  if (!restored_aik) {
+    if (awaits_restore &&
+        unexportable_keys::IsPersistentError(restored_aik.error())) {
+      // Attestation is optional. If restoring the wrapped AIK fails for good,
+      // clear it so later requests don't try to unwrap it again. The session
+      // stays. The next refresh saves the session without the wrapped AIK, so
+      // from then on the session has no AIK until the IdP registers it again.
+      session.set_unexportable_attestation_key_id(std::nullopt);
+    }
+    return base::unexpected(SessionError::kFailedToUnwrapKey);
+  }
+
+  if (awaits_restore) {
+    session.set_unexportable_attestation_key_id(*restored_aik);
+    return *restored_aik;
+  }
+
+  // An overlapping restore of the same wrapped key already stored this key
+  // ID. Any other state means the session was replaced or lost its AIK.
+  const std::optional<unexportable_keys::UnexportableAttestationKeyId>
+      session_aik = session.maybe_unexportable_attestation_key_id().value_or(
+          std::nullopt);
+  if (session_aik != *restored_aik) {
+    // TODO(crbug.com/575710508): Report a replaced provider session with its
+    // own error once key generation errors are reported.
+    return base::unexpected(SessionError::kSigningKeyGenerationError);
+  }
+  return *restored_aik;
 }
 
 }  // namespace
@@ -2118,11 +2164,22 @@ bool SessionServiceImpl::HandleGenerateKeyHeader(
     return false;
   }
 
-  ASSIGN_OR_RETURN(
-      std::optional<unexportable_keys::UnexportableAttestationKeyId> idp_aik,
-      idp_session->maybe_unexportable_attestation_key_id(),
-      [](unexportable_keys::ServiceError) { return false; });
-  if (!idp_aik) {
+  // The new key is certified with the session's attestation key (AIK), which
+  // is either loaded or, for sessions loaded from disk, still wrapped in the
+  // store (`kKeyNotReady`) until something needs it. A wrapped AIK is restored
+  // in parallel with RP key generation. Sessions without an AIK can't certify
+  // the key.
+  const Session::MaybeAttestationKeyIdOrError& aik_or_error =
+      idp_session->maybe_unexportable_attestation_key_id();
+  // Copied here because `NotifySessionAccess()` below runs a callback, after
+  // which references into the session must not be used.
+  const std::optional<unexportable_keys::UnexportableAttestationKeyId>
+      loaded_aik = aik_or_error.value_or(std::nullopt);
+  const bool needs_restore =
+      session_store_ &&
+      aik_or_error ==
+          base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
+  if (!loaded_aik && !needs_restore) {
     return false;
   }
 
@@ -2138,8 +2195,42 @@ bool SessionServiceImpl::HandleGenerateKeyHeader(
   NotifySessionAccess(request.device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, idp_session_key,
                       *idp_session);
-  sso_key_manager_.GenerateKey(*idp_aik, std::move(param),
-                               std::move(provider_origin), std::move(callback));
+  SingleSignOnKeyManager::AttestationKeyCallback deliver_aik =
+      sso_key_manager_.GenerateKey(std::move(param), std::move(provider_origin),
+                                   std::move(callback));
+  if (needs_restore) {
+    // The store may reply synchronously. `callback` still doesn't run before
+    // this method returns, because `sso_key_manager_` posts the result.
+    session_store_->RestoreSessionAttestationKey(
+        idp_session_key,
+        unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+        base::BindOnce(
+            &SessionServiceImpl::OnAttestationKeyRestoredForGenerateKey,
+            weak_factory_.GetWeakPtr(), idp_session_key,
+            std::move(deliver_aik)));
+  } else {
+    std::move(deliver_aik).Run(*loaded_aik);
+  }
   return true;
+}
+
+void SessionServiceImpl::OnAttestationKeyRestoredForGenerateKey(
+    const SessionKey& idp_session_key,
+    SingleSignOnKeyManager::AttestationKeyCallback deliver_aik,
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableAttestationKeyId> restored_aik) {
+  // The session may have been deleted or replaced while the store restored
+  // the key.
+  Session* idp_session = GetSession(idp_session_key);
+  if (!idp_session) {
+    // TODO(crbug.com/575710508): Report a deleted provider session with its
+    // own error once key generation errors are reported.
+    std::move(deliver_aik)
+        .Run(base::unexpected(SessionError::kSigningKeyGenerationError));
+    return;
+  }
+
+  std::move(deliver_aik)
+      .Run(ApplyRestoredAttestationKey(*idp_session, restored_aik));
 }
 }  // namespace net::device_bound_sessions
