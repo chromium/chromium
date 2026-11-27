@@ -325,7 +325,8 @@ class CORE_EXPORT HTMLTokenizer {
   [[maybe_unused]] const bool simd_scan_script_data_enabled_;
   [[maybe_unused]] const bool simd_scan_rawtext_enabled_;
   [[maybe_unused]] const bool simd_scan_attribute_value_enabled_;
-  [[maybe_unused]] const size_t simd_scan_min_length_;
+  [[maybe_unused]] const size_t simd_scan_min_remaining_length_;
+  [[maybe_unused]] const size_t simd_scan_min_buffered_length_;
   const HTMLParserOptions options_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#additional-allowed-character

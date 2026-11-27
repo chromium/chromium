@@ -88,6 +88,7 @@ class HTMLToken {
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
     const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
+    const UCharLiteralBuffer<32>& ValueBuffer() const { return value_; }
 
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_);
@@ -324,6 +325,11 @@ class HTMLToken {
     current_attribute_->AppendToValue(characters, bitwise_or_chars);
   }
 
+  ALWAYS_INLINE wtf_size_t CurrentAttributeValueSize() const {
+    DCHECK(type_ == kStartTag || type_ == kEndTag);
+    return current_attribute_->ValueBuffer().size();
+  }
+
   const AttributeList& Attributes() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     return attributes_;
@@ -344,6 +350,10 @@ class HTMLToken {
   ALWAYS_INLINE void EnsureIsCharacterToken() {
     DCHECK(type_ == kUninitialized || type_ == kCharacter);
     type_ = kCharacter;
+  }
+
+  ALWAYS_INLINE wtf_size_t BufferedCharacterSize() const {
+    return type_ == kCharacter ? data_.size() : 0;
   }
 
   const DataVector& Characters() const {

@@ -615,8 +615,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kHTMLTokenizerSimdScanAttributeValue);
 // Minimum remaining length of the current input buffer (SegmentedSubstring)
 // required to enter the SIMD scanning fast path.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
-                                               kHTMLTokenizerSimdScanMinLength);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kHTMLTokenizerSimdScanMinRemainingLength);
+// Minimum number of characters already buffered in the current token or
+// attribute value before entering the SIMD scanning fast path. This avoids
+// SIMD setup overhead on short attribute values or short text blocks.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kHTMLTokenizerSimdScanMinBufferedLength);
 
 // Whether blink::HeapVector promptly frees its backing store via
 // Allocator::FreeVectorBacking(). When disabled, the backing store is left to

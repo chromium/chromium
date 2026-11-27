@@ -260,7 +260,7 @@ TEST(HTMLTokenizerTest, SimdScanScriptDataAndRawtextMatchesBaseline) {
 
 TEST(HTMLTokenizerTest, SimdScanCrlfAcrossChunkBoundary) {
   test::TaskEnvironment task_environment;
-  std::string pad(80, 'x');
+  std::string pad(160, 'x');
   String chunk1(base::as_byte_span("<script>" + pad + "\r"));
   String chunk2(
       base::as_byte_span("\n" + pad + "</script><style>" + pad + "\r"));
@@ -283,7 +283,7 @@ TEST(HTMLTokenizerTest, SimdScanCrlfAcrossChunkBoundary) {
 
 TEST(HTMLTokenizerTest, SimdScanFeatureParams) {
   test::TaskEnvironment task_environment;
-  std::string pad(80, 'z');
+  std::string pad(160, 'z');
   String input(base::as_byte_span("<script>" + pad + "</script><style>" + pad +
                                   "</style>"));
 
@@ -295,12 +295,19 @@ TEST(HTMLTokenizerTest, SimdScanFeatureParams) {
   }
 
   const std::vector<base::FieldTrialParams> param_sets = {
-      {{"min_length", "0"}},
-      {{"min_length", "1"}},
-      {{"min_length", "15"}},
-      {{"min_length", "16"}},
-      {{"min_length", "17"}},
-      {{"min_length", "64"}},
+      {{"min_remaining_length", "0"}},
+      {{"min_remaining_length", "1"}},
+      {{"min_remaining_length", "15"}},
+      {{"min_remaining_length", "16"}},
+      {{"min_remaining_length", "17"}},
+      {{"min_remaining_length", "64"}},
+      {{"min_buffered_length", "0"}},
+      {{"min_buffered_length", "1"}},
+      {{"min_buffered_length", "63"}},
+      {{"min_buffered_length", "64"}},
+      {{"min_buffered_length", "65"}},
+      {{"min_buffered_length", "160"}},
+      {{"min_buffered_length", "161"}},
       {{"script_data", "true"}, {"rawtext", "false"}},
       {{"script_data", "false"}, {"rawtext", "true"}},
       {{"script_data", "false"}, {"rawtext", "false"}},
@@ -350,7 +357,8 @@ TEST(HTMLTokenizerTest, SimdScanVectorStrideBoundaries) {
         {
           base::test::ScopedFeatureList enabled;
           enabled.InitAndEnableFeatureWithParameters(
-              features::kHTMLTokenizerSimdScan, {{"min_length", "1"}});
+              features::kHTMLTokenizerSimdScan,
+              {{"min_buffered_length", "0"}, {"min_remaining_length", "1"}});
           simd = TokenizeAll({s});
         }
         EXPECT_EQ(baseline, simd);
@@ -481,11 +489,15 @@ TEST(HTMLTokenizerTest, SimdScanQuotedAttributeValuesMatchesBaseline) {
         return tokenize_attrs(chunks, track_ranges);
       }();
       for (const std::string& attr_param : {"true", "false"}) {
-        base::test::ScopedFeatureList enabled;
-        enabled.InitAndEnableFeatureWithParameters(
-            features::kHTMLTokenizerSimdScan,
-            {{"attribute_value", attr_param}, {"min_length", "16"}});
-        EXPECT_EQ(baseline, tokenize_attrs(chunks, track_ranges));
+        for (const std::string& min_buffered : {"0", "64"}) {
+          base::test::ScopedFeatureList enabled;
+          enabled.InitAndEnableFeatureWithParameters(
+              features::kHTMLTokenizerSimdScan,
+              {{"attribute_value", attr_param},
+               {"min_remaining_length", "16"},
+               {"min_buffered_length", min_buffered}});
+          EXPECT_EQ(baseline, tokenize_attrs(chunks, track_ranges));
+        }
       }
     }
   }

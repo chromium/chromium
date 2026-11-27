@@ -864,9 +864,15 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(size_t,
-                   kHTMLTokenizerSimdScanMinLength,
+                   kHTMLTokenizerSimdScanMinRemainingLength,
                    &kHTMLTokenizerSimdScan,
-                   "min_length",
+                   "min_remaining_length",
+                   64);
+
+BASE_FEATURE_PARAM(size_t,
+                   kHTMLTokenizerSimdScanMinBufferedLength,
+                   &kHTMLTokenizerSimdScan,
+                   "min_buffered_length",
                    64);
 
 BASE_FEATURE(kHeapVectorPromptlyFree, base::FEATURE_ENABLED_BY_DEFAULT);

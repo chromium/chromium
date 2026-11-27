@@ -181,9 +181,14 @@ HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options,
       simd_scan_attribute_value_enabled_(
           simd_scan_enabled &&
           features::kHTMLTokenizerSimdScanAttributeValue.Get()),
-      simd_scan_min_length_(
-          simd_scan_enabled ? features::kHTMLTokenizerSimdScanMinLength.Get()
-                            : 0),
+      simd_scan_min_remaining_length_(
+          simd_scan_enabled
+              ? features::kHTMLTokenizerSimdScanMinRemainingLength.Get()
+              : 0),
+      simd_scan_min_buffered_length_(
+          simd_scan_enabled
+              ? features::kHTMLTokenizerSimdScanMinBufferedLength.Get()
+              : 0),
       options_(options),
       input_stream_preprocessor_(this) {
   Reset();
@@ -282,7 +287,7 @@ bool HTMLTokenizer::TrySimdScanScriptOrRawtext(SegmentedString& source) {
   if (source.IsCurrentSubstring8Bit()) {
     const base::span<const LChar> remaining =
         source.CurrentSubstringRemainingSpan8();
-    if (remaining.size() < simd_scan_min_length_) {
+    if (remaining.size() < simd_scan_min_remaining_length_) {
       return false;
     }
     const size_t count = SimdScan<LChar, 4>(remaining, {'<', '\n', '\r', '\0'});
@@ -298,7 +303,7 @@ bool HTMLTokenizer::TrySimdScanScriptOrRawtext(SegmentedString& source) {
 
   const base::span<const UChar> remaining =
       source.CurrentSubstringRemainingSpan16();
-  if (remaining.size() < simd_scan_min_length_) {
+  if (remaining.size() < simd_scan_min_remaining_length_) {
     return false;
   }
   UChar bitwise_or = 0;
@@ -320,7 +325,7 @@ bool HTMLTokenizer::TrySimdScanQuotedAttributeValue(SegmentedString& source,
   if (source.IsCurrentSubstring8Bit()) {
     const base::span<const LChar> remaining =
         source.CurrentSubstringRemainingSpan8();
-    if (remaining.size() < simd_scan_min_length_) {
+    if (remaining.size() < simd_scan_min_remaining_length_) {
       return false;
     }
     const size_t count = SimdScan<LChar, 5>(
@@ -336,7 +341,7 @@ bool HTMLTokenizer::TrySimdScanQuotedAttributeValue(SegmentedString& source,
 
   const base::span<const UChar> remaining =
       source.CurrentSubstringRemainingSpan16();
-  if (remaining.size() < simd_scan_min_length_) {
+  if (remaining.size() < simd_scan_min_remaining_length_) {
     return false;
   }
   UChar bitwise_or = 0;
@@ -527,8 +532,9 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         return EmitEndOfFile(source);
       } else {
 #if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
-        if (simd_scan_rawtext_enabled_ && cc != '\n' &&
-            TrySimdScanScriptOrRawtext(source)) {
+        if (simd_scan_rawtext_enabled_ &&
+            token_.BufferedCharacterSize() >= simd_scan_min_buffered_length_ &&
+            cc != '\n' && TrySimdScanScriptOrRawtext(source)) {
           if (source.IsEmpty() ||
               !input_stream_preprocessor_.Peek(source, cc)) {
             return HaveBufferedCharacterToken();
@@ -549,8 +555,9 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         return EmitEndOfFile(source);
       } else {
 #if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
-        if (simd_scan_script_data_enabled_ && cc != '\n' &&
-            TrySimdScanScriptOrRawtext(source)) {
+        if (simd_scan_script_data_enabled_ &&
+            token_.BufferedCharacterSize() >= simd_scan_min_buffered_length_ &&
+            cc != '\n' && TrySimdScanScriptOrRawtext(source)) {
           if (source.IsEmpty() ||
               !input_stream_preprocessor_.Peek(source, cc)) {
             return HaveBufferedCharacterToken();
@@ -1188,8 +1195,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         HTML_RECONSUME_IN(kDataState);
       } else {
 #if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
-        if (simd_scan_attribute_value_enabled_ && cc != '\n' &&
-            TrySimdScanQuotedAttributeValue(source, '"')) {
+        if (simd_scan_attribute_value_enabled_ &&
+            token_.CurrentAttributeValueSize() >=
+                simd_scan_min_buffered_length_ &&
+            cc != '\n' && TrySimdScanQuotedAttributeValue(source, '"')) {
           if (source.IsEmpty() ||
               !input_stream_preprocessor_.Peek(source, cc)) {
             return HaveBufferedCharacterToken();
@@ -1223,8 +1232,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         HTML_RECONSUME_IN(kDataState);
       } else {
 #if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
-        if (simd_scan_attribute_value_enabled_ && cc != '\n' &&
-            TrySimdScanQuotedAttributeValue(source, '\'')) {
+        if (simd_scan_attribute_value_enabled_ &&
+            token_.CurrentAttributeValueSize() >=
+                simd_scan_min_buffered_length_ &&
+            cc != '\n' && TrySimdScanQuotedAttributeValue(source, '\'')) {
           if (source.IsEmpty() ||
               !input_stream_preprocessor_.Peek(source, cc)) {
             return HaveBufferedCharacterToken();

@@ -10709,7 +10709,8 @@
                     "name": "Enabled",
                     "params": {
                         "attribute_value": "true",
-                        "min_length": "64",
+                        "min_buffered_length": "64",
+                        "min_remaining_length": "64",
                         "rawtext": "true",
                         "script_data": "true"
                     },
