@@ -8,9 +8,11 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -142,8 +144,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
     void DispatchActivateEvent(
         DispatchActivateEventCallback callback) override {
       if (worker_helper_->quit_on_activate_) {
-        worker_helper_->quit_on_activate_->Quit();
-        worker_helper_->quit_on_activate_ = nullptr;
+        std::move(worker_helper_->quit_on_activate_).Run();
       }
 
       FakeServiceWorker::DispatchActivateEvent(std::move(callback));
@@ -168,7 +169,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
   // Spins inside a run loop until a service worker activate event is received.
   void WaitForActivateEvent() {
     base::RunLoop run_loop;
-    quit_on_activate_ = &run_loop;
+    quit_on_activate_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
@@ -176,8 +177,8 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
   std::vector<net::CookieChangeInfo>& changes() { return changes_; }
 
  private:
-  // Set by WaitForActivateEvent(), used in OnActivateEvent().
-  raw_ptr<base::RunLoop> quit_on_activate_ = nullptr;
+  // Set by WaitForActivateEvent(), invoked in DispatchActivateEvent().
+  base::OnceClosure quit_on_activate_;
 
   // Collects the changes reported to OnCookieChangeEvent().
   std::vector<net::CookieChangeInfo> changes_;
