@@ -59,14 +59,17 @@ def _GitSourceDirectories(base_directory):
   git_source_directories = set([base_dir_norm])
 
   git_cmd = 'git.bat' if os.name == 'nt' else 'git'
-  git_ls_files_cmd = [git_cmd, 'ls-files']
+  # -z: NUL-terminated paths, which git does not C-quote when non-ASCII.
+  git_ls_files_cmd = [git_cmd, 'ls-files', '-z']
   # FIXME: Use a context manager in Python 3.2+
   popen = subprocess.Popen(
     git_ls_files_cmd, stdout=subprocess.PIPE, cwd=base_directory
   )
   try:
     try:
-      for line in popen.stdout.read().decode('utf-8').splitlines():
+      for line in popen.stdout.read().decode('utf-8').split('\0'):
+        if not line:
+          continue
         dir_path = os.path.join(base_directory, os.path.dirname(line))
         dir_path_norm = NormalizePath(dir_path)
         # Add the directory as well as all the parent directories,
@@ -122,7 +125,7 @@ def _ParseDepsMemoize(dir_path, under_test, verbose):
     under_test and os.path.basename(dir_path) == 'checkdeps'
   ):
     try:
-      with open(deps_file_path) as file:
+      with open(deps_file_path, encoding='utf-8') as file:
         try:
           # An invalid escape sequence such as "\." in a non-raw string
           # is *not* a SyntaxError: Python still compiles the file and
@@ -360,14 +363,26 @@ class DepsBuilder(object):
     """
     if self.is_git and self._git_source_directories is None:
       self._git_source_directories = _GitSourceDirectories(self.base_directory)
+      base_prefix = NormalizePath(self.base_directory).rstrip('/') + '/'
       for repo in self.extra_repos:
-        repo_path = os.path.join(self.base_directory, repo)
+        repo_path = os.path.normpath(os.path.join(self.base_directory, repo))
         self._git_source_directories.update(_GitSourceDirectories(repo_path))
+        # Also list the directories between base_directory and the repo, so
+        # that a walk from base_directory reaches it.
+        parent_norm = posixpath.dirname(NormalizePath(repo_path))
+        while (
+          parent_norm.startswith(base_prefix)
+          and parent_norm not in self._git_source_directories
+        ):
+          self._git_source_directories.add(parent_norm)
+          parent_norm = posixpath.dirname(parent_norm)
 
     # Collect a list of all files and directories to check.
     if dir_name and not os.path.isabs(dir_name):
       dir_name = os.path.join(self.base_directory, dir_name)
-    dirs_to_check = [dir_name or self.base_directory]
+    # normpath() drops a trailing separator, which would keep the directory
+    # from being found among the git directories.
+    dirs_to_check = [os.path.normpath(dir_name or self.base_directory)]
     while dirs_to_check:
       current_dir = dirs_to_check.pop()
 

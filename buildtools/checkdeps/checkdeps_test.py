@@ -668,6 +668,84 @@ class CheckDepsTest(unittest.TestCase):
       self.assertEqual(1, len(problems))
       self.assertIn('disallowed/Bad.java', problems[0][2])
 
+  def testStartDirectoryWithTrailingSeparator(self):
+    # A trailing separator must not turn the check into a no-op.
+    with tempfile.TemporaryDirectory() as temp_dir:
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
+      os.makedirs(os.path.join(temp_dir, 'sub'))
+      _write(os.path.join(temp_dir, 'DEPS'), 'include_rules = ["-bad"]\n')
+      _write(os.path.join(temp_dir, 'a.cc'), '#include "bad/x.h"\n')
+      _write(os.path.join(temp_dir, 'sub', 'b.cc'), '#include "bad/y.h"\n')
+      subprocess.check_call(['git', '-C', temp_dir, 'add', '.'])
+
+      def Check(start_dir):
+        checker = checkdeps.DepsChecker(base_directory=temp_dir)
+        checker.CheckDirectory(start_dir)
+        return checker.results_formatter.GetResults()
+
+      sub_dir = os.path.join(temp_dir, 'sub')
+      self.assertEqual(2, len(Check(temp_dir)))
+      self.assertEqual(Check(temp_dir), Check(temp_dir + os.sep))
+      self.assertEqual(1, len(Check(sub_dir)))
+      self.assertEqual(Check(sub_dir), Check(sub_dir + os.sep))
+
+  def testGitQuotedNonAsciiPaths(self):
+    # git ls-files without -z quotes paths containing non-ASCII bytes, which
+    # would corrupt directory names and skip checking those directories.
+    with tempfile.TemporaryDirectory() as temp_dir:
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
+      # Make git quote non-ASCII paths, as it does by default.
+      subprocess.check_call(
+        ['git', '-C', temp_dir, 'config', 'core.quotepath', 'true']
+      )
+      non_ascii_dir = os.path.join(temp_dir, 'dir_\u03b1')
+      os.makedirs(non_ascii_dir)
+      _write(
+        os.path.join(temp_dir, 'DEPS'),
+        '# UTF-8 comment: \u03b1\ninclude_rules = ["-bad"]\n',
+      )
+      _write(os.path.join(non_ascii_dir, 'a.cc'), '#include "bad/x.h"\n')
+      subprocess.check_call(['git', '-C', temp_dir, 'add', '.'])
+
+      checker = checkdeps.DepsChecker(base_directory=temp_dir)
+      checker.CheckDirectory(temp_dir)
+      problems = checker.results_formatter.GetResults()
+      self.assertEqual(1, len(problems))
+      self.assertIn('dir_\u03b1', problems[0])
+
+  def testNestedExtraRepos(self):
+    # An extra_repos entry under an untracked intermediate directory must still
+    # be reached when walking from base_directory or that intermediate dir.
+    with tempfile.TemporaryDirectory() as temp_dir:
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
+      _write(os.path.join(temp_dir, 'DEPS'), 'include_rules = ["-bad"]\n')
+      subprocess.check_call(['git', '-C', temp_dir, 'add', 'DEPS'])
+
+      nested_repo = os.path.join(temp_dir, 'sub', 'nested')
+      os.makedirs(nested_repo)
+      subprocess.check_call(['git', 'init', '-q', nested_repo])
+      _write(os.path.join(nested_repo, 'a.cc'), '#include "bad/x.h"\n')
+      subprocess.check_call(['git', '-C', nested_repo, 'add', 'a.cc'])
+
+      untracked_dir = os.path.join(temp_dir, 'untracked')
+      os.makedirs(untracked_dir)
+      _write(os.path.join(untracked_dir, 'b.cc'), '#include "bad/y.h"\n')
+
+      for start in (temp_dir, os.path.join(temp_dir, 'sub'), nested_repo):
+        checker = checkdeps.DepsChecker(
+          base_directory=temp_dir, extra_repos=['sub/nested']
+        )
+        checker.CheckDirectory(start)
+        self.assertEqual(
+          1, len(checker.results_formatter.GetResults()), msg=start
+        )
+
+      checker = checkdeps.DepsChecker(
+        base_directory=temp_dir, extra_repos=['sub/nested']
+      )
+      checker.CheckDirectory(untracked_dir)
+      self.assertEqual([], checker.results_formatter.GetResults())
+
 
 if __name__ == '__main__':
   unittest.main()
