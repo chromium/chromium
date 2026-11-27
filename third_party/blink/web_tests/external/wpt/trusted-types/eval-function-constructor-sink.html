@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="help" href="https://w3c.github.io/webappsec-csp/#can-compile-strings">
+  <link rel="help" href="https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <meta http-equiv="Content-Security-Policy"
+        content="require-trusted-types-for 'script'">
+</head>
+<body>
+<script>
+  let last_sink = null;
+  trustedTypes.createPolicy("default", {
+    createScript(s, type, sink) {
+      last_sink = sink;
+      return s;
+    }
+  });
+
+  test(t => {
+    t.add_cleanup(() => { last_sink = null; });
+    assert_equals(eval("1 + 1"), 2);
+    assert_equals(last_sink, "eval");
+  }, "Regular eval reports 'eval' sink.");
+
+  test(t => {
+    t.add_cleanup(() => { last_sink = null; });
+    assert_equals(new Function("return 1 + 1")(), 2);
+    assert_equals(last_sink, "Function");
+  }, "Regular Function constructor reports 'Function' sink.");
+
+  test(t => {
+    t.add_cleanup(() => { last_sink = null; });
+    assert_equals(eval("(function anonymous() { return 1 + 1; })()"), 2);
+    assert_equals(last_sink, "eval");
+  }, "eval with '(function anonymous()' prefix reports 'eval' sink.");
+</script>
+</body>
+</html>
