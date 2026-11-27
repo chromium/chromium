@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -260,7 +261,11 @@ class ContentVerifierTest : public ExtensionBrowserTest {
       const GURL& extension_resource) {
     TestExtensionRegistryObserver unload_observer(
         ExtensionRegistry::Get(profile()), extension_id);
-    NavigateToURLInNewTab(extension_resource);
+    // Navigate in the active tab rather than opening a new tab. Disabling the
+    // corrupted extension causes ExtensionBrowserWindowHelper to close any
+    // non-last tab committed to an extension URL, which races with
+    // android_ui_test_utils::OpenUrlInNewTab's tab-count assertion.
+    std::ignore = NavigateToURL(GetActiveWebContents(), extension_resource);
     EXPECT_TRUE(unload_observer.WaitForExtensionUnloaded());
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     DisableReasonSet reasons = prefs->GetDisableReasons(extension_id);
