@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,11 +18,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -36,14 +39,17 @@
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -55,6 +61,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
@@ -194,6 +201,8 @@ class SaveUpdatePasswordMessageDelegateTest
   void DismissMessage(messages::DismissReason dismiss_reason);
   void DestroyDelegate();
   void DismissAllActiveUI();
+  [[nodiscard]] bool NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError expected_error);
 
   TestDeviceLockBridge* test_device_lock_bridge();
   MockPasswordManagerErrorMessageHelperBridge* helper_bridge();
@@ -240,7 +249,7 @@ class SaveUpdatePasswordMessageDelegateTest
       bool update_password) {
     delegate_->DisplaySaveUpdatePasswordPromptInternal(
         web_contents(), std::move(form_to_save), account_info, update_password,
-        &password_manager_client_);
+        &password_manager_client_, &sync_service_);
   }
 
   messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
@@ -258,6 +267,8 @@ class SaveUpdatePasswordMessageDelegateTest
     return delegate_.get();
   }
 
+  syncer::TestSyncService& sync_service() { return sync_service_; }
+
   scoped_refptr<password_manager::TestPasswordStore> password_store_;
   scoped_refptr<password_manager::TestPasswordStore> account_store_;
 
@@ -268,14 +279,14 @@ class SaveUpdatePasswordMessageDelegateTest
   ukm::SourceId ukm_source_id_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockPasswordEditDialog> mock_password_edit_dialog_;
+  MockPasswordManagerClient password_manager_client_;
+  syncer::TestSyncService sync_service_;
   raw_ptr<TestDeviceLockBridge> test_device_lock_bridge_ = nullptr;
   std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   bool is_password_saved_ = false;
-  MockPasswordManagerClient password_manager_client_;
   std::vector<password_manager::StoredCredential> best_matches_;
   // The `helper_bridge_` is owned by the `delegate_`.
   raw_ptr<MockPasswordManagerErrorMessageHelperBridge> helper_bridge_ = nullptr;
-  syncer::TestSyncService sync_service_;
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
@@ -423,7 +434,7 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
       .WillOnce(Return(true));
   delegate_->DisplaySaveUpdatePasswordPromptInternal(
       web_contents(), std::move(form_to_save), account_info, update_password,
-      &password_manager_client_);
+      &password_manager_client_, &sync_service_);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick() {
@@ -496,6 +507,21 @@ void SaveUpdatePasswordMessageDelegateTest::DestroyDelegate() {
 
 void SaveUpdatePasswordMessageDelegateTest::DismissAllActiveUI() {
   delegate_->DismissAllActiveUI();
+}
+
+bool SaveUpdatePasswordMessageDelegateTest::NotifyAccountStoreAboutErrorAndWait(
+    password_manager::ActionableError expected_error) {
+  testing::NiceMock<password_manager::MockPasswordStoreObserver> observer;
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      observation(&observer);
+  observation.Observe(account_store_.get());
+  bool error_notified = false;
+  EXPECT_CALL(observer,
+              OnErrorStateChanged(account_store_.get(), expected_error))
+      .WillOnce([&error_notified]() { error_notified = true; });
+  account_store_->NotifyAboutError();
+  return base::test::RunUntil([&error_notified]() { return error_notified; });
 }
 
 TestDeviceLockBridge*
@@ -778,7 +804,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   base::android::device_info::set_gms_version_code_for_test(
       base::NumberToString(
           password_manager::features::
-              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() - 1));
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() -
+          1));
 
   std::unique_ptr<password_manager::FakePasswordStoreBackend>
       fake_account_backend =
@@ -3328,9 +3355,14 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   delegate()->DismissAllActiveUI();
 }
 
-class SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest
+class SaveUpdatePasswordMessageDelegateTrustedVaultTest
     : public SaveUpdatePasswordMessageDelegateTest {
  protected:
+  using Outcome =
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome;
+  static constexpr char kOutcomeHistogram[] =
+      "PasswordManager.SaveWithTrustedVaultError.Outcome";
+
   void SetUp() override {
     SaveUpdatePasswordMessageDelegateTest::SetUp();
     feature_list_.InitAndEnableFeature(
@@ -3339,8 +3371,100 @@ class SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest
         password_manager::PasswordStoreBackendError(
             password_manager::PasswordStoreBackendErrorType::
                 kKeyRetrievalRequired));
+    sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(true);
   }
 
+  MockPasswordFormManagerForUI* EnqueueTrustedVaultSavePrompt() {
+    std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+        CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+    MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+    EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                   /*update_password=*/false);
+    EXPECT_NE(nullptr, GetMessageWrapper());
+    testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+    testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+    return raw_form_manager;
+  }
+
+  // Enqueues a save prompt blocked by a trusted vault error, clicks Continue,
+  // and optionally captures the recovery completion callback.
+  MockPasswordFormManagerForUI* StartTrustedVaultRecovery(
+      base::OnceClosure* out_recovery_callback = nullptr) {
+    MockPasswordFormManagerForUI* raw_form_manager =
+        EnqueueTrustedVaultSavePrompt();
+    auto& expect_call =
+        EXPECT_CALL(*helper_bridge(),
+                    StartTrustedVaultKeyRetrievalFlow(
+                        _,
+                        trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                            kPasswordSavePrompt,
+                        _));
+    if (out_recovery_callback) {
+      expect_call.WillOnce(
+          [out_recovery_callback](
+              content::WebContents*,
+              trusted_vault::TrustedVaultUserActionTriggerForUMA,
+              base::OnceClosure callback) {
+            *out_recovery_callback = std::move(callback);
+          });
+    }
+    TriggerActionClick();
+    EXPECT_EQ(nullptr, GetMessageWrapper());
+    EXPECT_FALSE(is_password_saved());
+    testing::Mock::VerifyAndClearExpectations(helper_bridge());
+    testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+    testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+    return raw_form_manager;
+  }
+
+  // Clears the account store error while `SyncService` still requires a key,
+  // then runs `recovery_callback` to show the urgent reprompt.
+  [[nodiscard]] bool ResolveStoreErrorAndShowReprompt(
+      base::OnceClosure recovery_callback,
+      MockPasswordFormManagerForUI* form_manager = nullptr) {
+    account_store_->ReturnErrorOnRequest(std::nullopt);
+    if (!NotifyAccountStoreAboutErrorAndWait(
+            password_manager::ActionableError::kNoError)) {
+      return false;
+    }
+    EXPECT_FALSE(is_password_saved());
+    testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+    EXPECT_CALL(*message_dispatcher_bridge(),
+                EnqueueMessage(_, _, _, messages::MessagePriority::kUrgent))
+        .WillOnce(Return(true));
+    std::move(recovery_callback).Run();
+    const bool reprompt_shown = GetMessageWrapper() != nullptr;
+    testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+    if (form_manager) {
+      testing::Mock::VerifyAndClearExpectations(form_manager);
+    }
+    return reprompt_shown;
+  }
+
+  void ExpectSaveAndConfirmationMessage(
+      MockPasswordFormManagerForUI* form_manager) {
+    EXPECT_CALL(*form_manager, Save()).WillOnce([this]() {
+      EXPECT_TRUE(password_manager::features_util::IsAccountStorageActive(
+          &sync_service()));
+      RecordPasswordSaved();
+    });
+    EXPECT_CALL(*message_dispatcher_bridge(),
+                EnqueueMessage(_, _, _, messages::MessagePriority::kNormal))
+        .WillOnce(Return(true));
+  }
+
+  void DisablePasswordSync() {
+    sync_service().GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, /*types=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest
+    : public SaveUpdatePasswordMessageDelegateTrustedVaultTest {
+ protected:
   // Enqueues a save prompt blocked by a trusted vault error and opens
   // `PasswordEditDialog`, returning the raw form manager and mock dialog.
   std::pair<MockPasswordFormManagerForUI*, MockPasswordEditDialog*>
@@ -3388,9 +3512,6 @@ class SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest
     EXPECT_FALSE(is_password_saved());
     delegate()->DismissAllActiveUI();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Editing the username in the dialog to an existing local-only credential with
@@ -3431,6 +3552,7 @@ TEST_F(
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 
   EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
   EXPECT_TRUE(IsDelegateStateCleared());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
@@ -3464,6 +3586,7 @@ TEST_F(
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 
   EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
   EXPECT_TRUE(IsDelegateStateCleared());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
@@ -3519,4 +3642,723 @@ TEST_F(
                               /*is_account_store=*/true)});
 
   AcceptDialogAndExpectTrustedVaultRecovery(u"", kPassword, raw_form_manager);
+}
+
+// Tests that if the account password store clears its `kKeyRetrievalRequired`
+// error before `SyncService` clears `IsTrustedVaultKeyRequired()`, the delegate
+// waits for `SyncServiceObserver::OnStateChanged()` before saving so that
+// `IsAccountStorageActive()` is true when `Save()` runs (preventing silent
+// fallback to `kProfileStore`).
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    StoreErrorResolvedBeforeSyncServiceTrustedVaultKeyRequirement_WaitsForSyncServiceBeforeSaving) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager = StartTrustedVaultRecovery();
+
+  // 1. Store clears its error while `SyncService` still requires a key.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kNoError));
+  EXPECT_FALSE(
+      password_manager::features_util::IsAccountStorageActive(&sync_service()));
+  EXPECT_FALSE(is_password_saved());
+
+  // 2. `SyncService` clears `IsTrustedVaultKeyRequired()` -> saves while
+  // account storage is active.
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kSavedSuccessfully, 1);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests the reverse order: `SyncService` clears `IsTrustedVaultKeyRequired()`
+// first while the account store still reports `kKeyRetrievalRequired`; the
+// delegate waits for the store error to clear before saving.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    SyncServiceTrustedVaultKeyResolvedBeforeStoreError_WaitsForStoreErrorBeforeSaving) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager = StartTrustedVaultRecovery();
+
+  // 1. `SyncService` clears first while account store still has an error.
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+  EXPECT_FALSE(is_password_saved());
+
+  // 2. Account store clears its error -> `Save()` runs.
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kNoError));
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kSavedSuccessfully, 1);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if the store error clears and the recovery activity callback runs
+// while `SyncService` still requires a trusted vault key, the reprompt is shown
+// and then automatically dismissed and saved when `SyncService` clears
+// `IsTrustedVaultKeyRequired()`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    StoreErrorResolvedBeforeRecoveryCallbackWhileSyncRequiresKey_SavesFromRepromptOnSyncStateChanged) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback),
+                                               raw_form_manager));
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_SUBTITLE_TRUSTED_VAULT_ERROR),
+            GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_FALSE(is_password_saved());
+
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  ExpectDismissMessageCall();
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if the store error clears while `SyncService` still requires a
+// trusted vault key and the user dismisses the reprompt, `kUserDismissedPrompt`
+// is logged and the `SyncService` observation is cleaned up.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    UserDismissesRepromptWhenStoreErrorClearedWhileSyncRequiresKey_LogsUserDismissed) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  StartTrustedVaultRecovery(&recovery_callback);
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback)));
+  EXPECT_TRUE(sync_service().HasObserver(delegate()));
+
+  DismissMessage(messages::DismissReason::GESTURE);
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kUserDismissedPrompt, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+}
+
+// Tests that if password syncing is disabled while waiting for trusted vault
+// resolution (so account storage is no longer active), `OnStateChanged()`
+// immediately dismisses without saving to the local profile store and logs
+// `kErrorResolutionAbandoned`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    PasswordSyncDisabledWhileWaitingForTrustedVault_OnStateChangedDismissesWithoutSaving) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+
+  // Late recovery callback after `kIdle` is a safe no-op.
+  std::move(recovery_callback).Run();
+  EXPECT_FALSE(is_password_saved());
+}
+
+// Tests that if password syncing is disabled before
+// `OnTrustedVaultRecoveryDone` runs (before `OnStateChanged()` is notified),
+// `OnTrustedVaultRecoveryDone()` dismisses without saving to the profile store
+// and logs `kErrorResolutionAbandoned`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    PasswordSyncDisabledBeforeRecoveryCallbackRuns_OnTrustedVaultRecoveryDoneDismissesWithoutSaving) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  // Store error clears and password sync is disabled before observers run.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  DisablePasswordSync();
+  ASSERT_FALSE(IsDelegateStateCleared());
+
+  std::move(recovery_callback).Run();
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+}
+
+// Tests that if `SyncService` enters a persistent auth error (`PAUSED`) while
+// waiting for trusted vault resolution—so `HasChosenToSyncPasswords()` stays
+// true while `IsAccountStorageActive()` is false—the delegate dismisses with
+// `kErrorResolutionAbandoned` instead of falling back to `kProfileStore`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    PersistentAuthErrorWhileWaitingForTrustedVault_DoesNotSaveToProfileStore) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager = StartTrustedVaultRecovery();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kNoError));
+  EXPECT_FALSE(is_password_saved());
+
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().SetPersistentAuthError();
+  ASSERT_TRUE(
+      password_manager::sync_util::HasChosenToSyncPasswords(&sync_service()));
+  ASSERT_FALSE(
+      password_manager::features_util::IsAccountStorageActive(&sync_service()));
+  sync_service().FireStateChanged();
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+}
+
+// Tests that if password syncing is disabled while `kRepromptShowing` is active
+// (after the store error cleared while `SyncService` still required a key),
+// `OnStateChanged()` dismisses the reprompt, logs `kErrorResolutionAbandoned`,
+// and cleans up state without saving to the profile store.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    PasswordSyncDisabledWhileRepromptShowing_DismissesAndDoesNotSaveToProfileStore) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback),
+                                               raw_form_manager));
+
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+  ExpectDismissMessageCall();
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kErrorResolutionAbandoned, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+}
+
+// Tests that when the reprompt is showing after the store error cleared while
+// `SyncService` still requires a key, clicking "Continue" on the reprompt
+// (even when Device Lock is required) restarts the trusted vault key retrieval
+// flow rather than saving to the local profile store.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    ClickingContinueOnRepromptWithDeviceLockWhenStoreClearedWhileSyncRequiresKey_RestartsVaultFlow) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+  base::OnceClosure recovery_callback;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*helper_bridge(),
+                StartTrustedVaultKeyRetrievalFlow(
+                    _,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                        kPasswordSavePrompt,
+                    _))
+        .WillOnce([&recovery_callback](
+                      content::WebContents*,
+                      trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                      base::OnceClosure callback) {
+          recovery_callback = std::move(callback);
+        });
+    EXPECT_CALL(*helper_bridge(),
+                StartTrustedVaultKeyRetrievalFlow(
+                    _,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                        kPasswordSavePrompt,
+                    _));
+  }
+  TriggerActionClick();
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback)));
+
+  // Clicking Continue on the reprompt goes through Device Lock, then restarts
+  // key retrieval instead of saving locally.
+  TriggerActionClick();
+  EXPECT_EQ(2, test_device_lock_bridge()->device_lock_ui_shown_count());
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+  EXPECT_FALSE(is_password_saved());
+
+  delegate()->DismissAllActiveUI();
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram, Outcome::kTabDestroyed,
+                                     1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+}
+
+// Tests that `SyncService` shutdown while waiting for trusted vault resolution
+// resets the observation cleanly, logs `kErrorResolutionAbandoned`, and clears
+// state.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       SyncShutdownWhileWaitingForTrustedVaultResetsObservationSafely) {
+  base::HistogramTester histogram_tester;
+  EnqueueTrustedVaultSavePrompt();
+  EXPECT_TRUE(sync_service().HasObserver(delegate()));
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+  TriggerActionClick();
+
+  sync_service().Shutdown();
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+}
+
+// Tests that if the account store reports `kCancelled`
+// (`kInactionableTemporaryError`) when `OnTrustedVaultRecoveryDone()` runs and
+// `OnStateChanged()` fires, saving remains blocked (`kRepromptShowing` is shown
+// rather than dismissing with `kErrorResolutionAbandoned`), and the password is
+// saved once both the store error and `SyncService` resolve.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    CancelledStoreErrorDuringRecoveryDoneAndSyncStateChanged_ShowsRepromptAndSavesOnResolve) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+
+  // In-flight store refresh is cancelled (`kInactionableTemporaryError`) and
+  // `SyncService` clears before the store refresh completes.
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::kCancelled));
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kInactionableTemporaryError));
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+  EXPECT_FALSE(is_password_saved());
+
+  // `OnTrustedVaultRecoveryDone()` and a subsequent `OnStateChanged()` keep the
+  // reprompt alive while the temporary store error is active.
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              EnqueueMessage(_, _, _, messages::MessagePriority::kUrgent))
+      .WillOnce(Return(true));
+  std::move(recovery_callback).Run();
+  ASSERT_NE(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(is_password_saved());
+
+  sync_service().FireStateChanged();
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kErrorResolutionAbandoned, 0);
+
+  // Store refresh succeeds -> saves and shows confirmation.
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ExpectDismissMessageCall();
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kNoError));
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if password syncing is disabled while waiting for Device Lock
+// launched from `kRepromptShowing`, completing Device Lock routes through
+// `CompleteUnblockedTrustedVaultFlow()` and abandons without saving locally.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       PasswordSyncDisabledDuringDeviceLockFromReprompt_AbandonsWithoutSaving) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+  base::OnceClosure recovery_callback;
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
+      .WillOnce([&recovery_callback](
+                    content::WebContents*,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                    base::OnceClosure callback) {
+        recovery_callback = std::move(callback);
+      });
+  TriggerActionClick();
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+  testing::Mock::VerifyAndClearExpectations(helper_bridge());
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback)));
+
+  // Clicking Continue on the reprompt launches Device Lock; disabling password
+  // sync while Device Lock is open causes completion to abandon instead of
+  // falling back to the local profile store.
+  TriggerActionClick();
+  EXPECT_EQ(2, test_device_lock_bridge()->device_lock_ui_shown_count());
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+  ASSERT_FALSE(IsDelegateStateCleared());
+
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kErrorResolutionAbandoned, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+}
+
+// Tests that if the trusted vault error resolves while waiting for Device Lock
+// launched from `kRepromptShowing`, completing Device Lock saves with the
+// confirmation message and logs `kSavedSuccessfully`.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       TrustedVaultResolvedDuringDeviceLockFromReprompt_SavesWithConfirmation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+  base::OnceClosure recovery_callback;
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
+      .WillOnce([&recovery_callback](
+                    content::WebContents*,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                    base::OnceClosure callback) {
+        recovery_callback = std::move(callback);
+      });
+  TriggerActionClick();
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+  testing::Mock::VerifyAndClearExpectations(helper_bridge());
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback),
+                                               raw_form_manager));
+
+  TriggerActionClick();
+  EXPECT_EQ(2, test_device_lock_bridge()->device_lock_ui_shown_count());
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+  EXPECT_FALSE(is_password_saved());
+
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if password syncing is disabled while `PasswordEditDialog` opened
+// from `kRepromptShowing` is open, accepting the dialog abandons without saving
+// to the profile store.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       EditDialogFromRepromptPasswordSyncDisabled_AbandonsWithoutSaving) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback),
+                                               raw_form_manager));
+
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          _, _, _, _, /*is_saving_blocked_by_trusted_vault_error=*/true));
+  TriggerPasswordEditDialog(/*update_password=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock_dialog);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+  ASSERT_FALSE(IsDelegateStateCleared());
+
+  EXPECT_CALL(*mock_dialog, Dismiss()).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  TriggerDialogAcceptedCallback(/*username=*/kUsername, /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(kOutcomeHistogram,
+                                     Outcome::kErrorResolutionAbandoned, 1);
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 2);
+}
+
+// Tests that editing the username in `PasswordEditDialog` opened from
+// `kRepromptShowing` to match an existing local-only credential still saves
+// locally directly instead of routing through
+// `CompleteUnblockedTrustedVaultFlow()`.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       EditDialogFromRepromptLocalPasswordEdit_SavesLocallyDirectly) {
+  base::HistogramTester histogram_tester;
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl),
+                        {CreatePasswordForm(kUsername2, kPassword,
+                                            /*is_account_store=*/false)});
+  MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+  ON_CALL(*raw_form_manager, OnUpdateUsernameFromPrompt(_))
+      .WillByDefault([this](const std::u16string& username) {
+        SetPendingUsername(username);
+      });
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+
+  base::OnceClosure recovery_callback;
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
+      .WillOnce([&recovery_callback](
+                    content::WebContents*,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                    base::OnceClosure callback) {
+        recovery_callback = std::move(callback);
+      });
+  TriggerActionClick();
+  testing::Mock::VerifyAndClearExpectations(helper_bridge());
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+
+  ASSERT_TRUE(ResolveStoreErrorAndShowReprompt(std::move(recovery_callback),
+                                               raw_form_manager));
+
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          _, _, _, _, /*is_saving_blocked_by_trusted_vault_error=*/true));
+  TriggerPasswordEditDialog(/*update_password=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock_dialog);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+
+  EXPECT_CALL(*raw_form_manager, OnUpdateUsernameFromPrompt(Eq(kUsername2)));
+  EXPECT_CALL(*mock_dialog, Dismiss()).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
+
+  TriggerDialogAcceptedCallback(/*username=*/kUsername2,
+                                /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(
+      kOutcomeHistogram, Outcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 2);
+}
+
+// Tests that if an unrecoverable store error updates `GetError()` before the
+// posted `OnErrorStateChanged()` runs, `OnStateChanged()` logs `kNewStoreError`
+// rather than `kErrorResolutionAbandoned`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    UnrecoverableStoreErrorBeforeErrorStateChanged_OnStateChangedLogsNewStoreError) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager = StartTrustedVaultRecovery();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  account_store_->SetError(password_manager::ActionableError::kSignInNeeded);
+  sync_service().FireStateChanged();
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kNewStoreError, 1);
+}
+
+// Tests that if an unrecoverable store error updates `GetError()` before the
+// posted `OnErrorStateChanged()` runs, `OnTrustedVaultRecoveryDone()` logs
+// `kNewStoreError` rather than `kErrorResolutionAbandoned`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    UnrecoverableStoreErrorBeforeErrorStateChanged_OnRecoveryDoneLogsNewStoreError) {
+  base::HistogramTester histogram_tester;
+  base::OnceClosure recovery_callback;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      StartTrustedVaultRecovery(&recovery_callback);
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  account_store_->SetError(password_manager::ActionableError::kSignInNeeded);
+  std::move(recovery_callback).Run();
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kNewStoreError, 1);
+}
+
+// Tests that if `OnErrorStateChanged(..., kNoError)` arrives while account
+// storage is inactive (e.g. `SetTrustedVaultKeyRequired(false)` + persistent
+// auth error without `FireStateChanged()`), the delegate abandons resolution
+// without saving to the profile store.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    StoreErrorClearedWhileAccountStorageInactive_OnErrorStateChangedAbandonsWithoutSaving) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager = StartTrustedVaultRecovery();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().SetPersistentAuthError();
+  ASSERT_TRUE(
+      password_manager::sync_util::HasChosenToSyncPasswords(&sync_service()));
+  ASSERT_FALSE(
+      password_manager::features_util::IsAccountStorageActive(&sync_service()));
+
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ASSERT_TRUE(NotifyAccountStoreAboutErrorAndWait(
+      password_manager::ActionableError::kNoError));
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+}
+
+// Tests that `SyncServiceObserver::OnStateChanged()` is a no-op while the
+// initial save prompt is showing (`kSaveUpdatePromptShowing`).
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       SyncStateChangedDuringSavePromptShowing_IsNoOp) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), DismissMessage).Times(0);
+
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  sync_service().FireStateChanged();
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_TRUE(sync_service().HasObserver(delegate()));
+  EXPECT_FALSE(IsDelegateStateCleared());
+  histogram_tester.ExpectTotalCount(kOutcomeHistogram, 0);
+
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
 }

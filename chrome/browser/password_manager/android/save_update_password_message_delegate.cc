@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -37,10 +38,11 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "save_update_password_message_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -95,13 +97,14 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
 
   std::optional<AccountInfo> account_info = GetAccountInfoForPasswordMessages(
-      SyncServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      sync_service, IdentityManagerFactory::GetForProfile(profile));
   DisplaySaveUpdatePasswordPromptInternal(
       web_contents, std::move(form_to_save), std::move(account_info),
-      update_password, password_manager_client);
+      update_password, password_manager_client, sync_service);
 }
 
 void SaveUpdatePasswordMessageDelegate::DismissAllActiveUI() {
@@ -114,7 +117,6 @@ void SaveUpdatePasswordMessageDelegate::DismissAllActiveUI() {
   // This dismissal is programmatic (e.g. WebContents being destroyed or a new
   // prompt replacing this one), not user-initiated.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  account_password_store_observation_.Reset();
 
   if (IsSavingBlockedByTrustedVaultError() &&
       (state_ == State::kSaveUpdatePromptShowing ||
@@ -136,6 +138,8 @@ void SaveUpdatePasswordMessageDelegate::DismissAllActiveUI() {
     RecordDismissalReasonMetrics(
         password_manager::metrics_util::NO_DIRECT_INTERACTION);
   }
+
+  ResetTrustedVaultFlowState();
 
   // Set state_ to kDismissing before dismissing UI elements to reflect that
   // UI teardown is in progress. ClearState() at the end resets it to kIdle.
@@ -172,7 +176,8 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     std::optional<AccountInfo> account_info,
     bool update_password,
-    password_manager::PasswordManagerClient* password_manager_client) {
+    password_manager::PasswordManagerClient* password_manager_client,
+    syncer::SyncService* sync_service) {
   // Dismiss previous message if it is displayed.
   DismissAllActiveUI();
   CHECK_EQ(state_, State::kIdle);
@@ -185,6 +190,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
       !account_password_store_observation_.IsObserving()) {
     account_password_store_observation_.Observe(
         password_manager_client->GetAccountPasswordStore());
+  }
+  if (sync_service && !sync_service_observation_.IsObserving()) {
+    sync_service_observation_.Observe(sync_service);
   }
   if (update_password) {
     passwords_state_.OnUpdatePassword(std::move(form_to_save));
@@ -420,6 +428,7 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
   }
 
   if (IsSavingBlockedByTrustedVaultError()) {
+    is_in_trusted_vault_error_flow_ = true;
     TransitionTo(State::kWaitingForTrustedVault);
     password_manager_error_message_helper_bridge_
         ->StartTrustedVaultKeyRetrievalFlow(
@@ -432,21 +441,29 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
     return;
   }
 
+  if (is_in_trusted_vault_error_flow_ &&
+      !password_manager_util::IsLocalPasswordUpdate(
+          passwords_state_.form_manager())) {
+    CompleteUnblockedTrustedVaultFlow(/*should_dismiss_reprompt=*/false);
+    return;
+  }
+
   SaveFormManager(/*show_confirmation_message=*/false);
   TransitionTo(State::kDismissing);
 }
 
 void SaveUpdatePasswordMessageDelegate::OnTrustedVaultRecoveryDone() {
   // While the key retrieval flow was running, the error may have already been
-  // resolved (or a new store error encountered) via OnErrorStateChanged(),
-  // transitioning away from `kWaitingForTrustedVault`.
+  // resolved (or a new store or sync error encountered) via
+  // `OnErrorStateChanged()` or `OnStateChanged()`, transitioning away from
+  // `kWaitingForTrustedVault`.
   if (state_ != State::kWaitingForTrustedVault) {
     return;
   }
 
   // Check if the trusted vault error is still present and reshow the message.
-  // If the trusted vault error is resolved, save the pending credential and
-  // show confirmation.
+  // If the trusted vault error is resolved and account storage is active, save
+  // the pending credential and show confirmation.
   if (IsSavingBlockedByTrustedVaultError()) {
     password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
         password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
@@ -458,23 +475,80 @@ void SaveUpdatePasswordMessageDelegate::OnTrustedVaultRecoveryDone() {
         messages::MessagePriority::kUrgent);
     TransitionTo(State::kRepromptShowing);
   } else {
-    SaveAfterTrustedVaultResolution();
+    CompleteUnblockedTrustedVaultFlow(/*should_dismiss_reprompt=*/false);
   }
 }
 
-void SaveUpdatePasswordMessageDelegate::SaveAfterTrustedVaultResolution() {
+void SaveUpdatePasswordMessageDelegate::CompleteUnblockedTrustedVaultFlow(
+    bool should_dismiss_reprompt) {
+  if (!passwords_state_.client() || !sync_service_observation_.IsObserving()) {
+    AbandonTrustedVaultFlow(
+        password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+            kErrorResolutionAbandoned,
+        should_dismiss_reprompt);
+    return;
+  }
+  const syncer::SyncService* sync_service =
+      sync_service_observation_.GetSource();
+  const password_manager::PasswordStoreInterface* account_store =
+      passwords_state_.client()->GetAccountPasswordStore();
+  if (!account_store) {
+    AbandonTrustedVaultFlow(
+        password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+            kErrorResolutionAbandoned,
+        should_dismiss_reprompt);
+    return;
+  }
+  const password_manager::ActionableError store_error =
+      account_store->GetError();
+  if (store_error == password_manager::ActionableError::kNoError &&
+      password_manager::features_util::IsAccountStorageActive(sync_service)) {
+    SaveAfterTrustedVaultResolution(should_dismiss_reprompt);
+    return;
+  }
+  const password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome
+      outcome =
+          (password_manager::sync_util::HasChosenToSyncPasswords(
+               sync_service) &&
+           IsUnrecoverableStoreError(store_error))
+              ? password_manager::metrics_util::
+                    SaveWithTrustedVaultErrorOutcome::kNewStoreError
+              : password_manager::metrics_util::
+                    SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned;
+  AbandonTrustedVaultFlow(outcome, should_dismiss_reprompt);
+}
+
+void SaveUpdatePasswordMessageDelegate::AbandonTrustedVaultFlow(
+    password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome outcome,
+    bool should_dismiss_reprompt) {
+  ResetTrustedVaultFlowState();
+  password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(outcome);
+  TransitionTo(State::kDismissing);
+  if (should_dismiss_reprompt) {
+    DismissSaveUpdatePasswordMessage(messages::DismissReason::UNKNOWN);
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::SaveAfterTrustedVaultResolution(
+    bool should_dismiss_reprompt) {
+  ResetTrustedVaultFlowState();
   SaveFormManager(/*show_confirmation_message=*/true);
   password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
       password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
           kSavedSuccessfully);
-  if (confirmation_message_ != nullptr) {
-    TransitionTo(State::kConfirmationShowing);
-  } else {
-    TransitionTo(State::kDismissing);
+  TransitionTo(confirmation_message_ != nullptr ? State::kConfirmationShowing
+                                                : State::kDismissing);
+  if (should_dismiss_reprompt) {
+    // Dismiss the reprompt if the error was resolved in the background while
+    // the reprompt was showing.
+    DismissSaveUpdatePasswordMessage(messages::DismissReason::UNKNOWN);
   }
-  // Dismiss the message prompt if it is currently displayed (e.g. if the error
-  // was resolved in the background while the reprompt was showing).
-  DismissSaveUpdatePasswordMessage(messages::DismissReason::UNKNOWN);
+}
+
+void SaveUpdatePasswordMessageDelegate::ResetTrustedVaultFlowState() {
+  is_in_trusted_vault_error_flow_ = false;
+  account_password_store_observation_.Reset();
+  sync_service_observation_.Reset();
 }
 
 void SaveUpdatePasswordMessageDelegate::SaveFormManager(
@@ -705,7 +779,7 @@ void SaveUpdatePasswordMessageDelegate::ClearState() {
   CHECK(confirmation_message_ == nullptr);
   CHECK(password_edit_dialog_ == nullptr);
 
-  account_password_store_observation_.Reset();
+  ResetTrustedVaultFlowState();
   state_ = State::kIdle;
   // ManagePasswordsState::OnInactive() requires a non-null client
   // (DCHECK(client_)). Only reset passwords_state_ if it was initialized.
@@ -720,11 +794,44 @@ void SaveUpdatePasswordMessageDelegate::ClearState() {
 bool SaveUpdatePasswordMessageDelegate::IsSavingBlockedByTrustedVaultError()
     const {
   // Updating passwords does not require resolving trusted vault keys in
-  // context. Verify `passwords_state_.client()` is non-null before passing
-  // to `password_manager_util::IsSavingBlockedByTrustedVaultError`.
-  return !update_password_ && passwords_state_.client() &&
-         password_manager_util::IsSavingBlockedByTrustedVaultError(
-             passwords_state_.client(), passwords_state_.form_manager());
+  // context. Verify `passwords_state_.client()` is non-null and `SyncService`
+  // is still being observed before querying sync or store error state.
+  if (update_password_ ||
+      password_manager_util::IsLocalPasswordUpdate(
+          passwords_state_.form_manager()) ||
+      !passwords_state_.client() || !sync_service_observation_.IsObserving()) {
+    return false;
+  }
+  if (!is_in_trusted_vault_error_flow_) {
+    return password_manager_util::IsSavingBlockedByTrustedVaultError(
+        passwords_state_.client(), passwords_state_.form_manager());
+  }
+  // Once the prompt has entered the trusted vault error flow, the account store
+  // may clear its `kTrustedVaultKeyNeeded` error (or report a transient
+  // cancellation error while refreshing) before `SyncService` finishes
+  // processing the retrieved keys and clears `IsTrustedVaultKeyRequired()`.
+  // Treat saving as still blocked by the trusted vault error until both the
+  // store and `SyncService` are ready.
+  const syncer::SyncService* sync_service =
+      sync_service_observation_.GetSource();
+  const password_manager::PasswordStoreInterface* account_store =
+      passwords_state_.client()->GetAccountPasswordStore();
+  if (!account_store ||
+      !password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
+    return false;
+  }
+  switch (account_store->GetError()) {
+    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+    case password_manager::ActionableError::kInactionableTemporaryError:
+      return true;
+    case password_manager::ActionableError::kNoError:
+      return sync_service->GetUserSettings()->IsTrustedVaultKeyRequired();
+    case password_manager::ActionableError::kInactionable:
+    case password_manager::ActionableError::kSignInNeeded:
+    case password_manager::ActionableError::kKeychainError:
+    case password_manager::ActionableError::kNeedsPassphrase:
+      return false;
+  }
 }
 
 void SaveUpdatePasswordMessageDelegate::RecordMessageShownMetrics(
@@ -789,15 +896,38 @@ void SaveUpdatePasswordMessageDelegate::OnErrorStateChanged(
   // Ignore transient store errors and request cancellations (which map to
   // `kInactionableTemporaryError`) while waiting for trusted vault key
   // recovery.
+  const bool should_dismiss_reprompt = state_ == State::kRepromptShowing;
   if (changed_error == password_manager::ActionableError::kNoError &&
       !IsSavingBlockedByTrustedVaultError()) {
-    SaveAfterTrustedVaultResolution();
+    CompleteUnblockedTrustedVaultFlow(should_dismiss_reprompt);
   } else if (IsUnrecoverableStoreError(changed_error)) {
-    password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
+    AbandonTrustedVaultFlow(
         password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
-            kNewStoreError);
-    TransitionTo(State::kDismissing);
-    DismissSaveUpdatePasswordMessage(messages::DismissReason::UNKNOWN);
+            kNewStoreError,
+        should_dismiss_reprompt);
+  }
+}
+
+void SaveUpdatePasswordMessageDelegate::OnStateChanged(
+    syncer::SyncService* sync) {
+  if ((state_ != State::kWaitingForTrustedVault &&
+       state_ != State::kRepromptShowing) ||
+      IsSavingBlockedByTrustedVaultError()) {
+    return;
+  }
+  CompleteUnblockedTrustedVaultFlow(
+      /*should_dismiss_reprompt=*/state_ == State::kRepromptShowing);
+}
+
+void SaveUpdatePasswordMessageDelegate::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+  if (state_ == State::kWaitingForTrustedVault ||
+      state_ == State::kRepromptShowing) {
+    AbandonTrustedVaultFlow(
+        password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+            kErrorResolutionAbandoned,
+        /*should_dismiss_reprompt=*/state_ == State::kRepromptShowing);
   }
 }
 

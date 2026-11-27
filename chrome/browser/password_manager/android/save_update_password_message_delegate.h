@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace content {
 class WebContents;
@@ -32,6 +33,10 @@ namespace password_manager {
 class PasswordManagerClient;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // This class provides simplified interface for ChromePasswordManagerClient to
 // display a prompt to save and update password through Messages API. The class
 // is responsible for populating message properties, managing message's
@@ -39,7 +44,8 @@ class PasswordManagerClient;
 // metrics.
 class SaveUpdatePasswordMessageDelegate
     : public PasswordEditDialogBridgeDelegate,
-      public password_manager::PasswordStoreInterface::Observer {
+      public password_manager::PasswordStoreInterface::Observer,
+      public syncer::SyncServiceObserver {
  public:
   using PasswordEditDialogFactory =
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
@@ -88,6 +94,10 @@ class SaveUpdatePasswordMessageDelegate
       password_manager::PasswordStoreInterface* store,
       password_manager::ActionableError changed_error) override;
 
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
  private:
   friend class SaveUpdatePasswordMessageDelegateTest;
   enum class SavePasswordDialogMenuItem { kNeverSave = 0, kEditPassword = 1 };
@@ -111,14 +121,14 @@ class SaveUpdatePasswordMessageDelegate
     kWaitingForDeviceLock,
 
     // Password saving is blocked by an unrecovered trusted vault key. The
-    // delegate is observing the password store while waiting for the trusted
-    // vault key retrieval flow to finish.
+    // delegate is observing the password store and sync service while waiting
+    // for the trusted vault key retrieval flow to finish.
     kWaitingForTrustedVault,
 
     // The trusted vault key retrieval flow completed but the vault remains
     // locked. The "Save password" message prompt is shown again to allow the
     // user to retry, while the delegate continues observing the password store
-    // for background error resolution.
+    // and sync service for background error resolution.
     kRepromptShowing,
 
     // The password was successfully saved after resolving a trusted vault key
@@ -141,7 +151,8 @@ class SaveUpdatePasswordMessageDelegate
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       std::optional<AccountInfo> account_info,
       bool update_password,
-      password_manager::PasswordManagerClient* password_manager_client);
+      password_manager::PasswordManagerClient* password_manager_client,
+      syncer::SyncService* sync_service);
   void CreateMessage(bool update_password);
   void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
                     bool update_password);
@@ -183,7 +194,18 @@ class SaveUpdatePasswordMessageDelegate
   void StartSavePasswordFlow();
   void SolveTrustedVaultCheck(bool is_device_lock_requirement_met);
   void OnTrustedVaultRecoveryDone();
-  void SaveAfterTrustedVaultResolution();
+  // Completes an active trusted vault flow once saving is no longer blocked by
+  // a trusted vault error. Saves if account storage is active with no store
+  // error; otherwise abandons the flow with `kNewStoreError` (for unrecoverable
+  // store errors while password sync is enabled) or
+  // `kErrorResolutionAbandoned`. Callers must first ensure
+  // `!IsSavingBlockedByTrustedVaultError()`.
+  void CompleteUnblockedTrustedVaultFlow(bool should_dismiss_reprompt);
+  void AbandonTrustedVaultFlow(
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome outcome,
+      bool should_dismiss_reprompt);
+  void SaveAfterTrustedVaultResolution(bool should_dismiss_reprompt);
+  void ResetTrustedVaultFlowState();
   void SaveFormManager(bool show_confirmation_message);
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();
@@ -203,7 +225,10 @@ class SaveUpdatePasswordMessageDelegate
   void ClearState();
 
   // Returns true if password saving (not updating) is blocked by a trusted
-  // vault error. Ensures the client is non-null before checking error state.
+  // vault error. During an active trusted vault recovery flow, saving also
+  // remains blocked while `SyncService` still requires a trusted vault key or
+  // while a transient store refresh is in flight. Ensures the client is
+  // non-null before checking error state.
   bool IsSavingBlockedByTrustedVaultError() const;
 
   void RecordMessageShownMetrics(bool update_password);
@@ -226,6 +251,11 @@ class SaveUpdatePasswordMessageDelegate
   // dismissal callbacks from UI bridges (e.g. HandleDialogDismissed).
   bool is_programmatic_dismissal_ = false;
 
+  // True while an in-context trusted vault recovery flow is active (from when
+  // key retrieval starts until the credential is saved or the prompt state is
+  // cleared).
+  bool is_in_trusted_vault_error_flow_ = false;
+
   State state_ = State::kIdle;
 
   // ManagePasswordsState maintains the password form that is being
@@ -244,6 +274,9 @@ class SaveUpdatePasswordMessageDelegate
   base::ScopedObservation<password_manager::PasswordStoreInterface,
                           password_manager::PasswordStoreInterface::Observer>
       account_password_store_observation_{this};
+
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   base::WeakPtrFactory<SaveUpdatePasswordMessageDelegate> weak_ptr_factory_{
       this};

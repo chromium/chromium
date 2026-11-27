@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Tab destroyed before resolution"/>
   <int value="8"
       label="Trusted vault error resolution abandoned (navigation, new
-             password submission, account change)"/>
+             password submission, account/sync state change)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:SaveWithTrustedVaultErrorOutcome) -->

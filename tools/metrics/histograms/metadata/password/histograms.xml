@@ -3962,11 +3962,14 @@ useful for Chirp alerts (go/crca-alerts). -->
     On Android, recorded when the message times out, when the user dismisses the
     prompt, when the user selects never save, when device lock UI is canceled,
     when key retrieval fails or is canceled, when the tab is destroyed before
-    resolution, when a new store error occurs, or when key retrieval completes
-    and the password is saved successfully. When key retrieval fails or is
-    canceled, a reprompt is shown to allow the user to retry; therefore, 'Key
-    retrieval failed or canceled' can be recorded alongside a subsequent outcome
-    (such as reprompt dismissal, tab destruction, or successful save upon retry)
+    resolution, when error resolution is abandoned due to an account or sync
+    state change (including sync shutdown), when a new store error occurs, or
+    when key retrieval completes and the password is saved successfully. When
+    key retrieval fails or is canceled (or returns before the updated sync or
+    store state finishes propagating), a reprompt is shown to allow the user to
+    retry; therefore, 'Key retrieval failed or canceled' can be recorded
+    alongside a subsequent outcome (such as reprompt dismissal, tab destruction,
+    background save or abandonment without retry, or successful save upon retry)
     if the flow continues.
 
     On desktop, pre-recovery bubble dismissals are recorded in
