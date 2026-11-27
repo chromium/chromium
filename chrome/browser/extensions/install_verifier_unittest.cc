@@ -4,14 +4,20 @@
 
 #include "extensions/browser/install_verifier.h"
 
+#include "base/one_shot_event.h"
+#include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -130,6 +136,56 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
         install_verifier()->MustRemainDisabled(extension.get(),
                                                &disable_reason));
   }
+}
+
+// Verifies that bootstrapping does not run CheckManagementPolicy() when install
+// verification is disabled, even if unverified webstore extensions exist.
+TEST_F(InstallVerifierTest, SkipBootstrapCheckWhenVerificationDisabled) {
+  // Override the fixture's kForceOn bypass to simulate platforms where install
+  // verification is disabled by default (e.g. ChromeOS, Linux).
+  ScopedInstallVerifierBypassForTest disable_verification(
+      ScopedInstallVerifierBypassForTest::kForceOff);
+
+  // Install a webstore extension so GetExtensionsToVerify() is non-empty.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Webstore Extension")
+          .SetLocation(ManifestLocation::kInternal)
+          .SetManifestKey("update_url",
+                          extension_urls::GetWebstoreUpdateUrl().spec())
+          .Build();
+  registrar()->AddExtension(extension.get());
+
+  // Count CheckManagementPolicy() passes via a lightweight policy provider.
+  class CountingPolicyProvider : public ManagementPolicy::Provider {
+   public:
+    std::string GetDebugPolicyProviderName() const override {
+      return "CountingPolicyProvider";
+    }
+    bool MustRemainDisabled(
+        const Extension* extension,
+        disable_reason::DisableReason* reason) const override {
+      ++check_count;
+      return false;
+    }
+    mutable int check_count = 0;
+  } provider;
+
+  ManagementPolicy* management_policy =
+      ExtensionSystem::Get(profile())->management_policy();
+  management_policy->RegisterProvider(&provider);
+
+  // Init() posts MaybeBootstrapSelf() to ready(); queue QuitClosure() after it
+  // so run_loop exits once the bootstrap task has run.
+  install_verifier()->Init();
+  base::RunLoop run_loop;
+  ExtensionSystem::Get(profile())->ready().Post(FROM_HERE,
+                                                run_loop.QuitClosure());
+  static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
+      ->SetReady();
+  run_loop.Run();
+
+  management_policy->UnregisterProvider(&provider);
+  EXPECT_EQ(0, provider.check_count);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

@@ -329,15 +329,20 @@ ExtensionIdSet InstallVerifier::GetExtensionsToVerify() const {
 }
 
 void InstallVerifier::MaybeBootstrapSelf() {
-  ExtensionIdSet extension_ids = GetExtensionsToVerify();
-  if ((signature_.get() == nullptr && ShouldFetchSignature()) ||
-      std::ranges::any_of(extension_ids, [this](const std::string& id) {
-        return !IsKnownId(id);
-      })) {
-    AddMany(extension_ids, ADD_ALL_BOOTSTRAP);
-  } else {
-    bootstrap_check_complete_ = true;
+  // Only bootstrap when signature fetching is enabled; otherwise signature_ is
+  // always null and calling AddMany() would trigger a redundant
+  // CheckManagementPolicy() pass on startup.
+  if (ShouldFetchSignature()) {
+    ExtensionIdSet extension_ids = GetExtensionsToVerify();
+    if (!signature_ ||
+        std::ranges::any_of(extension_ids, [this](const std::string& id) {
+          return !IsKnownId(id);
+        })) {
+      AddMany(extension_ids, ADD_ALL_BOOTSTRAP);
+      return;
+    }
   }
+  bootstrap_check_complete_ = true;
 }
 
 void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
