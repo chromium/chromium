@@ -27,6 +27,7 @@
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -332,6 +333,21 @@ class ReadAnythingAppControllerTest : public testing::Test {
   // kReadAnythingDistillerRefactor.
   ReadAnythingDistiller* active_distiller() {
     return controller_->active_distiller_.get();
+  }
+
+  // Replaces the controller's distiller factory with a `FactoryT`, built with
+  // the same arguments the controller uses. Used for
+  // kReadAnythingDistillerRefactor.
+  template <typename FactoryT>
+  void SetDistillerFactory() {
+    controller_->active_distiller_.reset();
+    controller_->distiller_factory_ = std::make_unique<FactoryT>(
+        /*render_frame=*/nullptr,
+        base::BindRepeating(&ReadAnythingAppModel::is_screen_ai_service_ready,
+                            base::Unretained(&controller_->model_)),
+        base::BindRepeating(
+            &ReadAnythingAppController::RequestReadabilityDistillation,
+            controller_->weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Delivers pending replies from the page handler to the controller.
@@ -7281,6 +7297,79 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
             ReadAnythingAppModel::DistillationMethod::kReadability);
   EXPECT_EQ(active_distiller()->GetDistillationMethod(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+namespace {
+
+// A Screen2x distiller whose result never arrives, like one still waiting on
+// the ScreenAI service.
+class PendingScreen2xDistiller : public ReadAnythingDistiller {
+ public:
+  void Distill(const DistillationRequest& request) override {}
+  void Reset() override {}
+  bool IsDistillationInProgress() const override { return true; }
+  ReadAnythingAppModel::DistillationMethod GetDistillationMethod()
+      const override {
+    return ReadAnythingAppModel::DistillationMethod::kScreen2x;
+  }
+};
+
+// Creates PendingScreen2xDistiller for Screen2x, and the real distillers
+// otherwise.
+class PendingScreen2xDistillerFactory : public ReadAnythingDistillerFactory {
+ public:
+  using ReadAnythingDistillerFactory::ReadAnythingDistillerFactory;
+
+  std::unique_ptr<ReadAnythingDistiller> CreateDistiller(
+      ReadAnythingAppModel::DistillationMethod method,
+      ReadAnythingDistiller::DistillationCompleteCallback callback) override {
+    if (method == ReadAnythingAppModel::DistillationMethod::kScreen2x) {
+      return std::make_unique<PendingScreen2xDistiller>();
+    }
+    return ReadAnythingDistillerFactory::CreateDistiller(method,
+                                                         std::move(callback));
+  }
+};
+
+}  // namespace
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       NavigatingDuringScreen2xDistillation_DoesNotStayPaused) {
+  SetDistillerFactory<PendingScreen2xDistillerFactory>();
+
+  // Start a Screen2x distillation on a PDF.
+  ui::AXTreeID pdf_tree = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(pdf_tree);
+  controller().OnActiveAXTreeIDChanged(pdf_tree, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // Before it finishes, navigate to a page that uses Readability. This
+  // replaces the Screen2x distiller, so its result never arrives.
+  UseReadability();
+  ui::AXTreeID web_tree = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(web_tree);
+  ReadabilityReply& reply = ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(web_tree, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  page_handler_.FlushForTesting();
+  Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
+        "Title", "<p>Body</p>");
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  // Link clicks reach the browser.
+  EXPECT_CALL(page_handler_, OnLinkClicked(web_tree, 2)).Times(1);
+  controller().OnLinkClicked(2);
+  page_handler_.FlushForTesting();
+
+  // A later PDF starts distilling.
+  ui::AXTreeID next_pdf_tree = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(next_pdf_tree);
+  controller().OnActiveAXTreeIDChanged(next_pdf_tree, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  EXPECT_EQ(active_distiller()->GetDistillationMethod(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  EXPECT_FALSE(model().requires_distillation());
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,

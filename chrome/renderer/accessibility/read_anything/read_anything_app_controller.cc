@@ -775,6 +775,17 @@ void ReadAnythingAppController::UpdateActiveDistiller() {
       active_distiller_->GetDistillationMethod() == method) {
     return;
   }
+  // Replacing a Screen2x distiller drops its pending result, so
+  // OnAXTreeDistilled() never clears screen2x_distiller_running_. Clear it
+  // here, or update processing stays paused for the rest of the WebUI's
+  // lifetime.
+  // TODO(crbug.com/587049657): Remove this once ReadAnythingDistiller owns
+  // in-flight state and resets via IsDistillationInProgress() and Reset().
+  if (active_distiller_ &&
+      active_distiller_->GetDistillationMethod() ==
+          ReadAnythingAppModel::DistillationMethod::kScreen2x) {
+    model_.set_screen2x_distiller_running(false);
+  }
   // Recreating active_distiller_ destructs the previous instance,
   // canceling its in-flight operations and dropping pending callbacks.
   active_distiller_ = distiller_factory_->CreateDistiller(
