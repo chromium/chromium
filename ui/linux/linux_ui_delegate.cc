@@ -18,7 +18,9 @@ LinuxUiDelegate* LinuxUiDelegate::GetInstance() {
 }
 
 LinuxUiDelegate::LinuxUiDelegate() {
-  CHECK(!instance_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/585678880): CHECK-exclusion: Convert to a CHECK once
+  // we are confident it won't be triggered.
+  DCHECK(!instance_);
   instance_ = this;
 }
 
