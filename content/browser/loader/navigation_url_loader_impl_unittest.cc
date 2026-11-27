@@ -101,9 +101,19 @@ class TestAcceptCHFrameInterceptor;
 class NavigationURLLoaderImplTest : public testing::Test {
  public:
   NavigationURLLoaderImplTest()
+      : NavigationURLLoaderImplTest(
+            BrowserTaskEnvironment::TimeSource::SYSTEM_TIME) {}
+
+ protected:
+  // Tests in this suite talk to real background test servers on separate
+  // threads. Using real time by default prevents simulated clocks from
+  // auto-advancing and prematurely firing navigation timeouts while the main
+  // thread waits for server responses.
+  explicit NavigationURLLoaderImplTest(
+      BrowserTaskEnvironment::TimeSource time_source)
       : task_environment_(std::make_unique<BrowserTaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::IO,
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)),
+            time_source)),
         network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {
     browser_context_ = std::make_unique<TestBrowserContext>();
@@ -117,6 +127,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
 #endif
   }
 
+ public:
   ~NavigationURLLoaderImplTest() override {
     browser_context_.reset();
     // Reset the BrowserTaskEnvironment to force destruction of the local
@@ -1840,9 +1851,21 @@ TEST_F(NavigationURLLoaderImplTest, UpgradeIfInsecureTest) {
   EXPECT_EQ(expected_url, redirect_info.new_url);
 }
 
+// Uses a simulated clock so timeout expiration can be verified without waiting
+// in real time. Only safe for tests whose requests never expect a server
+// response before the timeout fires; tests that wait on real background test
+// server responses must use the real-time base fixture to avoid premature
+// clock advancement.
+class NavigationURLLoaderImplMockTimeTest : public NavigationURLLoaderImplTest {
+ public:
+  NavigationURLLoaderImplMockTimeTest()
+      : NavigationURLLoaderImplTest(
+            BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
 // Tests that when a navigation timeout is set and the navigation takes longer
 // than that timeout, then the navigation load fails with ERR_TIMED_OUT.
-TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
+TEST_F(NavigationURLLoaderImplMockTimeTest, NavigationTimeoutTest) {
   ASSERT_TRUE(http_test_server_.Start());
   const GURL url = http_test_server_.GetURL("/hung");
   TestNavigationURLLoaderDelegate delegate;
@@ -1863,9 +1886,13 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutRedirectTest) {
   TestNavigationURLLoaderDelegate delegate;
   auto loader = CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
   loader->Start();
-  loader->SetNavigationTimeout(base::Seconds(3));
+  SetLargeNavigationTimeout(*loader);
   delegate.WaitForRequestRedirected();
   loader->FollowRedirect({});
+  // Trigger the timeout explicitly after following the redirect so we verify
+  // the timer stayed active across the redirect without waiting in real time.
+  EXPECT_TRUE(loader->IsNavigationTimeoutRunningForTesting());
+  loader->TriggerTimeoutForTesting();
   delegate.WaitForRequestFailed();
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
 }
@@ -1876,13 +1903,13 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutAfterResponseStartedTest) {
   TestNavigationURLLoaderDelegate delegate;
   auto loader = CreateTestLoader(url, std::string(), "GET", &delegate);
   loader->Start();
-  loader->SetNavigationTimeout(base::Seconds(30));
+  SetLargeNavigationTimeout(*loader);
+  EXPECT_TRUE(loader->IsNavigationTimeoutRunningForTesting());
   delegate.WaitForResponseStarted();
 
-  // Once response has started, OnReceiveResponse() cancels the navigation
-  // timeout timer. Advancing time past the timeout should not trigger the
-  // timer or cause any request failure.
-  task_environment_->FastForwardBy(base::Seconds(35));
+  // Once a response has started, the navigation timeout should be canceled so
+  // it cannot later trigger a request failure.
+  EXPECT_FALSE(loader->IsNavigationTimeoutRunningForTesting());
   EXPECT_EQ(net::OK, delegate.net_error());
 }
 

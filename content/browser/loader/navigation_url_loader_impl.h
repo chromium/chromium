@@ -153,6 +153,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void CancelNavigationTimeout() override;
 
   void TriggerTimeoutForTesting();
+  bool IsNavigationTimeoutRunningForTesting() const {
+    return timeout_timer_.IsRunning();
+  }
   const network::ResourceRequest& GetResourceRequestForTesting() const;
   bool HasEarlyHintsManagerForTesting() const { return !!early_hints_manager_; }
 
