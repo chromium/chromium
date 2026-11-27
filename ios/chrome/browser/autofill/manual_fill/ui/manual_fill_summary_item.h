@@ -7,17 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class FaviconAttributes;
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_icon_configuration.h"
 
-// Leading icon style for a manual fill item.
-enum class ManualFillIconStyle {
-  // Symbol inside a rounded-square container.
-  kSymbol,
-  // Credit card network or custom card art icon.
-  kCardIcon,
-  // Site favicon (or `iconImage` symbol override).
-  kFavicon,
-};
+@class FaviconAttributes;
 
 // UI item for a summary row in the expanded manual fill view.
 @interface ManualFillSummaryItem : NSObject

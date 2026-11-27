@@ -6,22 +6,9 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
-#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_configuration.h"
-#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
-#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
-#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-
-namespace {
-
-// Dimensions of the credit card icon.
-constexpr CGFloat kCardIconWidth = 40;
-constexpr CGFloat kCardIconHeight = 24;
-
-}  // namespace
 
 @implementation ManualFillSummaryItem
 
@@ -56,7 +43,8 @@ constexpr CGFloat kCardIconHeight = 24;
   configuration.subtitle = self.subtitle;
   configuration.subtitleNumberOfLines = 1;
   configuration.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
-  configuration.leadingConfiguration = [self createLeadingConfiguration];
+  configuration.leadingConfiguration = CreateManualFillIconConfiguration(
+      self.iconStyle, self.iconImage, self.faviconAttributes);
 
   if (self.cellIndexAccessibilityLabel.length > 0) {
     configuration.customAccessibilityLabel =
@@ -71,54 +59,6 @@ constexpr CGFloat kCardIconHeight = 24;
   // Overwrite rather than bitwise-ORing because `TableViewCell` does not reset
   // `accessibilityTraits` in `-prepareForReuse`.
   cell.accessibilityTraits = UIAccessibilityTraitButton;
-}
-
-#pragma mark - Private
-
-// Creates the leading `ChromeContentConfiguration` matching `iconStyle`.
-- (NSObject<ChromeContentConfiguration>*)createLeadingConfiguration {
-  switch (self.iconStyle) {
-    case ManualFillIconStyle::kSymbol: {
-      ColorfulSymbolContentConfiguration* symbolConfiguration =
-          [[ColorfulSymbolContentConfiguration alloc] init];
-      symbolConfiguration.symbolImage = self.iconImage;
-      symbolConfiguration.symbolTintColor =
-          [UIColor colorNamed:kTextPrimaryColor];
-      // Contrast the icon container against the cell's
-      // `kGroupedSecondaryBackgroundColor` background.
-      symbolConfiguration.symbolBackgroundColor =
-          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-      return symbolConfiguration;
-    }
-    case ManualFillIconStyle::kCardIcon: {
-      ImageContentConfiguration* imageConfiguration =
-          [[ImageContentConfiguration alloc] init];
-      imageConfiguration.image = self.iconImage;
-      imageConfiguration.imageSize =
-          CGSizeMake(kCardIconWidth, kCardIconHeight);
-      imageConfiguration.imageContentMode = UIViewContentModeScaleAspectFit;
-      return imageConfiguration;
-    }
-    case ManualFillIconStyle::kFavicon: {
-      // Credential entries without a site favicon (such as passkeys or backup
-      // passwords) supply a symbol override.
-      if (self.iconImage) {
-        ImageContentConfiguration* imageConfiguration =
-            [[ImageContentConfiguration alloc] init];
-        imageConfiguration.image = self.iconImage;
-        imageConfiguration.imageSize =
-            CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
-        imageConfiguration.imageContentMode = UIViewContentModeCenter;
-        imageConfiguration.imageTintColor =
-            [UIColor colorNamed:kTextPrimaryColor];
-        return imageConfiguration;
-      }
-      FaviconContentConfiguration* faviconConfiguration =
-          [[FaviconContentConfiguration alloc] init];
-      faviconConfiguration.faviconAttributes = self.faviconAttributes;
-      return faviconConfiguration;
-    }
-  }
 }
 
 @end

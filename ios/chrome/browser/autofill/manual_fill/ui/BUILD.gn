@@ -36,6 +36,8 @@ source_set("ui") {
     "manual_fill_cell_button.mm",
     "manual_fill_cell_utils.h",
     "manual_fill_cell_utils.mm",
+    "manual_fill_icon_configuration.h",
+    "manual_fill_icon_configuration.mm",
     "manual_fill_labeled_chip.h",
     "manual_fill_labeled_chip.mm",
     "manual_fill_password_cell.h",
