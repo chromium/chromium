@@ -8,7 +8,6 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
@@ -90,13 +89,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 // covered by other tests.  A single programming error may cause multiple tests
 // to fail.
 @implementation TabSwitcherTransitionTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kChromeNextIa);
-  config.features_enabled.push_back(kFullscreenRefactoring);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
@@ -313,11 +312,6 @@ void TapTabGroupTitle() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-  if ([self isRunningTest:@selector(testCreateGroupFromTabInAnotherWindow)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  } else {
-    config.features_enabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -291,17 +290,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 @end
 
 @implementation TabGridTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testTapOnSearchScrimExitsSearchMode)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  } else {
-    config.features_enabled.push_back(kChromeNextIa);
-  }
-
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -586,9 +574,8 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
   [ChromeEarlGrey waitForIncognitoTabCount:0];
 }
 
-// Tests opening an incognito tabs after closing all incognito tabs with Chrome
-// Next IA flag enabled. This is to prevent regression during development.
-- (void)testIncognitoTabOperationsWithChromeNextIa {
+// Tests opening an incognito tab after closing all incognito tabs.
+- (void)testIncognitoTabOperations {
   // Opens an incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];

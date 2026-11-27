@@ -221,7 +221,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = SharedTabGroupAppLaunchConfiguration();
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  // Shared Tab Groups is not planned to ship with Chrome Next (which does not
+  // implement the toolbar/AppBar activity indicators tested by this suite), so
+  // keep `kChromeNextIa` disabled here.
   config.features_disabled.push_back(kChromeNextIa);
   return config;
 }

@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
@@ -83,13 +82,6 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 @end
 
 @implementation PinnedTabsGenericConsistencyTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_enabled.push_back(kChromeNextIa);
-  return config;
-}
 
 // Waits for the animation (context modal disappearance) to complete.
 - (void)waitForAnimationCompletionWithMatcher:(id<GREYMatcher>)elementMatcher {
