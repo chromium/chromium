@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -46,6 +47,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "testing/platform_test.h"
+#import "url/origin.h"
 
 namespace autofill {
 
@@ -525,6 +527,114 @@ TEST_F(FormActivityTabHelperUnitTest, ReentrantObserverNotification) {
 
   EXPECT_TRUE(test_observer.form_activity_info());
   EXPECT_TRUE(test_observer.form_removal_info());
+}
+
+namespace {
+
+// Observer that removes the sender frame while being notified, emulating a
+// frame destroyed by a nested run loop during observer notifications.
+class FrameRemovingFormActivityObserver : public FormActivityObserver {
+ public:
+  explicit FrameRemovingFormActivityObserver(
+      web::FakeWebFramesManager* frames_manager)
+      : frames_manager_(frames_manager) {}
+
+  void FormActivityRegistered(web::WebState* web_state,
+                              web::WebFrame* sender_frame,
+                              const FormActivityParams& params) override {
+    frames_manager_->RemoveWebFrame(sender_frame->GetFrameId());
+  }
+
+  void FormRemoved(web::WebState* web_state,
+                   web::WebFrame* sender_frame,
+                   const FormRemovalParams& params) override {
+    frames_manager_->RemoveWebFrame(sender_frame->GetFrameId());
+  }
+
+ private:
+  raw_ptr<web::FakeWebFramesManager> frames_manager_;
+};
+
+// Test fixture for notifications where the sender frame is destroyed by an
+// observer before all observers are notified.
+class FormActivityTabHelperFrameDestroyedTest : public PlatformTest {
+ protected:
+  FormActivityTabHelperFrameDestroyedTest() {
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    frames_manager_ = frames_manager.get();
+    web_state_.SetWebFramesManager(ContentWorldForAutofillJavascriptFeatures(),
+                                   std::move(frames_manager));
+    auto main_frame =
+        web::FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.test/"));
+    frame_id_ = main_frame->GetFrameId();
+    frame_origin_ = main_frame->GetSecurityOrigin();
+    frames_manager_->AddWebFrame(std::move(main_frame));
+
+    tab_helper_ = FormActivityTabHelper::GetOrCreateForWebState(&web_state_);
+    frame_removing_observer_ =
+        std::make_unique<FrameRemovingFormActivityObserver>(frames_manager_);
+    test_observer_ = std::make_unique<TestFormActivityObserver>(&web_state_);
+    // Observers are notified in insertion order, so `test_observer_` is
+    // notified after the frame is removed.
+    tab_helper_->AddObserver(frame_removing_observer_.get());
+    tab_helper_->AddObserver(test_observer_.get());
+  }
+
+  ~FormActivityTabHelperFrameDestroyedTest() override {
+    tab_helper_->RemoveObserver(test_observer_.get());
+    tab_helper_->RemoveObserver(frame_removing_observer_.get());
+  }
+
+  // Sends a form message with `body` from the main frame.
+  void SendMessage(base::DictValue body) {
+    web::ScriptMessage message(std::make_unique<base::Value>(std::move(body)),
+                               /*is_user_interacting=*/true,
+                               /*is_main_frame=*/true,
+                               /*request_url=*/std::nullopt, frame_origin_);
+    tab_helper_->OnFormMessageReceived(&web_state_, message);
+  }
+
+  web::FakeWebState web_state_;
+  raw_ptr<web::FakeWebFramesManager> frames_manager_;
+  std::string frame_id_;
+  url::Origin frame_origin_;
+  raw_ptr<FormActivityTabHelper> tab_helper_;
+  std::unique_ptr<FrameRemovingFormActivityObserver> frame_removing_observer_;
+  std::unique_ptr<TestFormActivityObserver> test_observer_;
+};
+
+}  // namespace
+
+// Tests that observers are no longer notified of form activity once the sender
+// frame is destroyed during notifications.
+TEST_F(FormActivityTabHelperFrameDestroyedTest, FormActivity) {
+  SendMessage(base::DictValue()
+                  .Set("command", "form.activity")
+                  .Set("frameID", frame_id_)
+                  .Set("formName", "form1")
+                  .Set("formRendererID", "1")
+                  .Set("fieldIdentifier", "id1")
+                  .Set("fieldRendererID", "2")
+                  .Set("fieldType", "text")
+                  .Set("type", "focus")
+                  .Set("value", "")
+                  .Set("hasUserGesture", true));
+
+  EXPECT_FALSE(frames_manager_->GetFrameWithId(frame_id_));
+  EXPECT_FALSE(test_observer_->form_activity_info());
+}
+
+// Tests that observers are no longer notified of form removal once the sender
+// frame is destroyed during notifications.
+TEST_F(FormActivityTabHelperFrameDestroyedTest, FormRemoval) {
+  SendMessage(base::DictValue()
+                  .Set("command", "form.removal")
+                  .Set("frameID", frame_id_)
+                  .Set("removedFormIDs", "[\"1\"]")
+                  .Set("removedFieldIDs", "[]"));
+
+  EXPECT_FALSE(frames_manager_->GetFrameWithId(frame_id_));
+  EXPECT_FALSE(test_observer_->form_removal_info());
 }
 
 // Tests that focus event from same-origin iframe correctly delivered to
