@@ -89,6 +89,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -316,9 +317,23 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     test_account_preview_data_services_.erase(profile);
   }
 
+  // Installs a `TestURLLoaderFactory` interceptor that replies instantly to
+  // Gaia endpoints (including an empty account list for `/ListAccounts`) so
+  // injecting accounts into a newly created profile does not time out.
+  //
+  // Callers without a primary account must add accounts and populate Gaia
+  // cookies before calling this: in cookie-based consistency mode
+  // `AccountReconcilor` revokes refresh tokens missing from `/ListAccounts`,
+  // and this interceptor overrides `/ListAccounts` for all subsequent requests
+  // (including later `SetCookieAccounts()` calls).
   void SetupGaiaResponses() {
-    // Instantly return from Gaia calls, to avoid timing out when injecting the
-    // account in the new profile.
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+        (!identity_manager()->GetAccountsWithRefreshTokens().empty() &&
+         identity_manager()->GetCachedAccountsInCookieJar().AreAccountsFresh()))
+        << "Add accounts and set Gaia cookies before calling "
+           "SetupGaiaResponses() when there is no primary account.";
+
     network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
     loader_factory->SetInterceptor(base::BindLambdaForTesting(
         [loader_factory](const network::ResourceRequest& request) {
@@ -337,8 +352,10 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
 
   AccountInfo MakeAccountInfoAvailableAndUpdate(
       std::string_view email,
-      const std::string& hosted_domain) {
-    AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+      const std::string& hosted_domain,
+      signin::SimpleAccountAvailabilityOptions options = {}) {
+    AccountInfo account_info =
+        identity_test_env()->MakeAccountAvailable(email, options);
     // Fill the account info, in particular for the hosted_domain field.
     account_info = AccountInfo::Builder(account_info)
                        .SetFullName("fullname")
@@ -2395,8 +2412,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterprise);
   Profile* new_profile = InterceptAndWaitProfileCreation(
       web_contents, account_info.GetAccountId());
-  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   ASSERT_TRUE(new_profile);
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
@@ -2778,8 +2795,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTestAccountLevelPolicy) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -2803,8 +2820,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   Profile* new_profile = InterceptAndWaitProfileCreation(
       web_contents, account_info.GetAccountId());
-  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
@@ -2858,8 +2875,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseForcedInterceptionInPopup) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -2913,8 +2930,8 @@ class DiceWebSigninInterceptorPopupDisabledByFlagBrowserTest
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorPopupDisabledByFlagBrowserTest,
                        EnterpriseForcedInterceptionInPopupDisabledByFlag) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -2990,8 +3007,8 @@ IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyMergeData) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -3044,8 +3061,8 @@ IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyDeclined) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -3105,8 +3122,8 @@ IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
     ForcedEnterpriseInterceptionTestAccountLevelPolicyStrictDeclined) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -3165,8 +3182,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTest) {
   base::HistogramTester histogram_tester;
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", "example.com", {.set_cookie = true});
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -3187,8 +3204,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   Profile* new_profile = InterceptAndWaitProfileCreation(
       web_contents, account_info.GetAccountId());
-  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(new_profile));
   EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
