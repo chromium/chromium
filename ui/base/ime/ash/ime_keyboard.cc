@@ -58,6 +58,7 @@ bool ImeKeyboard::IsISOLevel5ShiftAvailable() const {
 
 bool ImeKeyboard::IsAltGrAvailable() const {
   constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+      // clang-format off: to avoid oscillation between 1- and 2-column layouts
       "be",
       "bg",
       "bg(phonetic)",
@@ -92,11 +93,13 @@ bool ImeKeyboard::IsAltGrAvailable() const {
       "se",
       "si",
       "sk",
+      "th(kedmanee)",
       "tr",
       "ua",
       "us(altgr-intl)",
       "us(intl)",
       "us(noop-altgr)",
+      // clang-format on
   });
 
   return kSet.contains(last_layout_);

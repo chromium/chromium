@@ -296,8 +296,8 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     out->layout = "us";
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // TODO(b/587215253): Serialise this override back to in-memory parsed JSON,
-  // so it's also included in the result of chrome.runtime.getManifest() API.
+  // TODO(b/587215253): Serialise these overrides back to in-memory parsed JSON,
+  // so they're also included in the result of chrome.runtime.getManifest() API.
   if (*engine_id == "vkd_th_tis" &&
       base::FeatureList::IsEnabled(
           features::kUseDirectXkbLayoutForThaiTisInputMethod)) {
@@ -305,6 +305,13 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     // (chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json)
     // once the feature flag has been enabled-by-default then dismantled.
     out->layout = "th";
+  } else if (*engine_id == "vkd_th" &&
+             base::FeatureList::IsEnabled(
+                 features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod)) {
+    // TODO(b/590778639): Configure this directly in CrOS 1P manifest
+    // (chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json)
+    // once the feature flag has been enabled-by-default then dismantled.
+    out->layout = "th(kedmanee)";
   }
 #endif
 

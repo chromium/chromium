@@ -300,6 +300,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   void RecordInputMethodUsage(const std::string& input_method_id);
   FRIEND_TEST_ALL_PREFIXES(InputMethodManagerImplTest,
                            RecordInputMethodUsageThaiTisCategory);
+  FRIEND_TEST_ALL_PREFIXES(InputMethodManagerImplTest,
+                           RecordInputMethodUsageThaiKedmaneeCategory);
 
   // Notifies the current input method or the list of enabled input method IDs
   // changed.

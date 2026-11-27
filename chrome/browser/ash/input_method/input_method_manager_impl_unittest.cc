@@ -1822,5 +1822,45 @@ TEST_F(InputMethodManagerImplTest, RecordInputMethodUsageThaiTisCategory) {
   }
 }
 
+TEST_F(InputMethodManagerImplTest, RecordInputMethodUsageThaiKedmaneeCategory) {
+  constexpr int kInputMethodCategoryM17n = 5;
+  const std::string cros_1p_thai_kedmanee_id =
+      extension_ime_util::GetComponentInputMethodID(
+          "jkghodnilhceideoidjikpgommlajknk", "vkd_th");
+  const std::string oss_m17n_thai_kedmanee_id =
+      extension_ime_util::GetComponentInputMethodID(
+          "jhffeifommiaekmbkkjlpmilogcfdohp", "vkd_th");
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod);
+    base::HistogramTester histogram_tester;
+    manager_->RecordInputMethodUsage(cros_1p_thai_kedmanee_id);
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryM17n, 1);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod);
+    base::HistogramTester histogram_tester;
+    manager_->RecordInputMethodUsage(cros_1p_thai_kedmanee_id);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    constexpr int kInputMethodCategoryXkb = 1;
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryXkb, 1);
+#else
+    histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                        kInputMethodCategoryM17n, 1);
+#endif
+
+    base::HistogramTester oss_histogram_tester;
+    manager_->RecordInputMethodUsage(oss_m17n_thai_kedmanee_id);
+    oss_histogram_tester.ExpectUniqueSample("InputMethod.Category",
+                                            kInputMethodCategoryM17n, 1);
+  }
+}
+
 }  // namespace input_method
 }  // namespace ash

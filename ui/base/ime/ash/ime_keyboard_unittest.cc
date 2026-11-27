@@ -66,6 +66,9 @@ TEST_F(ImeKeyboardTest, IsAltGrAvailable) {
   EXPECT_TRUE(ime_keyboard_->IsAltGrAvailable());
   ime_keyboard_->SetCurrentKeyboardLayoutByName("th", base::DoNothing());
   EXPECT_FALSE(ime_keyboard_->IsAltGrAvailable());
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("th(kedmanee)",
+                                                base::DoNothing());
+  EXPECT_TRUE(ime_keyboard_->IsAltGrAvailable());
 }
 
 }  // namespace

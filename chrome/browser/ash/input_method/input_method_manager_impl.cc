@@ -104,7 +104,11 @@ InputMethodCategory GetInputMethodCategory(const std::string& input_method_id) {
               extension_ime_util::GetComponentInputMethodID(
                   extension_ime_util::kXkbExtensionId, "vkd_th_tis") &&
           base::FeatureList::IsEnabled(
-              features::kUseDirectXkbLayoutForThaiTisInputMethod))
+              features::kUseDirectXkbLayoutForThaiTisInputMethod)) ||
+      (input_method_id == extension_ime_util::GetComponentInputMethodID(
+                              extension_ime_util::kXkbExtensionId, "vkd_th") &&
+       base::FeatureList::IsEnabled(
+           features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod))
 #endif
   ) {
     category = INPUT_METHOD_CATEGORY_XKB;
