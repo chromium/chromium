@@ -84,7 +84,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "Flaky, crbug.com/40757167")
     public void testPrefetchFailoverRequestMadeAfterOpen() throws Exception {
         simulateSlowResolveSearch("states");
 

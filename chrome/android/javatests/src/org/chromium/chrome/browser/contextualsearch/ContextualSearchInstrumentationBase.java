@@ -906,9 +906,12 @@ public class ContextualSearchInstrumentationBase {
      * @param isFailure whether the request resulted in a failure.
      */
     protected void fakeContentViewDidNavigate(boolean isFailure) {
-        String url = mFakeServer.getLoadedUrl();
-        mManager.getOverlayPanelContentDelegate()
-                .onMainFrameNavigation(url, false, isFailure, false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    String url = mFakeServer.getLoadedUrl();
+                    mManager.getOverlayPanelContentDelegate()
+                            .onMainFrameNavigation(url, false, isFailure, false);
+                });
     }
 
     /**
