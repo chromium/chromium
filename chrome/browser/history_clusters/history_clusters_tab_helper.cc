@@ -240,31 +240,46 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
     base::TimeDelta total_foreground_duration,
     const page_load_metrics::PageEndReason page_end_reason) {
   auto* history_clusters_service = GetHistoryClustersService();
-  if (!history_clusters_service)
+  if (!history_clusters_service ||
+      !history_clusters_service->HasIncompleteVisitContextAnnotations(
+          navigation_id)) {
     return history::VisitContextAnnotations();
+  }
 
-  auto& incomplete_visit_context_annotations =
-      history_clusters_service->GetIncompleteVisitContextAnnotations(
-          navigation_id);
-  incomplete_visit_context_annotations.context_annotations.page_end_reason =
-      page_end_reason;
-  incomplete_visit_context_annotations.context_annotations
-      .total_foreground_duration = total_foreground_duration;
+  {
+    auto& incomplete_visit_context_annotations =
+        history_clusters_service->GetIncompleteVisitContextAnnotations(
+            navigation_id);
+    incomplete_visit_context_annotations.context_annotations.page_end_reason =
+        page_end_reason;
+    incomplete_visit_context_annotations.context_annotations
+        .total_foreground_duration = total_foreground_duration;
+    // Ensure `RecordPageEndMetricsIfNeeded()` does not complete and erase the
+    // entry early if `TagNavigationAsExpectingUkmNavigationComplete()` was not
+    // called when the navigation started.
+    incomplete_visit_context_annotations.status.expect_ukm_page_end_signals =
+        true;
+  }
+
   // `RecordPageEndMetricsIfNeeded()` will fail to complete the
   // `IncompleteVisitContextAnnotations` as `ukm_page_end_signals` hasn't been
   // set yet, but it will record metrics if needed (i.e. not already recorded)
   // and possible (i.e. the history request has resolved and `history_rows` have
   // been recorded).
   RecordPageEndMetricsIfNeeded(navigation_id);
+  if (!history_clusters_service->HasIncompleteVisitContextAnnotations(
+          navigation_id)) {
+    return history::VisitContextAnnotations();
+  }
+
   // Make a copy of the context annotations as the referenced
-  // incomplete_visit_context_annotations may be destroyed in
+  // `incomplete_visit_context_annotations` may be destroyed in
   // `CompleteVisitContextAnnotationsIfReady()`.
+  auto& incomplete_visit_context_annotations =
+      history_clusters_service->GetIncompleteVisitContextAnnotations(
+          navigation_id);
   auto context_annotations_copy =
       incomplete_visit_context_annotations.context_annotations;
-  // TODO(crbug.com/574688432): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(
-      incomplete_visit_context_annotations.status.expect_ukm_page_end_signals);
   incomplete_visit_context_annotations.status.ukm_page_end_signals = true;
   history_clusters_service->CompleteVisitContextAnnotationsIfReady(
       navigation_id);

@@ -740,4 +740,56 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
             base::Seconds(20));
 }
 
+// Regression test for crbug.com/589865719: Calling `OnUkmNavigationComplete()`
+// without `TagNavigationAsExpectingUkmNavigationComplete()` should not cause a
+// use-after-free and should still record and return UKM context annotations.
+TEST_F(HistoryClustersTabHelperTest,
+       UkmNavigationCompleteWithoutExpectingUkm) {
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  UpdateHistoryForNavigation(0, MakeTime(1), GURL{"https://github.com"});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_);
+
+  const auto annotations = helper_->OnUkmNavigationComplete(
+      0, /*total_foreground_duration=*/base::Seconds(20),
+      page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(annotations.page_end_reason,
+            page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(annotations.total_foreground_duration, base::Seconds(20));
+
+  DeleteContents();
+  auto visits = GetVisits();
+  ASSERT_EQ(visits.size(), 1u);
+  EXPECT_EQ(visits[0].context_annotations.page_end_reason,
+            page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(visits[0].context_annotations.total_foreground_duration,
+            base::Seconds(20));
+}
+
+// Calling `OnUkmNavigationComplete()` for an untracked navigation or after the
+// visit has already been completed should safely return default annotations.
+TEST_F(HistoryClustersTabHelperTest,
+       UkmNavigationCompleteWithoutIncompleteVisit) {
+  const auto untracked_annotations = helper_->OnUkmNavigationComplete(
+      0, /*total_foreground_duration=*/base::Seconds(20),
+      page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(untracked_annotations.page_end_reason, 0);
+
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  UpdateHistoryForNavigation(1, MakeTime(1), GURL{"https://github.com"});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_);
+  helper_->TagNavigationAsExpectingUkmNavigationComplete(1);
+
+  const auto first_annotations = helper_->OnUkmNavigationComplete(
+      1, /*total_foreground_duration=*/base::Seconds(20),
+      page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(first_annotations.page_end_reason,
+            page_load_metrics::PageEndReason::END_OTHER);
+
+  const auto duplicate_annotations = helper_->OnUkmNavigationComplete(
+      1, /*total_foreground_duration=*/base::Seconds(30),
+      page_load_metrics::PageEndReason::END_CLOSE);
+  EXPECT_EQ(duplicate_annotations.page_end_reason, 0);
+  EXPECT_EQ(duplicate_annotations.total_foreground_duration, base::Seconds(-1));
+}
+
 }  // namespace
