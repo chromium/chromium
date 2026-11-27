@@ -9,9 +9,11 @@
 #import <memory>
 #import <optional>
 #import <string>
+#import <string_view>
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/containers/flat_set.h"
@@ -22,6 +24,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/sequence_checker.h"
+#import "base/strings/string_view_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -107,6 +110,64 @@ void LogPasskeyMigrationStatus(PasskeysMigrationStatus status) {
 // Logs the passkey signal action to UMA.
 void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
   base::UmaHistogramEnumeration("Passkeys.IOSMigration.SignalAction", action);
+}
+
+// Returns a `std::string_view` over the bytes owned by `data`, or an empty view
+// if `data` is nil or empty.
+std::string_view StringViewFromData(NSData* data) {
+  return base::as_string_view(base::apple::NSDataToSpan(data));
+}
+
+// Applies pending state updates from `credential` to `passkey_store` if the
+// matching passkey is still active (not shadowed). Returns false if no active
+// passkey matches `credential`.
+bool UpdateExistingPasskey(webauthn::PasskeyModel& passkey_store,
+                           id<Credential> credential) {
+  CHECK(passkey_store.IsReady());
+  std::string rp_id = base::SysNSStringToUTF8(credential.rpId);
+  std::string credential_id(StringViewFromData(credential.credentialId));
+  std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
+      passkey_store.GetPasskey(
+          rp_id, credential_id,
+          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
+  if (!credential_specifics.has_value()) {
+    return false;
+  }
+
+  if (credential_specifics->hidden() != credential.hidden) {
+    // TODO(crbug.com/564349705): Add PasskeyChangeQuotaTracker.
+    if (credential.hidden) {
+      passkey_store.HidePasskey(
+          credential_id,
+          base::Time::FromMillisecondsSinceUnixEpoch(credential.hiddenTime));
+      LogPasskeySignalMigrationAction(
+          PasskeysSignalMigrationAction::kPasskeyHidden);
+    } else {
+      passkey_store.UnhidePasskey(credential_id);
+      LogPasskeySignalMigrationAction(
+          PasskeysSignalMigrationAction::kPasskeyRestored);
+    }
+  }
+
+  std::string username = base::SysNSStringToUTF8(credential.username);
+  if (credential_specifics->user_name() != username) {
+    passkey_store.UpdatePasskey(
+        credential_id,
+        {.user_name = username,
+         .user_display_name = credential_specifics->user_display_name()},
+        /*updated_by_user=*/false);
+    LogPasskeySignalMigrationAction(
+        PasskeysSignalMigrationAction::kPasskeyDetailsUpdated);
+  }
+
+  if (credential_specifics->last_used_time_windows_epoch_micros() <
+      credential.lastUsedTime) {
+    passkey_store.UpdatePasskeyTimestamp(
+        credential_id, base::Time::FromDeltaSinceWindowsEpoch(
+                           base::Microseconds(credential.lastUsedTime)));
+    LogPasskeyMigrationStatus(PasskeysMigrationStatus::kPasskeyUpdated);
+  }
+  return true;
 }
 
 }  // namespace
@@ -442,55 +503,11 @@ void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
   std::vector<sync_pb::WebauthnCredentialSpecifics> createdPasskeys;
 
   for (id<Credential> credential in credentials) {
-    std::string syncID(static_cast<const char*>(credential.syncId.bytes),
-                       credential.syncId.length);
-    if (syncIDs.contains(syncID)) {
+    if (syncIDs.contains(StringViewFromData(credential.syncId))) {
       // If the passkey already exists, update its state only if the credential
       // is still active.
-      std::string rpID = base::SysNSStringToUTF8(credential.rpId);
-      std::string credentialID(
-          static_cast<const char*>(credential.credentialId.bytes),
-          credential.credentialId.length);
-      std::optional<sync_pb::WebauthnCredentialSpecifics> credentialSpecifics =
-          _passkeyStore->GetPasskey(
-              rpID, credentialID,
-              webauthn::PasskeyModel::ShadowedCredentials::kExclude);
-      if (!credentialSpecifics.has_value()) {
+      if (!UpdateExistingPasskey(*_passkeyStore, credential)) {
         continue;
-      }
-
-      if (credentialSpecifics->hidden() != credential.hidden) {
-        // TODO(crbug.com/564349705): Add PasskeyChangeQuotaTracker.
-        if (credential.hidden) {
-          _passkeyStore->HidePasskey(credentialID,
-                                     base::Time::FromMillisecondsSinceUnixEpoch(
-                                         credential.hiddenTime));
-          LogPasskeySignalMigrationAction(
-              PasskeysSignalMigrationAction::kPasskeyHidden);
-        } else {
-          _passkeyStore->UnhidePasskey(credentialID);
-          LogPasskeySignalMigrationAction(
-              PasskeysSignalMigrationAction::kPasskeyRestored);
-        }
-      }
-
-      std::string username = base::SysNSStringToUTF8(credential.username);
-      if (credentialSpecifics->user_name() != username) {
-        _passkeyStore->UpdatePasskey(
-            credentialID,
-            {.user_name = username,
-             .user_display_name = credentialSpecifics->user_display_name()},
-            /*updated_by_user=*/false);
-        LogPasskeySignalMigrationAction(
-            PasskeysSignalMigrationAction::kPasskeyDetailsUpdated);
-      }
-
-      if (credentialSpecifics->last_used_time_windows_epoch_micros() <
-          credential.lastUsedTime) {
-        _passkeyStore->UpdatePasskeyTimestamp(
-            credentialID, base::Time::FromDeltaSinceWindowsEpoch(
-                              base::Microseconds(credential.lastUsedTime)));
-        LogPasskeyMigrationStatus(PasskeysMigrationStatus::kPasskeyUpdated);
       }
     } else {
       sync_pb::WebauthnCredentialSpecifics passkey =
