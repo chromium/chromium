@@ -959,9 +959,6 @@
   <message name="IDS_AUTOFILL_AI_REMOVE_INFO" desc="Text for a child menu option to remove an Autofill AI suggestion.">
     Remove this info
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO" desc="The text displayed at the bottom of the AtMemory popup to allow the user to manage their Autofill preferences for contact information. When the user clicks on it, opens the Contact info settings page." translateable="false">
-    Manage contact info
-  </message>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->
@@ -1202,9 +1199,6 @@
   <message name="IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the order product names attribute.">
     Product names
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_GRAND_TOTAL_ATTRIBUTE_NAME" desc="Used as a general label for the total amount of money paid for an order, including taxes and shipping costs.">
-    Total
-  </message>
 
   <!-- Attributes of the shipment entity -->
   <message name="IDS_AUTOFILL_AI_SHIPMENT_TRACKING_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the shipment tracking number attribute.">
@@ -1228,15 +1222,6 @@
   <message name="IDS_AUTOFILL_AI_SHIPMENT_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the shipment product names attribute.">
     Product names
   </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ADDRESS_ATTRIBUTE_NAME" desc="Used as a general label for the address a shipment is delivered to.">
-    Delivery address
-  </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_ESTIMATED_DELIVERY_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the date a shipment is expected to be delivered on.">
-    Estimated delivery date
-  </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_ASSOCIATED_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the id of the order that a shipment belongs to. The id of the order itself is IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME.">
-    Order ID
-  </message>
 
   <!-- Attributes of the flight reservation entity -->
   <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_FLIGHT_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation flight number attribute.">
@@ -1259,9 +1244,6 @@
   </message>
   <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation departure date attribute.">
     Departure date
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation arrival date attribute.">
-    Arrival date
   </message>
 
   <!-- Attributes of the driver's license entity -->

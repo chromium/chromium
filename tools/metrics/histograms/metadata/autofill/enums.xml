@@ -754,8 +754,6 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Other"/>
 </enum>
 
-<!-- LINT.IfChange(AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask) -->
-
 <enum name="AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask">
   <summary>
     A bitmask indicating which data sources provided an accepted AtMemory
@@ -778,8 +776,6 @@ Called by update_autofill_enums.py.-->
   <int value="15" label="Autofill, Gmail, Calendar, Photos"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/at_memory/memory_data_type.h:MemoryEntrySourceType) -->
-
 <enum name="AutofillAtMemoryQueryCompletedStatus">
   <int value="0" label="Query returned data"/>
   <int value="1" label="Query unsupported"/>
@@ -789,8 +785,6 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Internal error"/>
 </enum>
 
-<!-- LINT.IfChange(AutofillAtMemoryStateRestored) -->
-
 <enum name="AutofillAtMemoryStateRestored">
   <int value="0" label="New session"/>
   <int value="1" label="Restored with existing query"/>
@@ -798,16 +792,12 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Restored with response"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h:AutofillAtMemoryStateRestored) -->
-
 <enum name="AutofillAtMemoryTriggerSource">
   <int value="0" label="(Obsolete) Typed trigger"/>
   <int value="1" label="Context menu"/>
   <int value="2" label="Keyboard shortcut"/>
   <int value="3" label="Double Ctrl"/>
 </enum>
-
-<!-- LINT.IfChange(AutofillAtMemoryUiSessionOutcome) -->
 
 <enum name="AutofillAtMemoryUiSessionOutcome">
   <int value="0" label="Dismissed before query"/>
@@ -817,8 +807,6 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Suggestion accepted but not filled"/>
   <int value="5" label="Suggestion filled"/>
 </enum>
-
-<!-- LINT.ThenChange(//components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h:AtMemoryUiSessionOutcome) -->
 
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
@@ -5825,8 +5813,6 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h:MandatoryReauthOptInConfirmationBubbleMetric) -->
 
-<!-- LINT.IfChange(MemoryDataType) -->
-
 <enum name="MemoryDataType">
   <summary>
     The type of data a query or piece of information is related to.
@@ -5903,8 +5889,6 @@ Called by update_autofill_enums.py.-->
   <int value="78" label="LoyaltyMembershipProgram"/>
   <int value="79" label="LoyaltyMembershipProvider"/>
 </enum>
-
-<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/at_memory/memory_data_type.h:MemoryDataType) -->
 
 <!-- LINT.IfChange(OmniboxAutofillEvents) -->
 
