@@ -2995,6 +2995,9 @@ public class ToolbarManager
     }
 
     private void onDownloadButtonClicked() {
+        if (mDownloadToolbarButtonController != null) {
+            mDownloadToolbarButtonController.recordButtonClicked();
+        }
         if (mDownloadTrayCoordinator != null) {
             mDownloadTrayCoordinator.toggleFullTray();
         }

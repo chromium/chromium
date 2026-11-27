@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupNotShownReason;
 import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Surface;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadDangerType;
@@ -1040,5 +1041,102 @@ public class DownloadTrayMediatorTest {
         complete.get(DownloadTrayItemProperties.ON_OPEN).onClick(mAnchor);
         mMediator.onFullHistoryClicked();
         actions.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_recordsFullTrayRowCount() {
+        // Empty-tray fallback records 0.
+        HistogramWatcher emptyCount =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.FULL_TRAY_ROW_COUNT_HISTOGRAM, 0);
+        mMediator.toggleFullTray();
+        emptyCount.assertExpected();
+
+        mGetAllItemsCallbackCaptor
+                .getValue()
+                .onResult(
+                        new ArrayList<>(
+                                List.of(
+                                        createItem("a", OfflineItemState.IN_PROGRESS),
+                                        createItem("b", OfflineItemState.COMPLETE))));
+
+        // Failed showFullTray does not record.
+        doReturn(false).when(mPopupController).showFullTray(any(), any());
+        HistogramWatcher noRecord =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadTrayMetrics.FULL_TRAY_ROW_COUNT_HISTOGRAM)
+                        .build();
+        mMediator.toggleFullTray();
+        noRecord.assertExpected();
+
+        // Successful full tray records the number of shown rows.
+        doReturn(true).when(mPopupController).showFullTray(any(), any());
+        HistogramWatcher twoRows =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.FULL_TRAY_ROW_COUNT_HISTOGRAM, 2);
+        mMediator.toggleFullTray();
+        twoRows.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_recordsCompletionPopupNotShownReasons() {
+        HistogramWatcher reasons =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DownloadTrayMetrics.COMPLETION_POPUP_NOT_SHOWN_REASON_HISTOGRAM,
+                                CompletionPopupNotShownReason.NOTHING_NEW,
+                                CompletionPopupNotShownReason.ALREADY_SHOWING,
+                                CompletionPopupNotShownReason.TOO_SOON,
+                                CompletionPopupNotShownReason.WINDOW_UNFOCUSED,
+                                CompletionPopupNotShownReason.WINDOW_NOT_VISIBLE,
+                                CompletionPopupNotShownReason.WINDOW_NOT_VISIBLE,
+                                CompletionPopupNotShownReason.ANCHOR_HIDDEN,
+                                CompletionPopupNotShownReason.ANCHOR_HIDDEN,
+                                CompletionPopupNotShownReason.SHOW_FAILED)
+                        .build();
+
+        // NOTHING_NEW: completed item started over 24 h ago is excluded from the recent list.
+        OfflineItem old = createItem("old", OfflineItemState.IN_PROGRESS);
+        old.creationTimeMs = TimeUtils.currentTimeMillis() - TimeUnit.HOURS.toMillis(25);
+        mModel.onItemsAdded(List.of(old));
+        OfflineItem oldComplete = old.clone();
+        oldComplete.state = OfflineItemState.COMPLETE;
+        mModel.onItemUpdated(oldComplete, /* updateDelta= */ null);
+
+        // ALREADY_SHOWING: "a" shows the popup; "b" completes while it is up.
+        runToState("a", OfflineItemState.COMPLETE);
+        runToState("b", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+
+        // TOO_SOON: completes within the 15-second minimum interval.
+        runToState("c", OfflineItemState.COMPLETE);
+        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+
+        // WINDOW_UNFOCUSED: e.g. Custom Tab or another Chrome window has focus.
+        mIsWindowFocused = false;
+        runToState("d", OfflineItemState.COMPLETE);
+        mIsWindowFocused = true;
+
+        // WINDOW_NOT_VISIBLE: stopped window (e.g. Chrome in the background) or detached anchor.
+        mActivity.getWindow().getDecorView().setVisibility(View.INVISIBLE);
+        runToState("e", OfflineItemState.COMPLETE);
+        mActivity.getWindow().getDecorView().setVisibility(View.VISIBLE);
+        mCurrentAnchor = new View(mActivity);
+        runToState("e2", OfflineItemState.COMPLETE);
+        mCurrentAnchor = mAnchor;
+
+        // ANCHOR_HIDDEN: anchor hidden while window is visible (e.g. fullscreen) or null.
+        mAnchor.setVisibility(View.GONE);
+        runToState("f", OfflineItemState.COMPLETE);
+        mAnchor.setVisibility(View.VISIBLE);
+        mCurrentAnchor = null;
+        runToState("g", OfflineItemState.COMPLETE);
+        mCurrentAnchor = mAnchor;
+
+        // SHOW_FAILED: popup controller declines to show.
+        doReturn(false).when(mPopupController).showCompletions(any(), any());
+        runToState("h", OfflineItemState.COMPLETE);
+
+        reasons.assertExpected();
     }
 }

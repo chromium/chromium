@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonMetrics.ButtonState;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
@@ -98,6 +99,13 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
     private boolean mIsIncognitoSelected;
 
     /**
+     * Whether {@link DownloadToolbarButtonMetrics#recordShown()} has fired for the current show
+     * cycle; reset when the button hides (other than on a tab-mode switch) or when no active or
+     * lingering ended items remain.
+     */
+    private boolean mHasRecordedShown;
+
+    /**
      * Creates a controller deriving the button state from {@code model}.
      *
      * @param model The model to observe for download state changes. Must outlive this controller.
@@ -119,6 +127,26 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
     /** Returns a supplier of the state the download toolbar button should currently display. */
     public NonNullObservableSupplier<DownloadToolbarButtonState> getStateSupplier() {
         return mStateSupplier;
+    }
+
+    /** Records that the user clicked the toolbar button in its current state. */
+    public void recordButtonClicked() {
+        if (mDestroyChecker.isDestroyed()) {
+            return;
+        }
+        DownloadToolbarButtonState state = mStateSupplier.get();
+        if (!state.shouldShow) {
+            return;
+        }
+        @ButtonState int buttonState;
+        if (state.iconState == IconState.PROGRESS) {
+            buttonState = ButtonState.IN_PROGRESS;
+        } else if (state.isActive) {
+            buttonState = ButtonState.COMPLETE_ACTIVE;
+        } else {
+            buttonState = ButtonState.COMPLETE_INACTIVE;
+        }
+        DownloadToolbarButtonMetrics.recordClicked(buttonState);
     }
 
     /**
@@ -218,7 +246,7 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
     private void onIncognitoStateChanged(boolean isIncognitoSelected) {
         if (mIsIncognitoSelected == isIncognitoSelected) return;
         mIsIncognitoSelected = isIncognitoSelected;
-        publishState();
+        publishState(/* isTabModeSwitch= */ true);
     }
 
     private void scheduleAutoHide() {
@@ -262,6 +290,10 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         publishState();
     }
 
+    private void publishState() {
+        publishState(/* isTabModeSwitch= */ false);
+    }
+
     /**
      * Recomputes the button state, notifies observers if it changed and keeps the auto-hide timer
      * in step with it: it runs while the button lingers after the window's last active download
@@ -269,14 +301,28 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
      * active download shows again or nothing is left to show. Deriving it from the published state,
      * rather than from the model's active items, makes it follow the items this window surfaces,
      * including across switches between regular and incognito tabs.
+     *
+     * @param isTabModeSwitch Whether this publish is due to switching between regular and incognito
+     *     tabs; a hide caused by that switch does not end the Shown metric cycle.
      */
-    private void publishState() {
+    private void publishState(boolean isTabModeSwitch) {
         // The model may outlive this controller, so a destroyed controller publishes HIDDEN
         // rather than deriving a state from the model's items.
         DownloadToolbarButtonState state =
                 mDestroyChecker.isDestroyed() ? DownloadToolbarButtonState.HIDDEN : computeState();
+        boolean wasShowing = mStateSupplier.get().shouldShow;
         if (!state.equals(mStateSupplier.get())) {
             mStateSupplier.set(state);
+        }
+        if (state.shouldShow) {
+            if (!mHasRecordedShown) {
+                mHasRecordedShown = true;
+                DownloadToolbarButtonMetrics.recordShown();
+            }
+        } else if ((wasShowing && !isTabModeSwitch) || !hasAnyItemThisWindowCanShow()) {
+            // A real hide ends the cycle; updates while already hidden (e.g. progress ticks after
+            // switching away from incognito) end it only once no items remain for either tab mode.
+            mHasRecordedShown = false;
         }
         boolean lingering = state.shouldShow && state.iconState == IconState.COMPLETE;
         if (!lingering) {
@@ -285,6 +331,21 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
             // Removing one of several ended items keeps lingering without extending the window.
             scheduleAutoHide();
         }
+    }
+
+    /** Whether any active or lingering ended item could be surfaced in regular or incognito. */
+    private boolean hasAnyItemThisWindowCanShow() {
+        for (OfflineItem item : mModel.getActiveItems()) {
+            if (DownloadStateModel.isVisibleInWindow(item, /* isIncognitoSelected= */ true)) {
+                return true;
+            }
+        }
+        for (OfflineItem item : mEndedItems.values()) {
+            if (DownloadStateModel.isVisibleInWindow(item, /* isIncognitoSelected= */ true)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

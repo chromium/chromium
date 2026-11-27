@@ -25,6 +25,17 @@ final class DownloadTrayMetrics {
     static final String COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM =
             "Android.DownloadTray.CompletionPopup.CloseReason";
 
+    @VisibleForTesting
+    static final String COMPLETION_POPUP_NOT_SHOWN_REASON_HISTOGRAM =
+            "Android.DownloadTray.CompletionPopup.NotShownReason";
+
+    @VisibleForTesting
+    static final String FULL_TRAY_ROW_COUNT_HISTOGRAM = "Android.DownloadTray.FullTray.RowCount";
+
+    // Fixed bucket bound for FullTray.RowCount (0..30) so changing the UI cap cannot silently
+    // alter the histogram's bucket layout.
+    private static final int MAX_FULL_TRAY_ROW_COUNT = 30;
+
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     // LINT.IfChange(Action)
@@ -93,6 +104,34 @@ final class DownloadTrayMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDownloadTrayCompletionPopupCloseReason)
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(CompletionPopupNotShownReason)
+    @IntDef({
+        CompletionPopupNotShownReason.ALREADY_SHOWING,
+        CompletionPopupNotShownReason.WINDOW_UNFOCUSED,
+        CompletionPopupNotShownReason.TOO_SOON,
+        CompletionPopupNotShownReason.WINDOW_NOT_VISIBLE,
+        CompletionPopupNotShownReason.ANCHOR_HIDDEN,
+        CompletionPopupNotShownReason.NOTHING_NEW,
+        CompletionPopupNotShownReason.SHOW_FAILED,
+        CompletionPopupNotShownReason.COUNT
+    })
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CompletionPopupNotShownReason {
+        int ALREADY_SHOWING = 0;
+        int WINDOW_UNFOCUSED = 1;
+        int TOO_SOON = 2;
+        int WINDOW_NOT_VISIBLE = 3;
+        int ANCHOR_HIDDEN = 4;
+        int NOTHING_NEW = 5;
+        int SHOW_FAILED = 6;
+        int COUNT = 7;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDownloadTrayCompletionPopupNotShownReason)
+
     private DownloadTrayMetrics() {}
 
     static void recordAction(@Action int action) {
@@ -106,5 +145,17 @@ final class DownloadTrayMetrics {
     static void recordCompletionPopupCloseReason(@CompletionPopupCloseReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM, reason, CompletionPopupCloseReason.COUNT);
+    }
+
+    static void recordCompletionPopupNotShownReason(@CompletionPopupNotShownReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                COMPLETION_POPUP_NOT_SHOWN_REASON_HISTOGRAM,
+                reason,
+                CompletionPopupNotShownReason.COUNT);
+    }
+
+    static void recordFullTrayRowCount(int rowCount) {
+        RecordHistogram.recordExactLinearHistogram(
+                FULL_TRAY_ROW_COUNT_HISTOGRAM, rowCount, MAX_FULL_TRAY_ROW_COUNT + 1);
     }
 }

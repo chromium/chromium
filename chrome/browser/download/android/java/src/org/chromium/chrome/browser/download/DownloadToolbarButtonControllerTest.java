@@ -23,6 +23,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonMetrics.ButtonState;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -646,5 +648,164 @@ public class DownloadToolbarButtonControllerTest {
         assertLingering();
         advanceTimeMs(1);
         assertState(DownloadToolbarButtonState.HIDDEN);
+    }
+
+    // Metrics ------------------------------------------------------------------------------------
+
+    @Test
+    public void testMetrics_recordsClickedByButtonState() {
+        onAllItemsRetrieved();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DownloadToolbarButtonMetrics.CLICKED_HISTOGRAM,
+                                ButtonState.IN_PROGRESS,
+                                ButtonState.IN_PROGRESS,
+                                ButtonState.COMPLETE_ACTIVE,
+                                ButtonState.COMPLETE_INACTIVE,
+                                ButtonState.COMPLETE_INACTIVE)
+                        .build();
+
+        // Ignored while hidden.
+        mController.recordButtonClicked();
+
+        onItemAdded(createInProgressItem("a", 10, 100));
+        mController.recordButtonClicked();
+
+        // All-paused still uses the progress icon state.
+        onItemUpdated(createPausedItem("a"));
+        mController.recordButtonClicked();
+
+        onItemUpdated(createCompletedItem("a"));
+        mController.recordButtonClicked();
+
+        mController.markActioned();
+        mController.recordButtonClicked();
+
+        // Lingering on an interrupted download is CompleteInactive without markActioned().
+        onItemRemoved("a");
+        onItemAdded(createInProgressItem("b"));
+        onItemUpdated(createItem("b", OfflineItemState.INTERRUPTED));
+        mController.recordButtonClicked();
+
+        // Ignored after destroy.
+        mController.destroy();
+        mController.recordButtonClicked();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_recordsShownOncePerShowCycle() {
+        onAllItemsRetrieved();
+
+        // Hidden -> shown records once; progress ticks and completion do not re-record.
+        HistogramWatcher firstShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("a", 10, 100));
+        onItemUpdated(createInProgressItem("a", 50, 100));
+        onItemUpdated(createCompletedItem("a"));
+        firstShow.assertExpected();
+
+        // After auto-hide, a new download starts a fresh show cycle.
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
+        HistogramWatcher secondShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("b"));
+        secondShow.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_shownAcrossIncognitoSwitches() {
+        onAllItemsRetrieved();
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+
+        // An incognito download started on regular tabs stays hidden until switching to incognito.
+        HistogramWatcher noRecord =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM)
+                        .build();
+        onItemAdded(createIncognitoItem("incog", OfflineItemState.IN_PROGRESS, primary));
+        noRecord.assertExpected();
+
+        // First switch to incognito records once; round-tripping through regular (even with a
+        // progress tick arriving while on regular) does not double-count.
+        HistogramWatcher incognitoShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        setIncognitoSelected(true);
+        setIncognitoSelected(false);
+        OfflineItem tick = createIncognitoItem("incog", OfflineItemState.IN_PROGRESS, primary);
+        tick.receivedBytes = 50;
+        tick.totalSizeBytes = 100;
+        onItemUpdated(tick);
+        setIncognitoSelected(true);
+        incognitoShow.assertExpected();
+
+        // Once all downloads are gone, a new regular download starts a fresh show cycle — even if
+        // a non-primary OTR download (never visible in this window) ended in this session.
+        OtrProfileId nonPrimary = new OtrProfileId("CCT:Incognito-1");
+        onItemAdded(createIncognitoItem("cct", OfflineItemState.IN_PROGRESS, nonPrimary));
+        onItemUpdated(createIncognitoItem("cct", OfflineItemState.COMPLETE, nonPrimary));
+        setIncognitoSelected(false);
+        onItemRemoved("incog");
+        HistogramWatcher regularShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("regular"));
+        setIncognitoSelected(true);
+        regularShow.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_endedIncognitoItemDoesNotSuppressLaterRegularShowCycles() {
+        onAllItemsRetrieved();
+        OtrProfileId primary = OtrProfileId.getPrimaryOtrProfileId();
+
+        // Both a regular and an incognito download complete while on regular tabs. Regular
+        // auto-hide clears only the regular item, leaving the incognito completion pending.
+        HistogramWatcher firstRegularShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("regular1"));
+        onItemAdded(createIncognitoItem("incog", OfflineItemState.IN_PROGRESS, primary));
+        onItemUpdated(createIncognitoItem("incog", OfflineItemState.COMPLETE, primary));
+        onItemUpdated(createCompletedItem("regular1"));
+        firstRegularShow.assertExpected();
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        // A later regular download starts a fresh show cycle despite the pending incognito
+        // completion; cancelling or removing it also ends the cycle without auto-hide.
+        HistogramWatcher secondRegularShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("regular2"));
+        secondRegularShow.assertExpected();
+        onItemUpdated(createItem("regular2", OfflineItemState.CANCELLED));
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        HistogramWatcher thirdRegularShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        onItemAdded(createInProgressItem("regular3"));
+        thirdRegularShow.assertExpected();
+        onItemRemoved("regular3");
+        assertState(DownloadToolbarButtonState.HIDDEN);
+
+        // Switching to incognito surfaces the lingering incognito completion once; round-tripping
+        // through regular tabs while it lingers does not double-count.
+        HistogramWatcher incognitoShow =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadToolbarButtonMetrics.SHOWN_HISTOGRAM, /* value= */ 1);
+        setIncognitoSelected(true);
+        assertLingering();
+        setIncognitoSelected(false);
+        assertState(DownloadToolbarButtonState.HIDDEN);
+        setIncognitoSelected(true);
+        assertLingering();
+        incognitoShow.assertExpected();
     }
 }

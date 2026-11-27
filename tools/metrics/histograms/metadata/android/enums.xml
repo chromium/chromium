@@ -339,6 +339,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/download/DownloadMetrics.java:DownloadOpenTarget) -->
 
+<!-- LINT.IfChange(AndroidDownloadToolbarButtonState) -->
+
+<enum name="AndroidDownloadToolbarButtonState">
+  <int value="0" label="InProgress"/>
+  <int value="1" label="CompleteActive"/>
+  <int value="2" label="CompleteInactive"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonMetrics.java:ButtonState) -->
+
 <!-- LINT.IfChange(AndroidDownloadTrayAction) -->
 
 <enum name="AndroidDownloadTrayAction">
@@ -365,6 +375,20 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java:CompletionPopupCloseReason) -->
+
+<!-- LINT.IfChange(AndroidDownloadTrayCompletionPopupNotShownReason) -->
+
+<enum name="AndroidDownloadTrayCompletionPopupNotShownReason">
+  <int value="0" label="AlreadyShowing"/>
+  <int value="1" label="WindowUnfocused"/>
+  <int value="2" label="TooSoon"/>
+  <int value="3" label="WindowNotVisible"/>
+  <int value="4" label="AnchorHidden"/>
+  <int value="5" label="NothingNew"/>
+  <int value="6" label="ShowFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java:CompletionPopupNotShownReason) -->
 
 <!-- LINT.IfChange(AndroidDownloadTraySurface) -->
 

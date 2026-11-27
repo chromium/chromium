@@ -63,6 +63,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/DownloadStateModel.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",
     "java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonMetrics.java",
     "java/src/org/chromium/chrome/browser/download/InsecureDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",

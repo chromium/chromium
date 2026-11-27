@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.download.StringUtils;
 import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
 import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
 import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupCloseReason;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupNotShownReason;
 import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Surface;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -214,18 +215,22 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         Map<ContentId, ListItem> rowsById = new ArrayMap<>();
         ModelList rows = buildFullTrayRows(rowsById);
         if (rows.isEmpty()) {
+            DownloadTrayMetrics.recordFullTrayRowCount(0);
             openDownloadHistory();
             return;
         }
         // Showing first dismisses any completion popup, which clears the shown rows, so record the
         // new ones only once the tray is showing.
         recordCompletionPopupClosed(CompletionPopupCloseReason.REPLACED_BY_FULL_TRAY);
-        if (!mPopupController.showFullTray(anchor, rows)) return;
+        if (!mPopupController.showFullTray(anchor, rows)) {
+            return;
+        }
         mShownList = rows;
         mShownRows.putAll(rowsById);
         mIsFullTrayShowing = true;
         mUnactionedIds.removeAll(rowsById.keySet());
         DownloadTrayMetrics.recordShown(Surface.FULL_TRAY);
+        DownloadTrayMetrics.recordFullTrayRowCount(rows.size());
     }
 
     /** Called when the user asks for the full download history from the tray. */
@@ -326,26 +331,59 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     private void maybeShowPendingCompletions() {
-        if (mPendingIds.isEmpty() || isAnythingDownloading()) return;
+        if (mPendingIds.isEmpty() || isAnythingDownloading()) {
+            return;
+        }
         mPendingIds.clear();
 
         // As on desktop, a completion while the popup is up isn't added to it; it's listed the next
         // time the popup opens.
-        if (mShownList != null || !mIsWindowFocused.getAsBoolean()) return;
+        if (mShownList != null) {
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    CompletionPopupNotShownReason.ALREADY_SHOWING);
+            return;
+        }
+        if (!mIsWindowFocused.getAsBoolean()) {
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    CompletionPopupNotShownReason.WINDOW_UNFOCUSED);
+            return;
+        }
 
         long now = TimeUtils.elapsedRealtimeMillis();
-        if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) return;
+        if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) {
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    CompletionPopupNotShownReason.TOO_SOON);
+            return;
+        }
 
         View anchor = mAnchorSupplier.get();
-        if (anchor == null || !anchor.isShown()) return;
+        if (anchor == null || !anchor.isShown()) {
+            boolean windowNotVisible =
+                    anchor != null
+                            && (!anchor.isAttachedToWindow()
+                                    || anchor.getRootView().getVisibility() != View.VISIBLE);
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    windowNotVisible
+                            ? CompletionPopupNotShownReason.WINDOW_NOT_VISIBLE
+                            : CompletionPopupNotShownReason.ANCHOR_HIDDEN);
+            return;
+        }
 
         Map<ContentId, ListItem> rowsById = new ArrayMap<>();
         ModelList rows = buildCompletionPopupRows(rowsById);
-        if (rows.isEmpty()) return;
+        if (rows.isEmpty()) {
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    CompletionPopupNotShownReason.NOTHING_NEW);
+            return;
+        }
 
         // Showing replaces any previous popup, whose dismissal clears the shown rows, so set them
         // after.
-        if (!mPopupController.showCompletions(anchor, rows)) return;
+        if (!mPopupController.showCompletions(anchor, rows)) {
+            DownloadTrayMetrics.recordCompletionPopupNotShownReason(
+                    CompletionPopupNotShownReason.SHOW_FAILED);
+            return;
+        }
         mLastShownTimeMs = now;
         mShownList = rows;
         mShownRows.putAll(rowsById);

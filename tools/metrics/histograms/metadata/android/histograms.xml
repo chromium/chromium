@@ -2312,6 +2312,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DownloadToolbarButton.Clicked"
+    enum="AndroidDownloadToolbarButtonState" expires_after="2027-11-26">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the visual state of the download toolbar button on Android desktop
+    when the user clicks it (InProgress including paused, CompleteActive during
+    the 1-minute accent window, or CompleteInactive while lingering). Includes
+    clicks that toggle an open tray closed.
+  </summary>
+</histogram>
+
+<histogram name="Android.DownloadToolbarButton.Shown" enum="BooleanHit"
+    expires_after="2027-11-26">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records once per show cycle of the download toolbar button per window on
+    Android desktop: from the first time the button appears until it hides (e.g.
+    on auto-hide, cancellation, or removal). Each window records separately, so
+    N open windows record N times, and opening a new window or recreating an
+    activity while a download is active records immediately. Tracked in memory
+    only, so it resets across process restarts. Temporary hides from switching
+    between incognito and regular tabs do not double-count the same show cycle.
+  </summary>
+</histogram>
+
 <histogram name="Android.DownloadTray.Action" enum="AndroidDownloadTrayAction"
     expires_after="2027-11-25">
   <owner>bjfong@google.com</owner>
@@ -2337,6 +2366,34 @@ chromium-metrics-reviews@google.com.
     shown. &quot;Other&quot; covers programmatic and environmental dismissals
     such as all rows being removed, screen size changes, or the window being
     destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.DownloadTray.CompletionPopup.NotShownReason"
+    enum="AndroidDownloadTrayCompletionPopupNotShownReason"
+    expires_after="2027-11-26">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records why a due download completion popup was not shown on Android
+    desktop. Logged when all in-progress downloads have finished and at least
+    one unactioned completion was pending, but an eligibility check or popup
+    show prevented the popup from appearing. &quot;AlreadyShowing&quot; covers
+    both a showing completion popup and an open full tray.
+  </summary>
+</histogram>
+
+<histogram name="Android.DownloadTray.FullTray.RowCount" units="rows"
+    expires_after="2027-11-26">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the number of rows (0 to 30) when the user opens the full download
+    tray on Android desktop. Bucket 0 is recorded when there are no eligible
+    rows and the tray falls back to opening the full download history; buckets
+    1-30 are recorded when the full tray is shown.
   </summary>
 </histogram>
 
