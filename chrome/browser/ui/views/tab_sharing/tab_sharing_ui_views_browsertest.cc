@@ -763,8 +763,10 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, ReloadKilledTab) {
                           .infobar_count = 0});
 }
 
+// TODO(crbug.com/590687499): Flaky due to renderer bad message (reason 167,
+// RWH_INVALID_FRAME_TOKEN) after reload and infobar count mismatch.
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
-                       ReloadKilledTabAddedAfterSharing) {
+                       DISABLED_ReloadKilledTabAddedAfterSharing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
