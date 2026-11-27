@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/browser_process.h"
@@ -127,11 +128,12 @@ void AttemptLoginTool::Validate(DeprecatedToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void AttemptLoginTool::Invoke(DeprecatedToolCallback callback) {
+void AttemptLoginTool::Invoke(ToolResultCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface) {
-    PostResponseTask(std::move(callback),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    PostResponseTask(
+        std::move(callback),
+        ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
     return;
   }
 
@@ -205,7 +207,8 @@ void AttemptLoginTool::OnGetCredentials(
   if (!credentials.has_value()) {
     PostResponseTask(
         std::move(invoke_callback_),
-        MakeResult(actor_login::LoginErrorToActorResult(credentials.error())));
+        ToolResult::Error(ToolError(
+            actor_login::LoginErrorToActorResult(credentials.error()))));
     return;
   }
 
@@ -214,7 +217,8 @@ void AttemptLoginTool::OnGetCredentials(
   if (credentials_.empty()) {
     PostResponseTask(
         std::move(invoke_callback_),
-        MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
+        ToolResult::Error(
+            ToolError(mojom::ActionResultCode::kLoginNoCredentialsAvailable)));
     return;
   }
 
@@ -243,14 +247,16 @@ void AttemptLoginTool::OnGetCredentials(
       // Saved credentials exist, but none are available for login, which
       // means that this is not a signin page.
       PostResponseTask(std::move(invoke_callback_),
-                       MakeResult(mojom::ActionResultCode::kLoginNotLoginPage));
+                       ToolResult::Error(ToolError(
+                           mojom::ActionResultCode::kLoginNotLoginPage)));
       return;
     }
   }
 
   if (!actor_surface_handle_.Get()) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
     return;
   }
 
@@ -360,7 +366,8 @@ void AttemptLoginTool::OnCredentialSelected(
     // user declining the usage of a credential.
     PostResponseTask(
         std::move(invoke_callback_),
-        MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
+        ToolResult::Error(
+            ToolError(mojom::ActionResultCode::kLoginNoCredentialsAvailable)));
     return;
   }
 
@@ -413,8 +420,9 @@ void AttemptLoginTool::OnCredentialCachingDone(
     webui::mojom::UserGrantedPermissionDuration permission_duration) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
     return;
   }
 
@@ -425,7 +433,8 @@ void AttemptLoginTool::OnCredentialCachingDone(
     // waiting for credential selection.
     PostResponseTask(
         std::move(invoke_callback_),
-        MakeResult(mojom::ActionResultCode::kLoginPageChangedDuringSelection));
+        ToolResult::Error(ToolError(
+            mojom::ActionResultCode::kLoginPageChangedDuringSelection)));
     return;
   }
 
@@ -453,7 +462,8 @@ void AttemptLoginTool::OnAttemptLogin(
     tool_delegate().GetActorOneTimeTokenFillingService().AbortLoginTracking();
     PostResponseTask(
         std::move(invoke_callback_),
-        MakeResult(actor_login::LoginErrorToActorResult(login_status.error())));
+        ToolResult::Error(ToolError(
+            actor_login::LoginErrorToActorResult(login_status.error()))));
     return;
   }
 
@@ -465,8 +475,9 @@ void AttemptLoginTool::OnAttemptLogin(
   if (login_status.value() ==
       actor_login::LoginStatusResult::kErrorDeviceReauthRequired) {
     if (!actor_surface_handle_.Get()) {
-      PostResponseTask(std::move(invoke_callback_),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      PostResponseTask(
+          std::move(invoke_callback_),
+          ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
       return;
     }
 
@@ -475,7 +486,8 @@ void AttemptLoginTool::OnAttemptLogin(
       // would never end. Report that reauth is required instead.
       PostResponseTask(
           std::move(invoke_callback_),
-          MakeResult(mojom::ActionResultCode::kLoginDeviceReauthRequired));
+          ToolResult::Error(
+              ToolError(mojom::ActionResultCode::kLoginDeviceReauthRequired)));
       return;
     }
 
@@ -493,8 +505,9 @@ void AttemptLoginTool::OnAttemptLogin(
           GaiaUrls::GetInstance()->gaia_origin() &&
       sign_in_with_google_button_.has_value()) {
     if (!actor_surface_handle_.Get()) {
-      PostResponseTask(std::move(invoke_callback_),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      PostResponseTask(
+          std::move(invoke_callback_),
+          ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
       return;
     }
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
@@ -505,7 +518,8 @@ void AttemptLoginTool::OnAttemptLogin(
     mojom::ActionResultPtr result =
         MakeOkResult(/*requires_page_stabilization=*/false);
     result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
-    PostResponseTask(std::move(invoke_callback_), std::move(result));
+    PostResponseTask(std::move(invoke_callback_),
+                     ToolResult::Success(std::move(result)));
     return;
   }
 
@@ -517,8 +531,9 @@ void AttemptLoginTool::OnAttemptLogin(
       password_button_.has_value()) {
     CHECK_EQ(selected_credential.type, actor_login::CredentialType::kPassword);
     if (!actor_surface_handle_.Get()) {
-      PostResponseTask(std::move(invoke_callback_),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      PostResponseTask(
+          std::move(invoke_callback_),
+          ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
       return;
     }
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
@@ -528,30 +543,35 @@ void AttemptLoginTool::OnAttemptLogin(
     mojom::ActionResultPtr result =
         MakeOkResult(/*requires_page_stabilization=*/false);
     result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
-    PostResponseTask(std::move(invoke_callback_), std::move(result));
+    PostResponseTask(std::move(invoke_callback_),
+                     ToolResult::Success(std::move(result)));
     return;
   }
 
   mojom::ActionResultCode code =
       actor_login::LoginResultToActorResult(login_status.value());
-  mojom::ActionResultPtr result =
-      IsOk(code) ? MakeOkResult() : MakeResult(code);
-  if (IsOk(code)) {
-    result->attempt_login_status =
-        login_status.value() ==
-                actor_login::LoginStatusResult::kSuccessFederated
-            ? mojom::AttemptLoginStatus::kFederated
-            : mojom::AttemptLoginStatus::kPasswordManager;
+  if (!IsOk(code)) {
+    PostResponseTask(std::move(invoke_callback_),
+                     ToolResult::Error(ToolError(code)));
+    return;
   }
-  PostResponseTask(std::move(invoke_callback_), std::move(result));
+
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->attempt_login_status =
+      login_status.value() == actor_login::LoginStatusResult::kSuccessFederated
+          ? mojom::AttemptLoginStatus::kFederated
+          : mojom::AttemptLoginStatus::kPasswordManager;
+  PostResponseTask(std::move(invoke_callback_),
+                   ToolResult::Success(std::move(result)));
 }
 
 void AttemptLoginTool::OnWillDetach(tabs::TabInterface* tab,
                                     tabs::TabInterface::DetachReason reason) {
   if (reason == tabs::TabInterface::DetachReason::kDelete &&
       credential_awaiting_task_focus_.has_value()) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
   }
 }
 

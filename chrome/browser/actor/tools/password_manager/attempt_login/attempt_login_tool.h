@@ -59,7 +59,7 @@ class AttemptLoginTool : public Tool
 
   // actor::Tool
   void Validate(DeprecatedToolCallback callback) override;
-  void Invoke(DeprecatedToolCallback callback) override;
+  void Invoke(ToolResultCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
@@ -158,7 +158,7 @@ class AttemptLoginTool : public Tool
   // selection.
   content::GlobalRenderFrameHostToken main_rfh_token_;
 
-  DeprecatedToolCallback invoke_callback_;
+  ToolResultCallback invoke_callback_;
 
   // Track if the affiliations update has finished. This is only relevant on
   // Android. On other platforms, the update happens on startup.
