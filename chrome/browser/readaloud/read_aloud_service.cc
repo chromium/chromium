@@ -29,6 +29,7 @@
 #include "chrome/browser/readaloud/audio_generation/overview_generation_broker.h"
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
+#include "chrome/browser/readaloud/read_aloud_blocklist.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/browser/readaloud/voice_preview_controller.h"
@@ -200,7 +201,9 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
   ResetVoicePreview();
 
   if (new_web_contents != web_contents()) {
-    Initialize(new_web_contents);
+    if (!Initialize(new_web_contents)) {
+      return;
+    }
   }
 
   user_requested_play_ = true;
@@ -437,7 +440,8 @@ bool ReadAloudService::SendAiPlaybackFeedback(
 
 void ReadAloudService::CheckReadability(const GURL& url) {
   if (delegate_) {
-    bool is_readable = web_distiller::url_utils::IsUrlDistillable(url);
+    bool is_readable = web_distiller::url_utils::IsUrlDistillable(url) &&
+                       !ReadAloudBlocklist::GetInstance().IsBlocked(url);
     delegate_->OnReadabilityResult(url, is_readable);
   }
 }
@@ -697,9 +701,14 @@ bool ReadAloudService::IsWaitingForOverviewContent() const {
   return playback_mode_ == PlaybackMode::kOverview && !overview_script_loaded_;
 }
 
-void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
+bool ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
-    return;
+    return false;
+  }
+  if (ReadAloudBlocklist::GetInstance().IsBlocked(
+          new_web_contents->GetLastCommittedURL())) {
+    HandlePlaybackError("Domain is blocked from Read Aloud");
+    return false;
   }
   ResetVoicePreview();
   ResetPlayback();
@@ -717,6 +726,7 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   DistillPage(new_web_contents);
   EnsurePlaybackControllerConnected();
   InitializeAudioStream();
+  return true;
 }
 
 void ReadAloudService::ProvideInitialMetadata() {

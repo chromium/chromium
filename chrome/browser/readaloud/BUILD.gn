@@ -2,6 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("blocklist") {
+  sources = [
+    "read_aloud_blocklist.cc",
+    "read_aloud_blocklist.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//url" ]
+}
+
 source_set("readaloud") {
   sources = [
     "audio_generation/overview_generation_broker.h",
@@ -41,6 +50,7 @@ source_set("impl") {
     "voice_preview_controller.cc",
   ]
   deps = [
+    ":blocklist",
     ":readaloud",
     "//base/i18n:language_tag",
     "//chrome/browser:browser_process",
@@ -68,11 +78,13 @@ source_set("unit_tests") {
     "fake_audio_stream_factory.cc",
     "fake_audio_stream_factory.h",
     "read_aloud_audio_broker_unittest.cc",
+    "read_aloud_blocklist_unittest.cc",
     "read_aloud_service_factory_unittest.cc",
     "read_aloud_service_unittest.cc",
     "voice_preview_controller_unittest.cc",
   ]
   deps = [
+    ":blocklist",
     ":impl",
     ":readaloud",
     "//base/test:test_support",

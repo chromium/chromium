@@ -27,6 +27,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/fake_audio_stream_factory.h"
+#include "chrome/browser/readaloud/read_aloud_blocklist.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
@@ -2988,6 +2989,86 @@ TEST_F(ReadAloudServiceTest, CheckReadability) {
 
   EXPECT_CALL(*delegate_ptr, OnReadabilityResult(invalid_url, false)).Times(1);
   service()->CheckReadability(invalid_url);
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, CheckReadabilityBlocksDefaultDomains) {
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  const GURL drive_url(
+      "https://drive.google.com/corp/drive/mobile/my-drive?pli=1");
+  EXPECT_CALL(*delegate_ptr,
+              OnReadabilityResult(drive_url, /*is_readable=*/false))
+      .Times(1);
+  service()->CheckReadability(drive_url);
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, CheckReadabilityAllowsArticleSubdomains) {
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  // Non-blocked Google article sites (e.g. blog.google and other *.google.com
+  // hosts) should remain readable.
+  const GURL blog_url("https://blog.google/technology/ai/google-gemini-ai/");
+  EXPECT_CALL(*delegate_ptr,
+              OnReadabilityResult(blog_url, /*is_readable=*/true))
+      .Times(1);
+  service()->CheckReadability(blog_url);
+
+  const GURL developers_url("https://developers.google.com/web");
+  EXPECT_CALL(*delegate_ptr,
+              OnReadabilityResult(developers_url, /*is_readable=*/true))
+      .Times(1);
+  service()->CheckReadability(developers_url);
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, CheckReadabilityWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kReadAloudBlockedDomains);
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  const GURL drive_url("https://drive.google.com/corp/drive/mobile/my-drive");
+
+  // When feature is disabled, default domain blocklist is bypassed.
+  EXPECT_CALL(*delegate_ptr,
+              OnReadabilityResult(drive_url, /*is_readable=*/true))
+      .Times(1);
+  service()->CheckReadability(drive_url);
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, PlayAndInitializeRejectBlockedDomainsWithError) {
+  NavigateAndCommit(
+      GURL("https://drive.google.com/corp/drive/mobile/my-drive?pli=1"));
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackError("Domain is blocked from Read Aloud"))
+      .Times(1);
+
+  service()->Play(web_contents());
+  EXPECT_EQ(service()->web_contents(), nullptr);
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }

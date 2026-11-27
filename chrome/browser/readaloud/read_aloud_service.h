@@ -300,8 +300,9 @@ class ReadAloudService
 
   // Stops any active playback session and restarts the service lifecycle for
   // the given `web_contents`, triggering page distillation and ensuring the
-  // utility process is connected.
-  void Initialize(content::WebContents* web_contents);
+  // utility process is connected. Returns false if `web_contents` is null or
+  // its URL is blocked (in which case HandlePlaybackError() is invoked).
+  bool Initialize(content::WebContents* web_contents);
 
   // TODO(b/553612030): Refactor out GetViewerHandleForTesting().
   web_distiller::ViewerHandle* GetViewerHandleForTesting() const {
