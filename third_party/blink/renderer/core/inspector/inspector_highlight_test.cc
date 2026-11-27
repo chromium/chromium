@@ -909,8 +909,6 @@ TEST_F(InspectorHighlightTest, OffsetPathHighlight) {
 }
 
 TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightUsesPath) {
-  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
-
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       body {
@@ -941,8 +939,6 @@ TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightUsesPath) {
 }
 
 TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightIsNotMirroredInRtl) {
-  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
-
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       body {
@@ -981,8 +977,6 @@ TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightIsNotMirroredInRtl) {
 }
 
 TEST_F(InspectorHighlightTest, ShapeOutsideHighlightScalesAfterTranslation) {
-  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
-
   auto* chrome_client = MakeGarbageCollected<ScaledChromeClient>(2.f);
   auto page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600), chrome_client);
