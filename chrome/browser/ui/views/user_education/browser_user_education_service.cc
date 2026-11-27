@@ -159,6 +159,10 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/dino/dino_features.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1384,6 +1388,25 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
       feature_engagement::kIPHReadingListEntryPointFeature,
       kBookmarkStarViewElementId, IDS_READING_LIST_ENTRY_POINT_PROMO));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // kIPHDelightDinoBookmarkFeature:
+  if (base::FeatureList::IsEnabled(dino::kDinoDelight)) {
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHDelightDinoBookmarkFeature,
+            kBookmarkStarViewElementId, IDS_DELIGHT_DINO_BOOKMARK_IPH_BODY,
+            IDS_DELIGHT_DINO_BOOKMARK_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleTitleText(IDS_DELIGHT_DINO_BOOKMARK_IPH_TITLE)
+            .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+            .SetMetadata(
+                160, "musalmaan@chromium.org",
+                "Triggered when the user hits Game Over in the offline Chrome "
+                "Dino game and does not already have chrome://dino "
+                "bookmarked.")));
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // kIPHReadingListInSidePanelFeature:
   registry.RegisterFeature(std::move(
