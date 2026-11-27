@@ -292,7 +292,8 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
 
   if (ash::features::IsDeskTemplateSyncEnabled() &&
       (ash::saved_desk_util::AreDesksTemplatesEnabled() ||
-       ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
+       ash::floating_workspace_util::IsFloatingWorkspaceEnabled(
+           CHECK_DEREF(profile->GetPrefs())))) {
     saved_desk_storage_manager_ =
         std::make_unique<desks_storage::DeskModelWrapper>(
             save_and_recall_desks_storage_manager_.get());
@@ -535,7 +536,8 @@ desks_storage::DeskModel* DesksClient::GetDeskModel() {
   if ((!desk_sync_service || !desk_sync_service->GetDeskModel()) ||
       !ash::features::IsDeskTemplateSyncEnabled() ||
       (!ash::saved_desk_util::AreDesksTemplatesEnabled() &&
-       !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
+       !ash::floating_workspace_util::IsFloatingWorkspaceEnabled(
+           CHECK_DEREF(active_profile_->GetPrefs())))) {
     CHECK(save_and_recall_desks_storage_manager_.get(),
           base::NotFatalUntil::M162);
     return save_and_recall_desks_storage_manager_.get();

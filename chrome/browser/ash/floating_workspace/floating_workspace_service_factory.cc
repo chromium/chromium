@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -60,12 +62,14 @@ FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;
 std::unique_ptr<KeyedService>
 FloatingWorkspaceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+  user_manager::User* const user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  if (!user_manager::UserManager::Get()->IsPrimaryUser(user)) {
+    // Floating Workspace is not supported for non-primary browser profiles.
     return nullptr;
   }
-  if (!user_manager::UserManager::Get()->IsPrimaryUser(
-          BrowserContextHelper::Get()->GetUserByBrowserContext(context))) {
-    // Floating Workspace is not supported for non-primary browser profiles.
+  if (!floating_workspace_util::IsFloatingWorkspaceEnabled(
+          CHECK_DEREF(user->GetProfilePrefs()))) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

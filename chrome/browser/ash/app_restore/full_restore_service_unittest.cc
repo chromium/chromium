@@ -14,6 +14,7 @@
 #include "ash/constants/chrome_switches.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
@@ -505,7 +506,8 @@ TEST_F(FullRestoreServiceTest, NoServiceWithFloatingWorkspace) {
   profile()->GetTestingPrefService()->SetManagedPref(
       chromeos::prefs::kFloatingWorkspaceV2Enabled,
       std::make_unique<base::Value>(true));
-  ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled());
+  ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceEnabled(
+      CHECK_DEREF(profile()->GetPrefs())));
   FullRestoreService* service =
       FullRestoreServiceFactory::GetForProfile(profile());
   EXPECT_EQ(nullptr, service);

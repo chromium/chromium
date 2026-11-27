@@ -14,6 +14,7 @@
 
 #include "apps/switches.h"
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -929,7 +930,8 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
                                      : profile;
 #if BUILDFLAG(IS_CHROMEOS)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
-        if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled() ||
+        const PrefService& prefs = CHECK_DEREF(profile->GetPrefs());
+        if (ash::floating_workspace_util::IsFloatingWorkspaceEnabled(prefs) ||
             ash::floating_workspace_util::IsFloatingSsoEnabled(
                 profile_to_open)) {
           // Calling `GetForProfile` here ensures that
@@ -942,7 +944,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
         }
         // If floating workspace is responsible for restore, stop here before
         // entering the FullRestoreService code path.
-        if (ash::floating_workspace_util::ShouldHandleRestartRestore()) {
+        if (ash::floating_workspace_util::ShouldHandleRestartRestore(prefs)) {
           return;
         }
         // If FullRestoreService is available for the profile (i.e. the full

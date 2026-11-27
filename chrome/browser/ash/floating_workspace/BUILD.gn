@@ -60,11 +60,9 @@ static_library("utils") {
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
-    "//components/user_manager",
   ]
 }
 

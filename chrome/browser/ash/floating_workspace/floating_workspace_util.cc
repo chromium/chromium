@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -21,23 +20,12 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 
 namespace ash::floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(chromeos::prefs::kFloatingWorkspaceV2Enabled,
                                 false);
-}
-
-bool IsFloatingWorkspaceV2Enabled() {
-  // TODO(crbug.com/417724348): take the user as a parameter, so that this
-  // stops asking who is active.
-  const user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  const PrefService* const prefs =
-      active_user ? active_user->GetProfilePrefs() : nullptr;
-  return prefs && IsFloatingWorkspaceEnabled(*prefs);
 }
 
 bool IsFloatingWorkspaceEnabled(const PrefService& prefs) {
@@ -89,8 +77,8 @@ bool IsSafeMode() {
       ash::switches::kSafeMode);
 }
 
-bool ShouldHandleRestartRestore() {
-  return IsFloatingWorkspaceV2Enabled() && !IsSafeMode();
+bool ShouldHandleRestartRestore(const PrefService& prefs) {
+  return IsFloatingWorkspaceEnabled(prefs) && !IsSafeMode();
 }
 
 }  // namespace ash::floating_workspace_util

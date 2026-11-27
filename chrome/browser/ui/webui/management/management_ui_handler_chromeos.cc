@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -624,7 +625,8 @@ void ManagementUIHandlerChromeOS::AddDeskSyncNotice(Profile* profile,
                                                     base::DictValue* response) {
   const bool are_windows_synced =
       IsActiveProfile(profile) &&
-      ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled();
+      ash::floating_workspace_util::IsFloatingWorkspaceEnabled(
+          CHECK_DEREF(profile->GetPrefs()));
   response->Set("showWindowsNoticeForDeskSync", are_windows_synced);
   response->Set("showCookiesNoticeForDeskSync", IsFloatingSsoEnabled(profile));
 }

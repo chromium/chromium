@@ -307,7 +307,7 @@ bool FloatingSsoService::ShouldSyncSessionCookies() const {
     return session_cookies_pref->GetValue()->GetBool();
   }
 
-  return ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled();
+  return ash::floating_workspace_util::IsFloatingWorkspaceEnabled(*prefs_);
 }
 
 bool FloatingSsoService::ShouldSyncCookiesForUrl(const GURL& url) const {

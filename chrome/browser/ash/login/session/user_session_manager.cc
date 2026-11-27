@@ -2436,7 +2436,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   TRACE_EVENT0("login", "LaunchBrowser");
   if (should_launch_browser_) {
     const bool floating_workspace_handles_restore =
-        floating_workspace_util::IsFloatingWorkspaceV2Enabled();
+        floating_workspace_util::IsFloatingWorkspaceEnabled(
+            CHECK_DEREF(profile->GetPrefs()));
     if (floating_workspace_handles_restore ||
         floating_workspace_util::IsFloatingSsoEnabled(profile)) {
       // Calling `GetForProfile` here ensures that `FloatingWorkspaceService` is

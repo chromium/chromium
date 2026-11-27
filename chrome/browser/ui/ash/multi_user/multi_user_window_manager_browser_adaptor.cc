@@ -166,7 +166,8 @@ void MultiUserWindowManagerBrowserAdaptor::OnTransitionUserShelfToNewAccount() {
 
   // Only init full restore when floating workspace is disabled or in safe mode.
   // TODO(b/312233508): Add fws test coverage for this case.
-  if (!floating_workspace_util::ShouldHandleRestartRestore()) {
+  if (!floating_workspace_util::ShouldHandleRestartRestore(
+          CHECK_DEREF(profile->GetPrefs()))) {
     auto* full_restore_service =
         full_restore::FullRestoreServiceFactory::GetForProfile(profile);
     if (full_restore_service) {

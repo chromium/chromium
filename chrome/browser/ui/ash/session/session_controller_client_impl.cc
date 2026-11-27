@@ -197,14 +197,18 @@ SessionControllerClientImpl* SessionControllerClientImpl::Get() {
 }
 
 void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
-  if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-    User* active_user = UserManager::Get()->GetActiveUser();
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
-    if (profile) {
-      auto* floating_workspace_service =
-          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile);
-      if (floating_workspace_service) {
-        floating_workspace_service->CaptureAndUploadActiveDesk();
+  if (User* active_user = UserManager::Get()->GetActiveUser()) {
+    const PrefService* const prefs = active_user->GetProfilePrefs();
+    if (prefs &&
+        ash::floating_workspace_util::IsFloatingWorkspaceEnabled(*prefs)) {
+      Profile* profile =
+          ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+      if (profile) {
+        auto* floating_workspace_service =
+            ash::FloatingWorkspaceServiceFactory::GetForProfile(profile);
+        if (floating_workspace_service) {
+          floating_workspace_service->CaptureAndUploadActiveDesk();
+        }
       }
     }
   }
