@@ -521,6 +521,17 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 
+  java_cpp_strings("java_switches_srcjar") {
+    # External code should depend on ":accessibility_switches_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//ui/accessibility/accessibility_switches.cc" ]
+    class_name = "org.chromium.ui.accessibility.AccessibilitySwitches"
+  }
+
+  android_library("accessibility_switches_java") {
+    srcjar_deps = [ ":java_switches_srcjar" ]
+  }
+
   generate_jni("ax_base_jni_headers") {
     sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
   }

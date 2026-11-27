@@ -98,6 +98,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -130,6 +131,7 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilitySwitches;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -1141,7 +1143,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // If accessibility was auto-disabled, then we do not want to restart a new timer.
             if (mIsCurrentlyAutoDisabled) return;
 
-            if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) {
+            if (!AccessibilityState.isAnyAccessibilityServiceEnabled()
+                    && !isForceRendererAccessibilityEnabled()) {
                 mAutoDisableAccessibilityHandler.cancelDisableTimer();
                 mAutoDisableAccessibilityHandler.startDisableTimer(
                         NO_ACCESSIBILITY_SERVICES_ENABLED_DELAY_MS);
@@ -1174,8 +1177,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (shouldPreventNativeEngineUse()) return null;
 
         // On auto-disable candidates, do not initialize or re-enable renderer accessibility when
-        // neither an accessibility service nor a password manager is enabled (e.g. only
-        // UiAutomation is connected).
+        // neither an accessibility service, a password manager, nor --force-renderer-accessibility
+        // is enabled (e.g. only UiAutomation is connected).
         //
         // Note: isOnlyPasswordManagersEnabled() must be called first because it populates
         // AccessibilityState's internal State via updateAccessibilityServices() when uninitialized,
@@ -1183,7 +1186,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // (which is true when UiAutomation is connected) if State has not been populated yet.
         if (mIsAutoDisableAccessibilityCandidate
                 && !AccessibilityState.isOnlyPasswordManagersEnabled()
-                && !AccessibilityState.isAnyAccessibilityServiceEnabled()) {
+                && !AccessibilityState.isAnyAccessibilityServiceEnabled()
+                && !isForceRendererAccessibilityEnabled()) {
             return null;
         }
 
@@ -1219,6 +1223,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         return this;
+    }
+
+    private static boolean isForceRendererAccessibilityEnabled() {
+        CommandLine commandLine = CommandLine.getInstance();
+        return commandLine.hasSwitch(AccessibilitySwitches.FORCE_RENDERER_ACCESSIBILITY)
+                && !commandLine.hasSwitch(AccessibilitySwitches.DISABLE_RENDERER_ACCESSIBILITY);
     }
 
     protected void initializeNativeWithAXTreeUpdate(long nativeAxTree) {

@@ -175,6 +175,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
+import org.chromium.ui.accessibility.AccessibilitySwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -1866,6 +1867,76 @@ public class WebContentsAccessibilityTest {
                     AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(true);
                     Assert.assertNull(wcax.getAccessibilityNodeProviderCompat());
                     Assert.assertTrue(wcax.isNativeInitialized());
+                });
+    }
+
+    /**
+     * Tests that --force-renderer-accessibility exempts an auto-disable candidate from the client
+     * check in getAccessibilityNodeProviderCompat() and does not schedule an auto-disable timer.
+     */
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({AccessibilitySwitches.FORCE_RENDERER_ACCESSIBILITY})
+    public void testGetAccessibilityNodeProvider_forceRendererAccessibilityBypassesClientCheck() {
+        mActivityTestRule.launchContentShellWithUrl(
+                UrlUtils.encodeHtmlDataUri("<p>This is a test</p>"));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.mockWebContentsAccessibilityImpl();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsAccessibilityImpl wcax =
+                            mActivityTestRule.getWebContentsAccessibility();
+                    mActivityTestRule.mWcax = wcax;
+                    wcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
+
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    Assert.assertFalse(wcax.isNativeInitialized());
+                    wcax.getAccessibilityNodeProviderCompat();
+                    Assert.assertTrue(wcax.isNativeInitialized());
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat() != null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    Assert.assertFalse(mActivityTestRule.mWcax.hasAnyPendingTimersForTesting());
+                });
+    }
+
+    /**
+     * Tests that --disable-renderer-accessibility overrides --force-renderer-accessibility when
+     * both switches are present, so getAccessibilityNodeProviderCompat() returns null without
+     * initializing native.
+     */
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        AccessibilitySwitches.FORCE_RENDERER_ACCESSIBILITY,
+        AccessibilitySwitches.DISABLE_RENDERER_ACCESSIBILITY
+    })
+    public void testGetAccessibilityNodeProvider_disableRendererAccessibilityOverridesForce() {
+        mActivityTestRule.launchContentShellWithUrl(
+                UrlUtils.encodeHtmlDataUri("<p>This is a test</p>"));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.mockWebContentsAccessibilityImpl();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsAccessibilityImpl wcax =
+                            mActivityTestRule.getWebContentsAccessibility();
+                    wcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
+
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    Assert.assertFalse(wcax.isNativeInitialized());
+                    Assert.assertNull(wcax.getAccessibilityNodeProviderCompat());
+                    Assert.assertFalse(wcax.isNativeInitialized());
                 });
     }
 
