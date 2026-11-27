@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -34,7 +35,9 @@ struct TestAutofillDriverCreateParams {
 
  public:
   TestAutofillDriver* parent = nullptr;
-  bool is_embedded = false;
+  // Defaults to `parent->IsEmbedded()` if `parent` is non-null, and `false`
+  // otherwise.
+  std::optional<bool> is_embedded;
 };
 
 }  // namespace internal

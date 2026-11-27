@@ -5632,8 +5632,8 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   // of the root frame.
   autofill_driver(0).SetIsEmbedded(is_embedded());
   if (has_parent()) {
-    TestAutofillDriverFactory::CreateParams params = {
-        .parent = &autofill_driver(0), .is_embedded = is_embedded()};
+    TestAutofillDriverFactory::CreateParams params = {.parent =
+                                                          &autofill_driver(0)};
     if (is_active()) {
       CreateAndActivateAutofillDriver(params);
     } else {

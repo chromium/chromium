@@ -80,9 +80,8 @@ void TestAutofillDriverFactory::ApplyParams(TestAutofillDriver& driver,
   if (params.parent) {
     driver.SetParent(params.parent);
   }
-  if (params.is_embedded) {
-    driver.SetIsEmbedded(true);
-  }
+  driver.SetIsEmbedded(params.is_embedded.value_or(
+      params.parent && params.parent->IsEmbedded()));
 }
 
 void TestAutofillDriverFactory::Adopt(
