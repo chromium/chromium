@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Values and Units Test: attr() taint in discrete transition fallback</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#attr-security">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  @property --src {
+    syntax: "<string>";
+    inherits: false;
+    initial-value: "https://does-not-exist.test/safe.png";
+  }
+
+  @property --s {
+    syntax: "<string>";
+    inherits: false;
+    initial-value: "https://does-not-exist.test/end.png";
+  }
+
+  @property --num-src {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+  }
+
+  @property --u {
+    syntax: "<number> | none";
+    inherits: false;
+    initial-value: none;
+  }
+
+  @keyframes inject-string {
+    from, to { --src: attr(data-secret); }
+  }
+
+  @keyframes mask-string {
+    from, to { --src: "https://does-not-exist.test/safe.png"; }
+  }
+
+  @keyframes inject-num {
+    from, to { --num-src: attr(data-secret type(<number>)); }
+  }
+
+  #starting-string {
+    --s: "https://does-not-exist.test/end.png";
+    animation: inject-string 1000s linear;
+    transition: --s 1000s steps(1, end) allow-discrete;
+    background-image: image-set(var(--s));
+  }
+  @starting-style {
+    #starting-string { --s: var(--src); }
+  }
+
+  #starting-direct {
+    --s: "https://does-not-exist.test/end.png";
+    transition: --s 1000s steps(1, end) allow-discrete;
+    background-image: image-set(var(--s));
+  }
+  @starting-style {
+    #starting-direct { --s: attr(data-secret); }
+  }
+
+  #starting-union {
+    --u: none;
+    animation: inject-num 1000s linear;
+    transition: --u 1000s steps(1, end) allow-discrete;
+    background-image: if(
+      style(--u: 42): url("https://does-not-exist.test/secret.png");
+      else: none
+    );
+  }
+  @starting-style {
+    #starting-union { --u: var(--num-src); }
+  }
+
+  #dynamic-string {
+    --s: var(--src);
+    animation: inject-string 1000s linear;
+    transition: --s 1000s steps(1, end) allow-discrete;
+    background-image: image-set(var(--s));
+  }
+  #dynamic-string.go {
+    --s: "https://does-not-exist.test/end.png";
+  }
+
+  #masked-string {
+    --src: attr(data-secret);
+    --s: var(--src);
+    animation: mask-string 1000s linear;
+    transition: --s 1000s steps(1, end) allow-discrete;
+    background-image: image-set(var(--s));
+  }
+  #masked-string.go {
+    animation: none;
+    --s: "https://does-not-exist.test/end.png";
+  }
+
+  #transition-src {
+    --src: attr(data-secret);
+    --s: var(--src);
+    transition: --src 1000s steps(1, end) allow-discrete;
+    background-image: image-set(var(--s));
+  }
+  #transition-src.stage2 {
+    --src: "https://does-not-exist.test/safe.png";
+  }
+  #transition-src.stage3 {
+    --src: "https://does-not-exist.test/safe.png";
+    --s: "https://does-not-exist.test/end.png";
+    transition: --src 1000s steps(1, end) allow-discrete,
+                --s 1000s steps(1, end) allow-discrete;
+  }
+</style>
+
+<div id="starting-string"
+     data-secret="https://does-not-exist.test/secret.png">
+</div>
+<div id="starting-direct"
+     data-secret="https://does-not-exist.test/secret.png">
+</div>
+<div id="starting-union" data-secret="42"></div>
+<div id="dynamic-string"
+     data-secret="https://does-not-exist.test/secret.png">
+</div>
+<div id="masked-string"
+     data-secret="https://does-not-exist.test/secret.png">
+</div>
+<div id="transition-src"
+     data-secret="https://does-not-exist.test/secret.png">
+</div>
+
+<script>
+  test(() => {
+    const el = document.getElementById("starting-string");
+    const bg = getComputedStyle(el).backgroundImage;
+    assert_false(
+        bg.includes("secret.png"),
+        "attr()-tainted value must not leak via @starting-style discrete " +
+        "transition");
+  }, "Discrete <string> transition from @starting-style with animated var() " +
+     "must not lose attr() taint");
+
+  test(() => {
+    const el = document.getElementById("starting-direct");
+    assert_equals(getComputedStyle(el).backgroundImage, "none");
+  }, "Discrete <string> transition from direct @starting-style attr() " +
+     "preserves taint");
+
+  test(() => {
+    const el = document.getElementById("starting-union");
+    assert_equals(getComputedStyle(el).backgroundImage, "none");
+  }, "Discrete fallback transition on union syntax from @starting-style must " +
+     "not lose attr() taint");
+
+  promise_test(async () => {
+    const el = document.getElementById("dynamic-string");
+    assert_equals(getComputedStyle(el).backgroundImage, "none");
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    el.classList.add("go");
+    const bg = getComputedStyle(el).backgroundImage;
+    assert_false(
+        bg.includes("secret.png"),
+        "attr()-tainted value must not leak via discrete transition " +
+        "triggered during animation");
+  }, "Discrete <string> transition triggered during animated var() must not " +
+     "lose attr() taint");
+
+  promise_test(async () => {
+    const el = document.getElementById("masked-string");
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    el.classList.add("go");
+    const bg = getComputedStyle(el).backgroundImage;
+    assert_false(
+        bg.includes("secret.png"),
+        "attr()-tainted base value masked by animation must not leak via " +
+        "discrete transition");
+  }, "Discrete <string> transition with attr()-tainted base style masked by " +
+     "animation preserves taint");
+
+  promise_test(async () => {
+    const el = document.getElementById("transition-src");
+    assert_equals(getComputedStyle(el).backgroundImage, "none");
+    await new Promise(requestAnimationFrame);
+    el.classList.add("stage2");
+    assert_equals(getComputedStyle(el).backgroundImage, "none");
+    await new Promise(requestAnimationFrame);
+    el.classList.add("stage3");
+    const bg = getComputedStyle(el).backgroundImage;
+    assert_false(
+        bg.includes("secret.png"),
+        "attr()-tainted value from transitioning var() must not leak via " +
+        "discrete transition");
+  }, "Discrete <string> transition triggered during transitioning var() must " +
+     "not lose attr() taint");
+</script>

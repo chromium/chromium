@@ -2914,7 +2914,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     const Document& document = state.animating_element.GetDocument();
     const CSSValue* start_css_value =
         AnimationUtils::KeyframeValueFromComputedStyle(
-            property, state.old_style, document,
+            property, before_change_style, document,
             state.animating_element.GetLayoutObject());
     const CSSValue* end_css_value =
         AnimationUtils::KeyframeValueFromComputedStyle(

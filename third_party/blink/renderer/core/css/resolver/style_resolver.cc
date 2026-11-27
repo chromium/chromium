@@ -3463,6 +3463,8 @@ const ComputedStyle* StyleResolver::BeforeChangeStyleForTransitionUpdate(
   // TODO(crbug.com/1098937): Include active CSS animations in a separate
   // interpolations map and add each map at the appropriate CascadeOrigin.
   ApplyInterpolations(state, cascade, transition_interpolations);
+  StyleAdjuster::AdjustComputedStyle(
+      state, element.IsPseudoElement() ? nullptr : &element);
   return state.TakeStyle();
 }
 
