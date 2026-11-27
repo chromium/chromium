@@ -595,8 +595,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   }));
 }
 
+// TODO(crbug.com/590996360): Flaky on M159.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
-                       AppMenuOpensOnArrowKeysAndClearsFocusOnBlur) {
+                       DISABLED_AppMenuOpensOnArrowKeysAndClearsFocusOnBlur) {
   WaitForInitialWebUIToolbar(browser());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
