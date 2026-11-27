@@ -220,6 +220,141 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       'count_smallerIsBetter',
     )
 
+  def test_percentage_and_scroll_jank_metrics(self):
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      tp_csv_path = dir_path / 'wv_scroll_jank.csv'
+      tp_csv_path.write_text(
+        'wv_frametimeline_missed_frames_percentage,'
+        'wv_scroll_janky_frames_pct,'
+        'wv_dropped_frames_percent,'
+        'frame_coverage_pct,'
+        'wv_frametimeline_frames_count,'
+        'wv_scroll_input_to_sf_present_mean_ms,'
+        'cb_story\n'
+        '2.5,4.25,1.25,99.0,240,18.75,scroll-cnn\n'
+      )
+      hist_json_path = dir_path / 'chrome_histograms.json'
+      hist_json_path.write_text(
+        json.dumps(
+          {
+            'Event.ScrollJank.DelayedFramesPercentage4.PerScroll_mean': {
+              'values': [1.5],
+            },
+            'Event.Jank.PredictorJankyFramePercentage2_mean': {
+              'values': [0.5],
+            },
+            'Event.ScrollJank.MissedVsyncsSum4.FixedWindow_mean': {
+              'values': [3.0],
+            },
+            'cache_hit_percentage': {
+              'values': [98.5],
+            },
+          }
+        )
+      )
+      cb_results = {
+        'probes': {
+          'trace_processor': {
+            'csv': [str(tp_csv_path)],
+            'json': [],
+          },
+        },
+        'browsers': {
+          'webview': {
+            'probes': {
+              'trace_processor': None,
+              'chrome_histograms': {
+                'json': [str(hist_json_path)],
+              },
+            }
+          }
+        },
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path, out_file, benchmark='scrolling.crossbench'
+      )
+      results = self.list_to_dict(json.loads(out_file.read_text()))
+
+    self.assertEqual(len(results), 10)
+    self.check_result(
+      results,
+      'wv_frametimeline_missed_frames_percentage',
+      2.5,
+      'unitless_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'wv_scroll_janky_frames_pct',
+      4.25,
+      'unitless_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'wv_dropped_frames_percent',
+      1.25,
+      'unitless_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'frame_coverage_pct',
+      99.0,
+      'ms_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'wv_frametimeline_frames_count',
+      240,
+      'count_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'wv_scroll_input_to_sf_present_mean_ms',
+      18.75,
+      'ms_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'Event.ScrollJank.DelayedFramesPercentage4.PerScroll_mean',
+      1.5,
+      'unitless_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'Event.Jank.PredictorJankyFramePercentage2_mean',
+      0.5,
+      'unitless_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'Event.ScrollJank.MissedVsyncsSum4.FixedWindow_mean',
+      3.0,
+      'count_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'cache_hit_percentage',
+      98.5,
+      'ms_smallerIsBetter',
+    )
+    self.assertEqual(
+      results['wv_frametimeline_missed_frames_percentage']['sampleValues'],
+      [2.5],
+    )
+    self.assertEqual(
+      results['Event.ScrollJank.DelayedFramesPercentage4.PerScroll_mean'][
+        'sampleValues'
+      ],
+      [1.5],
+    )
+    self.assertEqual(
+      results['Event.Jank.PredictorJankyFramePercentage2_mean']['sampleValues'],
+      [0.5],
+    )
+
   def test_loadline1_results(self):
     csv_content = 'browser,metric1,metric2\nBrowserA,123.45,54.321 ± 0.574\n'
     with tempfile.TemporaryDirectory() as temp_dir:

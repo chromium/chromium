@@ -35,9 +35,17 @@ def _get_metric_unit(metric: str) -> str:
     k in lower_key for k in ('score', 'tokenspersecond', 'acceptancerate')
   ):
     return 'unitless_biggerIsBetter'
+  if (
+    any(k in lower_key for k in ('jank', 'missed', 'delayed', 'dropped'))
+    and ('percentage' in lower_key or lower_key.endswith(('_pct', '_percent')))
+  ):
+    return 'unitless_smallerIsBetter'
   if lower_key.endswith('_bytes'):
     return 'sizeInBytes_smallerIsBetter'
-  if lower_key.endswith('_count'):
+  if (
+    lower_key.endswith('_count')
+    or 'missedvsyncs' in lower_key  # UMA Event.ScrollJank.MissedVsyncs*
+  ):
     return 'count_smallerIsBetter'
   return 'ms_smallerIsBetter'
 
