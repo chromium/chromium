@@ -37,6 +37,7 @@
 #include "ui/views/examples/notification_example.h"
 #include "ui/views/examples/progress_bar_example.h"
 #include "ui/views/examples/radio_button_example.h"
+#include "ui/views/examples/render_text_example.h"
 #include "ui/views/examples/scroll_view_example.h"
 #include "ui/views/examples/slider_example.h"
 #include "ui/views/examples/square_ink_drop_example.h"
@@ -86,6 +87,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<NotificationExample>());
   examples.push_back(std::make_unique<ProgressBarExample>());
   examples.push_back(std::make_unique<RadioButtonExample>());
+  examples.push_back(std::make_unique<RenderTextExample>());
   examples.push_back(std::make_unique<ScrollViewExample>());
   examples.push_back(std::make_unique<SliderExample>());
   examples.push_back(std::make_unique<SquareInkDropExample>());

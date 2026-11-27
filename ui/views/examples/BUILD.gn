@@ -91,6 +91,8 @@ component("views_examples_lib") {
     "progress_bar_example.h",
     "radio_button_example.cc",
     "radio_button_example.h",
+    "render_text_example.cc",
+    "render_text_example.h",
     "scroll_view_example.cc",
     "scroll_view_example.h",
     "slider_example.cc",

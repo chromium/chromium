@@ -633,7 +633,15 @@ class COMPONENT_EXPORT(GFX) RenderText {
   // Rect can't have a negative width.)
   virtual RangeF GetCursorSpan(const Range& text_range) = 0;
 
+  // Returns the current drawing offset relative to `display_rect()`, updating
+  // cached bounds and offset if needed.
   const Vector2d& GetUpdatedDisplayOffset();
+
+  // Shifts where the text is drawn relative to `display_rect()` (e.g. negative
+  // x scrolls left-aligned text left to reveal overflowing text on the right).
+  // Clamped so no empty gap is introduced on any side (0 if the text fits).
+  // Non-zero y offset requires `ALIGN_TOP`. The `int` overload updates only
+  // the x offset.
   void SetDisplayOffset(int horizontal_offset);
   void SetDisplayOffset(Vector2d offset);
 

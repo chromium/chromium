@@ -343,6 +343,11 @@
         Sample Text:
       </message>
 
+      <!-- render text example -->
+      <message translateable="false" name="IDS_RENDER_TEXT_SELECT_LABEL">
+        RenderText
+      </message>
+
       <!-- native theme example -->
       <message translateable="false" name="IDS_THEME_SELECT_LABEL">
         Colors
