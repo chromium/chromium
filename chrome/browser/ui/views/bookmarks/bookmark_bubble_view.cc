@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -81,6 +82,11 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
 #include "components/sync/base/features.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif
 
 using base::UserMetricsAction;
@@ -164,6 +170,23 @@ actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
   CHECK(action_item);
   return *action_item;
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool MaybeShowCrossDeviceSigninPromo(bool already_bookmarked,
+                                     BrowserWindowInterface* browser,
+                                     bookmarks::BookmarkModel* model,
+                                     const bookmarks::BookmarkNode* bookmark) {
+  if (!bookmark || already_bookmarked || !browser) {
+    return false;
+  }
+  // Bookmarks saved to a local-only folder are not available on other devices.
+  if (model->account_bookmark_bar_node() && model->IsLocalOnlyNode(*bookmark)) {
+    return false;
+  }
+  return MaybeShowCrossDeviceSigninQrPromo(
+      browser, CrossDeviceSigninPromoEntryPoint::kBookmarkSave);
+}
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void MaybeShowSignInPromo(bool already_bookmarked,
@@ -325,11 +348,39 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     close_callback_ = std::move(close_callback);
   }
 
+  void OnOkButton(bool already_bookmarked,
+                  views::BubbleAnchor bubble_anchor,
+                  content::WebContents* web_contents) {
+    ApplyEdits();
+#if !BUILDFLAG(IS_CHROMEOS)
+    // Post-save sign-in promos do not apply on ChromeOS, and the cross-device
+    // QR promo is currently DICE-only.
+    Profile* const profile = browser_->GetProfile();
+    bookmarks::BookmarkModel* const model =
+        BookmarkModelFactory::GetForBrowserContext(profile);
+    const bookmarks::BookmarkNode* const bookmark =
+        model->GetMostRecentlyAddedUserNodeForURL(url_);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (MaybeShowCrossDeviceSigninPromo(already_bookmarked, browser_, model,
+                                        bookmark)) {
+      // The QR promo replaces the other post-save promos and claims the star's
+      // showing-bubble state once its WebUI loads (which may happen before this
+      // bubble's widget is asynchronously destroyed).
+      ReleaseActionItem();
+      close_callback_.Reset();
+      return;
+    }
+#endif
+    MaybeShowSignInPromo(already_bookmarked, profile, bubble_anchor,
+                         web_contents, bookmark);
+#endif
+  }
+
   void OnWindowClosing() {
     if (should_apply_edits_) {
       ApplyEdits();
     }
-    action_item_->SetIsShowingBubble(false);
+    ReleaseActionItem();
     bookmark_bubble_ = nullptr;
 
     if (close_callback_) {
@@ -433,11 +484,18 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     }
   }
 
+  void ReleaseActionItem() {
+    if (!std::exchange(released_action_item_, true)) {
+      action_item_->SetIsShowingBubble(false);
+    }
+  }
+
   const raw_ptr<BrowserWindowInterface> browser_;
   const GURL url_;
   base::OnceCallback<void()> close_callback_;
 
   bool should_apply_edits_ = true;
+  bool released_action_item_ = false;
   const raw_ref<actions::ActionItem> action_item_;
   // Keeps the bubble from outliving the tab it was opened for. Destroyed with
   // `this`, which is why the callbacks may use Unretained.
@@ -458,6 +516,15 @@ void BookmarkBubbleView::ShowBubble(
   Profile* profile = browser->GetProfile();
   CHECK(profile);
   CHECK(web_contents);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (IsCrossDeviceSigninPromoBubbleOpen(profile)) {
+    if (SigninViewController* signin_view_controller =
+            SigninViewController::From(browser)) {
+      signin_view_controller->CloseBubbleSignin();
+    }
+  }
+#endif
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
@@ -510,17 +577,13 @@ void BookmarkBubbleView::ShowBubble(
       .SetDialogDestroyingCallback(
           base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
                          base::Unretained(bubble_delegate)))
-      .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
-                                  base::Unretained(bubble_delegate))
-#if !BUILDFLAG(IS_CHROMEOS)
-                       .Then(base::BindOnce(
-                           MaybeShowSignInPromo, already_bookmarked, profile,
-                           bubble_anchor, web_contents, bookmark_node))
-#endif
-                       ,
-                   ui::DialogModel::Button::Params()
-                       .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
-                       .SetId(kBookmarkBubbleOkButtonId))
+      .AddOkButton(
+          base::BindOnce(&BookmarkBubbleDelegate::OnOkButton,
+                         base::Unretained(bubble_delegate), already_bookmarked,
+                         bubble_anchor, web_contents),
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
+              .SetId(kBookmarkBubbleOkButtonId))
       .AddCancelButton(
           base::BindRepeating(&BookmarkBubbleDelegate::HandleSecondaryButton,
                               base::Unretained(bubble_delegate)),

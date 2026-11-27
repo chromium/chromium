@@ -4,6 +4,13 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -33,6 +40,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -45,7 +53,31 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "base/auto_reset.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/mock_signin_ui_delegate.h"
+#include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "net/base/url_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/actions.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
  public:
@@ -566,3 +598,415 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewWithAccountBookmarksBrowserTest,
   EXPECT_EQ(ui::MenuModel::TYPE_TITLE,
             combobox->menu_model_for_testing()->GetTypeAt(0));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+class BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest
+    : public BookmarkBubbleViewMigrationBrowserTest {
+ public:
+  explicit BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest(
+      bool enable_followup_feature = true)
+      : BookmarkBubbleViewMigrationBrowserTest(InitializationMode::kDefer),
+        delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
+            &mock_signin_ui_delegate_)) {
+    std::vector<base::test::FeatureRef> enabled = {
+        switches::kCrossDeviceSigninFromDesktop,
+        switches::kSyncEnableBookmarksInTransportMode};
+    std::vector<base::test::FeatureRef> disabled;
+    if (enable_followup_feature) {
+      enabled.push_back(switches::kCrossDeviceSigninFromDesktopFollowup);
+    } else {
+      disabled.push_back(switches::kCrossDeviceSigninFromDesktopFollowup);
+    }
+    test_features_.InitWithFeatures(enabled, disabled);
+  }
+
+  void SetUpOnMainThread() override {
+    BookmarkBubbleViewMigrationBrowserTest::SetUpOnMainThread();
+
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+        "fake_username@gmail.com", signin::ConsentLevel::kSignin);
+    SetBookmarksSyncing(true);
+    GetBookmarkModel()->CreateAccountPermanentFolders();
+    GetBookmarkModel()->Move(GetBookmark(),
+                             GetBookmarkModel()->account_other_node(), 0);
+  }
+
+  void SetBookmarksSyncing(bool is_syncing) {
+    syncer::SyncService* const sync_service =
+        SyncServiceFactory::GetForProfile(browser()->GetProfile());
+    ASSERT_TRUE(sync_service);
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, is_syncing);
+    ASSERT_EQ(is_syncing,
+              sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                  syncer::UserSelectableType::kBookmarks));
+  }
+
+  void AcceptBubble() {
+    ASSERT_TRUE(BookmarkBubbleView::bookmark_bubble());
+    views::test::WidgetDestroyedWaiter destroyed_waiter(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget());
+    BookmarkBubbleView::bookmark_bubble()->AcceptDialog();
+    destroyed_waiter.Wait();
+  }
+
+ protected:
+  void UseRealSigninUiDelegate() { delegate_auto_reset_.reset(); }
+
+  testing::StrictMock<signin_ui_util::MockSigninUiDelegate>
+      mock_signin_ui_delegate_;
+
+ private:
+  std::optional<base::AutoReset<signin_ui_util::SigninUiDelegate*>>
+      delegate_auto_reset_;
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       QrBubbleShownAndExplicitlyDismissedAfterSavingBookmark) {
+  base::HistogramTester histogram_tester;
+
+  GURL qr_code_url;
+  base::OnceClosure close_callback;
+  base::OnceClosure explicit_dismissal_callback;
+  EXPECT_CALL(mock_signin_ui_delegate_,
+              ShowCrossDeviceSigninQrBubble(
+                  testing::NotNull(), testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce([&](BrowserWindowInterface*, GURL url,
+                    base::OnceClosure on_closed,
+                    CrossDeviceSigninPromoEntryPoint,
+                    base::OnceClosure on_explicit_dismissal) {
+        qr_code_url = std::move(url);
+        close_callback = std::move(on_closed);
+        explicit_dismissal_callback = std::move(on_explicit_dismissal);
+      });
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  std::string ios_campaign;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(qr_code_url, "ios-campaign", &ios_campaign));
+  EXPECT_EQ("XDeviceBookmarkSave", ios_campaign);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShownCount.BookmarkSave", 1, 1);
+
+  // Explicit dismissal of the QR bubble activates the 7-day cooldown.
+  ASSERT_TRUE(explicit_dismissal_callback);
+  std::move(explicit_dismissal_callback).Run();
+  ASSERT_TRUE(close_callback);
+  std::move(close_callback).Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.BookmarkSave", 1, 1);
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kCooldownActive, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       QrBubbleNotShownForAlreadyBookmarkedPage) {
+  base::HistogramTester histogram_tester;
+
+  CreateBubbleView(/*already_bookmarked=*/true);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       QrBubbleNotShownForLocalOnlyBookmark) {
+  base::HistogramTester histogram_tester;
+  GetBookmarkModel()->Move(GetBookmark(), GetBookmarkModel()->other_node(), 0);
+  ASSERT_TRUE(GetBookmarkModel()->IsLocalOnlyNode(*GetBookmark()));
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       QrBubbleNotShownWhenBookmarksAreNotSyncing) {
+  base::HistogramTester histogram_tester;
+  GetBookmarkModel()->Move(GetBookmark(), GetBookmarkModel()->other_node(), 0);
+  GetBookmarkModel()->RemoveAccountPermanentFolders();
+  ASSERT_NO_FATAL_FAILURE(SetBookmarksSyncing(false));
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       QrBubbleNotShownWhenSignedOut) {
+  base::HistogramTester histogram_tester;
+  GetBookmarkModel()->Move(GetBookmark(), GetBookmarkModel()->other_node(), 0);
+  GetBookmarkModel()->RemoveAccountPermanentFolders();
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
+}
+
+// Saves a product bookmark and lets the price tracking email promo request
+// permission to show, so that closing the bookmark bubble runs its post-save
+// callback, which checks whether the product is price tracked.
+class BookmarkBubbleViewCrossDeviceSigninPromoPriceTrackingBrowserTest
+    : public BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest {
+ public:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest::
+        OnWillCreateBrowserContextServices(context);
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto tracker = std::make_unique<
+              testing::NiceMock<feature_engagement::test::MockTracker>>();
+          ON_CALL(
+              *tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHPriceTrackingEmailConsentFeature)))
+              .WillByDefault(testing::Return(true));
+          return tracker;
+        }));
+  }
+
+  void SetUpOnMainThread() override {
+    BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest::SetUpOnMainThread();
+    commerce::AddProductInfoToExistingBookmark(
+        GetBookmarkModel(), GetBookmark(), u"product", kProductClusterId);
+    // Not tracked, so that the post-save callback does not show a dialog.
+    GetMockShoppingService()->SetIsSubscribedCallbackValue(false);
+  }
+
+  commerce::MockShoppingService* GetMockShoppingService() {
+    return static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForBrowserContext(
+            browser()->GetProfile()));
+  }
+
+  // Expects the post-save callback of the bookmark bubble to run `times`.
+  void ExpectPostSaveCallbackRuns(int times) {
+    EXPECT_CALL(
+        *GetMockShoppingService(),
+        IsSubscribed(testing::Field(&commerce::CommerceSubscription::id,
+                                    base::NumberToString(kProductClusterId)),
+                     testing::_))
+        .Times(times);
+  }
+
+ private:
+  static constexpr uint64_t kProductClusterId = 12345;
+};
+
+// A QR bubble opened from an unrelated entry point must not swallow the post-
+// save price tracking promo of the bookmark bubble.
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBubbleViewCrossDeviceSigninPromoPriceTrackingBrowserTest,
+    PostSaveCallbackRunsWhileUnrelatedQrBubbleIsOpen) {
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_signin_ui_delegate_,
+              ShowCrossDeviceSigninQrBubble(
+                  testing::NotNull(), testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kProfileMenu, testing::_))
+      .WillOnce(MoveArg<2>(&close_callback));
+  OpenSigninToPhoneQrCodeBubble(browser(),
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(browser()->GetProfile()));
+
+  ExpectPostSaveCallbackRuns(1);
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+  testing::Mock::VerifyAndClearExpectations(GetMockShoppingService());
+
+  ASSERT_TRUE(close_callback);
+  std::move(close_callback).Run();
+}
+
+// The QR promo opened by the bookmark save replaces its post-save price
+// tracking promo.
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBubbleViewCrossDeviceSigninPromoPriceTrackingBrowserTest,
+    PostSaveCallbackDroppedWhenSaveOpensQrBubble) {
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_signin_ui_delegate_,
+              ShowCrossDeviceSigninQrBubble(
+                  testing::NotNull(), testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce(MoveArg<2>(&close_callback));
+
+  ExpectPostSaveCallbackRuns(0);
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+  testing::Mock::VerifyAndClearExpectations(GetMockShoppingService());
+
+  ASSERT_TRUE(close_callback);
+  std::move(close_callback).Run();
+}
+
+// Reopening `BookmarkBubbleView` while the post-save QR bubble is either still
+// loading or already visible closes the QR bubble passively (without recording
+// a dismissal or starting the cooldown) and keeps `kActionBookmarkThisTab`'s
+// showing-bubble state set after `DeleteSoon()` drains.
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+    ReopeningBookmarkBubbleClosesLoadingOrVisibleQrBubbleCleanly) {
+  static constexpr char kQrBubbleWidgetName[] =
+      "CrossDeviceSigninQrBubbleViews";
+  UseRealSigninUiDelegate();
+  base::HistogramTester histogram_tester;
+  Profile* const profile = browser()->GetProfile();
+  actions::ActionItem* const bookmark_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionBookmarkThisTab,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(bookmark_action_item);
+
+  // 1. Reopening `BookmarkBubbleView` while the post-save QR bubble is still
+  // loading (before WebUI load completes).
+  {
+    views::Widget* loading_qr_widget = nullptr;
+    bool qr_widget_shown = false;
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kQrBubbleWidgetName) {
+            loading_qr_widget = widget;
+          }
+        }));
+    observer.set_shown_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kQrBubbleWidgetName) {
+            qr_widget_shown = true;
+          }
+        }));
+
+    CreateBubbleView(/*already_bookmarked=*/false);
+    ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+    ASSERT_TRUE(loading_qr_widget);
+    EXPECT_FALSE(loading_qr_widget->IsVisible());
+    EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+    views::test::WidgetDestroyedWaiter qr_destroyed_waiter(loading_qr_widget);
+    CreateBubbleView(/*already_bookmarked=*/true);
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    auto bookmark_pin =
+        BookmarkBubbleView::bookmark_bubble()->PreventCloseOnDeactivate();
+    qr_destroyed_waiter.Wait();
+
+    EXPECT_FALSE(qr_widget_shown);
+    EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    EXPECT_TRUE(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget()->IsVisible());
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+    histogram_tester.ExpectTotalCount(
+        "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.BookmarkSave", 0);
+
+    views::test::WidgetDestroyedWaiter bookmark_closed_waiter(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget());
+    BookmarkBubbleView::Hide();
+    bookmark_closed_waiter.Wait();
+    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+  }
+
+  // 2. Reopening `BookmarkBubbleView` while the post-save QR bubble is visible
+  // on screen.
+  {
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::AnyWidgetObserver init_observer(views::test::AnyWidgetTestPasskey{});
+    init_observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kQrBubbleWidgetName) {
+            pin = widget->widget_delegate()
+                      ->AsBubbleDialogDelegate()
+                      ->PreventCloseOnDeactivate();
+          }
+        }));
+    views::NamedWidgetShownWaiter qr_shown_waiter(
+        views::test::AnyWidgetTestPasskey{}, kQrBubbleWidgetName);
+
+    CreateBubbleView(/*already_bookmarked=*/false);
+    ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+    views::Widget* visible_qr_widget = qr_shown_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(visible_qr_widget);
+    ASSERT_TRUE(pin);
+    EXPECT_TRUE(visible_qr_widget->IsVisible());
+    EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+
+    views::test::WidgetDestroyedWaiter qr_destroyed_waiter(visible_qr_widget);
+    CreateBubbleView(/*already_bookmarked=*/true);
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    auto bookmark_pin =
+        BookmarkBubbleView::bookmark_bubble()->PreventCloseOnDeactivate();
+    qr_destroyed_waiter.Wait();
+
+    EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    EXPECT_TRUE(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget()->IsVisible());
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+    histogram_tester.ExpectTotalCount(
+        "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.BookmarkSave", 0);
+    EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile));
+  }
+}
+
+class BookmarkBubbleViewCrossDeviceSigninPromoDisabledBrowserTest
+    : public BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest {
+ public:
+  BookmarkBubbleViewCrossDeviceSigninPromoDisabledBrowserTest()
+      : BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest(
+            /*enable_followup_feature=*/false) {}
+};
+
+// In the control arm (`kCrossDeviceSigninFromDesktopFollowup` disabled), no QR
+// bubble is shown, while `ShouldShowResult.BookmarkSave` is still logged at the
+// Done trigger.
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBubbleViewCrossDeviceSigninPromoDisabledBrowserTest,
+    ControlArmLogsEligibilityWithoutShowingQrBubble) {
+  base::HistogramTester histogram_tester;
+
+  CreateBubbleView(/*already_bookmarked=*/false);
+  ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShownCount.BookmarkSave", 0);
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
