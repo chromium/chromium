@@ -4177,9 +4177,11 @@ void MenuController::SelectByChar(char16_t character) {
   if (!item->SubmenuIsShowing()) {
     item = item->GetParentMenuItem();
   }
-  CHECK(item, base::NotFatalUntil::M163);
-  CHECK(item->HasSubmenu(), base::NotFatalUntil::M163);
-  CHECK(item->GetSubmenu(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/589232693): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(item);
+  DCHECK(item->HasSubmenu());
+  DCHECK(item->GetSubmenu());
 
   if (!item) {
     return;
