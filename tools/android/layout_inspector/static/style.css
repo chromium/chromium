@@ -4,9 +4,13 @@
  */
 
 :root {
+  --bg-hover-markup: rgba(255, 0, 255, 0.15);
   --bg-hover: rgba(0, 0, 255, 0.15);
+  --bg-markup: rgba(255, 0, 0, 0.15);
   --body-padding: 5px;
+  --color-hover-markup: #f0f;
   --color-hover: #00f;
+  --color-markup: #f00;
   --color-sep: #888;
   --splitter-size: 7px;
   --tree-toggle-width: 20px;
@@ -320,13 +324,30 @@ label:has(#sel-zoom) {
     background-clip: border-box;
     border-bottom: 1px solid #0001;
     border-left: 3px solid transparent;  /* Descendant selection indicator. */
+    cursor: pointer;
     display: flex;
     font-family: monospace;
     height: 24px;
     white-space: nowrap;
 
+    &.selected-view {
+      background-color: var(--bg-markup);
+
+      &.hovered-view {
+        background-color: var(--bg-hover-markup);
+      }
+    }
+
     &.hovered-view {
       background-color: var(--bg-hover);
+    }
+
+    &.hides-selection {
+      border-left-color: var(--color-markup);
+
+      &.hides-hover {
+        border-left-color: var(--color-hover-markup);
+      }
     }
 
     &.hides-hover {

@@ -361,10 +361,17 @@ class ViewEngaged {
   constructor() {
     /** @type {?number} The active hover index, null for none. */
     this.hover = null;
+
+    /**
+     * @type {!SortedSet} Set of selection indices, sorted for consistent visits
+     *     and to help selection UI elements maintain order.
+     */
+    this.sels = new SortedSet();
   }
 
   clear() {
     this.hover = null;
+    this.sels.clear();
   }
 }
 

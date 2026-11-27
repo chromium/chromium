@@ -9,9 +9,9 @@
  * Renders and manages the interactive, hierarchical DOM-based View list.
  *
  * Employs a Nearest Visible Ancestor (NVA) map to handle deep element
- * highlights. If a hovered (or upcoming selected) View is hidden inside a
- * collapsed parent node, the NVA map resolves the closest visible parent,
- * allowing the parent row to render an active ancestor highlight (e.g.,
+ * highlights. If a selected or hovered View is hidden inside a collapsed parent
+ * node, the NVA map resolves the closest visible parent, allowing the parent
+ * row to render an active ancestor highlight (e.g., 'hides-selection',
  * 'hides-hover').
  */
 class TreeVis {
@@ -33,11 +33,17 @@ class TreeVis {
     this.nvaMap = new Int32Array(0);
     /** @type {?number} Nullable index of the View Row with hover visuals. */
     this.hoverIndex = null;
+    /**
+     * @type {!Set<number>} Set of collapsed View Rows (as indices) that have a
+     *     strict descendant that is selected.
+     */
+    this.hidesSelection = new Set();
   }
 
   clear() {
     // No need to call `_syncHover(false)`.
     this.el.root.innerHTML = '';
+    this.hidesSelection.clear();
     this.hoverIndex = null;
     this.nvaMap = new Int32Array(0);
     this.expandedMap.length = 0;
@@ -63,6 +69,30 @@ class TreeVis {
     }
   }
 
+  _updateHidesSelection() {
+    // Clear all selection highlights.
+    for (const index of this.hidesSelection) {
+      this.viewRows[index].classList.remove('hides-selection');
+    }
+    this.hidesSelection.clear();
+
+    // Mark collapsed ancestors using NVA map.
+    for (const index of this.model.engaged.sels.visitSorted()) {
+      // Find the NVA of each selected `ViewNode`, represented by `index`. If
+      // same as self, then the View Row is visible; otherwise it's hidden, and
+      // its NVA's View should be added.
+      const nvaIndex = this.nvaMap[index];
+      if (nvaIndex !== index) {
+        this.hidesSelection.add(nvaIndex);
+      }
+    }
+
+    // Set all selection highlights.
+    for (const index of this.hidesSelection) {
+      this.viewRows[index].classList.add('hides-selection');
+    }
+  }
+
   updateVisibility() {
     this._recalcNVA();
 
@@ -79,6 +109,19 @@ class TreeVis {
         row.classList.toggle('expanded', this.expandedMap[view.index]);
       }
     }
+
+    this._updateHidesSelection();
+  }
+
+  updateAllSelections() {
+    for (const row of this.viewRows) {
+      row.classList.remove('selected-view');
+    }
+    for (const i of this.model.engaged.sels.visitSorted()) {
+      this.viewRows[i].classList.add('selected-view');
+    }
+
+    this._updateHidesSelection();
   }
 
   /** Renders the Tree View from parsed Android View data. */
@@ -170,6 +213,7 @@ class TreeVis {
     this.el.root.appendChild(fragment);
 
     this.updateVisibility();
+    this.updateAllSelections();
   }
 
   toggleRowExpansion(index, includeDescendants) {
@@ -243,11 +287,13 @@ class TreeController {
    * @param {!Element} divViewTree Container Element for the View Tree.
    * @param {!Object} callbacks Interaction callbacks to the owner.
    * @param {function(?number)} callbacks.onHover
+   * @param {function(number)} callbacks.onToggleSelection
    */
-  constructor(model, divViewTree, {onHover}) {
+  constructor(model, divViewTree, {onHover, onToggleSelection}) {
     this.model = model;
     this.vis = new TreeVis(divViewTree, this.model);
     this.onHover = onHover;
+    this.onToggleSelection = onToggleSelection;
 
     this.bindAll();
   }
@@ -276,9 +322,14 @@ class TreeController {
     this.vis.populateViewList();
   }
 
+  updateAllSelections() {
+    this.vis.withTransaction(() => {
+      this.vis.updateAllSelections();
+    });
+  }
+
   bindAll() {
     const root = this.vis.el.root;
-    const views = this.model.views;
 
     // Resolves the View Row index for an event target within the tree. Examine
     // `relatedTarget` to reject spurious `pointerover` / `pointerout`
@@ -310,7 +361,7 @@ class TreeController {
         if (e.target.classList.contains('tree-toggle')) {
           this._onToggleExpansion(index, e.altKey);
         } else {
-          // TODO: Handle direct Tree Row click for selection.
+          this.onToggleSelection(index);
         }
       }
     });

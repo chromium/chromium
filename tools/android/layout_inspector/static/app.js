@@ -111,6 +111,7 @@ class MainController {
 
     this.treeCtrl = new TreeController(this.model, this.el.divViewTree, {
       onHover: (index) => this.handleHover(index),
+      onToggleSelection: (index) => this.handleSelectionToggle(index),
     });
   }
 
@@ -119,6 +120,18 @@ class MainController {
     this.screenshotCtrl.clear();
     this.treeCtrl.clear();
     this.vis.clear();
+  }
+
+  // Event Handlers - Screenshot / View Tree Interaction.
+  handleSelectionToggle(index) {
+    if (index == null) return;
+
+    if (this.model.engaged.sels.has(index)) {
+      this.model.engaged.sels.remove(index);
+    } else {
+      this.model.engaged.sels.add(index);
+    }
+    this.treeCtrl.updateAllSelections();
   }
 
   // Event Handlers - File Operations / Markup.

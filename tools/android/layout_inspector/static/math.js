@@ -34,6 +34,26 @@ function capFixed(v, prec) {
   return v.toFixed(prec).replace(/(?:\.0+|(\.\d*[1-9])0+)$/, '$1');
 }
 
+/******** Algorithm Utilities ********/
+
+/**
+ * Finds the largest position to insert `key` into `sortedArr` so that the
+ * resulting array remains sorted, using binary search.
+ */
+function upperBound(sortedArr, key) {
+  let lo = -1;
+  let hi = sortedArr.length;
+  while (hi - lo > 1) {
+    const mid = (hi + lo) >> 1;
+    if (sortedArr[mid] <= key) {
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+  return hi;
+}
+
 /******** Point2D ********/
 /**
  * Represents a 2D vector or point using an Array backend for performance.
@@ -165,4 +185,47 @@ class Rectangle {
            this.top <= pt.y && pt.y < this.bottom;
   }
   // clang-format on
+}
+
+/******** SortedSet ********/
+/**
+ * Sorted set of values. Uses a sorted array for O(lg n) queries and O(n)
+ * insertions, removals, and sorted iteration.
+ */
+class SortedSet {
+  constructor() {
+    this._sortedVals = [];
+  }
+
+  has(val) {
+    const pos = upperBound(this._sortedVals, val);
+    return pos > 0 && this._sortedVals[pos - 1] === val;
+  }
+
+  findNext(val) {
+    const pos = upperBound(this._sortedVals, val);
+    return pos < this._sortedVals.length ? this._sortedVals[pos] : null;
+  }
+
+  add(val) {
+    const pos = upperBound(this._sortedVals, val);
+    if (pos === 0 || this._sortedVals[pos - 1] !== val) {
+      this._sortedVals.splice(pos, 0, val);
+    }
+  }
+
+  remove(val) {
+    const pos = upperBound(this._sortedVals, val);
+    if (pos > 0 && this._sortedVals[pos - 1] === val) {
+      this._sortedVals.splice(pos - 1, 1);
+    }
+  }
+
+  clear() {
+    this._sortedVals.length = 0;
+  }
+
+  * visitSorted() {
+    yield* this._sortedVals;
+  }
 }
