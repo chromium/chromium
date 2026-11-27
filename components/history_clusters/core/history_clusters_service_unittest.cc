@@ -885,7 +885,14 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
+// TODO(crbug.com/591050480): Re-enable on Android once clusters.size() flake
+// is fixed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EndToEndWithBackend DISABLED_EndToEndWithBackend
+#else
+#define MAYBE_EndToEndWithBackend EndToEndWithBackend
+#endif
+TEST_F(HistoryClustersServiceTest, MAYBE_EndToEndWithBackend) {
   base::HistogramTester histogram_tester;
   AddHardcodedTestDataToHistoryService();
 
