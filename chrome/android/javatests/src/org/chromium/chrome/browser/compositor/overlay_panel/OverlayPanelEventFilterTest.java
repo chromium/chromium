@@ -47,6 +47,9 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Class responsible for testing the OverlayPanelEventFilter. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -94,6 +97,7 @@ public class OverlayPanelEventFilterTest {
 
     private boolean mShouldLockHorizontalMotionInContent;
     private MotionEvent mEventPropagatedToContent;
+    private final List<Integer> mPropagatedContentActions = new ArrayList<>();
     private boolean mEventWasScroll;
     private boolean mEventWasTap;
 
@@ -117,6 +121,7 @@ public class OverlayPanelEventFilterTest {
 
         @Override
         protected void propagateEventToContent(MotionEvent e) {
+            mPropagatedContentActions.add(e.getActionMasked());
             mEventPropagatedToContent = MotionEvent.obtain(e);
             super.propagateEventToContent(e);
             mEventPropagatedToContent.recycle();
@@ -316,6 +321,7 @@ public class OverlayPanelEventFilterTest {
 
         mWasTapDetectedOnContent = false;
         mWasScrollDetectedOnContent = false;
+        mPropagatedContentActions.clear();
 
         mShouldLockHorizontalMotionInContent = false;
     }
@@ -537,6 +543,29 @@ public class OverlayPanelEventFilterTest {
 
         Assert.assertFalse(mWasScrollDetectedOnContent);
         Assert.assertFalse(mWasTapDetectedOnContent);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"OverlayPanel"})
+    @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
+    public void testCanceledGestureDoesNotReplayStaleRecordedEvents() {
+        positionPanelInAlmostMaximizedState();
+
+        // Start a gesture in the ContentView area and cancel it before the event target is
+        // determined.
+        simulateActionDownEvent(0.f, mAlmostMaximizedContentOffsetYDp + 1.f);
+        simulateEvent(MotionEvent.ACTION_CANCEL, 0.f, mAlmostMaximizedContentOffsetYDp + 1.f);
+        Assert.assertTrue(mPropagatedContentActions.isEmpty());
+
+        // A subsequent tap in the ContentView area must only replay the current gesture's events.
+        simulateActionDownEvent(0.f, mAlmostMaximizedContentOffsetYDp + 1.f);
+        simulateActionUpEvent(0.f, mAlmostMaximizedContentOffsetYDp + 1.f);
+
+        Assert.assertEquals(
+                List.of(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP), mPropagatedContentActions);
+        Assert.assertTrue(mWasTapDetectedOnContent);
     }
 
     // --------------------------------------------------------------------------------------------

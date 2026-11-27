@@ -102,9 +102,6 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
     /** The current gesture orientation. */
     private @GestureOrientation int mGestureOrientation;
 
-    /** Whether the events are being recorded. */
-    private boolean mIsRecordingEvents;
-
     /** Whether the ACTION_DOWN that initiated the MotionEvent's stream was synthetic. */
     private boolean mWasActionDownEventSynthetic;
 
@@ -178,10 +175,9 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
         }
 
         // The event filter will have been recording events before the event target was
-        // determined. Clear this cache if the panel is not showing to prevent sending
-        // motion events that would start a target's stream with something other than
-        // ACTION_DOWN.
-        mRecordedEvents.clear();
+        // determined. Reset the filter and clear this cache if the panel is not showing to
+        // prevent sending motion events that would start a target's stream with something other
+        // than ACTION_DOWN.
         reset();
 
         return false;
@@ -234,7 +230,6 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
             // until we are able to determine the event target.
             MotionEvent event = MotionEvent.obtain(e);
             mRecordedEvents.add(event);
-            mIsRecordingEvents = true;
         }
 
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -261,6 +256,17 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
 
         mGestureOrientation = GestureOrientation.UNDETERMINED;
         mHasDeterminedGestureOrientation = false;
+
+        clearRecordedEvents();
+        mFilterHadDownEvent = false;
+    }
+
+    /** Recycles and clears any recorded {@link MotionEvent}s. */
+    private void clearRecordedEvents() {
+        for (int i = 0, size = mRecordedEvents.size(); i < size; i++) {
+            mRecordedEvents.get(i).recycle();
+        }
+        mRecordedEvents.clear();
     }
 
     /**
@@ -276,7 +282,7 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
      * @param e The {@link MotionEvent} to be propagated after resuming the pending events.
      */
     private void resumeAndPropagateEvent(MotionEvent e) {
-        if (mIsRecordingEvents) {
+        if (!mRecordedEvents.isEmpty()) {
             resumeRecordedEvents();
         }
 
@@ -312,7 +318,6 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
         }
 
         mRecordedEvents.clear();
-        mIsRecordingEvents = false;
     }
 
     /**
@@ -343,6 +348,7 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
                 MotionEvent down = MotionEvent.obtain(e);
                 down.setAction(MotionEvent.ACTION_DOWN);
                 super.onTouchEventInternal(down);
+                down.recycle();
                 mFilterHadDownEvent = true;
             }
             super.onTouchEventInternal(e);
