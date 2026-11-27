@@ -33,7 +33,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/animation/throb_animation.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -284,8 +283,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetShowStateChanged(Widget* widget) override;
-  void OnWidgetBoundsChanged(Widget* widget,
-                             const gfx::Rect& new_bounds) override;
 
   // FocusChangeListener overrides, observing each submenu widget's
   // FocusManager:
@@ -890,15 +887,9 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // WARNING: this may be NULL.
   raw_ptr<Widget> owner_ = nullptr;
 
-  // Observes `owner_` and its primary window (e.g. the browser window for a
-  // menu shown from a bubble) while a menu is running. Declared after `owner_`
-  // so it is destroyed first.
-  base::ScopedMultiSourceObservation<Widget, WidgetObserver> owner_observation_{
-      this};
-
-  // Bounds of the primary window of `owner_` when the menu was shown. Menus
-  // are closed when it is moved or resized, e.g. tiled by the window manager.
-  gfx::Rect primary_window_bounds_;
+  // Observes `owner_` while a menu is running. Declared after `owner_` so it
+  // is destroyed first.
+  base::ScopedObservation<Widget, WidgetObserver> owner_observation_{this};
 
   // Observes the FocusManager of each submenu widget shown by this controller,
   // so menu-hosted Textfields keep accessibility focus and selection however

@@ -858,22 +858,13 @@ void MenuController::CancelAllActive(bool disable_animation) {
 }
 
 void MenuController::OnWidgetShowStateChanged(Widget* widget) {
+  CHECK_EQ(owner_, widget);
+
   // See crbug.com/40914555. Whenever browser widget has show state change close
   // all the open menus, unless the widget is not visible, which can happen in
   // menu creation tests, which in turn results in menu gets canceled
   // immediately.
   if (widget->IsVisible()) {
-    Cancel(ExitType::kAll);
-  }
-}
-
-void MenuController::OnWidgetBoundsChanged(Widget* widget,
-                                           const gfx::Rect& new_bounds) {
-  // Some platforms report a move without a change in bounds (e.g. X11 after
-  // entering fullscreen), so compare with the bounds from when the menu was
-  // shown.
-  if (owner_ && widget == owner_->GetPrimaryWindowWidget() &&
-      widget->IsVisible() && new_bounds != primary_window_bounds_) {
     Cancel(ExitType::kAll);
   }
 }
@@ -950,14 +941,7 @@ void MenuController::Run(Widget* parent,
     } else {
       owner_ = parent;
       if (owner_) {
-        owner_observation_.AddObservation(owner_);
-      }
-    }
-    if (owner_) {
-      Widget* primary_window = owner_->GetPrimaryWindowWidget();
-      primary_window_bounds_ = primary_window->GetWindowBoundsInScreen();
-      if (!owner_observation_.IsObservingSource(primary_window)) {
-        owner_observation_.AddObservation(primary_window);
+        owner_observation_.Observe(owner_);
       }
     }
     SetShowing(true);
@@ -2108,19 +2092,15 @@ void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
 
 void MenuController::ClearOwner() {
   SetShowing(false);
-  owner_observation_.RemoveAllObservations();
+  owner_observation_.Reset();
   owner_ = nullptr;
 }
 
 void MenuController::OnWidgetDestroying(Widget* widget) {
-  if (widget != owner_) {
-    // The primary window of `owner_`.
-    owner_observation_.RemoveObservation(widget);
-    return;
-  }
   // Track stack depth to defer controller destruction if ExitMenu() leads
   // to releasing the runner or destroying the controller.
   ScopedDeletionGuard guard(AsWeakPtr());
+  CHECK_EQ(owner_, widget, base::NotFatalUntil::M163);
   ClearOwner();
   native_view_for_gestures_ = gfx::NativeView();
 
