@@ -10,6 +10,7 @@
 #include "ash/system/accessibility/accessibility_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "unified_accessibility_detailed_view_controller.h"
 
 namespace ash {
 
@@ -33,6 +34,10 @@ UnifiedAccessibilityDetailedViewController::CreateView() {
       detailed_view_delegate_.get());
   view_ = view.get();
   return view;
+}
+
+void UnifiedAccessibilityDetailedViewController::ShutDown() {
+  view_ = nullptr;
 }
 
 std::u16string UnifiedAccessibilityDetailedViewController::GetAccessibleName()

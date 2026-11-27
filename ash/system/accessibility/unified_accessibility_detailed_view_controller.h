@@ -35,6 +35,7 @@ class UnifiedAccessibilityDetailedViewController
   // DetailedViewController:
   std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
+  void ShutDown() override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
@@ -46,7 +47,7 @@ class UnifiedAccessibilityDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  raw_ptr<AccessibilityDetailedView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<AccessibilityDetailedView> view_ = nullptr;
 };
 
 }  // namespace ash
