@@ -17,14 +17,23 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaDrm;
+import android.os.Bundle;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
@@ -77,16 +86,21 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
+import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
+import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
+import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
@@ -102,6 +116,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -1602,5 +1618,251 @@ public class SiteSettingsTest {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
         // is resolved.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testChosenObjectSearchFilterRevokesMatchingSite() {
+        final String usbObject = "{\"name\":\"Test USB Device\",\"product-id\":1}";
+        final String alphaOrigin = "https://alpha.example";
+        final String gammaOrigin = "https://gamma.example";
+
+        ChosenObjectInfo alphaInfo =
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        alphaOrigin,
+                        "Test USB Device",
+                        usbObject,
+                        /* isManaged= */ false);
+        ChosenObjectInfo gammaInfo =
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        gammaOrigin,
+                        "Test USB Device",
+                        usbObject,
+                        /* isManaged= */ false);
+
+        ArrayList<ChosenObjectInfo> objectInfos = new ArrayList<>();
+        objectInfos.add(alphaInfo);
+        objectInfos.add(gammaInfo);
+
+        ArrayList<Website> sites = new ArrayList<>();
+        sites.add(new Website(WebsiteAddress.create(alphaOrigin), null));
+        sites.add(new Website(WebsiteAddress.create(gammaOrigin), null));
+
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        doAnswer(
+                        invocation -> {
+                            @SuppressWarnings("unchecked")
+                            List<ChosenObjectInfo> outList =
+                                    (List<ChosenObjectInfo>) invocation.getArgument(2);
+                            outList.addAll(objectInfos);
+                            return null;
+                        })
+                .when(mockJni)
+                .getChosenObjects(any(), eq(ContentSettingsType.USB_CHOOSER_DATA), any());
+
+        SettingsActivity settingsActivity = null;
+        try {
+            Bundle args = new Bundle();
+            args.putInt(ChosenObjectSettings.EXTRA_CATEGORY, ContentSettingsType.USB_GUARD);
+            args.putString(SingleCategorySettings.EXTRA_TITLE, "USB");
+            args.putSerializable(
+                    ChosenObjectSettings.EXTRA_OBJECT_INFOS, new ArrayList<>(objectInfos));
+            args.putSerializable(ChosenObjectSettings.EXTRA_SITES, new ArrayList<>(sites));
+
+            settingsActivity = SiteSettingsTestUtils.startChosenObjectSettings(args);
+            final ChosenObjectSettings fragment =
+                    (ChosenObjectSettings) settingsActivity.getMainFragment();
+            CriteriaHelper.pollUiThread(() -> fragment.getSearchViewForTesting() != null);
+
+            // Filter to gamma and click its revoke button.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SearchView searchView = fragment.getSearchViewForTesting();
+                        assertNotNull(searchView);
+                        searchView.setIconified(false);
+                        searchView.setQuery("gamma", false);
+                    });
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        PreferenceScreen screen = fragment.getPreferenceScreen();
+                        if (screen.getPreferenceCount() != 3) return false;
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference) screen.getPreference(2);
+                        return gammaOrigin.equals(pref.getTitle()) && pref.getButton() != null;
+                    });
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference)
+                                        fragment.getPreferenceScreen().getPreference(2);
+                        Assert.assertEquals(gammaOrigin, pref.getTitle());
+                        pref.getButton().performClick();
+                    });
+
+            verify(mockJni)
+                    .revokeObjectPermission(
+                            any(),
+                            eq(ContentSettingsType.USB_CHOOSER_DATA),
+                            eq(gammaOrigin),
+                            eq(usbObject));
+            verify(mockJni, never())
+                    .revokeObjectPermission(
+                            any(),
+                            eq(ContentSettingsType.USB_CHOOSER_DATA),
+                            eq(alphaOrigin),
+                            eq(usbObject));
+
+            // Also filter to alpha and revoke it so the test is independent of HashMap order.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SearchView searchView = fragment.getSearchViewForTesting();
+                        assertNotNull(searchView);
+                        searchView.setQuery("alpha", false);
+                    });
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        PreferenceScreen screen = fragment.getPreferenceScreen();
+                        if (screen.getPreferenceCount() != 3) return false;
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference) screen.getPreference(2);
+                        return alphaOrigin.equals(pref.getTitle()) && pref.getButton() != null;
+                    });
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference)
+                                        fragment.getPreferenceScreen().getPreference(2);
+                        Assert.assertEquals(alphaOrigin, pref.getTitle());
+                        pref.getButton().performClick();
+                    });
+
+            verify(mockJni)
+                    .revokeObjectPermission(
+                            any(),
+                            eq(ContentSettingsType.USB_CHOOSER_DATA),
+                            eq(alphaOrigin),
+                            eq(usbObject));
+        } finally {
+            if (settingsActivity != null) {
+                settingsActivity.finish();
+            }
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testChosenObjectSearchFilterPreservesManagedState() {
+        final String usbObject = "{\"name\":\"Test USB Device\",\"product-id\":2}";
+        final String alphaOrigin = "https://alpha.example";
+        final String gammaOrigin = "https://gamma.example";
+
+        ChosenObjectInfo alphaManagedInfo =
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        alphaOrigin,
+                        "Test USB Device",
+                        usbObject,
+                        /* isManaged= */ true);
+        ChosenObjectInfo gammaUserInfo =
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        gammaOrigin,
+                        "Test USB Device",
+                        usbObject,
+                        /* isManaged= */ false);
+
+        ArrayList<ChosenObjectInfo> objectInfos = new ArrayList<>();
+        objectInfos.add(alphaManagedInfo);
+        objectInfos.add(gammaUserInfo);
+
+        ArrayList<Website> sites = new ArrayList<>();
+        sites.add(new Website(WebsiteAddress.create(alphaOrigin), null));
+        sites.add(new Website(WebsiteAddress.create(gammaOrigin), null));
+
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        doAnswer(
+                        invocation -> {
+                            @SuppressWarnings("unchecked")
+                            List<ChosenObjectInfo> outList =
+                                    (List<ChosenObjectInfo>) invocation.getArgument(2);
+                            outList.addAll(objectInfos);
+                            return null;
+                        })
+                .when(mockJni)
+                .getChosenObjects(any(), eq(ContentSettingsType.USB_CHOOSER_DATA), any());
+
+        SettingsActivity settingsActivity = null;
+        try {
+            Bundle args = new Bundle();
+            args.putInt(ChosenObjectSettings.EXTRA_CATEGORY, ContentSettingsType.USB_GUARD);
+            args.putString(SingleCategorySettings.EXTRA_TITLE, "USB");
+            args.putSerializable(
+                    ChosenObjectSettings.EXTRA_OBJECT_INFOS, new ArrayList<>(objectInfos));
+            args.putSerializable(ChosenObjectSettings.EXTRA_SITES, new ArrayList<>(sites));
+
+            settingsActivity = SiteSettingsTestUtils.startChosenObjectSettings(args);
+            final ChosenObjectSettings fragment =
+                    (ChosenObjectSettings) settingsActivity.getMainFragment();
+            CriteriaHelper.pollUiThread(() -> fragment.getSearchViewForTesting() != null);
+
+            // Filter to the managed site (alpha) and verify it reports managed.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SearchView searchView = fragment.getSearchViewForTesting();
+                        assertNotNull(searchView);
+                        searchView.setIconified(false);
+                        searchView.setQuery("alpha", false);
+                    });
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        PreferenceScreen screen = fragment.getPreferenceScreen();
+                        if (screen.getPreferenceCount() != 3) return false;
+                        return alphaOrigin.equals(screen.getPreference(2).getTitle());
+                    });
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference)
+                                        fragment.getPreferenceScreen().getPreference(2);
+                        Assert.assertEquals(alphaOrigin, pref.getTitle());
+                        Assert.assertTrue(pref.isManaged());
+                    });
+
+            // Filter to the unmanaged site (gamma) and verify it reports unmanaged.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SearchView searchView = fragment.getSearchViewForTesting();
+                        assertNotNull(searchView);
+                        searchView.setQuery("gamma", false);
+                    });
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        PreferenceScreen screen = fragment.getPreferenceScreen();
+                        if (screen.getPreferenceCount() != 3) return false;
+                        return gammaOrigin.equals(screen.getPreference(2).getTitle());
+                    });
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ChromeImageViewPreference pref =
+                                (ChromeImageViewPreference)
+                                        fragment.getPreferenceScreen().getPreference(2);
+                        Assert.assertEquals(gammaOrigin, pref.getTitle());
+                        Assert.assertFalse(pref.isManaged());
+                    });
+        } finally {
+            if (settingsActivity != null) {
+                settingsActivity.finish();
+            }
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
     }
 }

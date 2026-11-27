@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
@@ -54,9 +55,13 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     // The site settings category we are showing.
     private SiteSettingsCategory mCategory;
 
-    // The set of object permissions being examined.
+    // The set of all object permissions for the device being examined.
     @SuppressWarnings("NullAway.Init")
     private ArrayList<ChosenObjectInfo> mObjectInfos;
+
+    // The subset of object permissions corresponding to |mSites| after filtering by |mSearch|.
+    @SuppressWarnings("NullAway.Init")
+    private ArrayList<ChosenObjectInfo> mDisplayedObjectInfos;
 
     // The set of sites to display.
     private @Nullable ArrayList<Website> mSites;
@@ -87,6 +92,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
                 (ArrayList<ChosenObjectInfo>)
                         assertNonNull(getArguments().getSerializable(EXTRA_OBJECT_INFOS));
         checkObjectConsistency();
+        mDisplayedObjectInfos = new ArrayList<>(mObjectInfos);
         mSites = (ArrayList<Website>) getArguments().getSerializable(EXTRA_SITES);
         String title = getArguments().getString(SingleCategorySettings.EXTRA_TITLE);
         if (title != null) mPageTitle.set(title);
@@ -220,6 +226,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
             String exampleObject = mObjectInfos.get(0).getObject();
 
             mObjectInfos.clear();
+            mDisplayedObjectInfos = new ArrayList<>();
             mSites = new ArrayList<>();
             for (Website site : sites) {
                 for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
@@ -229,6 +236,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
                                 || site.getTitle()
                                         .toLowerCase(Locale.getDefault())
                                         .contains(mSearch)) {
+                            mDisplayedObjectInfos.add(info);
                             mSites.add(site);
                         }
                     }
@@ -318,11 +326,11 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         createHeader();
 
         assumeNonNull(mSites);
-        // Each item |i| in |mSites| and |mObjectInfos| correspond to each other.
+        // Each item |i| in |mSites| and |mDisplayedObjectInfos| correspond to each other.
         // See SingleCategorySettings.addChosenObjects().
-        for (int i = 0; i < mSites.size() && i < mObjectInfos.size(); ++i) {
+        for (int i = 0; i < mSites.size() && i < mDisplayedObjectInfos.size(); ++i) {
             Website site = mSites.get(i);
-            ChosenObjectInfo info = mObjectInfos.get(i);
+            ChosenObjectInfo info = mDisplayedObjectInfos.get(i);
             WebsitePreference preference =
                     new WebsitePreference(
                             getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
@@ -363,6 +371,11 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @VisibleForTesting
+    public @Nullable SearchView getSearchViewForTesting() {
+        return mSearchView;
     }
 
     @Override

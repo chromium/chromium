@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.CookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
@@ -89,6 +90,10 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(
                 AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
         return startSiteSettings(AllSiteSettings.class, fragmentArgs);
+    }
+
+    public static SettingsActivity startChosenObjectSettings(Bundle fragmentArgs) {
+        return startSiteSettings(ChosenObjectSettings.class, fragmentArgs);
     }
 
     private static SettingsActivity startSiteSettings(
