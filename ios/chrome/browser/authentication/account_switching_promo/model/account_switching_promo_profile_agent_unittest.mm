@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_profile_agent.h"
 
 #import <memory>
 #import <optional>
@@ -13,7 +13,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -24,7 +23,6 @@
 #import "components/signin/core/browser/test_account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/browser/account_switching_promo_metrics.h"
 #import "components/signin/public/browser/account_switching_promo_prefs.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -64,7 +62,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
+class AccountSwitchingPromoProfileAgentTest : public PlatformTest {
  public:
   // Marks `identity` as known not to be subject to parental controls.
   void SetNotSupervised(id<SystemIdentity> identity) {
@@ -107,8 +105,6 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
   // PlatformTest:
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        switches::kEnableAccountPreviewSwitchingAccount);
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -149,16 +145,19 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
     profile_state_.profile = profile_;
     scene_state_.profileState = profile_state_;
     scene_state_.UIEnabled = YES;
+    [profile_state_ sceneStateConnected:scene_state_];
 
-    agent_ = [AccountSwitchingPromoSceneAgent agentWithProfile:profile_];
-    ASSERT_NE(agent_, nil);
-    agent_.sceneState = scene_state_;
+    agent_ = [[AccountSwitchingPromoProfileAgent alloc] init];
+    [profile_state_ addAgent:agent_];
   }
 
   void TearDown() override {
     scene_state_.UIEnabled = NO;
     [scene_state_ shutdown];
-    agent_ = nil;
+    if (agent_) {
+      [profile_state_ removeAgent:agent_];
+      agent_ = nil;
+    }
     scene_state_ = nil;
     profile_state_ = nil;
     authentication_service_ = nullptr;
@@ -167,6 +166,7 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
     mock_tracker_ = nullptr;
     promos_manager_ = nullptr;
     profile_ = nullptr;
+    [AccountSwitchingPromoProfileAgent resetPromoAlreadyEvaluatedForTesting];
     PlatformTest::TearDown();
   }
 
@@ -174,7 +174,6 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   FakeSceneState* scene_state_;
@@ -184,12 +183,12 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
   raw_ptr<signin::TestAccountPreviewDataService> test_preview_service_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   raw_ptr<MockPromosManager> promos_manager_;
-  AccountSwitchingPromoSceneAgent* agent_;
+  AccountSwitchingPromoProfileAgent* agent_;
 };
 
 // Tests that signing in notifies `feature_engagement::Tracker`, and that the
 // promo is registered only the first time the scene is foreground-active.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        NotifiesFeatureEngagementOnPrimarySigninAndRegistersPromoOnce) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(
@@ -217,7 +216,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 }
 
 // Tests that signing out does not notify `feature_engagement::Tracker`.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DoesNotNotifyFeatureEngagementOnSignout) {
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
@@ -229,16 +228,20 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
 }
 
-// Tests that signing in after the scene UI is disabled does not notify
-// `feature_engagement::Tracker`.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
-       DoesNotNotifyFeatureEngagementAfterUIDisabled) {
-  scene_state_.UIEnabled = NO;
+// Tests that signing in after the agent is removed from its profile state
+// neither notifies `feature_engagement::Tracker` nor crashes.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       DoesNotNotifyFeatureEngagementAfterRemovedFromProfileState) {
+  // Keeps the agent alive after it is removed from `profile_state_`.
+  AccountSwitchingPromoProfileAgent* agent = agent_;
+  agent_ = nil;
+  [profile_state_ removeAgent:agent];
   EXPECT_CALL(
       *mock_tracker_,
       NotifyEvent(
           feature_engagement::events::kAccountSwitchingPrimaryAccountChanged))
       .Times(0);
+  // Simulate the user signing in after the agent was removed.
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
@@ -247,37 +250,167 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
                                   signin_metrics::AccessPoint::kStartPage);
 }
 
-// Tests that `+agentWithProfile:` returns `nil` when
-// `kEnableAccountPreviewSwitchingAccount` is disabled.
-TEST_F(AccountSwitchingPromoSceneAgentTest, ReturnsNilWhenFeatureDisabled) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(
-      switches::kEnableAccountPreviewSwitchingAccount);
-  EXPECT_FALSE([AccountSwitchingPromoSceneAgent agentWithProfile:profile_]);
+// Tests that clearing `profileState.profile` during `ProfileController`
+// shutdown (before the `ProfileIOS` itself is destroyed) does not crash if an
+// observer callback fires in that window.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       DoesNotCrashWhenProfileStateProfileClearedDuringShutdown) {
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
+  SetUpEligibleAccounts(primary, target);
+
+  // Simulate `-[ProfileController shutdown]` clearing `profile_state_.profile`
+  // before the `ProfileIOS` is destroyed.
+  profile_state_.profile = nullptr;
+
+  // Trigger an observer callback that checks `-isPersonalProfile` while
+  // `profile_state_.profile` is null. The agent cannot access `PromosManager`
+  // without `profile_state_.profile`, so the promo is not deregistered.
+  EXPECT_CALL(*promos_manager_, DeregisterPromo(testing::_)).Times(0);
+  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
 }
 
-// Tests that `+agentWithProfile:` returns `nil` when the profile is not the
-// personal profile.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
-       ReturnsNilWhenProfileIsNotPersonal) {
+// Tests that opening a second scene (e.g., a second window on iPad) does not
+// emit `kEligibleOnStartup` or call `RegisterPromoForSingleDisplay()` again.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       RegistersPromoOnceAcrossMultipleScenes) {
+  base::HistogramTester histogram_tester;
+  SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
+                        [FakeSystemIdentity fakeIdentity2]);
+  // Let enough time pass for the promo to be eligible.
+  task_environment_.FastForwardBy(base::Days(28));
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(
+                                    promos_manager::Promo::AccountSwitching))
+      .Times(1);
+  // Simulate the first scene becoming foreground active.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  histogram_tester.ExpectUniqueSample(
+      signin::kAccountSwitchingPromoEventsHistogram,
+      signin::AccountSwitchingPromoEvent::kEligibleOnStartup, 1);
+
+  // Connect and activate a second scene for the same profile.
+  FakeSceneState* second_scene_state =
+      [[FakeSceneState alloc] initWithProfile:profile_];
+  second_scene_state.profileState = profile_state_;
+  second_scene_state.UIEnabled = YES;
+  [profile_state_ sceneStateConnected:second_scene_state];
+  second_scene_state.activationLevel = SceneActivationLevelForegroundActive;
+
+  histogram_tester.ExpectTotalCount(
+      signin::kAccountSwitchingPromoEventsHistogram, 1);
+
+  // Simulate the second scene being torn down.
+  second_scene_state.UIEnabled = NO;
+  [second_scene_state shutdown];
+}
+
+// Tests that an agent attached to a profile that is not the personal profile
+// neither registers nor deregisters the promo, and has no `targetIdentity`.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       DoesNothingWhenProfileIsNotPersonal) {
+  [profile_state_ removeAgent:agent_];
+  SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
+                        [FakeSystemIdentity fakeIdentity2]);
+  // Let enough time pass for the promo to be eligible.
+  task_environment_.FastForwardBy(base::Days(28));
   const std::string other_profile_name =
       profile_manager_.ReserveNewProfileName();
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
       ->SetPersonalProfileName(other_profile_name);
-  EXPECT_FALSE([AccountSwitchingPromoSceneAgent agentWithProfile:profile_]);
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(testing::_))
+      .Times(0);
+  EXPECT_CALL(*promos_manager_, DeregisterPromo(testing::_)).Times(0);
+  agent_ = [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state_ addAgent:agent_];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_FALSE(agent_.targetIdentity);
+}
+
+// Tests that evaluating at startup on a non-personal (managed) profile does
+// not prevent a personal profile agent from evaluating later in the same
+// session.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       ManagedProfileDoesNotBlockPersonalProfileEvaluation) {
+  [profile_state_ removeAgent:agent_];
+  const std::string personal_profile_name = profile_->GetProfileName();
+  const std::string managed_profile_name =
+      profile_manager_.ReserveNewProfileName();
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->SetPersonalProfileName(managed_profile_name);
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(testing::_))
+      .Times(0);
+  agent_ = [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state_ addAgent:agent_];
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  testing::Mock::VerifyAndClearExpectations(promos_manager_.get());
+
+  [profile_state_ removeAgent:agent_];
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->SetPersonalProfileName(personal_profile_name);
+  SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
+                        [FakeSystemIdentity fakeIdentity2]);
+  task_environment_.FastForwardBy(base::Days(28));
+  agent_ = [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state_ addAgent:agent_];
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(
+                                    promos_manager::Promo::AccountSwitching))
+      .Times(1);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that once evaluated in a session, attaching a new
+// `AccountSwitchingPromoProfileAgent` instance (e.g. after switching to a
+// managed profile and back) does not evaluate or register the promo again.
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       EvaluatesOnlyOnceAcrossProfileAgentInstancesInSession) {
+  base::HistogramTester histogram_tester;
+  SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
+                        [FakeSystemIdentity fakeIdentity2]);
+  task_environment_.FastForwardBy(base::Days(28));
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(
+                                    promos_manager::Promo::AccountSwitching))
+      .Times(1);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  histogram_tester.ExpectUniqueSample(
+      signin::kAccountSwitchingPromoEventsHistogram,
+      signin::AccountSwitchingPromoEvent::kEligibleOnStartup, 1);
+  testing::Mock::VerifyAndClearExpectations(promos_manager_.get());
+
+  // Re-create the agent on the profile state and re-activate a scene.
+  [profile_state_ removeAgent:agent_];
+  agent_ = [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state_ addAgent:agent_];
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(testing::_))
+      .Times(0);
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  histogram_tester.ExpectTotalCount(
+      signin::kAccountSwitchingPromoEventsHistogram, 1);
 }
 
 // Tests that `targetIdentity` is the preferred account for switching.
-TEST_F(AccountSwitchingPromoSceneAgentTest, TargetIdentityIsPreferredAccount) {
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       TargetIdentityIsPreferredAccount) {
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1], target);
   EXPECT_EQ(target.gaiaId, agent_.targetIdentity.gaiaId);
 }
 
 // Tests that `targetIdentity` is `nil` when signed out.
-TEST_F(AccountSwitchingPromoSceneAgentTest, NoTargetIdentityWhenSignedOut) {
+TEST_F(AccountSwitchingPromoProfileAgentTest, NoTargetIdentityWhenSignedOut) {
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
@@ -289,7 +422,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest, NoTargetIdentityWhenSignedOut) {
 }
 
 // Tests that `targetIdentity` is `nil` when the primary account is managed.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        NoTargetIdentityWhenPrimaryAccountIsManaged) {
   FakeSystemIdentity* managed = [FakeSystemIdentity fakeManagedIdentity];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -311,9 +444,36 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
   EXPECT_FALSE(agent_.targetIdentity);
 }
 
+// Tests that `targetIdentity` is `nil` when the candidate target account is
+// managed (even if it is mapped to the personal profile).
+TEST_F(AccountSwitchingPromoProfileAgentTest,
+       NoTargetIdentityWhenTargetAccountIsManaged) {
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* managed_target = [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentity(primary);
+  system_identity_manager->AddIdentity(managed_target);
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MoveManagedAccountToPersonalProfileForTesting(managed_target.gaiaId);
+  authentication_service_->SignIn(primary,
+                                  signin_metrics::AccessPoint::kStartPage);
+  signin::AccountPreviewDataService::AccountPreviewPreference pref{
+      .gaia_id = managed_target.gaiaId};
+  test_preview_service_->SetPreferredAccountForSwitching(pref);
+  SetNotSupervised(primary);
+  ASSERT_EQ(
+      identity_manager_->FindExtendedAccountInfoByGaiaId(managed_target.gaiaId)
+          .IsManaged(),
+      signin::Tribool::kTrue);
+  EXPECT_FALSE(agent_.targetIdentity);
+}
+
 // Tests that `targetIdentity` is `nil` when the preferred account is the same
 // as the primary account.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        NoTargetIdentityWhenPreferredAccountIsPrimaryAccount) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   SetUpEligibleAccounts(primary, primary);
@@ -322,7 +482,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that `targetIdentity` is `nil` when the preferred account does not
 // exist on the device.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        NoTargetIdentityWhenPreferredAccountIsNotOnDevice) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager* system_identity_manager =
@@ -339,7 +499,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 }
 
 // Tests that `targetIdentity` is `nil` without a preferred account.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        NoTargetIdentityWithoutPreferredAccount) {
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
@@ -349,7 +509,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the promo is not registered within 28 days of the last sign-in,
 // nor later in the same session once 28 days have passed.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DoesNotRegisterPromoWithin28DaysOfSignin) {
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
@@ -368,7 +528,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the registered promo is deregistered once the target account is
 // removed from the device.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DeregistersPromoWhenTargetAccountIsRemoved) {
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1], target);
@@ -388,7 +548,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the registered promo is deregistered once its account pair
 // becomes suppressed.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DeregistersPromoWhenPairBecomesSuppressed) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -407,7 +567,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the promo is not registered for a suppressed reverse pair, even
 // 60 days after the switch.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        SwitchingAccountsPermanentlySuppressesReversePair) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -443,7 +603,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that removing an account from the device deletes its reverse pair
 // suppression, so the promo is registered again once it is re-added.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        RemovingAccountDeletesPairStateAllowingFreshStartWhenReadded) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -479,7 +639,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 }
 
 // Tests that the promo is deregistered when there is no switching candidate.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DeregistersPromoWhenNoSwitchingCandidate) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager* system_identity_manager =
@@ -502,7 +662,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the promo is not registered, and `targetIdentity` is `nil`, when
 // the primary account is supervised (`Tribool::kTrue`).
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DoesNotRegisterPromoWhenSupervised) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -521,7 +681,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 // Tests that the promo is not registered, and `targetIdentity` is `nil`, when
 // the supervision status of the primary account is unknown
 // (`Tribool::kUnknown`).
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DoesNotRegisterPromoWhenSupervisionIsUnknown) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
@@ -545,7 +705,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the promo is neither registered nor stored once the profile is no
 // longer the personal profile.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DoesNothingWhenProfileIsNoLongerPersonal) {
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
@@ -566,7 +726,9 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the promo is only registered once `ProfileInitStage::kFinal` is
 // reached.
-TEST_F(AccountSwitchingPromoSceneAgentTest, EvaluatesOnlyAtFinalInitStage) {
+TEST_F(AccountSwitchingPromoProfileAgentTest, EvaluatesOnlyAtFinalInitStage) {
+  // Set up a profile that has not reached `ProfileInitStage::kFinal` yet, with
+  // a connected scene whose UI is enabled.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
   SetProfileStateInitStage(profile_state, ProfileInitStage::kNormalUI);
   profile_state.profile = profile_;
@@ -574,29 +736,35 @@ TEST_F(AccountSwitchingPromoSceneAgentTest, EvaluatesOnlyAtFinalInitStage) {
       [[FakeSceneState alloc] initWithProfile:profile_];
   scene_state.profileState = profile_state;
   scene_state.UIEnabled = YES;
-  AccountSwitchingPromoSceneAgent* agent =
-      [AccountSwitchingPromoSceneAgent agentWithProfile:profile_];
-  agent.sceneState = scene_state;
+  AccountSwitchingPromoProfileAgent* agent =
+      [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state addAgent:agent];
+  [profile_state sceneStateConnected:scene_state];
 
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
+  // Let enough time pass for the promo to be eligible.
   task_environment_.FastForwardBy(base::Days(28));
   EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(testing::_))
       .Times(0);
+  // Simulate the scene becoming foreground active before
+  // `ProfileInitStage::kFinal`.
   scene_state.activationLevel = SceneActivationLevelForegroundActive;
   testing::Mock::VerifyAndClearExpectations(promos_manager_.get());
 
   EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(
                                     promos_manager::Promo::AccountSwitching));
+  // Simulate the profile initialization reaching `ProfileInitStage::kFinal`.
   SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
 
+  // Simulate the scene being torn down.
   scene_state.UIEnabled = NO;
   [scene_state shutdown];
 }
 
 // Tests that the registered promo is deregistered if the personal profile
 // becomes managed mid-session.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DeregistersWhenProfileBecomesManaged) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
@@ -626,7 +794,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that the registered promo is deregistered when the target account is
 // filtered out of the profile by `prefs::kRestrictAccountsToPatterns`.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        DeregistersPromoWhenTargetAccountIsRestrictedByPattern) {
   FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1], target);
@@ -646,7 +814,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that signing out within 24 hours of accepting the promo records `true`
 // for `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours`.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        RecordsRetentionMetricOnPrimaryAccountChange) {
   base::HistogramTester histogram_tester;
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
@@ -664,19 +832,16 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 // Tests that staying on the accepted account for 24 hours records `false` for
 // `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours` once startup reaches
 // `ProfileInitStage::kFinal`.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        RecordsRetentionMetricOnStartupAfter24Hours) {
   base::HistogramTester histogram_tester;
+  // Set up a profile in `ProfileInitStage::kFirstRun` with the agent attached.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
   SetProfileStateInitStage(profile_state, ProfileInitStage::kFirstRun);
   profile_state.profile = profile_;
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithProfile:profile_];
-  scene_state.profileState = profile_state;
-  scene_state.UIEnabled = YES;
-  AccountSwitchingPromoSceneAgent* agent =
-      [AccountSwitchingPromoSceneAgent agentWithProfile:profile_];
-  agent.sceneState = scene_state;
+  AccountSwitchingPromoProfileAgent* agent =
+      [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state addAgent:agent];
 
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
@@ -684,23 +849,23 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
   signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
                                               primary.gaiaId);
 
+  // Advance past the 24-hour window and progress startup to
+  // `ProfileInitStage::kNormalUI`, before the final stage.
   task_environment_.FastForwardBy(base::Hours(25));
   SetProfileStateInitStage(profile_state, ProfileInitStage::kNormalUI);
   histogram_tester.ExpectTotalCount(
       "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", 0);
 
+  // Simulate the profile initialization reaching `ProfileInitStage::kFinal`.
   SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", false, 1);
-
-  scene_state.UIEnabled = NO;
-  [scene_state shutdown];
 }
 
 // Tests that staying on the accepted account for 24 hours records `false` for
 // `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours` on scene activation.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        RecordsRetentionMetricOnSceneActivationAfter24Hours) {
   base::HistogramTester histogram_tester;
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
@@ -721,7 +886,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 // `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours`, both during an
 // active session (including async sign-out) and on scene activation when the
 // account was removed while Chrome was not running.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        RemovingAcceptedAccountDoesNotRecordRetentionMetric) {
   base::HistogramTester histogram_tester;
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
@@ -753,7 +918,7 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 
 // Tests that `kAccountSwitchingPromoStatePref` is cleared when the profile is
 // no longer the personal profile.
-TEST_F(AccountSwitchingPromoSceneAgentTest,
+TEST_F(AccountSwitchingPromoProfileAgentTest,
        ClearsPromoStateWhenProfileIsNoLongerPersonal) {
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
@@ -776,20 +941,25 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
                   .empty());
 }
 
-using AccountSwitchingPromoSceneAgentNoServiceTest = PlatformTest;
+using AccountSwitchingPromoProfileAgentNoServiceTest = PlatformTest;
 
-// Tests that `+agentWithProfile:` returns `nil` when
-// `AccountPreviewDataService` is unavailable for the profile.
-TEST_F(AccountSwitchingPromoSceneAgentNoServiceTest,
-       ReturnsNilWhenAccountPreviewDataServiceUnavailable) {
+// Tests that the agent has no `targetIdentity` when `AccountPreviewDataService`
+// is unavailable for the profile.
+TEST_F(AccountSwitchingPromoProfileAgentNoServiceTest,
+       NoTargetIdentityWhenAccountPreviewDataServiceUnavailable) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableAccountPreviewSwitchingAccount);
   TestProfileManagerIOS profile_manager;
   TestProfileIOS* profile =
       profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
   ASSERT_FALSE(AccountPreviewDataServiceFactory::GetForProfile(profile));
-  EXPECT_FALSE([AccountSwitchingPromoSceneAgent agentWithProfile:profile]);
+  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
+  profile_state.profile = profile;
+  AccountSwitchingPromoProfileAgent* agent =
+      [[AccountSwitchingPromoProfileAgent alloc] init];
+  [profile_state addAgent:agent];
+
+  EXPECT_FALSE(agent.targetIdentity);
+  [profile_state removeAgent:agent];
 }

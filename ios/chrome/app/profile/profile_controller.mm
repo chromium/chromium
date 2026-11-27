@@ -34,6 +34,7 @@
 #import "components/language/core/browser/language_usage_metrics.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/translate/core/browser/translate_metrics_logger_impl.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -56,6 +57,7 @@
 #import "ios/chrome/app/profile/synced_set_up_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_profile_agent.h"
 #import "ios/chrome/browser/backend_promo/model/backend_promo_profile_agent.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
@@ -632,6 +634,11 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
 
   if (IsGeminiActorBackgroundingEnabled()) {
     [_state addAgent:[[ActorProfileAgent alloc] init]];
+  }
+
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount)) {
+    [_state addAgent:[[AccountSwitchingPromoProfileAgent alloc] init]];
   }
 }
 

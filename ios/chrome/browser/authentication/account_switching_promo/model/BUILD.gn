@@ -4,9 +4,10 @@
 
 source_set("model") {
   sources = [
-    "account_switching_promo_scene_agent.h",
-    "account_switching_promo_scene_agent.mm",
+    "account_switching_promo_profile_agent.h",
+    "account_switching_promo_profile_agent.mm",
   ]
+  public_deps = [ "//ios/chrome/app/profile" ]
   deps = [
     "//base",
     "//components/feature_engagement/public",
@@ -18,12 +19,10 @@ source_set("model") {
     "//components/signin/public/identity_manager/objc",
     "//components/supervised_user/core/browser",
     "//google_apis",
-    "//ios/chrome/app/profile",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_activation_level",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -39,7 +38,7 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "account_switching_promo_scene_agent_unittest.mm" ]
+  sources = [ "account_switching_promo_profile_agent_unittest.mm" ]
 
   deps = [
     ":model",

@@ -24,7 +24,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_profile_agent.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
@@ -2223,7 +2223,8 @@ const char kContextPanelDismissedHistogram[] =
 
 - (void)showAccountSwitchingPromo {
   id<SystemIdentity> targetIdentity =
-      [AccountSwitchingPromoSceneAgent agentFromScene:_browser->GetSceneState()]
+      [AccountSwitchingPromoProfileAgent
+          agentFromProfile:_browser->GetSceneState().profileState]
           .targetIdentity;
   if (!targetIdentity) {
     [_promosManagerCoordinator promoWasDismissed];
