@@ -8,6 +8,7 @@ NSString* const kPrimaryToolbarViewIdentifier =
     @"kPrimaryToolbarViewIdentifier";
 NSString* const kSecondaryToolbarViewIdentifier =
     @"kSecondaryToolbarViewIdentifier";
+NSString* const kVerticalSidebarIdentifier = @"VerticalSidebarIdentifier";
 NSString* const kToolbarBackButtonIdentifier = @"kToolbarBackButtonIdentifier";
 NSString* const kToolbarForwardButtonIdentifier =
     @"kToolbarForwardButtonIdentifier";

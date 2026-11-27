@@ -46,6 +46,29 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("vertical_sidebar") {
+  sources = [
+    "vertical_sidebar_view_controller.h",
+    "vertical_sidebar_view_controller.mm",
+  ]
+  public_deps = [
+    ":buttons_consumer",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/shared/ui/elements",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/ui/buttons",
+    "//ios/chrome/browser/toolbar/ui/buttons:actions",
+    "//ios/chrome/common/ui/colors",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("buttons_consumer") {
   sources = [
     "toolbar_button_type.h",
@@ -75,4 +98,25 @@ source_set("utils") {
   ]
   deps = [ "//ios/chrome/browser/shared/ui/util" ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "vertical_sidebar_view_controller_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":vertical_sidebar",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/ui/buttons",
+    "//ios/chrome/browser/toolbar/ui/buttons:actions",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

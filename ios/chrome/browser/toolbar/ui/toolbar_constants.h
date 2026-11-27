@@ -10,6 +10,9 @@
 // Accessibility identifiers for the toolbar views.
 extern NSString* const kPrimaryToolbarViewIdentifier;
 extern NSString* const kSecondaryToolbarViewIdentifier;
+// Accessibility identifier of the sidebar hosting the toolbar buttons in the
+// iPhone Duo vertical bar column.
+extern NSString* const kVerticalSidebarIdentifier;
 
 // Accessibility identifiers for toolbar buttons.
 extern NSString* const kToolbarBackButtonIdentifier;
