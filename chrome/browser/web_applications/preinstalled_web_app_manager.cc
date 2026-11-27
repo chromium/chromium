@@ -943,7 +943,9 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     if (!g_bypass_offline_manifest_requirement_for_testing_) {
       // Non-Chrome OS platforms are not permitted to fetch the web app install
       // URLs during start up.
-      CHECK(options.app_info_factory, base::NotFatalUntil::M162);
+      // TODO(crbug.com/590888107): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(options.app_info_factory);
       options.only_use_app_info_factory = true;
     }
 
