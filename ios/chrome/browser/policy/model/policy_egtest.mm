@@ -1236,15 +1236,7 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
 
 // Tests that `chrome://dino/` shows the disabled page instead of the dinosaur
 // game when the `AllowDinosaurEasterEgg` enterprise policy is set to `false`.
-// TODO(crbug.com/590458746): Failing on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testAllowDinosaurEasterEggDisabled \
-  DISABLED_testAllowDinosaurEasterEggDisabled
-#else
-#define MAYBE_testAllowDinosaurEasterEggDisabled \
-  testAllowDinosaurEasterEggDisabled
-#endif
-- (void)MAYBE_testAllowDinosaurEasterEggDisabled {
+- (void)testAllowDinosaurEasterEggDisabled {
   SetPolicy(false, policy::key::kAllowDinosaurEasterEgg);
   [ChromeEarlGrey loadURL:GURL(kChromeDinoGameURL)];
   [ChromeEarlGrey
@@ -1253,11 +1245,18 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
   [ChromeEarlGrey
       waitForWebStateNotContainingElement:
           [ElementSelector selectorWithCSSSelector:".runner-canvas"]];
+  // The page creates the snackbar and registers its keydown listener together.
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithCSSSelector:".snackbar"]];
 
-  // Pressing space on the disabled page shows the disabled message and icon.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
+  // A Space keydown on the disabled page shows the disabled message and icon.
+  // The event is dispatched from JavaScript because a simulated hardware key
+  // press does not reach this page on physical devices.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"document.dispatchEvent(new KeyboardEvent('keydown', {key: ' ', "
+          @"code: 'Space', keyCode: 32, which: 32, bubbles: true, "
+          @"cancelable: true}));"];
   [ChromeEarlGrey
       waitForWebStateContainingElement:
           [ElementSelector selectorWithCSSSelector:".snackbar.snackbar-show"]];
