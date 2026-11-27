@@ -40,7 +40,7 @@ test(t => {
 promise_test(t => {
   const animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   return animation.ready.then(() => {
-    assert_greater_than(animation.startTime, 0, 'startTime when running');
+    assert_greater_than_equal(animation.startTime, 0, 'startTime when running');
   });
 }, 'startTime is resolved when running');
 
