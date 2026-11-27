@@ -1186,8 +1186,7 @@ BASE_FEATURE(kParentAccessJelly, base::FEATURE_DISABLED_BY_DEFAULT);
 // password auth factor is locked out (too many wrong attempts) to cryptohome
 // recovery if they have a recovery factor, instead of failing with a generic
 // error until the lockout expires. See b/578979328.
-BASE_FEATURE(kPasswordLockoutRecoveryRouting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPasswordLockoutRecoveryRouting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
