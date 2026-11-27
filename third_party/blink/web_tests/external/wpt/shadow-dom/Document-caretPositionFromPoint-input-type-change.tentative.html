@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>caretPositionFromPoint() next to a text input never exposes its internals after a type change</title>
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#dom-document-caretpositionfrompoint">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div style="width: 300px; padding: 10px 20px">
+  <input id="input" type="text" value="abc"
+         style="display: block; width: 100px; margin: 20px">
+</div>
+<script>
+test(() => {
+  const input = document.getElementById("input");
+  const rect = input.getBoundingClientRect();
+  const pos = document.caretPositionFromPoint(
+      rect.right + 10, rect.top + rect.height / 2);
+  assert_not_equals(pos, null);
+  assert_equals(pos.offsetNode, input);
+
+  input.type = "button";
+  assert_false(pos.offsetNode instanceof ShadowRoot,
+               "offsetNode must not be a ShadowRoot");
+  assert_equals(pos.offsetNode, input, "after changing type to button");
+  assert_equals(pos.offset, 0, "offset after changing type to button");
+
+  input.type = "text";
+  assert_equals(pos.offsetNode, input, "after changing type back to text");
+}, "offsetNode stays the input when the input type changes");
+</script>

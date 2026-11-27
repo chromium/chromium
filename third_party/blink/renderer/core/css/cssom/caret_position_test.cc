@@ -8,8 +8,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_caret_position_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -165,5 +167,49 @@ TEST_F(CaretPositionTest, caretPositionFromPointInTextareaWithSuggestedValue) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_LE(DistinctCaretRectPositions(textarea).size(), 1u);
+}
+
+// Repro geometry from crbug.com/583133959: hit-testing just to the inline-end
+// of a block-level text <input> narrower than its container produces
+// Position::AfterNode(inner-editor), i.e. (UA ShadowRoot, n).
+namespace {
+constexpr char kBlockInputInContainer[] =
+    "<div style='width: 300px; padding: 10px 20px'>"
+    "<input id='input' type='text' "
+    "style='display: block; width: 100px; margin: 20px; font-size: 16px'>"
+    "</div>";
+}  // namespace
+
+TEST_F(CaretPositionTest,
+       BlockInputWithSuggestedValueTypeChangeDoesNotLeakPreview) {
+  SetBodyContent(kBlockInputInContainer);
+  auto* input = To<HTMLInputElement>(GetElementById("input"));
+  input->SetSuggestedValue("secret autofill suggestion 0123456789");
+  UpdateAllLifecyclePhasesForTest();
+
+  const DOMRect* bounds = input->GetBoundingClientRect();
+  const float y = bounds->top() + bounds->height() / 2.0f;
+  CaretPosition* pos = GetDocument().caretPositionFromPoint(
+      bounds->right() + 10.0f, y, CaretPositionFromPointOptions::Create());
+  ASSERT_NE(nullptr, pos);
+  EXPECT_EQ(input, pos->offsetNode());
+  EXPECT_EQ(0u, pos->offset());
+
+  // The caret rect must be at the start of the (empty) inner editor, not after
+  // the previewed suggestion text.
+  auto* range = Range::Create(GetDocument());
+  range->setStart(input->InnerEditorElement(), 0);
+  range->setEnd(input->InnerEditorElement(), 0);
+  const DOMRect* expected_rect = range->getBoundingClientRect();
+  const DOMRect* rect = pos->getClientRect();
+  ASSERT_NE(nullptr, rect);
+  EXPECT_EQ(*expected_rect, *rect);
+  EXPECT_LT(rect->x(), bounds->left() + 10.0f);
+
+  input->setAttribute(html_names::kTypeAttr, AtomicString("button"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(input, pos->offsetNode());
+  EXPECT_EQ(0u, pos->offset());
+  EXPECT_EQ(nullptr, pos->getClientRect());
 }
 }  // namespace blink

@@ -13,6 +13,7 @@ namespace blink {
 
 class DOMRect;
 class Node;
+class TextControlElement;
 
 class CORE_EXPORT CaretPosition : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,6 +27,7 @@ class CORE_EXPORT CaretPosition : public ScriptWrappable {
 
  private:
   Member<Node> node_;
+  Member<TextControlElement> text_control_;
   unsigned offset_;
 };
 }  // namespace blink

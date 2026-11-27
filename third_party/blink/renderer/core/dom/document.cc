@@ -2124,13 +2124,24 @@ CaretPosition* Document::caretPositionFromPoint(
     return nullptr;
   }
 
-  Node* anchor_node = position_with_affinity.AnchorNode();
+  Position position = position_with_affinity.GetPosition();
+  Node* anchor_node = position.AnchorNode();
   if (TextControlElement* text_control = EnclosingTextControl(anchor_node)) {
+    HTMLElement* inner_editor = text_control->InnerEditorElement();
+    // Convert to parent-anchored form before checking containment so positions
+    // anchored before/after the inner editor (whose container is the UA
+    // ShadowRoot) or inside other UA shadow subtrees (e.g., autofill
+    // suggestions) are not retained.
+    Position parent_anchored = position.ParentAnchoredEquivalent();
+    Node* container_node = parent_anchored.AnchorNode();
+    if (!inner_editor || !container_node ||
+        !inner_editor->contains(container_node)) {
+      position = inner_editor ? Position::FirstPositionInNode(*inner_editor)
+                              : Position::InParentBeforeNode(*text_control);
+    } else {
+      position = parent_anchored;
+    }
     anchor_node = text_control;
-    CHECK(anchor_node == text_control ||
-          text_control->InnerEditorElement()->contains(anchor_node))
-        << "We should not expose positions in content (e.g., autofill "
-           "suggestions) not in the editor";
   }
   bool adjust_position = false;
   while (anchor_node->IsInShadowTree() &&
@@ -2141,7 +2152,7 @@ CaretPosition* Document::caretPositionFromPoint(
   }
   Position adjusted_position = adjust_position
                                    ? Position::InParentBeforeNode(*anchor_node)
-                                   : position_with_affinity.GetPosition();
+                                   : position;
   CHECK(!adjusted_position.IsNull());
 
   return CreateCaretPosition(adjusted_position.ParentAnchoredEquivalent());
