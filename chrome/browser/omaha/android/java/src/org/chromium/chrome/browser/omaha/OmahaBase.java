@@ -463,6 +463,7 @@ public class OmahaBase {
                             'communication. '
                             'A unique identifier for the device may be transmitted.'
                           destination: GOOGLE_OWNED_SERVICE
+                          api_service_name: "update.googleapis.com"
                           internal {
                             contacts {
                               email: "clank-dev@google.com"
