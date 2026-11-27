@@ -135,8 +135,10 @@ class MockStreamProvider : public StreamProvider {
   MockStreamProvider();
   ~MockStreamProvider() override;
 
-  MOCK_METHOD(void, BindToTargetAndConnect, (Target & target), (override));
-  MOCK_METHOD(void, DetachTarget, (), (override));
+  MOCK_METHOD(void,
+              BindToTargetAndConnect,
+              (std::unique_ptr<Target> target),
+              (override));
   MOCK_METHOD(void, Stop, (DictationStreamEndTrigger trigger), (override));
   MOCK_METHOD(void,
               OnTranscriptionUpdated,

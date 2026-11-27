@@ -11,7 +11,6 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
-#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/test_util.h"
@@ -277,8 +276,7 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                                     blink::WebInputEvent::kNoModifiers,
                                     base::TimeTicks::Now());
   esc_event.windows_key_code = ui::VKEY_ESCAPE;
-  attached_stream()->GetTarget()->AsDomTarget()->DidGetUserInteraction(
-      esc_event);
+  session_controller()->DidGetUserInteraction(esc_event);
 
   histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
                                       DictationStreamExitStatus::kUserDone, 1);
@@ -350,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
       blink::DOMNodeIdType(456));
 
-  attached_stream()->GetTarget()->AsDomTarget()->OnFocusChangedInPage(details);
+  session_controller()->OnFocusChangedInPage(details);
 
   histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
                                       DictationStreamExitStatus::kAutoDone, 1);

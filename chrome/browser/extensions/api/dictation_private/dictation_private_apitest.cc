@@ -66,8 +66,9 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
   ~ExtensionApiTestStreamProvider() override = default;
 
   // StreamProvider:
-  void BindToTargetAndConnect(dictation::Target& target) override {
-    target_ = &target;
+  void BindToTargetAndConnect(
+      std::unique_ptr<dictation::Target> target) override {
+    target_ = std::move(target);
     api::dictation_private::StartStreamDetails details;
     details.stream_id = stream_id_.value();
     api::dictation_private::DictationContext context;
@@ -92,8 +93,6 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id_, std::move(event));
   }
-
-  void DetachTarget() override { target_ = nullptr; }
 
   void Stop(dictation::DictationStreamEndTrigger trigger) override {
     api::dictation_private::EndStreamDetails details;
@@ -143,7 +142,7 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
   }
 
  private:
-  raw_ptr<dictation::Target> target_ = nullptr;
+  std::unique_ptr<dictation::Target> target_;
   raw_ptr<content::BrowserContext> browser_context_;
   ExtensionId extension_id_;
   dictation::DictationMultiplexer::StreamId stream_id_;
@@ -190,8 +189,6 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
   ASSERT_TRUE(service);
   dictation::DictationMultiplexer& multiplexer = service->multiplexer();
 
-  dictation::DomTarget target(dictation::TargetDetails(
-      content::GlobalDOMNodeId{content::WeakDocumentPtr()}));
   const dictation::DictationMultiplexer::StreamId test_stream_id(123);
   ExtensionApiTestStreamProvider test_stream_provider(
       profile(), extension->id(), test_stream_id);
@@ -200,7 +197,9 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
   // Flush the buffered log immediately so the test does not wait for the timer.
   service->log_buffer().Flush();
 
-  test_stream_provider.BindToTargetAndConnect(target);
+  auto target = std::make_unique<dictation::DomTarget>(dictation::TargetDetails(
+      content::GlobalDOMNodeId{content::WeakDocumentPtr()}));
+  test_stream_provider.BindToTargetAndConnect(std::move(target));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -286,13 +285,13 @@ IN_PROC_BROWSER_TEST_P(DictationPrivateApiStartStreamFlagsTest,
   ASSERT_TRUE(service);
   dictation::DictationMultiplexer& multiplexer = service->multiplexer();
 
-  dictation::DomTarget target(dictation::TargetDetails(
-      content::GlobalDOMNodeId{content::WeakDocumentPtr()}));
   ExtensionApiTestStreamProvider test_stream_provider(
       profile(), extension->id(), test_stream_id);
   multiplexer.RegisterStreamProvider(test_stream_id, &test_stream_provider);
 
-  test_stream_provider.BindToTargetAndConnect(target);
+  auto target = std::make_unique<dictation::DomTarget>(dictation::TargetDetails(
+      content::GlobalDOMNodeId{content::WeakDocumentPtr()}));
+  test_stream_provider.BindToTargetAndConnect(std::move(target));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 

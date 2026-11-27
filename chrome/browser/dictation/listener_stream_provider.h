@@ -30,16 +30,15 @@ class Target;
 // dictation private extension API.
 class ListenerStreamProvider : public StreamProvider {
  public:
-  ListenerStreamProvider(content::BrowserContext* browser_context,
-                         StreamProviderDelegate& delegate);
+  explicit ListenerStreamProvider(content::BrowserContext* browser_context,
+                                  StreamProviderDelegate& delegate);
   ~ListenerStreamProvider() override;
 
   ListenerStreamProvider(const ListenerStreamProvider&) = delete;
   ListenerStreamProvider& operator=(const ListenerStreamProvider&) = delete;
 
   // StreamProvider:
-  void BindToTargetAndConnect(Target& target) override;
-  void DetachTarget() override;
+  void BindToTargetAndConnect(std::unique_ptr<Target> target) override;
   void Stop(DictationStreamEndTrigger trigger) override;
   void OnTranscriptionUpdated(const std::string& data, bool is_final) override;
   void OnStreamStateChanged(StreamState state,
@@ -70,7 +69,7 @@ class ListenerStreamProvider : public StreamProvider {
 
   // Owns this
   const base::raw_ref<StreamProviderDelegate> delegate_;
-  raw_ptr<Target> target_ = nullptr;
+  std::unique_ptr<Target> target_;
   raw_ptr<content::BrowserContext> browser_context_;
 
   bool needs_end_stream_ = false;

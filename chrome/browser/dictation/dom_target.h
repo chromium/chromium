@@ -13,15 +13,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
 #include "content/public/browser/global_dom_node_id.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -30,11 +25,8 @@
 namespace content {
 struct FocusedNodeDetails;
 class RenderFrameHost;
+class RenderWidgetHost;
 }  // namespace content
-
-namespace input {
-struct NativeWebKeyboardEvent;
-}  // namespace input
 
 namespace tabs {
 class TabInterface;
@@ -62,11 +54,8 @@ struct TargetDetails {
 };
 
 // Represents a DOM-backed dictation target into which transcriptions are
-// written via IME composition or paste fallback. Observes the backing
-// WebContents and RenderWidgetHost for lifecycle, focus, and keyboard events.
-class DomTarget : public Target,
-                  public content::WebContentsObserver,
-                  public content::RenderWidgetHostObserver {
+// written via IME composition or paste fallback.
+class DomTarget : public Target {
  public:
   DomTarget();
   explicit DomTarget(const TargetDetails& target_details);
@@ -81,23 +70,8 @@ class DomTarget : public Target,
   std::unique_ptr<DictationContextFetcher> CreateContextFetcher() override;
   void SetSelectedText(std::u16string selected_text) override;
   std::optional<content::GlobalDOMNodeId> GetGlobalDOMNodeId() const override;
-  void SetDelegate(Delegate* delegate) override;
-  void SetStreamActive(bool active) override;
   DomTarget* AsDomTarget() override;
   const DomTarget* AsDomTarget() const override;
-
-  // content::WebContentsObserver:
-  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
-  void OnFocusChangedInPage(
-      const content::FocusedNodeDetails& details) override;
-  void PrimaryPageChanged(content::Page& page) override;
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override;
-  void WebContentsDestroyed() override;
-
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostDestroyed(
-      content::RenderWidgetHost* widget_host) override;
 
   // Returns the RenderFrameHost associated with this target, or nullptr if it
   // no longer exists.
@@ -108,6 +82,9 @@ class DomTarget : public Target,
   }
 
   bool richly_editable() const { return target_details_.richly_editable; }
+
+  // Called when focus changes in the page.
+  void OnFocusChanged(const content::FocusedNodeDetails& details);
 
   // Returns the DictationAgent in the target's document, connecting to it if
   // needed. Returns nullptr if the target's document is gone.
@@ -167,23 +144,8 @@ class DomTarget : public Target,
   std::u16string FormatTextForInsertion(const std::u16string& text);
 
   content::RenderWidgetHost* GetRenderWidgetHost() const;
-  void RegisterKeyPressCallback(content::RenderWidgetHost* widget_host);
-  void UnregisterKeyPressCallback();
-
-  // Intercepts Enter key presses while a stream is active to end the stream
-  // and prevent the newline from being inserted into the targeted element. See
-  // also `DidGetUserInteraction`, which handles other user typing that should
-  // end the stream without preventing the typed input from reaching the
-  // element.
-  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   TargetDetails target_details_;
-  raw_ptr<Delegate> delegate_ = nullptr;
-  bool is_stream_active_ = false;
-  content::RenderWidgetHost::KeyPressEventCallback key_press_event_callback_;
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      render_widget_host_observation_{this};
 
   std::u16string last_sent_composition_;
   // The range of the last composition (or text immediately committed by the

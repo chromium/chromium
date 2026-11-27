@@ -134,11 +134,9 @@ class ListenerStreamProviderTest : public testing::Test {
   }
 
   void StartAndStopStream() {
-    DomTarget target(EmptyTarget());
     ListenerStreamProvider provider(&profile_, delegate_);
-    provider.BindToTargetAndConnect(target);
+    provider.BindToTargetAndConnect(std::make_unique<DomTarget>(EmptyTarget()));
     provider.Stop(DictationStreamEndTrigger::kTest);
-    provider.DetachTarget();
   }
 
   void ExpectStartAndEndDispatchedTo(

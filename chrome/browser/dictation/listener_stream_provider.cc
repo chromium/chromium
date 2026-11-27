@@ -161,8 +161,10 @@ ListenerStreamProvider::~ListenerStreamProvider() {
   }
 }
 
-void ListenerStreamProvider::BindToTargetAndConnect(Target& target) {
-  target_ = &target;
+void ListenerStreamProvider::BindToTargetAndConnect(
+    std::unique_ptr<Target> target) {
+  CHECK(target);
+  target_ = std::move(target);
 
   // TODO(b/531048253): Ensure `target` still points to a valid Document.
 
@@ -188,11 +190,6 @@ void ListenerStreamProvider::BindToTargetAndConnect(Target& target) {
         base::BindOnce(&ListenerStreamProvider::OnStartContextCaptured,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void ListenerStreamProvider::DetachTarget() {
-  context_fetcher_.reset();
-  target_ = nullptr;
 }
 
 void ListenerStreamProvider::StartStream(
@@ -233,7 +230,6 @@ void ListenerStreamProvider::OnStartContextCaptured(DictationContext result) {
 
 void ListenerStreamProvider::ForwardSelectedTextToTarget(
     const DictationContext& context) {
-  CHECK(target_);
   if (context.editable_content) {
     target_->SetSelectedText(base::UTF8ToUTF16(*context.editable_content));
   }
@@ -299,9 +295,7 @@ void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
   // TODO(b/531048253): Observe changes to the target and end the stream if the
   // element is no longer valid.
 
-  if (target_) {
-    target_->SetComposition(base::UTF8ToUTF16(data), is_final);
-  }
+  target_->SetComposition(base::UTF8ToUTF16(data), is_final);
 }
 
 void ListenerStreamProvider::OnStreamStateChanged(StreamState state,
@@ -310,18 +304,14 @@ void ListenerStreamProvider::OnStreamStateChanged(StreamState state,
     RecordExitMetric(DictationStreamEndTrigger::kSpeechComplete);
     VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
                              << " Complete pending commit";
-    if (target_) {
-      target_->CommitComposition(
-          base::UTF8ToUTF16(latest_transcription_),
-          base::BindOnce(&ListenerStreamProvider::OnPendingInsertionsComplete,
-                         weak_ptr_factory_.GetWeakPtr()));
-      // Once the extension informs us that the stream is complete, we need to
-      // wait for our target to finish inserting text, before marking this
-      // stream provider complete. Otherwise this provider would be deleted
-      // while having uncommitted text.
-      return;
-    }
-    OnPendingInsertionsComplete();
+    target_->CommitComposition(
+        base::UTF8ToUTF16(latest_transcription_),
+        base::BindOnce(&ListenerStreamProvider::OnPendingInsertionsComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    // Once the extension informs us that the steam is complete, we need to wait
+    // for our target to finish inserting text, before marking this stream
+    // provider complete. Otherwise this provider would be deleted while having
+    // uncommitted text.
     return;
   }
 

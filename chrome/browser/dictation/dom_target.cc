@@ -11,22 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_context_fetcher.h"
-#include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/format_transcription.h"
-#include "chrome/browser/dictation/hotkey_manager.h"
-#include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,28 +26,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_utils.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_keyboard_event.h"
-#include "third_party/blink/public/mojom/input/focus_type.mojom.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ime_text_span.h"
-#include "ui/events/blink/blink_event_util.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace dictation {
 
 namespace {
-
-bool MatchesAccelerator(const blink::WebKeyboardEvent& key_event,
-                        const ui::Accelerator& accelerator) {
-  if (accelerator.IsEmpty()) {
-    return false;
-  }
-  return key_event.windows_key_code == accelerator.key_code() &&
-         ui::Accelerator::MaskOutKeyEventFlags(
-             ui::WebEventModifiersToEventFlags(key_event.GetModifiers())) ==
-             ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers());
-}
 
 tabs::TabInterface* GetActiveTabFromGlic(content::WebContents* web_contents) {
   if (!glic::IsGlicGuest(web_contents)) {
@@ -161,22 +136,12 @@ TargetDetails::TargetDetails(TargetDetails&&) = default;
 TargetDetails& TargetDetails::operator=(TargetDetails&&) = default;
 TargetDetails::~TargetDetails() = default;
 
-DomTarget::DomTarget()
-    : key_press_event_callback_(
-          base::BindRepeating(&DomTarget::HandleKeyPressEvent,
-                              base::Unretained(this))) {}
+DomTarget::DomTarget() = default;
 
 DomTarget::DomTarget(const TargetDetails& target_details)
-    : target_details_(target_details),
-      key_press_event_callback_(
-          base::BindRepeating(&DomTarget::HandleKeyPressEvent,
-                              base::Unretained(this))) {
-  Observe(content::WebContents::FromRenderFrameHost(GetRenderFrameHost()));
-}
+    : target_details_(target_details) {}
 
-DomTarget::~DomTarget() {
-  UnregisterKeyPressCallback();
-}
+DomTarget::~DomTarget() = default;
 
 tabs::TabInterface* DomTarget::GetHostTab() const {
   return GetTabFromTargetId(target_details_.target_id);
@@ -198,19 +163,6 @@ std::optional<content::GlobalDOMNodeId> DomTarget::GetGlobalDOMNodeId() const {
   return target_details_.target_id;
 }
 
-void DomTarget::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
-}
-
-void DomTarget::SetStreamActive(bool active) {
-  is_stream_active_ = active;
-  if (active) {
-    RegisterKeyPressCallback(GetRenderWidgetHost());
-  } else {
-    UnregisterKeyPressCallback();
-  }
-}
-
 DomTarget* DomTarget::AsDomTarget() {
   return this;
 }
@@ -219,80 +171,7 @@ const DomTarget* DomTarget::AsDomTarget() const {
   return this;
 }
 
-void DomTarget::DidGetUserInteraction(const blink::WebInputEvent& event) {
-  if (!delegate_) {
-    return;
-  }
-  if (event.GetType() != blink::WebInputEvent::Type::kRawKeyDown &&
-      event.GetType() != blink::WebInputEvent::Type::kKeyDown &&
-      event.GetType() != blink::WebInputEvent::Type::kChar) {
-    return;
-  }
-
-  const auto& key_event = static_cast<const blink::WebKeyboardEvent&>(event);
-  if (key_event.windows_key_code == ui::VKEY_TAB) {
-    // Don't handle tab key presses here. Let stream ending for those be handled
-    // by the focus change logic.
-    return;
-  }
-
-  if (key_event.windows_key_code == ui::VKEY_ESCAPE) {
-    if (is_stream_active_) {
-      delegate_->OnTargetRequestEndStream(
-          DictationStreamEndTrigger::kEscapeKey);
-    } else {
-      delegate_->OnTargetRequestEndSession(
-          DictationStreamEndTrigger::kEscapeKey);
-    }
-    return;
-  }
-
-  // Special case to ignore the accelerator used to focus inactive popups for
-  // accessibility so it's not treated as typing that ends the stream.
-  ui::Accelerator focus_accelerator;
-  if (GetAcceleratorForCommandId(IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY,
-                                 &focus_accelerator) &&
-      MatchesAccelerator(key_event, focus_accelerator)) {
-    return;
-  }
-
-  CHECK(web_contents());
-
-  // Ignore the Dictation hotkey itself. On surfaces where the key event reaches
-  // the renderer before the accelerator is handled (e.g. the Glic side panel),
-  // treating it as typing would end the stream here. ToggleHotkeyHandler()
-  // would then find no attached stream to toggle off and start a new one
-  // instead, so dictation could never be stopped with the hotkey.
-  Profile* const profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  if (MatchesAccelerator(key_event, GetDictationHotkeyFromPrefs(profile)) ||
-      MatchesAccelerator(key_event,
-                         GetDictationPressAndHoldHotkeyFromPrefs(profile))) {
-    return;
-  }
-
-  // While the hotkey hold watcher is active, any non-chord key press is
-  // handled by `HotkeyHoldWatcher` (ending with `kHotkeyHoldAbort`), and
-  // synthetic IME composition events (`VKEY_PROCESSKEY` on macOS during key
-  // auto-repeat while `_hasMarkedText` is true) must not be treated as user
-  // typing.
-  const DictationKeyedService* const service =
-      DictationKeyedService::Get(profile);
-  CHECK(service);
-  if (!service->is_hold_watcher_active()) {
-    // If the user starts typing, end the stream.
-    const bool event_has_text = !base::IsUnicodeControl(key_event.text[0]);
-    if (is_stream_active_ && web_contents()->IsFocusedElementEditable() &&
-        event_has_text) {
-      delegate_->OnTargetRequestEndStream(
-          DictationStreamEndTrigger::kUserTyping);
-    }
-  }
-}
-
-void DomTarget::OnFocusChangedInPage(
-    const content::FocusedNodeDetails& details) {
+void DomTarget::OnFocusChanged(const content::FocusedNodeDetails& details) {
   content::RenderFrameHost* rfh = GetRenderFrameHost();
   if (!last_sent_composition_.empty() &&
       (!rfh ||
@@ -301,76 +180,6 @@ void DomTarget::OnFocusChangedInPage(
            details.global_dom_node_id.target_element_dom_id)) {
     has_lost_focus_during_composition_ = true;
   }
-
-  if (!delegate_ || !is_stream_active_) {
-    return;
-  }
-
-  if (details.focus_type == blink::mojom::FocusType::kNone ||
-      details.focus_type == blink::mojom::FocusType::kScript) {
-    return;
-  }
-
-  delegate_->OnTargetRequestEndStream(DictationStreamEndTrigger::kFocusChange);
-}
-
-void DomTarget::PrimaryPageChanged(content::Page& page) {
-  if (delegate_) {
-    delegate_->OnTargetInvalidated();
-  }
-}
-
-void DomTarget::PrimaryMainFrameRenderProcessGone(
-    base::TerminationStatus status) {
-  if (delegate_) {
-    delegate_->OnTargetInvalidated();
-  }
-}
-
-void DomTarget::WebContentsDestroyed() {
-  UnregisterKeyPressCallback();
-  if (delegate_) {
-    delegate_->OnTargetInvalidated();
-  }
-}
-
-void DomTarget::RenderWidgetHostDestroyed(
-    content::RenderWidgetHost* widget_host) {
-  CHECK_EQ(widget_host, render_widget_host_observation_.GetSource());
-  UnregisterKeyPressCallback();
-}
-
-void DomTarget::RegisterKeyPressCallback(
-    content::RenderWidgetHost* widget_host) {
-  UnregisterKeyPressCallback();
-  if (!widget_host) {
-    return;
-  }
-  widget_host->AddKeyPressEventCallback(key_press_event_callback_);
-  render_widget_host_observation_.Observe(widget_host);
-}
-
-void DomTarget::UnregisterKeyPressCallback() {
-  if (render_widget_host_observation_.IsObserving()) {
-    render_widget_host_observation_.GetSource()->RemoveKeyPressEventCallback(
-        key_press_event_callback_);
-    render_widget_host_observation_.Reset();
-  }
-}
-
-bool DomTarget::HandleKeyPressEvent(
-    const input::NativeWebKeyboardEvent& event) {
-  if (!is_stream_active_ || !delegate_) {
-    return false;
-  }
-
-  if (event.windows_key_code != ui::VKEY_RETURN ||
-      (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers)) {
-    return false;
-  }
-
-  delegate_->OnTargetRequestEndStream(DictationStreamEndTrigger::kEnterKey);
-  return true;
 }
 
 content::RenderFrameHost* DomTarget::GetRenderFrameHost() const {

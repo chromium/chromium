@@ -104,14 +104,6 @@ class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
     return std::make_unique<DomTarget>(details);
   }
 
-  DomTarget* current_dom_target() {
-    Target* target = controller_->current_target_for_testing();
-    CHECK(target);
-    DomTarget* dom_target = target->AsDomTarget();
-    CHECK(dom_target);
-    return dom_target;
-  }
-
   void SimulateElementInFrameFocused(content::RenderFrameHost* rfh) {
     content::FocusWebContentsOnFrame(
         content::WebContents::FromRenderFrameHost(rfh), rfh);
@@ -582,7 +574,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnNonUserFocusChange) {
     details.editable_level = content::EditableLevel::kPlaintextEditable;
     details.global_dom_node_id = MockTargetInMainFrame(1);
 
-    current_dom_target()->OnFocusChangedInPage(details);
+    controller_->OnFocusChangedInPage(details);
     // Stream should remain active.
     EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
     EXPECT_NE(controller_->attached_stream_provider(), nullptr);
@@ -606,12 +598,13 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusNonEditableNode) {
   details.editable_level = content::EditableLevel::kNotEditable;
   details.global_dom_node_id = MockTargetInMainFrame(1);
 
-  current_dom_target()->OnFocusChangedInPage(details);
+  controller_->OnFocusChangedInPage(details);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
 
 TEST_F(DictationSessionControllerTest, EndStreamOnFocusOtherEditableNode) {
+  DomTarget target_1(EmptyTarget());
   auto mock_stream_provider_1 =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
   MockStreamProvider* stream_provider_1_ptr = mock_stream_provider_1.get();
@@ -623,6 +616,8 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusOtherEditableNode) {
                                     base::TimeTicks::Now());
 
   EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
+  EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
+      .WillRepeatedly(Return(&target_1));
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_)).Times(0);
 
   content::FocusedNodeDetails details;
@@ -630,7 +625,7 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusOtherEditableNode) {
   details.editable_level = content::EditableLevel::kRichlyEditable;
   details.global_dom_node_id = MockTargetInMainFrame(1);
 
-  current_dom_target()->OnFocusChangedInPage(details);
+  controller_->OnFocusChangedInPage(details);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
@@ -796,7 +791,7 @@ TEST_F(DictationSessionControllerTest, EndStreamOnTextInputInEditable) {
                                     base::TimeTicks::Now());
   key_event.windows_key_code = ui::VKEY_A;
   key_event.text[0] = 'a';
-  current_dom_target()->DidGetUserInteraction(key_event);
+  controller_->DidGetUserInteraction(key_event);
 
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
@@ -815,7 +810,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
                                     blink::WebInputEvent::kControlKey,
                                     base::TimeTicks::Now());
   mod_event.windows_key_code = ui::VKEY_CONTROL;
-  current_dom_target()->DidGetUserInteraction(mod_event);
+  controller_->DidGetUserInteraction(mod_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
@@ -824,7 +819,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
       blink::WebInputEvent::kControlKey, base::TimeTicks::Now());
   shortcut_event.windows_key_code = ui::VKEY_A;
   shortcut_event.text[0] = 1;  // Ctrl+A produces a control character.
-  current_dom_target()->DidGetUserInteraction(shortcut_event);
+  controller_->DidGetUserInteraction(shortcut_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
@@ -832,7 +827,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
                                       blink::WebInputEvent::kNoModifiers,
                                       base::TimeTicks::Now());
   arrow_event.windows_key_code = ui::VKEY_RIGHT;
-  current_dom_target()->DidGetUserInteraction(arrow_event);
+  controller_->DidGetUserInteraction(arrow_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
@@ -841,7 +836,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
                                     base::TimeTicks::Now());
   tab_event.windows_key_code = ui::VKEY_TAB;
   tab_event.text[0] = 9;  // Tab control character.
-  current_dom_target()->DidGetUserInteraction(tab_event);
+  controller_->DidGetUserInteraction(tab_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
@@ -855,7 +850,7 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
       base::TimeTicks::Now());
   focus_popup_event.windows_key_code = focus_popup_accelerator.key_code();
   focus_popup_event.text[0] = 'A';
-  current_dom_target()->DidGetUserInteraction(focus_popup_event);
+  controller_->DidGetUserInteraction(focus_popup_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 }
@@ -1016,7 +1011,7 @@ TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {
   esc_event.windows_key_code = ui::VKEY_ESCAPE;
 
   // The first escape press ends the active stream.
-  current_dom_target()->DidGetUserInteraction(esc_event);
+  controller_->DidGetUserInteraction(esc_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 
@@ -1036,7 +1031,7 @@ TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {
   EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
     controller_.reset();
   });
-  current_dom_target()->DidGetUserInteraction(esc_event);
+  controller_->DidGetUserInteraction(esc_event);
   WaitForPostedTasks();
 
   EXPECT_EQ(controller_, nullptr);
@@ -1469,130 +1464,6 @@ TEST_F(DictationSessionControllerTest, WakeLockReleasedOnDestruction) {
   WaitForPostedTasks();
   EXPECT_EQ(
       GetActiveWakeLocks(device::mojom::WakeLockType::kPreventDisplaySleep), 0);
-}
-
-class FakeTarget final : public Target {
- public:
-  explicit FakeTarget(bool* destroyed = nullptr) : destroyed_(destroyed) {}
-  ~FakeTarget() override {
-    if (destroyed_) {
-      *destroyed_ = true;
-    }
-  }
-
-  void SetComposition(const std::u16string& text, bool is_final) override {}
-  void CommitComposition(const std::u16string& text,
-                         base::OnceClosure on_commit_complete) override {}
-  tabs::TabInterface* GetHostTab() const override { return nullptr; }
-  void SetDelegate(Delegate* delegate) override { delegate_ = delegate; }
-  void SetStreamActive(bool active) override { stream_active_ = active; }
-
-  Delegate* delegate() const { return delegate_; }
-  bool stream_active() const { return stream_active_; }
-
- private:
-  raw_ptr<bool> destroyed_;
-  raw_ptr<Delegate> delegate_ = nullptr;
-  bool stream_active_ = false;
-};
-
-TEST_F(DictationSessionControllerTest,
-       TargetDelegateCallbacksControlStreamAndSessionLifecycle) {
-  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
-  MockSessionUi* ui_ptr = mock_ui.get();
-  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
-  controller_->ResetUi();
-
-  auto fake_target = std::make_unique<FakeTarget>();
-  FakeTarget* target_ptr = fake_target.get();
-
-  auto mock_stream_provider =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider)));
-
-  controller_->StartDictationStream(std::move(fake_target),
-                                    DictationStreamStartTrigger::kSessionStart,
-                                    base::TimeTicks::Now());
-  EXPECT_EQ(target_ptr->delegate(), controller_.get());
-  EXPECT_TRUE(target_ptr->stream_active());
-
-  // Requesting stream end stops the attached stream and clears active flag.
-  EXPECT_CALL(*stream_provider_ptr,
-              Stop(DictationStreamEndTrigger::kEscapeKey));
-  target_ptr->delegate()->OnTargetRequestEndStream(
-      DictationStreamEndTrigger::kEscapeKey);
-  EXPECT_FALSE(target_ptr->stream_active());
-  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
-
-  // Completing finalization detaches target from provider while keeping the
-  // target alive with its delegate set as `idle_target_`.
-  EXPECT_CALL(*stream_provider_ptr, DetachTarget()).Times(1);
-  EXPECT_CALL(*stream_provider_ptr, GetState())
-      .WillRepeatedly(Return(StreamProvider::StreamState::kComplete));
-  controller_->DidUpdateStreamProviderState(
-      *stream_provider_ptr, StreamProvider::StreamState::kTranscribing);
-  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
-  EXPECT_EQ(target_ptr->delegate(), controller_.get());
-
-  // Target invalidation stops the UI and schedules session end.
-  EXPECT_CALL(*ui_ptr, OnStopped());
-  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
-    controller_.reset();
-  });
-  target_ptr->delegate()->OnTargetInvalidated();
-  WaitForPostedTasks();
-  EXPECT_EQ(controller_, nullptr);
-}
-
-TEST_F(DictationSessionControllerTest,
-       StartDictationStreamSynchronousFailureInBindToTargetAndConnect) {
-  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
-  MockSessionUi* ui_ptr = mock_ui.get();
-  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
-  controller_->ResetUi();
-
-  bool target_destroyed = false;
-  auto fake_target = std::make_unique<FakeTarget>(&target_destroyed);
-  FakeTarget* target_ptr = fake_target.get();
-
-  auto mock_stream_provider =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider)));
-  ON_CALL(*stream_provider_ptr, GetState())
-      .WillByDefault(Return(StreamProvider::StreamState::kFailed));
-  EXPECT_CALL(*stream_provider_ptr, DetachTarget()).Times(1);
-
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(*ui_ptr, OnStartedStream(_));
-    EXPECT_CALL(*stream_provider_ptr, BindToTargetAndConnect(_))
-        .WillOnce([this, stream_provider_ptr](Target&) {
-          controller_->DidUpdateStreamProviderState(
-              *stream_provider_ptr, StreamProvider::StreamState::kInitializing,
-              StreamErrorReason::kUnknown);
-        });
-    EXPECT_CALL(*ui_ptr, OnError(SessionUi::StreamType::kAttached,
-                                 StreamErrorReason::kUnknown));
-  }
-
-  controller_->StartDictationStream(std::move(fake_target),
-                                    DictationStreamStartTrigger::kSessionStart,
-                                    base::TimeTicks::Now());
-
-  EXPECT_FALSE(target_destroyed);
-  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
-  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
-  EXPECT_EQ(target_ptr->delegate(), controller_.get());
-  EXPECT_FALSE(target_ptr->stream_active());
-
-  // Destroying the controller before `PurgeToDeleteStreamProviders()` runs must
-  // not call `DetachTarget()` a second time on already-detached providers.
-  controller_.reset();
-  EXPECT_TRUE(target_destroyed);
 }
 
 }  // namespace
