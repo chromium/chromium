@@ -78,10 +78,10 @@ bool ParseFromValue(base::Value* value, WebRect* rect) {
 
 base::DictValue CreateValueFrom(const WebRect& rect) {
   base::DictValue dict;
-  dict.Set("left", static_cast<int>(rect.X()));
-  dict.Set("top", static_cast<int>(rect.Y()));
-  dict.Set("width", static_cast<int>(rect.Width()));
-  dict.Set("height", static_cast<int>(rect.Height()));
+  dict.Set("left", rect.X());
+  dict.Set("top", rect.Y());
+  dict.Set("width", rect.Width());
+  dict.Set("height", rect.Height());
   return dict;
 }
 

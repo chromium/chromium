@@ -99,6 +99,33 @@ class MockResponseWebView : public StubWebView {
   }
 };
 
+class FractionalRegionWebView : public StubWebView {
+ public:
+  FractionalRegionWebView() : StubWebView("1") {}
+
+  Status CallFunction(const std::string& frame,
+                      const std::string& function,
+                      const base::ListValue& args,
+                      std::unique_ptr<base::Value>* result) override {
+    base::DictValue response;
+    if (args.size() == 1u) {
+      response.Set("left", 0.25);
+      response.Set("top", 0.75);
+      response.Set("width", 20.5);
+      response.Set("height", 20.75);
+    } else {
+      scroll_region = args[2].GetDict().Clone();
+      // The atom returns the region's position relative to the viewport.
+      response.Set("x", 10.25 + scroll_region.FindDouble("left").value());
+      response.Set("y", 20.75 + scroll_region.FindDouble("top").value());
+    }
+    *result = std::make_unique<base::Value>(std::move(response));
+    return Status(kOk);
+  }
+
+  base::DictValue scroll_region;
+};
+
 class StaleAXNodeWebView : public StubWebView {
  public:
   StaleAXNodeWebView() : StubWebView("1") {}
@@ -144,6 +171,28 @@ class StaleAXNodeWebView : public StubWebView {
 };
 
 }  // namespace
+
+TEST(ElementCommandsTest, ScrollElementRegionPreservesFractionalCoordinates) {
+  FractionalRegionWebView web_view;
+  Session session("id");
+  WebRect region;
+  Status status = GetElementRegion(&session, &web_view, "element", &region);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+
+  WebPoint location;
+  status = ScrollElementRegionIntoView(&session, &web_view, "element", region,
+                                       false, std::string(), &location);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+
+  EXPECT_DOUBLE_EQ(0.25, web_view.scroll_region.FindDouble("left").value());
+  EXPECT_DOUBLE_EQ(0.75, web_view.scroll_region.FindDouble("top").value());
+  EXPECT_DOUBLE_EQ(20.5, web_view.scroll_region.FindDouble("width").value());
+  EXPECT_DOUBLE_EQ(20.75, web_view.scroll_region.FindDouble("height").value());
+  // Recovering the element's origin must use the same region offset as the
+  // atom.
+  EXPECT_DOUBLE_EQ(10.25, location.x - region.origin.x);
+  EXPECT_DOUBLE_EQ(20.75, location.y - region.origin.y);
+}
 
 TEST(ElementCommandsTest, GetAXNodeByElementIdRejectsStaleElement) {
   StaleAXNodeWebView webview;
