@@ -53,6 +53,7 @@ class MOJO_CPP_SYSTEM_EXPORT FilteredDataSource final
   // DataPipeProducer::DataSource:
   uint64_t GetLength() const override;
   ReadResult Read(uint64_t offset, base::span<char> buffer) override;
+  bool MayInspectReadBuffer() const override;
   void Abort() override;
 
   std::unique_ptr<DataPipeProducer::DataSource> source_;

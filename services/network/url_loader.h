@@ -46,6 +46,7 @@
 #include "services/network/partial_decoder.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
+#include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
@@ -101,7 +102,6 @@ enum class FetchKeepAliveRequestNetworkMetricType {
 class AcceptCHFrameInterceptor;
 class FileOpenerForUpload;
 class KeepaliveStatisticsRecorder;
-class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class SharedDictionaryManager;
 class SharedResourceChecker;
@@ -423,7 +423,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const std::optional<std::string>& headers,
       const std::optional<GURL>& preserve_fragment_on_redirect_url);
 
+  void ResetResponseBodyStream();
   void CompleteBlockedResponse(
+      int error_code,
+      bool should_report_orb_blocking,
+      std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
+  void FinishBlockedResponse(
       int error_code,
       bool should_report_orb_blocking,
       std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
@@ -521,7 +526,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   base::ByteSize total_written_bytes_;
 
   mojo::ScopedDataPipeProducerHandle response_body_stream_;
+  const bool has_provided_response_body_stream_ = false;
   scoped_refptr<NetToMojoPendingBuffer> pending_write_;
+  NetToMojoPendingBuffer::StagingBufferPool staging_buffer_pool_;
   uint32_t pending_write_buffer_size_ = 0;
   uint32_t pending_write_buffer_offset_ = 0;
   mojo::SimpleWatcher writable_handle_watcher_;
@@ -550,6 +557,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // finished.
   mojom::URLResponseHeadPtr response_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
+  bool should_send_response_to_client_ = false;
+  bool has_sent_response_to_client_ = false;
 
   // Sniffing state and ORB state.
   bool is_more_orb_sniffing_needed_ = false;
@@ -627,7 +636,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker_;
-
 
   // Outlives `this`.
   const raw_ref<const cors::OriginAccessList> origin_access_list_;

@@ -113,4 +113,8 @@ DataPipeProducer::DataSource::ReadResult FileDataSource::Read(
   return result;
 }
 
+bool FileDataSource::MayInspectReadBuffer() const {
+  return false;
+}
+
 }  // namespace mojo

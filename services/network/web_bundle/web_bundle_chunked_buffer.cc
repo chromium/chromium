@@ -32,6 +32,8 @@ class ChunkedBufferDataSource : public mojo::DataPipeProducer::DataSource {
 
   uint64_t GetLength() const override { return length_; }
 
+  bool MayInspectReadBuffer() const override { return false; }
+
   ReadResult Read(uint64_t offset, base::span<char> buffer) override {
     ReadResult result;
     if (offset >= length_) {

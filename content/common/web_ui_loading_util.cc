@@ -47,6 +47,8 @@ class MemoryDataSource : public mojo::DataPipeProducer::DataSource {
 
   uint64_t GetLength() const override { return size_; }
 
+  bool MayInspectReadBuffer() const override { return false; }
+
   ReadResult Read(uint64_t offset, base::span<char> buffer) override {
     ReadResult result;
     CHECK_LT(offset, size_);

@@ -9657,4 +9657,159 @@ TEST_F(URLLoaderTest,
   EXPECT_FALSE(client()->response_head()->pvt_token_removed_due_to_cookies);
 }
 
+TEST_F(URLLoaderTest, ProvidedResponseBodyStreamSniffsMimeType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kURLLoaderUseProvidedResponseBodyStream,
+       features::kStageNetToMojoBuffer},
+      {});
+
+  GURL url = test_server()->GetURL("/content-sniffer-test0.html");
+  ResourceRequest request = CreateResourceRequest("GET", url);
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
+
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+
+  URLLoaderOptions loader_options;
+  loader_options.options = mojom::kURLLoadOptionSniffMimeType;
+  url_loader = loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  ASSERT_TRUE(client()->response_head());
+  EXPECT_TRUE(client()->response_head()->did_mime_sniff);
+  EXPECT_EQ("text/html", client()->response_head()->mime_type);
+  EXPECT_FALSE(client()->response_body().is_valid());
+
+  std::string body;
+  EXPECT_TRUE(mojo::BlockingCopyToString(std::move(consumer), &body));
+  EXPECT_FALSE(body.empty());
+  delete_run_loop.Run();
+}
+
+TEST_F(URLLoaderTest, ProvidedResponseBodyStreamSmallPipeSniffsMimeType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kURLLoaderUseProvidedResponseBodyStream,
+       features::kStageNetToMojoBuffer},
+      {});
+
+  // Use chunks that fill the 256-byte pipe capacity across two reads (smaller
+  // than `net::kMaxBytesToSniff` = 1024) so `DidRead()` terminates sniffing at
+  // `pending_write_buffer_offset_ >= pending_write_buffer_size_`, followed by a
+  // third chunk after the consumer drains the pipe.
+  const std::string kChunk1(128, 'a');
+  const std::string kChunk2(128, 'b');
+  const std::string kChunk3(200, 'c');
+  AddMultipleWritesInterceptor({kChunk1, kChunk2, kChunk3}, net::OK,
+                               /*async_reads=*/true);
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", MultipleWritesInterceptor::GetURL());
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(256, producer, consumer));
+
+  ASSERT_TRUE(request.trusted_params);
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+
+  URLLoaderOptions loader_options;
+  loader_options.options = mojom::kURLLoadOptionSniffMimeType;
+  url_loader = loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilResponseReceived();
+  ASSERT_TRUE(client()->response_head());
+  EXPECT_TRUE(client()->response_head()->did_mime_sniff);
+  EXPECT_EQ("text/plain", client()->response_head()->mime_type);
+
+  // Drain the initial 256-byte buffer so `URLLoader` can write `kChunk3` on
+  // the IO thread's `RunLoop` and complete.
+  std::string first_part(256, '\0');
+  size_t bytes_read = 0;
+  ASSERT_EQ(
+      MOJO_RESULT_OK,
+      consumer->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                         base::as_writable_byte_span(first_part), bytes_read));
+  EXPECT_EQ(kChunk1 + kChunk2, first_part.substr(0, bytes_read));
+
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  std::string remainder;
+  EXPECT_TRUE(mojo::BlockingCopyToString(std::move(consumer), &remainder));
+  EXPECT_EQ(kChunk3, remainder);
+  delete_run_loop.Run();
+}
+
+TEST_F(URLLoaderTest, StagedReadErrorClosesBodyPipeBeforeCompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kStageNetToMojoBuffer);
+
+  const std::string kFirstChunk = "InitialPayload";
+  AddMultipleWritesInterceptor({kFirstChunk}, net::ERR_ACCESS_DENIED,
+                               /*async_reads=*/true);
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", MultipleWritesInterceptor::GetURL());
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+
+  URLLoaderOptions loader_options;
+  loader_options.sync_url_loader_client = client()->GetSyncClientWeakPtr();
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  bool pipe_closed_before_loader_destruction = false;
+  auto delete_callback = base::BindLambdaForTesting([&](URLLoader* loader_ptr) {
+    ASSERT_EQ(url_loader.get(), loader_ptr);
+    ASSERT_TRUE(client()->has_received_completion());
+    ASSERT_TRUE(client()->response_body().is_valid());
+    pipe_closed_before_loader_destruction =
+        client()->response_body().QuerySignalsState().peer_closed();
+    url_loader.reset();
+    delete_run_loop.Quit();
+  });
+
+  url_loader = loader_options.MakeURLLoader(
+      context(), std::move(delete_callback),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  delete_run_loop.Run();
+  EXPECT_EQ(net::ERR_ACCESS_DENIED, client()->completion_status().error_code);
+  EXPECT_TRUE(pipe_closed_before_loader_destruction);
+
+  std::string body;
+  EXPECT_TRUE(
+      mojo::BlockingCopyToString(client()->response_body_release(), &body));
+  EXPECT_EQ(kFirstChunk, body);
+}
+
 }  // namespace network

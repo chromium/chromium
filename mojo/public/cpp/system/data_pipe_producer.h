@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,10 +17,16 @@
 
 namespace mojo {
 
+MOJO_CPP_SYSTEM_EXPORT BASE_DECLARE_FEATURE(kStageDataPipeProducerReads);
+
 // Helper class which takes ownership of a ScopedDataPipeProducerHandle and
 // assumes responsibility for feeding it the contents of a DataSource. This
 // takes care of waiting for pipe capacity as needed, and can notify callers
-// asynchronously when the operation is complete.
+// asynchronously when the operation is complete. When
+// `DataSource::MayInspectReadBuffer()` returns true and
+// `kStageDataPipeProducerReads` is enabled, reads from `DataSource` are placed
+// into an intermediate heap buffer of up to 64 KiB before being copied into the
+// data pipe.
 //
 // Note that the DataPipeProducer must be kept alive until notified of
 // completion to ensure that all of the intended contents are written to the
@@ -30,18 +37,19 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeProducer {
   using CompletionCallback = base::OnceCallback<void(MojoResult result)>;
   // Interface definition of abstracted content reader that has minimum
   // base::File equivalent interface to read content.
-  class DataSource {
+  class MOJO_CPP_SYSTEM_EXPORT DataSource {
    public:
     // Used as a return value for Read().
     struct ReadResult {
-      // The number of bytes read. If returned |bytes_read| is less than
-      // requested size, it means EOF is reached.
+      // The number of bytes read. May be less than the requested buffer size
+      // without indicating EOF (for example, on a partial read). 0 indicates
+      // EOF when `result` is `MOJO_RESULT_OK`.
       uint64_t bytes_read = 0;
 
       // MojoResult resulting from this call.
       MojoResult result = MOJO_RESULT_OK;
     };
-    virtual ~DataSource() {}
+    virtual ~DataSource();
 
     // Returns maximum data size. Actual size can be smaller. Used as a hint to
     // adjust internal read buffer size.
@@ -52,8 +60,14 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeProducer {
     // represent the number of bytes read and errors.
     virtual ReadResult Read(uint64_t offset, base::span<char> buffer) = 0;
 
+    // Returns true if Read() may inspect or modify the contents of `buffer`
+    // after writing to it (for example, via a post-read filter). When true and
+    // `kStageDataPipeProducerReads` is enabled, DataPipeProducer reads into an
+    // intermediate heap buffer before copying committed bytes into the pipe.
+    virtual bool MayInspectReadBuffer() const = 0;
+
     // Notifies DataPipeProducer aborts read operations.
-    virtual void Abort() {}
+    virtual void Abort();
   };
 
   // Constructs a new DataPipeProducer which will write data to |producer|.

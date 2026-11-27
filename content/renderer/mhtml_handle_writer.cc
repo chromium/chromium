@@ -107,6 +107,8 @@ class MHTMLDataSource : public mojo::DataPipeProducer::DataSource {
   // mojo::DataPipeProducer::DataSource:
   uint64_t GetLength() const override { return total_size_; }
 
+  bool MayInspectReadBuffer() const override { return false; }
+
   ReadResult Read(uint64_t offset, base::span<char> buffer) override {
     ReadResult result;
     if (offset != current_offset_) {

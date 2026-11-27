@@ -302,10 +302,12 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
   while (true) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
-    if (rv == ERR_IO_PENDING)
+    if (rv == ERR_IO_PENDING) {
       rv = CompleteReadIfAsync(rv, &callback, mock_stream, num_reads);
-    if (rv == OK)
+    }
+    if (rv == OK) {
       break;
+    }
     ASSERT_GT(rv, OK);
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
@@ -383,8 +385,9 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnData) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
     rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/1);
-    if (rv == OK)
+    if (rv == OK) {
       break;
+    }
     ASSERT_GE(static_cast<int>(read_size), rv);
     ASSERT_GT(rv, OK);
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
@@ -417,8 +420,9 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnMoreData) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
     rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/1);
-    if (rv == OK)
+    if (rv == OK) {
       break;
+    }
     ASSERT_GE(static_cast<int>(read_size) * multiplier, rv);
     ASSERT_GT(rv, OK);
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
@@ -452,10 +456,12 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
   while (true) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
-    if (rv == ERR_IO_PENDING)
+    if (rv == ERR_IO_PENDING) {
       rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/1);
-    if (rv == OK)
+    }
+    if (rv == OK) {
       break;
+    }
     ASSERT_GT(rv, OK);
     ASSERT_GE(kSmallBufferSize, static_cast<size_t>(rv));
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
@@ -509,10 +515,12 @@ TEST_P(FilterSourceStreamTest, FilterChaining) {
   while (true) {
     int rv = second_pass_through_source->Read(
         output_buffer.get(), output_buffer->size(), callback.callback());
-    if (rv == ERR_IO_PENDING)
+    if (rv == ERR_IO_PENDING) {
       rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/2);
-    if (rv == OK)
+    }
+    if (rv == OK) {
       break;
+    }
     ASSERT_GT(rv, OK);
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
@@ -541,10 +549,12 @@ TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
   while (true) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
-    if (rv == ERR_IO_PENDING)
+    if (rv == ERR_IO_PENDING) {
       rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/1);
-    if (rv == OK)
+    }
+    if (rv == OK) {
       break;
+    }
     ASSERT_GT(rv, OK);
     ASSERT_GE(kSmallBufferSize, static_cast<size_t>(rv));
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
@@ -569,16 +579,35 @@ TEST_P(FilterSourceStreamTest, ThrottleSourceStream) {
   while (true) {
     int rv = stream.Read(output_buffer.get(), output_buffer->size(),
                          callback.callback());
-    if (rv == ERR_IO_PENDING)
+    if (rv == ERR_IO_PENDING) {
       rv = CompleteReadIfAsync(rv, &callback, mock_stream, /*num_reads=*/1);
-    if (rv == OK)
+    }
+    if (rv == OK) {
       break;
+    }
     ASSERT_GT(rv, OK);
     // ThrottleSourceStream returns 1 byte at a time.
     ASSERT_GE(1u, static_cast<size_t>(rv));
+    EXPECT_TRUE(output_buffer->HasOneRef());
     actual_output.append(base::as_string_view(output_buffer->first(rv)));
   }
+  EXPECT_TRUE(output_buffer->HasOneRef());
   EXPECT_EQ(input, actual_output);
+}
+
+TEST(FilterSourceStreamTest, ReleasesOutputBufferOnSyncError) {
+  auto source = std::make_unique<MockSourceStream>();
+  std::string input = "hello";
+  source->AddReadResult(base::as_byte_span(input), OK, MockSourceStream::SYNC);
+  ErrorFilterSourceStream stream(std::move(source));
+  auto output_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback callback;
+
+  int rv = stream.Read(output_buffer.get(), output_buffer->size(),
+                       callback.callback());
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
+  EXPECT_TRUE(output_buffer->HasOneRef());
 }
 
 TEST(FilterSourceStreamTest, GetContentEncodingTypes) {
@@ -609,9 +638,7 @@ TEST(FilterSourceStreamTest, GetContentEncodingTypes) {
       {"HTTP/1.1 200 OK\nContent-Encoding: gzip, br\n",
        {SourceStreamType::kGzip, SourceStreamType::kBrotli},
        "Multiple encodings (gzip and brotli) - different order"},
-      {"HTTP/1.1 200 OK\nContent-Encoding: unknown\n",
-       {},
-       "Unknown encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: unknown\n", {}, "Unknown encoding"},
       {"HTTP/1.1 200 OK\nContent-Encoding: identity\n",
        {},
        "Identity encoding"},

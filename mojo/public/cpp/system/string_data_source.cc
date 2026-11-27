@@ -41,4 +41,8 @@ DataPipeProducer::DataSource::ReadResult StringDataSource::Read(
   return ReadResult{.bytes_read = copyable_size, .result = MOJO_RESULT_OK};
 }
 
+bool StringDataSource::MayInspectReadBuffer() const {
+  return false;
+}
+
 }  // namespace mojo

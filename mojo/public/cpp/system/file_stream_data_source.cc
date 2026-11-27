@@ -50,4 +50,8 @@ DataPipeProducer::DataSource::ReadResult FileStreamDataSource::Read(
   return result;
 }
 
+bool FileStreamDataSource::MayInspectReadBuffer() const {
+  return false;
+}
+
 }  // namespace mojo

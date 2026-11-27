@@ -4,12 +4,16 @@
 
 #include "services/network/public/cpp/net_adapters.h"
 
+#include <algorithm>
 #include <limits>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/strings/string_view_util.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -17,24 +21,70 @@ namespace {
 constexpr size_t kMaxBufSize = 64 * 1024;
 }
 
+NetToMojoPendingBuffer::StagingBuffer::StagingBuffer(size_t size)
+    : buffer_(base::HeapArray<char>::WithSize(size)) {}
+
+NetToMojoPendingBuffer::StagingBuffer::~StagingBuffer() = default;
+
+NetToMojoPendingBuffer::StagingBufferPool::StagingBufferPool() = default;
+
+NetToMojoPendingBuffer::StagingBufferPool::~StagingBufferPool() = default;
+
+void NetToMojoPendingBuffer::StagingBufferPool::Reset() {
+  buffer_.reset();
+}
+
+scoped_refptr<NetToMojoPendingBuffer::StagingBuffer>
+NetToMojoPendingBuffer::StagingBufferPool::Take(size_t min_size) {
+  if (!buffer_) {
+    return nullptr;
+  }
+  CHECK(buffer_->HasOneRef());
+  if (buffer_->span().size() >= min_size) {
+    return std::move(buffer_);
+  }
+  buffer_.reset();
+  return nullptr;
+}
+
+void NetToMojoPendingBuffer::StagingBufferPool::PutIfUniquelyOwned(
+    scoped_refptr<StagingBuffer> buffer) {
+  if (buffer && buffer->HasOneRef()) {
+    buffer_ = std::move(buffer);
+  }
+}
+
 NetToMojoPendingBuffer::NetToMojoPendingBuffer(
     mojo::ScopedDataPipeProducerHandle handle,
-    base::span<char> buffer)
-    : handle_(std::move(handle)), buffer_(buffer) {
+    base::span<uint8_t> mojo_buffer,
+    scoped_refptr<StagingBuffer> staging_buffer,
+    base::WeakPtr<StagingBufferPool> buffer_pool)
+    : handle_(std::move(handle)),
+      mojo_buffer_(mojo_buffer),
+      staging_buffer_(std::move(staging_buffer)),
+      buffer_pool_(std::move(buffer_pool)),
+      buffer_(staging_buffer_
+                  ? staging_buffer_->span().first(mojo_buffer_.size())
+                  : base::as_writable_chars(mojo_buffer_)) {
   CHECK_LE(buffer_.size(), std::numeric_limits<uint32_t>::max());
 }
 
 NetToMojoPendingBuffer::~NetToMojoPendingBuffer() {
-  if (handle_.is_valid())
+  buffer_ = base::span<char>();
+  mojo_buffer_ = base::span<uint8_t>();
+  if (handle_.is_valid()) {
     handle_->EndWriteData(0);
+  }
 }
 
+// static
 MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
-    scoped_refptr<NetToMojoPendingBuffer>* pending) {
+    scoped_refptr<NetToMojoPendingBuffer>* pending,
+    StagingBufferPool* buffer_pool) {
   base::span<uint8_t> buf;
-  MojoResult result =
-      (*handle)->BeginWriteData(kMaxBufSize, MOJO_WRITE_DATA_FLAG_NONE, buf);
+  MojoResult result = (*handle)->BeginWriteData(
+      kMaxBufSize, MOJO_BEGIN_WRITE_DATA_FLAG_NONE, buf);
   if (result != MOJO_RESULT_OK) {
     *pending = nullptr;
     return result;
@@ -42,15 +92,47 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
   if (buf.size() > kMaxBufSize) {
     buf = buf.first(kMaxBufSize);
   }
-  *pending = new NetToMojoPendingBuffer(std::move(*handle),
-                                        base::as_writable_chars(buf));
+
+  scoped_refptr<StagingBuffer> staging;
+  base::WeakPtr<StagingBufferPool> pool_weak_ptr;
+  if (base::FeatureList::IsEnabled(features::kStageNetToMojoBuffer)) {
+    if (buffer_pool) {
+      staging = buffer_pool->Take(buf.size());
+      pool_weak_ptr = buffer_pool->GetWeakPtr();
+    }
+    if (!staging) {
+      staging = base::MakeRefCounted<StagingBuffer>(buf.size());
+    }
+  }
+
+  *pending = base::WrapRefCounted(new NetToMojoPendingBuffer(
+      std::move(*handle), buf, std::move(staging), std::move(pool_weak_ptr)));
   return MOJO_RESULT_OK;
 }
 
 mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
     uint32_t num_bytes) {
+  CHECK(handle_.is_valid());
+  CHECK_LE(size_t{num_bytes}, buffer_.size());
+  if (staging_buffer_) {
+    if (num_bytes > 0) {
+      mojo_buffer_.first(num_bytes).copy_from(
+          base::as_byte_span(buffer_.first(num_bytes)));
+    }
+    handle_->EndWriteData(num_bytes);
+    buffer_ = base::span<char>();
+    mojo_buffer_ = base::span<uint8_t>();
+    if (buffer_pool_) {
+      buffer_pool_->PutIfUniquelyOwned(std::move(staging_buffer_));
+    } else {
+      staging_buffer_.reset();
+    }
+    return std::move(handle_);
+  }
+
   handle_->EndWriteData(num_bytes);
   buffer_ = base::span<char>();
+  mojo_buffer_ = base::span<uint8_t>();
   return std::move(handle_);
 }
 
@@ -58,11 +140,12 @@ NetToMojoIOBuffer::NetToMojoIOBuffer(
     scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
     size_t offset)
     : net::WrappedIOBuffer(base::span(*pending_buffer).subspan(offset)),
-      pending_buffer_(std::move(pending_buffer)) {}
+      staging_buffer_(pending_buffer->staging_buffer()),
+      pending_buffer_(staging_buffer_ ? nullptr : std::move(pending_buffer)) {}
 
 NetToMojoIOBuffer::~NetToMojoIOBuffer() {
   // Avoid dangling ptr should this destructor remove the last reference
-  // to `pending_buffer_`.
+  // to `pending_buffer_` or `staging_buffer_`.
   ClearSpan();
 }
 

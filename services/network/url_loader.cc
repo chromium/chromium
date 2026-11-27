@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -369,6 +370,7 @@ URLLoader::URLLoader(
       url_loader_client_(std::move(url_loader_client),
                          std::move(sync_url_loader_client)),
       response_body_stream_(std::move(response_body_stream)),
+      has_provided_response_body_stream_(response_body_stream_.is_valid()),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                TaskRunner(request.priority)),
@@ -1274,6 +1276,7 @@ void URLLoader::ContinueOnResponseStarted() {
       CHECK(consumer_handle_.is_valid());
     }
     CHECK(response_body_stream_.is_valid());
+    should_send_response_to_client_ = true;
     peer_closed_handle_watcher_.Watch(
         response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
         base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
@@ -1508,7 +1511,7 @@ void URLLoader::ReadMore() {
     // If we have buffered raw data from the partial decoder, send that first.
     while (partial_decoder_result_->HasRawData()) {
       MojoResult result = NetToMojoPendingBuffer::BeginWrite(
-          &response_body_stream_, &pending_write_);
+          &response_body_stream_, &pending_write_, &staging_buffer_pool_);
       switch (result) {
         case MOJO_RESULT_OK:
           break;
@@ -1548,7 +1551,7 @@ void URLLoader::ReadMore() {
 
   // Once the MIME type is sniffed, all data is sent as soon as it is read from
   // the network.
-  DCHECK(consumer_handle_.is_valid() || !pending_write_);
+  DCHECK(should_send_response_to_client_ || !pending_write_);
 
   // TODO(ricea): Refactor this method and DidRead() to reduce duplication.
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
@@ -1567,7 +1570,7 @@ void URLLoader::ReadMore() {
     // TODO: we should use the abstractions in MojoAsyncResourceHandler.
     DCHECK_EQ(0u, pending_write_buffer_offset_);
     MojoResult result = NetToMojoPendingBuffer::BeginWrite(
-        &response_body_stream_, &pending_write_);
+        &response_body_stream_, &pending_write_, &staging_buffer_pool_);
     mojo_begin_write_count_for_uma_++;
     switch (result) {
       case MOJO_RESULT_OK:
@@ -1575,7 +1578,8 @@ void URLLoader::ReadMore() {
       case MOJO_RESULT_SHOULD_WAIT: {
         CHECK(!pending_write_);
         bool should_wait = true;
-        if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_) {
+        if (base::FeatureList::IsEnabled(kSlopBucket) &&
+            !should_send_response_to_client_ && !slop_bucket_) {
           slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
           was_slop_bucket_enabled_ = true;
         }
@@ -1645,12 +1649,19 @@ void URLLoader::ReadMore() {
   }
 
   CHECK(!slop_bucket_ || !slop_bucket_->IsComplete());
-  auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
-      pending_write_, pending_write_buffer_offset_);
-  url_read_state_ = URLReadState::kURLReadInProgress;
-  int bytes_read = url_request_->Read(
-      buf.get(), static_cast<int>(pending_write_buffer_size_ -
-                                  pending_write_buffer_offset_));
+  int bytes_read;
+  {
+    // Scope `buf` to the `Read()` call so synchronous completions drop this
+    // local `NetToMojoIOBuffer` reference before `DidRead()` ->
+    // `CompletePendingWrite()` checks `HasOneRef()` to recycle
+    // `StagingBuffer`.
+    auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
+        pending_write_, pending_write_buffer_offset_);
+    url_read_state_ = URLReadState::kURLReadInProgress;
+    bytes_read = url_request_->Read(
+        buf.get(), static_cast<int>(pending_write_buffer_size_ -
+                                    pending_write_buffer_offset_));
+  }
   if (bytes_read != net::ERR_IO_PENDING) {
     DidRead(bytes_read, /*completed_synchronously=*/true,
             /*into_slop_bucket=*/false);
@@ -1687,7 +1698,7 @@ void URLLoader::DidRead(int num_bytes,
 
     // Only notify client of download progress if we're done sniffing and
     // started sending response.
-    if (!consumer_handle_.is_valid()) {
+    if (has_sent_response_to_client_) {
       int64_t total_encoded_bytes =
           url_request_->GetTotalReceivedBytes().InBytes();
       if (ShouldSendTransferSizeUpdated()) {
@@ -1702,16 +1713,15 @@ void URLLoader::DidRead(int num_bytes,
   }
 
   bool complete_read = true;
-  if (consumer_handle_.is_valid()) {
-    // `consumer_handle_` is only valid when we are sniffing. Sniffing is only
-    // applied to the first 1024 bytes. The mojo data pipe is always larger than
-    // 1024 bytes, therefore it will never fill up while we are sniffing.
-    // Therefore a SlopBucket will not have been created yet and
-    // `into_slop_bucket` can't be true.
+  if (should_send_response_to_client_) {
+    // `should_send_response_to_client_` is only true here when we are sniffing,
+    // and `ReadMore()` does not create a `SlopBucket` before response headers
+    // have been dispatched.
     CHECK(!into_slop_bucket);
 
     // |pending_write_| may be null if the job self-aborts due to a suspend;
-    // this will have |consumer_handle_| valid when the loader is paused.
+    // this will have `should_send_response_to_client_` true when the loader is
+    // paused.
     if (pending_write_) {
       // Limit sniffing to the first net::kMaxBytesToSniff.
       size_t data_length = pending_write_buffer_offset_;
@@ -1721,7 +1731,8 @@ void URLLoader::DidRead(int num_bytes,
       std::string_view data(pending_write_->buffer(), data_length);
       bool stop_sniffing_after_processing_current_data =
           (num_bytes <= 0 ||
-           pending_write_buffer_offset_ >= net::kMaxBytesToSniff);
+           pending_write_buffer_offset_ >= net::kMaxBytesToSniff ||
+           pending_write_buffer_offset_ >= pending_write_buffer_size_);
 
       if (is_more_mime_sniffing_needed_) {
         CHECK(mime_type_before_sniffing_.has_value());
@@ -2066,8 +2077,9 @@ void URLLoader::NotifyCompleted(int error_code) {
   }
 
   if (url_loader_client_.Get()) {
-    if (consumer_handle_.is_valid())
+    if (should_send_response_to_client_) {
       SendResponseToClient();
+    }
 
     URLLoaderCompletionStatus status;
     status.error_code = error_code;
@@ -2141,6 +2153,8 @@ void URLLoader::SendResponseToClient() {
               url_request_->url());
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
+  should_send_response_to_client_ = false;
+  has_sent_response_to_client_ = true;
 
   url_loader_client_.Get()->OnReceiveResponse(
       response_->Clone(), std::move(consumer_handle_), std::nullopt);
@@ -2149,16 +2163,16 @@ void URLLoader::SendResponseToClient() {
 void URLLoader::CompletePendingWrite(bool success) {
   if (success && pending_write_) {
     // The write can only be completed immediately in case of a success, since
-    // doing so invalidates memory of any attached NetToMojoIOBuffer's; but in
-    // case of an abort, particularly one caused by a suspend, the failure may
-    // be delivered to URLLoader while the disk_cache layer is still hanging on
-    // to the now-invalid IOBuffer in some worker thread trying to commit it to
-    // disk.  In case of an error, this will have to wait till everything is
-    // destroyed.
+    // in unstaged mode doing so invalidates memory of any attached
+    // NetToMojoIOBuffer; in staged mode, NetToMojoIOBuffer holds only the
+    // StagingBuffer, so dropping `pending_write_` below ends the two-phase
+    // Mojo write immediately without invalidating background disk_cache reads.
     response_body_stream_ =
         pending_write_->Complete(pending_write_buffer_offset_);
   }
-  total_written_bytes_ += base::ByteSize(pending_write_buffer_offset_);
+  if (success) {
+    total_written_bytes_ += base::ByteSize(pending_write_buffer_offset_);
+  }
   pending_write_ = nullptr;
   pending_write_buffer_offset_ = 0;
 }
@@ -2463,9 +2477,27 @@ void URLLoader::CompleteBlockedResponse(
     // The response headers and body shouldn't yet be sent to the
     // URLLoaderClient.
     CHECK(response_);
-    CHECK(consumer_handle_.is_valid() ||
-          (options_ & mojom::kURLLoadOptionReadAndDiscardBody));
+    CHECK(!has_sent_response_to_client_);
   }
+  FinishBlockedResponse(error_code, should_report_orb_blocking, reason);
+}
+
+void URLLoader::ResetResponseBodyStream() {
+  if (pending_write_) {
+    CompletePendingWrite(false);
+  }
+  peer_closed_handle_watcher_.Cancel();
+  writable_handle_watcher_.Cancel();
+  response_body_stream_.reset();
+  consumer_handle_.reset();
+}
+
+void URLLoader::FinishBlockedResponse(
+    int error_code,
+    bool should_report_orb_blocking,
+    std::optional<mojom::BlockedByResponseReason> reason) {
+  should_send_response_to_client_ = false;
+  ResetResponseBodyStream();
 
   // Tell the URLLoaderClient that the response has been completed.
   URLLoaderCompletionStatus status;
@@ -2494,7 +2526,10 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
 
   // The response headers and body shouldn't yet be sent to the URLLoaderClient.
   DCHECK(response_);
-  DCHECK(consumer_handle_.is_valid());
+  CHECK(!has_sent_response_to_client_);
+
+  should_send_response_to_client_ = false;
+  ResetResponseBodyStream();
 
   // Send stripped headers to the real URLLoaderClient.
   orb::SanitizeBlockedResponseHeaders(*response_);
@@ -2510,26 +2545,29 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
   // Send empty body to the real URLLoaderClient. This preserves "ORB v0.1"
   // behaviour.
   if (blocked_error_code == net::OK) {
-    mojo::ScopedDataPipeProducerHandle producer_handle;
-    mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    MojoResult result = mojo::CreateDataPipe(kBlockedBodyAllocationSize,
-                                             producer_handle, consumer_handle);
-    if (result != MOJO_RESULT_OK) {
-      // Defer calling NotifyCompleted to make sure the caller can still access
-      // |this|.
-      TaskRunner(url_request_->priority())
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&URLLoader::NotifyCompleted,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    net::ERR_INSUFFICIENT_RESOURCES));
+    mojo::ScopedDataPipeConsumerHandle empty_consumer_handle;
+    if (!has_provided_response_body_stream_) {
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      MojoResult result = mojo::CreateDataPipe(
+          kBlockedBodyAllocationSize, producer_handle, empty_consumer_handle);
+      if (result != MOJO_RESULT_OK) {
+        // Defer calling NotifyCompleted to make sure the caller can still
+        // access |this|.
+        TaskRunner(url_request_->priority())
+            ->PostTask(FROM_HERE,
+                       base::BindOnce(&URLLoader::NotifyCompleted,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      net::ERR_INSUFFICIENT_RESOURCES));
 
-      return kWillCancelRequest;
+        return kWillCancelRequest;
+      }
+      producer_handle.reset();
     }
-    producer_handle.reset();
 
     // Tell the real URLLoaderClient that the response has been completed.
+    has_sent_response_to_client_ = true;
     url_loader_client_.Get()->OnReceiveResponse(
-        response_->Clone(), std::move(consumer_handle), std::nullopt);
+        response_->Clone(), std::move(empty_consumer_handle), std::nullopt);
   }
 
   // At this point, orb_analyzer_ has done its duty. We'll reset it now
@@ -2537,7 +2575,7 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
   bool should_report_blocked_response =
       orb_analyzer_->ShouldReportBlockedResponse();
   orb_analyzer_.reset();
-  CompleteBlockedResponse(blocked_error_code, should_report_blocked_response);
+  FinishBlockedResponse(blocked_error_code, should_report_blocked_response);
 
   // Close the socket associated with the request, to prevent leaking
   // information.

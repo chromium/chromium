@@ -66,6 +66,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
   base::ByteSize transferred_bytes_;
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
+  network::NetToMojoPendingBuffer::StagingBufferPool staging_buffer_pool_;
   mojo::SimpleWatcher writable_handle_watcher_;
 
   base::WeakPtrFactory<SourceStreamToDataPipe> weak_factory_{this};

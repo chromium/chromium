@@ -33,6 +33,10 @@ FilteredDataSource::ReadResult FilteredDataSource::Read(
   return result;
 }
 
+bool FilteredDataSource::MayInspectReadBuffer() const {
+  return filter_ != nullptr || source_->MayInspectReadBuffer();
+}
+
 void FilteredDataSource::Abort() {
   if (filter_) {
     ReadResult result;

@@ -446,6 +446,11 @@ BASE_DECLARE_FEATURE(kClearPartitionedCookiesOnExitByTopLevelSite);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kEnforceStorageAccessApiRestrictions);
 
+// Stages `NetToMojoPendingBuffer` writes in a heap buffer before copying
+// committed bytes into the Mojo data pipe buffer on completion.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kStageNetToMojoBuffer);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

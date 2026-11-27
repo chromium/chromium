@@ -71,15 +71,20 @@ int FilterSourceStream::Read(IOBuffer* read_buffer,
   output_buffer_size_ = base::checked_cast<size_t>(read_buffer_size);
   int rv = DoLoop(OK);
 
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     callback_ = std::move(callback);
+  } else {
+    output_buffer_ = nullptr;
+    output_buffer_size_ = 0;
+  }
   return rv;
 }
 
 std::string FilterSourceStream::Description() const {
   std::string next_type_string = upstream_->Description();
-  if (next_type_string.empty())
+  if (next_type_string.empty()) {
     return GetTypeAsString();
+  }
   return base::StrCat({next_type_string, ",", GetTypeAsString()});
 }
 
@@ -107,7 +112,8 @@ SourceStreamType FilterSourceStream::ParseEncodingType(
 }
 
 // static
-std::vector<SourceStreamType> FilterSourceStream::GetContentEncodingTypes(const HttpResponseHeaders& headers) {
+std::vector<SourceStreamType> FilterSourceStream::GetContentEncodingTypes(
+    const HttpResponseHeaders& headers) {
   std::vector<SourceStreamType> types;
   size_t iter = 0;
   while (std::optional<std::string_view> type =
@@ -215,8 +221,9 @@ int FilterSourceStream::DoReadDataComplete(int result) {
         base::MakeRefCounted<DrainableIOBuffer>(input_buffer_, result);
     next_state_ = STATE_FILTER_DATA;
   }
-  if (result <= OK)
+  if (result <= OK) {
     upstream_end_reached_ = true;
+  }
   return result;
 }
 
@@ -243,19 +250,22 @@ int FilterSourceStream::DoFilterData() {
     DCHECK_LE(consumed_bytes, base::checked_cast<size_t>(bytes_remaining));
   }
   // FilterData() is not allowed to return ERR_IO_PENDING.
-  if (!bytes_output.has_value())
+  if (!bytes_output.has_value()) {
     DCHECK_NE(ERR_IO_PENDING, bytes_output.error());
+  }
 
-  if (consumed_bytes > 0)
+  if (consumed_bytes > 0) {
     drainable_input_buffer_->DidConsume(consumed_bytes);
+  }
 
   // Received data or encountered an error.
   if (!bytes_output.has_value()) {
     CHECK_LT(bytes_output.error(), 0);
     return bytes_output.error();
   }
-  if (bytes_output.value() != 0)
+  if (bytes_output.value() != 0) {
     return base::checked_cast<int>(bytes_output.value());
+  }
 
   // If no data is returned, continue reading if |this| needs more input.
   if (NeedMoreData()) {
@@ -269,8 +279,9 @@ void FilterSourceStream::OnIOComplete(int result) {
   DCHECK_EQ(STATE_READ_DATA_COMPLETE, next_state_);
 
   int rv = DoLoop(result);
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     return;
+  }
 
   output_buffer_ = nullptr;
   output_buffer_size_ = 0;

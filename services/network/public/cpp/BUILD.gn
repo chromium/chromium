@@ -865,6 +865,7 @@ source_set("tests") {
     "load_timing_internal_info_mojom_traits_unittest.cc",
     "mutable_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits_unittest.cc",
+    "net_adapters_unittest.cc",
     "net_log_mojom_traits_unittest.cc",
     "network_anonymization_key_mojom_traits_unittest.cc",
     "network_connection_tracker_unittest.cc",

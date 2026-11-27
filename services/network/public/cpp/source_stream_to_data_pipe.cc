@@ -70,8 +70,8 @@ int SourceStreamToDataPipe::DoLoop(int result) {
 int SourceStreamToDataPipe::DoBeginWrite() {
   DCHECK(!pending_write_.get());
   next_state_ = State::kBeginWriteComplete;
-  MojoResult mojo_result =
-      network::NetToMojoPendingBuffer::BeginWrite(&dest_, &pending_write_);
+  MojoResult mojo_result = network::NetToMojoPendingBuffer::BeginWrite(
+      &dest_, &pending_write_, &staging_buffer_pool_);
   switch (mojo_result) {
     case MOJO_RESULT_OK:
       return net::OK;
@@ -135,6 +135,7 @@ int SourceStreamToDataPipe::DoReadDataComplete(int result) {
   if (result <= 0) {
     // An error, or end of the stream.
     pending_write_->Complete(0);  // Closes the data pipe.
+    pending_write_.reset();
     return result;
   }
   dest_ = pending_write_->Complete(result);
@@ -153,6 +154,7 @@ void SourceStreamToDataPipe::CleanupAndRunCallback(int result) {
   // we will never be called back.
   writable_handle_watcher_.Cancel();
   pending_write_ = nullptr;
+  staging_buffer_pool_.Reset();
   dest_.reset();
   CHECK(completion_callback_);
   std::move(completion_callback_).Run(result);
