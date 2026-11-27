@@ -127,10 +127,7 @@ class OmniboxAutofillDelegateTest
             autofill_client().GetURLLoaderFactory(),
             *autofill_client().GetIdentityManager()));
 
-    CreateAutofillDriver();
-    autofill_driver().SetParent(nullptr);
-    autofill_driver().SetIsEmbedded(false);
-    autofill_driver().SetIsActive(true);
+    CreateAndActivateAutofillDriver();
 
     ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
         .WillByDefault(::testing::Return(&autofill_manager()));
@@ -211,21 +208,24 @@ TEST_F(OmniboxAutofillDelegateTest,
        OnFieldTypesDetermined_CalledFromNonOutermostDriver_Aborts) {
   base::HistogramTester histogram_tester;
 
-  // If the main AutofillDriver has a parent, it's not the right
-  // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
+  // The BrowserAutofillManager of a child frame is not the right one to run
+  // OmniboxAutofillDelegate logic.
   CreateAutofillDriver();
-  autofill_driver(0).SetParent(&autofill_driver(1));
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
 
-  EXPECT_CALL(autofill_driver(), ObserveFieldVisibility).Times(0);
+  EXPECT_CALL(autofill_driver(0), ObserveFieldVisibility).Times(0);
+  EXPECT_CALL(autofill_driver(1), ObserveFieldVisibility).Times(0);
 
-  FormData form = CreateTestCreditCardFormData();
-  FormsSeen({form});
+  FormData form = CreateFormDataForFrame(CreateTestCreditCardFormData(),
+                                         autofill_driver(1).GetFrameToken());
+  autofill_manager(1).OnFormsSeen(/*updated_forms=*/{form},
+                                  /*removed_forms=*/{},
+                                  AutofillManagerTestApi::pass_key());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
       OmniboxAutofillShowChipDecisionPart1::kNotActiveOutermostMainFrameBam, 1);
-
-  autofill_driver(0).SetParent(nullptr);
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
@@ -1370,19 +1370,15 @@ class OmniboxAutofillDelegateFillingTest
 // credit card form routes the preview and fill actions to the subframe driver.
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
   // Create drivers and set unique frame tokens.
-  CreateAutofillDriver();  // Main frame (index 0)
-  CreateAutofillDriver();  // Subframe (index 1)
+  CreateAndActivateAutofillDriver();  // Main frame (index 0)
+  CreateAutofillDriver();             // Subframe (index 1)
 
   autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   // Establish the subframe relationship.
   autofill_driver(1).SetParent(&autofill_driver(0));
-  autofill_driver(1).SetIsEmbedded(true);
-  autofill_driver(0).SetParent(nullptr);
-  autofill_driver(0).SetIsEmbedded(false);
-  autofill_driver(0).SetIsActive(true);
-  autofill_driver(1).SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver(1));
 
   ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
       .WillByDefault(Return(&autofill_manager(0)));
@@ -1480,11 +1476,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
 // driver.
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
   // Create only the main frame driver.
-  CreateAutofillDriver();  // Main frame (index 0)
+  CreateAndActivateAutofillDriver();  // Main frame (index 0)
   autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(0).SetParent(nullptr);
-  autofill_driver(0).SetIsEmbedded(false);
-  autofill_driver(0).SetIsActive(true);
 
   ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
       .WillByDefault(Return(&autofill_manager(0)));
