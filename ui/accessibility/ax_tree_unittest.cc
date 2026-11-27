@@ -5654,4 +5654,304 @@ TEST(AXTreeTest, InvalidNodeIdZeroUAFRepro) {
 #endif
 }
 
+TEST(AXTreeTest, NewRootCannotBeCreatedAsChild) {
+  auto make_node = [](AXNodeID id, ax::mojom::Role role,
+                      std::vector<AXNodeID> child_ids) {
+    AXNodeData data;
+    data.id = id;
+    data.role = role;
+    data.child_ids = std::move(child_ids);
+    return data;
+  };
+
+  const std::vector<AXNodeID> kKeptChildren = {1010, 1011, 1012, 1013};
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1000;
+  initial_state.nodes = {
+      make_node(1000, ax::mojom::Role::kRootWebArea,
+                {1001, 1010, 1011, 1012, 1013}),
+      make_node(1001, ax::mojom::Role::kGenericContainer, {}),
+      make_node(1010, ax::mojom::Role::kGenericContainer, {}),
+      make_node(1011, ax::mojom::Role::kGenericContainer, {}),
+      make_node(1012, ax::mojom::Role::kGenericContainer, {}),
+      make_node(1013, ax::mojom::Role::kGenericContainer, {}),
+  };
+
+  // Case 1: `root_id` names a new node (1002) that is added as a child of an
+  // existing node (1001).
+  {
+    AXTree tree(initial_state);
+    AXTreeUpdate new_root_as_child_update;
+    new_root_as_child_update.root_id = 1002;
+    new_root_as_child_update.nodes = {
+        make_node(1001, ax::mojom::Role::kGenericContainer, {1002}),
+    };
+#if AX_FAIL_FAST_BUILD()
+    EXPECT_DEATH_IF_SUPPORTED(
+        tree.Unserialize(new_root_as_child_update),
+        "Node 1002 is the new root and cannot be a child");
+#else
+    base::HistogramTester histogram_tester;
+    TestAXTreeObserver observer(&tree);
+    EXPECT_FALSE(tree.Unserialize(new_root_as_child_update));
+    EXPECT_EQ("Node 1002 is the new root and cannot be a child", tree.error());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.Reliability.Tree.UnserializeError",
+        AXTreeUnserializeError::kCreationPendingForChild, 1);
+    EXPECT_TRUE(observer.node_will_be_deleted_ids().empty());
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+    EXPECT_EQ(nullptr, tree.GetFromId(1002));
+#endif
+  }
+
+  // Case 2: `node_id_to_clear` clears a non-root node (1001), its existing
+  // child (1002) is set as `root_id`, and 1001 tries to add 1002 back as a
+  // child. Exercises `!ShouldPendingNodeExistInTree(update.root_id)` when
+  // computing `root_will_be_created`.
+  {
+    AXTreeUpdate existing_child_state;
+    existing_child_state.root_id = 1000;
+    existing_child_state.nodes = {
+        make_node(1000, ax::mojom::Role::kRootWebArea, {1001}),
+        make_node(1001, ax::mojom::Role::kGenericContainer, {1002}),
+        make_node(1002, ax::mojom::Role::kGenericContainer, {}),
+    };
+    AXTree tree(existing_child_state);
+
+    AXTreeUpdate cleared_child_as_root_update;
+    cleared_child_as_root_update.node_id_to_clear = 1001;
+    cleared_child_as_root_update.root_id = 1002;
+    cleared_child_as_root_update.nodes = {
+        make_node(1001, ax::mojom::Role::kGenericContainer, {1002}),
+    };
+#if AX_FAIL_FAST_BUILD()
+    EXPECT_DEATH_IF_SUPPORTED(
+        tree.Unserialize(cleared_child_as_root_update),
+        "Node 1002 is the new root and cannot be a child");
+#else
+    base::HistogramTester histogram_tester;
+    TestAXTreeObserver observer(&tree);
+    EXPECT_FALSE(tree.Unserialize(cleared_child_as_root_update));
+    EXPECT_EQ("Node 1002 is the new root and cannot be a child", tree.error());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.Reliability.Tree.UnserializeError",
+        AXTreeUnserializeError::kCreationPendingForChild, 1);
+    EXPECT_TRUE(observer.node_will_be_deleted_ids().empty());
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+    ASSERT_NE(nullptr, tree.GetFromId(1002));
+    EXPECT_EQ(tree.GetFromId(1001), tree.GetFromId(1002)->parent());
+#endif
+  }
+
+  // Non-regression guard: creating and removing a new child node within the
+  // same update continues to succeed when root_id names the existing root.
+  {
+    AXTree tree(initial_state);
+    AXTreeUpdate valid_existing_root;
+    valid_existing_root.root_id = 1000;
+    valid_existing_root.nodes = {
+        make_node(1001, ax::mojom::Role::kGenericContainer, {1002}),
+        make_node(1002, ax::mojom::Role::kGenericContainer, {}),
+        make_node(1002, ax::mojom::Role::kGenericContainer, {}),
+        make_node(1000, ax::mojom::Role::kRootWebArea, kKeptChildren),
+        make_node(1000, ax::mojom::Role::kRootWebArea, kKeptChildren),
+    };
+    ASSERT_TRUE(tree.Unserialize(valid_existing_root)) << tree.error();
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+    EXPECT_EQ(nullptr, tree.GetFromId(1001));
+    EXPECT_EQ(nullptr, tree.GetFromId(1002));
+    EXPECT_EQ(5, tree.size());
+  }
+}
+
+TEST(AXTreeTest, MissingOrClearedRootInUpdateRejected) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1000;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1000;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids = {1001};
+  initial_state.nodes[1].id = 1001;
+  initial_state.nodes[1].role = ax::mojom::Role::kGenericContainer;
+
+  // 1. `root_id` specifies a non-existent node ID (2000), but `nodes` never
+  // provides node 2000.
+  {
+    AXTree tree(initial_state);
+    AXTreeUpdate missing_new_root_update;
+    missing_new_root_update.root_id = 2000;
+    missing_new_root_update.nodes.resize(1);
+    missing_new_root_update.nodes[0].id = 1000;
+    missing_new_root_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+    missing_new_root_update.nodes[0].child_ids = {1001};
+
+#if AX_FAIL_FAST_BUILD()
+    EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(missing_new_root_update),
+                              "Update did not include new root.");
+#else
+    base::HistogramTester histogram_tester;
+    TestAXTreeObserver observer(&tree);
+    EXPECT_FALSE(tree.Unserialize(missing_new_root_update));
+    EXPECT_EQ("Update did not include new root.", tree.error());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.Reliability.Tree.UnserializeError",
+        AXTreeUnserializeError::kNoRoot, 1);
+    EXPECT_TRUE(observer.node_will_be_deleted_ids().empty());
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+#endif
+  }
+
+  // 2. Clearing the existing root without providing a replacement root fails
+  // before mutating the tree or notifying observers.
+  {
+    AXTree tree(initial_state);
+    AXTreeUpdate clear_root_without_replacement;
+    clear_root_without_replacement.node_id_to_clear = 1000;
+
+#if AX_FAIL_FAST_BUILD()
+    EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(clear_root_without_replacement),
+                              "Tree has no root.");
+#else
+    base::HistogramTester histogram_tester;
+    TestAXTreeObserver observer(&tree);
+    EXPECT_FALSE(tree.Unserialize(clear_root_without_replacement));
+    EXPECT_EQ("Tree has no root.", tree.error());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.Reliability.Tree.UnserializeError",
+        AXTreeUnserializeError::kNoRoot, 1);
+    EXPECT_TRUE(observer.node_will_be_deleted_ids().empty());
+    EXPECT_TRUE(observer.subtree_deleted_ids().empty());
+    EXPECT_TRUE(observer.deleted_ids().empty());
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+#endif
+  }
+
+  // 3. Out-of-sync `node_id_to_clear == root_id` where `nodes` updates an
+  // existing node (1001) before creating the new root (2000) fails cleanly in
+  // `ComputePendingChanges` before mutating the tree or notifying observers.
+  {
+    AXTree tree(initial_state);
+    AXTreeUpdate out_of_sync_update_before_new_root;
+    out_of_sync_update_before_new_root.node_id_to_clear = 2000;
+    out_of_sync_update_before_new_root.root_id = 2000;
+    out_of_sync_update_before_new_root.nodes.resize(2);
+    out_of_sync_update_before_new_root.nodes[0].id = 1001;
+    out_of_sync_update_before_new_root.nodes[0].role =
+        ax::mojom::Role::kGenericContainer;
+    out_of_sync_update_before_new_root.nodes[1].id = 2000;
+    out_of_sync_update_before_new_root.nodes[1].role =
+        ax::mojom::Role::kRootWebArea;
+
+#if AX_FAIL_FAST_BUILD()
+    EXPECT_DEATH_IF_SUPPORTED(
+        tree.Unserialize(out_of_sync_update_before_new_root),
+        "1001 will not be in the tree and is not the new root");
+#else
+    base::HistogramTester histogram_tester;
+    TestAXTreeObserver observer(&tree);
+    EXPECT_FALSE(tree.Unserialize(out_of_sync_update_before_new_root));
+    EXPECT_EQ("1001 will not be in the tree and is not the new root",
+              tree.error());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.Reliability.Tree.UnserializeError",
+        AXTreeUnserializeError::kNotInTree, 1);
+    EXPECT_TRUE(observer.node_will_be_deleted_ids().empty());
+    EXPECT_TRUE(observer.subtree_deleted_ids().empty());
+    EXPECT_TRUE(observer.deleted_ids().empty());
+    ASSERT_NE(nullptr, tree.root());
+    EXPECT_EQ(1000, tree.root()->id());
+    EXPECT_NE(nullptr, tree.GetFromId(1001));
+#endif
+  }
+}
+
+TEST(AXTreeTest, ValidRootReplacementSubtreeAndMergedUpdatesSucceed) {
+  auto make_node = [](AXNodeID id, ax::mojom::Role role,
+                      std::vector<AXNodeID> child_ids) {
+    AXNodeData data;
+    data.id = id;
+    data.role = role;
+    data.child_ids = std::move(child_ids);
+    return data;
+  };
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1000;
+  initial_state.nodes = {
+      make_node(1000, ax::mojom::Role::kRootWebArea, {1001, 1002}),
+      make_node(1001, ax::mojom::Role::kGenericContainer, {}),
+      make_node(1002, ax::mojom::Role::kGenericContainer, {}),
+  };
+  AXTree tree(initial_state);
+
+  // 1. Subtree update and reparenting where `root_id` points to an existing
+  // non-root node (1001) keeps `root_` unchanged at 1000.
+  AXTreeUpdate subtree_reparent_update;
+  subtree_reparent_update.root_id = 1001;
+  subtree_reparent_update.nodes = {
+      make_node(1000, ax::mojom::Role::kRootWebArea, {1002}),
+      make_node(1002, ax::mojom::Role::kGenericContainer, {1001}),
+      make_node(1001, ax::mojom::Role::kRegion, {}),
+  };
+  ASSERT_TRUE(tree.Unserialize(subtree_reparent_update)) << tree.error();
+  ASSERT_NE(nullptr, tree.root());
+  EXPECT_EQ(1000, tree.root()->id());
+  ASSERT_NE(nullptr, tree.GetFromId(1001));
+  EXPECT_EQ(ax::mojom::Role::kRegion, tree.GetFromId(1001)->GetRole());
+  EXPECT_EQ(tree.GetFromId(1002), tree.GetFromId(1001)->parent());
+
+  // 2. Valid root replacement without `node_id_to_clear` using fresh IDs.
+  AXTreeUpdate replacement_update;
+  replacement_update.root_id = 2000;
+  replacement_update.nodes = {
+      make_node(2000, ax::mojom::Role::kRootWebArea, {2001}),
+      make_node(2001, ax::mojom::Role::kButton, {}),
+  };
+  ASSERT_TRUE(tree.Unserialize(replacement_update)) << tree.error();
+  ASSERT_NE(nullptr, tree.root());
+  EXPECT_EQ(2000, tree.root()->id());
+  EXPECT_EQ(nullptr, tree.GetFromId(1000));
+  EXPECT_EQ(nullptr, tree.GetFromId(1001));
+  EXPECT_NE(nullptr, tree.GetFromId(2001));
+
+  // 3. Valid merged update that creates a new root (3000) and updates it again
+  // within the same `AXTreeUpdate`.
+  AXTreeUpdate merged_root_update;
+  merged_root_update.root_id = 3000;
+  merged_root_update.nodes = {
+      make_node(3000, ax::mojom::Role::kRootWebArea, {3001}),
+      make_node(3001, ax::mojom::Role::kGenericContainer, {}),
+      make_node(3000, ax::mojom::Role::kRootWebArea, {3001, 3002}),
+      make_node(3002, ax::mojom::Role::kButton, {}),
+  };
+  ASSERT_TRUE(tree.Unserialize(merged_root_update)) << tree.error();
+  ASSERT_NE(nullptr, tree.root());
+  EXPECT_EQ(3000, tree.root()->id());
+  EXPECT_EQ(nullptr, tree.root()->parent());
+  EXPECT_EQ(3, tree.size());
+  EXPECT_EQ(nullptr, tree.GetFromId(2000));
+  EXPECT_NE(nullptr, tree.GetFromId(3001));
+  EXPECT_NE(nullptr, tree.GetFromId(3002));
+
+  // 4. Valid root replacement clearing the old root via `node_id_to_clear` and
+  // reusing a previously existing descendant ID (3001) as the new root.
+  AXTreeUpdate cleared_root_update;
+  cleared_root_update.node_id_to_clear = 3000;
+  cleared_root_update.root_id = 3001;
+  cleared_root_update.nodes = {
+      make_node(3001, ax::mojom::Role::kRootWebArea, {3002}),
+      make_node(3002, ax::mojom::Role::kButton, {}),
+  };
+  ASSERT_TRUE(tree.Unserialize(cleared_root_update)) << tree.error();
+  ASSERT_NE(nullptr, tree.root());
+  EXPECT_EQ(3001, tree.root()->id());
+  EXPECT_EQ(2, tree.size());
+  EXPECT_EQ(nullptr, tree.GetFromId(3000));
+}
+
 }  // namespace ui

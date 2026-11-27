@@ -1395,16 +1395,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     // ID of the new root.
     bool root_updated = false;
     if (update.node_id_to_clear != kInvalidAXNodeID) {
-      // If the incoming tree was initialized with a root with an id != 1, the
-      // update won't match the tree created by CreateEmptyDocument In this
-      // case, the update won't be able to set the right node_id_to_clear.
-      // If node_id_to_clear was set and the update's root_id doesn't match the
-      // old_root_id, we assume that the update meant to replace the root.
-      int node_id_to_clear = update.node_id_to_clear;
-      if (!GetFromId(node_id_to_clear) && update.root_id == node_id_to_clear &&
-          update.root_id != old_root_id && root_) {
-        node_id_to_clear = old_root_id;
-      }
+      AXNodeID node_id_to_clear = GetNodeIdToClear(update);
       if (AXNode* cleared_node = GetFromId(node_id_to_clear)) {
         CHECK(root_, base::NotFatalUntil::M163);
         if (cleared_node == root_) {
@@ -1771,7 +1762,8 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   // Otherwise if the root is being replaced, update.root_id should hold the ID
   // of the new root.
   if (update.node_id_to_clear != kInvalidAXNodeID) {
-    if (AXNode* cleared_node = GetFromId(update.node_id_to_clear)) {
+    AXNodeID node_id_to_clear = GetNodeIdToClear(update);
+    if (AXNode* cleared_node = GetFromId(node_id_to_clear)) {
       CHECK(root_, base::NotFatalUntil::M163);
       if (cleared_node == root_ &&
           update.root_id != update_state->pending_root_id) {
@@ -1828,6 +1820,23 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
     }
   }
 
+  if (!update_state->pending_root_id) {
+    ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
+        AXTreeUnserializeError::kNoRoot);
+    RecordError(*update_state, "Tree has no root.", false);
+    update_state->pending_update_status = AXTreePendingStructureStatus::kFailed;
+    return false;
+  }
+
+  if (update_state->root_will_be_created &&
+      *update_state->pending_root_id != update.root_id) {
+    ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
+        AXTreeUnserializeError::kNoRoot);
+    RecordError(*update_state, "Update did not include new root.", false);
+    update_state->pending_update_status = AXTreePendingStructureStatus::kFailed;
+    return false;
+  }
+
   // Track the number of inline text boxes for each AXTreeUpdate.
   base::UmaHistogramBoolean("Accessibility.InlineTextBoxes.PresentInUpdate",
                             number_of_inline_textboxes > 0);
@@ -1852,6 +1861,21 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   return true;
+}
+
+AXNodeID AXTree::GetNodeIdToClear(const AXTreeUpdate& update) const {
+  // If the incoming tree was initialized with a root with an ID !=
+  // `kInitialEmptyDocumentRootNodeID`, the update won't match the tree created
+  // by `BrowserAccessibilityManager::GetEmptyDocument`. In this case, the
+  // update won't be able to set the right `node_id_to_clear`. If
+  // `node_id_to_clear` was set and the update's `root_id` doesn't match the
+  // old root ID, we assume that the update meant to replace the root.
+  AXNodeID node_id_to_clear = update.node_id_to_clear;
+  if (update.root_id == node_id_to_clear && root_ &&
+      update.root_id != root_->id() && !GetFromId(node_id_to_clear)) {
+    node_id_to_clear = root_->id();
+  }
+  return node_id_to_clear;
 }
 
 bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
@@ -1886,19 +1910,8 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
       return false;
     }
 
-    // Creation is implicit for new root nodes. If |new_data.id| is already
-    // pending for creation, then it must be a duplicate entry in the tree.
-    if (!update_state->IncrementPendingCreateNodeCount(new_data.id,
-                                                       std::nullopt)) {
-      ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
-          AXTreeUnserializeError::kCreationPending);
-      RecordError(
-          *update_state,
-          base::StrCat(
-              {"Node ", base::NumberToString(new_data.id),
-               " is already pending for creation, cannot be the new root"}));
-      return false;
-    }
+    // Creation is implicit for new root nodes.
+    update_state->IncrementPendingCreateNodeCount(new_data.id, std::nullopt);
     if (update_state->pending_root_id) {
       MarkSubtreeForDestruction(*update_state->pending_root_id, update_state);
     }
@@ -1917,6 +1930,20 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                       base::NumberToString(new_data.child_ids.size() -
                                            new_child_id_set.size()),
                       " duplicate child ids"}));
+    return false;
+  }
+
+  // A newly created root node cannot have a parent, so it must not appear in
+  // any node's `child_ids`.
+  if (update_state->root_will_be_created &&
+      new_child_id_set.contains(update_state->pending_tree_update->root_id)) {
+    ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
+        AXTreeUnserializeError::kCreationPendingForChild);
+    RecordError(*update_state,
+                base::StrCat({"Node ",
+                              base::NumberToString(
+                                  update_state->pending_tree_update->root_id),
+                              " is the new root and cannot be a child"}));
     return false;
   }
 
@@ -2077,6 +2104,17 @@ bool AXTree::UpdateNode(const AXNodeData& src,
   // and this is a serious error.
   AXNode* node = GetFromId(src.id);
   if (node) {
+    // Check safety before replacing root; `UpdateNode` can still reach here if
+    // a tree is reused after an earlier failed update left stale `child_ids`.
+    if (is_new_root && (node != root_ || node->parent())) {
+      ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
+          AXTreeUnserializeError::kCreationPending);
+      RecordError(*update_state,
+                  base::StrCat({"Node ", base::NumberToString(src.id),
+                                " already exists as non-root or child node, "
+                                "cannot be the new root"}));
+      return false;
+    }
     // Node is changing.
     update_state->pending_node_ids.erase(node->id());
     UpdateReverseRelations(node, src);
@@ -2629,6 +2667,11 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
 
   auto iter = id_map_.find(id);
   CHECK(iter != id_map_.end());
+  // Ensure `root_` is never a dangling pointer, even though callers are
+  // expected to clear or replace `root_` first.
+  if (root_ == node) {
+    root_ = nullptr;
+  }
   std::unique_ptr<AXNode> node_to_delete = std::move(iter->second);
   id_map_.erase(iter);
   node = nullptr;

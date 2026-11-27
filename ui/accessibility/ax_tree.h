@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 
@@ -339,6 +340,10 @@ class AX_EXPORT AXTree {
   // tree is still in a stable and unchanged state.
   bool ComputePendingChanges(const AXTreeUpdate& update,
                              AXTreeUpdateState* update_state);
+
+  // Returns `update.node_id_to_clear` unless that node is an unknown new root
+  // ID replacing the current root, in which case falls back to `root_->id()`.
+  AXNodeID GetNodeIdToClear(const AXTreeUpdate& update) const;
 
   // Populates |update_state| with information about actions that will
   // be performed on the tree during the update, such as adding or
