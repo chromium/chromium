@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -59,9 +60,9 @@ class WebContentDecryptionModule;
 
 // References are held by JS and HTMLMediaElement.
 // The WebContentDecryptionModule has the same lifetime as this object.
-class MediaKeys : public ScriptWrappable,
-                  public ActiveScriptWrappable<MediaKeys>,
-                  public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT MediaKeys : public ScriptWrappable,
+                                 public ActiveScriptWrappable<MediaKeys>,
+                                 public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -72,8 +73,7 @@ class MediaKeys : public ScriptWrappable,
       const MediaKeysConfig&);
   ~MediaKeys() override;
 
-  MediaKeySession* createSession(ScriptState*,
-                                 const V8MediaKeySessionType& session_type,
+  MediaKeySession* createSession(const V8MediaKeySessionType& session_type,
                                  ExceptionState&);
 
   ScriptPromise<IDLBoolean> setServerCertificate(
