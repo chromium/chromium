@@ -223,10 +223,16 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
+  sk_sp<SkSurface> surface =
+      CreateSkSurface(size, format, alpha_type, color_space);
+  if (!surface) {
+    return nullptr;
+  }
+
+  return base::WrapUnique(new CanvasNon2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      shared_image_interface_provider, std::move(context_lost_callback)));
-  return provider->IsValid() ? std::move(provider) : nullptr;
+      shared_image_interface_provider, std::move(surface),
+      std::move(context_lost_callback)));
 }
 
 CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
@@ -292,6 +298,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    sk_sp<SkSurface> surface,
     base::OnceClosure context_lost_callback)
     : size_(size),
       format_(format),
@@ -300,9 +307,11 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(true),
+      surface_(std::move(surface)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()) {
+  CHECK(surface_);
   CHECK(shared_image_interface_provider_);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   shared_image_interface_provider_->AddGpuChannelLostObserver(this);
@@ -352,8 +361,7 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
 bool CanvasNon2DResourceProvider::IsValid() const {
   if (IsSoftware()) {
     return shared_image_interface_provider_ &&
-           shared_image_interface_provider_->SharedImageInterface() &&
-           GetSkSurface();
+           shared_image_interface_provider_->SharedImageInterface();
   }
 
   return !IsGpuContextLost();
@@ -574,7 +582,7 @@ void CanvasNon2DResourceProvider::UploadSoftwareRenderingResults(
       resource.GetSharedImage();
   CHECK(shared_image->is_software());
 
-  // Copy the rendering results from `GetSkSurface()` to the SharedImage backing
+  // Copy the rendering results from `surface_` to the SharedImage backing
   // this resource.
   // NOTE: Calling `BackingWasExternallyUpdated()` is not necessary for the
   // software compositor, as all accesses to the SI's backing happen via shared
@@ -585,14 +593,13 @@ void CanvasNon2DResourceProvider::UploadSoftwareRenderingResults(
     return;
   }
 
-  GetSkSurface()->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
+  surface_->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
 }
 
 scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::ProduceCanvasResource");
   if (IsSoftware()) {
-    DCHECK(GetSkSurface());
     scoped_refptr<Resource> output_resource = NewOrRecycledResource();
 
     UploadSoftwareRenderingResults(*output_resource);
@@ -616,7 +623,7 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
   if (is_software_) {
     cc::PaintImage paint_image;
 
-    auto sk_image = GetSkSurface()->makeImageSnapshot();
+    auto sk_image = surface_->makeImageSnapshot();
     if (sk_image) {
       auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
       snapshot_sk_image_id_ = sk_image->uniqueID();
@@ -728,7 +735,7 @@ void CanvasNon2DResourceProvider::FlushRecording(
     if (!skia_canvas_) {
       auto* image_provider = GetOrCreateImageProvider();
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), image_provider);
+          surface_->getCanvas(), image_provider);
     }
     // Software PaintRecord playback allocates short-lived Skia rasterization
     // scratch buffers that churn PartitionAlloc's quarantine. Keep safety
@@ -774,10 +781,6 @@ base::ByteSize CanvasNon2DResourceProvider::EstimatedSizeInBytes() const {
 void CanvasNon2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (IsSoftware()) {
-    if (!surface_) {
-      return;
-    }
-
     std::string dump_name =
         base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
                            reinterpret_cast<uintptr_t>(surface_.get()));
@@ -807,35 +810,30 @@ void CanvasNon2DResourceProvider::OnMemoryDump(
 }
 
 size_t CanvasNon2DResourceProvider::GetSize() const {
-  if (!surface_) {
+  if (!IsSoftware()) {
     return 0;
   }
   SkImageInfo info = surface_->imageInfo();
   return info.computeByteSize(info.minRowBytes());
 }
 
-SkSurface* CanvasNon2DResourceProvider::GetSkSurface() const {
-  if (!surface_) {
-    surface_ = CreateSkSurface();
-  }
-  return surface_.get();
-}
-
-
-SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
+SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps(
+    SkAlphaType alpha_type) {
+  const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
-sk_sp<SkSurface> CanvasNon2DResourceProvider::CreateSkSurface() const {
+sk_sp<SkSurface> CanvasNon2DResourceProvider::CreateSkSurface(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space) {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::CreateSkSurface");
 
-  CHECK(is_software_);
-
-  const auto props = GetSkSurfaceProps();
-  const auto info = SkImageInfo::Make(
-      size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-      alpha_type_, color_space_.ToSkColorSpace());
+  const auto props = GetSkSurfaceProps(alpha_type);
+  const auto info = SkImageInfo::Make(size.width(), size.height(),
+                                      viz::ToClosestSkColorType(format),
+                                      alpha_type, color_space.ToSkColorSpace());
   return SkSurfaces::Raster(info, &props);
 }
 

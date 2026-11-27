@@ -146,13 +146,12 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
                               const gfx::ColorSpace&,
                               const gfx::HDRMetadata&,
                               WebGraphicsSharedImageInterfaceProvider*,
+                              sk_sp<SkSurface>,
                               base::OnceClosure context_lost_callback = {});
 
   gpu::raster::RasterInterface* RasterInterface() const;
   CanvasImageProvider* GetOrCreateImageProvider();
   bool IsGpuContextLost() const;
-
-  SkSurface* GetSkSurface() const;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -160,15 +159,17 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-
-  SkSurfaceProps GetSkSurfaceProps() const;
+  static SkSurfaceProps GetSkSurfaceProps(SkAlphaType alpha_type);
 
   scoped_refptr<Resource> NewOrRecycledResource();
 
   // FlushForImageObserver implementation:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
-  sk_sp<SkSurface> CreateSkSurface() const;
+  static sk_sp<SkSurface> CreateSkSurface(gfx::Size size,
+                                          viz::SharedImageFormat format,
+                                          SkAlphaType alpha_type,
+                                          const gfx::ColorSpace& color_space);
 
   base::WeakPtr<CanvasNon2DResourceProvider> CreateWeakPtr();
 
@@ -203,7 +204,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   const bool is_software_;
 
-  mutable sk_sp<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
   uint64_t snapshot_sk_image_id_ = 0u;
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
