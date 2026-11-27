@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<head>
+  <title>CSS Images Test: Aborting cross-fade image with slot-assigned children inside fallback img does not crash</title>
+  <link rel="help" href="https://drafts.csswg.org/css-images-4/#cross-fade-function">
+  <style>
+    .cf, .host::part(cf) {
+      content: -webkit-cross-fade(url("/images/green.png?pipe=trickle(d5)"), none, 50%);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // Start the slow image fetch after the load event so that it does not
+    // block load (window.stop() would otherwise suppress the load event).
+    window.addEventListener('load', () => {
+      const root = document.getElementById('root');
+      const validGif =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+      for (let i = 0; i < 4; ++i) {
+        const host = document.createElement('div');
+        host.className = 'host';
+        const sr = host.attachShadow({mode: 'open'});
+        const s1 = document.createElement('slot');
+        s1.id = 's1';
+        sr.appendChild(s1);
+        const img = document.createElement('img');
+        img.setAttribute('part', 'cf');
+        img.src = validGif;
+        img.alt = 'fallback';
+        const s2 = document.createElement('slot');
+        s2.id = 's2';
+        img.appendChild(s2);
+        sr.appendChild(img);
+        for (let j = 0; j < 28; ++j) {
+          const span = document.createElement('span');
+          span.className = 'cf';
+          host.appendChild(span);
+        }
+        root.appendChild(host);
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          for (const host of document.querySelectorAll('.host')) {
+            const sr = host.shadowRoot;
+            const s1 = sr.getElementById('s1');
+            const s2 = sr.getElementById('s2');
+            s1.name = 'unused';
+            s2.assignedNodes();
+            s1.remove();
+          }
+          window.stop();
+          document.body.offsetTop;
+          document.documentElement.classList.remove('test-wait');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

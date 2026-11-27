@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<head>
+  <title>CSS Images Test: Aborting cross-fade image with moveBefore children inside fallback img does not crash</title>
+  <link rel="help" href="https://drafts.csswg.org/css-images-4/#cross-fade-function">
+  <style>
+    .cf {
+      content: -webkit-cross-fade(url("/images/green.png?pipe=trickle(d5)"), none, 50%);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // Start the slow image fetch after the load event so that it does not
+    // block load (window.stop() would otherwise suppress the load event).
+    window.addEventListener('load', () => {
+      const root = document.getElementById('root');
+      const validGif =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+      for (let i = 0; i < 4; ++i) {
+        const img = document.createElement('img');
+        img.className = 'cf';
+        img.src = validGif;
+        img.alt = 'fallback';
+        root.appendChild(img);
+        for (let j = 0; j < 28; ++j) {
+          const span = document.createElement('span');
+          span.className = 'cf';
+          root.appendChild(span);
+        }
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const imgs = Array.from(document.querySelectorAll('img.cf'));
+          const spans = Array.from(document.querySelectorAll('span.cf'));
+          for (let i = 0; i < imgs.length; ++i) {
+            for (let j = 0; j < 28; ++j) {
+              imgs[i].moveBefore(spans[i * 28 + j], null);
+            }
+          }
+          window.stop();
+          document.body.offsetTop;
+          document.documentElement.classList.remove('test-wait');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

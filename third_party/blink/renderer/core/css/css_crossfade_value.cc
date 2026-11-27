@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -108,9 +109,13 @@ class CSSCrossfadeValue::ObserverProxy final
 
   void ImageChanged(ImageResourceContent*,
                     CanDeferInvalidation defer) override {
-    for (const ImageResourceObserver* const_observer : Clients().Keys()) {
-      auto* observer = const_cast<ImageResourceObserver*>(const_observer);
-      observer->ImageChanged(static_cast<WrappedImagePtr>(owner_), defer);
+    HeapVector<Member<const ImageResourceObserver>> observers(Clients().Keys());
+    for (const ImageResourceObserver* observer : observers) {
+      if (!Clients().Contains(observer)) {
+        continue;
+      }
+      const_cast<ImageResourceObserver*>(observer)->ImageChanged(
+          static_cast<WrappedImagePtr>(owner_), defer);
     }
   }
 
