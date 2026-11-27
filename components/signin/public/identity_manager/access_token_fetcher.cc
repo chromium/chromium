@@ -276,17 +276,20 @@ void AccessTokenFetcher::RecordLatency(bool success) {
   const base::TimeDelta request_latency =
       now - access_token_request_start_time_;
   const base::TimeDelta end_to_end_latency = now - creation_time_;
-  if (success) {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccessTokenFetch.Latency.Request.Success", request_latency);
-    base::UmaHistogramMediumTimes(
-        "Signin.AccessTokenFetch.Latency.EndToEnd.Success", end_to_end_latency);
-  } else {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccessTokenFetch.Latency.Request.Failure", request_latency);
-    base::UmaHistogramMediumTimes(
-        "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", end_to_end_latency);
-  }
+  const base::TimeDelta refresh_token_wait_latency =
+      access_token_request_start_time_ - creation_time_;
+  base::UmaHistogramMediumTimes(
+      success ? "Signin.AccessTokenFetch.Latency.Request.Success"
+              : "Signin.AccessTokenFetch.Latency.Request.Failure",
+      request_latency);
+  base::UmaHistogramMediumTimes(
+      success ? "Signin.AccessTokenFetch.Latency.EndToEnd.Success"
+              : "Signin.AccessTokenFetch.Latency.EndToEnd.Failure",
+      end_to_end_latency);
+  base::UmaHistogramMediumTimes(
+      success ? "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Success"
+              : "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure",
+      refresh_token_wait_latency);
   // Guard against recording the same request twice.
   access_token_request_start_time_ = base::TimeTicks();
 }

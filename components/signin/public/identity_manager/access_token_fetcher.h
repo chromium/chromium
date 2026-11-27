@@ -222,9 +222,11 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 
-  // Records the latency of the access token fetch for the "Request" stage
-  // (measured from `StartAccessTokenRequest()`) and the "EndToEnd" stage
-  // (measured from the creation of this object).
+  // Records the latency of the access token fetch for various fetch stages:
+  // - "Request", measured from `StartAccessTokenRequest()`,
+  // - "EndToEnd", measured from the creation of this object, and
+  // - "RefreshTokenWait", measured from creation until
+  //   `StartAccessTokenRequest()`.
   void RecordLatency(bool success);
 
   // Invokes |callback_| with (|error|, |access_token_info|). Per the contract

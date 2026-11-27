@@ -501,7 +501,8 @@ TEST_F(AccessTokenFetcherTest, FailedAccessTokenRequest) {
 }
 
 // Test that EndToEnd latency includes the time spent waiting for a refresh
-// token, while Request latency does not.
+// token, RefreshTokenWait records that wait duration, and Request latency
+// excludes it.
 TEST_F(AccessTokenFetcherTest, RecordsEndToEndAndRequestLatency) {
   base::HistogramTester histogram_tester;
   TestTokenCallback callback;
@@ -536,10 +537,85 @@ TEST_F(AccessTokenFetcherTest, RecordsEndToEndAndRequestLatency) {
   histogram_tester.ExpectUniqueTimeSample(
       "Signin.AccessTokenFetch.Latency.Request.Success",
       base::Milliseconds(200), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Success",
+      base::Seconds(1), 1);
   histogram_tester.ExpectTotalCount(
       "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", 0);
   histogram_tester.ExpectTotalCount(
       "Signin.AccessTokenFetch.Latency.Request.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure", 0);
+}
+
+// Test that RefreshTokenWait records 0ms when no wait is needed (both in
+// kWaitUntilRefreshTokenAvailable mode when the refresh token is already
+// available and in kImmediate mode).
+TEST_F(AccessTokenFetcherTest, RecordsZeroRefreshTokenWaitWhenNoWaitNeeded) {
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+  token_service()->UpdateCredentials(account_id, "refresh token");
+
+  for (AccessTokenFetcher::Mode mode :
+       {AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable,
+        AccessTokenFetcher::Mode::kImmediate}) {
+    base::HistogramTester histogram_tester;
+    TestTokenCallback callback;
+    base::RunLoop run_loop;
+    set_on_access_token_request_callback(run_loop.QuitClosure());
+    auto fetcher = CreateFetcher(account_id, callback.Get(), mode);
+    run_loop.Run();
+
+    task_environment().FastForwardBy(base::Milliseconds(200));
+    EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
+                              access_token_info()));
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+
+    histogram_tester.ExpectUniqueTimeSample(
+        "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Success",
+        base::TimeDelta(), 1);
+    histogram_tester.ExpectTotalCount(
+        "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure", 0);
+  }
+}
+
+// Test that RefreshTokenWait.Failure records the refresh token wait duration
+// when a kWaitUntilRefreshTokenAvailable fetch ultimately fails.
+TEST_F(AccessTokenFetcherTest, RecordsRefreshTokenWaitLatencyOnFailure) {
+  base::HistogramTester histogram_tester;
+  TestTokenCallback callback;
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+
+  auto fetcher =
+      CreateFetcher(account_id, callback.Get(),
+                    AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
+  task_environment().FastForwardBy(base::Milliseconds(500));
+
+  base::RunLoop run_loop;
+  set_on_access_token_request_callback(run_loop.QuitClosure());
+  token_service()->UpdateCredentials(account_id, "refresh token");
+  run_loop.Run();
+
+  task_environment().FastForwardBy(base::Milliseconds(300));
+  auto error = GoogleServiceAuthError::FromServiceUnavailable("");
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure",
+      base::Milliseconds(800), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Request.Failure",
+      base::Milliseconds(300), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure",
+      base::Milliseconds(500), 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Success", 0);
 }
 
 // Test that the latency of failed requests is recorded.
@@ -566,6 +642,9 @@ TEST_F(AccessTokenFetcherTest, RecordsLatencyOnFailure) {
   histogram_tester.ExpectUniqueTimeSample(
       "Signin.AccessTokenFetch.Latency.Request.Failure",
       base::Milliseconds(300), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure",
+      base::TimeDelta(), 1);
 }
 
 // Test that the latency of requests failing with REQUEST_CANCELED is recorded
@@ -596,6 +675,9 @@ TEST_F(AccessTokenFetcherTest, RecordsRequestCanceledErrorAsFailure) {
   histogram_tester.ExpectUniqueTimeSample(
       "Signin.AccessTokenFetch.Latency.Request.Failure",
       base::Milliseconds(100), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.RefreshTokenWait.Failure",
+      base::TimeDelta(), 1);
 }
 
 // Test that no latency is recorded if the fetcher is destroyed before the
@@ -620,14 +702,9 @@ TEST_F(AccessTokenFetcherTest, DoesNotRecordLatencyIfDestroyed) {
                       .WithIdToken(access_token_info().id_token)
                       .build());
 
-  EXPECT_TRUE(
-      histogram_tester
-          .GetTotalCountsForPrefix("Signin.AccessTokenFetch.Latency.EndToEnd.")
-          .empty());
-  EXPECT_TRUE(
-      histogram_tester
-          .GetTotalCountsForPrefix("Signin.AccessTokenFetch.Latency.Request.")
-          .empty());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.AccessTokenFetch.Latency."),
+              testing::IsEmpty());
 }
 
 TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {

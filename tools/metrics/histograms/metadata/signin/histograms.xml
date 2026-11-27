@@ -275,14 +275,14 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <summary>
     Records the duration of an OAuth2 access token fetch, or of one of its
     stages, that finished with {Result}. {Stage} Fetches cancelled by the token
-    service are recorded as failures in the EndToEnd and Request stages, like in
-    the Signin.AccessTokenFetch.Failure.* histograms: with REQUEST_CANCELED when
-    the refresh token is updated (on Android, every time the device accounts are
-    reloaded) or on shutdown, and with ACCOUNT_NOT_FOUND when the refresh token
-    is revoked (e.g. on sign-out). Other stages are not recorded for these
-    cancellations. The EndToEnd and Request stages are not recorded if the
-    fetcher is destroyed before the fetch completes, nor for device tokens on
-    iOS.
+    service are recorded as failures in the EndToEnd, Request, and
+    RefreshTokenWait stages, like in the Signin.AccessTokenFetch.Failure.*
+    histograms: with REQUEST_CANCELED when the refresh token is updated (on
+    Android, every time the device accounts are reloaded) or on shutdown, and
+    with ACCOUNT_NOT_FOUND when the refresh token is revoked (e.g. on sign-out).
+    Other stages are not recorded for these cancellations. The EndToEnd,
+    Request, and RefreshTokenWait stages are not recorded if the fetcher is
+    destroyed before the fetch completes, nor for device tokens on iOS.
   </summary>
   <token key="Stage">
     <variant name="Backoff"
@@ -300,9 +300,12 @@ to monitor/debug fetching OAuth2 Token issues. -->
                  during the fetch. Recorded once when the token service fetch
                  completes."/>
     <variant name="EndToEnd"
-        summary="From the creation of the access token fetcher until the
-                 result is returned to the client, including any wait for a
-                 refresh token to become available. Includes requests served
+        summary="From the creation of the AccessTokenFetcher until the result
+                 is returned to the client, including any wait for a token in
+                 AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable
+                 (excludes waiting inside PrimaryAccountAccessTokenFetcher,
+                 which creates AccessTokenFetcher in kImmediate mode only
+                 once credentials are available). Includes requests served
                  from the cache. Recorded when the fetcher returns its
                  result."/>
     <variant name="Network"
@@ -314,6 +317,15 @@ to monitor/debug fetching OAuth2 Token issues. -->
                  fetch (cache hits and immediate non-network rejections are
                  excluded). Recorded once when the token service fetch
                  completes."/>
+    <variant name="RefreshTokenWait"
+        summary="From the creation of the AccessTokenFetcher until the access
+                 token request is started (0ms if the refresh token was
+                 available or in kImmediate mode). Only captures waits in
+                 AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable.
+                 PrimaryAccountAccessTokenFetcher waits for credentials
+                 before creating AccessTokenFetcher in kImmediate mode, so
+                 its wait time is not included. Recorded when the fetcher
+                 returns its result."/>
     <variant name="Request"
         summary="From the start of the access token request until the result
                  is returned to the client, excluding any wait for a refresh
