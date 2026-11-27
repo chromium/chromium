@@ -29,9 +29,13 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/metrics/custom_form_control_metrics.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
@@ -107,11 +111,14 @@ void CustomFormControlScriptRunner::OnAfterFormsSeen(
   Reset();
   frame_token_ = driver.GetFrameToken();
   const blink::DocumentToken document_token = rfh->GetDocumentToken();
-  std::optional<std::string> script =
-      index_->FindScript(rfh->GetLastCommittedURL());
+  const GURL& url = rfh->GetLastCommittedURL();
+  std::optional<std::string> script = index_->FindScript(url);
   if (!script) {
     return;
   }
+  LOG_AF(client_->GetCurrentLogManager())
+      << LoggingScope::kCustomFormControls
+      << LogMessage::kCustomFormControlScriptAvailable << url.host();
   if (script_found_callback_for_testing_) {
     script_found_callback_for_testing_.Run(*script);
   }
