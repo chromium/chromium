@@ -1740,18 +1740,20 @@ base::optional_ref<const OrderedMarker> GetAlignedListMarker(
   return std::nullopt;
 }
 
-// Returns the font size of the item text for a list marker of `form`. A
-// standalone marker's font size can differ from its item text's because some
-// authoring tools size bullets separately. For example, PowerPoint sizes
-// bullets as a percentage of the text size, so a 20pt item with a 70% bullet
-// has a 14pt marker run. Standalone markers therefore use the following run.
-float GetListItemFontSize(const TextRunContext& run_context,
-                          ListMarkerForm form) {
+// Returns the largest indent that nests a list marker of `form`
+// (`kMaxListNestingIndentEm` of the item text's font size). A standalone
+// marker's font size can differ from its item text's because some authoring
+// tools size bullets separately. For example, PowerPoint sizes bullets as a
+// percentage of the text size, so a 20pt item with a 70% bullet has a 14pt
+// marker run. Standalone markers therefore use the following run.
+float GetMaxListNestingIndent(const TextRunContext& run_context,
+                              ListMarkerForm form) {
+  float font_size = run_context.run->style.font_size;
   if (form == ListMarkerForm::kStandalone) {
     CHECK(run_context.next_run);
-    return run_context.next_run->style.font_size;
+    font_size = run_context.next_run->style.font_size;
   }
-  return run_context.run->style.font_size;
+  return kMaxListNestingIndentEm * font_size;
 }
 
 // Classifies `text` as a marker used only for nested list levels, without
@@ -2014,8 +2016,7 @@ bool StartsIndentedSublist(const TextRunContext& run_context,
   if (form == ListMarkerForm::kNone) {
     return false;
   }
-  const float max_nest =
-      kMaxListNestingIndentEm * GetListItemFontSize(run_context, form);
+  const float max_nest = GetMaxListNestingIndent(run_context, form);
   return run_x <= marker_x + max_nest;
 }
 
@@ -2102,8 +2103,8 @@ OrderedListCheck ContinuesOrConfirmsOrderedList(
   const HeuristicPageProperties& page_properties = *context.page_properties;
   const base::span<const ListLevel> list_levels = context.list_levels;
   const TextRunContext run_context = GetTextRunContext(layout, run_index);
-  const float max_nest = kMaxListNestingIndentEm *
-                         GetListItemFontSize(run_context, ordered_kind.form);
+  const float max_nest =
+      GetMaxListNestingIndent(run_context, ordered_kind.form);
   const ListPlacement placement =
       GetListPlacement(list_levels, run_context.run->bounds.x(), max_nest,
                        ordered_kind.ordered_marker);
@@ -2210,8 +2211,7 @@ ListMarkerKind ClassifyListMarker(
     const ListMarkerForm nested_form =
         ClassifyNestedOnlyMarker(text, run_context);
     if (nested_form != ListMarkerForm::kNone) {
-      const float max_nest = kMaxListNestingIndentEm *
-                             GetListItemFontSize(run_context, nested_form);
+      const float max_nest = GetMaxListNestingIndent(run_context, nested_form);
       if (run_x <= parent->marker_x + max_nest) {
         return {.form = nested_form, .nested_only = true};
       }
@@ -3539,8 +3539,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
     const ListMarkerKind& marker_kind,
     std::vector<ListLevel> levels) {
   const float marker_x = run_context.run->bounds.x();
-  const float max_nest = kMaxListNestingIndentEm *
-                         GetListItemFontSize(run_context, marker_kind.form);
+  const float max_nest = GetMaxListNestingIndent(run_context, marker_kind.form);
   const std::optional<OrderedMarker>& ordered_marker =
       marker_kind.ordered_marker;
   const ListPlacement placement =
