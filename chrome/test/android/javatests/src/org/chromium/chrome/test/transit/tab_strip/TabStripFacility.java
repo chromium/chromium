@@ -46,7 +46,7 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 @NullMarked
 public class TabStripFacility<HostStationT extends CtaPageStation> extends Facility<HostStationT> {
-    // Same timeout as TabStripUtils.clickNewTabButton().
+    // Creating and loading a new tab can exceed Transit's default timeout.
     private static final long NEW_TAB_TIMEOUT_MS = 10000L;
 
     // How far after the new tab button openContextMenu() long-presses.
