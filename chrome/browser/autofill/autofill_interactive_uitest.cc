@@ -1171,12 +1171,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Clicking a disabled button will generate a mouse event but focus doesn't
   // change. This tests that autofill can handle a mouse event outside a focused
   // input *without* showing the popup.
-  ASSERT_FALSE(AutofillFlow(GetElementById("disabled-button"), this,
-                            {.do_focus = false,
-                             .do_select = false,
-                             .do_accept = false,
-                             .show_method = ShowMethod::ByClick(),
-                             .execution_target = GetWebContents()}));
+  ASSERT_FALSE(AutofillFlow(
+      GetElementById("disabled-button"), this,
+      {.do_focus = false,
+       .do_select = false,
+       .do_accept = false,
+       .show_method = ShowMethod::ByClick(),
+       // Since failure is expected, do not retry showing the Autofill popup.
+       .max_show_tries = 1,
+       .execution_target = GetWebContents()}));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.do_focus = false,
@@ -1206,14 +1209,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   SetTestUrlResponse(kTestFormWithLargeInputField);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  ASSERT_FALSE(AutofillFlow(GetElementById("firstname"), this,
-                            {.do_select = false,
-                             .do_accept = false,
-                             .show_method = ShowMethod::ByClick(),
-                             // Since failure is expected, no need to retry
-                             // showing the Autofill popup too often.
-                             .max_show_tries = 2,
-                             .execution_target = GetWebContents()}));
+  ASSERT_FALSE(AutofillFlow(
+      GetElementById("firstname"), this,
+      {.do_select = false,
+       .do_accept = false,
+       .show_method = ShowMethod::ByClick(),
+       // Since failure is expected, do not retry showing the Autofill popup.
+       .max_show_tries = 1,
+       .execution_target = GetWebContents()}));
 }
 
 // Test that a field is still autofillable after the previously autofilled
