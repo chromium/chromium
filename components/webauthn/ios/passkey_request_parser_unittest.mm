@@ -63,6 +63,7 @@ constexpr char kExtensions[] = "extensions";
 // Event keys and types.
 constexpr char kEvent[] = "event";
 constexpr char kCancelRequest[] = "cancelRequest";
+constexpr char kCleanupRequest[] = "cleanupRequest";
 constexpr char kHandleGetRequest[] = "handleGetRequest";
 constexpr char kHandleCreateRequest[] = "handleCreateRequest";
 constexpr char kLogGetRequest[] = "logGetRequest";
@@ -777,6 +778,62 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
         ParsePasskeyScriptEvent(dict, GetDefaultOrigin(), &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(*result, PasskeyScriptEvent::kCancelRequest);
+  }
+  // Test case 6: Cleanup Request.
+  {
+    base::DictValue dict;
+    dict.Set(kEvent, kCleanupRequest);
+    auto result =
+        ParsePasskeyScriptEvent(dict, GetDefaultOrigin(), &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kCleanupRequest);
+  }
+}
+
+// Tests ParsePasskeyRequestMediation extracts mediation mode from both
+// top-level and nested "request" dictionaries.
+TEST_F(PasskeyRequestParserTest, ParsePasskeyRequestMediation) {
+  // Missing key returns std::nullopt (e.g. Signal API events).
+  {
+    base::DictValue dict;
+    dict.Set(kEvent, "signalUnknownCredential");
+    EXPECT_EQ(ParsePasskeyRequestMediation(dict), std::nullopt);
+  }
+
+  // Top-level isConditional = false (e.g. logGetRequest, cancelRequest).
+  {
+    base::DictValue dict;
+    dict.Set(kIsConditional, false);
+    EXPECT_EQ(ParsePasskeyRequestMediation(dict),
+              PasskeyRequestMediation::kModal);
+  }
+
+  // Top-level isConditional = true.
+  {
+    base::DictValue dict;
+    dict.Set(kIsConditional, true);
+    EXPECT_EQ(ParsePasskeyRequestMediation(dict),
+              PasskeyRequestMediation::kConditional);
+  }
+
+  // Nested request.isConditional = false (e.g. handleGetRequest).
+  {
+    base::DictValue dict;
+    base::DictValue request_dict;
+    request_dict.Set(kIsConditional, false);
+    dict.Set(kRequest, std::move(request_dict));
+    EXPECT_EQ(ParsePasskeyRequestMediation(dict),
+              PasskeyRequestMediation::kModal);
+  }
+
+  // Nested request.isConditional = true.
+  {
+    base::DictValue dict;
+    base::DictValue request_dict;
+    request_dict.Set(kIsConditional, true);
+    dict.Set(kRequest, std::move(request_dict));
+    EXPECT_EQ(ParsePasskeyRequestMediation(dict),
+              PasskeyRequestMediation::kConditional);
   }
 }
 

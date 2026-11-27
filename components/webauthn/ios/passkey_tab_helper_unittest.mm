@@ -39,10 +39,12 @@
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
+#import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_test_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -59,6 +61,7 @@
 
 namespace webauthn {
 
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCancelRequested;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCreateRequested;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kCreateResolvedGpm;
@@ -70,6 +73,8 @@ using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kGetResolvedNonGpm;
 using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
     kIncognitoInterstitialShown;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kSignalUnknownCredentialRequested;
 
 namespace {
 
@@ -91,6 +96,10 @@ constexpr char16_t kResolveAttestationRequestJsCall[] =
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
+constexpr char kWebAuthenticationIOSContentAreaEventModalHistogram[] =
+    "WebAuthentication.IOS.ContentAreaEvent.Modal";
+constexpr char kWebAuthenticationIOSContentAreaEventConditionalHistogram[] =
+    "WebAuthentication.IOS.ContentAreaEvent.Conditional";
 
 constexpr char kMainRemoteFrameId[] = "1effd8f52a067c8d3a01762d3c41dfda";
 constexpr char kChildRemoteFrameId[] = "2effd8f52a067c8d3a01762d3c41dfdb";
@@ -384,6 +393,18 @@ class PasskeyTabHelperTest : public PlatformTest {
                                                 /*did_complete_uv=*/false);
   }
 
+  // Delivers a script message directly to PasskeyJavaScriptFeature.
+  void DispatchScriptMessage(base::DictValue body,
+                             const GURL& origin_url = GURL(kOriginURL),
+                             bool is_user_interacting = true) {
+    auto body_value = std::make_unique<base::Value>(std::move(body));
+    web::ScriptMessage message(std::move(body_value), is_user_interacting,
+                               /*is_main_frame=*/true, origin_url,
+                               url::Origin::Create(origin_url));
+    PasskeyJavaScriptFeature::GetInstance()->ScriptMessageReceived(
+        &fake_web_state_, message);
+  }
+
   // Returns the last JavaScript call made in the main frame.
   std::u16string GetLastJavaScriptCall() {
     web::FakeWebFramesManager* frames_manager =
@@ -462,6 +483,34 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpm) {
   histogram_tester_.ExpectUniqueSample(
       kWebAuthenticationIOSContentAreaEventHistogram, kCreateRequestedBucket,
       /*count=*/1);
+}
+
+TEST_F(PasskeyTabHelperTest, LogsEventWithMediationVariants) {
+  passkey_tab_helper()->LogEvent(kGetRequested,
+                                 PasskeyRequestMediation::kModal);
+  passkey_tab_helper()->LogEvent(kCreateRequested,
+                                 PasskeyRequestMediation::kConditional);
+  passkey_tab_helper()->LogEvent(kSignalUnknownCredentialRequested,
+                                 std::nullopt);
+
+  histogram_tester_.ExpectBucketCount(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kGetRequested), 1);
+  histogram_tester_.ExpectBucketCount(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kCreateRequested), 1);
+  histogram_tester_.ExpectBucketCount(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kSignalUnknownCredentialRequested), 1);
+  histogram_tester_.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventHistogram, 3);
+
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kGetRequested), 1);
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+      static_cast<int>(kCreateRequested), 1);
 }
 
 TEST_F(PasskeyTabHelperTest, HasExcludedPasskey) {
@@ -869,6 +918,12 @@ TEST_F(PasskeyTabHelperTest, MaybeShowInterstitialAndRegisterAndContinue) {
       kWebAuthenticationIOSContentAreaEventHistogram,
       static_cast<int>(kIncognitoInterstitialShown),
       /*count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kIncognitoInterstitialShown),
+      /*count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
 }
 
 TEST_F(PasskeyTabHelperTest, MaybeShowInterstitialAndRegisterAndCancel) {
@@ -884,6 +939,12 @@ TEST_F(PasskeyTabHelperTest, MaybeShowInterstitialAndRegisterAndCancel) {
       kWebAuthenticationIOSContentAreaEventHistogram,
       static_cast<int>(kIncognitoInterstitialShown),
       /*count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kIncognitoInterstitialShown),
+      /*count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
 }
 
 TEST_F(PasskeyTabHelperTest, NoInterstitial) {
@@ -2087,6 +2148,14 @@ TEST_F(PasskeyTabHelperTest,
       password_manager::metrics_util::BrowserAssistedLoginType::
           kPasskeyStoredInGPM,
       1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kGetResolvedGpm), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kGetResolvedGpm), 1);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
 }
 
 // Tests that a successful passkey assertion updates the passkey's last used
@@ -2143,6 +2212,12 @@ TEST_F(PasskeyTabHelperTest,
   // Verify that PasswordManager.BrowserAssistedLogin.Type was NOT logged.
   histogram_tester.ExpectTotalCount("PasswordManager.BrowserAssistedLogin.Type",
                                     0);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventModalHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
 }
 
 // Tests that device authorization keys aren't fetched, and that the request is
@@ -2781,6 +2856,217 @@ TEST_F(PasskeyTabHelperTest,
   EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kResolveAssertionRequestJsCall),
             std::u16string::npos);
+}
+
+// Tests that in-browser modal passkey creation logs kCreateResolvedGpm to both
+// the base and .Modal ContentAreaEvent histograms.
+TEST_F(PasskeyTabHelperTest, ModalPasskeyCreationLogsCreateResolvedGpm) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                             kFakeRequestId);
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), /*challenge=*/{},
+      device::UserVerificationRequirement::kPreferred,
+      PasskeyRequestParams::RequestType::kModal, PasskeyExtensionData());
+  device::PublicKeyCredentialUserEntity user_entity({1, 2, 3}, kUsername,
+                                                    kUserDisplayName);
+  RegistrationRequestParams params(std::move(request_params),
+                                   std::move(user_entity),
+                                   /*exclude_credentials=*/{});
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+  ASSERT_TRUE(client_->DidShowCreationBottomSheet());
+
+  base::HistogramTester histogram_tester;
+  passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
+                                             /*did_complete_uv=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kCreateResolvedGpm), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kCreateResolvedGpm), 1);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
+}
+
+// Tests that in-browser conditional passkey creation logs kCreateResolvedGpm
+// to both the base and .Conditional ContentAreaEvent histograms.
+TEST_F(PasskeyTabHelperTest, ConditionalPasskeyCreationLogsCreateResolvedGpm) {
+  passkey_tab_helper()->RecordPasswordLogin(
+      kUsername, url::Origin::Create(GURL(kOriginURL)));
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  password_manager::PasswordForm form;
+  form.username_value = kUsername16;
+  form.url = GURL(kOriginURL);
+  form.date_last_used = base::Time::Now();
+  base::test::TestFuture<void> add_login_future;
+  test_password_store_->AddLogin(password_manager::FromPasswordForm(form),
+                                 add_login_future.GetCallback());
+  ASSERT_TRUE(add_login_future.Wait());
+
+  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                             kFakeRequestId);
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), /*challenge=*/{},
+      device::UserVerificationRequirement::kPreferred,
+      PasskeyRequestParams::RequestType::kConditionalCreate,
+      PasskeyExtensionData());
+  device::PublicKeyCredentialUserEntity user_entity({1, 2, 3}, kUsername,
+                                                    kUserDisplayName);
+  RegistrationRequestParams params(std::move(request_params),
+                                   std::move(user_entity),
+                                   /*exclude_credentials=*/{});
+
+  base::HistogramTester histogram_tester;
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetLastJavaScriptCall().find(u"resolveAttestationRequest") !=
+           std::u16string::npos;
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kCreateResolvedGpm), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+      static_cast<int>(kCreateResolvedGpm), 1);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventModalHistogram, 0);
+}
+
+// Tests that in-browser conditional passkey assertion logs kGetResolvedGpm to
+// both the base and .Conditional ContentAreaEvent histograms.
+TEST_F(PasskeyTabHelperTest, ConditionalPasskeyAssertionLogsGetResolvedGpm) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  sync_pb::WebauthnCredentialSpecifics passkey = AddValidPasskey();
+
+  std::optional<base::UnguessableToken> deserialized =
+      autofill::DeserializeJavaScriptFrameId(kMainRemoteFrameId);
+  ASSERT_TRUE(deserialized.has_value());
+  IOSPasskeyClient::RequestInfo request_info(
+      web::kMainFakeFrameId, kFakeRequestId,
+      autofill::RemoteFrameToken(*deserialized));
+  PasskeyRequestParams request_params(
+      std::move(request_info), device::PublicKeyCredentialRpEntity(kRpId),
+      /*challenge=*/{}, device::UserVerificationRequirement::kPreferred,
+      PasskeyRequestParams::RequestType::kConditionalGet,
+      PasskeyExtensionData());
+  passkey_tab_helper()->HandleGetRequestedEvent(
+      AssertionRequestParams(std::move(request_params),
+                             /*allow_credentials=*/{}));
+
+  base::HistogramTester histogram_tester;
+  passkey_tab_helper()->StartPasskeyAssertion(kFakeRequestId,
+                                              passkey.credential_id(),
+                                              /*did_complete_uv=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kGetResolvedGpm), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+      static_cast<int>(kGetResolvedGpm), 1);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventModalHistogram, 0);
+}
+
+// Tests that ScriptMessageReceived routes cleanupRequest to request cleanup
+// without logging kCancelRequested, while cancelRequest logs kCancelRequested
+// to both the base histogram and the matching mediation variant.
+TEST_F(PasskeyTabHelperTest,
+       ScriptMessageCleanupRequestDoesNotLogCancelRequested) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kIOSPasskeyModalLoginWithShim, kIOSPasskeyConditionalLoginWithShim}, {});
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  AddValidPasskey();
+
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+  ASSERT_TRUE(passkey_tab_helper()
+                  ->ShouldPerformUserVerification(kFakeRequestId)
+                  .has_value());
+
+  base::HistogramTester histogram_tester;
+  base::DictValue cleanup_body;
+  cleanup_body.Set("event", "cleanupRequest");
+  cleanup_body.Set("frameId", web::kMainFakeFrameId);
+  cleanup_body.Set("requestId", kFakeRequestId);
+  cleanup_body.Set("isConditional", true);
+  DispatchScriptMessage(std::move(cleanup_body));
+
+  // Pending request should be cleaned up without logging kCancelRequested.
+  EXPECT_FALSE(passkey_tab_helper()
+                   ->ShouldPerformUserVerification(kFakeRequestId)
+                   .has_value());
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventModalHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram, 0);
+
+  // Now dispatch a real cancelRequest (from AbortSignal) with isConditional.
+  base::DictValue cancel_body;
+  cancel_body.Set("event", "cancelRequest");
+  cancel_body.Set("frameId", web::kMainFakeFrameId);
+  cancel_body.Set("requestId", "other_request_id");
+  cancel_body.Set("isConditional", true);
+  DispatchScriptMessage(std::move(cancel_body));
+
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram,
+      static_cast<int>(kCancelRequested), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+      static_cast<int>(kCancelRequested), 1);
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventModalHistogram, 0);
+}
+
+// Tests that ScriptMessageReceived logs mediation-less Signal API events only
+// to the base histogram and passthrough log*Request events to the matching
+// mediation variant.
+TEST_F(PasskeyTabHelperTest, ScriptMessageLogsMediationVariantsCorrectly) {
+  base::HistogramTester histogram_tester;
+
+  base::DictValue modal_get_body;
+  modal_get_body.Set("event", "logGetRequest");
+  modal_get_body.Set("isConditional", false);
+  DispatchScriptMessage(std::move(modal_get_body));
+
+  base::DictValue conditional_create_body;
+  conditional_create_body.Set("event", "logCreateRequest");
+  conditional_create_body.Set("isConditional", true);
+  DispatchScriptMessage(std::move(conditional_create_body));
+
+  base::DictValue signal_body;
+  signal_body.Set("event", "signalUnknownCredential");
+  DispatchScriptMessage(std::move(signal_body));
+
+  histogram_tester.ExpectTotalCount(
+      kWebAuthenticationIOSContentAreaEventHistogram, 3);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventModalHistogram,
+      static_cast<int>(kGetRequested), 1);
+  histogram_tester.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+      static_cast<int>(kCreateRequested), 1);
 }
 
 }  // namespace webauthn

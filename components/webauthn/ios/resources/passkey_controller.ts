@@ -114,22 +114,28 @@ function getAbortError(): DOMException {
   return new DOMException('The request has been aborted.', 'AbortError');
 }
 
-// Cancels an assertion request if it is still ongoing.
-function cancelAssertionRequest(requestId: string): void {
+// Cancels a pending passkey request if it is still ongoing. When
+// `isAbortSignal` is true, sends a 'cancelRequest' event (logged as a
+// cancellation metric); otherwise sends a 'cleanupRequest' event for internal
+// state cleanup (e.g., when a concurrent WebKit passthrough request wins).
+function cancelPasskeyRequest(
+    requestId: string, isAbortSignal: boolean, isConditional: boolean): void {
   if (DeferredPublicKeyCredentialPromise.has(requestId)) {
     DeferredPublicKeyCredentialPromise.reject(requestId, getAbortError());
     sendWebKitMessage(HANDLER_NAME, {
-      'event': 'cancelRequest',
+      'event': isAbortSignal ? 'cancelRequest' : 'cleanupRequest',
       'frameId': gCrWeb.getFrameId(),
       'requestId': requestId,
+      'isConditional': isConditional,
     });
   }
 }
 
 // Helper to handle the AbortSignal event listener.
-function setupAbortSignalHandler(signal: AbortSignal, promiseId: string): void {
+function setupAbortSignalHandler(
+    signal: AbortSignal, promiseId: string, isConditional: boolean): void {
   signal.addEventListener('abort', () => {
-    cancelAssertionRequest(promiseId);
+    cancelPasskeyRequest(promiseId, /*isAbortSignal=*/ true, isConditional);
   }, {once: true});
 }
 
@@ -1000,11 +1006,11 @@ function signalAllAcceptedCredentials(options: AllAcceptedCredentialsOptions):
 
 // Creates a passthrough registration request from the provided parameters.
 // The passthrough request invokes the WebKit implementation of
-// `navigator.credentials.get()` and, upon completion, informs the browser for
-// metrics purposes.
+// `navigator.credentials.create()` and, upon completion, informs the browser
+// for metrics purposes.
 function createPassthroughRegistrationRequest(
     options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
-  sendWebKitMessage(HANDLER_NAME, {'event': 'logCreateRequest'});
+  const isConditional = options ? isConditionalMediation(options) : false;
 
   return cachedNavigatorCredentials.create(options).then((credential) => {
     if (credential && isPublicKeyCredential(credential)) {
@@ -1019,6 +1025,7 @@ function createPassthroughRegistrationRequest(
         'event': 'logCreateResolved',
         'isGpm': isGpmAaguid(aaguid),
         'rpId': rpId,
+        'isConditional': isConditional,
       });
     }
     return credential;
@@ -1028,14 +1035,10 @@ function createPassthroughRegistrationRequest(
 // Creates a passthrough assertion request from the provided parameters.
 // The passthrough request invokes the WebKit implementation of
 // `navigator.credentials.get()` and, upon completion, informs the browser for
-// metrics purposes. `logStartEvent` indicates whether the start of the get
-// request should be logged for metrics.
+// metrics purposes.
 function createPassthroughAssertionRequest(
-    options: CredentialRequestOptions|undefined,
-    logStartEvent: boolean): Promise<Credential|null> {
-  if (logStartEvent) {
-    sendWebKitMessage(HANDLER_NAME, {'event': 'logGetRequest'});
-  }
+    options?: CredentialRequestOptions|undefined): Promise<Credential|null> {
+  const isConditional = options ? isConditionalMediation(options) : false;
 
   return cachedNavigatorCredentials.get(options).then((credential) => {
     if (credential && isPublicKeyCredential(credential)) {
@@ -1047,6 +1050,7 @@ function createPassthroughAssertionRequest(
         'event': 'logGetResolved',
         'credentialId': credential.id,
         'rpId': rpId,
+        'isConditional': isConditional,
       });
     }
     return credential;
@@ -1068,7 +1072,7 @@ function createRegistrationRequest(
       new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
 
   if (signal) {
-    setupAbortSignalHandler(signal, deferredPromise.id);
+    setupAbortSignalHandler(signal, deferredPromise.id, isConditional);
   }
 
   sendWebKitMessage(HANDLER_NAME, {
@@ -1104,7 +1108,7 @@ function createAssertionRequest(
       new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
 
   if (signal) {
-    setupAbortSignalHandler(signal, deferredPromise.id);
+    setupAbortSignalHandler(signal, deferredPromise.id, isConditional);
   }
 
   sendWebKitMessage(HANDLER_NAME, {
@@ -1181,14 +1185,16 @@ function handleConditionalGetRequest(options: CredentialRequestOptions):
         rejectPassthrough = reject;
       });
 
-  createPassthroughAssertionRequest(passthroughOptions, false)
+  createPassthroughAssertionRequest(passthroughOptions)
       .then(
           result => {
             status.passthroughSettled = true;
             status.passthroughResult = result;
             resolvePassthrough(result);
             if (isValidCredential(result)) {
-              cancelAssertionRequest(browserAssertionRequest.requestId);
+              cancelPasskeyRequest(
+                  browserAssertionRequest.requestId, /*isAbortSignal=*/ false,
+                  /*isConditional=*/ true);
             }
           },
           err => {
@@ -1253,16 +1259,18 @@ const credentialsContainer: CredentialsContainer = {
           }
 
           if (isValidCredential(result)) {
-            // TODO(crbug.com/460485333): Notification message of
-            // success here?
             return result;
           }
 
-          return createPassthroughAssertionRequest(options, true);
+          return createPassthroughAssertionRequest(options);
         });
       }
     } else {
-      promise = createPassthroughAssertionRequest(options, true);
+      sendWebKitMessage(HANDLER_NAME, {
+        'event': 'logGetRequest',
+        'isConditional': isConditional,
+      });
+      promise = createPassthroughAssertionRequest(options);
     }
 
     return promise.finally(() => {
@@ -1292,14 +1300,16 @@ const credentialsContainer: CredentialsContainer = {
         }
 
         if (isValidCredential(result)) {
-          // TODO(crbug.com/460485333): Notification message of
-          // success here?
           return result;
         }
 
         return createPassthroughRegistrationRequest(options);
       });
     } else {
+      sendWebKitMessage(HANDLER_NAME, {
+        'event': 'logCreateRequest',
+        'isConditional': isConditional,
+      });
       promise = createPassthroughRegistrationRequest(options);
     }
 

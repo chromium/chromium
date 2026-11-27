@@ -92,6 +92,7 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<PasskeyJavaScriptFeature>;
+  friend class PasskeyTabHelperTest;
 
   PasskeyJavaScriptFeature();
   PasskeyJavaScriptFeature(const PasskeyJavaScriptFeature&) = delete;

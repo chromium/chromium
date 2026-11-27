@@ -51,6 +51,23 @@ namespace {
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
+constexpr char kWebAuthenticationIOSContentAreaEventModalHistogram[] =
+    "WebAuthentication.IOS.ContentAreaEvent.Modal";
+constexpr char kWebAuthenticationIOSContentAreaEventConditionalHistogram[] =
+    "WebAuthentication.IOS.ContentAreaEvent.Conditional";
+
+std::optional<PasskeyRequestMediation> MediationFromRequestType(
+    PasskeyRequestParams::RequestType type) {
+  switch (type) {
+    case PasskeyRequestParams::RequestType::kModal:
+      return PasskeyRequestMediation::kModal;
+    case PasskeyRequestParams::RequestType::kConditionalGet:
+    case PasskeyRequestParams::RequestType::kConditionalCreate:
+      return PasskeyRequestMediation::kConditional;
+    case PasskeyRequestParams::RequestType::kUnknown:
+      return std::nullopt;
+  }
+}
 
 // Time threshold within which a password must have been used to be eligible for
 // automatic passkey upgrade.
@@ -190,9 +207,24 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> GetVisiblePasskeys(
 PasskeyTabHelper::~PasskeyTabHelper() = default;
 
 void PasskeyTabHelper::LogEvent(
-    WebAuthenticationIOSContentAreaEvent event_type) {
+    WebAuthenticationIOSContentAreaEvent event_type,
+    std::optional<PasskeyRequestMediation> mediation) {
   base::UmaHistogramEnumeration(kWebAuthenticationIOSContentAreaEventHistogram,
                                 event_type);
+  if (!mediation.has_value()) {
+    return;
+  }
+  switch (*mediation) {
+    case PasskeyRequestMediation::kModal:
+      base::UmaHistogramEnumeration(
+          kWebAuthenticationIOSContentAreaEventModalHistogram, event_type);
+      break;
+    case PasskeyRequestMediation::kConditional:
+      base::UmaHistogramEnumeration(
+          kWebAuthenticationIOSContentAreaEventConditionalHistogram,
+          event_type);
+      break;
+  }
 }
 
 void PasskeyTabHelper::HandleCancelRequestEvent(
@@ -1117,7 +1149,6 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   }
 
   // Add passkey to the passkey model and present the confirmation infobar.
-  // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
   AddNewPasskey(passkey);
 
   // Resolve the PublicKeyCredential promise.
@@ -1125,6 +1156,8 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
       web_frame, passkey_request_id, credential_id,
       std::move(attestation_data));
+  LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateResolvedGpm,
+           MediationFromRequestType(params.Type()));
 
   // Notify the client that the passkey creation process has completed.
   if (params.Type() == PasskeyRequestParams::RequestType::kModal) {
@@ -1264,8 +1297,6 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
                             passkey, std::move(client_data_json), params.RpId(),
                             extension_input_data, did_complete_uv);
 
-  // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
-
   if (assertion_data.has_value()) {
     passkey_model_->UpdatePasskeyTimestamp(credential_id, base::Time::Now());
 
@@ -1273,6 +1304,8 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
         web_frame, passkey_request_id, credential_id,
         std::move(*assertion_data));
+    LogEvent(WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm,
+             MediationFromRequestType(params.Type()));
     password_manager::metrics_util::RecordBrowserAssistedLogin(
         password_manager::metrics_util::BrowserAssistedLoginType::
             kPasskeyStoredInGPM);
@@ -1330,7 +1363,8 @@ void PasskeyTabHelper::MaybeShowInterstitialAndRegister(
     RegistrationRequestParams params) {
   if (web_state_->GetBrowserState()->IsOffTheRecord()) {
     CHECK_EQ(params.Type(), PasskeyRequestParams::RequestType::kModal);
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
+    LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown,
+             PasskeyRequestMediation::kModal);
     client_->ShowInterstitial(
         base::BindOnce(&PasskeyTabHelper::OnInterstitialDecision,
                        weak_factory_.GetWeakPtr(), std::move(params)));

@@ -39,6 +39,12 @@ chromium-metrics-reviews@google.com.
       summary="recovery_key_store/wrap_pin_and_secret"/>
 </variants>
 
+<variants name="PasskeyRequestMediation">
+  <variant name="" summary="all requests"/>
+  <variant name=".Conditional" summary="conditional mediation requests"/>
+  <variant name=".Modal" summary="modal mediation requests"/>
+</variants>
+
 <histogram name="WebAuthentication.Ambient.BubbleCredentialCount"
     units="credentials" expires_after="2027-05-01">
   <owner>kenrb@chromium.org</owner>
@@ -964,18 +970,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.IOS.ContentAreaEvent"
+<histogram name="WebAuthentication.IOS.ContentAreaEvent{Mediation}"
     enum="WebAuthenticationIOSContentAreaEvent" expires_after="2027-05-23">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
-    Logs WebAuthn API interactions in the content area in Chrome on iOS, such as
-    a site requesting passkeys, or an assertion being returned by a CPE. Note
-    that this is *not* limited to passkeys stored in Chrome. Requests handled by
-    any (or no) credential provider are counted here, as well as requests for
-    other types of WebAuthn credentials (e.g. security key credentials).
+    Logs WebAuthn API interactions in the content area in Chrome on iOS for
+    {Mediation}, such as a site requesting passkeys, or a passkey being created
+    or asserted via Chrome's in-browser GPM flow or a CPE. Note that this is
+    *not* limited to passkeys stored in Chrome. Requests handled by any (or no)
+    credential provider are counted here, as well as requests for other types of
+    WebAuthn credentials (e.g. security key credentials). Mediation-less Signal
+    API calls are logged only to the unsuffixed histogram.
   </summary>
+  <token key="Mediation" variants="PasskeyRequestMediation"/>
 </histogram>
 
 <histogram name="WebAuthentication.IOS.PasskeyParsingError"

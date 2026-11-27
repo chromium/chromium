@@ -17,9 +17,17 @@
 
 @interface PasskeyScriptMessageHandler : NSObject <WKScriptMessageHandler>
 @property(nonatomic, strong) WKScriptMessage* lastReceivedMessage;
+@property(nonatomic, strong) NSMutableArray<WKScriptMessage*>* receivedMessages;
 @end
 
 @implementation PasskeyScriptMessageHandler
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _receivedMessages = [NSMutableArray array];
+  }
+  return self;
+}
 
 - (void)configureForWebView:(WKWebView*)webView {
   [webView.configuration.userContentController
@@ -30,6 +38,7 @@
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
   self.lastReceivedMessage = message;
+  [self.receivedMessages addObject:message];
 }
 
 @end
@@ -317,6 +326,7 @@ NSString* const kMockCredentialWithNullAttachmentJs =
     @"navigator.credentials.get = async (options) => mockCredential;";
 
 NSString* const kEventKey = @"event";
+NSString* const kIsConditionalKey = @"isConditional";
 NSString* const kFrameIdKey = @"frameId";
 NSString* const kRequestIdKey = @"requestId";
 NSString* const kRequestKey = @"request";
@@ -332,6 +342,8 @@ NSString* const kLogCreateRequestEvent = @"logCreateRequest";
 NSString* const kLogGetRequestEvent = @"logGetRequest";
 NSString* const kHandleCreateRequestEvent = @"handleCreateRequest";
 NSString* const kHandleGetRequestEvent = @"handleGetRequest";
+NSString* const kCancelRequestEvent = @"cancelRequest";
+NSString* const kCleanupRequestEvent = @"cleanupRequest";
 
 // Provides responses for initial page and destination URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -469,10 +481,12 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 1ul);
+  EXPECT_EQ(allKeys.count, 2ul);
   EXPECT_TRUE([allKeys containsObject:kEventKey]);
+  EXPECT_TRUE([allKeys containsObject:kIsConditionalKey]);
 
   EXPECT_NSEQ(kLogCreateRequestEvent, body[kEventKey]);
+  EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -487,10 +501,12 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 1ul);
+  EXPECT_EQ(allKeys.count, 2ul);
   EXPECT_TRUE([allKeys containsObject:kEventKey]);
+  EXPECT_TRUE([allKeys containsObject:kIsConditionalKey]);
 
   EXPECT_NSEQ(kLogGetRequestEvent, body[kEventKey]);
+  EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -564,10 +580,12 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 1ul);
+  EXPECT_EQ(allKeys.count, 2ul);
   EXPECT_TRUE([allKeys containsObject:kEventKey]);
+  EXPECT_TRUE([allKeys containsObject:kIsConditionalKey]);
 
   EXPECT_NSEQ(kLogCreateRequestEvent, body[kEventKey]);
+  EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -1210,6 +1228,204 @@ TEST_F(PasskeyControllerJavaScriptTest,
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   EXPECT_NSEQ(@"logGetResolved", body[kEventKey]);
   EXPECT_NSEQ(@"credential_id", body[@"credentialId"]);
+  EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
+}
+
+// Tests that deferring a modal get() request back to WebKit passthrough does
+// not emit a duplicate logGetRequest event.
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalGetDeferPassthroughNullAttachmentNoDoubleLog) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsGetWithResultUrl);
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* handle_body = message_handler().lastReceivedMessage.body;
+  ASSERT_NSEQ(kHandleGetRequestEvent, handle_body[kEventKey]);
+  NSString* request_id = handle_body[kRequestIdKey];
+  ASSERT_TRUE(request_id != nil);
+
+  [message_handler().receivedMessages removeAllObjects];
+  message_handler().lastReceivedMessage = nil;
+
+  NSString* defer_js = [NSString
+      stringWithFormat:kDeferToRendererFormat, request_id,
+                       static_cast<int>(
+                           PasskeyRequestParams::RequestType::kModal)];
+  web::test::ExecuteJavaScriptInWebView(web_view(), defer_js);
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        for (WKScriptMessage* msg in message_handler().receivedMessages) {
+          if ([msg.body[kEventKey] isEqualToString:@"logGetResolved"]) {
+            return YES;
+          }
+        }
+        return NO;
+      }));
+
+  bool saw_log_get_request = false;
+  bool saw_log_get_resolved = false;
+  for (WKScriptMessage* msg in message_handler().receivedMessages) {
+    NSDictionary* body = msg.body;
+    if ([body[kEventKey] isEqualToString:kLogGetRequestEvent]) {
+      saw_log_get_request = true;
+    } else if ([body[kEventKey] isEqualToString:@"logGetResolved"]) {
+      saw_log_get_resolved = true;
+      EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
+    }
+  }
+  EXPECT_FALSE(saw_log_get_request);
+  EXPECT_TRUE(saw_log_get_resolved);
+}
+
+// Tests that deferring a modal create() request back to WebKit passthrough
+// does not emit a duplicate logCreateRequest event.
+TEST_F(
+    PasskeyControllerJavaScriptTest,
+    NavigatorCredentialsModalCreateDeferPassthroughNullAttachmentNoDoubleLog) {
+  GURL create_url = server().GetURL(kNavigatorCredentialsCreateWithResultUrl);
+  ASSERT_TRUE(LoadUrl(create_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* handle_body = message_handler().lastReceivedMessage.body;
+  ASSERT_NSEQ(kHandleCreateRequestEvent, handle_body[kEventKey]);
+  NSString* request_id = handle_body[kRequestIdKey];
+  ASSERT_TRUE(request_id != nil);
+
+  [message_handler().receivedMessages removeAllObjects];
+  message_handler().lastReceivedMessage = nil;
+
+  NSString* defer_js = [NSString
+      stringWithFormat:kDeferToRendererFormat, request_id,
+                       static_cast<int>(
+                           PasskeyRequestParams::RequestType::kModal)];
+  web::test::ExecuteJavaScriptInWebView(web_view(), defer_js);
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        for (WKScriptMessage* msg in message_handler().receivedMessages) {
+          if ([msg.body[kEventKey] isEqualToString:@"logCreateResolved"]) {
+            return YES;
+          }
+        }
+        return NO;
+      }));
+
+  bool saw_log_create_request = false;
+  bool saw_log_create_resolved = false;
+  for (WKScriptMessage* msg in message_handler().receivedMessages) {
+    NSDictionary* body = msg.body;
+    if ([body[kEventKey] isEqualToString:kLogCreateRequestEvent]) {
+      saw_log_create_request = true;
+    } else if ([body[kEventKey] isEqualToString:@"logCreateResolved"]) {
+      saw_log_create_resolved = true;
+      EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
+    }
+  }
+  EXPECT_FALSE(saw_log_create_request);
+  EXPECT_TRUE(saw_log_create_resolved);
+}
+
+// Tests that when WebKit's concurrent passthrough wins a conditional get(),
+// passkey_controller sends 'cleanupRequest' instead of 'cancelRequest' and
+// tags 'logGetResolved' with isConditional=true.
+TEST_F(
+    PasskeyControllerJavaScriptTest,
+    NavigatorCredentialsConditionalGetPassthroughNullAttachmentSendsCleanup) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsConditionalGetUrl);
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        bool saw_resolved = false;
+        bool saw_cleanup = false;
+        for (WKScriptMessage* msg in message_handler().receivedMessages) {
+          NSString* event = msg.body[kEventKey];
+          if ([event isEqualToString:@"logGetResolved"]) {
+            saw_resolved = true;
+          } else if ([event isEqualToString:kCleanupRequestEvent]) {
+            saw_cleanup = true;
+          }
+        }
+        return saw_resolved && saw_cleanup;
+      }));
+
+  bool saw_cancel = false;
+  bool saw_log_get_request = false;
+  for (WKScriptMessage* msg in message_handler().receivedMessages) {
+    NSDictionary* body = msg.body;
+    NSString* event = body[kEventKey];
+    if ([event isEqualToString:kCancelRequestEvent]) {
+      saw_cancel = true;
+    } else if ([event isEqualToString:kLogGetRequestEvent]) {
+      saw_log_get_request = true;
+    } else if ([event isEqualToString:@"logGetResolved"] ||
+               [event isEqualToString:kCleanupRequestEvent]) {
+      EXPECT_NSEQ(@YES, body[kIsConditionalKey]);
+    }
+  }
+  EXPECT_FALSE(saw_cancel);
+  EXPECT_FALSE(saw_log_get_request);
+}
+
+// Tests that aborting a modal get() via AbortSignal sends 'cancelRequest' with
+// isConditional=false.
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalGetAbortSignalSendsCancelRequest) {
+  GURL another_url = server().GetURL(kAnotherPageUrl);
+  ASSERT_TRUE(LoadUrl(another_url));
+
+  NSString* abort_js = @"window.abortController = new AbortController();"
+                       @"navigator.credentials.get({"
+                       @"  signal: window.abortController.signal,"
+                       @"  publicKey: { challenge: new ArrayBuffer(0) }"
+                       @"}).catch(() => {});";
+  web::test::ExecuteJavaScriptInWebView(web_view(), abort_js);
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  ASSERT_NSEQ(kHandleGetRequestEvent,
+              message_handler().lastReceivedMessage.body[kEventKey]);
+
+  web::test::ExecuteJavaScriptInWebView(web_view(),
+                                        @"window.abortController.abort();");
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return [message_handler().lastReceivedMessage.body[kEventKey]
+            isEqualToString:kCancelRequestEvent];
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kCancelRequestEvent, body[kEventKey]);
+  EXPECT_NSEQ(@NO, body[kIsConditionalKey]);
+}
+
+// Tests that in Control (conditional flag disabled), conditional get()
+// passthrough tags logGetRequest with isConditional=true.
+// Note: test name intentionally omits "Conditional" so the fixture keeps
+// kIOSPasskeyConditionalLoginWithShim disabled.
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsAutofillGetControlLogsMediationFlag) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsConditionalGetUrl);
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kLogGetRequestEvent, body[kEventKey]);
+  EXPECT_NSEQ(@YES, body[kIsConditionalKey]);
 }
 
 }  // namespace webauthn

@@ -125,6 +125,7 @@ source_set("unit_tests") {
     "passkey_tab_helper_unittest.mm",
   ]
   deps = [
+    ":features",
     ":ios",
     ":js_tests",
     ":test_support",
@@ -144,6 +145,7 @@ source_set("unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//components/webauthn/core/browser/device_authorization:features",
     "//device/fido/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

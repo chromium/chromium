@@ -72,6 +72,12 @@ enum class PasskeyUserVerificationStatus {
   kCompleted,
 };
 
+// Mediation mode of a WebAuthn passkey request.
+enum class PasskeyRequestMediation {
+  kModal,
+  kConditional,
+};
+
 // Callback to be called once trusted vault keys and their versions are fetched
 // by `PasskeyKeychainProvider`.
 using KeysWithVersionsFetchedCallback = base::OnceCallback<

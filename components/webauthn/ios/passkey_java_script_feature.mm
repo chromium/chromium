@@ -38,6 +38,8 @@ namespace {
 
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
+constexpr char kPasskeyParsingErrorHistogram[] =
+    "WebAuthentication.IOS.PasskeyParsingError";
 
 // Placeholder logic.
 constexpr char kHandlePasskeyRequestsPlaceholder[] =
@@ -140,9 +142,12 @@ bool ValidateFeatureUsageForGet(const AssertionRequestParams& request_params,
 }
 
 // Helper to determine the logging event type based on the parsed script event.
-WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
-    PasskeyScriptEvent event) {
+// Returns std::nullopt for internal events that should not be logged to UMA.
+std::optional<WebAuthenticationIOSContentAreaEvent>
+ToWebAuthenticationIOSContentAreaEvent(PasskeyScriptEvent event) {
   switch (event) {
+    case PasskeyScriptEvent::kCleanupRequest:
+      return std::nullopt;
     case PasskeyScriptEvent::kHandleGetRequest:
     case PasskeyScriptEvent::kLogGetRequest:
       return WebAuthenticationIOSContentAreaEvent::kGetRequested;
@@ -169,6 +174,40 @@ WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
       return WebAuthenticationIOSContentAreaEvent::
           kSignalAllAcceptedCredentialsRequested;
   }
+}
+
+// Returns whether `event` is only used for metrics logging and requires no
+// further browser-side handling.
+bool IsLogOnlyEvent(PasskeyScriptEvent event) {
+  switch (event) {
+    case PasskeyScriptEvent::kLogGetRequest:
+    case PasskeyScriptEvent::kLogCreateRequest:
+    case PasskeyScriptEvent::kLogGetResolvedGpm:
+    case PasskeyScriptEvent::kLogGetResolvedNonGpm:
+    case PasskeyScriptEvent::kLogCreateResolvedGpm:
+    case PasskeyScriptEvent::kLogCreateResolvedNonGpm:
+      return true;
+    case PasskeyScriptEvent::kCancelRequest:
+    case PasskeyScriptEvent::kCleanupRequest:
+    case PasskeyScriptEvent::kHandleGetRequest:
+    case PasskeyScriptEvent::kHandleCreateRequest:
+    case PasskeyScriptEvent::kSignalUnknownCredential:
+    case PasskeyScriptEvent::kSignalCurrentUserDetails:
+    case PasskeyScriptEvent::kSignalAllAcceptedCredentials:
+      return false;
+  }
+}
+
+// Builds `RequestInfo` from `dict` and logs a parsing error metric on failure.
+std::optional<IOSPasskeyClient::RequestInfo> ParseRequestInfo(
+    const base::DictValue& dict) {
+  auto request_info = BuildRequestInfo(dict);
+  if (!request_info.has_value()) {
+    base::UmaHistogramEnumeration(kPasskeyParsingErrorHistogram,
+                                  request_info.error());
+    return std::nullopt;
+  }
+  return std::move(*request_info);
 }
 
 // Returns the string representation of a WebAuthnError's name.
@@ -347,24 +386,14 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  passkey_tab_helper->LogEvent(ToWebAuthenticationIOSContentAreaEvent(*event));
+  std::optional<WebAuthenticationIOSContentAreaEvent> content_area_event =
+      ToWebAuthenticationIOSContentAreaEvent(*event);
+  if (content_area_event.has_value()) {
+    passkey_tab_helper->LogEvent(*content_area_event,
+                                 ParsePasskeyRequestMediation(dict));
+  }
 
-  bool is_handle_get_request_event =
-      (*event == PasskeyScriptEvent::kHandleGetRequest);
-  bool is_handle_create_request_event =
-      (*event == PasskeyScriptEvent::kHandleCreateRequest);
-  bool is_cancel_request_event = (*event == PasskeyScriptEvent::kCancelRequest);
-  bool is_signal_unknown_credential_event =
-      (*event == PasskeyScriptEvent::kSignalUnknownCredential);
-  bool is_signal_current_user_details_event =
-      (*event == PasskeyScriptEvent::kSignalCurrentUserDetails);
-  bool is_signal_all_accepted_credentials_event =
-      (*event == PasskeyScriptEvent::kSignalAllAcceptedCredentials);
-
-  if (!is_handle_get_request_event && !is_handle_create_request_event &&
-      !is_cancel_request_event && !is_signal_unknown_credential_event &&
-      !is_signal_current_user_details_event &&
-      !is_signal_all_accepted_credentials_event) {
+  if (IsLogOnlyEvent(*event)) {
     return;
   }
 
@@ -374,91 +403,97 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (is_signal_unknown_credential_event) {
-    if (auto params = BuildSignalUnknownCredentialParams(dict)) {
-      passkey_tab_helper->HandleSignalUnknownCredentialEvent(
-          message.security_origin(), *std::move(params));
-    }
-    return;
-  }
+  switch (*event) {
+    case PasskeyScriptEvent::kLogGetRequest:
+    case PasskeyScriptEvent::kLogCreateRequest:
+    case PasskeyScriptEvent::kLogGetResolvedGpm:
+    case PasskeyScriptEvent::kLogGetResolvedNonGpm:
+    case PasskeyScriptEvent::kLogCreateResolvedGpm:
+    case PasskeyScriptEvent::kLogCreateResolvedNonGpm:
+      return;
+    case PasskeyScriptEvent::kSignalUnknownCredential:
+      if (auto params = BuildSignalUnknownCredentialParams(dict)) {
+        passkey_tab_helper->HandleSignalUnknownCredentialEvent(
+            message.security_origin(), *std::move(params));
+      }
+      return;
+    case PasskeyScriptEvent::kSignalCurrentUserDetails:
+      if (auto params = BuildSignalCurrentUserDetailsParams(dict)) {
+        passkey_tab_helper->HandleSignalCurrentUserDetailsEvent(
+            message.security_origin(), *std::move(params));
+      }
+      return;
+    case PasskeyScriptEvent::kSignalAllAcceptedCredentials:
+      if (auto params = BuildSignalAllAcceptedCredentialsParams(dict)) {
+        passkey_tab_helper->HandleSignalAllAcceptedCredentialsEvent(
+            message.security_origin(), *std::move(params));
+      }
+      return;
+    case PasskeyScriptEvent::kCancelRequest:
+    case PasskeyScriptEvent::kCleanupRequest:
+      if (auto request_info = ParseRequestInfo(dict)) {
+        passkey_tab_helper->HandleCancelRequestEvent(std::move(*request_info));
+      }
+      return;
+    case PasskeyScriptEvent::kHandleCreateRequest: {
+      auto request_info = ParseRequestInfo(dict);
+      if (!request_info.has_value()) {
+        return;
+      }
 
-  if (is_signal_current_user_details_event) {
-    if (auto params = BuildSignalCurrentUserDetailsParams(dict)) {
-      passkey_tab_helper->HandleSignalCurrentUserDetailsEvent(
-          message.security_origin(), *std::move(params));
-    }
-    return;
-  }
+      auto registration_request_params =
+          BuildRegistrationRequestParams(*request_info, dict);
+      if (!registration_request_params.has_value()) {
+        base::UmaHistogramEnumeration(kPasskeyParsingErrorHistogram,
+                                      registration_request_params.error());
+        passkey_tab_helper->DeferToRenderer(
+            std::move(*request_info),
+            PasskeyRequestParams::RequestType::kUnknown);
+        return;
+      }
 
-  if (is_signal_all_accepted_credentials_event) {
-    if (auto params = BuildSignalAllAcceptedCredentialsParams(dict)) {
-      passkey_tab_helper->HandleSignalAllAcceptedCredentialsEvent(
-          message.security_origin(), *std::move(params));
-    }
-    return;
-  }
+      if (!ValidateFeatureUsageForCreate(*registration_request_params,
+                                         message.is_user_interacting(),
+                                         passkey_tab_helper)) {
+        // TODO(crbug.com/460485333): Log the error.
+        passkey_tab_helper->DeferToRenderer(
+            std::move(*request_info), registration_request_params->Type());
+        return;
+      }
 
-  auto request_info = BuildRequestInfo(dict);
-  if (!request_info.has_value()) {
-    base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
-                                  request_info.error());
-    return;
-  }
-
-  if (is_cancel_request_event) {
-    passkey_tab_helper->HandleCancelRequestEvent(std::move(*request_info));
-    return;
-  }
-
-  if (is_handle_create_request_event) {
-    auto registration_request_params =
-        BuildRegistrationRequestParams(*request_info, dict);
-
-    if (!registration_request_params.has_value()) {
-      base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
-                                    registration_request_params.error());
-      passkey_tab_helper->DeferToRenderer(
-          std::move(*request_info),
-          PasskeyRequestParams::RequestType::kUnknown);
+      passkey_tab_helper->HandleCreateRequestedEvent(
+          std::move(*registration_request_params));
       return;
     }
+    case PasskeyScriptEvent::kHandleGetRequest: {
+      auto request_info = ParseRequestInfo(dict);
+      if (!request_info.has_value()) {
+        return;
+      }
 
-    if (!ValidateFeatureUsageForCreate(*registration_request_params,
-                                       message.is_user_interacting(),
-                                       passkey_tab_helper)) {
-      // TODO(crbug.com/460485333): Log the error.
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
-                                          registration_request_params->Type());
+      auto assertion_request_params =
+          BuildAssertionRequestParams(*request_info, dict);
+      if (!assertion_request_params.has_value()) {
+        base::UmaHistogramEnumeration(kPasskeyParsingErrorHistogram,
+                                      assertion_request_params.error());
+        passkey_tab_helper->DeferToRenderer(
+            std::move(*request_info),
+            PasskeyRequestParams::RequestType::kUnknown);
+        return;
+      }
+
+      if (!ValidateFeatureUsageForGet(*assertion_request_params,
+                                      message.is_user_interacting())) {
+        // TODO(crbug.com/460485333): Log the error.
+        passkey_tab_helper->DeferToRenderer(std::move(*request_info),
+                                            assertion_request_params->Type());
+        return;
+      }
+
+      passkey_tab_helper->HandleGetRequestedEvent(
+          std::move(*assertion_request_params));
       return;
     }
-
-    passkey_tab_helper->HandleCreateRequestedEvent(
-        std::move(*registration_request_params));
-    return;
-  }
-
-  if (is_handle_get_request_event) {
-    auto assertion_request_params =
-        BuildAssertionRequestParams(*request_info, dict);
-    if (!assertion_request_params.has_value()) {
-      base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
-                                    assertion_request_params.error());
-      passkey_tab_helper->DeferToRenderer(
-          std::move(*request_info),
-          PasskeyRequestParams::RequestType::kUnknown);
-      return;
-    }
-
-    if (!ValidateFeatureUsageForGet(*assertion_request_params,
-                                    message.is_user_interacting())) {
-      // TODO(crbug.com/460485333): Log the error.
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
-                                          assertion_request_params->Type());
-      return;
-    }
-
-    passkey_tab_helper->HandleGetRequestedEvent(
-        std::move(*assertion_request_params));
   }
 }
 

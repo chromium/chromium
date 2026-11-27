@@ -21,6 +21,7 @@ constexpr char kEvent[] = "event";
 
 // Message event types.
 constexpr char kCancelRequest[] = "cancelRequest";
+constexpr char kCleanupRequest[] = "cleanupRequest";
 constexpr char kHandleGetRequest[] = "handleGetRequest";
 constexpr char kHandleCreateRequest[] = "handleCreateRequest";
 constexpr char kLogGetRequest[] = "logGetRequest";
@@ -617,6 +618,9 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
   if (*event_string == kCancelRequest) {
     return PasskeyScriptEvent::kCancelRequest;
   }
+  if (*event_string == kCleanupRequest) {
+    return PasskeyScriptEvent::kCleanupRequest;
+  }
   if (*event_string == kHandleGetRequest) {
     return PasskeyScriptEvent::kHandleGetRequest;
   }
@@ -678,6 +682,21 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
   }
 
   return std::nullopt;
+}
+
+std::optional<PasskeyRequestMediation> ParsePasskeyRequestMediation(
+    const base::DictValue& dict) {
+  std::optional<bool> is_conditional = dict.FindBool(kIsConditional);
+  if (!is_conditional.has_value()) {
+    if (const base::DictValue* request_dict = dict.FindDict(kRequest)) {
+      is_conditional = request_dict->FindBool(kIsConditional);
+    }
+  }
+  if (!is_conditional.has_value()) {
+    return std::nullopt;
+  }
+  return *is_conditional ? PasskeyRequestMediation::kConditional
+                         : PasskeyRequestMediation::kModal;
 }
 
 }  // namespace webauthn

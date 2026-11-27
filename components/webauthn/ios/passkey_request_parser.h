@@ -9,6 +9,7 @@
 #import "base/types/expected.h"
 #import "base/values.h"
 #import "components/webauthn/ios/passkey_request_params.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "url/origin.h"
 
 namespace webauthn {
@@ -16,6 +17,7 @@ namespace webauthn {
 // Events received from the Passkey JavaScript shim.
 enum class PasskeyScriptEvent {
   kCancelRequest,
+  kCleanupRequest,
   kHandleGetRequest,
   kHandleCreateRequest,
   kLogGetRequest,
@@ -113,6 +115,12 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
     const base::DictValue& dict,
     const url::Origin& caller_origin,
     IsGpmPasskeyFunc is_gpm_passkey_func);
+
+// Extracts the mediation mode (modal vs conditional) from the script message
+// dictionary if present (at top-level "isConditional" or nested under
+// "request.isConditional").
+std::optional<PasskeyRequestMediation> ParsePasskeyRequestMediation(
+    const base::DictValue& dict);
 
 }  // namespace webauthn
 

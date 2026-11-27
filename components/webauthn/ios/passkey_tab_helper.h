@@ -78,10 +78,16 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   ~PasskeyTabHelper() override;
 
-  // Logs metric indicating that an event of the given type occurred.
-  void LogEvent(WebAuthenticationIOSContentAreaEvent event_type);
+  // Logs metric indicating that an event of the given type occurred. When
+  // `mediation` is provided, also logs to the corresponding `.Modal` or
+  // `.Conditional` variant histogram.
+  void LogEvent(
+      WebAuthenticationIOSContentAreaEvent event_type,
+      std::optional<PasskeyRequestMediation> mediation = std::nullopt);
 
-  // Handles passkey cancellation requests triggered by an AbortSignal.
+  // Handles passkey request cancellation triggered by an `AbortSignal` and
+  // internal cleanup (e.g., when a concurrent WebKit conditional passthrough
+  // request wins).
   void HandleCancelRequestEvent(
       webauthn::IOSPasskeyClient::RequestInfo request_info);
 
