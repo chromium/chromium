@@ -4343,7 +4343,6 @@ crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/capturing_bo
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/coalesced_events_attributes.https.html?mouse [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/coalesced_events_attributes.https.html?touch [ Skip Timeout ]
-crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault-passive.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/compat/pointerevent_mouseevent_key_pressed.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/pointerevents/compat/pointerevent_preventdefault_pointerdown_dblclick.html?touch [ Skip Timeout ]

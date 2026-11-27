@@ -18,12 +18,12 @@
 </style>
 <h1>Verifies that pointerup/down are fired correctly for corresponding mouse events on the scollbar.</h1>
 <div id="target">
-<div id="spacer"></div>
+  <div id="spacer"></div>
 </div>
 
-<div id="console"></div>
-
 <script>
+"use strict";
+
 var receivedEvents = [];
 var targetDiv = document.getElementById('target');
 
@@ -38,7 +38,6 @@ function init() {
 
 function performActions(x, y){
   return new test_driver.Actions()
-        .pointerMove(0, 0)
         .pointerMove(x, y)
         .pointerDown(0)
         .pointerUp(0)
@@ -47,16 +46,20 @@ function performActions(x, y){
 }
 
 function runTests() {
+  var scrollbarWidth = getElementScrollbarWidth(targetDiv);
   var rect = targetDiv.getBoundingClientRect();
-  var x1 = rect.right - 5;
+  var x1 = rect.right - scrollbarWidth / 2;
   var y1 = rect.top + 20;
 
-  test(function(){
-    assert_equals(targetDiv, document.elementFromPoint(x1,y1),
-      "Didn't hit the scrollbar as expected");
-  }, `Test point (${x1},${y1}) is on the scrollbar`);
-
   promise_test(async () => {
+    // Skip the test on platforms with overlay scrollbars.
+    if (scrollbarWidth <= 0) {
+      return;
+    }
+    // With a classic scrollbar, (x1, y1) hits #target's scrollbar instead of
+    // #spacer beneath the scrollbar.
+    assert_equals(document.elementFromPoint(x1, y1), targetDiv,
+      "Didn't hit the scrollbar as expected");
     await performActions(Math.ceil(x1), Math.ceil(y1));
     assert_array_equals(receivedEvents, ["pointerdown@target", "mousedown@target",
       "pointerup@target", "mouseup@target"]);

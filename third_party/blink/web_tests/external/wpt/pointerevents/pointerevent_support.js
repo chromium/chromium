@@ -554,3 +554,13 @@ function preventDefaultPointerdownOnce(target, test) {
     }
   });
 }
+
+// Returns the width of the vertical scrollbar for |element|, or 0 if it has no
+// layout-consuming scrollbar (e.g., overlay scrollbars).
+function getElementScrollbarWidth(element) {
+  const styles = window.getComputedStyle(element);
+  const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+  const borderRight = parseFloat(styles.borderRightWidth) || 0;
+
+  return element.offsetWidth - element.clientWidth - borderLeft - borderRight;
+}
