@@ -2841,7 +2841,7 @@ source_set("blink_fuzzer_test_support") {
 }
 
 if (is_android) {
-  java_group("blink_fuzzer_test_support_assets") {
+  java_group("blink_fuzzer_test_support_java") {
     testonly = true
     visibility = []  # Allow re-assignment of list.
     visibility = [ "*" ]

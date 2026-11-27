@@ -1212,7 +1212,6 @@ if (!is_robolectric && enable_java_templates) {
       _dep_label = get_label_info(_dep, "label_no_toolchain")
       if (filter_include([ _dep_label ], java_resource_patterns) != []) {
         _assetres_deps += [ _dep ]
-        _lib_walk_deps += [ _dep ]
       } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
         _expanded_lib_deps += [ _dep_label ]
         _lib_walk_deps += [ _dep ]
@@ -1244,6 +1243,9 @@ if (!is_robolectric && enable_java_templates) {
         filter_include([ get_label_info(":$_main_target_name",
                                         "label_no_toolchain") ],
                        java_resource_patterns) != []
+    assert(
+        !_is_resource_group || _lib_walk_deps == [],
+        "Resource-named java_group(\"$target_name\") cannot wrap java_library deps: $_lib_walk_deps")
 
     foreach(_group_name, _group_names) {
       group("${_main_target_name}__$_group_name") {
@@ -1292,6 +1294,9 @@ if (!is_robolectric && enable_java_templates) {
       }
       metadata = {
         android_java_walk_keys = _lib_walk_deps
+
+        # Consumed by jni_zero to skip resource and non-Java deps.
+        java_walk_keys = _lib_walk_deps
         if (_is_resource_group) {
           # Consumed by generate_r_java() and resource, manifest, lint,
           # asset, and size-info walks when this resource-named java_group()
@@ -2742,6 +2747,11 @@ if (!is_robolectric && enable_java_templates) {
       manifest_walk_deps = _java_assetres_deps
     }
 
+    _java_host_deps = [ ":${_java_target_name}__host" ]
+    if (defined(invoker.apk_under_test)) {
+      _java_host_deps += [ "${invoker.apk_under_test}__java__host" ]
+    }
+
     _final_deps = [ ":$_java_target_name" ]
 
     _compile_resources_target = "${_template_name}__compile_resources"
@@ -3149,10 +3159,7 @@ if (!is_robolectric && enable_java_templates) {
               # Pure dex-merge.
               enable_desugar = false
             } else {
-              deps += [ ":${_java_target_name}__host" ]
-              if (defined(invoker.apk_under_test)) {
-                deps += [ "${invoker.apk_under_test}__java__host" ]
-              }
+              deps += _java_host_deps
               input_classes_filearg =
                   "@FileArg($_rebased_build_config:processed_classpath)"
             }
@@ -3431,11 +3438,14 @@ if (!is_robolectric && enable_java_templates) {
 
         # Allows metadata collection via apk targets that traverse only java
         # deps.
-        java_walk_keys = [ ":$_java_target_name" ]
+        java_walk_keys = _java_host_deps
       }
 
       # Generate apk related operations at runtime.
       public_deps = _final_deps
+
+      # GN requires targets listed in java_walk_keys to be direct deps.
+      deps = _java_host_deps
 
       if (!defined(data_deps)) {
         data_deps = []
@@ -4906,10 +4916,12 @@ if (!is_robolectric && enable_java_templates) {
 
     # Make build config, which is required for synchronized proguarding.
     _module_java_targets = []
+    _module_java_host_targets = []
     _module_targets = []
     foreach(_module, _modules) {
       _module_targets += [ _module.module_target ]
       _module_java_targets += [ "${_module.module_target}__java" ]
+      _module_java_host_targets += [ "${_module.module_target}__java__host" ]
     }
 
     # Used to expose the module Java targets of the bundle.
@@ -5347,8 +5359,16 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(_size_info_target)) {
         public_deps += [ ":$_size_info_target" ]
       }
+
+      # GN requires targets listed in java_walk_keys to be direct deps.
+      deps = _module_java_host_targets
       if (_enable_lint) {
         validations = [ ":${target_name}__lint" ]
+      }
+      metadata = {
+        # Allows metadata collection (e.g. jni_zero) via bundle targets that
+        # traverses only java deps.
+        java_walk_keys = _module_java_host_targets
       }
     }
 
