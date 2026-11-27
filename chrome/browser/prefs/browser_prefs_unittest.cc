@@ -25,6 +25,14 @@
 #include "chrome/common/pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "components/prefs/testing_pref_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 class BrowserPrefsTest : public testing::Test {
@@ -45,6 +53,76 @@ class BrowserPrefsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kTestDohTemplate[] = "https://doh.example/dns-query{?dns}";
+constexpr char kTestDohSalt[] = "testsalt";
+
+class BrowserPrefsLocalStateTest : public testing::Test {
+ protected:
+  BrowserPrefsLocalStateTest() { RegisterLocalState(local_state_.registry()); }
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
+};
+
+TEST_F(BrowserPrefsLocalStateTest, ClearsUserSetSecureDnsPrefs) {
+  local_state_.SetString(prefs::kDnsOverHttpsMode, "secure");
+  local_state_.SetString(prefs::kDnsOverHttpsTemplates, kTestDohTemplate);
+  local_state_.SetString(ash::prefs::kDnsOverHttpsSalt, kTestDohSalt);
+  local_state_.SetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                         kTestDohTemplate);
+
+  MigrateObsoleteLocalStatePrefs(&local_state_);
+
+  EXPECT_FALSE(local_state_.GetUserPrefValue(prefs::kDnsOverHttpsMode));
+  EXPECT_FALSE(local_state_.GetUserPrefValue(prefs::kDnsOverHttpsTemplates));
+  EXPECT_FALSE(local_state_.GetUserPrefValue(ash::prefs::kDnsOverHttpsSalt));
+  EXPECT_FALSE(local_state_.GetUserPrefValue(
+      ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers));
+}
+
+TEST_F(BrowserPrefsLocalStateTest, KeepsPolicySecureDnsPrefs) {
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsMode, base::Value("secure"));
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsTemplates,
+                              base::Value(kTestDohTemplate));
+  local_state_.SetManagedPref(ash::prefs::kDnsOverHttpsSalt,
+                              base::Value(kTestDohSalt));
+  local_state_.SetManagedPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                              base::Value(kTestDohTemplate));
+
+  MigrateObsoleteLocalStatePrefs(&local_state_);
+
+  EXPECT_EQ(local_state_.GetString(prefs::kDnsOverHttpsMode), "secure");
+  EXPECT_EQ(local_state_.GetString(prefs::kDnsOverHttpsTemplates),
+            kTestDohTemplate);
+  EXPECT_EQ(local_state_.GetString(ash::prefs::kDnsOverHttpsSalt),
+            kTestDohSalt);
+  EXPECT_EQ(
+      local_state_.GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers),
+      kTestDohTemplate);
+}
+
+TEST_F(BrowserPrefsLocalStateTest, KillSwitchOffKeepsUserSetSecureDnsPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kKeepUserSecureDnsOutOfLocalState);
+  local_state_.SetString(prefs::kDnsOverHttpsTemplates, kTestDohTemplate);
+  local_state_.SetString(ash::prefs::kDnsOverHttpsSalt, kTestDohSalt);
+  local_state_.SetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                         kTestDohTemplate);
+
+  MigrateObsoleteLocalStatePrefs(&local_state_);
+
+  EXPECT_EQ(local_state_.GetString(prefs::kDnsOverHttpsTemplates),
+            kTestDohTemplate);
+  EXPECT_EQ(local_state_.GetString(ash::prefs::kDnsOverHttpsSalt),
+            kTestDohSalt);
+  EXPECT_EQ(
+      local_state_.GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers),
+      kTestDohTemplate);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

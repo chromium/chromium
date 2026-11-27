@@ -83,11 +83,13 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -425,12 +427,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDnsOverHttpsMode] = settings_api::PrefType::kString;
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplates] =
       settings_api::PrefType::kString;
-#if BUILDFLAG(IS_CHROMEOS)
-  (*s_allowlist)[ash::prefs::kDnsOverHttpsSalt] =
-      settings_api::PrefType::kString;
-  (*s_allowlist)[ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers] =
-      settings_api::PrefType::kString;
-#endif
 
   // Privacy Guide
   (*s_allowlist)[::prefs::kPrivacyGuideViewed] =
@@ -1798,6 +1794,16 @@ bool PrefsUtil::IsPrefUserModifiable(const std::string& pref_name) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (pref_name == ash::prefs::kUserTimezone &&
       !settings_private::IsTimezoneChangeAllowed(profile_)) {
+    return false;
+  }
+
+  // `local_state` is shared by all users, so user-set secure DNS settings must
+  // not be stored there.
+  if ((pref_name == prefs::kDnsOverHttpsMode ||
+       pref_name == prefs::kDnsOverHttpsTemplates) &&
+      FindServiceForPref(pref_name) == g_browser_process->local_state() &&
+      base::FeatureList::IsEnabled(
+          ash::features::kKeepUserSecureDnsOutOfLocalState)) {
     return false;
   }
 #endif

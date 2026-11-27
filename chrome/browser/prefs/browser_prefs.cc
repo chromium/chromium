@@ -361,9 +361,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -2847,6 +2849,18 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 11/2026.
   local_state->ClearPref(kPumaRcClientId);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 11/2026. User-set secure DNS settings are stored in profile prefs;
+  // Local State holds policy-provided DoH configuration only.
+  if (base::FeatureList::IsEnabled(
+          ash::features::kKeepUserSecureDnsOutOfLocalState)) {
+    local_state->ClearPref(prefs::kDnsOverHttpsMode);
+    local_state->ClearPref(prefs::kDnsOverHttpsTemplates);
+    local_state->ClearPref(ash::prefs::kDnsOverHttpsSalt);
+    local_state->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

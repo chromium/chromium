@@ -36,68 +36,6 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace {
-void MigratePrefIfNecessary(const std::string& pref_name,
-                            PrefService* from_local_state,
-                            PrefService* to_profile_prefs) {
-  const base::Value* user_pref_value =
-      to_profile_prefs->GetUserPrefValue(pref_name);
-  // If there's already a user-set value in the profile prefs, do not override
-  // it.
-  if (user_pref_value) {
-    return;
-  }
-  const base::Value* pref_value = from_local_state->GetUserPrefValue(pref_name);
-  if (!pref_value) {
-    return;
-  }
-  to_profile_prefs->Set(pref_name, *pref_value);
-
-  // TODO(b/323547098): Clear the DoH user-set local state pref once the
-  // migration code has ran for a couple of milestones.
-  //  from_local_state->ClearPref(pref_name);
-}
-
-bool IsUserSetSecureDnsConfigInvalid(const PrefService* local_state) {
-  const base::Value* secure_dns_mode =
-      local_state->GetUserPrefValue(ash::chrome_prefs::kDnsOverHttpsMode);
-
-  // Can be missing in tests.
-  if (!secure_dns_mode) {
-    return false;
-  }
-  if (*secure_dns_mode != base::Value(SecureDnsConfig::kModeSecure)) {
-    return false;
-  }
-
-  const base::Value* secure_dns_template =
-      local_state->GetUserPrefValue(ash::chrome_prefs::kDnsOverHttpsTemplates);
-  if (!secure_dns_template || *secure_dns_template == base::Value()) {
-    return true;
-  }
-
-  return false;
-}
-
-// Although DNS configurations are user specific, the initial implementation
-// stored the secure DNS config to local_state, making it available to all users
-// of the device. Part of restricting the user-set secure DNS preference to the
-// user session is migrating the related preferences from local_state to profile
-// prefs. See b/323547098 for details.
-void MigrateDnsOverHttpsPrefs(PrefService* from_local_state,
-                              PrefService* to_profile_prefs) {
-  if (IsUserSetSecureDnsConfigInvalid(from_local_state)) {
-    // Remove the invalid config. See b/335400734.
-    from_local_state->ClearPref(ash::chrome_prefs::kDnsOverHttpsMode);
-    return;
-  }
-  // Migrate local state to user pref.
-  MigratePrefIfNecessary(ash::chrome_prefs::kDnsOverHttpsTemplates,
-                         from_local_state, to_profile_prefs);
-  MigratePrefIfNecessary(ash::chrome_prefs::kDnsOverHttpsMode, from_local_state,
-                         to_profile_prefs);
-}
-}  // namespace
 namespace ash {
 
 SecureDnsManager::SecureDnsManager(
@@ -109,10 +47,9 @@ SecureDnsManager::SecureDnsManager(
       user_(user),
       is_profile_managed_(is_profile_managed) {
   CHECK(device_attributes);
-  auto* profile_prefs = user.GetProfilePrefs();
   if (!is_profile_managed) {
-    CHECK(profile_prefs) << "Profile prefs cannot be empty for unmanaged users";
-    MigrateDnsOverHttpsPrefs(local_state, profile_prefs);
+    CHECK(user.GetProfilePrefs())
+        << "Profile prefs cannot be empty for unmanaged users";
   }
   doh_templates_uri_resolver_ =
       std::make_unique<dns_over_https::TemplatesUriResolverImpl>(

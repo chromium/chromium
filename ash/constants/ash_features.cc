@@ -960,6 +960,10 @@ BASE_FEATURE(kIppFirstSetupForUsbPrinters, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Romaji/Kana mode switch for Japanese VK.
 BASE_FEATURE(kJapaneseInputModeSwitchInVK, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for keeping user-set secure DNS settings out of Local State.
+BASE_FEATURE(kKeepUserSecureDnsOutOfLocalState,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Reboots the device when a Kiosk app does not create its window within a
 // specified timeout. The app is assumed to be hung in this scenario.
 // Intended only for legacy Rooms Devices (CfMs).

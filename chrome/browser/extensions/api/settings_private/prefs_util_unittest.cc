@@ -22,17 +22,28 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #endif
 
 namespace extensions {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+constexpr char kTestDohTemplate[] = "https://doh.example/dns-query{?dns}";
+
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefsUtilTest : public testing::Test {
  public:
@@ -168,6 +179,94 @@ TEST_F(PrefsUtilTest, ChildUserTimezoneRequiresParentApproval) {
   }
 
   profile_manager_.DeleteTestingProfile(std::string(account_id.GetUserEmail()));
+}
+
+// A managed user's secure DNS write is not stored in `local_state`, even when
+// only the mode is set by policy.
+TEST_F(PrefsUtilTest, ManagedUserSecureDnsWriteNotStoredInLocalState) {
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetManagedPref(::prefs::kDnsOverHttpsMode, base::Value("off"));
+
+  base::Value templates(kTestDohTemplate);
+  EXPECT_EQ(prefs_util_->SetPref(::prefs::kDnsOverHttpsTemplates, &templates),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_FALSE(local_state->GetUserPrefValue(::prefs::kDnsOverHttpsTemplates));
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetUserPrefValue(::prefs::kDnsOverHttpsTemplates));
+}
+
+// Managed users without a secure DNS policy (e.g. Family Link) read the secure
+// DNS prefs from `local_state`, but can't write them there.
+TEST_F(PrefsUtilTest, ManagedUserWithoutDohPolicyUsesLocalStateReadOnly) {
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  ASSERT_FALSE(local_state->IsManagedPreference(::prefs::kDnsOverHttpsMode));
+  local_state->SetString(::prefs::kDnsOverHttpsMode, "automatic");
+  profile_->GetPrefs()->SetString(::prefs::kDnsOverHttpsMode, "off");
+
+  std::optional<api::settings_private::PrefObject> pref =
+      prefs_util_->GetPref(::prefs::kDnsOverHttpsMode);
+  ASSERT_TRUE(pref.has_value());
+  ASSERT_TRUE(pref->value);
+  EXPECT_EQ(pref->value->GetString(), "automatic");
+
+  base::Value mode("secure");
+  base::Value templates(kTestDohTemplate);
+  EXPECT_EQ(prefs_util_->SetPref(::prefs::kDnsOverHttpsMode, &mode),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(prefs_util_->SetPref(::prefs::kDnsOverHttpsTemplates, &templates),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(local_state->GetString(::prefs::kDnsOverHttpsMode), "automatic");
+  EXPECT_FALSE(local_state->GetUserPrefValue(::prefs::kDnsOverHttpsTemplates));
+}
+
+TEST_F(PrefsUtilTest, ManagedUserSecureDnsWriteKillSwitchOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kKeepUserSecureDnsOutOfLocalState);
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  base::Value templates(kTestDohTemplate);
+  EXPECT_EQ(prefs_util_->SetPref(::prefs::kDnsOverHttpsTemplates, &templates),
+            settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(local_state->GetString(::prefs::kDnsOverHttpsTemplates),
+            kTestDohTemplate);
+}
+
+TEST_F(PrefsUtilTest, UnmanagedUserSecureDnsWriteStaysInProfile) {
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  base::Value templates(kTestDohTemplate);
+  EXPECT_EQ(prefs_util_->SetPref(::prefs::kDnsOverHttpsTemplates, &templates),
+            settings_private::SetPrefResult::SUCCESS);
+
+  EXPECT_EQ(profile_->GetPrefs()->GetString(::prefs::kDnsOverHttpsTemplates),
+            kTestDohTemplate);
+  EXPECT_FALSE(local_state->GetUserPrefValue(::prefs::kDnsOverHttpsTemplates));
+}
+
+// Policy-only secure DNS identifier prefs are not exposed via settingsPrivate.
+TEST_F(PrefsUtilTest, SecureDnsIdentifierPrefsNotAllowlisted) {
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  EXPECT_FALSE(prefs_util_->GetPref(ash::prefs::kDnsOverHttpsSalt).has_value());
+  EXPECT_FALSE(
+      prefs_util_->GetPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers)
+          .has_value());
+
+  base::Value salt("testsalt");
+  base::Value templates(kTestDohTemplate);
+  EXPECT_EQ(prefs_util_->SetPref(ash::prefs::kDnsOverHttpsSalt, &salt),
+            settings_private::SetPrefResult::PREF_NOT_FOUND);
+  EXPECT_EQ(prefs_util_->SetPref(
+                ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers, &templates),
+            settings_private::SetPrefResult::PREF_NOT_FOUND);
+  EXPECT_FALSE(local_state->GetUserPrefValue(ash::prefs::kDnsOverHttpsSalt));
+  EXPECT_FALSE(local_state->GetUserPrefValue(
+      ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
