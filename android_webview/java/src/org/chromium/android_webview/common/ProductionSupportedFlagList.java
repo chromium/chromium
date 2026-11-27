@@ -173,16 +173,8 @@ public final class ProductionSupportedFlagList {
                         + " AccessibilityNodeInfoCompat.MathInfoCompat to screen readers."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
-                "Enables Magnification and other views to keep the text cursor onscreen when"
-                        + " physical keyboard is attached."),
-        Flag.baseFeature(
-                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
                 "When enabled, the Android framework will be notified when the text cursor or input"
                         + " focus moves and a physical keyboard is attached."),
-        Flag.baseFeature(
-                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD,
-                "Enables Magnification and other views to keep the text cursor onscreen when no"
-                        + " physical keyboard is attached."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD,
                 "When enabled, the Android framework will be notified when the text cursor or input"
@@ -209,10 +201,10 @@ public final class ProductionSupportedFlagList {
                         + " back-pressure in this case. This can result in wasted work and "
                         + " contention, but should regularize the timing of client rendering."),
         Flag.baseFeature(
-                "AddressSorterConnectCache",
+                NetFeatures.ADDRESS_SORTER_CONNECT_CACHE,
                 "Enables caching the results of UDP connect() results in AddressSorterPosix."),
         Flag.baseFeature(
-                "AddWarningShownTSToClientSafeBrowsingReport",
+                SafeBrowsingFeatures.ADD_WARNING_SHOWN_TS_TO_CLIENT_SAFE_BROWSING_REPORT,
                 "When enabled, client reports will include a timestamp of when the warning was "
                         + "shown to the user"),
         Flag.baseFeature(
@@ -223,7 +215,7 @@ public final class ProductionSupportedFlagList {
                 "Enables controlling the QUIC slow timer"),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
-                "AllowDatapipeDrainedAsBytesConsumerInBFCache",
+                BlinkFeatures.ALLOW_DATAPIPE_DRAINED_AS_BYTES_CONSUMER_IN_BF_CACHE,
                 "When enabled, allow pages with drained datapipe into bfcache."),
         Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
@@ -288,7 +280,7 @@ public final class ProductionSupportedFlagList {
                 "Removes the setLocalFocus workaround and delay for multi-display setups on "
                         + "Baklava and above."),
         Flag.baseFeature(
-                "AndroidSurfaceControlHdrOverlays",
+                VizFeatures.ANDROID_SURFACE_CONTROL_HDR_OVERLAYS,
                 "Enable the use of overlays on devices which support them for HDR content"
                         + " playback."),
         Flag.baseFeature(
@@ -328,7 +320,7 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
         Flag.baseFeature(NetFeatures.ASYNC_RETRY_ON_TOO_MANY_CONNECTION_ERRORS),
         Flag.baseFeature(
-                "AsyncThreadPoolInit",
+                BaseFeatures.ASYNC_THREAD_POOL_INIT,
                 "When enabled, thread pool initialization creates various thread groups'"
                         + " initial threads asynchronously on the service thread instead of"
                         + " synchronously on UI thread."),
@@ -432,7 +424,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_NEGATIVE_PATTERN_FOR_ALL_ATTRIBUTES,
                 "When enabled, parser won't try to match other attributes if any of the negative"
                         + " patterns matched."),
-        Flag.baseFeature("AvoidEntryCreationForNoStore"),
+        Flag.baseFeature(
+                NetFeatures.AVOID_ENTRY_CREATION_FOR_NO_STORE,
+                "Avoid creating net cache entries for transactions that are most likely no-store."),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
         Flag.baseFeature(
                 "AwMetricsLogTrimming",
@@ -444,7 +438,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BACKGROUND_RESOURCE_FETCH,
                 "Process resource requests in a background thread inside Blink."),
         Flag.baseFeature(
-                "BaseLockTrySpin",
+                BaseFeatures.BASE_LOCK_TRY_SPIN,
                 "When enabled, base::Lock will try to acquire the lock in user space multiple times"
                         + " before blocking in the kernel."),
         Flag.baseFeature("BatchNativeEventsInMessagePumpEpoll"),
@@ -522,12 +516,12 @@ public final class ProductionSupportedFlagList {
                         + " `ttl` parameter in the `use-as-dictionary` HTTP response header."),
         Flag.baseFeature(GpuFeatures.CONDITIONALLY_SKIP_GPU_CHANNEL_FLUSH),
         Flag.baseFeature(
-                "ConnectionKeepAliveForHttp2",
+                NetFeatures.CONNECTION_KEEP_ALIVE_FOR_HTTP2,
                 "When enabled, WebView#preconnect will use a ConnectionKeepAliveConfig for"
                     + " NetworkContext::PreconnectSocket in HTTP2, and will be informed when the"
                     + " connection drops"),
         Flag.baseFeature(
-                "ConsolidateMetricsServiceLocales",
+                MetricsFeatures.CONSOLIDATE_METRICS_SERVICE_LOCALES,
                 "Consolidate the source of locale used by MetricsService."),
         Flag.baseFeature(
                 BlinkFeatures.CONSTRUCTABLE_STYLESHEET_CACHE,
@@ -543,11 +537,11 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.CREATE_SPARE_RENDERER_FOR_DEFAULT_PROFILE,
                 "When enabled, creates a spare renderer process for the default WebView profile."),
         Flag.baseFeature(
-                "CreateWarningShownClientSafeBrowsingReports",
+                SafeBrowsingFeatures.CREATE_WARNING_SHOWN_CLIENT_SAFE_BROWSING_REPORTS,
                 "When enabled, WARNING_SHOWN client reports will be sent when a warning is "
                         + "shown to the user"),
         Flag.baseFeature(
-                "DataUrlMimeTypeParameterPreservation",
+                NetFeatures.DATA_URL_MIME_TYPE_PARAMETER_PRESERVATION,
                 "Preserve parameters in the MIME type of data: URLs."),
         Flag.baseFeature("DefaultANGLEVulkan", "Use the Vulkan backend of ANGLE."),
         Flag.baseFeature(
@@ -611,7 +605,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.DRAIN_SPDY_SESSION_SYNCHRONOUSLY_ON_REMOTE_ENDPOINT_DISCONNECT),
         Flag.baseFeature(
-                "EarlyCookieLoadOnPreconnect",
+                NetFeatures.EARLY_COOKIE_LOAD_ON_PRECONNECT,
                 "When enabled, cookies are loaded early on preconnect requests."),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),
         Flag.baseFeature(
@@ -631,7 +625,10 @@ public final class ProductionSupportedFlagList {
                         + " session connected over IPv6 attempts to migrate to an IPv4-only"
                         + " network."),
         Flag.baseFeature(NetFeatures.ENABLE_TLS13_EARLY_DATA, "Enables TLS 1.3 Early Data"),
-        Flag.baseFeature("EnsureExistingRendererAlive"),
+        Flag.baseFeature(
+                ContentFeatures.ENSURE_EXISTING_RENDERER_ALIVE,
+                "Ensures the renderer is not dead when getting the process host for a site"
+                        + " instance."),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
         Flag.baseFeature(
                 GwpAsanFeatures.EXTREME_LIGHTWEIGHT_UAF_DETECTOR,
@@ -650,7 +647,7 @@ public final class ProductionSupportedFlagList {
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),
         Flag.baseFeature(
-                "FontResourceDecodedMemoryAccounting",
+                BlinkFeatures.FONT_RESOURCE_DECODED_MEMORY_ACCOUNTING,
                 "Counts decoded font data in MemoryCache size accounting."),
         Flag.baseFeature(
                 BlinkFeatures.FORCE_WEB_CONTENTS_DARK_MODE,
@@ -713,7 +710,7 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.HTTP_CACHE_NO_VARY_SEARCH,
                 "Enables support for the No-Vary-Search response header in the HTTP disk cache"),
         Flag.baseFeature(
-                "IDBDatabaseExternalMemoryAccounting",
+                BlinkFeatures.IDB_DATABASE_EXTERNAL_MEMORY_ACCOUNTING,
                 "Report external memory held by IndexedDB connections, so it's taken into account"
                         + " in GC heuristics."),
         Flag.baseFeature(
@@ -723,7 +720,7 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.IDB_SQLITE_ON_DISK_ROLLOUT,
                 "Enables the SQLite backing store rollout for on-disk IndexedDB."),
         Flag.baseFeature(
-                "IgnoreQuicCryptoConfigMemoryPressure",
+                NetFeatures.IGNORE_QUIC_CRYPTO_CONFIG_MEMORY_PRESSURE,
                 "If true, ignore memory pressure for all network isolation partitions in the Quic"
                         + " session cache."),
         Flag.baseFeature(
@@ -735,7 +732,7 @@ public final class ProductionSupportedFlagList {
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
         Flag.baseFeature(
-                "IndexedDBConnectionDeduplication",
+                BlinkFeatures.INDEXED_DB_CONNECTION_DEDUPLICATION,
                 "Enables connection deduplication for IndexedDB."),
         Flag.baseFeature(
                 NetFeatures.INITIAL_DELAY_FOR_BROKEN_ALTERNATIVE_SERVICE,
@@ -752,7 +749,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.I_PV6_FALLBACK_BASED_ON_RTT,
                 "Enables the Happy Eyeballs slow timer to be based on the network RTT"),
-        Flag.baseFeature("IsolatesPriorityUseProcessPriority"),
+        Flag.baseFeature(ContentFeatures.ISOLATES_PRIORITY_USE_PROCESS_PRIORITY),
         Flag.baseFeature(
                 "KeepChildProcessAfterIPCReset",
                 "When enabled, child process will not terminate itself when IPC is reset."),
@@ -766,7 +763,7 @@ public final class ProductionSupportedFlagList {
                 "Defers declaration block parsing in inline stylesheets until rules match or"
                         + " are queried."),
         Flag.baseFeature(
-                "LCPTimingPredictorPrerender2",
+                BlinkFeatures.LCP_TIMING_PREDICTOR_PRERENDER2,
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
         Flag.baseFeature(
@@ -862,7 +859,7 @@ public final class ProductionSupportedFlagList {
                 "Do not throttle Javascript timers to 1Hz on hidden cross-origin frames that are"
                         + " same-agent with a visible frame."),
         Flag.baseFeature(
-                "NoVarySearchCacheLoadOnSeparateTaskRunner",
+                NetFeatures.NO_VARY_SEARCH_CACHE_LOAD_ON_SEPARATE_TASK_RUNNER,
                 "Enable loading the No Vary Search cache on a separate task runner."),
         Flag.baseFeature(
                 VizFeatures.ON_BEGIN_FRAME_THROTTLE_VIDEO,
@@ -884,11 +881,11 @@ public final class ProductionSupportedFlagList {
                 "Show stale paint from old Document until new Document is ready for subframe"
                         + " navigations."),
         Flag.baseFeature(
-                "PartitionAllocAdjustSizeWhenInForeground",
+                BaseFeatures.PARTITION_ALLOC_ADJUST_SIZE_WHEN_IN_FOREGROUND,
                 "Tuning memory allocator for speed - adjustments for foreground vs. background"
                         + " use"),
         Flag.baseFeature(
-                "PartitionAllocLargeEmptySlotSpanRing",
+                BaseFeatures.PARTITION_ALLOC_LARGE_EMPTY_SLOT_SPAN_RING,
                 "Tuning memory allocator for speed - large empty slot span ring"),
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_MEMORY_RECLAIMER,
@@ -942,7 +939,7 @@ public final class ProductionSupportedFlagList {
                 "If enabled, inline scripts will be stream compiled using a background HTML"
                         + " scanner."),
         Flag.baseFeature(
-                "PreconnectManagerDirectFastPath",
+                ContentFeatures.PRECONNECT_MANAGER_DIRECT_FAST_PATH,
                 "When enabled, PreconnectManager bypasses intermediate proxy and host lookups"
                         + " for direct StartPreconnectUrl calls and immediately issues"
                         + " NetworkContext::PreconnectSockets."),
@@ -970,12 +967,14 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "PrefetchServiceWorker",
                 "Enables SpeculationRules prefetch to ServiceWorker-controlled URLs."),
-        Flag.baseFeature("PrefetchUseContentRefactor"),
+        Flag.baseFeature(ContentFeatures.PREFETCH_USE_CONTENT_REFACTOR),
         Flag.baseFeature("PreloadingNoSamePageFragmentAnchorTracking"),
         Flag.baseFeature(
                 BlinkFeatures.PRELOAD_LINK_REL_DATA_URLS,
                 "Allow preloading data: URLs with link rel=preload"),
-        Flag.baseFeature("Prerender2FallbackPrefetchSpecRules"),
+        Flag.baseFeature(
+                ContentFeatures.PRERENDER2_FALLBACK_PREFETCH_SPEC_RULES,
+                "Triggers prefetch ahead of prerender for Speculation Rules."),
         Flag.baseFeature(
                 BlinkFeatures.PRERENDER2_MEMORY_CONTROLS, "Controls memory limits for Prerender2."),
         Flag.baseFeature(
@@ -1012,7 +1011,7 @@ public final class ProductionSupportedFlagList {
                 "Controls whether QUIC sessions are allowed to migrate to a different port when"
                         + " the current path is degrading."),
         Flag.baseFeature(
-                "QuicIgnoreRedundantOnNetworkMadeDefault",
+                NetFeatures.QUIC_IGNORE_REDUNDANT_ON_NETWORK_MADE_DEFAULT,
                 "When enabled, Quic will ignore redundant OnNetworkMadeDefault calls."),
         Flag.baseFeature(
                 NetFeatures.QUIC_PRECONNECT_INITIAL_RTT,
@@ -1023,7 +1022,8 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.QUIC_SLOW_TIMER_BASED_ON_RTT,
                 "Enables the QUIC slow timer to be based on the network RTT"),
         Flag.baseFeature(
-                "QuicUseReadMultiple", "Utilizes recvmmsg over recvmsg for Quic UDP sockets."),
+                NetFeatures.QUIC_USE_READ_MULTIPLE,
+                "Utilizes recvmmsg over recvmsg for Quic UDP sockets."),
         Flag.baseFeature(BlinkFeatures.RASTER_INDUCING_SCROLL),
         Flag.baseFeature(
                 BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
@@ -1056,13 +1056,13 @@ public final class ProductionSupportedFlagList {
                 "Determines whether to always flush Local State immediately after an UMA/UKM "
                         + "log upload."),
         Flag.baseFeature(
-                "RequiresLoadIgnoreLimitsForDomWindowsOnly",
+                BlinkFeatures.REQUIRES_LOAD_IGNORE_LIMITS_FOR_DOM_WINDOWS_ONLY,
                 "When Enabled, Sync-XHR in workers cannot bypass load limits."),
         Flag.baseFeature(
                 BlinkFeatures.RESAMPLING_SCROLL_EVENTS,
                 "Enables resampling GestureScrollUpdate events at VSync time."),
         Flag.baseFeature(
-                "ResourceEncodedMemoryAccounting",
+                BlinkFeatures.RESOURCE_ENCODED_MEMORY_ACCOUNTING,
                 "Stops counting released encoded resource data in MemoryCache size"
                         + " accounting."),
         Flag.baseFeature(
@@ -1101,10 +1101,13 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SEPARATE_DEFER_MODULE_SCRIPT_TASKS,
                 "Enables yielding to the event loop between executing deferred module scripts to"
                         + " improve responsiveness."),
-        Flag.baseFeature("ServiceWorkerAutoPreload"),
+        Flag.baseFeature(ContentFeatures.SERVICE_WORKER_AUTO_PRELOAD),
         Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization"),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"),
-        Flag.baseFeature("ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"),
+        Flag.baseFeature(
+                ContentFeatures.SERVICE_WORKER_BACKGROUND_UPDATE_FOR_REGISTERED_STORAGE_KEYS,
+                "If enabled, UI thread tasks can check ServiceWorker registration information from"
+                        + " the thread pool without waiting for running the receiving task."),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"),
         Flag.baseFeature(
                 BlinkFeatures.SET_INTERVAL_WITHOUT_CLAMP,
@@ -1126,7 +1129,7 @@ public final class ProductionSupportedFlagList {
                 "SimpleCachePrefetchExperiment2",
                 "Enables fixed-size prefetching of simple cache entry data during open."),
         Flag.baseFeature(
-                "SimpleCachePrioritizedCaching",
+                NetFeatures.SIMPLE_CACHE_PRIORITIZED_CACHING,
                 "When enabled, main frame navigation resources will be prioritized in Simple"
                         + " Cache."),
         Flag.baseFeature(
@@ -1149,7 +1152,7 @@ public final class ProductionSupportedFlagList {
                 "Start decoding in-viewport images as soon as they have loaded, "
                         + "rather than waiting for them to appear in a raster task."),
         Flag.baseFeature(
-                "SQLitePersistentCookieStoreEarlyInit",
+                NetFeatures.SQ_LITE_PERSISTENT_COOKIE_STORE_EARLY_INIT,
                 "When enabled, the cookie dababase is initialized immediately upon creation, rather"
                         + " than waiting for the first load request."),
         Flag.baseFeature(
@@ -1239,7 +1242,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.USE_AUTOMATIC_SYNC_TOKEN_MANAGEMENT,
                 "Lets ClientSharedImage handle all SyncToken management internally."),
-        Flag.baseFeature("UseContextSnapshot"),
+        Flag.baseFeature(
+                ContentFeatures.USE_CONTEXT_SNAPSHOT,
+                "If enabled, blink's context snapshot is used rather than the v8 snapshot."),
         Flag.baseFeature(
                 NetFeatures.USE_DNS_HTTPS_SVCB_ADDRESS_HINTS,
                 "Enables using address hints (ipv4hint and ipv6hint) in HTTPS DNS records."),
@@ -1293,7 +1298,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8Flag_homomorphic_ic"),
         Flag.baseFeature("V8Flag_intl_date_time_pattern_generator_cache_eviction"),
         Flag.baseFeature("V8Flag_large_page_pool"),
-        Flag.baseFeature("V8Flag_late_heap_limit_check"),
         Flag.baseFeature("V8Flag_maglev"),
         Flag.baseFeature("V8Flag_managed_zone_memory"),
         Flag.baseFeature("V8Flag_memory_reducer"),
@@ -1347,7 +1351,8 @@ public final class ProductionSupportedFlagList {
                 "WebRTCBoostMediaIOThreads",
                 "Boosts the thread types of IO threads in the video capture and network utility"
                         + " processes on the WebRTC media path."),
-        Flag.baseFeature("WebRtcPqcForDtls", "Enable Post-Quantum Cryptography in WebRTC"),
+        Flag.baseFeature(
+                BlinkFeatures.WEB_RTC_PQC_FOR_DTLS, "Enable Post-Quantum Cryptography in WebRTC"),
         Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_USE_MEDIA_THREAD_TYPES,
                 "Elevates WebRTC and media threads in the renderer to media thread types."),
@@ -1441,7 +1446,7 @@ public final class ProductionSupportedFlagList {
                 "When enabled, text-size-adjust CSS property only affects WebViews with"
                         + " TEXT_AUTOSIZING layout algorithm."),
         Flag.baseFeature(
-                "WebViewHttpCacheQuotaApi",
+                AwFeatures.WEBVIEW_HTTP_CACHE_QUOTA_API,
                 "When enabled, HTTP cache quota can be managed via support library APIs."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
@@ -1451,7 +1456,7 @@ public final class ProductionSupportedFlagList {
                 "Use Chromium's usual video poster logic instead of"
                         + " WebChromeClient.getDefaultVideoPoster()"),
         Flag.baseFeature(
-                "WebViewIgnoreDuplicateNavs",
+                AwFeatures.WEBVIEW_IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INIT_IN_CONSTRUCTOR,
@@ -1525,7 +1530,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER,
                 "Enables automatic triggering of prefetch ahead of prerender in WebView."),
-        Flag.baseFeature("WebViewPrefetchHighestPrefetchPriority"),
+        Flag.baseFeature(ContentFeatures.WEBVIEW_PREFETCH_HIGHEST_PREFETCH_PRIORITY),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
                 "Prefetches the native WebView code to memory during startup."),
