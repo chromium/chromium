@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.view.View;
 
 import org.chromium.base.test.transit.Facility;
@@ -17,10 +19,11 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.test.transit.browser_controls.BrowserControlsOffsetCondition;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 
 /**
- * The browsing toolbar, shown and interactable.
+ * The browsing toolbar, fully shown and interactable.
  *
  * <p>Entered by default with every {@link CtaPageStation}.
  */
@@ -71,5 +74,12 @@ public class ToolbarFacility extends Facility<CtaPageStation> {
         // The sign-in button only appears when the toolbar sign-in button feature is enabled.
         signinButtonElement =
                 declareOptionalView(withId(R.id.signin_button), ViewElement.unscopedOption());
+    }
+
+    @Override
+    public void declareExtraElements() {
+        declareEnterCondition(
+                BrowserControlsOffsetCondition.shown(
+                        assertNonNull(mHostStation.getActivityElement())));
     }
 }
