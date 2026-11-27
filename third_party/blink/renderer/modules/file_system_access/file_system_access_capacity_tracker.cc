@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
 
-#include "base/bits.h"
+#include <bit>
+
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -138,17 +139,13 @@ int64_t FileSystemAccessCapacityTracker::GetNextCapacityRequestSize(
   if (required_capacity <= kMinAllocationSize)
     return kMinAllocationSize;
   if (required_capacity <= kMaxAllocationDoublingSize) {
-    // The assertion makes sure that casting `required_capacity` succeeds.
-    static_assert(
-        kMaxAllocationDoublingSize <= std::numeric_limits<uint32_t>::max(),
-        "The allocation strategy will overflow.");
-    // Since the previous statements ensured that `required_capacity` <=
-    // `kMaxAllocationDoublingSize`
-    // <= std::numeric_limits<uint32_t>::max() , the cast always succeeds.
+    static_assert(kMinAllocationSize >= 0 &&
+                      kMaxAllocationDoublingSize <= (int64_t{1} << 62),
+                  "The allocation strategy will overflow.");
     // This computes (in LaTeX notation) 2^{\ceil{\log_2(r)}}, where r is
-    // `required_capacity`. The bit shift performs the exponentiation.
-    return 1 << base::bits::Log2Ceiling(
-               static_cast<uint32_t>(required_capacity));
+    // `required_capacity`.
+    return static_cast<int64_t>(
+        std::bit_ceil(static_cast<uint64_t>(required_capacity)));
   }
   // The next statements compute (in LaTeX notation) m \cdot \ceil{\frac{r}{m}},
   // where m is `kMaxAllocationDoublingSize` and r is `required_capacity`.
