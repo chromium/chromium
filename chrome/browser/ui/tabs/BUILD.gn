@@ -1088,6 +1088,7 @@ if (!is_android) {
       "tab_copy_links_helper_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
       "tab_group_focus_iph_controller_unittest.cc",
+      "tab_group_unittest.cc",
       "tab_menu_model_unittest.cc",
       "tab_metrics_provider_unittest.cc",
       "tab_model_unittest.cc",

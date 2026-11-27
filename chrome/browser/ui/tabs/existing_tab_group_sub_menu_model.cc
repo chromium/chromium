@@ -155,7 +155,6 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
         current_model->group_model()->GetTabGroup(group);
     const std::u16string group_title = tab_group->visual_data()->title();
     // TODO(dljames): Add method to tab_group.cc to return displayed_title.
-    // TODO(dljames): Add unit tests for all of tab_group.h
     const std::u16string displayed_title =
         group_title.empty() ? tab_groups::GetGroupContentString(tab_group)
                             : group_title;
