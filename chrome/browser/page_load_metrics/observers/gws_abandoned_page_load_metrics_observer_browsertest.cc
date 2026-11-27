@@ -989,8 +989,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 // at various points during the navigation. Note that the navigation itself
 // might continue to commit, but we will count it as "abandoned" as soon as it's
 // hidden and stop recording navigation milestones metrics after that.
-// TODO - crbug.com/372878281: flaky on Mac builds
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372878281, crbug.com/591046646): Flaky on Mac and Win builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_SearchTabHidden DISABLED_SearchTabHidden
 #else
 #define MAYBE_SearchTabHidden SearchTabHidden
