@@ -237,13 +237,119 @@ TEST_F(RemoteActorPayloadParserTest, InvalidProtobuf) {
 TEST_F(RemoteActorPayloadParserTest, MissingRequiredField) {
   std::vector<uint8_t> key = CreateRandomKey();
 
+  RemoteActorPasswordUploadRequest request_without_gaia_id;
+  request_without_gaia_id.set_domain(kTestDomain);
+  request_without_gaia_id.set_task_id(kTestTaskId);
+
   RemoteActorPasswordUploadRequest request_without_domain;
   request_without_domain.set_gaia_id(kTestGaiaId);
   request_without_domain.set_task_id(kTestTaskId);
-  // domain intentionally omitted.
+
+  RemoteActorPasswordUploadRequest request_without_task_id;
+  request_without_task_id.set_gaia_id(kTestGaiaId);
+  request_without_task_id.set_domain(kTestDomain);
+
+  struct TestCase {
+    const char* name;
+    RemoteActorPasswordUploadRequest request;
+  };
+  const TestCase test_cases[] = {
+      {"missing_gaia_id", std::move(request_without_gaia_id)},
+      {"missing_domain", std::move(request_without_domain)},
+      {"missing_task_id", std::move(request_without_task_id)},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    std::optional<std::pair<std::string, std::string>> encrypted_payload =
+        CreateEncryptedRemoteActorPayloadForTesting(test_case.request, key);
+    ASSERT_TRUE(encrypted_payload.has_value());
+
+    base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+        result = ParseRemoteActorPayload(encrypted_payload->first,
+                                         encrypted_payload->second, key);
+
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), RemoteActorParsingError::kMissingRequiredField);
+  }
+}
+
+// Tests that a request with `new_credential_options` containing username and
+// password roundtrips properly.
+TEST_F(RemoteActorPayloadParserTest, RoundtripWithNewCredentialOptions) {
+  std::vector<uint8_t> key = CreateRandomKey();
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  original_request.mutable_new_credential_options()->set_username(
+      "user@example.com");
+  original_request.mutable_new_credential_options()->set_password("secret123");
 
   std::optional<std::pair<std::string, std::string>> encrypted_payload =
-      CreateEncryptedRemoteActorPayloadForTesting(request_without_domain, key);
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
+  ASSERT_TRUE(encrypted_payload.has_value());
+
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      result = ParseRemoteActorPayload(encrypted_payload->first,
+                                       encrypted_payload->second, key);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result->has_new_credential_options());
+  EXPECT_EQ(result->new_credential_options().username(), "user@example.com");
+  EXPECT_EQ(result->new_credential_options().password(), "secret123");
+}
+
+// Tests that a request with `new_credential_options` having an empty username
+// and non-empty password is accepted.
+TEST_F(RemoteActorPayloadParserTest,
+       RoundtripWithNewCredentialOptionsEmptyUsername) {
+  std::vector<uint8_t> key = CreateRandomKey();
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  original_request.mutable_new_credential_options()->set_password("secret123");
+
+  std::optional<std::pair<std::string, std::string>> encrypted_payload =
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
+  ASSERT_TRUE(encrypted_payload.has_value());
+
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      result = ParseRemoteActorPayload(encrypted_payload->first,
+                                       encrypted_payload->second, key);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result->has_new_credential_options());
+  EXPECT_TRUE(result->new_credential_options().username().empty());
+  EXPECT_EQ(result->new_credential_options().password(), "secret123");
+}
+
+// Tests that a request with `existing_credential_options` set roundtrips
+// properly, since its fields are all optional.
+TEST_F(RemoteActorPayloadParserTest, RoundtripWithExistingCredentialOptions) {
+  std::vector<uint8_t> key = CreateRandomKey();
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  original_request.mutable_existing_credential_options();
+
+  std::optional<std::pair<std::string, std::string>> encrypted_payload =
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
+  ASSERT_TRUE(encrypted_payload.has_value());
+
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      result = ParseRemoteActorPayload(encrypted_payload->first,
+                                       encrypted_payload->second, key);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->has_existing_credential_options());
+  EXPECT_FALSE(result->has_new_credential_options());
+}
+
+// Tests that a request with `new_credential_options` set and an empty password
+// is rejected as missing a required field.
+TEST_F(RemoteActorPayloadParserTest,
+       NewCredentialOptionsWithEmptyPasswordRejected) {
+  std::vector<uint8_t> key = CreateRandomKey();
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  original_request.mutable_new_credential_options()->set_username(
+      "user@example.com");
+
+  std::optional<std::pair<std::string, std::string>> encrypted_payload =
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
   ASSERT_TRUE(encrypted_payload.has_value());
 
   base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>

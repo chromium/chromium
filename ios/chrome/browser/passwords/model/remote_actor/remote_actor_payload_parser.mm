@@ -79,6 +79,11 @@ ParseRemoteActorPayload(std::string_view base64_payload,
     return base::unexpected(RemoteActorParsingError::kMissingRequiredField);
   }
 
+  if (request.has_new_credential_options() &&
+      request.new_credential_options().password().empty()) {
+    return base::unexpected(RemoteActorParsingError::kMissingRequiredField);
+  }
+
   return request;
 }
 
