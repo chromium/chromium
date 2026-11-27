@@ -67,7 +67,7 @@
 }
 
 // Tests that the correct connection label is displayed and that the learn more
-// button opens a help center article.
+// link opens a help center article.
 - (void)testSecurity {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -83,6 +83,15 @@
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_PAGE_INFO_NOT_SECURE_DETAILS))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the Learn more row has the link accessibility trait.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_kindOfClass([UITableViewCell class]),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(IDS_LEARN_MORE)),
+                                   nil)]
+      assertWithMatcher:grey_accessibilityTrait(UIAccessibilityTraitLink)];
 
   // Tap on the Learn more row.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(

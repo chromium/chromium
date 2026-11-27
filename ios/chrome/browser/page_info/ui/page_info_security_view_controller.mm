@@ -192,7 +192,7 @@ enum ItemIdentifier {
           [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
       learnMoreCell.contentConfiguration = configuration;
       learnMoreCell.isAccessibilityElement = YES;
-      learnMoreCell.accessibilityTraits = UIAccessibilityTraitButton;
+      learnMoreCell.accessibilityTraits = UIAccessibilityTraitLink;
 
       return learnMoreCell;
     }
