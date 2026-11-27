@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -32,7 +30,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 @NullMarked
 public class EducationalTipCardProviderSignalHandler {
     /** Creates an instance of InputContext. */
-    @VisibleForTesting
     static InputContext createInputContext(
             @ModuleType int moduleType,
             EducationTipModuleActionDelegate actionDelegate,

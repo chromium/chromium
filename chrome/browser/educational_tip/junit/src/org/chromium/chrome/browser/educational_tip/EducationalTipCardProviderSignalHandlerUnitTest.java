@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -49,8 +50,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 /** Unit tests for {@link EducationalTipCardProviderSignalHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class EducationalTipCardProviderSignalHandlerUnitTest {
-    private static final String SYNC_ID = "sync_id";
     private static final @TabId int TAB_ID = 1;
+    private static final float FLOAT_ASSERT_DELTA = 0.01f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -69,311 +70,209 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     @Mock private Tab mTab;
     @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
 
-    private Context mContext;
-
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        when(mActionDelegate.getContext()).thenReturn(mContext);
-        when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
-        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
-        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         TabGroupSyncServiceFactory.setForTesting(mMockTabGroupSyncService);
         TrackerFactory.setTrackerForTests(mTracker);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
-        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
-        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
     }
 
     @Test
     public void testCreateInputContext_DefaultBrowserPromoCard() {
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(3, inputContext.getSizeForTesting());
+        Context context = ApplicationProvider.getApplicationContext();
+        when(mActionDelegate.getContext()).thenReturn(context);
+        assertEquals(3, createInputContext(ModuleType.DEFAULT_BROWSER_PROMO).getSizeForTesting());
 
-        // Test signal "should_show_non_role_manager_default_browser_promo".
-        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
-                .thenReturn(true);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                1,
-                inputContext.getEntryValue("should_show_non_role_manager_default_browser_promo")
-                        .floatValue,
-                0.01);
+        String nonRoleManagerSignal = "should_show_non_role_manager_default_browser_promo";
+        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(context)).thenReturn(true);
+        assertFloatSignal(
+                ModuleType.DEFAULT_BROWSER_PROMO, nonRoleManagerSignal, /* expected= */ 1);
 
-        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
+        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(context))
                 .thenReturn(false);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                0,
-                inputContext.getEntryValue("should_show_non_role_manager_default_browser_promo")
-                        .floatValue,
-                0.01);
+        assertFloatSignal(
+                ModuleType.DEFAULT_BROWSER_PROMO, nonRoleManagerSignal, /* expected= */ 0);
 
-        // Test signal "has_default_browser_promo_shown_in_other_surface".
+        String promoShownSignal = "has_default_browser_promo_shown_in_other_surface";
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                0,
-                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, promoShownSignal, /* expected= */ 0);
 
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(false);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                1,
-                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, promoShownSignal, /* expected= */ 1);
 
         when(mTracker.isInitialized()).thenReturn(false);
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                0,
-                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, promoShownSignal, /* expected= */ 0);
 
         ChromeSharedPreferences.getInstance()
                 .writeLong(
                         ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP,
                         TimeUtils.currentTimeMillis());
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                1,
-                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, promoShownSignal, /* expected= */ 1);
 
-        // Test signal "is_user_signed_in".
+        String signedInSignal = "is_user_signed_in";
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(0, inputContext.getEntryValue("is_user_signed_in").floatValue, 0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, signedInSignal, /* expected= */ 0);
 
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(1, inputContext.getEntryValue("is_user_signed_in").floatValue, 0.01);
+        assertFloatSignal(ModuleType.DEFAULT_BROWSER_PROMO, signedInSignal, /* expected= */ 1);
     }
 
     @Test
     public void testCreateInputContext_TabGroupPromoCard_TabGroupExists() {
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.isReparentingInProgress()).thenReturn(false);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID);
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
-
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(3, inputContext.getSizeForTesting());
+        String signalKey = "tab_group_exists";
+        setupTabStateInitialized();
+        assertEquals(3, createInputContext(ModuleType.TAB_GROUP_PROMO).getSizeForTesting());
 
         when(mNormalModel.getTabGroupCount()).thenReturn(0);
         when(mIncognitoModel.getTabGroupCount()).thenReturn(0);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(0, inputContext.getEntryValue("tab_group_exists").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 0);
 
         when(mNormalModel.getTabGroupCount()).thenReturn(5);
         when(mIncognitoModel.getTabGroupCount()).thenReturn(6);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(1, inputContext.getEntryValue("tab_group_exists").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 1);
     }
 
     @Test
     public void testCreateInputContext_TabGroupPromoCard_NumberOfTabs() {
-        InputContext inputContext;
+        String signalKey = "number_of_tabs";
+        setupTabStateInitialized();
 
         // Test cases when tab state is already initialized.
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.isReparentingInProgress()).thenReturn(false);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID);
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(0);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(0, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 0);
 
         when(mNormalModel.getCount()).thenReturn(5);
         when(mIncognitoModel.getCount()).thenReturn(0);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(5, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 5);
 
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(10);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(10, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 10);
 
         when(mNormalModel.getCount()).thenReturn(10);
         when(mIncognitoModel.getCount()).thenReturn(10);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(20, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 20);
 
         // Test cases when tab state is not initialized.
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
 
         when(mActionDelegate.getTabCountForRelaunchFromPersistentStore()).thenReturn(10);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(10, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 10);
 
         when(mActionDelegate.getTabCountForRelaunchFromPersistentStore()).thenReturn(15);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(15, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_PROMO, signalKey, /* expected= */ 15);
     }
 
     @Test
     public void testCreateInputContext_TabGroupSyncPromoCard() {
-        when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(2, inputContext.getSizeForTesting());
-
-        // Test signal "synced_tab_group_exists".
+        String signalKey = "synced_tab_group_exists";
+        String syncId = "sync_id";
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(1, inputContext.getEntryValue("synced_tab_group_exists").floatValue, 0.01);
+        when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
+        assertEquals(2, createInputContext(ModuleType.TAB_GROUP_SYNC_PROMO).getSizeForTesting());
+        assertFloatSignal(ModuleType.TAB_GROUP_SYNC_PROMO, signalKey, /* expected= */ 1);
 
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(0, inputContext.getEntryValue("synced_tab_group_exists").floatValue, 0.01);
+        assertFloatSignal(ModuleType.TAB_GROUP_SYNC_PROMO, signalKey, /* expected= */ 0);
 
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(0, inputContext.getEntryValue("synced_tab_group_exists").floatValue, 0.01);
+        when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
+        assertFloatSignal(ModuleType.TAB_GROUP_SYNC_PROMO, signalKey, /* expected= */ 0);
     }
 
     @Test
     public void testCreateInputContext_NtpThemePromoCard() {
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
         when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(true);
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
-                        NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.CHROME_COLOR);
+        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(
+                /* timestamp= */ 100L);
+        assertNtpThemePromoSignals(/* expected= */ true);
 
-        // Case 1: The theme tip bottom sheet has been shown.
-        NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(100L);
-
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.NTP_THEME_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(4, inputContext.getSizeForTesting());
-
-        assertTrue(inputContext.getEntryValue("support_customized_ntp_theme").booleanValue);
-        assertTrue(inputContext.getEntryValue("has_customized_ntp_background").booleanValue);
-        assertTrue(
-                inputContext.getEntryValue("has_theme_tip_bottom_sheet_been_shown").booleanValue);
-
-        // Case 2: The theme tip bottom sheet hasn't been shown yet.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(false);
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
-                        NtpCustomizationUtils.NtpBackgroundType.DEFAULT);
-
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.NTP_THEME_PROMO, mActionDelegate, mProfile, mTracker);
-
-        assertFalse(inputContext.getEntryValue("support_customized_ntp_theme").booleanValue);
-        assertFalse(inputContext.getEntryValue("has_customized_ntp_background").booleanValue);
-        assertFalse(
-                inputContext.getEntryValue("has_theme_tip_bottom_sheet_been_shown").booleanValue);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(NtpBackgroundType.DEFAULT);
+        assertNtpThemePromoSignals(/* expected= */ false);
     }
 
     @Test
     public void testCreateInputContext_TipsNotificationsPromoCard() {
+        String signalKey = "is_eligible_to_tips_opt_in";
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE);
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TIPS_NOTIFICATIONS_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(2, inputContext.getSizeForTesting());
         assertEquals(
-                0.0f, inputContext.getEntryValue("is_eligible_to_tips_opt_in").floatValue, 0.01);
+                2, createInputContext(ModuleType.TIPS_NOTIFICATIONS_PROMO).getSizeForTesting());
+        assertFloatSignal(ModuleType.TIPS_NOTIFICATIONS_PROMO, signalKey, /* expected= */ 0);
 
         ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true);
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.TIPS_NOTIFICATIONS_PROMO, mActionDelegate, mProfile, mTracker);
-        assertEquals(
-                1.0f, inputContext.getEntryValue("is_eligible_to_tips_opt_in").floatValue, 0.01);
+                .writeBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, /* value= */ true);
+        assertFloatSignal(ModuleType.TIPS_NOTIFICATIONS_PROMO, signalKey, /* expected= */ 1);
     }
 
     @Test
     public void testCreateInputContext_FuseboxPromoCard() {
+        String signalKey = "is_fusebox_eligible";
         when(mActionDelegate.isFuseboxGuidedTourEligible()).thenReturn(true);
-
-        InputContext inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.FUSEBOX_PROMO, mActionDelegate, mProfile, mTracker);
-
+        InputContext inputContext = createInputContext(ModuleType.FUSEBOX_PROMO);
         assertEquals(2, inputContext.getSizeForTesting());
-        assertTrue(inputContext.getEntryValue("is_fusebox_eligible").booleanValue);
+        assertTrue(inputContext.getEntryValue(signalKey).booleanValue);
 
         when(mActionDelegate.isFuseboxGuidedTourEligible()).thenReturn(false);
+        assertFalse(
+                createInputContext(ModuleType.FUSEBOX_PROMO).getEntryValue(signalKey).booleanValue);
+    }
 
-        inputContext =
-                EducationalTipCardProviderSignalHandler.createInputContext(
-                        ModuleType.FUSEBOX_PROMO, mActionDelegate, mProfile, mTracker);
+    /** Creates an {@link InputContext} for the given {@code moduleType}. */
+    private InputContext createInputContext(@ModuleType int moduleType) {
+        return EducationalTipCardProviderSignalHandler.createInputContext(
+                moduleType, mActionDelegate, mProfile, mTracker);
+    }
 
-        assertFalse(inputContext.getEntryValue("is_fusebox_eligible").booleanValue);
+    /** Asserts that the float signal for {@code signalKey} matches {@code expected}. */
+    private void assertFloatSignal(@ModuleType int moduleType, String signalKey, float expected) {
+        assertEquals(
+                expected,
+                createInputContext(moduleType).getEntryValue(signalKey).floatValue,
+                FLOAT_ASSERT_DELTA);
+    }
+
+    /** Configures {@link #mTabModelSelector} as initialized with a valid current tab. */
+    private void setupTabStateInitialized() {
+        when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
+        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isReparentingInProgress()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID);
+        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
+    }
+
+    /** Asserts all three boolean signals for {@link ModuleType#NTP_THEME_PROMO}. */
+    private void assertNtpThemePromoSignals(boolean expected) {
+        InputContext inputContext = createInputContext(ModuleType.NTP_THEME_PROMO);
+        assertEquals(4, inputContext.getSizeForTesting());
+        assertEquals(
+                expected, inputContext.getEntryValue("support_customized_ntp_theme").booleanValue);
+        assertEquals(
+                expected, inputContext.getEntryValue("has_customized_ntp_background").booleanValue);
+        assertEquals(
+                expected,
+                inputContext.getEntryValue("has_theme_tip_bottom_sheet_been_shown").booleanValue);
     }
 }
