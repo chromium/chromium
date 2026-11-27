@@ -464,8 +464,9 @@ MenuItemView* MenuItemView::AddMenuItemViewImpl(
     }
   }
   const size_t insert_index = index.value_or(submenu_->children().size());
-  CHECK_LE(insert_index, submenu_->children().size(),
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/590732167): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(insert_index, submenu_->children().size());
 
   item->SetForegroundColorId(foreground_color);
   item->SetSelectedColorId(selected_color_id);
