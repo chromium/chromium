@@ -1391,17 +1391,6 @@ BASE_FEATURE(kIsolatedWebAppUnmanagedInstall,
 BASE_FEATURE(kIsolatedWebAppBundleCache, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kLinuxLowMemoryMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
-// Values taken from the low-memory-monitor documentation and also apply to the
-// portal API:
-// https://hadess.pages.freedesktop.org/low-memory-monitor/gdbus-org.freedesktop.LowMemoryMonitor.html
-constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorModerateLevel{
-    &kLinuxLowMemoryMonitor, "moderate_level", 50};
-constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
-    &kLinuxLowMemoryMonitor, "critical_level", 255};
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

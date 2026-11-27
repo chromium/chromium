@@ -647,9 +647,6 @@ specific_include_rules = {
     "+components/stylus_handwriting/win/features.h",
     "+sandbox/policy/features.h",
   ],
-  r"dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
-    "+dbus",
-  ],
   "permission_element_browsertest.cc": [
     "+chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h",
   ],

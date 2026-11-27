@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/common/chrome_features.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -45,7 +44,6 @@
 #endif
 
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #include "chrome/browser/lifetime/session_end_listener_linux.h"
 #endif
 
@@ -133,23 +131,14 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-#if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
-  auto* monitor = memory_pressure::MultiSourceMemoryPressureMonitor::Get();
-  if (monitor &&
-      base::FeatureList::IsEnabled(features::kLinuxLowMemoryMonitor)) {
-    monitor->SetSystemEvaluator(
-        std::make_unique<DbusMemoryPressureEvaluatorLinux>(
-            monitor->CreateVoter()));
-  }
-#if BUILDFLAG(IS_LINUX)
   camera_portal_focus_notifier_ =
       CameraPortalFocusNotifierLinux::CreateIfEnabled(
           GlobalBrowserCollection::GetInstance());
-#endif
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif  // BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS)

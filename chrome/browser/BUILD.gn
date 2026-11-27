@@ -1934,16 +1934,10 @@ source_set("core") {
     ]
 
     if (use_dbus) {
-      sources += [
-        "dbus_memory_pressure_evaluator_linux.cc",
-        "dbus_memory_pressure_evaluator_linux.h",
-        "platform_util_linux.cc",
-      ]
+      sources += [ "platform_util_linux.cc" ]
       deps += [
         "//chrome/browser/ui/browser_window",
-        "//chrome/common:chrome_features",
         "//components/dbus",
-        "//components/memory_pressure",
         "//components/os_crypt/browser:freedesktop_secret_key_provider",
         "//components/os_crypt/browser:secret_portal_key_provider",
         "//dbus",
@@ -5230,10 +5224,7 @@ source_set("core_unit_tests") {
     ]
 
     if (use_dbus) {
-      sources += [
-        "dbus_memory_pressure_evaluator_linux_unittest.cc",
-        "platform_util_linux_unittest.cc",
-      ]
+      sources += [ "platform_util_linux_unittest.cc" ]
       deps += [
         ":core",
         "//components/dbus",
