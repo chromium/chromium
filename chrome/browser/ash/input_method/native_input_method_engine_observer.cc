@@ -773,6 +773,14 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
       base::BindOnce([](bool) {}));
 }
 
+void NativeInputMethodEngineObserver::DisconnectFromImeService() {
+  // Release all Mojo connections to the IME service process.
+  connection_factory_.reset();
+  remote_manager_.reset();
+  input_method_.reset();
+  host_receiver_.reset();
+}
+
 void NativeInputMethodEngineObserver::OnFocusAck(
     int context_id,
     bool on_focus_success,
@@ -802,10 +810,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
       ShouldHandleWithoutExtension(use_ime_service_, engine_id) &&
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       !IsPredictiveWritingEnabled(prefs_, engine_id)) {
-    connection_factory_.reset();
-    remote_manager_.reset();
-    input_method_.reset();
-    host_receiver_.reset();
+    DisconnectFromImeService();
     return;
   }
 
@@ -821,11 +826,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   } else if (ShouldHandleWithoutExtension(use_ime_service_, engine_id)) {
     ConnectToImeService(engine_id);
   } else {
-    // Release the IME service.
-    connection_factory_.reset();
-    remote_manager_.reset();
-    input_method_.reset();
-    host_receiver_.reset();
+    DisconnectFromImeService();
 
     // It is possible that the extension has missed changes to the input
     // method options because the options were changed while it was sleeping.
@@ -1053,11 +1054,7 @@ void NativeInputMethodEngineObserver::OnReset(const std::string& engine_id) {
 
 void NativeInputMethodEngineObserver::OnDeactivated(
     const std::string& engine_id) {
-  // Release all Mojo connections to the ImeService process when deactivated.
-  connection_factory_.reset();
-  remote_manager_.reset();
-  input_method_.reset();
-  host_receiver_.reset();
+  DisconnectFromImeService();
   ime_base_observer_->OnDeactivated(engine_id);
 }
 

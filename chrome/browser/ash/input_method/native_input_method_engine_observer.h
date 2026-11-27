@@ -175,6 +175,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnConnectionFactoryBound(bool bound);
 
   void ConnectToImeService(const std::string& engine_id);
+  void DisconnectFromImeService();
 
   void HandleOnFocusAsyncForNativeMojoEngine(
       const std::string& engine_id,
