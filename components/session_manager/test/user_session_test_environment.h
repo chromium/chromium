@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/values.h"
@@ -44,9 +45,10 @@ class UserSessionTestEnvironment {
     virtual void DestroyProfileManager() = 0;
 
     // Creates and initializes a Profile for the user specified by `account_id`.
-    // Called during LogIn() after CreateSession() and before SessionStarted(),
-    // as UserSessionManager creates the profile before the session becomes
-    // active.
+    // Called during UserSessionTestEnvironment::CreateSession() after
+    // SessionManager::CreateSession(), i.e. before
+    // SessionManager::SessionStarted(), as UserSessionManager creates the
+    // profile before the session becomes active.
     // `initial_profile_prefs` is the dictionary of the initial values of the
     // Profile's prefs, keyed by pref names, which is given on adding the user.
     // Implementations are expected to create the Profile's PrefService with
@@ -69,13 +71,14 @@ class UserSessionTestEnvironment {
   // Registers LocalState's prefs that this test utility uses.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  // Following methods add a user. They must be called *ANY* of LogIn call.
+  // Following methods add a user. They must be called before *ANY*
+  // CreateSession() or LogIn() call.
   // Returns nullptr on error, so callers should check it always.
   // `initial_profile_prefs` is the dictionary of the initial values of the
   // user's Profile prefs, keyed by pref names. It is passed to
-  // Delegate::CreateProfile() on LogIn(). It must be empty if Delegate is not
-  // set. Guest user does not take it, because guest user's Profile is always
-  // created freshly.
+  // Delegate::CreateProfile() on CreateSession(). It must be empty if Delegate
+  // is not set. Guest user does not take it, because guest user's Profile is
+  // always created freshly.
   [[nodiscard]] user_manager::User* AddRegularUser(
       const AccountId& account_id,
       base::DictValue initial_profile_prefs = {});
@@ -96,12 +99,37 @@ class UserSessionTestEnvironment {
       std::string_view user_id,
       base::DictValue initial_profile_prefs = {});
 
+  // Creates a new user session for the user specified by `account_id`.
+  // This corresponds to the first half of the login flow in production:
+  // SessionManager::CreateSession() (which calls UserManager::UserLoggedIn()),
+  // followed by the Profile creation via Delegate::CreateProfile(), if
+  // Delegate is set (which calls UserManager::OnUserProfileCreated(); for a
+  // secondary user, SessionManager switches the active session to the user
+  // here).
+  // The created session is "pending" until StartSession() is called. In
+  // production, this corresponds to the period after the Profile is ready
+  // and before SessionManager::SessionStarted(), e.g. during onboarding, where
+  // the session state is OOBE, LOGIN_PRIMARY or LOGGED_IN_NOT_ACTIVE. Tests
+  // can observe the state between CreateSession() and StartSession().
+  // There must be no pending session, i.e. StartSession() must be called for
+  // the previously created session before calling this again.
+  void CreateSession(const AccountId& account_id, bool new_user = false);
+
+  // Starts the pending session created by CreateSession(). This corresponds to
+  // SessionManager::SessionStarted() in production, which is called for each
+  // user session, both primary and secondary. As a result, the session state
+  // becomes ACTIVE and SessionManagerObserver::OnUserSessionStarted() is
+  // notified.
+  // There must be a pending session.
+  void StartSession();
+
   // Logs in to a new user session with the user specified by `account_id`.
+  // This is a shorthand of CreateSession() followed by StartSession().
   void LogIn(const AccountId& account_id, bool new_user = false);
 
  private:
   // Remembers `initial_profile_prefs` for the `user` to be passed to
-  // Delegate::CreateProfile() on LogIn(), if it is not empty.
+  // Delegate::CreateProfile() on CreateSession(), if it is not empty.
   void MaybeSetInitialProfilePrefs(const user_manager::User& user,
                                    base::DictValue initial_profile_prefs);
 
@@ -111,6 +139,10 @@ class UserSessionTestEnvironment {
 
   // Initial values of the Profile prefs for each user.
   std::map<AccountId, base::DictValue> initial_profile_prefs_;
+
+  // The account of the session created by CreateSession() but not yet
+  // started by StartSession(), if any.
+  std::optional<AccountId> pending_account_id_;
 };
 
 }  // namespace ash::test

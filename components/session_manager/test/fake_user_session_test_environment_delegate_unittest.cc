@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -19,6 +21,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -175,6 +179,145 @@ TEST_F(FakeUserSessionTestEnvironmentDelegateTest, MultiUserLogIn) {
   ASSERT_TRUE(user1->GetProfilePrefs());
   ASSERT_TRUE(user2->GetProfilePrefs());
   EXPECT_NE(user1->GetProfilePrefs(), user2->GetProfilePrefs());
+}
+
+// Records OnUserSessionStarted() calls.
+class SessionStartedObserver : public session_manager::SessionManagerObserver {
+ public:
+  explicit SessionStartedObserver(
+      session_manager::SessionManager* session_manager) {
+    observation_.Observe(session_manager);
+  }
+
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStarted(bool is_primary_user) override {
+    is_primary_user_list_.push_back(is_primary_user);
+  }
+
+  const std::vector<bool>& is_primary_user_list() const {
+    return is_primary_user_list_;
+  }
+
+ private:
+  std::vector<bool> is_primary_user_list_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      observation_{this};
+};
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateTest,
+       CreateSessionAndStartSession) {
+  CreateUserSessionTestEnvironment({});
+
+  user_manager::User* user =
+      user_session_test_environment().AddRegularUser(kAccountId1);
+  ASSERT_TRUE(user);
+
+  auto* session_manager = session_manager::SessionManager::Get();
+  SessionStartedObserver observer(session_manager);
+
+  // After CreateSession(), the user is logged in and the Profile is ready,
+  // but the session is not yet started.
+  user_session_test_environment().CreateSession(kAccountId1);
+  EXPECT_TRUE(user->is_logged_in());
+  EXPECT_TRUE(user->is_profile_created());
+  EXPECT_TRUE(user->GetProfilePrefs());
+  ASSERT_TRUE(session_manager->GetPrimarySession());
+  EXPECT_EQ(AccountId(kAccountId1),
+            session_manager->GetPrimarySession()->account_id());
+  EXPECT_FALSE(session_manager->IsSessionStarted());
+  EXPECT_NE(session_manager::SessionState::ACTIVE,
+            session_manager->session_state());
+  EXPECT_TRUE(observer.is_primary_user_list().empty());
+
+  // After StartSession(), the session is started.
+  user_session_test_environment().StartSession();
+  EXPECT_TRUE(session_manager->IsSessionStarted());
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_manager->session_state());
+  EXPECT_EQ(std::vector<bool>({true}), observer.is_primary_user_list());
+}
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateTest,
+       CreateSessionAndStartSessionForSecondaryUser) {
+  CreateUserSessionTestEnvironment({});
+
+  user_manager::User* user1 =
+      user_session_test_environment().AddRegularUser(kAccountId1);
+  ASSERT_TRUE(user1);
+  user_manager::User* user2 =
+      user_session_test_environment().AddRegularUser(kAccountId2);
+  ASSERT_TRUE(user2);
+
+  auto* session_manager = session_manager::SessionManager::Get();
+  SessionStartedObserver observer(session_manager);
+
+  user_session_test_environment().LogIn(kAccountId1);
+  EXPECT_EQ(std::vector<bool>({true}), observer.is_primary_user_list());
+
+  // For the secondary user, the active session is switched on the Profile
+  // creation, i.e. before StartSession().
+  user_session_test_environment().CreateSession(kAccountId2);
+  EXPECT_TRUE(user2->is_logged_in());
+  EXPECT_TRUE(user2->is_profile_created());
+  EXPECT_TRUE(user2->GetProfilePrefs());
+  ASSERT_TRUE(session_manager->GetActiveSession());
+  EXPECT_EQ(AccountId(kAccountId2),
+            session_manager->GetActiveSession()->account_id());
+  EXPECT_EQ(AccountId(kAccountId1),
+            session_manager->GetPrimarySession()->account_id());
+  EXPECT_EQ(std::vector<bool>({true}), observer.is_primary_user_list());
+
+  user_session_test_environment().StartSession();
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_manager->session_state());
+  EXPECT_EQ(std::vector<bool>({true, false}), observer.is_primary_user_list());
+}
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateTest, LogInStartsSession) {
+  CreateUserSessionTestEnvironment({});
+
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId1));
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId2));
+
+  auto* session_manager = session_manager::SessionManager::Get();
+  SessionStartedObserver observer(session_manager);
+
+  user_session_test_environment().LogIn(kAccountId1);
+  EXPECT_TRUE(session_manager->IsSessionStarted());
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_manager->session_state());
+  EXPECT_EQ(std::vector<bool>({true}), observer.is_primary_user_list());
+
+  user_session_test_environment().LogIn(kAccountId2);
+  EXPECT_EQ(std::vector<bool>({true, false}), observer.is_primary_user_list());
+}
+
+using FakeUserSessionTestEnvironmentDelegateDeathTest =
+    FakeUserSessionTestEnvironmentDelegateTest;
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateDeathTest,
+       CreateSessionWithPendingSession) {
+  CreateUserSessionTestEnvironment({});
+
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId1));
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId2));
+
+  user_session_test_environment().CreateSession(kAccountId1);
+  EXPECT_CHECK_DEATH(
+      user_session_test_environment().CreateSession(kAccountId2));
+}
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateDeathTest,
+       StartSessionWithoutPendingSession) {
+  CreateUserSessionTestEnvironment({});
+
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(kAccountId1));
+
+  EXPECT_CHECK_DEATH(user_session_test_environment().StartSession());
+
+  user_session_test_environment().LogIn(kAccountId1);
+  EXPECT_CHECK_DEATH(user_session_test_environment().StartSession());
 }
 
 }  // namespace

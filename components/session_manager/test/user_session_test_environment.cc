@@ -129,12 +129,16 @@ user_manager::User* UserSessionTestEnvironment::AddKioskIwaUser(
   return user;
 }
 
-void UserSessionTestEnvironment::LogIn(const AccountId& account_id,
-                                       bool new_user) {
+void UserSessionTestEnvironment::CreateSession(const AccountId& account_id,
+                                               bool new_user) {
+  CHECK(!pending_account_id_)
+      << "StartSession() must be called for the pending session of "
+      << *pending_account_id_ << " before creating another session";
   session_manager_->CreateSession(
       account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
       new_user,
       /*has_active_session=*/false);
+  pending_account_id_ = account_id;
   if (delegate_) {
     // Cast the empty dict to an lvalue so that the conditional expression
     // yields an lvalue without copying `*initial_profile_prefs`. The empty
@@ -147,7 +151,18 @@ void UserSessionTestEnvironment::LogIn(const AccountId& account_id,
                                           : static_cast<const base::DictValue&>(
                                                 base::DictValue()));
   }
+}
+
+void UserSessionTestEnvironment::StartSession() {
+  CHECK(pending_account_id_) << "CreateSession() must be called in advance";
+  pending_account_id_.reset();
   session_manager_->SessionStarted();
+}
+
+void UserSessionTestEnvironment::LogIn(const AccountId& account_id,
+                                       bool new_user) {
+  CreateSession(account_id, new_user);
+  StartSession();
 }
 
 void UserSessionTestEnvironment::MaybeSetInitialProfilePrefs(
