@@ -12,14 +12,17 @@
 #include <variant>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/check_deref.h"
+#include "base/containers/flat_set.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -429,6 +432,184 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
   return strings;
 }
 
+// Preprocesses `capture_file_path` for Web Page Replay's strict HTTP-method
+// matching. Collects explicit GET navigation targets (`startingURL` and
+// `"force": true` `loadPage` actions) from the companion `.test` recipe; if any
+// target URL in the archive's `Requests` map lacks a GET entry, writes a
+// modified copy into `temp_dir` with its first non-HEAD entry cloned as GET
+// (skipping HEAD entries whose non-zero Content-Length and empty body would
+// fail script-injection re-serialization). Returns `capture_file_path`
+// unchanged if no modification is needed or on error.
+base::FilePath PrepareReplayArchive(const base::FilePath& capture_file_path,
+                                    base::ScopedTempDir& temp_dir) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath recipe_file_path =
+      capture_file_path.ReplaceExtension(FILE_PATH_LITERAL("test"));
+  std::string recipe_json_text;
+  if (!base::ReadFileToString(recipe_file_path, &recipe_json_text)) {
+    return capture_file_path;
+  }
+
+  std::optional<base::Value> parsed_recipe = base::JSONReader::Read(
+      recipe_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!parsed_recipe || !parsed_recipe->is_dict()) {
+    return capture_file_path;
+  }
+
+  base::flat_set<std::string> target_get_urls;
+  auto add_target_url = [&target_get_urls](const std::string* url) {
+    if (url && !url->empty()) {
+      std::string_view url_view(*url);
+      size_t ref_pos = url_view.find('#');
+      if (ref_pos != std::string_view::npos) {
+        url_view = url_view.substr(0, ref_pos);
+      }
+      if (!url_view.empty()) {
+        target_get_urls.insert(std::string(url_view));
+      }
+    }
+  };
+
+  const base::DictValue& recipe_dict = parsed_recipe->GetDict();
+  add_target_url(recipe_dict.FindString("startingURL"));
+  if (const base::ListValue* actions = recipe_dict.FindList("actions")) {
+    for (const base::Value& action_val : *actions) {
+      if (!action_val.is_dict()) {
+        continue;
+      }
+      const base::DictValue& action = action_val.GetDict();
+      const std::string* type = action.FindString("type");
+      if (type && base::CompareCaseInsensitiveASCII(*type, "loadPage") == 0 &&
+          action.FindBool("force").value_or(false)) {
+        add_target_url(action.FindString("url"));
+      }
+    }
+  }
+
+  if (target_get_urls.empty()) {
+    return capture_file_path;
+  }
+
+  std::string file_content;
+  if (!base::ReadFileToString(capture_file_path, &file_content)) {
+    return capture_file_path;
+  }
+
+  std::string decompressed_json_text;
+  if (!compression::GzipUncompress(file_content, &decompressed_json_text)) {
+    return capture_file_path;
+  }
+
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      decompressed_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!parsed_json || !parsed_json->is_dict()) {
+    return capture_file_path;
+  }
+
+  base::DictValue* requests_dict = parsed_json->GetDict().FindDict("Requests");
+  if (!requests_dict) {
+    return capture_file_path;
+  }
+
+  bool archive_modified = false;
+
+  for (std::pair<const std::string&, base::Value&> host_entry :
+       *requests_dict) {
+    if (!host_entry.second.is_dict()) {
+      continue;
+    }
+    for (std::pair<const std::string&, base::Value&> url_entry :
+         host_entry.second.GetDict()) {
+      if (!target_get_urls.contains(url_entry.first) ||
+          !url_entry.second.is_list()) {
+        continue;
+      }
+      base::ListValue& requests_list = url_entry.second.GetList();
+
+      bool has_get_method = false;
+      std::optional<base::DictValue> first_valid_entry;
+      std::string first_valid_decoded_request;
+
+      for (const base::Value& request_val : requests_list) {
+        if (!request_val.is_dict()) {
+          continue;
+        }
+        const base::DictValue& entry_dict = request_val.GetDict();
+        const std::string* ser_req = entry_dict.FindString("SerializedRequest");
+        const std::string* ser_resp =
+            entry_dict.FindString("SerializedResponse");
+        if (!ser_req || ser_req->empty() || !ser_resp || ser_resp->empty()) {
+          continue;
+        }
+
+        std::string decoded_request;
+        if (!base::Base64Decode(*ser_req, &decoded_request)) {
+          continue;
+        }
+
+        size_t first_space = decoded_request.find(' ');
+        if (first_space == std::string::npos || first_space == 0) {
+          continue;
+        }
+
+        std::string_view method =
+            std::string_view(decoded_request).substr(0, first_space);
+        if (method == "GET") {
+          has_get_method = true;
+          break;
+        }
+        if (method != "HEAD" && !first_valid_entry) {
+          first_valid_entry = entry_dict.Clone();
+          first_valid_decoded_request = std::move(decoded_request);
+        }
+      }
+
+      if (has_get_method || !first_valid_entry) {
+        continue;
+      }
+
+      size_t first_space = first_valid_decoded_request.find(' ');
+      std::string_view request_suffix =
+          std::string_view(first_valid_decoded_request).substr(first_space);
+      std::string cloned_request = base::StrCat({"GET", request_suffix});
+      base::DictValue cloned_entry = std::move(*first_valid_entry);
+      cloned_entry.Set("SerializedRequest", base::Base64Encode(cloned_request));
+      requests_list.Append(std::move(cloned_entry));
+      archive_modified = true;
+    }
+  }
+
+  if (!archive_modified) {
+    return capture_file_path;
+  }
+
+  std::optional<std::string> updated_json = base::WriteJsonWithOptions(
+      *parsed_json, base::JsonOptions::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION);
+  if (!updated_json) {
+    return capture_file_path;
+  }
+
+  std::string compressed_data;
+  if (!compression::GzipCompress(*updated_json, &compressed_data)) {
+    return capture_file_path;
+  }
+
+  if (temp_dir.IsValid()) {
+    std::ignore = temp_dir.Delete();
+  }
+  if (!temp_dir.CreateUniqueTempDir()) {
+    return capture_file_path;
+  }
+
+  base::FilePath output_path =
+      temp_dir.GetPath().Append(capture_file_path.BaseName());
+  if (!base::WriteFile(output_path, compressed_data)) {
+    return capture_file_path;
+  }
+
+  return output_path;
+}
+
 }  // namespace
 
 namespace captured_sites_test_utils {
@@ -733,9 +914,15 @@ bool WebPageReplayServerWrapper::Start(
           .c_str()));
   args.push_back("--no_archive_certificates");
 
+  base::FilePath replay_file_path = capture_file_path;
+  if (start_as_replay_) {
+    replay_file_path =
+        PrepareReplayArchive(capture_file_path, replay_archive_temp_dir_);
+  }
+
   // Specify the capture file.
   args.push_back(base::StringPrintf(
-      "%s", FilePathToUTF8(capture_file_path.value()).c_str()));
+      "%s", FilePathToUTF8(replay_file_path.value()).c_str()));
   if (!RunWebPageReplayCmd(args))
     return false;
 
@@ -832,6 +1019,9 @@ bool WebPageReplayServerWrapper::Stop() {
       }
     }
   }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::ignore = replay_archive_temp_dir_.Delete();
 
   // The test server hasn't started, no op.
   return true;

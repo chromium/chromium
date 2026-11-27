@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -153,6 +154,7 @@ class WebPageReplayServerWrapper {
   std::string cmd_name() { return start_as_replay_ ? "replay" : "record"; }
   // The Web Page Replay server that serves the captured sites.
   base::Process web_page_replay_server_;
+  base::ScopedTempDir replay_archive_temp_dir_;
 
   int host_http_port_;
   int host_https_port_;
