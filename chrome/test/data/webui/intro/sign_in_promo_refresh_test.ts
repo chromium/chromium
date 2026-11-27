@@ -242,4 +242,35 @@ suite('SignInPromoRefreshTest', function() {
         // Verify that setPlay was NOT called because animations are disabled.
         assertEquals(null, leftPlay);
       });
+
+  test('shows the product logo animation', async function() {
+    // The logo animation does not depend on the revamp.
+    loadTimeData.overrideValues({
+      isFirstRunDesktopRevampEnabled: false,
+    });
+
+    signInPromoElement = document.createElement('sign-in-promo-refresh');
+    document.body.appendChild(signInPromoElement);
+    await microtasksFinished();
+
+    const shadowRoot = signInPromoElement.shadowRoot;
+    assertTrue(!!shadowRoot.querySelector('#product-logo-animation'));
+    assertFalse(!!shadowRoot.querySelector('#product-logo'));
+  });
+
+  test(
+      'shows the static product logo when `disableAnimations` is true',
+      async function() {
+        loadTimeData.overrideValues({
+          disableAnimations: true,
+        });
+
+        signInPromoElement = document.createElement('sign-in-promo-refresh');
+        document.body.appendChild(signInPromoElement);
+        await microtasksFinished();
+
+        const shadowRoot = signInPromoElement.shadowRoot;
+        assertFalse(!!shadowRoot.querySelector('#product-logo-animation'));
+        assertTrue(!!shadowRoot.querySelector('#product-logo'));
+      });
 });

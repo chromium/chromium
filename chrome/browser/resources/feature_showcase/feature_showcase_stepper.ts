@@ -45,7 +45,8 @@ export class FeatureShowcaseStepperElement extends
 
   /**
    * Whether to force a static checkmark in place of the animation - either for
-   * testing or for a11y reasons when forced colors mode is active.
+   * testing or for a11y reasons when the user prefers reduced motion or forced
+   * colors mode is active.
    */
   private accessor useStaticCheck_: boolean =
       loadTimeData.getBoolean('disableAnimations') ||

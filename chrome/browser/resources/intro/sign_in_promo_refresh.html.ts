@@ -25,8 +25,13 @@ export function getHtml(this: SignInPromoRefreshElement) {
 </cr-lottie>
 
 <div id="product-logo-container">
-  <img id="product-logo-animation" src="images/product-logo-animation.svg"
-      alt="$i18n{productLogoAltText}">
+  ${this.shouldDisableLogoAnimation_ ? html`
+    <img id="product-logo" src="images/product-logo.svg"
+        alt="$i18n{productLogoAltText}">
+  ` : html`
+    <img id="product-logo-animation" src="images/product-logo-animation.svg"
+        alt="$i18n{productLogoAltText}">
+  `}
 </div>
 
 <h1 class="title fade-in">$i18n{pageTitle}</h1>

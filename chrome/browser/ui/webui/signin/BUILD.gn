@@ -411,6 +411,7 @@ if (!is_chromeos) {
       "//ui/base",
       "//ui/color:color_headers",
       "//ui/gfx",
+      "//ui/gfx/animation",
       "//ui/native_theme",
       "//ui/resources",
       "//ui/strings:ui_strings",

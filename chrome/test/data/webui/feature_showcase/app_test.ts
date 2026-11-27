@@ -19,6 +19,7 @@ import {browserProxyFactory as passwordManagerProxyFactory, PasswordManagerPageH
 import type {FeatureShowcasePasswordManagerStepElement} from 'chrome://feature-showcase/password_manager/password_manager_step.js';
 import {browserProxyFactory as themesAndCustomizationProxyFactory, ThemesAndCustomizationPageHandlerRemote} from 'chrome://feature-showcase/themes_and_customization.mojom-webui.js';
 import type {FeatureShowcaseThemesAndCustomizationStepElement} from 'chrome://feature-showcase/themes_and_customization/themes_and_customization_step.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeMediaQueryList} from 'chrome://webui-test/fake_media_query_list.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -55,6 +56,8 @@ suite('FeatureShowcaseAppTest', function() {
 
     testHandler = TestMock.fromClass(FeatureShowcasePageHandlerRemote);
     featureShowcaseProxyFactory.setInstance({handler: testHandler});
+
+    loadTimeData.overrideValues({disableAnimations: false});
 
     appElement = document.createElement('feature-showcase-app');
     document.body.appendChild(appElement);
@@ -156,6 +159,58 @@ suite('FeatureShowcaseAppTest', function() {
     assertDeepEquals([120, 121], bottomSegments);
   });
 
+  // Completes the first of two steps, and returns the segments that each of
+  // the transition animations was asked to play.
+  async function completeFirstStepAndGetPlayedSegments() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.history.replaceState(
+        {}, '', '?steps=default-browser,password-manager');
+    appElement = document.createElement('feature-showcase-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const rightAnimation = appElement.$.rightAnimation;
+    const rightSegments: Array<[number, number]> = [];
+    rightAnimation.playSegments = (segments: [number, number]) => {
+      rightSegments.push(segments);
+    };
+
+    const bottomAnimation = appElement.$.bottomAnimation;
+    const bottomSegments: Array<[number, number]> = [];
+    bottomAnimation.playSegments = (segments: [number, number]) => {
+      bottomSegments.push(segments);
+    };
+
+    const firstStep = appElement.shadowRoot.querySelector(
+        'feature-showcase-default-browser-step');
+    testHandler.resetResolver('nextStepShown');
+    firstStep!.dispatchEvent(new CustomEvent('step-completed'));
+    await testHandler.whenCalled('nextStepShown');
+
+    return {rightSegments, bottomSegments};
+  }
+
+  test('plays the transition animations', async function() {
+    const {rightSegments, bottomSegments} =
+        await completeFirstStepAndGetPlayedSegments();
+
+    assertDeepEquals([[0, 120]], rightSegments);
+    assertDeepEquals([[0, 120]], bottomSegments);
+  });
+
+  test(
+      'jumps to the end of the transition when animations are disabled',
+      async function() {
+        loadTimeData.overrideValues({disableAnimations: true});
+
+        const {rightSegments, bottomSegments} =
+            await completeFirstStepAndGetPlayedSegments();
+
+        // Only the last frame of the transition is played.
+        assertDeepEquals([[119, 120]], rightSegments);
+        assertDeepEquals([[119, 120]], bottomSegments);
+      });
+
   test(
       'waits for last stepper animation before finishing feature showcase',
       async function() {
@@ -223,6 +278,8 @@ suite('FeatureShowcaseStepperTest', function() {
     originalMatchMedia = window.matchMedia;
     fakeMediaQueryList = new FakeMediaQueryList('(forced-colors: active)');
     window.matchMedia = () => fakeMediaQueryList;
+
+    loadTimeData.overrideValues({disableAnimations: false});
   });
 
   teardown(function() {
@@ -334,6 +391,18 @@ suite('FeatureShowcaseStepperTest', function() {
     assertFalse(!!step?.querySelector('cr-lottie'));
     assertTrue(!!step?.querySelector('cr-icon'));
   });
+
+  test(
+      'renders a static checkmark when animations are disabled',
+      async function() {
+        loadTimeData.overrideValues({disableAnimations: true});
+        const stepperElement = createStepper(['step1', 'step2', 'step3'], 1);
+        await microtasksFinished();
+
+        const step = stepperElement.shadowRoot.querySelectorAll('.step')[0];
+        assertFalse(!!step?.querySelector('cr-lottie'));
+        assertTrue(!!step?.querySelector('cr-icon'));
+      });
 
   test('stays static when forced colors turns off', async function() {
     fakeMediaQueryList.matches = true;

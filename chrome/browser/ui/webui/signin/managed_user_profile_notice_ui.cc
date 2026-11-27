@@ -53,6 +53,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -271,7 +272,9 @@ void AddFlags(content::WebUIDataSource* source, Profile* profile) {
     CHECK_IS_TEST();
     source->AddBoolean("disableAnimations", true);
   } else {
-    source->AddBoolean("disableAnimations", false);
+    // The animations are not played if the user prefers reduced motion.
+    source->AddBoolean("disableAnimations",
+                       gfx::Animation::PrefersReducedMotion());
   }
 
   bool is_in_search_engine_choice_region =

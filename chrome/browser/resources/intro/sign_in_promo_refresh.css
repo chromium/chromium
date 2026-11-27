@@ -239,6 +239,11 @@ h2 {
   }
 }
 
+#product-logo {
+  height: var(--product-logo-size);
+  width: var(--product-logo-size);
+}
+
 #product-logo-animation {
   /* Because 50% of the svg file is the padding, we scale it by 2. */
   height: calc(var(--product-logo-size) * 2);

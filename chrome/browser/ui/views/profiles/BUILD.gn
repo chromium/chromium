@@ -680,6 +680,7 @@ if (toolkit_views) {
       "//components/signin/public/base",
       "//content/test:test_support",
       "//ui/base",
+      "//ui/gfx:gfx_switches",
       "//ui/gfx:test_support",
     ]
   }
@@ -906,6 +907,7 @@ if (is_win || is_mac || is_linux) {
       "//services/audio/public/cpp",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/gfx:gfx_switches",
     ]
   }
 }
@@ -1324,6 +1326,7 @@ if (enable_dice_support) {
       "//content/public/browser",
       "//google_apis",
       "//ui/base",
+      "//ui/gfx/animation",
       "//ui/views",
     ]
     if (is_win) {

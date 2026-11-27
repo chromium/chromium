@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/switches.h"
 
 AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
@@ -127,6 +128,10 @@ void SetUpPixelTestCommandLine(
     const PixelTestParam& params,
     std::unique_ptr<base::ScopedEnvironmentVariableOverride>& env_variables,
     base::CommandLine* command_line) {
+  // Some UIs are rendered differently if the user prefers reduced motion. Force
+  // the preference so that the tests do not depend on the system settings.
+  command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+
   if (params.use_dark_theme) {
     command_line->AppendSwitch(switches::kForceDarkMode);
   }

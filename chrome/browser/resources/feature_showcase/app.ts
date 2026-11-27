@@ -18,6 +18,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import type {CrLottieElement} from '//resources/cr_components/cr_lottie/cr_lottie.js';
 import type {CrViewManagerElement} from '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -58,6 +59,9 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   accessor steps: string[] = [];
   protected accessor areButtonsDisabled_: boolean = false;
   private accessor isDarkMode_: boolean = false;
+
+  private readonly disableAnimations_: boolean =
+      loadTimeData.getBoolean('disableAnimations');
   private matchMedia_: MediaQueryList;
   private darkModeListener_: (e: MediaQueryListEvent) => void;
 
@@ -151,8 +155,11 @@ export class FeatureShowcaseAppElement extends CrLitElement {
 
   private tryPlayingTransitionAnimations_() {
     assert(this.activeStepIndex > 0, 'Step index should be greater than 0.');
-    const startFrame = (this.activeStepIndex - 1) * 120;
-    const endFrame = startFrame + 120;
+    const endFrame = this.activeStepIndex * 120;
+    // If animations are disabled, only the last frame is played to jump
+    // straight to the end of the transition.
+    // TODO(crbug.com/500662042): Consider exposing goToAndStop(...).
+    const startFrame = this.disableAnimations_ ? endFrame - 1 : endFrame - 120;
 
     this.$.rightAnimation.playSegments([startFrame, endFrame]);
     this.$.bottomAnimation.playSegments([startFrame, endFrame]);

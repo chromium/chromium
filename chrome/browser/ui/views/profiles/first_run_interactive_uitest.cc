@@ -110,6 +110,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -119,6 +120,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -596,6 +598,10 @@ class FirstRunInteractiveUiBaseTest
     return std::nullopt;
   }
 
+  // Returns whether the "reduced motion" accessibility setting is turned on
+  // during test execution.
+  virtual bool PrefersReducedMotion() const { return false; }
+
   // FirstRunServiceBrowserTestBase:
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunServiceBrowserTestBase::SetUpInProcessBrowserTestFixture();
@@ -604,6 +610,11 @@ class FirstRunInteractiveUiBaseTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunServiceBrowserTestBase::SetUpCommandLine(command_line);
+    // The animations are not played if the user prefers reduced motion. Force
+    // the preference so that the tests do not depend on the system settings.
+    command_line->AppendSwitch(PrefersReducedMotion()
+                                   ? switches::kForcePrefersReducedMotion
+                                   : switches::kForcePrefersNoReducedMotion);
     if (!UseRevampedView()) {
       return;
     }
@@ -723,6 +734,15 @@ class FirstRunInteractiveUiBaseTest
     button_visible.test_function =
         "(btn) => !btn.classList.contains('visibility-hidden')";
     return WaitForStateChange(web_contents_id, button_visible);
+  }
+
+  // Checks that the animations are disabled on the page currently shown.
+  auto CheckAnimationsDisabled() {
+    return CheckJsResult(
+        kWebContentsId,
+        "() => import('chrome://resources/js/load_time_data.js')"
+        ".then(m => m.loadTimeData.getBoolean('disableAnimations'))",
+        true);
   }
 
   // Waits for the intro buttons to be shown and presses to proceed according
@@ -3381,6 +3401,205 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(proceed_future.Get());
   histogram_tester().ExpectTotalCount("Signin.HistorySyncOptIn.Started", 0);
+}
+
+class FirstRunReducedMotionInteractiveUiTest
+    : public FirstRunInteractiveUiTest {
+ protected:
+  // FirstRunInteractiveUiBaseTest:
+  bool PrefersReducedMotion() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(FirstRunReducedMotionInteractiveUiTest,
+                       LogoAnimationsDisabled) {
+  OpenFirstRun();
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      // The refreshed sign-in promo shows the static product logo instead of
+      // its animation. The legacy intro shows the sign-in promo right away,
+      // skipping the splash screen with the product logo animation.
+      If([this] { return UseRefreshedView(); },
+         Then(EnsurePresent(kWebContentsId, DeepQuery{"sign-in-promo-refresh",
+                                                      "#product-logo"})),
+         Else(EnsurePresent(kWebContentsId,
+                            DeepQuery{"intro-app", "#signInPromo.active"}))));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunReducedMotionInteractiveUiTest,
+                         Values(FirstRunVersion::Legacy{},
+                                FirstRunVersion::Refreshed{}),
+                         [](const TestParamInfo<FirstRunVersion::Value>& info) {
+                           return VersionSuffix(info.param);
+                         });
+
+class FirstRunRevampReducedMotionInteractiveUiTest
+    : public FirstRunRevampInteractiveUiTest {
+ protected:
+  // FirstRunInteractiveUiBaseTest:
+  bool PrefersReducedMotion() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampReducedMotionInteractiveUiTest,
+                       AnimationsDisabled) {
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      CheckAnimationsDisabled(),
+      // The static product logo is shown instead of its animation.
+      EnsurePresent(kWebContentsId,
+                    DeepQuery{"sign-in-promo-refresh", "#product-logo"}),
+      // The effects control button still controls the sounds.
+      WaitForShow(kProfilePickerToolbarEffectsControlButtonElementId),
+      // Do not sign in to proceed to the feature showcase.
+      CompleteIntroStep(/*sign_in=*/false),
+      WaitForWebContentsNavigation(kWebContentsId, GetFeatureShowcaseUrl()),
+      CheckAnimationsDisabled(),
+      // The feature showcase steps can be completed without the transition
+      // animations.
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      CompleteFinishOrContinueStep());
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampReducedMotionInteractiveUiTest,
+                       ManagedUserProfileNoticeAnimationDisabled) {
+  policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(
+                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
+
+  OpenFirstRun();
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEnterpriseEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)),
+      CheckAnimationsDisabled());
+}
+
+using FirstRunRevampReducedMotionInteractiveUiTestWithSyncService =
+    WithTestSyncServiceMixin<FirstRunRevampReducedMotionInteractiveUiTest>;
+
+IN_PROC_BROWSER_TEST_F(
+    FirstRunRevampReducedMotionInteractiveUiTestWithSyncService,
+    SkipsSignInCelebration) {
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Configure `SyncService` to be disabled by policy, so that signing in is
+  // directly followed by the feature showcase.
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(sync_service);
+  sync_service->SetAllowedByEnterprisePolicy(false);
+
+  // The sign-in celebration is shown in the contents of the sign-in page.
+  content::NavigationHandleObserver celebration_observer(
+      web_contents(),
+      GURL(chrome::kChromeUIIntroURL)
+          .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // The flow proceeds to the feature showcase. Its page is not waited for
+      // with `WaitForWebContentsNavigation()`: the loading screen shown after
+      // the sign-in loads concurrently, in the contents of the sign-in page,
+      // and can be the next page to finish loading.
+      WaitForShow(kProfilePickerToolbarStartBrowsingButtonElementId),
+      PressButton(kProfilePickerToolbarStartBrowsingButtonElementId));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+  // The navigation to the sign-in celebration was not even started: the
+  // observer only sets the navigation ID when it starts.
+  EXPECT_EQ(celebration_observer.navigation_id(), -1);
+  EXPECT_FALSE(celebration_observer.has_committed());
+}
+
+class FirstRunRevampSoundDisabledReducedMotionInteractiveUiTest
+    : public FirstRunRevampSoundDisabledInteractiveUiTest {
+ protected:
+  // FirstRunInteractiveUiBaseTest:
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::vector<std::string>();
+  }
+
+  bool PrefersReducedMotion() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FirstRunRevampSoundDisabledReducedMotionInteractiveUiTest,
+    EffectsButtonHidden) {
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      // Without sounds nor animations, the effects control button has nothing
+      // to control on the intro step.
+      EnsureNotPresent(kProfilePickerToolbarEffectsControlButtonElementId),
+      CompleteIntroStep(/*sign_in=*/false),
+      WaitForWebContentsNavigation(
+          kWebContentsId, GetFinishOrContinueURL(/*expected_showcase=*/false)),
+      // Nor on the finish or continue step.
+      EnsureNotPresent(kProfilePickerToolbarEffectsControlButtonElementId),
+      EnsurePresent(kWebContentsId,
+                    GetFinishOrContinueStartBrowsingButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFinishOrContinueStartBrowsingButtonQuery()));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
 }
 
 class PreFirstRunRefreshInteractiveUiTest

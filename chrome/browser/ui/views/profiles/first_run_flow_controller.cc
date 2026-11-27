@@ -80,6 +80,7 @@
 #include "media/base/audio_codecs.h"
 #include "net/base/url_util.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
+#include "ui/gfx/animation/animation.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -241,7 +242,10 @@ class IntroBasedAnimatedStepController : public IntroBasedStepController {
 
  protected:
   void SetupIntroUI(IntroUI& intro_ui) override {
-    if (!effects_button_shown_by_default_) {
+    // When not shown by default, the button only controls the animations of
+    // this step, which are not played if the user prefers reduced motion.
+    if (!effects_button_shown_by_default_ &&
+        !gfx::Animation::PrefersReducedMotion()) {
       host().SetNativeToolbarEffectsControlButtonVisible(true);
     }
     intro_ui.ToggleAnimations(query_effects_callback_.Run());
@@ -584,7 +588,8 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   void MaybeShowSignInCelebration(
       base::OnceClosure celebration_finished) override {
     if (!switches::IsFirstRunDesktopRevampEnabled(
-            IsProfileInSearchEngineChoiceRegion(profile()))) {
+            IsProfileInSearchEngineChoiceRegion(profile())) ||
+        gfx::Animation::PrefersReducedMotion()) {
       std::move(celebration_finished).Run();
       return;
     }

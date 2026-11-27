@@ -37,6 +37,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({disableAnimations: false});
     browserProxy = new TestManagedUserProfileNoticeBrowserProxy(
         testManagedUserProfileInfo);
     ManagedUserProfileNoticeBrowserProxyImpl.setInstance(browserProxy);
@@ -351,5 +352,36 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     const animationUrlDark = avatarAnimation.getAttribute('animation-url');
     assertTrue(!!animationUrlDark);
     assertTrue(animationUrlDark.includes('dark'));
+  });
+
+  test('do not play animation if animations are disabled', async function() {
+    async function isAvatarAnimationAutoplayed(): Promise<boolean> {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      await createManagedUserProfileNoticeApp();
+
+      // The animation is only shown in the disclosure section.
+      webUIListenerCallback('on-state-changed', State.DISCLOSURE);
+      await microtasksFinished();
+
+      const targetElement =
+          app.shadowRoot
+              .querySelector<ManagedUserProfileNoticeDisclosureRefreshElement>(
+                  '#disclosure');
+      assertTrue(!!targetElement);
+      const avatarAnimation =
+          targetElement.shadowRoot.querySelector<HTMLElement>(
+              '#avatarAnimation');
+      assertTrue(!!avatarAnimation);
+      return avatarAnimation.hasAttribute('autoplay');
+    }
+
+    // The animation is only shown during the first run with the revamp enabled.
+    loadTimeData.overrideValues({
+      'screenType': ScreenType.FIRST_RUN,
+    });
+    assertTrue(await isAvatarAnimationAutoplayed());
+
+    loadTimeData.overrideValues({disableAnimations: true});
+    assertFalse(await isAvatarAnimationAutoplayed());
   });
 });

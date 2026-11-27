@@ -72,6 +72,7 @@ source_set("feature_showcase") {
     "//components/signin/public/base:signin_switches",
     "//components/variations/service",
     "//content/public/browser",
+    "//ui/gfx/animation",
     "//ui/webui",
   ]
 

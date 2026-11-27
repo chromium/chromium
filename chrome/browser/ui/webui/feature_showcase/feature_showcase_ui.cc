@@ -44,6 +44,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -182,7 +183,9 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
     CHECK_IS_TEST();
     source->AddBoolean("disableAnimations", true);
   } else {
-    source->AddBoolean("disableAnimations", false);
+    // The animations are not played if the user prefers reduced motion.
+    source->AddBoolean("disableAnimations",
+                       gfx::Animation::PrefersReducedMotion());
   }
 
   AddDefaultBrowserStepResources(source);

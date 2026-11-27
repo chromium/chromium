@@ -76,10 +76,16 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected accessor isPreFirstRunDesktopRefreshEnabled_: boolean =
       loadTimeData.getBoolean('isPreFirstRunDesktopRefreshEnabled');
   // Animations are disabled if the feature is disabled (there is no mechanism
-  // to stop animations) or if we are using "disable animations" test flag.
+  // to stop animations), if the user prefers reduced motion or if we are using
+  // "disable animations" test flag.
   protected readonly shouldDisableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations') ||
       !loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
+  // The product logo animation does not depend on the feature. It is replaced
+  // with the static logo if the user prefers reduced motion or if we are using
+  // "disable animations" test flag.
+  protected readonly shouldDisableLogoAnimation_: boolean =
+      loadTimeData.getBoolean('disableAnimations');
   private accessor isDarkMode_: boolean;
   private accessor anyButtonClicked_: boolean = false;
   private introBrowserProxy_: IntroMojoBrowserProxy =

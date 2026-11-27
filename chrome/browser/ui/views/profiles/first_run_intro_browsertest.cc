@@ -183,7 +183,7 @@ class FirstRunIntroPixelTest
     views::Widget* widget = GetWidgetForScreenshot();
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    const std::string baseline = "8481376";
+    const std::string baseline = "8836146";
     const std::string screenshot_name = base::StrCat(
         {test_info->test_suite_name(), "_", test_info->name(), "_", baseline});
 

@@ -68,6 +68,7 @@ if (is_win || is_mac || is_linux) {
       "//services/network/public/mojom",
       "//skia",
       "//ui/base",
+      "//ui/gfx/animation",
       "//ui/webui",
     ]
   }
