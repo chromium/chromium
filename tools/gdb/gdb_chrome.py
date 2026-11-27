@@ -324,7 +324,9 @@ class FlatTreePrinter(object):
 pp_set.add_printer('base::flat_map', '^base::flat_map<.*>$', FlatTreePrinter)
 pp_set.add_printer('base::flat_set', '^base::flat_set<.*>$', FlatTreePrinter)
 pp_set.add_printer(
-  'base::flat_tree', '^base::internal::flat_tree<.*>$', FlatTreePrinter
+  'base::flat_tree',
+  '^base::flat_tree_internal::flat_tree<.*>$',
+  FlatTreePrinter,
 )
 
 

@@ -21,7 +21,7 @@
 
 namespace base {
 
-namespace internal {
+namespace flat_map_internal {
 
 // An implementation of the flat_tree GetKeyFromValue template parameter that
 // extracts the key as the first element of a pair.
@@ -32,7 +32,7 @@ struct GetFirst {
   }
 };
 
-}  // namespace internal
+}  // namespace flat_map_internal
 
 // flat_map is a container with a std::map-like interface that stores its
 // contents in a sorted container, by default a vector.
@@ -195,11 +195,12 @@ template <class Key,
           class Mapped,
           class Compare = std::less<>,
           class Container = std::vector<std::pair<Key, Mapped>>>
-class flat_map : public ::base::internal::
-                     flat_tree<Key, internal::GetFirst, Compare, Container> {
+class flat_map
+    : public ::base::flat_tree_internal::
+          flat_tree<Key, flat_map_internal::GetFirst, Compare, Container> {
  private:
-  using tree = typename ::base::internal::
-      flat_tree<Key, internal::GetFirst, Compare, Container>;
+  using tree = typename ::base::flat_tree_internal::
+      flat_tree<Key, flat_map_internal::GetFirst, Compare, Container>;
 
   // Alias supporting heterogeneous lookup if `Compare` is transparent.
   template <typename K>
@@ -479,7 +480,7 @@ constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
     const KeyCompare& comp = KeyCompare(),
     const Projection& proj = Projection()) {
   Container elements;
-  internal::ReserveIfSupported(elements, unprojected_elements);
+  flat_tree_internal::ReserveIfSupported(elements, unprojected_elements);
   std::ranges::transform(unprojected_elements, std::back_inserter(elements),
                          proj);
   return flat_map<Key, Mapped, KeyCompare, Container>(std::move(elements),

@@ -10,7 +10,7 @@ check_raw_ptr_in_container:
     - "std::list"
     - "std::queue"
     - "std::set"
-    - "base::internal::flat_tree"
+    - "base::flat_tree_internal::flat_tree"
     - "std::vector"
   # Pointer types that never point to PartitionAlloc memory (e.g. OS or driver
   # handles), so `raw_ptr<T>` gives them no protection and, for some of them,

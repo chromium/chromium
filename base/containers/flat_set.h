@@ -166,10 +166,10 @@ namespace base {
 template <class Key,
           class Compare = std::less<>,
           class Container = std::vector<Key>>
-using flat_set = typename ::base::internal::
+using flat_set = typename ::base::flat_tree_internal::
     flat_tree<Key, std::identity, Compare, Container>;
 
-namespace internal {
+namespace flat_tree_internal {
 
 // Deduction guides for `flat_set`. They are modeled after the guides for
 // `std::flat_set`, but default to `std::less<>` like `flat_set` itself. Since
@@ -258,7 +258,7 @@ template <class Key, class Compare = std::less<>>
 flat_tree(sorted_unique_t, std::initializer_list<Key>, Compare = Compare())
     -> flat_tree<Key, std::identity, Compare, std::vector<Key>>;
 
-}  // namespace internal
+}  // namespace flat_tree_internal
 
 // Utility function to simplify constructing a flat_set from a fixed list
 // of keys. The keys are obtained by applying the projection |proj| to the
@@ -278,7 +278,7 @@ constexpr flat_set<Key, Compare, Container> MakeFlatSet(
     const Compare& comp = Compare(),
     const Projection& proj = Projection()) {
   Container elements;
-  internal::ReserveIfSupported(elements, unprojected_elements);
+  flat_tree_internal::ReserveIfSupported(elements, unprojected_elements);
   std::ranges::transform(unprojected_elements, std::back_inserter(elements),
                          proj);
   return flat_set<Key, Compare, Container>(std::move(elements), comp);

@@ -46,7 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
-namespace base::internal {
+namespace base::flat_tree_internal {
 
 namespace {
 
@@ -1789,4 +1789,4 @@ TEST(FlatTree, ConstexprEmplaceDuplicate) {
   static_assert(test_constexpr_emplace_duplicate());
 }
 
-}  // namespace base::internal
+}  // namespace base::flat_tree_internal

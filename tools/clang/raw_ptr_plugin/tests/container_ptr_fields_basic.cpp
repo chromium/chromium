@@ -12,10 +12,10 @@
 #include <vector>
 
 namespace base {
-namespace internal {
+namespace flat_tree_internal {
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 struct flat_tree {};
-}  // namespace internal
+}  // namespace flat_tree_internal
 
 struct identity {
   template <class T>
@@ -27,7 +27,8 @@ struct identity {
 template <class Key,
           class Compare = std::less<>,
           class Container = std::vector<Key>>
-using flat_set = internal::flat_tree<Key, identity, Compare, Container>;
+using flat_set =
+    flat_tree_internal::flat_tree<Key, identity, Compare, Container>;
 
 template <class T, class Container = std::list<T>>
 using queue = std::queue<T, Container>;

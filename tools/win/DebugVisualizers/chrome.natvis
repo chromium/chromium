@@ -243,7 +243,7 @@
       <Item Name="more values that may be null (see chrome.natvis)" Optional="true" ExcludeView="simple">$T6</Item>
     </Expand>
   </Type>
-  <Type Name="base::internal::flat_tree&lt;*&gt;">
+  <Type Name="base::flat_tree_internal::flat_tree&lt;*&gt;">
     <DisplayString>{body_}</DisplayString>
     <Expand>
       <ExpandedItem>body_</ExpandedItem>

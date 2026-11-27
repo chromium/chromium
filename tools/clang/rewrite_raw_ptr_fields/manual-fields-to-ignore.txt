@@ -338,7 +338,7 @@ viz::(anonymous namespace)::BspTreePerfTest::base_list_
 base::CheckedContiguousIterator::start_
 base::CheckedContiguousIterator::current_
 base::CheckedContiguousIterator::end_
-base::internal::flat_tree::KeyValueCompare::comp_
+base::flat_tree_internal::flat_tree::KeyValueCompare::comp_
 base::MadvFreeDiscardableMemoryPosix::data_
 base::internal::UnexpectedDeducer::lambda_
 (anonymous namespace)::CouponDataStruct::description

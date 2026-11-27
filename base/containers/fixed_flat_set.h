@@ -15,10 +15,10 @@
 
 namespace base {
 
-namespace internal {
+namespace fixed_flat_set_internal {
 // Not constexpr to trigger a compile error.
 void FixedFlatSetInputNotSortedOrNotUnique();
-}  // namespace internal
+}  // namespace fixed_flat_set_internal
 
 // fixed_flat_set is a immutable container with a std::set-like interface that
 // stores its contents in a sorted std::array.
@@ -92,13 +92,13 @@ consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     sorted_unique_t,
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
-  if (!internal::is_sorted_and_unique(data, comp)) {
-    internal::FixedFlatSetInputNotSortedOrNotUnique();
+  if (!flat_tree_internal::is_sorted_and_unique(data, comp)) {
+    fixed_flat_set_internal::FixedFlatSetInputNotSortedOrNotUnique();
   }
   // Specify the value_type explicitly to ensure that the returned array has
   // immutable keys.
   return fixed_flat_set<Key, N, Compare>(
-      sorted_unique, internal::ToArray<const Key>(data), comp);
+      sorted_unique, flat_tree_internal::ToArray<const Key>(data), comp);
 }
 
 // Utility function to simplify constructing a fixed_flat_set from a fixed list

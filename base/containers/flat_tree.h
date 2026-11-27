@@ -30,7 +30,7 @@ struct sorted_unique_t {
 };
 inline constexpr sorted_unique_t sorted_unique;
 
-namespace internal {
+namespace flat_tree_internal {
 
 template <bool B>
 struct ConditionalImpl {
@@ -1132,7 +1132,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::
   return emplace_key_args(key, std::forward<Args>(args)...);
 }
 
-}  // namespace internal
+}  // namespace flat_tree_internal
 
 // ----------------------------------------------------------------------------
 // Free functions.
@@ -1144,8 +1144,8 @@ template <class Key,
           class Container,
           typename Predicate>
 size_t EraseIf(
-    base::internal::flat_tree<Key, GetKeyFromValue, KeyCompare, Container>&
-        container,
+    base::flat_tree_internal::
+        flat_tree<Key, GetKeyFromValue, KeyCompare, Container>& container,
     Predicate pred) {
   auto removed = std::remove_if(container.begin(), container.end(), pred);
   size_t num_removed = static_cast<size_t>(container.end() - removed);

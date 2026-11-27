@@ -15,10 +15,10 @@
 
 namespace base {
 
-namespace internal {
+namespace fixed_flat_map_internal {
 // Not constexpr to trigger a compile error.
 void FixedFlatMapInputNotSortedOrNotUnique();
-}  // namespace internal
+}  // namespace fixed_flat_map_internal
 
 // fixed_flat_map is a immutable container with a std::map-like interface that
 // stores its contents in a sorted std::array.
@@ -108,14 +108,15 @@ consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
     const Compare& comp = Compare()) {
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
   typename FixedFlatMap::value_compare value_comp{comp};
-  if (!internal::is_sorted_and_unique(data, value_comp)) {
+  if (!flat_tree_internal::is_sorted_and_unique(data, value_comp)) {
     std::ranges::sort(data, value_comp);
-    if (!internal::is_sorted_and_unique(data, value_comp)) {
-      internal::FixedFlatMapInputNotSortedOrNotUnique();
+    if (!flat_tree_internal::is_sorted_and_unique(data, value_comp)) {
+      fixed_flat_map_internal::FixedFlatMapInputNotSortedOrNotUnique();
     }
   }
   return FixedFlatMap(
-      sorted_unique, internal::ToArray<typename FixedFlatMap::value_type>(data),
+      sorted_unique,
+      flat_tree_internal::ToArray<typename FixedFlatMap::value_type>(data),
       comp);
 }
 
