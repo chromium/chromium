@@ -690,3 +690,151 @@ describe('NetworkRequest beforeRequestSent wire headers', () => {
     ]);
   });
 });
+
+describe('NetworkRequest response and request cookie overrides', () => {
+  function createBlockedRequest(
+    sendCommand: sinon.SinonStub,
+    phase: Network.InterceptPhase,
+    headers: Protocol.Network.Headers = {},
+  ) {
+    const eventManager = sinon.createStubInstance(EventManager);
+    const networkStorage = sinon.createStubInstance(NetworkStorage);
+    networkStorage.getInterceptsForPhase.returns(new Set(['intercept-1']));
+    const cdpTarget = sinon.createStubInstance(CdpTarget);
+    Object.defineProperty(cdpTarget, 'cdpClient', {
+      value: {sendCommand},
+    });
+    cdpTarget.isSubscribedTo.returns(true);
+
+    const request = new NetworkRequest(
+      REQUEST_ID,
+      eventManager,
+      networkStorage,
+      cdpTarget,
+      0,
+    );
+    request.onRequestPaused({
+      ...pausedEvent,
+      request: {...pausedEvent.request, headers},
+      ...(phase === Network.InterceptPhase.ResponseStarted
+        ? {
+            responseStatusCode: 200,
+            responseHeaders: [
+              {name: 'X-Orig', value: '1'},
+              {name: 'Set-Cookie', value: 'orig=1'},
+            ],
+          }
+        : {}),
+    });
+    return request;
+  }
+
+  it('converts provideResponse cookies to Set-Cookie headers', async () => {
+    const sendCommand = sinon.stub().resolves({});
+    const request = createBlockedRequest(
+      sendCommand,
+      Network.InterceptPhase.BeforeRequestSent,
+    );
+
+    await request.provideResponse({
+      statusCode: 200,
+      reasonPhrase: 'OK',
+      headers: [
+        {name: 'content-type', value: {type: 'string', value: 'text/plain'}},
+      ],
+      cookies: [
+        {name: 'a', value: {type: 'string', value: '1'}},
+        {name: 'b', value: {type: 'string', value: '2'}, httpOnly: true},
+      ],
+    });
+
+    sinon.assert.calledWithMatch(sendCommand, 'Fetch.fulfillRequest', {
+      requestId: FETCH_ID,
+      responseCode: 200,
+      responseHeaders: [
+        {name: 'content-type', value: 'text/plain'},
+        {name: 'Set-Cookie', value: 'a=1'},
+        {name: 'Set-Cookie', value: 'b=2;HttpOnly'},
+      ],
+    });
+  });
+
+  it('does not add a cookie header when provideResponse receives empty cookies', async () => {
+    const sendCommand = sinon.stub().resolves({});
+    const request = createBlockedRequest(
+      sendCommand,
+      Network.InterceptPhase.BeforeRequestSent,
+    );
+
+    await request.provideResponse({
+      statusCode: 200,
+      headers: [
+        {name: 'content-type', value: {type: 'string', value: 'text/plain'}},
+      ],
+      cookies: [],
+    });
+
+    sinon.assert.calledWithMatch(sendCommand, 'Fetch.fulfillRequest', {
+      requestId: FETCH_ID,
+      responseHeaders: [{name: 'content-type', value: 'text/plain'}],
+    });
+  });
+
+  it('replaces existing Set-Cookie headers when continueResponse passes cookies', async () => {
+    const sendCommand = sinon.stub().resolves({});
+    const request = createBlockedRequest(
+      sendCommand,
+      Network.InterceptPhase.ResponseStarted,
+    );
+
+    await request.continueResponse({
+      cookies: [
+        {name: 'a', value: {type: 'string', value: '1'}},
+        {name: 'b', value: {type: 'string', value: '2'}, httpOnly: true},
+      ],
+    });
+
+    sinon.assert.calledWithMatch(sendCommand, 'Fetch.continueResponse', {
+      requestId: FETCH_ID,
+      responseHeaders: [
+        {name: 'X-Orig', value: '1'},
+        {name: 'Set-Cookie', value: 'a=1'},
+        {name: 'Set-Cookie', value: 'b=2;HttpOnly'},
+      ],
+    });
+  });
+
+  it('drops existing Set-Cookie headers when continueResponse passes empty cookies', async () => {
+    const sendCommand = sinon.stub().resolves({});
+    const request = createBlockedRequest(
+      sendCommand,
+      Network.InterceptPhase.ResponseStarted,
+    );
+
+    await request.continueResponse({cookies: []});
+
+    sinon.assert.calledWithMatch(sendCommand, 'Fetch.continueResponse', {
+      requestId: FETCH_ID,
+      responseHeaders: [{name: 'X-Orig', value: '1'}],
+    });
+  });
+
+  it('replaces existing Cookie header with empty Cookie when continueRequest passes empty cookies', async () => {
+    const sendCommand = sinon.stub().resolves({});
+    const request = createBlockedRequest(
+      sendCommand,
+      Network.InterceptPhase.BeforeRequestSent,
+      {Cookie: 'old=1', 'X-Keep': 'yes'},
+    );
+
+    await request.continueRequest({cookies: []});
+
+    sinon.assert.calledWithMatch(sendCommand, 'Fetch.continueRequest', {
+      requestId: FETCH_ID,
+      headers: [
+        {name: 'X-Keep', value: 'yes'},
+        {name: 'Cookie', value: ''},
+      ],
+    });
+  });
+});

@@ -583,4 +583,55 @@ describe('NetworkUtils', () => {
       assert.deepEqual(cdpCookie.partitionKey, customPartitionKey);
     });
   });
+
+  describe('cookie header helpers', () => {
+    it('returns undefined for undefined and empty Cookie header for empty request CookieHeader list', () => {
+      assert.isUndefined(
+        networkUtils.networkHeaderFromCookieHeaders(undefined),
+      );
+      assert.deepEqual(networkUtils.networkHeaderFromCookieHeaders([]), {
+        name: 'Cookie',
+        value: {type: 'string', value: ''},
+      });
+    });
+
+    it('decodes base64 cookie values in networkHeaderFromCookieHeaders', () => {
+      assert.deepEqual(
+        networkUtils.networkHeaderFromCookieHeaders([
+          {
+            name: 'session',
+            value: {type: 'base64', value: btoa('abc')},
+          },
+        ]),
+        {
+          name: 'Cookie',
+          value: {type: 'string', value: 'session=abc'},
+        },
+      );
+    });
+
+    it('formats Set-Cookie response headers from BiDi SetCookieHeader', () => {
+      assert.deepEqual(
+        networkUtils.setCookieHeaderFromBidiSetCookieHeader({
+          name: 'token',
+          value: {type: 'string', value: 'xyz'},
+          domain: 'example.com',
+          path: '/app',
+          expiry: 'Wed, 21 Oct 2026 07:28:00 GMT',
+          maxAge: 3600,
+          secure: true,
+          httpOnly: true,
+          sameSite: Network.SameSite.Lax,
+        }),
+        {
+          name: 'Set-Cookie',
+          value: {
+            type: 'string',
+            value:
+              'token=xyz;Domain=example.com;Path=/app;Expires=Wed, 21 Oct 2026 07:28:00 GMT;Max-Age=3600;Secure;HttpOnly;SameSite=Lax',
+          },
+        },
+      );
+    });
+  });
 });

@@ -48,6 +48,7 @@ import {
   getTiming,
   mergeCdpNetworkHeaders,
   networkHeaderFromCookieHeaders,
+  setCookieHeaderFromBidiSetCookieHeader,
   stringToBase64,
 } from './NetworkUtils.js';
 
@@ -1153,9 +1154,12 @@ export class NetworkRequest {
     }
 
     if (this.#interceptPhase === Network.InterceptPhase.ResponseStarted) {
-      const overrideHeaders = this.#getOverrideHeader(
+      const overrideHeaders = this.#getResponseOverrideHeaders(
         overrides.headers,
         overrides.cookies,
+        bidiNetworkHeadersFromCdpFetchHeaders(
+          this.#response.paused?.responseHeaders,
+        ),
       );
       const responseHeaders =
         cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
@@ -1234,7 +1238,7 @@ export class NetworkRequest {
       });
     }
 
-    const overrideHeaders = this.#getOverrideHeader(
+    const overrideHeaders = this.#getResponseOverrideHeaders(
       overrides.headers,
       overrides.cookies,
     );
@@ -1250,6 +1254,10 @@ export class NetworkRequest {
       responseHeaders,
       body: getCdpBodyFromBiDiBytesValue(overrides.body),
     });
+    this.#responseOverrides = {
+      statusCode: responseCode,
+      headers: overrideHeaders,
+    };
     this.#interceptPhase = undefined;
   }
 
@@ -1410,7 +1418,8 @@ export class NetworkRequest {
   }
 
   #getResponseEventParams(): Network.ResponseData {
-    const headers = this.#getResponseHeaders();
+    const headers =
+      this.#responseOverrides?.headers ?? this.#getResponseHeaders();
     const authChallenges = this.#authChallenges;
     const status = this.#statusCode ?? -1;
     // Use the `Fetch.authRequired` data only before the response arrives. An
@@ -1436,7 +1445,7 @@ export class NetworkRequest {
         this.#response.info?.fromDiskCache ||
         this.#response.info?.fromPrefetchCache ||
         this.#servedFromCache,
-      headers: this.#responseOverrides?.headers ?? headers,
+      headers,
       mimeType: this.#response.info?.mimeType || '',
       bytesReceived: this.responseBytesReceived,
       headersSize: computeHeadersSize(headers),
@@ -1616,21 +1625,43 @@ export class NetworkRequest {
     if (!headers && !cookies) {
       return undefined;
     }
-    let overrideHeaders: Network.Header[] | undefined = headers;
-    const cookieHeader = networkHeaderFromCookieHeaders(cookies);
-    if (cookieHeader && !overrideHeaders) {
-      overrideHeaders = this.#requestHeaders;
-    }
-    if (cookieHeader && overrideHeaders) {
-      overrideHeaders.filter(
+    let overrideHeaders: Network.Header[] = headers
+      ? [...headers]
+      : this.#requestHeaders;
+    if (cookies !== undefined) {
+      overrideHeaders = overrideHeaders.filter(
         (header) =>
           header.name.localeCompare('cookie', undefined, {
             sensitivity: 'base',
           }) !== 0,
       );
-      overrideHeaders.push(cookieHeader);
+      const cookieHeader = networkHeaderFromCookieHeaders(cookies);
+      if (cookieHeader) {
+        overrideHeaders.push(cookieHeader);
+      }
     }
 
+    return overrideHeaders;
+  }
+
+  #getResponseOverrideHeaders(
+    headers: Network.Header[] | undefined,
+    cookies: Network.SetCookieHeader[] | undefined,
+    fallbackHeaders?: Network.Header[],
+  ): Network.Header[] | undefined {
+    if (!headers && !cookies) {
+      return undefined;
+    }
+    const overrideHeaders = headers
+      ? [...headers]
+      : (fallbackHeaders ?? []).filter(
+          (header) => header.name.toLowerCase() !== 'set-cookie',
+        );
+    if (cookies) {
+      for (const cookie of cookies) {
+        overrideHeaders.push(setCookieHeaderFromBidiSetCookieHeader(cookie));
+      }
+    }
     return overrideHeaders;
   }
 

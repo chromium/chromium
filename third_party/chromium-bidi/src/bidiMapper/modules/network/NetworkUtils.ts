@@ -168,24 +168,59 @@ export function networkHeaderFromCookieHeaders(
     return undefined;
   }
 
-  const value = headers.reduce((acc, value, index) => {
-    if (index > 0) {
-      acc += ';';
-    }
-    const cookieValue =
-      value.value.type === 'base64'
-        ? btoa(value.value.value)
-        : value.value.value;
-    acc += `${value.name}=${cookieValue}`;
-
-    return acc;
-  }, '');
+  const value = headers
+    .map((cookie) => `${cookie.name}=${deserializeByteValue(cookie.value)}`)
+    .join(';');
 
   return {
     name: 'Cookie',
     value: {
       type: 'string',
       value,
+    },
+  };
+}
+
+const SAME_SITE_HEADER_VALUES: Record<string, string> = {
+  strict: 'Strict',
+  lax: 'Lax',
+  none: 'None',
+};
+
+/** Converts a BiDi SetCookieHeader into a `Set-Cookie` response header. */
+export function setCookieHeaderFromBidiSetCookieHeader(
+  cookie: Network.SetCookieHeader,
+): Network.Header {
+  const parts = [`${cookie.name}=${deserializeByteValue(cookie.value)}`];
+  if (cookie.domain !== undefined) {
+    parts.push(`Domain=${cookie.domain}`);
+  }
+  if (cookie.path !== undefined) {
+    parts.push(`Path=${cookie.path}`);
+  }
+  if (cookie.expiry !== undefined) {
+    parts.push(`Expires=${cookie.expiry}`);
+  }
+  if (cookie.maxAge !== undefined) {
+    parts.push(`Max-Age=${cookie.maxAge}`);
+  }
+  if (cookie.secure) {
+    parts.push('Secure');
+  }
+  if (cookie.httpOnly) {
+    parts.push('HttpOnly');
+  }
+  if (cookie.sameSite !== undefined) {
+    const sameSiteValue = SAME_SITE_HEADER_VALUES[cookie.sameSite];
+    if (sameSiteValue !== undefined) {
+      parts.push(`SameSite=${sameSiteValue}`);
+    }
+  }
+  return {
+    name: 'Set-Cookie',
+    value: {
+      type: 'string',
+      value: parts.join(';'),
     },
   };
 }

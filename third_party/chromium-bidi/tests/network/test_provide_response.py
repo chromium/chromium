@@ -22,6 +22,7 @@ from test_helpers import (
     AnyExtending,
     execute_command,
     goto_url,
+    read_JSON_message,
     send_JSON_command,
     subscribe,
     wait_for_command,
@@ -684,3 +685,130 @@ async def test_provide_response_status_only_does_not_hit_server(
     event_response = await wait_for_event(websocket, "network.responseCompleted")
     assert event_response["params"]["response"]["status"] == 503
     assert event_response["params"]["response"]["statusText"] == "Service Unavailable"
+
+
+@pytest.mark.asyncio
+async def test_provide_response_cookies(websocket, context_id, url_example):
+    await subscribe(
+        websocket,
+        ["network.beforeRequestSent"],
+        [context_id],
+    )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{"type": "string", "pattern": url_example}],
+            },
+        },
+    )
+
+    nav_cmd = await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"url": url_example, "context": context_id, "wait": "complete"},
+        },
+    )
+    while True:
+        event_response = await wait_for_event(websocket, "network.beforeRequestSent")
+        if (
+            event_response["params"]["isBlocked"]
+            and event_response["params"]["request"]["url"] == url_example
+        ):
+            break
+    network_id = event_response["params"]["request"]["request"]
+
+    # Do not use `execute_command` here. It discards the navigation response if
+    # it arrives before the `network.provideResponse` response.
+    provide_cmd = await send_JSON_command(
+        websocket,
+        {
+            "method": "network.provideResponse",
+            "params": {
+                "request": network_id,
+                "statusCode": 200,
+                "reasonPhrase": "OK",
+                "headers": [
+                    {
+                        "name": "content-type",
+                        "value": {"type": "string", "value": "text/plain"},
+                    }
+                ],
+                "cookies": [
+                    {"name": "a", "value": {"type": "string", "value": "1"}},
+                    {"name": "b", "value": {"type": "string", "value": "2"}},
+                ],
+                "body": {"type": "string", "value": "ok"},
+            },
+        },
+    )
+    pending_commands = {provide_cmd, nav_cmd}
+    while pending_commands:
+        message = await read_JSON_message(websocket)
+        if message.get("id") in pending_commands:
+            assert message["type"] == "success"
+            pending_commands.remove(message["id"])
+
+    cookies_res = await execute_command(
+        websocket, {"method": "storage.getCookies", "params": {}}
+    )
+    cookie_map = {c["name"]: c["value"]["value"] for c in cookies_res["cookies"]}
+    assert cookie_map["a"] == "1"
+    assert cookie_map["b"] == "2"
+
+
+@pytest.mark.asyncio
+async def test_provide_response_empty_cookies(
+    websocket, context_id, url_base, url_example
+):
+    await goto_url(websocket, context_id, url_base)
+
+    network_id = await create_blocked_request(
+        websocket, context_id, url=url_example, phase="beforeRequestSent"
+    )
+
+    await subscribe(websocket, ["network.responseStarted"], [context_id])
+
+    # Do not use `execute_command` here. It discards events that arrive before
+    # the command response.
+    provide_cmd = await send_JSON_command(
+        websocket,
+        {
+            "method": "network.provideResponse",
+            "params": {
+                "request": network_id,
+                "statusCode": 200,
+                "reasonPhrase": "OK",
+                "headers": [
+                    {
+                        "name": "content-type",
+                        "value": {"type": "string", "value": "text/plain"},
+                    }
+                ],
+                "cookies": [],
+                "body": {"type": "string", "value": "ok"},
+            },
+        },
+    )
+
+    started = None
+    provide_done = False
+    while started is None or not provide_done:
+        message = await read_JSON_message(websocket)
+        if message.get("id") == provide_cmd:
+            assert message["type"] == "success"
+            provide_done = True
+        elif (
+            message.get("method") == "network.responseStarted"
+            and message["params"]["request"]["request"] == network_id
+        ):
+            started = message
+
+    assert all(
+        h["name"].lower() not in ("cookie", "set-cookie")
+        for h in started["params"]["response"]["headers"]
+    )
