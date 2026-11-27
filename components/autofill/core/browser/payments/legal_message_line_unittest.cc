@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -43,6 +44,9 @@ std::ostream& operator<<(std::ostream& os, const LegalMessageLines& lines) {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Property;
 using Link = LegalMessageLine::Link;
 
 // A test case.
@@ -295,6 +299,67 @@ TEST_P(LegalMessageLineTest, Parsing) {
 INSTANTIATE_TEST_SUITE_P(TestCases,
                          LegalMessageLineTest,
                          testing::ValuesIn(TestCaseValues()));
+
+base::DictValue CreateLegalMessage(std::string_view url) {
+  return base::DictValue().Set(
+      "line",
+      base::ListValue().Append(
+          base::DictValue()
+              .Set("template", "Panda {0}.")
+              .Set("template_parameter",
+                   base::ListValue().Append(base::DictValue()
+                                                .Set("display_text", "bears")
+                                                .Set("url", url)))));
+}
+
+TEST(LegalMessageLineUrlTest, AcceptsHttpsUrl) {
+  const base::DictValue legal_message =
+      CreateLegalMessage("https://www.example.com/tos");
+  LegalMessageLines actual_lines;
+  EXPECT_TRUE(LegalMessageLine::Parse(legal_message, &actual_lines));
+  EXPECT_THAT(actual_lines,
+              ElementsAre(Property(
+                  &LegalMessageLine::links,
+                  ElementsAre(Link(6, 11, "https://www.example.com/tos")))));
+}
+
+TEST(LegalMessageLineUrlTest, RejectsInvalidAndDisallowedUrls) {
+  static constexpr std::string_view kDisallowedUrls[] = {
+      "",
+      "not-a-valid-url",
+      "http://",
+      "chrome://settings/resetProfileSettings",
+      "file:///etc/passwd",
+      "javascript:alert(1)",
+  };
+
+  for (const std::string_view url : kDisallowedUrls) {
+    SCOPED_TRACE(url);
+    const base::DictValue legal_message = CreateLegalMessage(url);
+    LegalMessageLines actual_lines = {TestLegalMessageLine("existing")};
+    EXPECT_FALSE(LegalMessageLine::Parse(legal_message, &actual_lines));
+    EXPECT_THAT(actual_lines, IsEmpty());
+  }
+}
+
+TEST(LegalMessageLineUrlTest, RejectsMixedValidAndDisallowedUrls) {
+  const base::DictValue legal_message = base::DictValue().Set(
+      "line",
+      base::ListValue().Append(
+          base::DictValue()
+              .Set("template", "Panda {0} and {1}.")
+              .Set("template_parameter",
+                   base::ListValue()
+                       .Append(base::DictValue()
+                                   .Set("display_text", "bears")
+                                   .Set("url", "https://www.example.com/tos"))
+                       .Append(base::DictValue()
+                                   .Set("display_text", "bamboo")
+                                   .Set("url", "chrome://settings")))));
+  LegalMessageLines actual_lines = {TestLegalMessageLine("existing")};
+  EXPECT_FALSE(LegalMessageLine::Parse(legal_message, &actual_lines));
+  EXPECT_THAT(actual_lines, IsEmpty());
+}
 
 }  // namespace
 }  // namespace autofill

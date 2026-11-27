@@ -24,6 +24,7 @@ class LegalMessageLine {
  public:
   struct Link {
     Link(size_t start, size_t end, const std::string& url_spec);
+    Link(size_t start, size_t end, GURL url);
     ~Link();
 
     bool operator==(const Link& other) const;
@@ -39,7 +40,8 @@ class LegalMessageLine {
 
   bool operator==(const LegalMessageLine& other) const;
 
-  // Parses |legal_message|. Returns false on failure.
+  // Clears |out| and parses |legal_message|. Returns false and leaves |out|
+  // empty on failure. Template parameter URLs must be valid HTTP or HTTPS URLs.
   //
   // Example of valid |legal_message| data:
   // {

@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -15,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -74,6 +78,9 @@ LegalMessageLine::Link::Link(size_t start,
                              const std::string& url_spec)
     : range(start, end), url(url_spec) {}
 
+LegalMessageLine::Link::Link(size_t start, size_t end, GURL url)
+    : range(start, end), url(std::move(url)) {}
+
 LegalMessageLine::Link::~Link() = default;
 
 bool LegalMessageLine::Link::operator==(
@@ -92,6 +99,7 @@ bool LegalMessageLine::operator==(const LegalMessageLine& other) const =
 bool LegalMessageLine::Parse(const base::DictValue& legal_message,
                              LegalMessageLines* out,
                              bool escape_apostrophes) {
+  out->clear();
   const base::ListValue* lines_list = legal_message.FindList("line");
   if (lines_list) {
     LegalMessageLines lines;
@@ -134,12 +142,19 @@ bool LegalMessageLine::ParseLine(const base::DictValue& line,
       if (!display_text)
         return false;
 
-      const std::string* url = parameter.GetDict().FindString("url");
-      if (!url)
+      const std::optional<std::string_view> url =
+          parameter.GetDict().FindStr("url");
+      if (!url) {
         return false;
+      }
+
+      GURL parsed_url(*url);
+      if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+        return false;
+      }
 
       display_texts.push_back(base::UTF8ToUTF16(*display_text));
-      links_.emplace_back(0, 0, *url);
+      links_.emplace_back(0, 0, std::move(parsed_url));
     }
   }
 
