@@ -4,19 +4,40 @@
 
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 
+#include <cstdint>
 #include <optional>
 #include <variant>
 
 #include "base/check_deref.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
+namespace {
+
+// Returns a LocalFrameToken that is distinct from the tokens of all other
+// TestAutofillDrivers. Tokens of drivers created later compare greater.
+//
+// This does not use test::MakeLocalFrameToken() because not every test that
+// creates a TestAutofillDriver has an AutofillTestEnvironment. The high bits
+// differ from those of the tokens that test::MakeLocalFrameToken() returns, so
+// the tokens do not collide.
+LocalFrameToken NextDefaultFrameToken() {
+  static uint64_t counter = 0;
+  return LocalFrameToken(
+      base::UnguessableToken::CreateForTesting(0x7E57D21FE2ull, ++counter));
+}
+
+}  // namespace
+
 TestAutofillDriver::TestAutofillDriver(TestAutofillClient* client)
-    : autofill_client_(CHECK_DEREF(client)) {}
+    : frame_token_(NextDefaultFrameToken()),
+      autofill_client_(CHECK_DEREF(client)) {}
 
 TestAutofillDriver::~TestAutofillDriver() {
   autofill_manager_.reset();

@@ -6949,6 +6949,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     // All uploads should be expected explicitly.
     EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
 
+    form_.set_host_frame(autofill_driver().GetFrameToken());
     form_.set_name(u"MyForm");
     form_.set_url(GURL("https://myform.com/form.html"));
     form_.set_action(GURL("https://myform.com/submit.html"));
