@@ -46,6 +46,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.collaboration.CollaborationService;
@@ -61,6 +63,8 @@ import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+
+import java.util.List;
 
 /** Render tests for the Tab Strip. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -83,7 +87,7 @@ public class TabStripRenderTest {
             "shared_tab_group_avatar_notification_bubble";
     private static final String RENDER_TEST_ID_RTL = "shared_tab_group_avatar_rtl";
     private static final String RENDER_TEST_ID_FILLED_STRIP_PINNED_AND_UNPINNED =
-            "tab_strip_filled_pinned_and_unpinned";
+            "tab_strip_filled_pinned_and_unpinned_scrolled_halfway";
     private static final String RENDER_TEST_ID_COLLAPSED_GROUP = "tab_strip_collapsed_group";
     private static final String RENDER_TEST_ID_REORDER = "tab_strip_reorder";
     private static final String RENDER_TEST_ID_HOVER_HIGHLIGHT = "tab_strip_hover_highlight";
@@ -321,16 +325,29 @@ public class TabStripRenderTest {
         }
         settleLayout(stripLayoutHelper);
 
-        // Pin the first two tabs, select a middle unpinned tab, and scroll halfway so both
-        // left/right fades and pinned-over-unpinned layer z-ordering are exercised.
+        // Pin the first two tabs and select a middle unpinned tab. Selecting a tab out of view
+        // starts a strip scroll, which CompositorAnimationHandler's testing mode doesn't finish.
+        TabModel tabModel = page.getTabModel();
+        List<Integer> tabIdsToPin =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> List.of(tabModel.getTabAt(0).getId(), tabModel.getTabAt(1).getId()));
+        TabStripFacility<CtaPageStation> tabStrip = page.expectTabStrip();
+        page.runOnUiThreadTo(
+                        () -> {
+                            for (int tabId : tabIdsToPin) {
+                                tabModel.pinTab(tabId, /* showUngroupDialog= */ false);
+                            }
+                            TabModelUtils.setIndex(tabModel, 5);
+                        })
+                .waitForAnd(
+                        new TabsPinnedStatusCondition(
+                                tabModel, tabIdsToPin, /* shouldBePinned= */ true))
+                .reach(tabStrip.settled());
+
+        // Scroll halfway so both left/right fades and pinned-over-unpinned layer z-ordering are
+        // exercised.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModel tabModel = activity.getCurrentTabModel();
-                    tabModel.pinTab(tabModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
-                    tabModel.pinTab(tabModel.getTabAt(1).getId(), /* showUngroupDialog= */ false);
-                    TabModelUtils.setIndex(tabModel, 5);
-                    stripLayoutHelper.updateLayout(0);
-                    stripLayoutHelper.finishAnimations();
                     float midScrollOffset = stripLayoutHelper.getScrollOffsetLimitForTesting() / 2f;
                     stripLayoutHelper.setScrollOffsetForTesting(midScrollOffset);
                 });
