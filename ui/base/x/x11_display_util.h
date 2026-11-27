@@ -71,10 +71,20 @@ COMPONENT_EXPORT(UI_BASE_X)
 std::pair<int, int> RectDistance(const gfx::Rect& p, const gfx::Rect& q);
 
 // Given `displays` with bounds in pixel coordinates, uses each display scale
-// factor to update bounds to DIP coordinates.
+// factor to update bounds to DIP coordinates.  Work area insets are scaled
+// along with the bounds.
 COMPONENT_EXPORT(UI_BASE_X)
 void ConvertDisplayBoundsToDips(std::vector<display::Display>* displays,
                                 size_t primary_display_index);
+
+// Sets the work area of each display in `displays`, which must have bounds in
+// pixel coordinates, from `work_areas_px`, the per-monitor work areas in the
+// _GTK_WORKAREAS_D<desktop> root window property.  Like GTK, each display's
+// bounds are intersected in turn with every work area that overlaps them.
+// Exposed for unit testing.
+COMPONENT_EXPORT(UI_BASE_X)
+void SetGtkWorkAreas(std::vector<display::Display>& displays,
+                     const std::vector<gfx::Rect>& work_areas_px);
 
 }  // namespace ui
 

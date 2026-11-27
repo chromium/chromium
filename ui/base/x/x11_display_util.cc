@@ -10,7 +10,9 @@
 #include <bit>
 #include <bitset>
 #include <numeric>
+#include <optional>
 #include <queue>
+#include <string>
 #include <unordered_set>
 
 #include "base/bits.h"
@@ -29,6 +31,7 @@
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -78,6 +81,33 @@ gfx::Rect GetWorkAreaSync(x11::Future<x11::GetPropertyReply> future) {
   const uint32_t* value = response->value->cast_to<uint32_t>();
   return gfx::Rect(value[0], UNSAFE_TODO(value[1]), UNSAFE_TODO(value[2]),
                    UNSAFE_TODO(value[3]));
+}
+
+// Returns the per-monitor work areas that mutter-based window managers set in
+// _GTK_WORKAREAS_D<desktop>, or nullopt if they're unavailable.  Unlike
+// _NET_WORKAREA, these account for panels on any monitor.
+std::optional<std::vector<gfx::Rect>> GetGtkWorkAreas(
+    x11::Connection* connection) {
+  int32_t desktop = 0;
+  if (!connection->WmSupportsHint(connection->GetAtom("_GTK_WORKAREAS")) ||
+      !GetCurrentDesktop(&desktop)) {
+    return std::nullopt;
+  }
+  const std::string atom_name =
+      base::StringPrintf("_GTK_WORKAREAS_D%d", desktop);
+  std::vector<int32_t> values;
+  if (!connection->GetArrayProperty(connection->default_root(),
+                                    connection->GetAtom(atom_name.c_str()),
+                                    &values) ||
+      values.empty() || values.size() % 4 != 0) {
+    return std::nullopt;
+  }
+  std::vector<gfx::Rect> work_areas;
+  for (size_t i = 0; i < values.size(); i += 4) {
+    work_areas.emplace_back(values[i], values[i + 1], values[i + 2],
+                            values[i + 3]);
+  }
+  return work_areas;
 }
 
 x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
@@ -534,6 +564,12 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
   RemoveMirroredDisplays(displays, *primary_display_index_out);
 
+  const gfx::Rect net_workarea = GetWorkAreaSync(std::move(work_area_future));
+  const auto gtk_work_areas = GetGtkWorkAreas(connection);
+  if (gtk_work_areas) {
+    SetGtkWorkAreas(displays, *gtk_work_areas);
+  }
+
   if (!display::Display::HasForceDeviceScaleFactor()) {
     for (auto& display : displays) {
       display.set_device_scale_factor(
@@ -543,8 +579,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     ConvertDisplayBoundsToDips(&displays, *primary_display_index_out);
   }
 
-  ClipWorkArea(&displays, *primary_display_index_out,
-               GetWorkAreaSync(std::move(work_area_future)));
+  if (!gtk_work_areas) {
+    ClipWorkArea(&displays, *primary_display_index_out, net_workarea);
+  }
   return displays;
 }
 
@@ -664,12 +701,34 @@ void ConvertDisplayBoundsToDips(std::vector<display::Display>* displays,
   // Update the displays with the converted origins.
   for (size_t i = 0; i < displays->size(); i++) {
     auto& display = displays->at(i);
+    const gfx::Insets insets_px =
+        display.bounds().InsetsFrom(display.work_area());
     gfx::SizeF size_dip = gfx::ScaleSize(gfx::SizeF(display.size()),
                                          1.0f / display.device_scale_factor());
     gfx::Rect bounds_dip =
         gfx::ToEnclosingRect(gfx::RectF(origins_dip[i], size_dip));
     display.set_bounds(bounds_dip);
-    display.set_work_area(bounds_dip);
+    display.UpdateWorkAreaFromInsets(gfx::ScaleToCeiledInsets(
+        insets_px, 1.0f / display.device_scale_factor()));
+  }
+}
+
+void SetGtkWorkAreas(std::vector<display::Display>& displays,
+                     const std::vector<gfx::Rect>& work_areas_px) {
+  // The WM sets one rect per logical monitor, each contained in its monitor,
+  // but doesn't say which monitor each rect belongs to.  Like GTK, intersect
+  // the display bounds with every rect that overlaps them.  Monitors don't
+  // overlap, so only the display's own rect does (rects on an adjacent monitor
+  // share at most an edge, which gives an empty intersection).
+  for (auto& display : displays) {
+    gfx::Rect work_area = display.bounds();
+    for (const auto& area : work_areas_px) {
+      const gfx::Rect intersection = gfx::IntersectRects(work_area, area);
+      if (!intersection.IsEmpty()) {
+        work_area = intersection;
+      }
+    }
+    display.set_work_area(work_area);
   }
 }
 

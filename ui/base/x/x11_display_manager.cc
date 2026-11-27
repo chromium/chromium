@@ -70,7 +70,12 @@ void XDisplayManager::RemoveObserver(display::DisplayObserver* observer) {
 void XDisplayManager::OnEvent(const x11::Event& xev) {
   auto* prop = xev.As<x11::PropertyNotifyEvent>();
   if (xev.As<x11::RandR::NotifyEvent>() ||
-      (prop && prop->atom == connection_->GetAtom("_NET_WORKAREA"))) {
+      (prop && prop->atom == connection_->GetAtom("_NET_WORKAREA")) ||
+      (prop && prop->window == x_root_window_ &&
+       connection_->WmSupportsHint(connection_->GetAtom("_GTK_WORKAREAS")) &&
+       prop->atom ==
+           connection_->GetAtom(
+               ("_GTK_WORKAREAS_D" + GetCurrentWorkspace()).c_str()))) {
     DispatchDelayedDisplayListUpdate();
   }
 }
@@ -119,6 +124,8 @@ void XDisplayManager::FetchDisplayList() {
 void XDisplayManager::OnCurrentWorkspaceChanged(
     const std::string& new_workspace) {
   change_notifier_.NotifyCurrentWorkspaceChanged(new_workspace);
+  // The per-monitor work areas in _GTK_WORKAREAS_D<n> depend on the desktop.
+  DispatchDelayedDisplayListUpdate();
 }
 
 void XDisplayManager::UpdateDisplayList() {

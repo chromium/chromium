@@ -234,6 +234,27 @@ TEST(X11DisplayUtilTest, RemoveMirroredDisplays) {
   EXPECT_EQ(primary_display_index, 0u);
 }
 
+// Panels on any monitor, including ones on an edge shared with another
+// monitor, reduce that monitor's work area (https://crbug.com/40217761).
+TEST(X11DisplayUtilTest, SetGtkWorkAreas) {
+  std::vector<display::Display> displays;
+  displays.emplace_back(0, gfx::Rect(0, 0, 1920, 1080));
+  displays.emplace_back(1, gfx::Rect(1920, 0, 3840, 2160));
+  // A 40px panel at the top of the first monitor and an 80px panel on the
+  // left edge of the second, as listed in _GTK_WORKAREAS_D0 by mutter.
+  SetGtkWorkAreas(
+      displays, {gfx::Rect(0, 40, 1920, 1040), gfx::Rect(2000, 0, 3760, 2160)});
+  EXPECT_EQ(displays[0].work_area(), gfx::Rect(0, 40, 1920, 1040));
+  EXPECT_EQ(displays[1].work_area(), gfx::Rect(2000, 0, 3760, 2160));
+
+  // Work area insets are scaled to DIPs along with the bounds.
+  displays[1].set_device_scale_factor(2.0f);
+  ConvertDisplayBoundsToDips(&displays, 0);
+  EXPECT_EQ(displays[0].work_area(), gfx::Rect(0, 40, 1920, 1040));
+  EXPECT_EQ(displays[1].bounds(), gfx::Rect(1920, 270, 1920, 1080));
+  EXPECT_EQ(displays[1].work_area(), gfx::Rect(1960, 270, 1880, 1080));
+}
+
 // GtkUi folds the font scale (Xft.dpi / 96) into the primary scale, so it can
 // legitimately be less than 1. The fallback must accept such scales like the
 // XRandR path does.
