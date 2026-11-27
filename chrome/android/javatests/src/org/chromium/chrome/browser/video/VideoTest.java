@@ -8,7 +8,6 @@ import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,27 +16,31 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.PageTitleCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.TabTitleObserver;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.common.ContentFeatures;
-
-import java.util.concurrent.TimeoutException;
 
 /** Simple tests of html5 video. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 public class VideoTest {
+    // test.webm plays for about 5 s; keep the 15 s margin the old TabTitleObserver wait used.
+    private static final int VIDEO_PLAY_TIMEOUT_MS = 15000;
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private WebPageStation mPage;
+
+    private static class VideoPlayPageFacility extends WebPageFacility {
+        public final HtmlElement playButton = declareHtmlElement("#button1");
+    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -50,20 +53,23 @@ public class VideoTest {
     @DisableIf.Build(
             sdk_equals = Build.VERSION_CODES.Q,
             message = "crbug.com/447426928, crashing emulator with --disable-field-trial-config")
-    public void testLoadMediaUrl() throws TimeoutException {
-        Tab tab = mPage.getTab();
-        TabTitleObserver titleObserver = new TabTitleObserver(tab, "ready_to_play");
-        mActivityTestRule.loadUrl(
-                mActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/media/video-play.html"));
-        titleObserver.waitForTitleUpdate(5);
-        Assert.assertEquals("ready_to_play", ChromeTabUtils.getTitleOnUiThread(tab));
-        titleObserver = new TabTitleObserver(tab, "ended");
-        DOMUtils.clickNode(tab.getWebContents(), "button1");
+    public void testLoadMediaUrl() {
+        VideoPlayPageFacility videoPlayFacility = new VideoPlayPageFacility();
+        mPage =
+                mPage.loadPageProgrammatically(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/media/video-play.html"),
+                        WebPageStation.newBuilder()
+                                .withExpectedTitle("ready_to_play")
+                                .withFacility(videoPlayFacility));
         // Now the video will play for 5 secs.
         // Makes sure that the video ends and title was changed.
-        titleObserver.waitForTitleUpdate(15);
-        Assert.assertEquals("ended", ChromeTabUtils.getTitleOnUiThread(tab));
+        videoPlayFacility
+                .playButton
+                .clickTo()
+                .waitFor(
+                        new PageTitleCondition("ended", mPage.loadedTabElement)
+                                .withTimeout(VIDEO_PLAY_TIMEOUT_MS));
     }
 }
