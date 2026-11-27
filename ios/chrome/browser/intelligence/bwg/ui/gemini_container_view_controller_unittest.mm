@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +25,20 @@
 - (void)containerDidChangeActuationHeight:(CGFloat)height {
 }
 @end
+
+namespace {
+
+// Returns whether `view` or one of its ancestors is hidden.
+bool IsHiddenInHierarchy(UIView* view) {
+  for (UIView* ancestor = view; ancestor; ancestor = ancestor.superview) {
+    if (ancestor.hidden) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 class GeminiContainerViewControllerTest : public PlatformTest {
  protected:
@@ -182,6 +197,42 @@ TEST_F(GeminiContainerViewControllerTest, TestContentPadding) {
             container.view.bounds.size.width - 2 * kContainerPadding);
   EXPECT_EQ(content_view.frame.size.height,
             container.view.bounds.size.height - 2 * kContainerPadding);
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that during actuation, the worklog replaces the Gemini content, except
+// at the expanded mode where the Gemini content shows the worklog inline, even
+// if the worklog activates late (i.e. once its task registers).
+TEST_F(GeminiContainerViewControllerTest, TestActuationContentVisibility) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller];
+  [scoped_key_window_.Get() addSubview:container.view];
+  [container loadViewIfNeeded];
+  [container setGeminiViewController:child_view_controller_];
+  UIView* gemini_view = child_view_controller_.view;
+  UIView* worklog_view = worklog_view_controller.view;
+
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeExpanded];
+  [container setActuationActive:YES];
+  [worklog_view_controller setActuationActive:YES];
+  EXPECT_FALSE(IsHiddenInHierarchy(gemini_view));
+  EXPECT_TRUE(IsHiddenInHierarchy(worklog_view));
+
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  EXPECT_TRUE(IsHiddenInHierarchy(gemini_view));
+  EXPECT_FALSE(IsHiddenInHierarchy(worklog_view));
+
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeMinimized];
+  EXPECT_TRUE(IsHiddenInHierarchy(gemini_view));
+  EXPECT_FALSE(IsHiddenInHierarchy(worklog_view));
+
+  [container setActuationActive:NO];
+  EXPECT_FALSE(IsHiddenInHierarchy(gemini_view));
+  EXPECT_TRUE(IsHiddenInHierarchy(worklog_view));
 
   [container.view removeFromSuperview];
 }

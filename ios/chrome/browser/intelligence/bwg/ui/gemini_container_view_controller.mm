@@ -33,6 +33,9 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   UIViewController* _geminiViewController;
   // The child view controller displaying compact actuation status.
   ActuationWorklogViewController* _worklogViewController;
+  // Wrapper holding the worklog, hidden by the container since the worklog
+  // manages its own view's `hidden`.
+  UIView* _actuationContentView;
   // Wrapper view holding the Gemini UI and zero-state suggestions. This allows
   // to hide all of gemini UI without forcing a collapse with the default
   // handling of `hidden` by the stack view.
@@ -50,6 +53,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
   // Whether the container content has padding applied.
   BOOL _hasPadding;
+  // Whether actuation is in progress.
+  BOOL _actuationActive;
 }
 
 - (instancetype)initWithWorklogViewController:
@@ -113,6 +118,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   if (_worklogViewController) {
     [self addWorklogSubviews];
   }
+  [self updateActuationContentVisibility];
 }
 
 #pragma mark - ActuationWorklogViewControllerDelegate
@@ -150,12 +156,19 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 - (void)setWorklogDisplayMode:(ActuationWorklogDisplayMode)displayMode {
+  if (_worklogViewController.displayMode == displayMode) {
+    return;
+  }
   _worklogViewController.displayMode = displayMode;
+  [self updateActuationContentVisibility];
 }
 
 - (void)setActuationActive:(BOOL)active {
-  _geminiContentView.hidden = active;
-  _worklogViewController.view.hidden = !active;
+  if (_actuationActive == active) {
+    return;
+  }
+  _actuationActive = active;
+  [self updateActuationContentVisibility];
   if (!active) {
     return;
   }
@@ -200,6 +213,19 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 #pragma mark - Private
+
+// Shows either the Gemini content or the worklog. During actuation, the worklog
+// is shown, except at its expanded mode where the Gemini content and its inline
+// worklog replace the full worklog.
+// TODO(crbug.com/587910518): Keep the worklog header and interventions visible
+// around the Gemini content at the expanded mode.
+- (void)updateActuationContentVisibility {
+  BOOL showGeminiContent =
+      !_actuationActive ||
+      _worklogViewController.displayMode == ActuationWorklogDisplayModeExpanded;
+  _geminiContentView.hidden = !showGeminiContent;
+  _actuationContentView.hidden = showGeminiContent;
+}
 
 // Updates content view layout constraints based on whether padding is applied.
 - (void)updateLayoutConstraintsForPadding {
@@ -248,13 +274,17 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
 // Adds the actuation worklog to the view hierarchy.
 - (void)addWorklogSubviews {
+  _actuationContentView = [[UIView alloc] init];
+  _actuationContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_actuationContentView];
+  AddSameConstraintsWithInsets(_actuationContentView, self.view,
+                               kWorklogContainerInsets);
+
   _worklogViewController.delegate = self;
   [self addChildViewController:_worklogViewController];
   _worklogViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  _worklogViewController.view.hidden = YES;
-  [self.view addSubview:_worklogViewController.view];
-  AddSameConstraintsWithInsets(_worklogViewController.view, self.view,
-                               kWorklogContainerInsets);
+  [_actuationContentView addSubview:_worklogViewController.view];
+  AddSameConstraints(_worklogViewController.view, _actuationContentView);
   [_worklogViewController didMoveToParentViewController:self];
 }
 

@@ -21,7 +21,9 @@
 // Instructs the container to dismiss any active keyboard.
 - (void)dismissKeyboard;
 
-// Sets how the actuation worklog is presented.
+// Sets how the actuation worklog is presented. At
+// `ActuationWorklogDisplayModeExpanded`, the Gemini content, which shows the
+// worklog inline, replaces the worklog.
 - (void)setWorklogDisplayMode:(ActuationWorklogDisplayMode)displayMode;
 
 // Notifies consumer whether actuation is currently active.

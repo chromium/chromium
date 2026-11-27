@@ -147,6 +147,9 @@
     _actuationWorklogCoordinator = nil;
     // Nil if stopped before `-startContainer`. Removing a nil provider crashes.
     if (_inlineWorklogViewProvider) {
+      // On close, the store manager disconnects its store without notifying
+      // its observers, so the running task's view is unbound here.
+      [_inlineWorklogViewProvider stopObservingDataSource];
       [_mediator.gatewayManager.customUIHandler
           removeViewProvider:_inlineWorklogViewProvider];
       _inlineWorklogViewProvider = nil;
@@ -207,11 +210,13 @@
                               (id<ActorTaskActionHandler>)actionHandler {
   [_actuationWorklogCoordinator startObservingDataSource:dataSource
                                            actionHandler:actionHandler];
+  [_inlineWorklogViewProvider startObservingDataSource:dataSource];
 }
 
 - (void)geminiContainerMediatorDidStopActuationTask:
     (GeminiContainerMediator*)mediator {
   [_actuationWorklogCoordinator stopObservingDataSource];
+  [_inlineWorklogViewProvider stopObservingDataSource];
 }
 
 #pragma mark - Private
