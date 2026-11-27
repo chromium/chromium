@@ -11,7 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -204,10 +207,11 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
 
   void StoreKeys(StandaloneTrustedVaultClient* client,
                  const GaiaId& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) {
-    client->StoreKeys(gaia_id, keys, last_key_version,
-                      /*trigger=*/std::nullopt);
+                 base::span<const TrustedVaultKeyAndVersion> keys) {
+    CHECK(!keys.empty());
+    client->StoreKeys(gaia_id,
+                      base::ToVector(keys, &TrustedVaultKeyAndVersion::key),
+                      keys.back().version, /*trigger=*/std::nullopt);
   }
 
   bool MarkLocalKeysAsStale(StandaloneTrustedVaultClient* client,
@@ -279,9 +283,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldPreEnrollOnStartup) {
 
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldFallbackToKeyRetrievalWhenPreEnrollmentRejected) {
-  const std::vector<uint8_t> kServerKey = {1, 2, 3, 4};
-  const int kServerEpoch = 10;
-  fake_security_domains_server_->ResetDataToState({kServerKey}, kServerEpoch);
+  const TrustedVaultKeyAndVersion kServerKey({1, 2, 3, 4}, /*version=*/10);
+  fake_security_domains_server_->ResetDataToState({kServerKey.key},
+                                                  kServerKey.version);
 
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
@@ -298,14 +302,13 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   EXPECT_CALL(observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
-  StoreKeys(client.get(), account_info.gaia, {kServerKey}, kServerEpoch);
+  StoreKeys(client.get(), account_info.gaia, {kServerKey});
   WaitForIdle(client.get());
   EXPECT_THAT(fake_security_domains_server_->GetMembers(),
               UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
-  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey));
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey.key));
 
-  EXPECT_THAT(FetchKeys(client.get(), account_info),
-              ElementsAre(TrustedVaultKeyAndVersion(kServerKey, kServerEpoch)));
+  EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
@@ -359,13 +362,11 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation) {
-  const std::vector<uint8_t> kLocalKeyV1 = {1, 1, 1, 1};
-  const std::vector<uint8_t> kRemoteKeyV2 = {2, 2, 2, 2};
-  const int kLocalEpochV1 = 1;
-  const int kRemoteEpochV2 = 2;
+  const TrustedVaultKeyAndVersion kLocalKeyV1({1, 1, 1, 1}, /*version=*/1);
+  const TrustedVaultKeyAndVersion kRemoteKeyV2({2, 2, 2, 2}, /*version=*/2);
 
-  fake_security_domains_server_->ResetDataToState({kLocalKeyV1, kRemoteKeyV2},
-                                                  kRemoteEpochV2);
+  fake_security_domains_server_->ResetDataToState(
+      {kLocalKeyV1.key, kRemoteKeyV2.key}, kRemoteKeyV2.version);
 
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
@@ -376,11 +377,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   EXPECT_CALL(observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
-  StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1}, kLocalEpochV1);
+  StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1});
   WaitForIdle(client.get());
-  ASSERT_THAT(
-      FetchKeys(client.get(), account_info),
-      ElementsAre(TrustedVaultKeyAndVersion(kLocalKeyV1, kLocalEpochV1)));
+  ASSERT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kLocalKeyV1));
 
   // Attempting to add a recovery method with stale local key fails with
   // kLocalDataObsolete.
@@ -395,43 +394,39 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // auto-registers the default recovery factors.
   EXPECT_CALL(observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
-  StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2},
-            kRemoteEpochV2);
+  StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2});
   WaitForIdle(client.get());
   EXPECT_THAT(fake_security_domains_server_->GetMembers(),
               UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
-  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2));
+  EXPECT_TRUE(
+      fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2.key));
 
-  EXPECT_THAT(
-      FetchKeys(client.get(), account_info),
-      ElementsAre(TrustedVaultKeyAndVersion(kLocalKeyV1, kLocalEpochV1),
-                  TrustedVaultKeyAndVersion(kRemoteKeyV2, kRemoteEpochV2)));
+  EXPECT_THAT(FetchKeys(client.get(), account_info),
+              ElementsAre(kLocalKeyV1, kRemoteKeyV2));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldReadKeysAndStateFromDiskOnClientRestart) {
-  const std::vector<uint8_t> kKey = {5, 6, 7, 8};
-  const int kServerEpoch = 10;
+  const TrustedVaultKeyAndVersion kKey({5, 6, 7, 8}, /*version=*/10);
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
 
   {
     std::unique_ptr<StandaloneTrustedVaultClient> client_a = CreateClient();
-    StoreKeys(client_a.get(), account_info.gaia, {kKey}, kServerEpoch);
+    StoreKeys(client_a.get(), account_info.gaia, {kKey});
     WaitForIdle(client_a.get());
   }
 
   {
     std::unique_ptr<StandaloneTrustedVaultClient> client_b = CreateClient();
-    EXPECT_THAT(FetchKeys(client_b.get(), account_info),
-                ElementsAre(TrustedVaultKeyAndVersion(kKey, kServerEpoch)));
+    EXPECT_THAT(FetchKeys(client_b.get(), account_info), ElementsAre(kKey));
   }
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldShareFrontendAndRouteDomainNotifications) {
-  const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
-  constexpr int kServerEpoch = 10;
-  fake_security_domains_server_->ResetDataToState({kSyncKey}, kServerEpoch);
+  const TrustedVaultKeyAndVersion kSyncKey({1, 2, 3, 4}, /*version=*/10);
+  fake_security_domains_server_->ResetDataToState({kSyncKey.key},
+                                                  kSyncKey.version);
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
 
   scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
@@ -453,27 +448,27 @@ TEST_F(StandaloneTrustedVaultClientTest,
       OnTrustedVaultKeysChanged(
           /*trigger=*/Eq(TrustedVaultUserActionTriggerForUMA::kSettings)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
-  sync_client->StoreKeys(account_info.gaia, {kSyncKey}, kServerEpoch,
+  sync_client->StoreKeys(account_info.gaia, {kSyncKey.key}, kSyncKey.version,
                          TrustedVaultUserActionTriggerForUMA::kSettings);
   WaitForIdle(sync_client.get());
   testing::Mock::VerifyAndClearExpectations(&sync_observer);
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
   EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-              ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, kServerEpoch)));
+              ElementsAre(kSyncKey));
 
   // Downloading rotated keys via `FetchKeys()` in `kChromeSync` should notify
   // only `sync_observer`.
   const std::vector<uint8_t> rotated_sync_key =
-      fake_security_domains_server_->RotateTrustedVaultKey(kSyncKey);
+      fake_security_domains_server_->RotateTrustedVaultKey(kSyncKey.key);
   EXPECT_TRUE(MarkLocalKeysAsStale(sync_client.get(), account_info));
   EXPECT_CALL(sync_observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
-  EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-              ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, kServerEpoch),
-                          TrustedVaultKeyAndVersion(rotated_sync_key,
-                                                    kServerEpoch + 1)));
+  EXPECT_THAT(
+      FetchKeys(sync_client.get(), account_info),
+      ElementsAre(kSyncKey, TrustedVaultKeyAndVersion(rotated_sync_key,
+                                                      kSyncKey.version + 1)));
   testing::Mock::VerifyAndClearExpectations(&sync_observer);
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
@@ -509,8 +504,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
-  const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
-  const std::vector<uint8_t> kPasskeysKey = {5, 6, 7, 8};
+  const TrustedVaultKeyAndVersion kSyncKey({1, 2, 3, 4}, /*version=*/1);
+  const TrustedVaultKeyAndVersion kPasskeysKey({5, 6, 7, 8}, /*version=*/2);
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
 
   {
@@ -521,16 +516,14 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
         CreateClient(SecurityDomainId::kPasskeys, frontend);
     WaitForIdle(sync_client.get());
 
-    StoreKeys(sync_client.get(), account_info.gaia, {kSyncKey},
-              /*last_key_version=*/1);
-    StoreKeys(passkeys_client.get(), account_info.gaia, {kPasskeysKey},
-              /*last_key_version=*/2);
+    StoreKeys(sync_client.get(), account_info.gaia, {kSyncKey});
+    StoreKeys(passkeys_client.get(), account_info.gaia, {kPasskeysKey});
     WaitForIdle(sync_client.get());
 
     EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-                ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, 1)));
+                ElementsAre(kSyncKey));
     EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
-                ElementsAre(TrustedVaultKeyAndVersion(kPasskeysKey, 2)));
+                ElementsAre(kPasskeysKey));
   }
 
   // Verify persistence across frontend/client restart with LocalDomainsStorage.
@@ -542,17 +535,16 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
         CreateClient(SecurityDomainId::kPasskeys, frontend);
 
     EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
-                ElementsAre(TrustedVaultKeyAndVersion(kSyncKey, 1)));
+                ElementsAre(kSyncKey));
     EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
-                ElementsAre(TrustedVaultKeyAndVersion(kPasskeysKey, 2)));
+                ElementsAre(kPasskeysKey));
   }
 }
 
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldMigrateFromLegacyStorageOnRestart) {
-  const std::vector<uint8_t> kKey1 = {1, 2, 3, 4};
-  const int kServerEpoch = 10;
-  fake_security_domains_server_->ResetDataToState({kKey1}, kServerEpoch);
+  const TrustedVaultKeyAndVersion kKey1({1, 2, 3, 4}, /*version=*/10);
+  fake_security_domains_server_->ResetDataToState({kKey1.key}, kKey1.version);
 
   const base::FilePath legacy_file_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("trusted_vault.pb"));
@@ -570,7 +562,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
         kTrustedVaultSharedRecoveryFactorsAndEncryption);
 
     std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
-    StoreKeys(client.get(), account_info.gaia, {kKey1}, kServerEpoch);
+    StoreKeys(client.get(), account_info.gaia, {kKey1});
     WaitForIdle(client.get());
 
     EXPECT_TRUE(base::PathExists(legacy_file_path));
@@ -590,18 +582,17 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // Cached keys should be immediately returned from migrated storage without
   // re-registering recovery factors.
   EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
-              ElementsAre(TrustedVaultKeyAndVersion(kKey1, kServerEpoch)));
+              ElementsAre(kKey1));
   EXPECT_THAT(fake_security_domains_server_->GetMembers(), Eq(initial_members));
 
   // Verify that the migrated physical device private key can decrypt newly
   // rotated server keys.
   const std::vector<uint8_t> new_epoch_key =
-      fake_security_domains_server_->RotateTrustedVaultKey(kKey1);
+      fake_security_domains_server_->RotateTrustedVaultKey(kKey1.key);
   EXPECT_TRUE(MarkLocalKeysAsStale(migrated_client.get(), account_info));
-  EXPECT_THAT(
-      FetchKeys(migrated_client.get(), account_info),
-      ElementsAre(TrustedVaultKeyAndVersion(kKey1, kServerEpoch),
-                  TrustedVaultKeyAndVersion(new_epoch_key, kServerEpoch + 1)));
+  EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
+              ElementsAre(kKey1, TrustedVaultKeyAndVersion(new_epoch_key,
+                                                           kKey1.version + 1)));
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldCheckCanEnrollEligibility) {
