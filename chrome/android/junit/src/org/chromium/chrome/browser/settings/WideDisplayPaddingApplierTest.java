@@ -546,6 +546,29 @@ public class WideDisplayPaddingApplierTest {
         assertEquals(ViewUtils.dpToPx(metrics, 600), child.getWidth());
     }
 
+    @Test
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testDestroyedView_ignoresConfigurationChanges() {
+        DisplayMetrics metrics = mTestActivity.getResources().getDisplayMetrics();
+        FrameLayout container = createContentContainer();
+        TestSettingsFragment fragment = addTestSettingsFragment(container);
+        RecyclerView recyclerView = fragment.getListView();
+        layoutView(container, ViewUtils.dpToPx(metrics, 800));
+
+        mTestActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
+        layoutView(recyclerView, ViewUtils.dpToPx(metrics, 800));
+        assertFalse(recyclerView.isLayoutRequested());
+
+        Configuration narrowConfig =
+                new Configuration(mTestActivity.getResources().getConfiguration());
+        narrowConfig.screenWidthDp = 320;
+        mTestActivity.getResources().updateConfiguration(narrowConfig, metrics);
+        mTestActivity.onConfigurationChanged(narrowConfig);
+        assertFalse(
+                "The activity's configuration listener should be removed with the fragment view",
+                recyclerView.isLayoutRequested());
+    }
+
     private static void layoutView(View view, int widthPx) {
         view.measure(
                 View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),

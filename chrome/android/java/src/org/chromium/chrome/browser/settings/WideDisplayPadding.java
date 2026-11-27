@@ -8,12 +8,17 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -92,11 +97,19 @@ public class WideDisplayPadding {
                     });
         }
 
-        // Update padding on configuration changes.
-        fragment.requireActivity()
-                .addOnConfigurationChangedListener(
-                        (newConfig) -> {
-                            mUiConfig.updateDisplayStyle();
+        // Update padding on configuration changes while the fragment's view is alive. The activity
+        // outlives the view, so the listener must be removed to avoid retaining the fragment.
+        FragmentActivity activity = fragment.requireActivity();
+        Consumer<Configuration> onConfigChanged = (newConfig) -> mUiConfig.updateDisplayStyle();
+        activity.addOnConfigurationChangedListener(onConfigChanged);
+        fragment.getViewLifecycleOwner()
+                .getLifecycle()
+                .addObserver(
+                        new DefaultLifecycleObserver() {
+                            @Override
+                            public void onDestroy(LifecycleOwner owner) {
+                                activity.removeOnConfigurationChangedListener(onConfigChanged);
+                            }
                         });
 
         if (!hasPreferenceRecyclerView) {
