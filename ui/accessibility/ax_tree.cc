@@ -1725,12 +1725,12 @@ AXNode* AXTree::CreateNode(AXNode* parent,
   // may not be notified of changes.
   SANITIZER_CHECK(id != kInvalidAXNodeID);
   CHECK(!GetFromId(id), base::NotFatalUntil::M163);
-  CHECK_GT(update_state->GetPendingCreateNodeCount(id), 0,
-           base::NotFatalUntil::M163);
-  CHECK(update_state->InvalidatesUnignoredCachedValues(id),
-        base::NotFatalUntil::M163);
-  CHECK(!parent || update_state->InvalidatesUnignoredCachedValues(parent->id()),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/586428406): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(update_state->GetPendingCreateNodeCount(id), 0);
+  DCHECK(update_state->InvalidatesUnignoredCachedValues(id));
+  DCHECK(!parent ||
+         update_state->InvalidatesUnignoredCachedValues(parent->id()));
   update_state->DecrementPendingCreateNodeCount(id);
   update_state->new_node_ids.insert(id);
   // If this node is the root, use the given index_in_parent as the unignored
