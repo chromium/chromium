@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_ACTIVE_PINNED_FOCUSED_TAB_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_ACTIVE_PINNED_FOCUSED_TAB_MANAGER_H_
 
+#include <cstdint>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -96,6 +99,14 @@ class GlicActivePinnedFocusedTabManager
   std::unique_ptr<TabDataObserver> active_tab_data_observer_;
 
   raw_ptr<Profile> profile_;
+
+  // Monotonically incremented each time `UpdateFocusedTab()` starts so an outer
+  // invocation skips its trailing `NotifyFocusedTabDataChanged()` call when a
+  // re-entrant notification has already published a newer update.
+  uint64_t update_generation_ = 0;
+
+  base::WeakPtrFactory<GlicActivePinnedFocusedTabManager> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace glic

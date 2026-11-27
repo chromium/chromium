@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -256,6 +258,81 @@ IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest,
     }
     return false;
   }));
+}
+
+// Regression test for https://crbug.com/589800523: destroying TabDataObserver
+// inside its own cross-document navigation callback must not trigger a UAF
+// write.
+IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest,
+                       DestroyObserverDuringCrossDocNavigationCallback) {
+  bool destroyed = false;
+  observer_ = std::make_unique<TabDataObserver>(
+      web_contents_, base::BindLambdaForTesting([&](TabDataChange change) {
+        if (change.causes.Has(TabDataChangeCause::kCrossDocNavigation)) {
+          destroyed = true;
+          observer_.reset();
+        }
+      }));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  EXPECT_TRUE(destroyed);
+  EXPECT_EQ(observer_, nullptr);
+}
+
+// Regression test for https://crbug.com/589800523: destroying TabDataObserver
+// inside its own same-document navigation callback must not trigger a UAF
+// write.
+IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest,
+                       DestroyObserverDuringSameDocNavigationCallback) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  bool destroyed = false;
+  observer_ = std::make_unique<TabDataObserver>(
+      web_contents_, base::BindLambdaForTesting([&](TabDataChange change) {
+        if (change.causes.Has(TabDataChangeCause::kSameDocNavigation)) {
+          destroyed = true;
+          observer_.reset();
+        }
+      }));
+
+  ASSERT_TRUE(content::ExecJs(web_contents_->GetPrimaryMainFrame(),
+                              "history.pushState({}, '', '#next');"));
+  EXPECT_TRUE(destroyed);
+  EXPECT_EQ(observer_, nullptr);
+}
+
+// Regression test for https://crbug.com/589800523: destroying TabDataObserver
+// inside its deferred (rate-limited) timer callback must not trigger a UAF
+// write.
+IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest,
+                       DestroyObserverDuringDeferredTitleUpdateCallback) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  bool destroy_on_next_update = false;
+  bool destroyed = false;
+  observer_ = std::make_unique<TabDataObserver>(
+      web_contents_, base::BindLambdaForTesting([&](TabDataChange change) {
+        if (destroy_on_next_update) {
+          destroyed = true;
+          observer_.reset();
+        }
+      }));
+  observer_->SetTaskRunnerForTesting(mock_task_runner_);
+
+  for (const char* title : {"A", "B", "C", "D", "E"}) {
+    ASSERT_TRUE(
+        content::ExecJs(web_contents_->GetPrimaryMainFrame(),
+                        base::StrCat({"document.title = `", title, "`;"})));
+  }
+  ASSERT_FALSE(destroyed);
+
+  destroy_on_next_update = true;
+  mock_task_runner_->FastForwardBy(base::Milliseconds(250));
+  EXPECT_TRUE(destroyed);
+  EXPECT_EQ(observer_, nullptr);
 }
 
 }  // namespace

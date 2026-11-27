@@ -120,6 +120,7 @@ class TabDataObserver : public content::WebContentsObserver
  private:
   void SendRateLimitedUpdate();
   void SendUpdate();
+  void NotifyTabDataChanged();
   void ClearObservation();
 
   // Handler for TabInterface callback subscription.

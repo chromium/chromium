@@ -106,9 +106,14 @@ void GlicActivePinnedFocusedTabManager::UpdateActiveTabDataObserver(
 }
 
 void GlicActivePinnedFocusedTabManager::UpdateFocusedTab() {
-  FocusedTabData focused_tab_data = GetFocusedTabData();
-  NotifyFocusedTabChanged(focused_tab_data);
-  NotifyFocusedTabDataChanged(CreateTabData(focused_tab_data.focus()).get());
+  base::WeakPtr<GlicActivePinnedFocusedTabManager> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  const uint64_t update_generation = ++update_generation_;
+  NotifyFocusedTabChanged(GetFocusedTabData());
+  if (!weak_this || update_generation != update_generation_) {
+    return;
+  }
+  NotifyFocusedTabDataChanged(CreateTabData(GetFocusedTabData().focus()).get());
 }
 
 void GlicActivePinnedFocusedTabManager::NotifyFocusedTabChanged(
