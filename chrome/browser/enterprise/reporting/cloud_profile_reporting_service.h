@@ -55,6 +55,12 @@ class CloudProfileReportingService : public KeyedService,
 
  private:
   void Init();
+  // Schedules `CreateReportSchedulerIfEligible()` on `BEST_EFFORT`, coalescing
+  // into any already-pending task.
+  void ScheduleCreateReportScheduler();
+  // Creates `ReportScheduler` if the profile has `CLOUD` management authority
+  // or a connected `CloudPolicyClient`.
+  void CreateReportSchedulerIfEligible();
   void ResetReportScheduler();
 
   std::optional<std::string> active_dm_token_;
@@ -68,7 +74,10 @@ class CloudProfileReportingService : public KeyedService,
                           policy::CloudPolicyCore::Observer>
       core_observation_{this};
 
-  base::WeakPtrFactory<CloudProfileReportingService> weak_factory_{this};
+  // Reserved solely for the pending `BEST_EFFORT` scheduler-creation task so
+  // `HasWeakPtrs()` can coalesce duplicate scheduling requests.
+  base::WeakPtrFactory<CloudProfileReportingService>
+      create_scheduler_weak_factory_{this};
 };
 
 }  // namespace enterprise_reporting

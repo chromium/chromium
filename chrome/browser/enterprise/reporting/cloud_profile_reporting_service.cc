@@ -164,16 +164,28 @@ void CloudProfileReportingService::Shutdown() {
 
 void CloudProfileReportingService::OnCoreConnected(
     policy::CloudPolicyCore* core) {
-  // When a managed profile starts up with cached policies on disk, `Init()`'s
-  // `BEST_EFFORT` task may have already created `report_scheduler_` for this
-  // user before `CloudPolicyCore` finishes connecting online. Skip recreating
-  // the scheduler when the DMToken matches to avoid aborting or duplicating
-  // startup uploads, while still resetting whenever a different user signs in.
-  if (report_scheduler_ && active_dm_token_.has_value() &&
-      active_dm_token_ == reporting::GetUserDmToken(profile_)) {
-    return;
+  if (report_scheduler_) {
+    // When a managed profile starts up with cached policies on disk, `Init()`'s
+    // `BEST_EFFORT` task may have already created `report_scheduler_` for this
+    // user before `CloudPolicyCore` finishes connecting online. Skip recreating
+    // the scheduler when the DMToken matches to avoid aborting or duplicating
+    // startup uploads.
+    if (active_dm_token_.has_value() &&
+        active_dm_token_ == reporting::GetUserDmToken(profile_)) {
+      return;
+    }
+    // Synchronously tear down any stale scheduler/client (e.g. after an
+    // offline sign-out where `OnCoreDisconnecting()` was skipped) before
+    // posting recreation to `BEST_EFFORT`, so incoming policy prefs for
+    // the new user cannot trigger an upload under the old user's DMToken.
+    ResetReportScheduler();
   }
-  CreateReportScheduler();
+  // `CloudPolicyCore::Connect()` often runs synchronously before BEST_EFFORT
+  // UI tasks are allowed to run during startup. Schedule creation on
+  // `BEST_EFFORT` (which coalesces with any pending task from `Init()`) so
+  // startup profile report uploads do not contend with critical startup policy
+  // fetches.
+  ScheduleCreateReportScheduler();
 }
 
 void CloudProfileReportingService::OnRefreshSchedulerStarted(
@@ -210,19 +222,50 @@ void CloudProfileReportingService::Init() {
   if (policy::ManagementServiceFactory::GetForProfile(profile_)
           ->HasManagementAuthority(
               policy::EnterpriseManagementAuthority::CLOUD)) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&CloudProfileReportingService::CreateReportScheduler,
-                           weak_factory_.GetWeakPtr()));
+    ScheduleCreateReportScheduler();
   }
 }
 
+void CloudProfileReportingService::ScheduleCreateReportScheduler() {
+  // Coalesce concurrent scheduling requests (e.g. `Init()` followed by
+  // `OnCoreConnected()` before BEST_EFFORT UI tasks are allowed to run during
+  // startup) into a single pending `BEST_EFFORT` task.
+  if (create_scheduler_weak_factory_.HasWeakPtrs()) {
+    return;
+  }
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &CloudProfileReportingService::CreateReportSchedulerIfEligible,
+              create_scheduler_weak_factory_.GetWeakPtr()));
+}
+
+void CloudProfileReportingService::CreateReportSchedulerIfEligible() {
+  const bool has_cloud_authority =
+      policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD);
+  const policy::CloudPolicyManager* policy_manager =
+      profile_->GetCloudPolicyManager();
+  const bool has_connected_client =
+      policy_manager && policy_manager->core()->client() != nullptr;
+  // Preserve both offline/cached-policy startup (`has_cloud_authority`) and
+  // fresh online sign-in before policies land in `CloudPolicyStore`
+  // (`has_connected_client`), while skipping creation if an offline sign-out
+  // cleared cached policy before the startup `BEST_EFFORT` task ran.
+  if (!has_cloud_authority && !has_connected_client) {
+    return;
+  }
+  CreateReportScheduler();
+}
+
 void CloudProfileReportingService::ResetReportScheduler() {
-  // Cancel any pending `BEST_EFFORT` `CreateReportScheduler()` task posted by
-  // `Init()` so it cannot recreate schedulers after disconnect or overwrite one
-  // already created synchronously in `OnCoreConnected()`.
-  weak_factory_.InvalidateWeakPtrs();
+  // Cancel any pending `BEST_EFFORT` `CreateReportSchedulerIfEligible()` task
+  // posted by `Init()` or `OnCoreConnected()` so it cannot recreate schedulers
+  // after disconnect or overwrite a scheduler created synchronously (e.g., via
+  // `CreateReportScheduler()` in tests).
+  create_scheduler_weak_factory_.InvalidateWeakPtrs();
   active_dm_token_.reset();
   saas_usage_report_scheduler_.reset();
   // Destroy `report_scheduler_` before `cloud_policy_client_` because

@@ -10,6 +10,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/reporting/test/test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -226,6 +229,15 @@ class SecurityReportingBrowserTest
     embedded_https_test_server().StartAcceptingConnections();
 
     MixinBasedPlatformBrowserTest::SetUpOnMainThread();
+
+    // Wait for `CloudProfileReportingService` to finish creating its
+    // `ReportScheduler` on the `BEST_EFFORT` queue before tests mutate
+    // policies and assert on runtime trigger histograms.
+    CloudProfileReportingService* reporting_service =
+        CloudProfileReportingServiceFactory::GetForProfile(GetProfile());
+    ASSERT_TRUE(reporting_service);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return reporting_service->report_scheduler() != nullptr; }));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     ProfileNetworkContextServiceFactory::GetForContext(GetProfile())
