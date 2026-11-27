@@ -230,7 +230,6 @@ using manual_fill::ManualFillDataType;
     case ManualFillDataType::kAddress:
       [self showAddressManualFillingOptions];
       break;
-    case ManualFillDataType::kAtMemory:
     case ManualFillDataType::kOther:
       NOTREACHED();
   }

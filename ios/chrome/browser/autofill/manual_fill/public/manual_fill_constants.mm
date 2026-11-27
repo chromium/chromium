@@ -141,7 +141,6 @@ NSString* const kExpandedManualFillSummaryCellID =
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kAtMemory:
-      return manual_fill::ManualFillDataType::kAtMemory;
     case autofill::FillingProduct::kCompose:
     case autofill::FillingProduct::kMerchantPromoCode:
     case autofill::FillingProduct::kLoyaltyCard:

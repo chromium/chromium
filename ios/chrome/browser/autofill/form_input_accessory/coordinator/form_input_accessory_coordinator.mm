@@ -373,12 +373,6 @@ void UndoInSessionSuppressedEntity(
 - (void)startManualFillFromButton:(UIButton*)button
                       forDataType:(manual_fill::ManualFillDataType)dataType
          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
-  // `ManualFillDataType::kAtMemory` is unused while AtMemory is being removed
-  // and is not supported by `ExpandedManualFillCoordinator`.
-  if (dataType == manual_fill::ManualFillDataType::kAtMemory) {
-    return;
-  }
-
   manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
       manualFillDataTypeFromFillingProduct:
           [_formInputAccessoryMediator currentProviderMainFillingProduct]];

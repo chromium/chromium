@@ -106,7 +106,6 @@ enum class ManualFillDataType {
   kCredential = 0,
   kPaymentMethod,
   kAddress,
-  kAtMemory,
   kOther,
 };
 

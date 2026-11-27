@@ -85,9 +85,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
           "ManualFallback.VisibleSuggestions.ExpandIcon.OpenAddresses",
           suggestion_count);
       break;
-    case ManualFillDataType::kAtMemory:
-      // TODO(crbug.com/522326512): Support kAtMemory.
-      NOTREACHED();
     case ManualFillDataType::kOther:
       // The expand icon should only be available if the mapped `data_type` is
       // either associated with passwords, payment methods or addresses.
