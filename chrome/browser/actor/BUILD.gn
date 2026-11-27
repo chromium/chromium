@@ -454,6 +454,8 @@ source_set("variants") {
 # This avoids dependency cycles.
 source_set("types") {
   sources = [
+    "actor_flow_delegate.cc",
+    "actor_flow_delegate.h",
     "actor_task_delegate.h",
     "autofill_selection_dialog_event_handler.h",
     "tool_result_data.cc",
@@ -519,6 +521,7 @@ source_set("unit_tests") {
     "actor_commit_deferring_condition_unittest.cc",
     "actor_critical_action_logger_unittest.cc",
     "actor_enterprise_policy_checker_unittest.cc",
+    "actor_flow_delegate_unittest.cc",
     "actor_keyed_service_proto_wrapper_unittest.cc",
     "actor_keyed_service_unittest.cc",
     "actor_metrics_unittest.cc",

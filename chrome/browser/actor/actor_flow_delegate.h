@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_FLOW_DELEGATE_H_
-#define CHROME_BROWSER_ACTOR_UI_ACTOR_FLOW_DELEGATE_H_
+#ifndef CHROME_BROWSER_ACTOR_ACTOR_FLOW_DELEGATE_H_
+#define CHROME_BROWSER_ACTOR_ACTOR_FLOW_DELEGATE_H_
 
 #include "base/memory/weak_ptr.h"
 
-namespace actor::ui {
+namespace actor {
 
 // Decides which browser UI a task shows. Shows none by default.
 class ActorFlowDelegate {
@@ -38,6 +38,6 @@ class BrowserUiActorFlowDelegate : public ActorFlowDelegate {
   bool ShouldShowBrowserUi() const override;
 };
 
-}  // namespace actor::ui
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_FLOW_DELEGATE_H_
+#endif  // CHROME_BROWSER_ACTOR_ACTOR_FLOW_DELEGATE_H_

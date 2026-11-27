@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/ui/actor_flow_delegate.h"
+#include "chrome/browser/actor/actor_flow_delegate.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace actor::ui {
+namespace actor {
+namespace {
 
 TEST(ActorFlowDelegateTest, HidesBrowserUiByDefault) {
   ActorFlowDelegate flow_delegate;
@@ -18,4 +19,5 @@ TEST(ActorFlowDelegateTest, BrowserUiDelegateShowsBrowserUi) {
   EXPECT_TRUE(flow_delegate.ShouldShowBrowserUi());
 }
 
-}  // namespace actor::ui
+}  // namespace
+}  // namespace actor
