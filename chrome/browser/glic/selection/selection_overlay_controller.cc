@@ -2119,7 +2119,7 @@ CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
                    << region->shape->get_rect().ToString();
       }
     } else if (region->shape->is_polyline()) {
-      if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
+      if (features::IsGlicRegionSelectionLineAllowed()) {
         if (std::optional<std::vector<gfx::Point>> line_points =
                 ConvertPolylineToPixels(region->shape->get_polyline(),
                                         session_->redacted_screenshot)) {
@@ -2130,8 +2130,8 @@ CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
           LOG(ERROR) << "Invalid polyline selected";
         }
       } else {
-        LOG(ERROR) << "Received polyline but kGlicRegionSelectionLine feature "
-                      "is disabled.";
+        LOG(ERROR) << "Received polyline but polyline region selection is "
+                      "disabled.";
       }
     }
   }

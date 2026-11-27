@@ -152,8 +152,7 @@ void GeminiPromptEndpoint::Submit(
       }
     } else if (const auto* points = std::get_if<std::vector<gfx::Point>>(
                    &area_of_interest.bounds)) {
-      if (!points->empty() &&
-          base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine) &&
+      if (!points->empty() && features::IsGlicRegionSelectionLineAllowed() &&
           std::ranges::all_of(*points, [width, height](const gfx::Point& pt) {
             return pt.x() >= 0 && pt.x() < width && pt.y() >= 0 &&
                    pt.y() < height;

@@ -171,7 +171,7 @@ void RecordSelectionOverlayMetrics(
     reporter.RecordExactLinear("Instance.InputSubmitted.SelectionCount",
                                selection_areas_count, 10);
   }
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
+  if (features::IsGlicRegionSelectionLineAllowed()) {
     for (int count : polyline_point_counts) {
       reporter.RecordCounts1000(
           "Instance.InputSubmitted.Selection.PolylinePointCount", count);

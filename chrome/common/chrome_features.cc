@@ -919,6 +919,16 @@ BASE_FEATURE(kGlicRecordMemoryFootprintMetrics,
 
 BASE_FEATURE(kGlicRegionSelectionLine, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables non-rectangular (polyline) region selection for touch and pen
+// gestures in the Glic selection overlay.
+BASE_FEATURE(kGlicRegionSelectionLineForTouch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGlicRegionSelectionLineAllowed() {
+  return base::FeatureList::IsEnabled(kGlicRegionSelectionLine) ||
+         base::FeatureList::IsEnabled(kGlicRegionSelectionLineForTouch);
+}
+
 BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

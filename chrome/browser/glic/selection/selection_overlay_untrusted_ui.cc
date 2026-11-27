@@ -129,6 +129,9 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       "lineSelection",
       base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine));
   html_source->AddBoolean(
+      "lineSelectionForTouch",
+      base::FeatureList::IsEnabled(features::kGlicRegionSelectionLineForTouch));
+  html_source->AddBoolean(
       "enableSelectionOverlayPrompt",
       base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt));
   html_source->AddBoolean(

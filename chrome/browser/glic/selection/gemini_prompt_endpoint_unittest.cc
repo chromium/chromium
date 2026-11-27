@@ -470,10 +470,56 @@ TEST_F(GeminiPromptEndpointSubmitTest, SubmitPolylineRespectsFlagAndBounds) {
     testing::Mock::VerifyAndClearExpectations(&mock_service());
   }
 
-  // Disabled feature flag omits additional context even for valid points.
+  // Touch polyline flag enabled (with global flag disabled) + in-bounds
+  // polyline attaches pending polyline region.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kGlicRegionSelectionLine);
+    feature_list.InitWithFeatures({features::kGlicRegionSelectionLineForTouch},
+                                  {features::kGlicRegionSelectionLine});
+
+    std::optional<GlicInvokeOptions> captured;
+    EXPECT_CALL(mock_service(), InvokeWithAutoSubmit(_, _))
+        .WillOnce([&](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options) {
+          captured = std::move(options);
+          return nullptr;
+        });
+
+    ::selection::PageContext page_context;
+    page_context.screenshot = MakeBitmap(40, 50);
+    ::selection::PageContext::EncodedScreenshot encoded;
+    encoded.data = std::vector<uint8_t>{1, 2, 3};
+    encoded.mime_type = "image/jpeg";
+    encoded.size = gfx::Size(40, 50);
+    page_context.encoded_screenshot = std::move(encoded);
+
+    ::selection::AreaOfInterest aoi;
+    aoi.bounds = valid_points;
+
+    endpoint().Submit(mock_tab(), "Touch circle this",
+                      ::selection::PageContextWithSelection(
+                          std::move(page_context), std::move(aoi)));
+
+    ASSERT_TRUE(captured.has_value());
+    ASSERT_TRUE(captured->additional_context.has_value());
+    ASSERT_TRUE(captured->additional_context->context);
+    ASSERT_EQ(captured->additional_context->context->parts.size(), 2u);
+    ASSERT_TRUE(
+        captured->additional_context->context->parts[1]->is_pending_region());
+    const mojom::CapturedRegionPtr& region =
+        captured->additional_context->context->parts[1]
+            ->get_pending_region()
+            ->region;
+    ASSERT_TRUE(region->is_polyline());
+    EXPECT_EQ(region->get_polyline(), valid_points);
+    testing::Mock::VerifyAndClearExpectations(&mock_service());
+  }
+
+  // Disabled feature flags omit additional context even for valid points.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({},
+                                  {features::kGlicRegionSelectionLine,
+                                   features::kGlicRegionSelectionLineForTouch});
 
     std::optional<GlicInvokeOptions> captured;
     EXPECT_CALL(mock_service(), InvokeWithAutoSubmit(_, _))
