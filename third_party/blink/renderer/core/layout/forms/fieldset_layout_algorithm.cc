@@ -236,12 +236,14 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   // all live inside an anonymous child box of the fieldset container.
   if (content_break_token || !has_seen_all_children) {
     BlockNode fieldset_content = Node().GetFieldsetContent();
-    DCHECK(fieldset_content);
-    BreakStatus break_status =
-        LayoutFieldsetContent(fieldset_content, content_break_token,
-                              adjusted_padding_box_size, !!legend);
-    if (break_status == BreakStatus::kNeedsEarlierBreak) {
-      return break_status;
+    DCHECK(fieldset_content || Node().ChildLayoutBlockedByDisplayLock());
+    if (fieldset_content) {
+      BreakStatus break_status =
+          LayoutFieldsetContent(fieldset_content, content_break_token,
+                                adjusted_padding_box_size, !!legend);
+      if (break_status == BreakStatus::kNeedsEarlierBreak) {
+        return break_status;
+      }
     }
   }
 

@@ -1211,6 +1211,9 @@ LayoutInputNode BlockNode::FirstChild() const {
 BlockNode BlockNode::GetRenderedLegend() const {
   if (!IsFieldsetContainer())
     return nullptr;
+  if (ChildLayoutBlockedByDisplayLock()) {
+    return nullptr;
+  }
   return BlockNode(
       LayoutFieldset::FindInFlowLegend(*To<LayoutBlock>(box_.Get())));
 }
@@ -1218,6 +1221,9 @@ BlockNode BlockNode::GetRenderedLegend() const {
 BlockNode BlockNode::GetFieldsetContent() const {
   if (!IsFieldsetContainer())
     return nullptr;
+  if (ChildLayoutBlockedByDisplayLock()) {
+    return nullptr;
+  }
   return BlockNode(
       To<LayoutFieldset>(box_.Get())->FindAnonymousFieldsetContentBox());
 }
