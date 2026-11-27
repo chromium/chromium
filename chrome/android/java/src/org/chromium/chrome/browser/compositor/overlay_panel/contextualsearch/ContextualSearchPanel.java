@@ -70,7 +70,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -637,16 +636,16 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     @Override
     @VisibleForTesting
     public void animatePanelToState(
-            @PanelState @Nullable Integer state, @StateChangeReason int reason, long duration) {
+            @PanelState int state, @StateChangeReason int reason, long duration) {
         // If the in bar chip showing animation is running, do not run the new panel animation
         // unless it needs to animate to a different state.
-        if (Objects.equals(state, getPanelState())
+        if (state == getPanelState()
                 && haveSearchBarControl()
                 && getSearchBarControl().inBarRelatedSearchesAnimationIsRunning()) {
             return;
         }
 
-        if (Objects.equals(state, PanelState.PEEKED)
+        if (state == PanelState.PEEKED
                 && (getPanelState() == PanelState.EXPANDED
                         || getPanelState() == PanelState.MAXIMIZED)) {
             mManagementDelegate.onPanelCollapsing();

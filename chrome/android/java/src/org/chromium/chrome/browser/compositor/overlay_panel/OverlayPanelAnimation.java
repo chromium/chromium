@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
-import java.util.Objects;
-
 /** Base abstract class for animating the Overlay Panel. */
 @NullMarked
 public abstract class OverlayPanelAnimation extends OverlayPanelBase {
@@ -45,7 +43,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     private static final float INITIAL_ANIMATION_VELOCITY_DP_PER_SECOND = 1750f;
 
     /** The PanelState to which the Panel is being animated. */
-    private @Nullable @PanelState Integer mAnimatingState;
+    private @PanelState int mAnimatingState = PanelState.UNDEFINED;
 
     /** The StateChangeReason for which the Panel is being animated. */
     private @StateChangeReason int mAnimatingStateReason;
@@ -137,7 +135,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     protected void closePanel(@StateChangeReason int reason, boolean animate) {
         if (animate) {
             // Only animates the closing action if not doing that already.
-            if (!Objects.equals(mAnimatingState, PanelState.CLOSED)) {
+            if (mAnimatingState != PanelState.CLOSED) {
                 animatePanelToState(PanelState.CLOSED, reason);
             }
         } else {
@@ -168,11 +166,11 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
         // before the panel is notified of the size change, resulting in the panel's
         // ContentView being laid out incorrectly.
         if (isPanelResizeSupported) {
-            if (mAnimatingState == null || mAnimatingState != PanelState.UNDEFINED) {
+            if (mAnimatingState != PanelState.UNDEFINED) {
                 // If the size changes when an animation is happening, then we need to restart
                 // the animation, because the size of the Panel might have changed as well.
                 animatePanelToState(mAnimatingState, mAnimatingStateReason);
-            } else {
+            } else if (getPanelState() > PanelState.CLOSED) {
                 updatePanelForSizeChange();
             }
         } else {
@@ -209,7 +207,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     protected void onTopOffsetChanged() {
         super.onTopOffsetChanged();
         if (!isShowing()) return;
-        if (mAnimatingState != null && mAnimatingState != PanelState.UNDEFINED) {
+        if (mAnimatingState != PanelState.UNDEFINED) {
             animatePanelToState(mAnimatingState, mAnimatingStateReason);
         } else if (getPanelState() > PanelState.CLOSED) {
             resizePanelToState(getPanelState(), StateChangeReason.UNKNOWN);
@@ -227,8 +225,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param state The state to animate to.
      * @param reason The reason for the change of panel state.
      */
-    private void animatePanelToState(
-            @PanelState @Nullable Integer state, @StateChangeReason int reason) {
+    private void animatePanelToState(@PanelState int state, @StateChangeReason int reason) {
         animatePanelToState(state, reason, BASE_ANIMATION_DURATION_MS);
     }
 
@@ -240,7 +237,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param duration The animation duration in milliseconds.
      */
     protected void animatePanelToState(
-            @PanelState @Nullable Integer state, @StateChangeReason int reason, long duration) {
+            @PanelState int state, @StateChangeReason int reason, long duration) {
         mAnimatingState = state;
         mAnimatingStateReason = reason;
 
@@ -350,6 +347,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /** Cancels any height animation in progress. */
     protected void cancelHeightAnimation() {
         if (mHeightAnimator != null) mHeightAnimator.cancel();
+        mAnimatingState = PanelState.UNDEFINED;
+        mAnimatingStateReason = StateChangeReason.UNKNOWN;
     }
 
     /**
@@ -409,7 +408,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     protected void onHeightAnimationFinished() {
         // If animating to a particular PanelState, and after completing resizing the Panel to its
         // desired state, then the Panel's state should be updated.
-        if (mAnimatingState != null && mAnimatingState != PanelState.UNDEFINED) {
+        if (mAnimatingState != PanelState.UNDEFINED) {
             setPanelState(mAnimatingState, mAnimatingStateReason);
         }
 

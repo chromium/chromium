@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -789,5 +790,55 @@ public class OverlayPanelBaseTest {
         Assert.assertEquals(
                 Math.round((tabHeight - appHeaderHeightDp) / mExpandPanel.mPxToDp),
                 mExpandPanel.getContentViewHeightPx());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testHandleSizeChanged_noActiveAnimationUpdatesPanelSize() {
+        when(mLayoutManager.getAnimationHandler())
+                .thenReturn(new CompositorAnimationHandler(() -> {}));
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        mExpandPanel.onLayoutChanged(400, 1000, 100);
+        mExpandPanel.resizePanelToState(PanelState.MAXIMIZED, StateChangeReason.UNKNOWN);
+        Assert.assertEquals(1000, mExpandPanel.getHeight(), MathUtils.EPSILON);
+
+        // Starting and then canceling an animation must clear mAnimatingState so a subsequent
+        // size change resizes to the current state instead of restarting the canceled animation.
+        mExpandPanel.animatePanelToState(PanelState.EXPANDED, StateChangeReason.UNKNOWN, 500);
+        Assert.assertTrue(mExpandPanel.isHeightAnimationRunning());
+        mExpandPanel.cancelHeightAnimation();
+        Assert.assertFalse(mExpandPanel.isHeightAnimationRunning());
+
+        mExpandPanel.onLayoutChanged(400, 800, 100);
+        Assert.assertEquals(800, mExpandPanel.getHeight(), MathUtils.EPSILON);
+        Assert.assertFalse(mExpandPanel.isHeightAnimationRunning());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testHandleSizeChanged_closedPanelDoesNotResize() {
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        mExpandPanel.onLayoutChanged(400, 1000, 100);
+        mExpandPanel.setPanelHeight(100);
+        Assert.assertTrue(mExpandPanel.isShowing());
+        Assert.assertTrue(mExpandPanel.getPanelState() <= PanelState.CLOSED);
+
+        mExpandPanel.onLayoutChanged(400, 800, 100);
+        Assert.assertEquals(100, mExpandPanel.getHeight(), MathUtils.EPSILON);
+        Assert.assertFalse(mExpandPanel.isHeightAnimationRunning());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testDestroy_removesBrowserControlsObserver() {
+        mExpandPanel.destroy();
+        verify(mBrowserControlsStateProvider)
+                .removeObserver(mBrowserControlsStateProviderObserverCaptor.getValue());
     }
 }

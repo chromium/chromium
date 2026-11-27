@@ -2120,6 +2120,7 @@ android_library(
 
   deps = [
     ":common_unit_test_deps_java",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/overlay_panel:java",
   ]
 }

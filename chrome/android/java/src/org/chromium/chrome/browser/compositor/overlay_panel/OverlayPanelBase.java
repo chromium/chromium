@@ -154,6 +154,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     // State provider for Desktop Window.
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final BottomControlsStacker mBottomControlsStacker;
     private float mAppHeaderHeightDp;
     private float mTopInsetDp;
@@ -184,7 +185,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         mBottomControlsStacker = bottomControlsStacker;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
 
-        mBrowserControlsStateProvider.addObserver(
+        mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
                     public void onControlsOffsetChanged(
@@ -210,7 +211,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
                             updatePanelForHeight(mHeight);
                         }
                     }
-                });
+                };
+        mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
 
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
         mBarMarginTop = BAR_ICON_TOP_PADDING_DP;
@@ -1411,6 +1413,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     }
 
     protected void destroy() {
+        mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
