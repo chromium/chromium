@@ -15,9 +15,13 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/guest_page_holder.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -38,6 +42,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewManager;
@@ -394,4 +399,221 @@ IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewCannotOpenNewWindow) {
 
   // Verify that the window open attempts didn't create additional guests.
   EXPECT_EQ(1u, test_guest_view_manager()->num_guests_created());
+}
+
+namespace {
+
+// Fails the test if any navigation starts in the observed FrameTreeNode.
+class NoFrameNavigationObserver : public content::WebContentsObserver {
+ public:
+  explicit NoFrameNavigationObserver(content::RenderFrameHost* rfh)
+      : content::WebContentsObserver(
+            content::WebContents::FromRenderFrameHost(rfh)),
+        frame_tree_node_id_(rfh->GetFrameTreeNodeId()) {}
+
+  void DidStartNavigation(content::NavigationHandle* handle) override {
+    if (handle->GetFrameTreeNodeId() == frame_tree_node_id_) {
+      ADD_FAILURE() << "Unexpected navigation started to " << handle->GetURL();
+    }
+  }
+
+ private:
+  const content::FrameTreeNodeId frame_tree_node_id_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewCannotNavigateToWebPage) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
+             NEEDS_TEST_SERVER);
+
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(guest));
+
+  const GURL initial_url = skeleton_app->GetResourceURL("main.html");
+  ASSERT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+
+  const GURL web_url = embedded_test_server()->GetURL("/title1.html");
+
+  const struct {
+    const char* name;
+    const char* script_template;
+  } kNavigationAttempts[] = {
+      {
+          "location.href",
+          "window.location.href = $1;",
+      },
+      {
+          "location.assign",
+          "window.location.assign($1);",
+      },
+      {
+          "location.replace",
+          "window.location.replace($1);",
+      },
+      {
+          "anchor click",
+          R"(
+            const a = document.createElement('a');
+            a.href = $1;
+            document.body.appendChild(a);
+            a.click();
+          )",
+      },
+      {
+          "form GET submit",
+          R"(
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = $1;
+            document.body.appendChild(form);
+            form.submit();
+          )",
+      },
+      {
+          "form POST submit",
+          R"(
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = $1;
+            document.body.appendChild(form);
+            form.submit();
+          )",
+      },
+      {
+          "meta refresh",
+          R"(
+            const meta = document.createElement('meta');
+            meta.httpEquiv = 'refresh';
+            meta.content = '0; url=' + $1;
+            document.head.appendChild(meta);
+          )",
+      },
+      {
+          "window.open _self",
+          "window.open($1, '_self');",
+      },
+      {
+          "iframe top.location.href",
+          R"(
+            const iframe = document.createElement('iframe');
+            document.body.appendChild(iframe);
+            iframe.contentWindow.top.location.href = $1;
+          )",
+      },
+  };
+
+  {
+    NoFrameNavigationObserver no_navigation_observer(
+        guest->GetGuestMainFrame());
+    for (const auto& attempt : kNavigationAttempts) {
+      SCOPED_TRACE(attempt.name);
+
+      ASSERT_TRUE(content::ExecJs(
+          guest->GetGuestMainFrame(),
+          content::JsReplace(attempt.script_template, web_url)));
+
+      // Flush scheduled renderer tasks (such as form submissions or meta
+      // refreshes) and any resulting Mojo messages to the browser.
+      EXPECT_TRUE(content::ExecJs(guest->GetGuestMainFrame(),
+                                  "new Promise(resolve => setTimeout(() => "
+                                  "setTimeout(resolve, 0), 0));"));
+      EXPECT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+    }
+  }
+}
+
+// Verifies browser-side enforcement when a navigation to a web URL reaches the
+// browser directly (bypassing `browser_handles_all_top_level_requests`).
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewDirectLoadURLToWebPageBlocked) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
+             NEEDS_TEST_SERVER);
+
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(guest));
+
+  const GURL initial_url = skeleton_app->GetResourceURL("main.html");
+  ASSERT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+
+  const GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationManager nav_manager(guest->web_contents(), web_url);
+  guest->GetController().LoadURL(web_url, content::Referrer(),
+                                 ui::PAGE_TRANSITION_LINK, std::string());
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav_manager.was_committed());
+  EXPECT_FALSE(nav_manager.was_successful());
+  EXPECT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+}
+
+// Verifies that an appview cannot be navigated to another platform app's
+// resources (such as the embedder app).
+IN_PROC_BROWSER_TEST_P(AppViewTest,
+                       TestAppViewDirectLoadURLToOtherPlatformAppBlocked) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
+             NO_TEST_SERVER);
+
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(guest));
+
+  const GURL initial_url = skeleton_app->GetResourceURL("main.html");
+  ASSERT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+
+  const GURL embedder_app_url =
+      GetFirstAppWindowWebContents()->GetLastCommittedURL();
+  ASSERT_NE(embedder_app_url.GetHost(), skeleton_app->id());
+
+  content::TestNavigationManager nav_manager(guest->web_contents(),
+                                             embedder_app_url);
+  guest->GetController().LoadURL(embedder_app_url, content::Referrer(),
+                                 ui::PAGE_TRANSITION_LINK, std::string());
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav_manager.was_successful());
+}
+
+// Simulates a compromised renderer ignoring
+// `browser_handles_all_top_level_requests` and verifies that the browser still
+// blocks navigating the appview to a web page.
+IN_PROC_BROWSER_TEST_P(
+    AppViewTest,
+    TestAppViewRendererInitiatedNavigationBlockedWithoutPref) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // Under MPArch, `guest->web_contents()` is the embedder's WebContents and
+    // `GuestPageHolderImpl::GetRendererPrefs()` always re-applies
+    // `AppViewGuest::GuestOverrideRendererPreferences()`, so we cannot clear
+    // `browser_handles_all_top_level_requests` via `GetMutableRendererPrefs()`.
+    GTEST_SKIP() << "Cannot override guest renderer prefs via WebContents "
+                    "under MPArch.";
+  }
+
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
+             NEEDS_TEST_SERVER);
+
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(guest));
+
+  const GURL initial_url = skeleton_app->GetResourceURL("main.html");
+  ASSERT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
+
+  guest->web_contents()
+      ->GetMutableRendererPrefs()
+      ->browser_handles_all_top_level_requests = false;
+  guest->web_contents()->SyncRendererPrefs();
+
+  const GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationManager nav_manager(guest->web_contents(), web_url);
+  ASSERT_TRUE(content::ExecJs(
+      guest->GetGuestMainFrame(),
+      content::JsReplace("window.location.href = $1;", web_url)));
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav_manager.was_committed());
+  EXPECT_FALSE(nav_manager.was_successful());
+  EXPECT_EQ(initial_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
 }

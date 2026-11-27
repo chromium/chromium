@@ -59,6 +59,8 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       const base::UnguessableToken& profile_token,
       int guest_instance_id);
 
+  const std::string& guest_extension_id() const { return guest_extension_id_; }
+
  private:
   explicit AppViewGuest(content::RenderFrameHost* owner_rfh);
 
@@ -74,9 +76,14 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
 
-  // GuestpageHolder::Delegate implementation.
+  // GuestPageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
+  void GuestOpenURL(const content::OpenURLParams& params,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback) final;
 
   // content::WebContentsDelegate implementation.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -99,6 +106,13 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace) final;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) final;
+  bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_outermost_main_frame_navigation) final;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

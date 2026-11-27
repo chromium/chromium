@@ -82,10 +82,10 @@ bool ShouldBlockNavigationToPlatformAppResource(
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Platform apps can be embedded by other platform apps using an <appview>
-    // tag.
+    // tag. The appview must belong to `platform_app`.
     auto* app_view = AppViewGuest::FromGuestViewBase(guest);
     if (app_view) {
-      return false;
+      return app_view->guest_extension_id() != platform_app->id();
     }
 #endif
 
@@ -193,10 +193,17 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
         registry->enabled_extensions().GetByID(target_origin.host());
   } else {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-    // If this navigation is in a guest, check if the URL maps to the Chrome
-    // Web Store hosted app. If so, block the navigation to avoid a renderer
-    // kill later, see https://crbug.com/1197674.
     if (guest) {
+#if BUILDFLAG(IS_CHROMEOS)
+      // AppViews cannot navigate their main frame to non-extension URLs.
+      if (AppViewGuest::FromGuestViewBase(guest) &&
+          navigation_handle()->IsInOutermostMainFrame()) {
+        return content::NavigationThrottle::CANCEL;
+      }
+#endif
+      // If this navigation is in a guest, check if the URL maps to the Chrome
+      // Web Store hosted app. If so, block the navigation to avoid a renderer
+      // kill later, see https://crbug.com/1197674.
       const Extension* hosted_app =
           registry->enabled_extensions().GetHostedAppByURL(url);
       if (hosted_app && hosted_app->id() == kWebStoreAppId) {

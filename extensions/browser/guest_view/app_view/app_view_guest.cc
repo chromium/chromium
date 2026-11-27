@@ -27,6 +27,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -138,6 +139,21 @@ bool AppViewGuest::GuestHandleContextMenu(
          app_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
 }
 
+void AppViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  preferences.browser_handles_all_top_level_requests = true;
+}
+
+void AppViewGuest::GuestOpenURL(
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  // Suppress top-level navigations initiated by the embedded app.
+  // See also `CreateCustomWebContents` and
+  // `AppWebContentsHelper::OpenURLFromTab`.
+}
+
 bool AppViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
@@ -180,6 +196,22 @@ content::WebContents* AppViewGuest::CreateCustomWebContents(
 
   // Suppress window creation.
   return nullptr;
+}
+
+content::WebContents* AppViewGuest::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  // Suppress top-level navigations initiated by the embedded app.
+  // See also `CreateCustomWebContents` and
+  // `AppWebContentsHelper::OpenURLFromTab`.
+  return nullptr;
+}
+
+bool AppViewGuest::ShouldAllowRendererInitiatedCrossProcessNavigation(
+    bool is_outermost_main_frame_navigation) {
+  return !is_outermost_main_frame_navigation;
 }
 
 void AppViewGuest::RequestMediaAccessPermission(
@@ -282,6 +314,10 @@ void AppViewGuest::DidInitialize(const base::DictValue& create_params) {
   }
 
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  web_contents()
+      ->GetMutableRendererPrefs()
+      ->browser_handles_all_top_level_requests = true;
+  web_contents()->SyncRendererPrefs();
   LoadURL();
 }
 
