@@ -563,6 +563,31 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,
   EXPECT_EQ(result.Get()[0].tool_name, "OuterComposite");
 }
 
+// Verifies that a nested dispatcher can observe a sub-tool failure and issue a
+// fallback sub-tool that succeeds, allowing the dispatcher and Act() to
+// succeed.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,
+                       NestedDispatcherHandlesSubToolFailureWithFallback) {
+  std::vector<std::string> execution_log;
+
+  ToolRequestPtr composite = MakeFakeCompositeToolRequest({
+      StepLoggingToolRequest(execution_log, "failing_tool",
+                             mojom::ActionResultCode::kElementOffscreen),
+      StepLoggingToolRequest(execution_log, "fallback_tool",
+                             mojom::ActionResultCode::kOk),
+      ReturnResult(ToolResult::Success()),
+  });
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(composite), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_THAT(execution_log,
+              testing::ElementsAre("failing_tool", "fallback_tool"));
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].tool_name, "FakeCompositeTool");
+}
+
 // Verifies that pausing a task while a nested sub-tool is in flight cancels
 // execution and unwinds the dispatcher stack without calling GetNext again.
 IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,

@@ -1092,11 +1092,14 @@ void ExecutionEngine::SetState(State state) {
       base::StateTransitions<State>({
           {State::kInit, {State::kStartAction, State::kComplete}},
           {State::kStartAction,
-           {State::kToolCreateAndVerify, State::kComplete}},
+           {State::kStartAction, State::kToolCreateAndVerify,
+            State::kComplete}},
           {State::kToolCreateAndVerify,
-           {State::kUiPreInvoke, State::kComplete}},
-          {State::kUiPreInvoke, {State::kToolInvoke, State::kComplete}},
-          {State::kToolInvoke, {State::kUiPostInvoke, State::kComplete}},
+           {State::kStartAction, State::kUiPreInvoke, State::kComplete}},
+          {State::kUiPreInvoke,
+           {State::kStartAction, State::kToolInvoke, State::kComplete}},
+          {State::kToolInvoke,
+           {State::kStartAction, State::kUiPostInvoke, State::kComplete}},
           {State::kUiPostInvoke, {State::kComplete, State::kStartAction}},
           {State::kComplete, {State::kStartAction}},
       }));
@@ -1690,9 +1693,6 @@ void ExecutionEngine::ProcessNextFromDispatcher() {
 
 void ExecutionEngine::StartExecutingNewRequest() {
   TRACE_EVENT0("actor", "ExecutionEngine::StartExecutingNewRequest");
-  DCHECK(state_ == State::kInit || state_ == State::kUiPostInvoke ||
-         state_ == State::kComplete)
-      << "Current state is " << StateToString(state_);
   CHECK(executing_request_);
 
   // TODO(b/555808355): Consider how observation deferral should work with

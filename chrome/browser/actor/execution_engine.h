@@ -104,6 +104,8 @@ class ExecutionEngine : public ToolDelegate,
   //     |___________________________________________|______________|
   //
   // Complete may also be reached directly from other states in case of error.
+  // Nested dispatchers (i.e. composite tools) can recover from a failed tool
+  // call so all states can return to StartAction for that case.
   // LINT.IfChange(State)
   enum class State {
     kInit = 0,
