@@ -20,7 +20,6 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/stack.h"
@@ -562,60 +561,6 @@ void PostTaskForActCallback(
                                 std::move(observation_strategy)));
 }
 
-// Merges a follow-up or subsequent stage `ActionResult` into the existing
-// result for the top-level action, preserving parent message and metadata not
-// set by the follow-up.
-void MergeActionResult(mojom::ActionResult& target,
-                       mojom::ActionResultPtr followup) {
-  target.code = followup->code;
-  target.requires_page_stabilization = target.requires_page_stabilization ||
-                                       followup->requires_page_stabilization;
-  // TODO(crbug.com/581884304): if both parent and follow-up have messages,
-  // avoid overwriting.
-  if (!IsOk(*followup) || !followup->message.empty()) {
-    target.message = std::move(followup->message);
-  }
-  if (followup->script_tool_response) {
-    target.script_tool_response = std::move(followup->script_tool_response);
-  }
-  if (followup->execution_end_time) {
-    target.execution_end_time = followup->execution_end_time;
-  }
-  target.screenshot_policy =
-      std::max(target.screenshot_policy, followup->screenshot_policy);
-  target.page_content_policy =
-      std::max(target.page_content_policy, followup->page_content_policy);
-  if (followup->attempt_login_status.has_value()) {
-    target.attempt_login_status = followup->attempt_login_status;
-  }
-}
-
-// Merges a follow-up or subsequent stage `ToolResult` into `target`, combining
-// their `ActionResult` fields via `MergeActionResult` and replacing `target`
-// with `followup`.
-void MergeToolResult(ToolResult& target, ToolResult followup) {
-  mojom::ActionResultPtr merged_result =
-      std::move(target.deprecated_action_result());
-  MergeActionResult(*merged_result,
-                    std::move(followup.deprecated_action_result()));
-  followup.set_deprecated_action_result(std::move(merged_result));
-  target = std::move(followup);
-}
-
-void MergeInterceptedDialogs(
-    std::vector<InterceptedJavaScriptDialog>& target,
-    std::vector<InterceptedJavaScriptDialog> followup) {
-  if (target.size() >= JavaScriptDialogInterceptor::kMaxInterceptedDialogs) {
-    return;
-  }
-  const size_t remaining =
-      JavaScriptDialogInterceptor::kMaxInterceptedDialogs - target.size();
-  if (followup.size() > remaining) {
-    followup.resize(remaining);
-  }
-  base::Extend(target, std::move(followup));
-}
-
 struct BaseDispatcherToolResult : public ToolResultData {
   explicit BaseDispatcherToolResult(
       std::vector<ToolResultWithLatencyInfo> results)
@@ -672,11 +617,7 @@ class BaseDispatcher : public ExecutionEngineDispatcher {
     awaiting_tool_completion_ = false;
     if (last_request_was_followup_) {
       CHECK(!results_.empty());
-      ToolResultWithLatencyInfo& tool_result = results_.back();
-      MergeToolResult(tool_result.tool_result, std::move(result.tool_result));
-      MergeInterceptedDialogs(tool_result.javascript_dialogs,
-                              std::move(result.javascript_dialogs));
-      tool_result.end_time = result.end_time;
+      MergeFollowupResult(results_.back(), std::move(result));
       last_request_was_followup_ = false;
     } else {
       results_.push_back(std::move(result));

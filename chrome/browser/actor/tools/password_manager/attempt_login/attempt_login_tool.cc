@@ -9,12 +9,11 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
-#include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_result.h"
@@ -99,18 +98,38 @@ GetModelQualityLogsUploader(Profile& profile) {
 
 }  // namespace
 
+AttemptLoginToolResult::AttemptLoginToolResult(PageTarget button_to_click)
+    : button_to_click(std::move(button_to_click)) {}
+AttemptLoginToolResult::AttemptLoginToolResult(const AttemptLoginToolResult&) =
+    default;
+AttemptLoginToolResult& AttemptLoginToolResult::operator=(
+    const AttemptLoginToolResult&) = default;
+AttemptLoginToolResult::AttemptLoginToolResult(
+    AttemptLoginToolResult&&) noexcept = default;
+AttemptLoginToolResult& AttemptLoginToolResult::operator=(
+    AttemptLoginToolResult&&) noexcept = default;
+AttemptLoginToolResult::~AttemptLoginToolResult() = default;
+
+base::DictValue AttemptLoginToolResult::ToDict() const {
+  // This result is consumed by the AttemptLoginToolRequest's dispatcher and
+  // never surfaced outside of it.
+  NOTREACHED();
+}
+
+std::unique_ptr<ToolResultData> AttemptLoginToolResult::Clone() const {
+  return std::make_unique<AttemptLoginToolResult>(*this);
+}
+
 AttemptLoginTool::AttemptLoginTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
     ActorSurface& actor_surface,
     std::optional<PageTarget> password_button,
-    std::optional<PageTarget> sign_in_with_google_button,
-    bool requires_opening_web_contents)
+    std::optional<PageTarget> sign_in_with_google_button)
     : Tool(task_id, tool_delegate),
       actor_surface_handle_(actor_surface.GetHandle()),
       password_button_(password_button),
       sign_in_with_google_button_(sign_in_with_google_button),
-      requires_opening_web_contents_(requires_opening_web_contents),
       attempt_login_tool_start_time_(base::TimeTicks::Now()),
       quality_logger_(base::MakeRefCounted<ActorLoginQualityLogger>(
           g_browser_process->variations_service(),
@@ -510,16 +529,13 @@ void AttemptLoginTool::OnAttemptLogin(
           ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
       return;
     }
-    tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
-        actor_surface_handle_, *sign_in_with_google_button_,
-        mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
-        requires_opening_web_contents_,
-        AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
-    mojom::ActionResultPtr result =
+    mojom::ActionResultPtr action_result =
         MakeOkResult(/*requires_page_stabilization=*/false);
-    result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
-    PostResponseTask(std::move(invoke_callback_),
-                     ToolResult::Success(std::move(result)));
+    action_result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
+    ToolResult tool_result = ToolResult::Success(
+        AttemptLoginToolResult(*sign_in_with_google_button_));
+    tool_result.set_deprecated_action_result(std::move(action_result));
+    PostResponseTask(std::move(invoke_callback_), std::move(tool_result));
     return;
   }
 
@@ -536,15 +552,14 @@ void AttemptLoginTool::OnAttemptLogin(
           ToolResult::Error(ToolError(mojom::ActionResultCode::kTabWentAway)));
       return;
     }
-    tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
-        actor_surface_handle_, *password_button_, mojom::ClickType::kLeft,
-        mojom::ClickCount::kSingle, requires_opening_web_contents_,
-        AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
-    mojom::ActionResultPtr result =
+    mojom::ActionResultPtr action_result =
         MakeOkResult(/*requires_page_stabilization=*/false);
-    result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
-    PostResponseTask(std::move(invoke_callback_),
-                     ToolResult::Success(std::move(result)));
+    action_result->attempt_login_status =
+        mojom::AttemptLoginStatus::kPasswordManager;
+    ToolResult tool_result =
+        ToolResult::Success(AttemptLoginToolResult(*password_button_));
+    tool_result.set_deprecated_action_result(std::move(action_result));
+    PostResponseTask(std::move(invoke_callback_), std::move(tool_result));
     return;
   }
 

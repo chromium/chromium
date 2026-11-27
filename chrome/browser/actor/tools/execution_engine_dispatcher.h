@@ -35,6 +35,17 @@ class ExecutionEngineDispatcher {
   virtual void OnToolCompleted(ToolResultWithLatencyInfo result) = 0;
 };
 
+// Merges a follow-up or subsequent stage `ToolResult` into `target`, combining
+// their `ActionResult` fields and replacing `target` with `followup`. Parent
+// message and metadata not set by the follow-up are preserved.
+void MergeToolResult(ToolResult& target, ToolResult followup);
+
+// Merges the result of a follow-up or subsequent stage action into `target` so
+// that both are reported as a single action. Merges their `ToolResult`s via
+// `MergeToolResult`, appends intercepted dialogs and extends the end time.
+void MergeFollowupResult(ToolResultWithLatencyInfo& target,
+                         ToolResultWithLatencyInfo followup);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_TOOLS_EXECUTION_ENGINE_DISPATCHER_H_

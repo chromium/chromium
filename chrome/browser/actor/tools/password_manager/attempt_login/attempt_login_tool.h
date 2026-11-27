@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_PASSWORD_MANAGER_ATTEMPT_LOGIN_ATTEMPT_LOGIN_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_PASSWORD_MANAGER_ATTEMPT_LOGIN_ATTEMPT_LOGIN_TOOL_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -13,7 +14,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
@@ -42,6 +45,24 @@ namespace actor {
 
 class ActorSurface;
 
+// Returned as the ToolResult data from a successful AttemptLoginTool invocation
+// when the login flow must be completed by clicking a button on the page.
+// Consumed by the AttemptLoginToolRequest's dispatcher to issue the click.
+struct AttemptLoginToolResult : public ToolResultData {
+  explicit AttemptLoginToolResult(PageTarget button_to_click);
+  AttemptLoginToolResult(const AttemptLoginToolResult&);
+  AttemptLoginToolResult& operator=(const AttemptLoginToolResult&);
+  AttemptLoginToolResult(AttemptLoginToolResult&&) noexcept;
+  AttemptLoginToolResult& operator=(AttemptLoginToolResult&&) noexcept;
+  ~AttemptLoginToolResult() override;
+
+  // ToolResultData:
+  base::DictValue ToDict() const override;
+  std::unique_ptr<ToolResultData> Clone() const override;
+
+  PageTarget button_to_click;
+};
+
 class AttemptLoginTool : public Tool
 #if BUILDFLAG(IS_ANDROID)
     ,
@@ -53,8 +74,7 @@ class AttemptLoginTool : public Tool
                    ToolDelegate& tool_delegate,
                    ActorSurface& actor_surface,
                    std::optional<PageTarget> password_button,
-                   std::optional<PageTarget> sign_in_with_google_button,
-                   bool requires_opening_web_contents);
+                   std::optional<PageTarget> sign_in_with_google_button);
   ~AttemptLoginTool() override;
 
   // actor::Tool
@@ -141,8 +161,6 @@ class AttemptLoginTool : public Tool
   std::optional<PageTarget> password_button_;
   // Identifies a "Sign in with Google" button.
   std::optional<PageTarget> sign_in_with_google_button_;
-
-  const bool requires_opening_web_contents_;
 
   // The time where the attempt tool is created, used to calculate the overall
   // time of the flow until filling and submission time.

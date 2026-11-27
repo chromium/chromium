@@ -198,6 +198,7 @@ source_set("impl") {
     "tools/execute_js_tool_host.cc",
     "tools/execute_js_tool_host.h",
     "tools/execute_js_tool_request.cc",
+    "tools/execution_engine_dispatcher.cc",
     "tools/file_picker_interceptor.cc",
     "tools/file_upload_tool.cc",
     "tools/file_upload_tool.h",

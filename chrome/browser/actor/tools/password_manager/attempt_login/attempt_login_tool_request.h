@@ -40,6 +40,9 @@ class AttemptLoginToolRequest : public TabToolRequest {
   AttemptLoginToolRequest& operator=(const AttemptLoginToolRequest&);
 
   // ToolRequest:
+  std::unique_ptr<ExecutionEngineDispatcher> CreateDispatcher() const override;
+  // Note: The Tool itself is created via an internal tool request dispatched
+  // from the Dispatcher.
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
@@ -53,6 +56,14 @@ class AttemptLoginToolRequest : public TabToolRequest {
   }
 
   std::optional<PageTarget> GetSignInWithGoogleButtonForTesting() const {
+    return sign_in_with_google_button_;
+  }
+
+ protected:
+  const std::optional<PageTarget>& password_button() const {
+    return password_button_;
+  }
+  const std::optional<PageTarget>& sign_in_with_google_button() const {
     return sign_in_with_google_button_;
   }
 
