@@ -256,24 +256,32 @@ a new file type that meets that condition, we’d like to hear about it.
 <a name="TOC-i-found-a-local-file-or-directory-that-may-be-security-sensitive-and-is-not-blocked-by-file-system-access-api-"></a>
 ### I found a local file or directory that may be security-sensitive and is not blocked by File System Access API - is this a security bug?
 
-The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=368-493;drc=bbf74ad62c20afa8b0e51efbced167d0b91be8a1)
-of directories and files that may be sensitive, such as systems files, and if user
-chooses a file or a directory matching the list on a site using File System
-Access API, the access is blocked.
+The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=486-701;drc=0f6843da2e00af0250bfebe50e83718108c9046b)
+of directories and files that may be sensitive, such as system files, and if a
+user chooses a file or directory matching the list on a site using the File
+System Access API, access is blocked. See the [File System Access blocklist
+policy](../../chrome/browser/file_system_access/blocklist_policy.md) for the
+full scope and rationale behind current blocks.
 
-The blocklist is designed to prevent users from *accidentally* granting access
-to sensitive files, by listing well-known, security-sensitive locations, as a
-defense in-depth strategy. Therefore, evading the blocklist in some manner is
-not deemed as a security bug, especially as it requires user's explicit
-selection on a file or a directory from the file picker.
+The blocklist is a defense-in-depth layer designed to prevent users from
+*accidentally* granting access to OS/browser directories, user-profile
+configuration, ambient OS file-manager triggers, or widely used version-control
+metadata that can execute commands during routine file browsing or read-only
+inspection. Therefore, evading the blocklist in some manner is not deemed a
+security bug, especially as it requires the user's explicit selection of a file
+or directory from the file picker.
 
-In particular, the blocklist cannot exhaustively enumerate every third-party
-application, shell, editor, package manager, or build tool configuration file,
-dotfile, or project script that another local program might read or execute
-when run by the user. Once a user explicitly selects a file or directory in the
-file picker, the site is granted access to the user-selected location; finding
-an unblocked application configuration file or project file is not considered a
-security bug.
+In particular, the blocklist does not attempt to enumerate third-party
+application, editor, IDE, note-taking app, shell-hook, package manager, build
+tool, or niche version-control configuration files, dotfiles, plugins, or
+project scripts (for example, `.mvn`, `.cargo`, `.vscode`, `.idea`, `.obsidian`,
+`.envrc`, `mise.toml`, or `.Rprofile`) that another local program reads when the
+user opens, builds, or runs that folder, or when the user has already trusted
+that directory in that tool. Enforcing per-workspace trust or integrity checks
+for project files is the responsibility of the local application. Once a user
+explicitly selects a file or directory in the file picker, finding an unblocked
+third-party application or project configuration file inside it is not
+considered a security bug.
 
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
