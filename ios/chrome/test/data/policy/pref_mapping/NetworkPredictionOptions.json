@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ios.prerender.network_prediction_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "NetworkPredictionOptions": 0
+        },
+        "prefs": {
+          "ios.prerender.network_prediction_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "NetworkPredictionOptions": 1
+        },
+        "prefs": {
+          "ios.prerender.network_prediction_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "NetworkPredictionOptions": 2
+        },
+        "prefs": {
+          "ios.prerender.network_prediction_settings": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

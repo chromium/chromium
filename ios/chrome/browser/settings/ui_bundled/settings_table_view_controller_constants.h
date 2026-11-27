@@ -141,6 +141,12 @@ extern NSString* const kSettingsPrivacyNoticeCellId;
 // The accessibility identifier of the Preload cell.
 extern NSString* const kSettingsPreloadCellId;
 
+// The accessibility identifier of the Managed Preload cell.
+extern NSString* const kSettingsManagedPreloadCellId;
+
+// The accessibility identifier of the bandwidth settings TableView.
+extern NSString* const kBandwidthSettingsTableViewId;
+
 // The accessibility identifier of the Block Popups cell.
 extern NSString* const kSettingsBlockPopupsCellId;
 

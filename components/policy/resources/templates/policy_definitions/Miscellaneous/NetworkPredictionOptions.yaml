@@ -3,6 +3,8 @@ desc: |-
   This policy controls network prediction in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. It controls DNS prefetching, TCP, and SSL preconnection and prerendering of webpages.
 
         If you set the policy, users can't change it. Leaving it unset turns on network prediction, but the user can change it.
+
+        On <ph name="IOS_NAME">iOS</ph>, this policy controls webpage preloading in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, and setting it to 1 restricts webpage preloading to Wi-Fi connections. Leaving it unset defaults webpage preloading to Wi-Fi only, and the user can change it.
 default: null
 example_value: 1
 features:
@@ -17,7 +19,7 @@ items:
   value: 0
 - caption: |-
     Predict network actions on any network that is not cellular.
-              (Deprecated in 50, removed in 52. After 52, if value 1 is set, it will be treated as 0 - predict network actions on any network connection.)
+              (Deprecated in 50, removed in 52 on platforms other than <ph name="IOS_NAME">iOS</ph>. On <ph name="IOS_NAME">iOS</ph>, setting value 1 restricts webpage preloading to Wi-Fi connections; on other platforms after 52, it is treated as 0 - predict network actions on any network connection.)
   name: NetworkPredictionWifiOnly
   value: 1
 - caption: Do not predict network actions on any network connection
@@ -36,5 +38,6 @@ supported_on:
 - chrome.*:38-
 - chrome_os:38-
 - android:38-
+- ios:160-
 tags: []
 type: int-enum

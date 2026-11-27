@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/settings/ui_bundled/bandwidth/dataplan_usage_table_view_controller.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/files/file_path.h"
 #import "base/memory/ref_counted.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/testing_pref_store.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/settings/ui_bundled/bandwidth/dataplan_usage_table_view_controller+Testing.h"
@@ -52,6 +54,8 @@ class DataplanUsageTableViewControllerTest
     base::FilePath path("DataplanUsageTableViewControllerTest.pref");
     factory.SetUserPrefsFile(path,
                              task_environment_.GetMainThreadTaskRunner().get());
+    managed_prefs_->SetInitializationCompleted();
+    factory.set_managed_prefs(managed_prefs_);
     return factory.Create(registry.get());
   }
 
@@ -66,6 +70,8 @@ class DataplanUsageTableViewControllerTest
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  scoped_refptr<TestingPrefStore> managed_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
   std::unique_ptr<PrefService> pref_service_;
   DataplanUsageTableViewController* dataplanController_;
 };
@@ -103,6 +109,50 @@ TEST_F(DataplanUsageTableViewControllerTest, TestUpdateCheckedState) {
   CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 2);
 
   [dataplanController_ updateSetting:NetworkPredictionSetting::kDisabled];
+  CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 0);
+  CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 1);
+  CheckTextItemAccessoryType(UITableViewCellAccessoryCheckmark, 0, 2);
+}
+
+// Tests that `updateSetting:` neither writes the preference nor moves the
+// checkmark when the preference is managed by policy.
+TEST_F(DataplanUsageTableViewControllerTest,
+       TestUpdateSettingIgnoredWhenManaged) {
+  CheckController();
+  ASSERT_EQ(1, NumberOfSections());
+  ASSERT_EQ(3, NumberOfItemsInSection(0));
+
+  // Use a managed value that differs from the registered default so that an
+  // unguarded `updateSetting:` would move the checkmark to the managed value.
+  managed_prefs_->SetInteger(
+      kPrefName,
+      std::to_underlying(NetworkPredictionSetting::kEnabledWifiOnly));
+  ASSERT_TRUE(pref_service_->IsManagedPreference(kPrefName));
+
+  [dataplanController_
+      updateSetting:NetworkPredictionSetting::kEnabledWifiAndCellular];
+  EXPECT_EQ(nullptr, pref_service_->GetUserPrefValue(kPrefName));
+  EXPECT_EQ(std::to_underlying(NetworkPredictionSetting::kEnabledWifiOnly),
+            pref_service_->GetInteger(kPrefName));
+  CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 0);
+  CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 1);
+  CheckTextItemAccessoryType(UITableViewCellAccessoryCheckmark, 0, 2);
+}
+
+// Tests that `updateSetting:` neither writes the preference nor moves the
+// checkmark after `settingsWillBeDismissed` has been called.
+TEST_F(DataplanUsageTableViewControllerTest,
+       TestUpdateSettingIgnoredAfterSettingsDismissed) {
+  CheckController();
+  ASSERT_EQ(1, NumberOfSections());
+  ASSERT_EQ(3, NumberOfItemsInSection(0));
+
+  [dataplanController_ settingsWillBeDismissed];
+  [dataplanController_
+      updateSetting:NetworkPredictionSetting::kEnabledWifiOnly];
+  EXPECT_EQ(nullptr, pref_service_->GetUserPrefValue(kPrefName));
+  EXPECT_EQ(std::to_underlying(NetworkPredictionSetting::kDisabled),
+            pref_service_->GetInteger(kPrefName));
   CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 0);
   CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, 1);
   CheckTextItemAccessoryType(UITableViewCellAccessoryCheckmark, 0, 2);

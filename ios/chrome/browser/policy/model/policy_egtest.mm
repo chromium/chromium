@@ -271,6 +271,21 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
                                 kSettingsAutofillAndPasswordsCellId)];
 }
 
+// Opens "Bandwidth" settings and verifies that the "Preload webpages" row is
+// managed, displays `expectedStatusID`, and presents the enterprise popover.
+- (void)verifyNetworkPredictionManagedSettingsUIWithStatusID:
+    (int)expectedStatusID {
+  [self openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(kSettingsBandwidthCellId)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsManagedPreloadCellId)]
+      assertWithMatcher:grey_accessibilityValue(
+                            l10n_util::GetNSString(expectedStatusID))];
+  VerifyManagedSettingItem(kSettingsManagedPreloadCellId,
+                           kBandwidthSettingsTableViewId);
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   // Use commandline args to insert fake policy data into NSUserDefaults. To the
   // app, this policy data will appear under the
@@ -1249,6 +1264,33 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
   [ChromeEarlGrey
       waitForWebStateContainingElement:
           [ElementSelector selectorWithCSSSelector:".icon.icon-disabled"]];
+}
+
+// Tests that setting `NetworkPredictionOptions` to `0`
+// (`NetworkPredictionAlways`) locks the "Preload webpages" row to "Always" in
+// "Bandwidth" settings.
+- (void)testNetworkPredictionOptionsAlways {
+  SetPolicy(0, policy::key::kNetworkPredictionOptions);
+  [self verifyNetworkPredictionManagedSettingsUIWithStatusID:
+            IDS_IOS_OPTIONS_DATA_USAGE_ALWAYS];
+}
+
+// Tests that setting `NetworkPredictionOptions` to `1`
+// (`NetworkPredictionWifiOnly`) locks the "Preload webpages" row to
+// "Only on Wi-Fi" in "Bandwidth" settings.
+- (void)testNetworkPredictionOptionsWifiOnly {
+  SetPolicy(1, policy::key::kNetworkPredictionOptions);
+  [self verifyNetworkPredictionManagedSettingsUIWithStatusID:
+            IDS_IOS_OPTIONS_DATA_USAGE_ONLY_WIFI];
+}
+
+// Tests that setting `NetworkPredictionOptions` to `2`
+// (`NetworkPredictionNever`) locks the "Preload webpages" row to "Never" in
+// "Bandwidth" settings.
+- (void)testNetworkPredictionOptionsNever {
+  SetPolicy(2, policy::key::kNetworkPredictionOptions);
+  [self verifyNetworkPredictionManagedSettingsUIWithStatusID:
+            IDS_IOS_OPTIONS_DATA_USAGE_NEVER];
 }
 
 @end

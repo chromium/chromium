@@ -66,13 +66,11 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 
 }  // namespace.
 
-@interface DataplanUsageTableViewController () {
+@implementation DataplanUsageTableViewController {
   IntegerPrefMember _settingPreference;
+  // Whether settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
-
-@end
-
-@implementation DataplanUsageTableViewController
 
 #pragma mark - Initialization
 
@@ -172,6 +170,9 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 }
 
 - (void)updateSetting:(NetworkPredictionSetting)newSetting {
+  if (_settingsAreDismissed || _settingPreference.IsManaged()) {
+    return;
+  }
   _settingPreference.SetValue(static_cast<int>(newSetting));
   [self updateCheckedState];
 }
@@ -191,7 +192,11 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)settingsWillBeDismissed {
+  if (_settingsAreDismissed) {
+    return;
+  }
   _settingPreference.Destroy();
+  _settingsAreDismissed = YES;
 }
 
 @end

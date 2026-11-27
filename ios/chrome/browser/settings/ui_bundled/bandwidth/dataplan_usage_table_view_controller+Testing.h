@@ -11,6 +11,9 @@
 // for tests.
 @interface DataplanUsageTableViewController (Testing)
 - (void)updateSetting:(prerender_prefs::NetworkPredictionSetting)newSetting;
+// Stops observing the setting preference before settings are dismissed. After
+// this call, `updateSetting:` is a no-op.
+- (void)settingsWillBeDismissed;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BANDWIDTH_DATAPLAN_USAGE_TABLE_VIEW_CONTROLLER_TESTING_H_
