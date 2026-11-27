@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -23,8 +24,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
@@ -330,6 +333,67 @@ void LogSessionEvent(SCContentSharingPickerSessionEvent event) {
       "Media.ScreenCaptureKit.SCContentSharingPicker.SessionEvent", event);
 }
 
+std::string_view GetPickerTypeHistogramSuffix(DesktopMediaID::Type type) {
+  switch (type) {
+    case DesktopMediaID::Type::TYPE_SCREEN:
+      return "Screen";
+    case DesktopMediaID::Type::TYPE_WINDOW:
+      return "Window";
+    case DesktopMediaID::Type::TYPE_NONE:
+    case DesktopMediaID::Type::TYPE_WEB_CONTENTS:
+      NOTREACHED();
+  }
+}
+
+// LINT.IfChange(SCContentSharingPickerRequestOutcomeSuffix)
+std::string_view GetRequestOutcomeHistogramSuffix(
+    SCContentSharingPickerRequestOutcome outcome) {
+  switch (outcome) {
+    case SCContentSharingPickerRequestOutcome::kSelected:
+      return "Selected";
+    case SCContentSharingPickerRequestOutcome::kCancelledByUser:
+      return "CancelledByUser";
+    case SCContentSharingPickerRequestOutcome::kFailedWithError:
+      return "FailedWithError";
+    case SCContentSharingPickerRequestOutcome::kClosedBeforeResponse:
+      return "ClosedBeforeResponse";
+    case SCContentSharingPickerRequestOutcome::kScreenLockedBeforeResponse:
+      return "ScreenLockedBeforeResponse";
+    case SCContentSharingPickerRequestOutcome::kDestroyedBeforeResponse:
+      return "DestroyedBeforeResponse";
+    case SCContentSharingPickerRequestOutcome::kRejectedAlreadyPending:
+      return "RejectedAlreadyPending";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/histograms.xml:SCContentSharingPickerRequestOutcomeSuffix)
+
+void LogPickerRequestTracking(DesktopMediaID::Type type,
+                              SCContentSharingPickerRequestTracking step) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.",
+           GetPickerTypeHistogramSuffix(type)}),
+      step);
+}
+
+void LogPickerRequestOutcome(DesktopMediaID::Type type,
+                             SCContentSharingPickerRequestOutcome outcome,
+                             base::TimeDelta elapsed) {
+  LogPickerRequestTracking(
+      type, SCContentSharingPickerRequestTracking::kOutcomeRecorded);
+  const std::string_view type_suffix = GetPickerTypeHistogramSuffix(type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.",
+           type_suffix}),
+      outcome);
+  base::UmaHistogramLongTimes(
+      base::StrCat(
+          {"Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.",
+           type_suffix, ".", GetRequestOutcomeHistogramSuffix(outcome)}),
+      elapsed);
+}
+
 API_AVAILABLE(macos(14.0))
 NativeScreenCapturePickerMac::GetWindowOwnerPidCallback& GetTestingCallback() {
   static base::NoDestructor<
@@ -419,6 +483,10 @@ NativeScreenCapturePickerMac::NativeScreenCapturePickerMac()
 }
 
 NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() {
+  if (picker_callback_) {
+    RecordPendingPickerOutcome(
+        SCContentSharingPickerRequestOutcome::kDestroyedBeforeResponse);
+  }
   if (ScreenlockMonitor* monitor = ScreenlockMonitor::Get()) {
     monitor->RemoveObserver(this);
   }
@@ -437,9 +505,15 @@ void NativeScreenCapturePickerMac::Open(
   CHECK(type == DesktopMediaID::Type::TYPE_SCREEN ||
         type == DesktopMediaID::Type::TYPE_WINDOW);
   if (@available(macOS 14.0, *)) {
+    LogPickerRequestTracking(type,
+                             SCContentSharingPickerRequestTracking::kOpened);
     if (picker_callback_) {
       // The system picker is already showing for another request; reject this
       // one rather than displacing the in-flight selection.
+      CHECK(active_picker_timer_.has_value());
+      LogPickerRequestOutcome(
+          type, SCContentSharingPickerRequestOutcome::kRejectedAlreadyPending,
+          active_picker_timer_->Elapsed());
       std::move(error_callback).Run();
       return;
     }
@@ -450,6 +524,7 @@ void NativeScreenCapturePickerMac::Open(
     picker_callback_ = std::move(picker_callback);
     cancel_callback_ = std::move(cancel_callback);
     error_callback_ = std::move(error_callback);
+    active_picker_timer_.emplace();
 
     // Ensure the session entry exists and store the stop_audio_callback.
     auto& session = GetOrCreateCaptureSession(active_picker_source_id_);
@@ -627,6 +702,7 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
     session.received_first_response = true;
     LogUpdateToUma(active_picker_type_);
   }
+  RecordPendingPickerOutcome(SCContentSharingPickerRequestOutcome::kSelected);
 
   cancel_callback_.Reset();
   error_callback_.Reset();
@@ -671,6 +747,10 @@ void NativeScreenCapturePickerMac::OnPickerObserverCancelled(SCStream* stream) {
     session.received_first_response = true;
     LogCancelToUma(active_picker_type_);
   }
+  if (picker_callback_) {
+    RecordPendingPickerOutcome(
+        SCContentSharingPickerRequestOutcome::kCancelledByUser);
+  }
   picker_callback_.Reset();
   error_callback_.Reset();
   std::move(cancel_callback_).Run();
@@ -697,6 +777,10 @@ void NativeScreenCapturePickerMac::OnPickerObserverEncounteredError(
   if (!session.received_first_response) {
     session.received_first_response = true;
     LogErrorToUma(active_picker_type_);
+  }
+  if (picker_callback_) {
+    RecordPendingPickerOutcome(
+        SCContentSharingPickerRequestOutcome::kFailedWithError);
   }
   picker_callback_.Reset();
   cancel_callback_.Reset();
@@ -736,6 +820,10 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
         base::NotFatalUntil::M160);
   if (@available(macOS 14.0, *)) {
     if (device_id.id == active_picker_source_id_) {
+      if (picker_callback_) {
+        RecordPendingPickerOutcome(
+            SCContentSharingPickerRequestOutcome::kClosedBeforeResponse);
+      }
       picker_callback_.Reset();
       cancel_callback_.Reset();
       error_callback_.Reset();
@@ -758,6 +846,10 @@ void NativeScreenCapturePickerMac::OnScreenLocked() {
             << " session(s), " << stream_to_id_map_.size()
             << " stream mapping(s), pending picker = "
             << static_cast<bool>(cancel_callback_);
+    if (picker_callback_) {
+      RecordPendingPickerOutcome(
+          SCContentSharingPickerRequestOutcome::kScreenLockedBeforeResponse);
+    }
     picker_callback_.Reset();
     error_callback_.Reset();
     base::OnceClosure cancel_callback = std::move(cancel_callback_);
@@ -1010,6 +1102,16 @@ void NativeScreenCapturePickerMac::MaybeDeactivatePicker() {
     SCContentSharingPicker* picker = [SCContentSharingPicker sharedPicker];
     picker.active = false;
   }
+}
+
+void NativeScreenCapturePickerMac::RecordPendingPickerOutcome(
+    SCContentSharingPickerRequestOutcome outcome) {
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(picker_callback_);
+  CHECK(active_picker_timer_.has_value());
+  const base::TimeDelta elapsed = active_picker_timer_->Elapsed();
+  active_picker_timer_.reset();
+  LogPickerRequestOutcome(active_picker_type_, outcome, elapsed);
 }
 
 void CaptureScreenshotFromMacNativePicker(

@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -422,6 +423,15 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
       [g_fake_picker.observer
           contentSharingPicker:(SCContentSharingPicker*)g_fake_picker
             didCancelForStream:nil];
+    }
+  }
+
+  void TriggerError(NSInteger error_code = -3801) {
+    if (@available(macOS 14.0, *)) {
+      NSError* error = [NSError errorWithDomain:@"com.apple.ScreenCaptureKit"
+                                           code:error_code
+                                       userInfo:nil];
+      [g_fake_picker.observer contentSharingPickerStartDidFailWithError:error];
     }
   }
 
@@ -1322,5 +1332,276 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<MaxIdleTimeoutParamTestCase>& info) {
       return std::string(info.param.name);
     });
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RecordsSelectedOutcomeAndTimeWithoutDoubleCountingOnClose) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    DesktopMediaID::Id session_id = 0;
+    base::RunLoop select_run_loop;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN, base::DoNothing(),
+                  base::BindLambdaForTesting([&](Source source) {
+                    session_id = source.id;
+                    select_run_loop.Quit();
+                  }),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing());
+
+    // While pending, Opened is logged without OutcomeRecorded.
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 0);
+
+    task_environment_.FastForwardBy(base::Seconds(3));
+    TriggerUpdate();
+    select_run_loop.Run();
+
+    // Updating the active stream's content filter and later closing the session
+    // must not emit additional request outcomes.
+    SCStream* fake_stream = CreateAndRegisterFakeStream(session_id);
+    TriggerUpdate(/*window_id=*/std::nullopt, /*display_id=*/std::nullopt,
+                  fake_stream);
+    base::RunLoop fence_run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, fence_run_loop.QuitClosure());
+    fence_run_loop.Run();
+
+    picker_->Close(DesktopMediaID(DesktopMediaID::TYPE_SCREEN, session_id));
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Screen",
+        SCContentSharingPickerRequestOutcome::kSelected, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Screen."
+        "Selected",
+        base::Seconds(3), 1);
+    histogram_tester.ExpectTotalCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Screen."
+        "ClosedBeforeResponse",
+        0);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, RecordsCancelledByUserOutcomeAndTime) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    DesktopMediaID::Id session_id = 0;
+    base::RunLoop cancel_run_loop;
+    picker_->Open(DesktopMediaID::TYPE_WINDOW,
+                  base::BindLambdaForTesting(
+                      [&](DesktopMediaID::Id id) { session_id = id; }),
+                  base::DoNothing(), cancel_run_loop.QuitClosure(),
+                  base::DoNothing(), base::DoNothing());
+
+    task_environment_.FastForwardBy(base::Seconds(5));
+    TriggerCancel();
+    cancel_run_loop.Run();
+
+    picker_->Close(DesktopMediaID(DesktopMediaID::TYPE_WINDOW, session_id));
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Window",
+        SCContentSharingPickerRequestOutcome::kCancelledByUser, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Window."
+        "CancelledByUser",
+        base::Seconds(5), 1);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, RecordsFailedWithErrorOutcomeAndTime) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    base::RunLoop error_run_loop;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN, base::DoNothing(),
+                  base::DoNothing(), base::DoNothing(),
+                  error_run_loop.QuitClosure(), base::DoNothing());
+
+    task_environment_.FastForwardBy(base::Milliseconds(200));
+    TriggerError();
+    error_run_loop.Run();
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Screen",
+        SCContentSharingPickerRequestOutcome::kFailedWithError, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Screen."
+        "FailedWithError",
+        base::Milliseconds(200), 1);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RecordsClosedBeforeResponseOutcomeAndTimeWhenPickerHangs) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    DesktopMediaID::Id session_id = 0;
+    picker_->Open(DesktopMediaID::TYPE_WINDOW,
+                  base::BindLambdaForTesting(
+                      [&](DesktopMediaID::Id id) { session_id = id; }),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+
+    // Simulate a silent OS picker drop where the user closes the tab at the
+    // end of a 20-minute meeting without ever receiving an observer callback.
+    task_environment_.FastForwardBy(base::Minutes(20));
+    const DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+    picker_->Close(device_id);
+
+    // Redundant Close() and picker destruction after closing must not emit a
+    // second outcome.
+    picker_->Close(device_id);
+    picker_.reset();
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Window",
+        SCContentSharingPickerRequestOutcome::kClosedBeforeResponse, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Window."
+        "ClosedBeforeResponse",
+        base::Minutes(20), 1);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RecordsRejectedAlreadyPendingOutcomeAndAgeOfPendingRequest) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    DesktopMediaID::Id first_id = 0;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN,
+                  base::BindLambdaForTesting(
+                      [&](DesktopMediaID::Id id) { first_id = id; }),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+
+    task_environment_.FastForwardBy(base::Seconds(12));
+
+    bool second_error_called = false;
+    picker_->Open(
+        DesktopMediaID::TYPE_WINDOW, base::DoNothing(), base::DoNothing(),
+        base::DoNothing(),
+        base::BindLambdaForTesting([&]() { second_error_called = true; }),
+        base::DoNothing());
+    EXPECT_TRUE(second_error_called);
+
+    // The rejected Window request immediately logs both Opened and
+    // OutcomeRecorded, while the still-pending Screen request only has Opened.
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 0);
+
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Window",
+        SCContentSharingPickerRequestOutcome::kRejectedAlreadyPending, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Window."
+        "RejectedAlreadyPending",
+        base::Seconds(12), 1);
+
+    // The original pending request continues tracking its own total wait time.
+    task_environment_.FastForwardBy(base::Seconds(8));
+    picker_->Close(DesktopMediaID(DesktopMediaID::TYPE_SCREEN, first_id));
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Screen",
+        SCContentSharingPickerRequestOutcome::kClosedBeforeResponse, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Screen."
+        "ClosedBeforeResponse",
+        base::Seconds(20), 1);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RecordsScreenLockedBeforeResponseOutcomeAndTime) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN, base::DoNothing(),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+
+    task_environment_.FastForwardBy(base::Seconds(7));
+    LockScreen();
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Screen",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Screen",
+        SCContentSharingPickerRequestOutcome::kScreenLockedBeforeResponse, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Screen."
+        "ScreenLockedBeforeResponse",
+        base::Seconds(7), 1);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       RecordsDestroyedBeforeResponseOutcomeAndTime) {
+  if (@available(macOS 14.0, *)) {
+    base::HistogramTester histogram_tester;
+    picker_->Open(DesktopMediaID::TYPE_WINDOW, base::DoNothing(),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+
+    task_environment_.FastForwardBy(base::Seconds(45));
+    picker_.reset();
+
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOpened, 1);
+    histogram_tester.ExpectBucketCount(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.Window",
+        SCContentSharingPickerRequestTracking::kOutcomeRecorded, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.Window",
+        SCContentSharingPickerRequestOutcome::kDestroyedBeforeResponse, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.Window."
+        "DestroyedBeforeResponse",
+        base::Seconds(45), 1);
+  }
+}
 
 }  // namespace content

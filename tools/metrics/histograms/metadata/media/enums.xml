@@ -2629,6 +2629,29 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="TooManyInstancesAndSmallResolution"/>
 </enum>
 
+<!-- LINT.IfChange(SCContentSharingPickerRequestOutcome) -->
+
+<enum name="SCContentSharingPickerRequestOutcome">
+  <int value="0" label="Selected"/>
+  <int value="1" label="CancelledByUser"/>
+  <int value="2" label="FailedWithError"/>
+  <int value="3" label="ClosedBeforeResponse"/>
+  <int value="4" label="ScreenLockedBeforeResponse"/>
+  <int value="5" label="DestroyedBeforeResponse"/>
+  <int value="6" label="RejectedAlreadyPending"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/media/capture/native_screen_capture_picker_mac.h:SCContentSharingPickerRequestOutcome) -->
+
+<!-- LINT.IfChange(SCContentSharingPickerRequestTracking) -->
+
+<enum name="SCContentSharingPickerRequestTracking">
+  <int value="0" label="Opened"/>
+  <int value="1" label="OutcomeRecorded"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/media/capture/native_screen_capture_picker_mac.h:SCContentSharingPickerRequestTracking) -->
+
 <enum name="SCContentSharingPickerStopAudioEvent">
   <int value="0" label="Stop Audio Callback Called"/>
   <int value="1" label="Application Audio Stopped"/>

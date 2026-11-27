@@ -20,6 +20,7 @@ static_assert(BUILDFLAG(IS_MAC));
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/public/browser/desktop_capture.h"
@@ -41,6 +42,37 @@ class SkBitmap;
 namespace content {
 
 class NativeScreenCapturePicker;
+
+// Tracks whether an `Open()` attempt reached any terminal `RequestOutcome`,
+// allowing comparison of `kOpened` against `kOutcomeRecorded` within a single
+// histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SCContentSharingPickerRequestTracking)
+enum class SCContentSharingPickerRequestTracking {
+  kOpened = 0,
+  kOutcomeRecorded = 1,
+  kMaxValue = kOutcomeRecorded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:SCContentSharingPickerRequestTracking)
+
+// Outcome of a single `NativeScreenCapturePickerMac::Open()` request.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SCContentSharingPickerRequestOutcome)
+enum class SCContentSharingPickerRequestOutcome {
+  kSelected = 0,
+  kCancelledByUser = 1,
+  kFailedWithError = 2,
+  kClosedBeforeResponse = 3,
+  kScreenLockedBeforeResponse = 4,
+  kDestroyedBeforeResponse = 5,
+  kRejectedAlreadyPending = 6,
+  kMaxValue = kRejectedAlreadyPending,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:SCContentSharingPickerRequestOutcome)
 
 CONTENT_EXPORT std::unique_ptr<NativeScreenCapturePicker>
 CreateNativeScreenCapturePickerMac();
@@ -166,6 +198,10 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
 
   void MaybeDeactivatePicker();
 
+  // Records `outcome` and elapsed wait duration for the currently pending
+  // picker request, then clears `active_picker_timer_`.
+  void RecordPendingPickerOutcome(SCContentSharingPickerRequestOutcome outcome);
+
   // Get the capture session or create it if it doesn't exist.
   CaptureSession& GetOrCreateCaptureSession(DesktopMediaID::Id id);
 
@@ -175,6 +211,7 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback_;
   base::OnceClosure cancel_callback_;
   base::OnceClosure error_callback_;
+  std::optional<base::ElapsedTimer> active_picker_timer_;
 
   // On every new getDisplayMedia request, we increment
   // `active_picker_source_id_` and assign `active_picker_type_` the type of the

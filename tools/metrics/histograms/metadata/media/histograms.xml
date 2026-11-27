@@ -182,6 +182,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reject" summary="reject"/>
 </variants>
 
+<variants name="SCContentSharingPickerType">
+  <variant name="Screen" summary="screen-sharing"/>
+  <variant name="Window" summary="window-sharing"/>
+</variants>
+
 <variants name="VideoCaptureDeviceEnumerationMode">
   <variant name=".DevicesOnly"
       summary="video capture device-only enumerations (Windows only, without
@@ -7880,6 +7885,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.ScreenCaptureKit.SCContentSharingPicker.RequestOutcome.{PickerType}"
+    enum="SCContentSharingPickerRequestOutcome" expires_after="2027-11-01">
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Records the mutually-exclusive terminal outcome of each macOS
+    SCContentSharingPicker {PickerType} request initiated via
+    NativeScreenCapturePickerMac::Open(). Emitted once per Open() call, either
+    immediately if rejected because another picker request is already pending,
+    when the first OS observer response arrives, or when the pending request is
+    terminated before any OS response (via Close(), screen lock, or picker
+    destruction).
+  </summary>
+  <token key="PickerType" variants="SCContentSharingPickerType"/>
+</histogram>
+
+<histogram
+    name="Media.ScreenCaptureKit.SCContentSharingPicker.RequestTracking.{PickerType}"
+    enum="SCContentSharingPickerRequestTracking" expires_after="2027-11-01">
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Tracks each macOS SCContentSharingPicker {PickerType} attempt from
+    NativeScreenCapturePickerMac::Open() so lost attempts can be measured within
+    a single histogram. Emits Opened on entry to Open() (before checking whether
+    another request is already pending) and emits OutcomeRecorded whenever any
+    terminal bucket in the corresponding RequestOutcome histogram is recorded.
+    Comparing Opened against OutcomeRecorded reveals attempts that never
+    recorded an outcome (for example, due to browser crash, force quit, shutdown
+    after the UI loop exits, or a caller never invoking Close()).
+  </summary>
+  <token key="PickerType" variants="SCContentSharingPickerType"/>
+</histogram>
+
 <histogram name="Media.ScreenCaptureKit.SCContentSharingPicker.SessionEvent"
     enum="ScreenCaptureKitSCContentSharingPickerSessionEvent"
     expires_after="2027-01-04">
@@ -7903,6 +7945,35 @@ chromium-metrics-reviews@google.com.
     Records when the macOS native sharing picker triggers a stop_audio_callback
     and when application audio capture is actually stopped.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.ScreenCaptureKit.SCContentSharingPicker.TimeToOutcome.{PickerType}.{Outcome}"
+    units="ms" expires_after="2027-11-01">
+  <owner>tovep@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Records the elapsed duration from opening the macOS SCContentSharingPicker
+    for a {PickerType} request until it reaches the {Outcome} state. For
+    RejectedAlreadyPending, records how long the already-pending picker request
+    has been waiting when the new Open() call is rejected.
+  </summary>
+  <token key="PickerType" variants="SCContentSharingPickerType"/>
+<!-- LINT.IfChange(SCContentSharingPickerRequestOutcomeSuffix) -->
+
+  <token key="Outcome">
+    <variant name="CancelledByUser" summary="CancelledByUser"/>
+    <variant name="ClosedBeforeResponse" summary="ClosedBeforeResponse"/>
+    <variant name="DestroyedBeforeResponse" summary="DestroyedBeforeResponse"/>
+    <variant name="FailedWithError" summary="FailedWithError"/>
+    <variant name="RejectedAlreadyPending" summary="RejectedAlreadyPending"/>
+    <variant name="ScreenLockedBeforeResponse"
+        summary="ScreenLockedBeforeResponse"/>
+    <variant name="Selected" summary="Selected"/>
+  </token>
+<!-- LINT.ThenChange(//content/browser/media/capture/native_screen_capture_picker_mac.mm:SCContentSharingPickerRequestOutcomeSuffix) -->
+
 </histogram>
 
 <histogram name="Media.ScreenCaptureKit.SCContentSharingPicker2"
