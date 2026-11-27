@@ -268,6 +268,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.mutable_address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    s.Set(specifics.mutable_address_dependent_sub_locality(),
+          ADDRESS_HOME_DEPENDENT_SUB_LOCALITY);
+  }
   s.Set(specifics.mutable_address_thoroughfare_name(),
         ADDRESS_HOME_STREET_NAME);
   s.Set(specifics.mutable_address_thoroughfare_number(),
@@ -390,6 +394,10 @@ AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    s.Set(specifics.address_dependent_sub_locality(),
+          ADDRESS_HOME_DEPENDENT_SUB_LOCALITY);
+  }
   s.Set(specifics.address_thoroughfare_name(), ADDRESS_HOME_STREET_NAME);
   s.Set(specifics.address_thoroughfare_number(), ADDRESS_HOME_HOUSE_NUMBER);
   s.Set(specifics.address_thoroughfare_number_and_apt(),
@@ -512,6 +520,11 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_address_dependent_locality())) {
     trimmed_specifics.clear_address_dependent_locality();
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    if (d.Delete(trimmed_specifics.mutable_address_dependent_sub_locality())) {
+      trimmed_specifics.clear_address_dependent_sub_locality();
+    }
   }
   if (d.Delete(trimmed_specifics.mutable_address_thoroughfare_name())) {
     trimmed_specifics.clear_address_thoroughfare_name();

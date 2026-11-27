@@ -174,6 +174,9 @@ message ContactInfoSpecifics {
   // roughly equivalent to a city. Examples of dependent localities include
   // inner-city districts and suburbs.
   optional StringToken address_dependent_locality = 23;
+  // A dependent sub locality is a subunit of a dependent locality. It is
+  // roughly equivalent to a neighbourhood.
+  optional StringToken address_dependent_sub_locality = 65;
   reserved 24;
   reserved "address_language_code";
   // The street name of the address, without a house number.

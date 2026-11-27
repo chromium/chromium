@@ -139,6 +139,9 @@ message AutofillProfileSpecifics {
   optional string address_home_street_address = 17;
   optional string address_home_sorting_code = 18;
   optional string address_home_dependent_locality = 19;
+  // A dependent sub locality is a subunit of a dependent locality. It is
+  // roughly equivalent to a neighbourhood.
+  optional string address_home_dependent_sub_locality = 107;
   optional string address_home_language_code = 20;
   optional string address_home_thoroughfare_name = 38;
   optional string address_home_thoroughfare_number = 39;
@@ -211,6 +214,7 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_street_address_status = 47;
   optional VerificationStatus address_home_sorting_code_status = 48;
   optional VerificationStatus address_home_dependent_locality_status = 49;
+  optional VerificationStatus address_home_dependent_sub_locality_status = 108;
   optional VerificationStatus address_home_language_code_status = 50;
   optional VerificationStatus address_home_thoroughfare_name_status = 51;
   optional VerificationStatus address_home_thoroughfare_number_status = 52;

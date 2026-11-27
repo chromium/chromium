@@ -192,6 +192,10 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SORTING_CODE))));
   specifics->set_address_home_dependent_locality(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    specifics->set_address_home_dependent_sub_locality(base::UTF16ToUTF8(
+        entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_SUB_LOCALITY)));
+  }
   specifics->set_address_home_country(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   specifics->set_address_home_overflow(data_util::TruncateUTF8(
@@ -264,6 +268,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_dependent_locality_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY)));
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    specifics->set_address_home_dependent_sub_locality_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_SUB_LOCALITY)));
+  }
   specifics->set_address_home_country_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
@@ -502,6 +511,14 @@ AutofillProfile CreateAutofillProfileFromValidSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_dependent_locality_status()));
 
+  if (base::FeatureList::IsEnabled(features::kAutofillUseCOAddressModel)) {
+    profile.SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_DEPENDENT_SUB_LOCALITY,
+        base::UTF8ToUTF16(specifics.address_home_dependent_sub_locality()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_dependent_sub_locality_status()));
+  }
+
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code),
       ConvertSpecificsToProfileVerificationStatus(
@@ -632,7 +649,6 @@ AutofillProfile CreateAutofillProfileFromValidSpecifics(
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
   // TODO(crbug.com/359768803): Handle alternative names here.
-  // TODO(crbug.com/589718241): Handle ADDRESS_HOME_DEPENDENT_SUB_LOCALITY here.
   static_assert(FieldType::MAX_VALID_FIELD_TYPE == 221,
                 "New field type needs to be reviewed for inclusion in sync");
 
