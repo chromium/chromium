@@ -11,6 +11,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +35,15 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     keyboard_config_ = keyboard_config;
   }
   bool IsKeyboardEnabled() override { return enabled_; }
+  void SetKeyboardEnabled(bool enabled) {
+    if (enabled_ == enabled) {
+      return;
+    }
+    enabled_ = enabled;
+    for (auto& observer : observers_) {
+      observer.OnKeyboardEnabledChanged(enabled_);
+    }
+  }
   void SetEnableFlag(keyboard::KeyboardEnableFlag flag) override {
     keyboard_enable_flags_.insert(flag);
     for (auto& observer : observers_) {
@@ -126,4 +136,10 @@ ChromeKeyboardControllerClientTestHelper::
 
 void ChromeKeyboardControllerClientTestHelper::SetProfile(Profile* profile) {
   chrome_keyboard_controller_client_->set_profile_for_test(profile);
+}
+
+void ChromeKeyboardControllerClientTestHelper::SetKeyboardEnabled(
+    bool enabled) {
+  CHECK(fake_controller_);
+  fake_controller_->SetKeyboardEnabled(enabled);
 }

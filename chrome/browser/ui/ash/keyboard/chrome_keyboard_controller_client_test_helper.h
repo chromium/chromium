@@ -35,6 +35,9 @@ class ChromeKeyboardControllerClientTestHelper {
 
   void SetProfile(Profile* profile);
 
+  // Only supported when initialized with InitializeWithFake().
+  void SetKeyboardEnabled(bool enabled);
+
  private:
   class FakeKeyboardController;
 
