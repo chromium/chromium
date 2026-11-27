@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Syncs WebUI toolbar flags from `enabled.sh` across `about_flags.cc` and
-`tools/perf/`.
+"""Syncs WebUI toolbar flags from `enabled.sh` across
+`initial_webui_features_switch.h` and `tools/perf/`.
 """
 
 import argparse
@@ -14,6 +14,9 @@ import re
 import subprocess
 import sys
 
+_FEATURES_HEADER = (
+  'chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h'
+)
 _SHARD_NAMES = (
   'linux-r350-perf_map.json',
   'mac-m1-pro-perf_map.json',
@@ -28,7 +31,8 @@ _SHARD_PAT = (
 _Target = tuple[str, list[tuple[str, Callable[[re.Match[str]], str]]]]
 
 
-def format_block(entries: list[str], cpp_end: bool = False) -> str:
+def split_chunks(entries: list[str]) -> list[str]:
+  """Splits feature entries into <=74-char string-literal chunks."""
   chunks = []
   for i, entry in enumerate(entries):
     full = entry + ('' if i == len(entries) - 1 else ',')
@@ -45,10 +49,24 @@ def format_block(entries: list[str], cpp_end: bool = False) -> str:
           chunks.append(tail[:72])
           tail = tail[72:]
         chunks.append(tail)
-  lines = [f'    "{c}"' for c in chunks]
+  return chunks
+
+
+def format_block(entries: list[str], cpp_end: bool = False) -> str:
+  lines = [f'    "{c}"' for c in split_chunks(entries)]
   if cpp_end:
     lines[-1] += ';'
   return '\n'.join(lines)
+
+
+def format_macro(name: str, entries: list[str]) -> str:
+  """Formats a clang-format-aligned C++ string-literal `#define` block."""
+  head = f'#define {name}'
+  body = [f'  "{c}"' for c in split_chunks(entries)]
+  prefix_lines = [head, *body[:-1]]
+  col = max(len(line) + 1 for line in prefix_lines)
+  aligned = [f'{line:<{col}}\\' for line in prefix_lines] + [body[-1]]
+  return '\n'.join(aligned)
 
 
 def ci_sorted(items: Iterable[str]) -> list[str]:
@@ -67,7 +85,9 @@ def build_targets(
   raw_features: list[str], update_crossbench: bool
 ) -> list[_Target]:
   """Builds per-file replacement rules from the enabled feature list."""
-  about_enable = format_block(ci_sorted(raw_features) + ['WebUIToolbar'], True)
+  initial_webui_macro = format_macro(
+    'INITIAL_WEBUI_ENABLE_FEATURES', ci_sorted(raw_features)
+  )
   disable_set = {f.split(':', 1)[0] for f in raw_features} | {
     'WebUILocationBar'
   }
@@ -78,15 +98,15 @@ def build_targets(
 
   targets: list[_Target] = [
     (
-      'chrome/browser/about_flags.cc',
+      _FEATURES_HEADER,
       [
         (
-          r'(constexpr char kWebUIToolbarEnableFeatures\[\] =\n)'
-          r'(?:    "[^"]*";?\n)+',
-          lambda m: f'{m.group(1)}{about_enable}\n',
+          r'#define INITIAL_WEBUI_ENABLE_FEATURES\s+\\\n'
+          r'(?:  "[^"]*"(?:\s+\\)?\n)+',
+          lambda _m: f'{initial_webui_macro}\n',
         ),
         (
-          r'(constexpr char kWebUIToolbarDisableFeatures\[\] =\n)'
+          r'(inline constexpr char kWebUIToolbarDisableFeatures\[\] =\n)'
           r'(?:    "[^"]*";?\n)+',
           lambda m: f'{m.group(1)}{about_disable}\n',
         ),
@@ -110,16 +130,18 @@ def build_targets(
     ],
   ]
   if update_crossbench:
-    targets.append((
-      'third_party/crossbench/config/benchmark/'
-      'browser_startup/browser.config.hjson',
-      [
-        (
-          r'("flags": "--enable-features=)[^"]*(")',
-          lambda m: f'{m.group(1)}{perf_joined}{m.group(2)}',
-        )
-      ],
-    ))
+    targets.append(
+      (
+        'third_party/crossbench/config/benchmark/'
+        'browser_startup/browser.config.hjson',
+        [
+          (
+            r'("flags": "--enable-features=)[^"]*(")',
+            lambda m: f'{m.group(1)}{perf_joined}{m.group(2)}',
+          )
+        ],
+      )
+    )
   return targets
 
 
@@ -164,8 +186,7 @@ def main() -> int:
   if args.check:
     if changed:
       script = (
-        'chrome/browser/ui/webui/webui_toolbar/scripts/'
-        'generate_chrome_flags.py'
+        'chrome/browser/ui/webui/webui_toolbar/scripts/generate_chrome_flags.py'
       )
       msg = 'Out of sync with enabled.sh:\n  ' + '\n  '.join(changed)
       print(f'{msg}\nRun: {script}', file=sys.stderr)

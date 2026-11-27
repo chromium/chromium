@@ -6,15 +6,19 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
+_FEATURES_HEADER = (
+  'chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h'
+)
+
 _RELEVANT_PATHS = (
-  r'^chrome/browser/ui/webui/webui_toolbar/(?:scripts/|PRESUBMIT)',
-  r'^chrome/browser/about_flags\.cc$',
+  r'^chrome/browser/ui/webui/webui_toolbar/'
+  r'(?:scripts/|PRESUBMIT|initial_webui_features_switch\.h$)',
   r'^tools/perf/core/(?:bot_platforms\.py|shard_maps/)',
 )
 
 
 def CheckWebUIToolbarFlagsSynced(input_api, output_api):
-  """Checks that about_flags.cc and perf configs match enabled.sh."""
+  """Checks that generated feature headers and perf configs match enabled.sh."""
   if input_api.is_windows:
     return []
 
@@ -54,7 +58,7 @@ def CheckWebUIToolbarFlagsSynced(input_api, output_api):
   )
   if (
     'Out of sync with enabled.sh:' in message
-    and 'chrome/browser/about_flags.cc' not in message
+    and _FEATURES_HEADER not in message
   ):
     return [output_api.PresubmitPromptOrNotify(message)]
   return [output_api.PresubmitError(message)]

@@ -54,12 +54,15 @@ class CheckWebUIToolbarFlagsSyncedTest(unittest.TestCase):
     self.assertEqual(results, [])
     mock_popen.assert_called_once()
 
-  def testErrorsWhenAboutFlagsOutOfSync(self):
-    stderr = 'Out of sync with enabled.sh:\n  chrome/browser/about_flags.cc'
+  def testErrorsWhenFeaturesHeaderOutOfSync(self):
+    header = (
+      'chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h'
+    )
+    stderr = f'Out of sync with enabled.sh:\n  {header}'
     results, _ = self._run([_ENABLED_SH], returncode=1, stderr=stderr)
     self.assertEqual(len(results), 1)
     self.assertEqual(results[0].type, 'error')
-    self.assertIn('chrome/browser/about_flags.cc', results[0].message)
+    self.assertIn(header, results[0].message)
 
   def testPromptsOrNotifiesWhenOnlyPerfConfigsOutOfSync(self):
     stderr = 'Out of sync with enabled.sh:\n  tools/perf/core/bot_platforms.py'

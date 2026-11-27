@@ -88,4 +88,4 @@ join , \
   WebUIToolbarFrameEvictionOptOut \
   WebiumMetricsMapping:$(WebiumMetricsMappingParams) \
   # empty line
-# LINT.ThenChange(//chrome/browser/about_flags.cc:WebUIToolbarEnableFeatures)
+# LINT.ThenChange(//chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h:WebUIToolbarEnableFeatures)

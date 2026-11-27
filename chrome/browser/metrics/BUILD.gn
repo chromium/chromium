@@ -401,6 +401,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/waap:manager",
+      "//chrome/browser/ui/webui/webui_toolbar:initial_webui_features_switch",
       "//chrome/browser/web_applications:web_applications_metrics",
     ]
   }

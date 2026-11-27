@@ -1628,6 +1628,7 @@ source_set("core") {
       "//chrome/browser/ui/webui/util",
       "//chrome/browser/ui/webui/webnn_internals",
       "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/webui_toolbar:initial_webui_features_switch",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/web_applications",

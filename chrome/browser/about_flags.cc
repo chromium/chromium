@@ -303,6 +303,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 #include "components/user_education/common/user_education_features.h"  // nogncheck
@@ -4017,110 +4018,6 @@ constexpr char kWebiumFlag[] = "webium";
 constexpr char kWebiumFeatures[] =
     "Webium,SurfaceEmbed,ExtensionsMenuAccessControl";
 constexpr char kWebUIToolbarFlag[] = "webui-toolbar";
-// To update kWebUIToolbarEnableFeatures and kWebUIToolbarDisableFeatures:
-// 1. Edit chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh.
-// 2. Run generate_chrome_flags.py in the same directory (which updates both
-//    lists below, tools/perf/core/bot_platforms.py, and
-//    tools/perf/core/shard_maps/*_map.json in-place).
-// The script appends `WebUIToolbar` so that the flag turns on the entire
-// WebUI toolbar.
-// LINT.IfChange(WebUIToolbarEnableFeatures)
-constexpr char kWebUIToolbarEnableFeatures[] =
-    "BypassOutdatedSurfaceActivation,"
-    "DeferBackgroundTabLoadsWhileVisiblePageLoads,"
-    "DeferHistoryBackendInit,"
-    "DeferLayoutDuringBrowserStartup,"
-    "DeferSessionStorageScavengingOnStartup,"
-    "DeferSpellcheckInitialization,"
-    "GpuPersistentCacheAsyncInitialize,"
-    "GtkCacheNavButtonIcons,"
-    "GtkPrefetchNavButtonIcons,"
-    "InitialWebUI,"
-    "InitialWebUIChromeOptimizations,"
-    "InitialWebUISurfaceSync:deadline_in_frames/12000/"
-    "renderer_commit_delay_ms/100000,"
-    "InitialWebUIWithoutExtensions,"
-    "InitialWebUIWithoutSpellCheckForNtp,"
-    "InitialWebUIWithoutTranslateForNtp,"
-    "LazyKeyedServiceInstantiation,"
-    "MacDeferInputContextUntilFirstPaint,"
-    "MacPumpTasksBeforeFinishLaunching,"
-    "OmniboxAimPopupDeferCreation,"
-    "OmniboxWebUIPopupDeferCreation,"
-    "OnlyUseWindowResizeHelperOnResize,"
-    "OptimizeVariationsIpc,"
-    "PerDependencyDeadlines,"
-    "PrioritizeCompositorTaskRunnerOnStartup,"
-    "PrioritizeResizeTaskRunnerOnStartup,"
-    "PrioritizeWebUINavigationURLLoader,"
-    "SendGPUChannelEarly,"
-    "SkipIPCChannelPausingForNonGuests,"
-    "TopChromeWebUIPrerendering:TopChromeWebUIPrerenderingAtStartup/false/"
-    "TopChromeWebUIPrerenderingUnbound/true,"
-    "TopChromeWebUISharedRenderer,"
-    "WebiumMetricsMapping:config/"
-    "CjsKOUV2ZW50TGF0ZW5jeS5HZXN0dXJlU2Nyb2xsVXBkYXRlLlRvdWNoc2NyZWVuLlRvdGFs"
-    "TGF0ZW5jeQooCiZQYWdlTG9hZC5JbnRlcmFjdGl2ZVRpbWluZy5JbnB1dERlbGF5Mwo4CjZH"
-    "cmFwaGljcy5TbW9vdGhuZXNzLlBlcmNlbnREcm9wcGVkRnJhbWVzMy5BbGxTZXF1ZW5jZXM=,"
-    "WebUIBackForwardButton,"
-    "WebUIBundledCodeCache,"
-    "WebUIBypassMojoConnections,"
-    "WebUIHomeButton,"
-    "WebUIReloadButton:WebUIReloadButtonBypassLoaderThrottles/true/"
-    "WebUIReloadButtonDeferBrowserViewShow/false/"
-    "WebUIReloadButtonKeepVisibleUntilPaint/true/"
-    "WebUIReloadButtonPrewarmWebUI/true/"
-    "WebUIReloadButtonPrewarmWebUIPreNavigate/true/"
-    "WebUIReloadButtonProfilePrewarming/true/"
-    "WebUIReloadButtonRestartUnresponsive/true/"
-    "WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s,"
-    "WebUISplitTabsButton,"
-    "WebUISyncDataPipeWrite,"
-    "WebUIToolbarFrameEvictionOptOut,"
-    "WebUIToolbar";
-constexpr char kWebUIToolbarDisableFeatures[] =
-    "BypassOutdatedSurfaceActivation,"
-    "DeferBackgroundTabLoadsWhileVisiblePageLoads,"
-    "DeferHistoryBackendInit,"
-    "DeferLayoutDuringBrowserStartup,"
-    "DeferSessionStorageScavengingOnStartup,"
-    "DeferSpellcheckInitialization,"
-    "GpuPersistentCacheAsyncInitialize,"
-    "GtkCacheNavButtonIcons,"
-    "GtkPrefetchNavButtonIcons,"
-    "InitialWebUI,"
-    "InitialWebUIChromeOptimizations,"
-    "InitialWebUISurfaceSync,"
-    "InitialWebUIWithoutExtensions,"
-    "InitialWebUIWithoutSpellCheckForNtp,"
-    "InitialWebUIWithoutTranslateForNtp,"
-    "LazyKeyedServiceInstantiation,"
-    "MacDeferInputContextUntilFirstPaint,"
-    "MacPumpTasksBeforeFinishLaunching,"
-    "OmniboxAimPopupDeferCreation,"
-    "OmniboxWebUIPopupDeferCreation,"
-    "OnlyUseWindowResizeHelperOnResize,"
-    "OptimizeVariationsIpc,"
-    "PerDependencyDeadlines,"
-    "PrioritizeCompositorTaskRunnerOnStartup,"
-    "PrioritizeResizeTaskRunnerOnStartup,"
-    "PrioritizeWebUINavigationURLLoader,"
-    "SendGPUChannelEarly,"
-    "SkipIPCChannelPausingForNonGuests,"
-    "TopChromeWebUIPrerendering,"
-    "TopChromeWebUISharedRenderer,"
-    "WebiumMetricsMapping,"
-    "WebUIBackForwardButton,"
-    "WebUIBundledCodeCache,"
-    "WebUIBypassMojoConnections,"
-    "WebUIHomeButton,"
-    "WebUILocationBar,"
-    "WebUIReloadButton,"
-    "WebUISplitTabsButton,"
-    "WebUISyncDataPipeWrite,"
-    "WebUIToolbarFrameEvictionOptOut,"
-    "WebUIToolbar";
-// LINT.ThenChange(//chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh:WebUIToolbarEnableFeatures)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 constexpr char kTabsFromOtherDevicesEnhancementFeatures[] =
@@ -13222,10 +13119,11 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {kWebUIToolbarFlag, flag_descriptions::kWebUIToolbarName,
      flag_descriptions::kWebUIToolbarDescription, kOsWin | kOsMac | kOsLinux,
-     ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
-                                         kWebUIToolbarEnableFeatures,
-                                         switches::kDisableFeatures,
-                                         kWebUIToolbarDisableFeatures)},
+     ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(
+         switches::kEnableFeatures,
+         webui_toolbar::kWebUIToolbarEnableFeatures,
+         switches::kDisableFeatures,
+         webui_toolbar::kWebUIToolbarDisableFeatures)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

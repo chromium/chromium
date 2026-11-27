@@ -22,7 +22,8 @@ but if not, they should be added here:
 
 1. Edit `enabled.sh` (keeping features in lexical order).
 2. Run `./generate_chrome_flags.py`, which automatically updates:
-   - `chrome/browser/about_flags.cc` (`kWebUIToolbarEnableFeatures` and
+   - `chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h`
+     (`kInitialWebUIEnableFeatures`, `kWebUIToolbarEnableFeatures`, and
      `kWebUIToolbarDisableFeatures`)
    - `tools/perf/core/bot_platforms.py` (`INITIAL_WEBUI_FEATURES`)
    - `tools/perf/core/shard_maps/*_map.json` (`linux-r350-perf`,

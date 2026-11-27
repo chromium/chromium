@@ -36,6 +36,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/prefs/android/local_state_prefs_android.h"
+#else
+#include "chrome/browser/ui/webui/webui_toolbar/initial_webui_features_switch.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -69,6 +71,18 @@ void ChromeFeatureListCreator::CreateFeatureList() {
   // `ui::ResourceBundle::InitSharedInstanceWithLocale()` because experiment
   // flags such as `--touch-optimized-ui` affect loaded resources.
   CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M161);
+#if !BUILDFLAG(IS_ANDROID)
+  // Expand before `variations::CreateFeatureList()` checks `--no-experiments`
+  // because `--initial-webui-features` is an explicit command-line switch
+  // rather than a chrome://flags entry (and test harnesses commonly pass
+  // `--no-experiments`). Note that `flags_storage` entries are appended inside
+  // `variations::CreateFeatureList()`, so if a chrome://flags entry disables an
+  // overlapping feature (e.g. `#webui-toolbar` set to Disabled with
+  // `--initial-webui-features=enabled`), `base::FeatureList` gives
+  // `--disable-features` precedence.
+  webui_toolbar::ExpandInitialWebUIFeaturesSwitch(
+      *base::CommandLine::ForCurrentProcess());
+#endif  // !BUILDFLAG(IS_ANDROID)
   variations::CreateFeatureList(*this);
 }
 
