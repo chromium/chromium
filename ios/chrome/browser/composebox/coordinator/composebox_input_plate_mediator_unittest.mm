@@ -30,6 +30,7 @@
 #import "components/contextual_search/mock_contextual_search_context_controller.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "components/contextual_tasks/public/features.h"
+#import "components/lens/contextual_input.h"
 #import "components/lens/lens_overlay_mime_type.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -1683,6 +1684,149 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
   EXPECT_EQ(fake_loader.loadURLCallCount, 0u);
+}
+
+// Fixture for submits with dynamic AIM fulfillment, in regular search with an
+// uploaded Drive file, which the Search results page takes in the
+// `any_combination_all_types` mode.
+class ComposeboxInputPlateMediatorDynamicAimFulfillmentSubmitTest
+    : public ComposeboxInputPlateMediatorTest {
+ protected:
+  void SetUp() override {
+    ComposeboxInputPlateMediatorTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox::kDynamicAimFulfillment,
+        {{"srp_input_mode", "any_combination_all_types"}});
+    SetAIMEligible(true);
+    SetDSEGoogle(true);
+
+    real_session_ = service_->CreateSession(
+        std::make_unique<contextual_search::ContextualSearchContextController::
+                             ConfigParams>(),
+        contextual_search::ContextualSearchSource::kUnknown, std::nullopt);
+    auto session = std::make_unique<
+        testing::NiceMock<TestContextualSearchSessionHandle>>();
+    session_ = session.get();
+    ON_CALL(*session_, GetController())
+        .WillByDefault(testing::Return(real_session_->GetController()));
+    ON_CALL(*session_, CreateContextToken())
+        .WillByDefault(testing::Return(server_token_));
+    contextual_search::FileInfo drive_file;
+    drive_file.file_token = server_token_;
+    drive_file.input_data = std::make_unique<lens::ContextualInputData>();
+    drive_file.input_data->drive_id = "drive_file_id";
+    ON_CALL(*session_, GetUploadedContextFileInfos())
+        .WillByDefault(testing::Return(
+            std::vector<contextual_search::FileInfo>{drive_file}));
+    submit_mediator_ =
+        CreateMediator(std::move(session), ComposeboxEntrypoint::kOther,
+                       ComposeboxMode::kRegularSearch);
+    omnibox::ModelConfig* model_config = searchbox_config_.add_model_configs();
+    model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+    model_config->mutable_rule()->set_allow_all_input_types(true);
+    searchbox_config_.mutable_rule_set()->add_allowed_models(
+        omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+    ForwardSearchboxConfig();
+
+    [submit_mediator_ processDriveFileWithIdentifier:@"drive_file_id"
+                                                name:@"drive_file_name"
+                                            mimeType:@"application/pdf"
+                                                icon:nil];
+    [submit_mediator_
+        onContextUploadStatusChanged:server_token_
+                            mimeType:lens::MimeType::kPdf
+                 contextUploadStatus:contextual_search::ContextUploadStatus::
+                                         kUploadSuccessful
+                           errorType:std::nullopt];
+  }
+
+  void TearDown() override {
+    session_ = nullptr;
+    [submit_mediator_ disconnect];
+    submit_mediator_ = nil;
+    real_session_.reset();
+    ComposeboxInputPlateMediatorTest::TearDown();
+  }
+
+  // Expects one `CreateSearchUrl` call and stores its request in
+  // `search_url_request_`.
+  void ExpectCreateSearchUrl() {
+    EXPECT_CALL(*session_, CreateSearchUrl(testing::_, testing::_))
+        .WillOnce(
+            [this](std::unique_ptr<
+                       contextual_search::ContextualSearchContextController::
+                           CreateSearchUrlRequestInfo> info,
+                   base::OnceCallback<void(GURL)> callback) {
+              search_url_request_ = std::move(info);
+            });
+  }
+
+  // Waits for the `CreateSearchUrl` call set up by `ExpectCreateSearchUrl()`.
+  [[nodiscard]] bool WaitForCreateSearchUrl() {
+    return base::test::RunUntil([&]() { return !!search_url_request_; });
+  }
+
+  const base::UnguessableToken server_token_ = base::UnguessableToken::Create();
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      real_session_;
+  raw_ptr<TestContextualSearchSessionHandle> session_ = nullptr;
+  ComposeboxInputPlateMediator* submit_mediator_;
+  std::unique_ptr<contextual_search::ContextualSearchContextController::
+                      CreateSearchUrlRequestInfo>
+      search_url_request_;
+};
+
+// Tests that a query with attachments that the Search results page takes is
+// sent there, without the AI Mode `udm` param.
+TEST_F(ComposeboxInputPlateMediatorDynamicAimFulfillmentSubmitTest,
+       SendsTextToSearchResultsPage) {
+  ExpectCreateSearchUrl();
+
+  [submit_mediator_ sendText:@"test query"];
+
+  ASSERT_TRUE(WaitForCreateSearchUrl());
+  EXPECT_EQ(search_url_request_->search_url_type,
+            contextual_search::ContextualSearchContextController::
+                SearchUrlType::kSrp);
+  EXPECT_FALSE(search_url_request_->additional_params.contains("udm"));
+}
+
+// Tests that an AI Mode suggestion accepted in regular search opens AI Mode
+// even though routing chose the Search results page.
+TEST_F(ComposeboxInputPlateMediatorDynamicAimFulfillmentSubmitTest,
+       AIModeSuggestionOpensAIMode) {
+  ExpectCreateSearchUrl();
+
+  GURL suggestion_url("https://www.google.com/search?q=query&udm=50");
+  [submit_mediator_
+      omniboxDidAcceptText:u"query"
+            destinationURL:suggestion_url
+             URLLoadParams:UrlLoadParams::InCurrentTab(suggestion_url)
+              isSearchType:YES];
+
+  ASSERT_TRUE(WaitForCreateSearchUrl());
+  EXPECT_EQ(search_url_request_->search_url_type,
+            contextual_search::ContextualSearchContextController::
+                SearchUrlType::kAim);
+  EXPECT_EQ(search_url_request_->additional_params["udm"], "50");
+}
+
+// Tests that a query in AI Mode, here entered by picking a model, is sent to AI
+// Mode with the `udm` param.
+TEST_F(ComposeboxInputPlateMediatorDynamicAimFulfillmentSubmitTest,
+       SendsTextInAIModeToAIMode) {
+  [submit_mediator_ setModel:omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
+          explicitUserAction:YES];
+  ExpectCreateSearchUrl();
+
+  [submit_mediator_ sendText:@"test query"];
+
+  ASSERT_TRUE(WaitForCreateSearchUrl());
+  EXPECT_EQ(search_url_request_->search_url_type,
+            contextual_search::ContextualSearchContextController::
+                SearchUrlType::kAim);
+  EXPECT_EQ(search_url_request_->additional_params["udm"], "50");
 }
 
 // Tests that closing an attached tab in cobrowse mode removes the item and

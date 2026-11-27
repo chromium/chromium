@@ -16,6 +16,7 @@
 #import <vector>
 
 #import "components/contextual_search/input_state_model.h"
+#import "components/contextual_search/input_state_model_routing.h"
 #import "components/lens/lens_overlay_mime_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
@@ -129,6 +130,10 @@ class WebStateID;
 
 // Retrieves additional query parameters for the current state.
 - (std::map<std::string, std::string>)additionalQueryParams;
+
+// Returns where `InputStateModel` sends the current query (AI Mode or the
+// Search results page) and its URL params.
+- (contextual_search::FulfillmentDecision)fulfillmentDecision;
 
 // Notifies the model that the context has changed.
 - (void)onContextChanged;

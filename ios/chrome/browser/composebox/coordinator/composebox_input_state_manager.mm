@@ -393,6 +393,13 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   return {};
 }
 
+- (contextual_search::FulfillmentDecision)fulfillmentDecision {
+  if (!_inputStateModel) {
+    return {};
+  }
+  return _inputStateModel->GetFulfillmentDecision();
+}
+
 - (void)onContextChanged {
   if (!_inputStateModel) {
     return;

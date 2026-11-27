@@ -39,6 +39,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/contextual_search/input_state_model.h"
+#import "components/contextual_search/input_state_model_routing.h"
 #import "components/contextual_search/internal/ios/composebox_context_upload_observer_bridge.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/contextual_tasks/public/query_contextualizer.h"
@@ -869,19 +870,31 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // remove it via `-removeAutoAddedItems`.
   [self promoteAutoAddedItems];
 
-  auto advancedToolsParams = [_stateManager additionalQueryParams];
-  additionalParams.insert(advancedToolsParams.begin(),
-                          advancedToolsParams.end());
+  using SearchUrlType =
+      contextual_search::ContextualSearchContextController::SearchUrlType;
+  SearchUrlType searchURLType;
+  if ([self isDynamicAIMFulfillmentEnabled]) {
+    // The query goes where `InputStateModel` routed it (AI Mode or the Search
+    // results page), unless the suggestion's params ask for AI Mode.
+    contextual_search::FulfillmentDecision decision =
+        contextual_search::ResolveSubmitFulfillment(
+            [_stateManager fulfillmentDecision], std::move(additionalParams));
+    additionalParams = std::move(decision.url_params);
+    searchURLType = decision.will_fulfill_in_aim ? SearchUrlType::kAim
+                                                 : SearchUrlType::kSrp;
+  } else {
+    auto advancedToolsParams = [_stateManager additionalQueryParams];
+    additionalParams.insert(advancedToolsParams.begin(),
+                            advancedToolsParams.end());
+    searchURLType = _uiInputState.activeTool == ComposeboxMode::kRegularSearch
+                        ? SearchUrlType::kStandard
+                        : SearchUrlType::kAim;
+  }
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->search_url_type =
-      _uiInputState.activeTool == ComposeboxMode::kRegularSearch
-          ? contextual_search::ContextualSearchContextController::
-                SearchUrlType::kStandard
-          : contextual_search::ContextualSearchContextController::
-                SearchUrlType::kAim;
+  search_url_request_info->search_url_type = searchURLType;
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->aim_entry_point =
@@ -2632,10 +2645,15 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     case ComposeboxMode::kRegularSearch:
       // With dynamic AIM fulfillment, regular search can have attachments.
       // Searches keep them, including attachments sent without text (which
-      // arrive with no URL), while URL suggestions still navigate directly.
+      // arrive with no URL), while URL suggestions still navigate directly. AI
+      // Mode suggestions keep their params so that they open AI Mode.
       if ([self isDynamicAIMFulfillmentEnabled] &&
           (isSearchType || destinationURL.is_empty()) && !_items.empty) {
-        [self sendText:[NSString cr_fromString16:text]];
+        [self sendText:[NSString cr_fromString16:text]
+            additionalParams:IsAimURL(destinationURL)
+                                 ? lens::GetParametersMapWithoutQuery(
+                                       destinationURL)
+                                 : std::map<std::string, std::string>()];
         break;
       }
       [self recordNavigationInitiated];
