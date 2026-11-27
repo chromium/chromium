@@ -222,7 +222,7 @@ class AutofillCrowdsourcingManagerTest
             /*api_key=*/""));
     autofill_client().set_shared_url_loader_factory(
         test_shared_loader_factory_);
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   ~AutofillCrowdsourcingManagerTest() override {
@@ -1157,7 +1157,7 @@ class AutofillServerCommunicationTest
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
             nullptr /* network_service */, true /* is_trusted */);
     autofill_client().set_shared_url_loader_factory(shared_url_loader_factory_);
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     autofill_driver().SetIsolationInfo(net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther,
         url::Origin::Create(GURL("https://abc.com")),

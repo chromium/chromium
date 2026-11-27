@@ -66,7 +66,7 @@ class AutofillObserverImplTest
 
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }
@@ -126,7 +126,7 @@ class TabInteractionRecorderAndroidTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override {

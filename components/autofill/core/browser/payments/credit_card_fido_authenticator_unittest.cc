@@ -106,7 +106,7 @@ class CreditCardFidoAuthenticatorTest
   void SetUp() override {
     InitAutofillClient();
 
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     payments_autofill_client().set_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(

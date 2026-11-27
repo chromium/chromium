@@ -93,7 +93,7 @@ class TouchToFillAutofillDelegateAndroidImplTest
             /*pcontext_manager=*/nullptr,
             /*strike_database=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     delegate_ = std::make_unique<TouchToFillAutofillDelegateAndroidImpl>(
         &autofill_manager());
   }

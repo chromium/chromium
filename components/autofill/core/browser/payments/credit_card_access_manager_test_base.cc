@@ -102,7 +102,7 @@ void CreditCardAccessManagerTestBase::SetUp() {
   autofill_client().set_test_strike_database(
       std::make_unique<TestStrikeDatabase>());
 
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   test_api(credit_card_access_manager())

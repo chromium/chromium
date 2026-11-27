@@ -248,7 +248,7 @@ class TouchToFillPaymentMethodDelegateAndroidImplUnitTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     auto touch_to_fill_delegate =
         std::make_unique<TouchToFillPaymentMethodDelegateAndroidImpl>(&autofill_manager());

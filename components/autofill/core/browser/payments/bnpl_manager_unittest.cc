@@ -317,7 +317,7 @@ class BnplManagerTest : public Test,
     payments_autofill_client().set_bnpl_ui_delegate(
         std::make_unique<NiceMock<MockBnplUiDelegate>>());
 
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(

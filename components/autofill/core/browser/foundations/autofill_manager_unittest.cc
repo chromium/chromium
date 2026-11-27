@@ -174,7 +174,7 @@ class AutofillManagerTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }
@@ -343,7 +343,7 @@ class AutofillManagerTest_ObserverCalls
  public:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     ON_CALL(autofill_manager(), ShouldParseForms).WillByDefault(Return(true));
     observation_.Observe(&autofill_manager());
   }
@@ -407,7 +407,11 @@ class AutofillManagerTest_ObserverCalls
 // OnAutofillManagerStateChanged() observer events.
 TEST_F(AutofillManagerTest_ObserverCalls, OnAutofillManagerStateChanged) {
   using enum AutofillManager::LifecycleState;
-  auto m = Ref(autofill_manager());
+  CreateAutofillDriver();
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  observation().Reset();
+  observation().Observe(&autofill_manager(1));
+  auto m = Ref(autofill_manager(1));
 
   // Reset the manager and transition from kInactive to kActive. The observers
   // should stick around.
@@ -415,18 +419,18 @@ TEST_F(AutofillManagerTest_ObserverCalls, OnAutofillManagerStateChanged) {
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
   EXPECT_CALL(observer(),
               OnAutofillManagerStateChanged(m, kPendingReset, kInactive));
-  ResetAutofillDriver(autofill_driver());
+  ResetAutofillDriver(autofill_driver(1));
   EXPECT_CALL(observer(), OnAutofillManagerStateChanged(m, kInactive, kActive));
-  ActivateAutofillDriver(autofill_driver());
+  ActivateAutofillDriver(autofill_driver(1));
 
   // Test that not changing the LifecycleState does not fire events.
-  ActivateAutofillDriver(autofill_driver());
+  ActivateAutofillDriver(autofill_driver(1));
 
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer(),
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
       .WillOnce([this] { observation().Reset(); });
-  DeleteAutofillDriver(autofill_driver());
+  DeleteAutofillDriver(autofill_driver(1));
 }
 
 // Tests that even if the vector of new forms is too large, events are still
@@ -977,6 +981,7 @@ TEST_F(AutofillManagerTest,
       {{.host = "example.com", .script = "const x = 1;"}});
   CreateAutofillDriver();
   autofill_driver(1).SetParent(&autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
   std::vector<FormData> forms = CreateTestForms(1);
 
   EXPECT_CALL(autofill_driver(1), LoadCustomFormControlScript).Times(0);

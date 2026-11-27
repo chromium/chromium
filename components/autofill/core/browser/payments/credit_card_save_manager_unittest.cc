@@ -346,7 +346,7 @@ class CreditCardSaveManagerTest
     test_api(personal_data().address_data_manager())
         .set_auto_accept_address_imports(true);
     personal_data().SetSyncServiceForTest(&sync_service_);
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     payments_autofill_client().set_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
             autofill_client().GetURLLoaderFactory(),

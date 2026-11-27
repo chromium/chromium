@@ -90,7 +90,7 @@ class MerchantPromoCodeManagerTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     client().set_last_committed_primary_main_frame_url(GURL(kTestOriginUrl));
     merchant_promo_code_manager_ =
         std::make_unique<MerchantPromoCodeManager>(&autofill_client());

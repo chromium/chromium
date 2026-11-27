@@ -422,7 +422,7 @@ class CreditCardSuggestionGeneratorTest
     mock_payments_autofill_client_ = mock_payments_autofill_client.get();
     autofill_client().set_payments_autofill_client(
         std::move(mock_payments_autofill_client));
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager());

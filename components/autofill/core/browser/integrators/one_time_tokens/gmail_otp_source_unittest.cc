@@ -922,6 +922,7 @@ TEST_F(GmailOtpSourceTest, RecordsSenderDomainMatchUkmAgainstPage) {
       std::make_unique<TestBrowserAutofillManager>(owned_driver.get()));
   TestAutofillDriver& driver =
       client_.GetAutofillDriverFactory().TakeOwnership(std::move(owned_driver));
+  client_.GetAutofillDriverFactory().Activate(driver);
 
   {
     GmailOtpSource source(client_);
@@ -1103,6 +1104,7 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
       std::make_unique<TestBrowserAutofillManager>(embedded_driver.get()));
   GetParentCountingAutofillDriver* embedded_driver_ptr = embedded_driver.get();
   client_.GetAutofillDriverFactory().TakeOwnership(std::move(embedded_driver));
+  client_.GetAutofillDriverFactory().Activate(*embedded_driver_ptr);
 
   auto active_child_driver = std::make_unique<GetParentCountingAutofillDriver>(
       &client_, expected_source_id);
@@ -1119,7 +1121,9 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
       std::make_unique<TestBrowserAutofillManager>(main_driver.get()));
   GetParentCountingAutofillDriver* main_driver_ptr = main_driver.get();
   client_.GetAutofillDriverFactory().TakeOwnership(std::move(main_driver));
+  client_.GetAutofillDriverFactory().Activate(*main_driver_ptr);
   active_child_driver_ptr->SetParent(main_driver_ptr);
+  client_.GetAutofillDriverFactory().Activate(*active_child_driver_ptr);
 
   {
     GmailOtpSource source(client_);

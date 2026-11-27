@@ -283,7 +283,7 @@ TEST_F(AutofillVotesUploaderTest, DistinctFormsUploadedSeparately) {
 
 // Test that only the most recent vote for the same form is uploaded.
 TEST_F(AutofillVotesUploaderTest, MostRecentVoteForSameFormWins) {
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver();
   FormData form_data = test::CreateTestAddressFormData();
   form_data.set_host_frame(autofill_driver().GetFrameToken());
 
@@ -353,7 +353,7 @@ TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnSubmission) {
 
 // Test that pending votes are flushed when frame becomes inactive.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameInactive) {
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver();
   // Store a pending vote for a specific frame token that matches our test
   // driver.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
@@ -373,7 +373,7 @@ TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameInactive) {
 
 // Test that pending votes are flushed when frame is reset.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameReset) {
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver();
   // Store a pending vote.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
   EXPECT_TRUE(
@@ -396,7 +396,7 @@ TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameReset) {
 
 // Test that pending votes are flushed when frame is deleted.
 TEST_F(AutofillVotesUploaderTest, PendingVotesFlushedOnFrameDeletion) {
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver();
   // Store a pending vote.
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest).Times(0);
   EXPECT_TRUE(

@@ -33,7 +33,7 @@ class ActorFormSectionSplitterTest
 
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }

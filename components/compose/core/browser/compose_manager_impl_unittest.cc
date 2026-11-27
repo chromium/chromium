@@ -103,7 +103,7 @@ class ComposeManagerImplTest
         std::make_unique<compose::PageUkmTracker>(valid_test_source_id);
 
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();

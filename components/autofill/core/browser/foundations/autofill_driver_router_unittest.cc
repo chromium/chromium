@@ -110,10 +110,12 @@ class AutofillDriverRouterTest : public testing::Test {
       FakeAutofillDriver* parent = nullptr,
       FakeAutofillDriver::AutofillPermissionPolicy policy =
           FakeAutofillDriver::AutofillPermissionPolicy::kDefault) {
-    return static_cast<FakeAutofillDriver&>(
+    auto& driver = static_cast<FakeAutofillDriver&>(
         client_.GetAutofillDriverFactory().TakeOwnership(
             FakeAutofillDriver::CreateChildFrame(&client_, origin, parent,
                                                  policy)));
+    client_.GetAutofillDriverFactory().Activate(driver);
+    return driver;
   }
 
   void RegisterDriver(FakeAutofillDriver& driver) {

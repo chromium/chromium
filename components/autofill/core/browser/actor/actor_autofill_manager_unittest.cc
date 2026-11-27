@@ -66,7 +66,7 @@ class ActorAutofillManagerTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     feature_list_.InitAndEnableFeature(
         critical_actions::features::kCriticalActionHistory);

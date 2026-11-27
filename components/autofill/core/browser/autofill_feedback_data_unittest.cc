@@ -121,7 +121,7 @@ class AutofillFeedbackDataUnitTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   base::test::TaskEnvironment task_environment_{

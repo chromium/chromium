@@ -191,7 +191,7 @@ class PaymentsUtilFillOrPreviewCardTest
         .GetPersonalDataManager()
         .test_payments_data_manager()
         .AddCreditCard(card_);
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }

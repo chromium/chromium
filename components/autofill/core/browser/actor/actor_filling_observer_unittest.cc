@@ -43,7 +43,7 @@ class ActorFillingObserverTest : public ::testing::Test,
  public:
   ActorFillingObserverTest() {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
  protected:
@@ -247,8 +247,6 @@ TEST_F(ActorFillingObserverTest, FillingTimeout) {
 // Tests that no timeout happens while a credit card fetch is ongoing. After
 // fetch success/failure, the timeout is restarted.
 TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
-  CreateAutofillDriver();
-
   using Observer = CreditCardAccessManager::Observer;
   Future future;
   CreditCard card;
@@ -263,7 +261,7 @@ TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
   EXPECT_FALSE(future.IsReady());
 
   // The start of the fetch stops all timeouts.
-  test_api(credit_card_access_manager(1))
+  test_api(credit_card_access_manager())
       .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
   EXPECT_FALSE(future.IsReady());
   FastForwardBy(base::Milliseconds(1));
@@ -272,7 +270,7 @@ TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
   EXPECT_FALSE(future.IsReady());
 
   // The fetch completion (successful or not) restarts the timer.
-  test_api(credit_card_access_manager(1))
+  test_api(credit_card_access_manager())
       .NotifyObservers(&Observer::OnCreditCardFetchFailed, &card);
   FastForwardBy(ActorFillingObserver::GetFillingTimeout() -
                 base::Milliseconds(1));

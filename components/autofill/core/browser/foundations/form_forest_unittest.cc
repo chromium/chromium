@@ -422,6 +422,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
             FakeAutofillDriver::CreateChildFrame(
                 &client_, Origin(url), /*parent=*/parent_driver,
                 /*shared_autofill=*/frame_info.policy)));
+    client_.GetAutofillDriverFactory().Activate(driver);
 
     std::vector<FormData> forms;
     for (const FormInfo& form_info : frame_info.forms) {

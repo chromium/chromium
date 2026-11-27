@@ -1030,7 +1030,7 @@ class BrowserAutofillManagerTest : public testing::Test,
 
     InitAutofillClient();
     autofill_client().Init(&sync_service());
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
 
     // Initialize the TestPersonalDataManager with some default data.
     CreateTestAutofillProfiles();

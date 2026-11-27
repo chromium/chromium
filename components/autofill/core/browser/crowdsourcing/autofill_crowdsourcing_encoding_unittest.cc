@@ -309,7 +309,7 @@ class AutofillCrowdsourcingEncoding
  public:
   AutofillCrowdsourcingEncoding() {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   FormStructure& SeeAndGetParsedForm(const FormData& form_data) {

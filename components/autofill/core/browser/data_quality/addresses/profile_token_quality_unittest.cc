@@ -48,7 +48,7 @@ class ProfileTokenQualityTest : public testing::Test,
  public:
   ProfileTokenQualityTest() {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   // Creates a form and registers it with the `autofill_manager()` as-if it had

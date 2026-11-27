@@ -63,7 +63,7 @@ class PaymentsChurnedUsersManagerTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     AccountInfo account_info =
         autofill_client()
             .identity_test_environment()

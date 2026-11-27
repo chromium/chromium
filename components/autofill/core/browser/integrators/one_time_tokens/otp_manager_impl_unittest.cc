@@ -2439,6 +2439,8 @@ TEST_F(
 
   CreateAutofillDriver();
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
   LocalFrameToken frame_a = form->field(0)->host_frame();
   LocalFrameToken frame_b = autofill_driver(1).GetFrameToken();
   test_api(autofill_manager())

@@ -142,7 +142,7 @@ class OtpFieldDetectorAutofillManagerObserverTest
 
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     autofill_manager_observation_.Observe(&autofill_manager());
   }
 

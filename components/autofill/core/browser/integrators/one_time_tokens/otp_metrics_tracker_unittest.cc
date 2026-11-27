@@ -38,7 +38,7 @@ class OtpMetricsTrackerTest : public testing::Test,
 
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   ukm::TestAutoSetUkmRecorder& test_ukm_recorder() {

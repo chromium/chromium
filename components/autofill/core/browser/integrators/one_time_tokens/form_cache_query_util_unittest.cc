@@ -44,7 +44,7 @@ class FormCacheQueryUtilTest
     InitAutofillClient();
     autofill_client().set_last_committed_primary_main_frame_url(
         GURL("https://example.test"));
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     autofill_driver().set_frame_token(test::MakeLocalFrameToken());
   }
 
@@ -244,7 +244,6 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
 TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
   CreateAutofillDriver();
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  ActivateAutofillDriver(autofill_driver(0));
   autofill_driver(1).SetParent(&autofill_driver(0));
   ActivateAutofillDriver(autofill_driver(1));
 

@@ -228,7 +228,7 @@ class AutofillAiManagerTest
                               features::kAutofillAiWalletPrivatePasses},
         /*disabled_features=*/{});
     InitAutofillClient();
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
     autofill_client().set_sync_service(&sync_service_);
     autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPayments, true);

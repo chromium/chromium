@@ -534,7 +534,7 @@ class AutofillExternalDelegateTest : public testing::Test,
             /*pcontext_manager=*/nullptr,
             /*strike_database=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }

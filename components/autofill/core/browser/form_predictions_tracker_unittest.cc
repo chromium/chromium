@@ -30,7 +30,7 @@ class FormPredictionsTrackerTest
     InitAutofillClient();
     autofill_client().set_is_tab_in_actor_mode(true);
     tracker_ = std::make_unique<FormPredictionsTracker>(&autofill_client());
-    CreateAutofillDriver();
+    CreateAndActivateAutofillDriver();
   }
 
   ~FormPredictionsTrackerTest() override { DestroyAutofillClient(); }
