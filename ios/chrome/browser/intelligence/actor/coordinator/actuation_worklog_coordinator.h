@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTUATION_WORKLOG_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTUATION_WORKLOG_COORDINATOR_H_
 
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ActuationInterventionViewController;
@@ -14,8 +15,12 @@
 
 // Coordinator managing the actuation worklog lifecycle. Displays the worklog
 // published by an `ActorTaskDataSource` and forwards the user actions
-// to an `ActorTaskActionHandler`.
-@interface ActuationWorklogCoordinator : ChromeCoordinator
+// to an `ActorTaskActionHandler`. As an `ActuationSuggestionsPresenter`, shows
+// the picker of the current suggestions, if any, for worklogs displayed
+// elsewhere (e.g. inline in Gemini responses). Accessories other than the one
+// of the current suggestions, e.g. those of past tasks, are ignored.
+@interface ActuationWorklogCoordinator
+    : ChromeCoordinator <ActuationSuggestionsPresenter>
 
 // The view controller displaying the actuation worklog.
 @property(nonatomic, readonly) ActuationWorklogViewController* viewController;

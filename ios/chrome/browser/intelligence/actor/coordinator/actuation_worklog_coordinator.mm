@@ -83,6 +83,13 @@
   _viewController.suggestionsPresenter = _suggestionsCoordinator;
 }
 
+#pragma mark - ActuationSuggestionsPresenter
+
+- (void)showSuggestionsPickerForAccessory:
+    (ActuationWorklogAccessoryItem*)accessoryItem {
+  [_suggestionsCoordinator showSuggestionsPickerForAccessory:accessoryItem];
+}
+
 #pragma mark - Public
 
 - (void)startObservingDataSource:(id<ActorTaskDataSource>)dataSource

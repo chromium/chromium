@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_entries_diff.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actuation_worklog_builders.h"
@@ -88,10 +89,13 @@ ActuationWorklogView* CreateWorklogView() {
 
 }  // namespace
 
-@interface GeminiInlineWorklogViewProvider () <ActorTaskDataSourceObserver>
+@interface GeminiInlineWorklogViewProvider () <ActorTaskDataSourceObserver,
+                                               ActuationWorklogViewDelegate>
 @end
 
 @implementation GeminiInlineWorklogViewProvider {
+  // Shows the picker of a tapped suggestion card.
+  __weak id<ActuationSuggestionsPresenter> _suggestionsPresenter;
   // State last applied to each provided view. Keys are weak because the SDK
   // owns the views.
   NSMapTable<ActuationWorklogView*, ActuationWorklogState*>* _appliedStates;
@@ -105,9 +109,11 @@ ActuationWorklogView* CreateWorklogView() {
   NSHashTable<ActuationWorklogView*>* _liveViews;
 }
 
-- (instancetype)init {
+- (instancetype)initWithSuggestionsPresenter:
+    (id<ActuationSuggestionsPresenter>)suggestionsPresenter {
   self = [super init];
   if (self) {
+    _suggestionsPresenter = suggestionsPresenter;
     _appliedStates = [NSMapTable weakToStrongObjectsMapTable];
     _liveViews = [NSHashTable weakObjectsHashTable];
   }
@@ -160,6 +166,8 @@ ActuationWorklogView* CreateWorklogView() {
   if (!worklogView) {
     worklogView = CreateWorklogView();
   }
+  // A reused view may come from a previous provider.
+  worklogView.delegate = self;
   switch ([self contentOfView:worklogView inContext:context]) {
     case InlineWorklogContent::kLive:
       // Live content is richer than the block's, so the view is left as is.
@@ -210,6 +218,15 @@ ActuationWorklogView* CreateWorklogView() {
   }
   [runningTaskView setChip:state.entries.lastObject.chip];
   [_appliedStates setObject:state forKey:runningTaskView];
+}
+
+#pragma mark - ActuationWorklogViewDelegate
+
+- (void)worklogView:(ActuationWorklogView*)worklogView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
+  // The presenter ignores cards that aren't the running task's current one,
+  // e.g. those of past tasks.
+  [_suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
 }
 
 #pragma mark - Private

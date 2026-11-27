@@ -273,7 +273,8 @@
         _actuationWorklogCoordinator.interventionViewController;
     // The SDK decides whether Chrome renders a block when the block is first
     // shown, so the provider must be in place before the first response.
-    _inlineWorklogViewProvider = [[GeminiInlineWorklogViewProvider alloc] init];
+    _inlineWorklogViewProvider = [[GeminiInlineWorklogViewProvider alloc]
+        initWithSuggestionsPresenter:_actuationWorklogCoordinator];
     [_mediator.gatewayManager.customUIHandler
         addViewProvider:_inlineWorklogViewProvider];
     _confirmationCardViewProvider =

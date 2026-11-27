@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -91,6 +92,22 @@
 
 - (void)removeObserver:(id<ActorTaskDataSourceObserver>)observer {
   [_observers removeObject:observer];
+}
+
+@end
+
+// Presenter recording the accessory it was asked to show the picker for.
+@interface InlineWorklogFakeSuggestionsPresenter
+    : NSObject <ActuationSuggestionsPresenter>
+@property(nonatomic, strong, readonly)
+    ActuationWorklogAccessoryItem* presentedAccessoryItem;
+@end
+
+@implementation InlineWorklogFakeSuggestionsPresenter
+
+- (void)showSuggestionsPickerForAccessory:
+    (ActuationWorklogAccessoryItem*)accessoryItem {
+  _presentedAccessoryItem = accessoryItem;
 }
 
 @end
@@ -183,8 +200,11 @@ class GeminiInlineWorklogViewProviderTest : public PlatformTest {
                     reusingView:view];
   }
 
+  InlineWorklogFakeSuggestionsPresenter* suggestions_presenter_ =
+      [[InlineWorklogFakeSuggestionsPresenter alloc] init];
   GeminiInlineWorklogViewProvider* provider_ =
-      [[GeminiInlineWorklogViewProvider alloc] init];
+      [[GeminiInlineWorklogViewProvider alloc]
+          initWithSuggestionsPresenter:suggestions_presenter_];
   InlineWorklogFakeDataSource* data_source_ =
       [[InlineWorklogFakeDataSource alloc] init];
 };
@@ -423,6 +443,28 @@ TEST_F(GeminiInlineWorklogViewProviderTest, IgnoresNilState) {
   [data_source_ publishState:RunningState(@[ Entry(@"Live step") ])];
 
   EXPECT_NSEQ(@[ @"Live step" ], DisplayedTitles(view));
+}
+
+// Tests that tapping a suggestion card in a vended view, including a reused
+// one, asks the presenter to show its picker.
+TEST_F(GeminiInlineWorklogViewProviderTest, ForwardsAccessoryTapToPresenter) {
+  ActuationWorklogAccessoryItem* accessory_item =
+      [[ActuationWorklogAccessoryItem alloc] initWithIcon:nil
+                                                    title:@"user@example.com"
+                                                 subtitle:nil
+                                               detailText:nil
+                                               hasChevron:NO];
+  ActuationWorklogView* reused_view =
+      [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
+  ActuationWorklogView* worklog_view =
+      base::apple::ObjCCastStrict<ActuationWorklogView>(
+          ViewForBlock(BlockWithTitles(@[]), reused_view));
+  ASSERT_EQ(reused_view, worklog_view);
+
+  [worklog_view.delegate worklogView:worklog_view
+                 didTapAccessoryItem:accessory_item];
+
+  EXPECT_EQ(accessory_item, suggestions_presenter_.presentedAccessoryItem);
 }
 
 }  // namespace

@@ -10,12 +10,20 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_custom_ui_view_provider.h"
 
 @protocol ActorTaskDataSource;
+@protocol ActuationSuggestionsPresenter;
 
 // Renders the worklog of agent tasks inside Gemini responses. The running
 // task's worklog follows its data source, and past tasks are built from their
 // blocks. Vended views may outlive the provider.
 @interface GeminiInlineWorklogViewProvider
     : NSObject <GeminiCustomUIViewProvider>
+
+// Initializes with `suggestionsPresenter`, which is asked to show the picker
+// when a suggestion card is tapped in a vended view.
+- (instancetype)initWithSuggestionsPresenter:
+    (id<ActuationSuggestionsPresenter>)suggestionsPresenter
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Binds the running task's view to `dataSource`, replacing any previous
 // binding.
