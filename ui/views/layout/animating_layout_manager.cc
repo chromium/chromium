@@ -376,6 +376,7 @@ void AnimatingLayoutManager::FadeOut(View* child_view) {
   CHECK(child_view, base::NotFatalUntil::M163);
   CHECK(child_view->parent(), base::NotFatalUntil::M163);
   CHECK_EQ(host_view(), child_view->parent(), base::NotFatalUntil::M163);
+  CHECK(!avoid_reentrancy(), base::NotFatalUntil::M163);
 
   // If the view in question is already incapable of being visible, either:
   // 1. the view wasn't capable of being visible in the first place
@@ -417,6 +418,7 @@ void AnimatingLayoutManager::FadeIn(View* child_view) {
   CHECK(child_view, base::NotFatalUntil::M163);
   CHECK(child_view->parent(), base::NotFatalUntil::M163);
   CHECK_EQ(host_view(), child_view->parent(), base::NotFatalUntil::M163);
+  CHECK(!avoid_reentrancy(), base::NotFatalUntil::M163);
 
   // If the view in question is already capable of being visible, either:
   // 1. the view is already visible so this is a no-op

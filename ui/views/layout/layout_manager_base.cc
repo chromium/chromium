@@ -113,7 +113,7 @@ void LayoutManagerBase::Layout(View* host) {
   // positioned, which can result in loops or loss of layout data during layout
   // application. Therefore we protect the layout manager from spurious
   // invalidations during the layout process.
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  base::AutoReset<bool> setter(&avoid_reentrancy_, true);
   LayoutImpl();
 }
 
@@ -128,7 +128,7 @@ void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
 
   const bool include = IncludeInLayout(observed_view);
   if (include != child_infos_[observed_view].included_in_layout) {
-    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    base::AutoReset<bool> setter(&avoid_reentrancy_, true);
     PropagateChildViewIncludedInLayout(observed_view, include);
     InvalidateHost(false);
   }
@@ -249,7 +249,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
 
 void LayoutManagerBase::InvalidateHost(bool mark_layouts_changed) {
   if (mark_layouts_changed) {
-    CHECK(!suppress_invalidate_, base::NotFatalUntil::M163);
+    CHECK(!avoid_reentrancy_, base::NotFatalUntil::M163);
     if (host_view()) {
       // This has the side-effect of also invalidating all of the layouts
       // associated with the host view, from the view's layout through its
@@ -263,7 +263,7 @@ void LayoutManagerBase::InvalidateHost(bool mark_layouts_changed) {
     // Suppress invalidation at the root layout, so host view layout does not
     // propagate down the layout manager tree.
     LayoutManagerBase* const root_layout = GetRootLayoutManager();
-    base::AutoReset<bool> setter(&root_layout->suppress_invalidate_, true);
+    base::AutoReset<bool> setter(&root_layout->avoid_reentrancy_, true);
     host_view()->InvalidateLayout();
   }
 }
@@ -301,8 +301,8 @@ void LayoutManagerBase::OnLayoutChanged() {
 }
 
 void LayoutManagerBase::InvalidateLayout() {
-  if (!suppress_invalidate_) {
-    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  if (!avoid_reentrancy_) {
+    base::AutoReset<bool> setter(&avoid_reentrancy_, true);
     PropagateInvalidateLayout();
   }
 }
@@ -317,7 +317,7 @@ void LayoutManagerBase::Installed(View* host_view) {
     view_observations_.AddObservation(child);
   }
 
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  base::AutoReset<bool> setter(&avoid_reentrancy_, true);
   PropagateInstalled(host_view);
 }
 
@@ -328,7 +328,7 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 
   view_observations_.AddObservation(view);
 
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  base::AutoReset<bool> setter(&avoid_reentrancy_, true);
   const bool invalidate = PropagateViewAdded(host, view);
   if (invalidate || view->GetVisible()) {
     InvalidateHost(false);
@@ -347,7 +347,7 @@ void LayoutManagerBase::ViewRemoved(View* host, View* view) {
 
   view_observations_.RemoveObservation(view);
 
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  base::AutoReset<bool> setter(&avoid_reentrancy_, true);
   const bool invalidate = PropagateViewRemoved(host, view);
   if (invalidate || removed_visible) {
     InvalidateHost(false);
@@ -365,7 +365,7 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
     return;
   }
 
-  base::AutoReset<bool> setter(&suppress_invalidate_, true);
+  base::AutoReset<bool> setter(&avoid_reentrancy_, true);
   const bool invalidate =
       PropagateViewVisibilitySet(host, view, new_visibility);
   if (invalidate || it->second.included_in_layout) {
@@ -393,7 +393,7 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
 
   // Inform `owned_layout` about `host_view_` and its children.
   if (host_view_) {
-    base::AutoReset<bool> setter(&suppress_invalidate_, true);
+    base::AutoReset<bool> setter(&avoid_reentrancy_, true);
     owned_layout->PropagateInstalled(host_view_);
     for (View* child_view : host_view_->children()) {
       const ChildInfo& child_info = child_infos_.find(child_view)->second;

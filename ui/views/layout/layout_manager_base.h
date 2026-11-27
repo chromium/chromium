@@ -195,6 +195,9 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
     return owned_layouts_[index].get();
   }
 
+  // During various operations, re-entrancy is suppressed.
+  bool avoid_reentrancy() const { return avoid_reentrancy_; }
+
  private:
   friend class ManualLayoutUtil;
   friend class LayoutManagerBaseAvailableSizeTest;
@@ -245,7 +248,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
 
   // Used to suspend invalidation while processing signals from the host view,
   // or while invalidating the host view without invalidating the layout.
-  bool suppress_invalidate_ = false;
+  bool avoid_reentrancy_ = false;
 
   // Used during layout to determine if available size has changed for children;
   // when it changes, children are always laid out regardless of visibility or
