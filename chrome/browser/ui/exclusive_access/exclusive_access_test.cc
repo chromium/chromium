@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -37,8 +38,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -247,6 +251,18 @@ void ExclusiveAccessTest::WaitAndVerifyFullscreenState(bool browser_fullscreen,
       browser(), {.browser_fullscreen = browser_fullscreen,
                   .tab_fullscreen = tab_fullscreen});
   waiter.Wait();
+
+  // On Wayland the fullscreen state is reported before the window is resized.
+  // Wait for the resize, since resizing the window closes open menus.
+  ui::BaseWindow* const window = browser()->GetWindow();
+  if (window->IsFullscreen()) {
+    ASSERT_TRUE(base::test::RunUntil([window] {
+      return window->GetBounds() ==
+             display::Screen::Get()
+                 ->GetDisplayNearestWindow(window->GetNativeWindow())
+                 .bounds();
+    }));
+  }
 }
 
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
