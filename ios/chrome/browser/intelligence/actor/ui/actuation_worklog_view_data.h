@@ -139,7 +139,8 @@ typedef NS_ENUM(NSInteger, ActuationWorklogDisplayMode) {
   ActuationWorklogDisplayModeMinimized,
   // The header and the current step are visible.
   ActuationWorklogDisplayModeCompact,
-  // The header and the full timeline are visible.
+  // Only the header is visible, as the full worklog is shown inline in Gemini
+  // responses.
   ActuationWorklogDisplayModeExpanded,
 };
 

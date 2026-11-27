@@ -28,8 +28,11 @@
 }
 
 - (CGFloat)fittingHeight {
+  return [self fittingHeightForWidth:self.view.bounds.size.width];
+}
+
+- (CGFloat)fittingHeightForWidth:(CGFloat)width {
   [self loadViewIfNeeded];
-  CGFloat width = self.view.bounds.size.width;
   if (width <= 0) {
     return [_interventionView
                systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]

@@ -32,6 +32,35 @@
 
 namespace {
 
+// Fitting heights of `FakeWrappingInterventionViewController`, which wraps
+// below `kInterventionWrappingWidth`.
+constexpr CGFloat kInterventionWrappingWidth = 250.0;
+constexpr CGFloat kWideInterventionHeight = 60.0;
+constexpr CGFloat kNarrowInterventionHeight = 120.0;
+
+}  // namespace
+
+// Intervention whose fitting height depends on its width, like a wrapping card,
+// without depending on font metrics.
+@interface FakeWrappingInterventionViewController
+    : ActuationInterventionViewController
+// Width of the last measurement.
+@property(nonatomic, readonly) CGFloat lastMeasuredWidth;
+// Number of measurements.
+@property(nonatomic, readonly) NSUInteger measurementCount;
+@end
+
+@implementation FakeWrappingInterventionViewController
+- (CGFloat)fittingHeightForWidth:(CGFloat)width {
+  _lastMeasuredWidth = width;
+  _measurementCount++;
+  return width < kInterventionWrappingWidth ? kNarrowInterventionHeight
+                                            : kWideInterventionHeight;
+}
+@end
+
+namespace {
+
 // Returns whether `view` or one of its ancestors is hidden.
 bool IsHiddenInHierarchy(UIView* view) {
   for (UIView* ancestor = view; ancestor; ancestor = ancestor.superview) {
@@ -209,9 +238,8 @@ TEST_F(GeminiContainerViewControllerTest, TestContentPadding) {
 }
 
 // Tests that during actuation, the worklog replaces the Gemini content, except
-// at the expanded mode where the Gemini content shows the worklog inline, even
-// if the worklog activates late (i.e. once its task registers). The
-// intervention is shown with the worklog, except while minimized.
+// at the expanded mode where the Gemini content is shown between the worklog
+// header and the intervention. The intervention is hidden while minimized.
 TEST_F(GeminiContainerViewControllerTest, TestActuationContentVisibility) {
   ActuationWorklogViewController* worklog_view_controller =
       [[ActuationWorklogViewController alloc] init];
@@ -232,8 +260,8 @@ TEST_F(GeminiContainerViewControllerTest, TestActuationContentVisibility) {
   [container setActuationActive:YES];
   [worklog_view_controller setActuationActive:YES];
   EXPECT_FALSE(IsHiddenInHierarchy(gemini_view));
-  EXPECT_TRUE(IsHiddenInHierarchy(worklog_view));
-  EXPECT_TRUE(IsHiddenInHierarchy(intervention_view));
+  EXPECT_FALSE(IsHiddenInHierarchy(worklog_view));
+  EXPECT_FALSE(IsHiddenInHierarchy(intervention_view));
 
   [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
   EXPECT_TRUE(IsHiddenInHierarchy(gemini_view));
@@ -324,6 +352,135 @@ TEST_F(GeminiContainerViewControllerTest, TestActuationHeight) {
 
   [intervention_view_controller setIntervention:nil];
   EXPECT_DOUBLE_EQ(mutator_.actuationHeight, worklog_height + insets_height);
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that at the expanded mode, the worklog and the intervention keep their
+// measured heights, even when the Gemini content prefers another height, and
+// that the Gemini content fills the space between them.
+TEST_F(GeminiContainerViewControllerTest, TestExpandedActuationLayout) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  ActuationInterventionViewController* intervention_view_controller =
+      [[ActuationInterventionViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
+  [scoped_key_window_.Get() addSubview:container.view];
+  container.view.frame = CGRectMake(0, 0, 300, 600);
+  [container setGeminiViewController:child_view_controller_];
+  UIView* gemini_view = child_view_controller_.view;
+  // Simulates the Gemini SDK view preferring a height of its own.
+  NSLayoutConstraint* preferred_height_constraint =
+      [gemini_view.heightAnchor constraintEqualToConstant:100];
+  preferred_height_constraint.priority = UILayoutPriorityDefaultHigh;
+  preferred_height_constraint.active = YES;
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:@"Continue"];
+  [intervention_view_controller
+      setIntervention:[ActuationInterventionData
+                          rowItemWithActions:@[ action ]]];
+
+  [container setActuationActive:YES];
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeExpanded];
+  [container.view layoutIfNeeded];
+
+  CGRect worklog_frame = worklog_view_controller.view.frame;
+  CGRect intervention_frame = intervention_view_controller.view.frame;
+  CGRect gemini_frame = [gemini_view convertRect:gemini_view.bounds
+                                          toView:container.view];
+  EXPECT_NEAR(CGRectGetHeight(worklog_frame),
+              [worklog_view_controller
+                  heightForDisplayMode:ActuationWorklogDisplayModeExpanded],
+              1.0);
+  EXPECT_NEAR(CGRectGetHeight(intervention_frame),
+              [intervention_view_controller fittingHeight], 1.0);
+  EXPECT_NEAR(CGRectGetMaxY(intervention_frame),
+              600 - intelligence::actor::kSpacingLarge, 1.0);
+  EXPECT_NEAR(CGRectGetMinY(gemini_frame), CGRectGetMaxY(worklog_frame), 1.0);
+  EXPECT_NEAR(CGRectGetMaxY(gemini_frame), CGRectGetMinY(intervention_frame),
+              1.0);
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that in a container shorter than the worklog and the intervention, the
+// intervention keeps its height right below the worklog, to be clipped rather
+// than squeezed.
+TEST_F(GeminiContainerViewControllerTest, TestShortContainerClipsIntervention) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  ActuationInterventionViewController* intervention_view_controller =
+      [[ActuationInterventionViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
+  [scoped_key_window_.Get() addSubview:container.view];
+  container.view.frame = CGRectMake(0, 0, 300, 600);
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:@"Continue"];
+  [intervention_view_controller
+      setIntervention:[ActuationInterventionData
+                          rowItemWithActions:@[ action ]]];
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  [container setActuationActive:YES];
+  [container.view layoutIfNeeded];
+  CGFloat intervention_height = [intervention_view_controller fittingHeight];
+  CGFloat fitting_container_height =
+      [worklog_view_controller
+          heightForDisplayMode:ActuationWorklogDisplayModeCompact] +
+      intervention_height + 2 * intelligence::actor::kSpacingLarge;
+
+  container.view.frame = CGRectMake(0, 0, 300, fitting_container_height - 20);
+  [container.view layoutIfNeeded];
+
+  CGRect intervention_frame = intervention_view_controller.view.frame;
+  EXPECT_NEAR(CGRectGetHeight(intervention_frame), intervention_height, 1.0);
+  EXPECT_NEAR(CGRectGetMinY(intervention_frame),
+              CGRectGetMaxY(worklog_view_controller.view.frame), 1.0);
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that a width change, e.g. between detents, re-measures the intervention
+// in the layout pass seeing the new width, and that a layout at an unchanged
+// width doesn't measure it again.
+TEST_F(GeminiContainerViewControllerTest,
+       TestWidthChangeRemeasuresIntervention) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  FakeWrappingInterventionViewController* intervention_view_controller =
+      [[FakeWrappingInterventionViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
+  [scoped_key_window_.Get() addSubview:container.view];
+  container.view.frame = CGRectMake(0, 0, 300, 600);
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  [container setActuationActive:YES];
+  [container.view layoutIfNeeded];
+  UIView* intervention_view = intervention_view_controller.view;
+  EXPECT_EQ(intervention_view_controller.lastMeasuredWidth, 300.0);
+  EXPECT_NEAR(CGRectGetHeight(intervention_view.frame), kWideInterventionHeight,
+              1.0);
+
+  container.view.frame = CGRectMake(0, 0, 200, 600);
+  [container.view layoutIfNeeded];
+  EXPECT_EQ(intervention_view_controller.lastMeasuredWidth, 200.0);
+  EXPECT_NEAR(CGRectGetHeight(intervention_view.frame),
+              kNarrowInterventionHeight, 1.0);
+
+  const NSUInteger measurement_count =
+      intervention_view_controller.measurementCount;
+  [container.view setNeedsLayout];
+  [container.view layoutIfNeeded];
+  EXPECT_EQ(intervention_view_controller.measurementCount, measurement_count);
 
   [container.view removeFromSuperview];
 }

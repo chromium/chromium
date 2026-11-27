@@ -38,6 +38,10 @@
 // zero if there is no intervention.
 - (CGFloat)fittingHeight;
 
+// Returns the height fitting the intervention at `width`, or zero if there is
+// no intervention. Lets the host size the view before laying it out.
+- (CGFloat)fittingHeightForWidth:(CGFloat)width;
+
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

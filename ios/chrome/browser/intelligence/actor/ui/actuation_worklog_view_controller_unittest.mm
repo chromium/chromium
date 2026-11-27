@@ -86,11 +86,13 @@ TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
                                      kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
 
-  // Expanded worklog.
+  // Expanded worklog only shows the header, as the full worklog is shown inline
+  // in Gemini responses.
   view_controller_.displayMode = ActuationWorklogDisplayModeExpanded;
   EXPECT_EQ(ActuationWorklogDisplayModeExpanded, view_controller_.displayMode);
   EXPECT_TRUE(compact_view.hidden);
-  EXPECT_FALSE(full_scroll_view.hidden);
+  EXPECT_TRUE(full_scroll_view.hidden);
+  EXPECT_FALSE(header_view.hidden);
 
   // Compact worklog.
   view_controller_.displayMode = ActuationWorklogDisplayModeCompact;
@@ -106,16 +108,14 @@ TEST_F(ActuationWorklogViewControllerTest, TestSetDisplayMode) {
   EXPECT_FALSE(header_view.hidden);
 }
 
-// Tests that toggling actuation active updates container visibility.
+// Tests that toggling actuation active leaves the view's visibility to the
+// host.
 TEST_F(ActuationWorklogViewControllerTest, SetActuationActive) {
-  // Inactive by default.
-  EXPECT_TRUE(view_controller_.view.hidden);
-
   [consumer() setActuationActive:YES];
   EXPECT_FALSE(view_controller_.view.hidden);
 
   [consumer() setActuationActive:NO];
-  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_FALSE(view_controller_.view.hidden);
 }
 
 // Tests that reset clears title and worklog content.

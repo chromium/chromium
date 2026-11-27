@@ -107,6 +107,9 @@ using intelligence::actor::kSpacingSmall;
 - (void)setupConstraints {
   _collapsedHeightConstraint =
       [self.heightAnchor constraintEqualToConstant:0.0];
+  // Below required, so that it never conflicts with a height set by the host,
+  // which is only updated after the intervention changes.
+  _collapsedHeightConstraint.priority = UILayoutPriorityRequired - 1;
 
   UILayoutGuide* marginsGuide = self.layoutMarginsGuide;
   // Lowered priority to prevent conflicts when the view collapses.

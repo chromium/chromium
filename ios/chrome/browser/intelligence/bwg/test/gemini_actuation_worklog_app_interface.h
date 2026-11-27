@@ -22,22 +22,15 @@
 // Stops observing the current task in the shared `ActuationWorklogCoordinator`.
 + (void)stopObservingWorklogTask;
 
-// Switches the shared `ActuationWorklogCoordinator`'s view controller to
-// `ActuationWorklogDisplayModeExpanded`.
-+ (void)setWorklogDisplayModeExpanded;
-
 // Returns `YES` if there is an active task in `ActorService`.
 + (BOOL)hasActiveTask;
 
 // Starts an Actor task with credential suggestions for `usernames` and displays
 // them in the actuation worklog coordinator. Invokes `completionHandler` with
-// the chosen username (or `nil` if the user chooses "Enter password manually"),
-// and then executes the serialized `Action` in `nextActionProto` if the user
-// confirmed with "Allow" and `nextActionProto` is non-nil.
+// the chosen username (or `nil` if the user chooses "Enter password manually").
 + (void)startWorklogTaskWithCredentialSuggestions:(NSArray<NSString*>*)usernames
                                 completionHandler:(void (^)(NSString* username))
-                                                      completionHandler
-                                       nextAction:(NSData*)nextActionProto;
+                                                      completionHandler;
 
 // Enqueues a stop of the active task in `ActorService`. The task stops on a
 // later turn of the main run loop.

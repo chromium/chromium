@@ -23,7 +23,7 @@
 
 // Sets how the actuation worklog is presented. At
 // `ActuationWorklogDisplayModeExpanded`, the Gemini content, which shows the
-// worklog inline, replaces the worklog.
+// worklog inline, is shown between the worklog header and the intervention.
 - (void)setWorklogDisplayMode:(ActuationWorklogDisplayMode)displayMode;
 
 // Notifies consumer whether actuation is currently active.

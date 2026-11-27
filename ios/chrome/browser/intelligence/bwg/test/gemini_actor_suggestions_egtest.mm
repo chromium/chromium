@@ -6,7 +6,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/bwg/test/gemini_actuation_worklog_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -109,8 +108,7 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
                               completionHandler:^(NSString* username) {
                                 selectedUsername = username;
                                 interventionCompleted = YES;
-                              }
-                                     nextAction:nil];
+                              }];
 
   // Tap the worklog accessory view to open the suggestions picker.
   [[EarlGrey selectElementWithMatcher:WorklogAccessoryViewWithUsername(kUser1)]
@@ -155,8 +153,7 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
                               completionHandler:^(NSString* username) {
                                 selectedUsername = username;
                                 interventionCompleted = YES;
-                              }
-                                     nextAction:nil];
+                              }];
 
   // Verify initial selection in the worklog is user1, tap the accessory view
   // to open the suggestions picker, and select user2.
@@ -206,8 +203,7 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
                               completionHandler:^(NSString* username) {
                                 selectedUsername = username;
                                 interventionCompleted = YES;
-                              }
-                                     nextAction:nil];
+                              }];
 
   // Tap the manual entry button and verify intervention buttons are dismissed.
   [[EarlGrey selectElementWithMatcher:EnterPasswordManuallyButton()]
@@ -238,8 +234,7 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
                               completionHandler:^(NSString* username) {
                                 selectedUsername = username;
                                 interventionCompleted = YES;
-                              }
-                                     nextAction:nil];
+                              }];
 
   // Select user2, then reopen the bottom sheet so it remains presented when the
   // task stops.
@@ -287,8 +282,7 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
                               completionHandler:^(NSString* username) {
                                 selectedUsername = username;
                                 interventionCompleted = YES;
-                              }
-                                     nextAction:nil];
+                              }];
 
   [[EarlGrey selectElementWithMatcher:WorklogAccessoryViewWithUsername(kUser1)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -302,58 +296,6 @@ id<GREYMatcher> EnterPasswordManuallyButton() {
   GREYAssertTrue(completed, @"New task intervention timed out.");
   GREYAssertEqualObjects(selectedUsername, kUser1,
                          @"Expected new task to select user1.");
-}
-
-// Tests that in expanded mode, a resolved suggestion accessory is no longer
-// tappable after the intervention completes and the task moves on to the next
-// step.
-- (void)testResolvedSuggestionAccessoryNotTappableInExpandedMode {
-  [GeminiActuationWorklogAppInterface setWorklogDisplayModeExpanded];
-
-  // Make sure a new action appears in the worklog after the user has allowed
-  // credential selection.
-  optimization_guide::proto::Action waitAction;
-  waitAction.mutable_wait()->set_wait_time_ms(0);
-  std::string serializedAction = waitAction.SerializeAsString();
-  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
-                                      length:serializedAction.length()];
-
-  __block NSString* selectedUsername = nil;
-  __block BOOL interventionCompleted = NO;
-  [GeminiActuationWorklogAppInterface
-      startWorklogTaskWithCredentialSuggestions:@[ kUser1, kUser2 ]
-                              completionHandler:^(NSString* username) {
-                                selectedUsername = username;
-                                interventionCompleted = YES;
-                              }
-                                     nextAction:actionData];
-
-  // Resolve the suggestion intervention by tapping "Allow".
-  [[EarlGrey selectElementWithMatcher:WorklogAccessoryViewWithUsername(kUser1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:AllowButton()] performAction:grey_tap()];
-
-  BOOL completed = [[GREYCondition
-      conditionWithName:@"Wait for intervention completion"
-                  block:^BOOL {
-                    return interventionCompleted;
-                  }] waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
-  GREYAssertTrue(completed, @"Intervention timed out.");
-  GREYAssertEqualObjects(selectedUsername, kUser1,
-                         @"Expected user1 to be selected.");
-
-  // Verify the next step is displayed and tapping the earlier resolved
-  // accessory in expanded mode does not open the bottom sheet. Note that there
-  // are two instances of "Next step" chips (one invisible) and we only want to
-  // select the visible one.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(@"Next step"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:WorklogAccessoryViewWithUsername(kUser1)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:SuggestionCell(kUser1)];
 }
 
 // TODO(crbug.com/567040651): Test task pausing.

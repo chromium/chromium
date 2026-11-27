@@ -195,6 +195,8 @@ UIView* CreateGroupedCapsule(NSArray<IntelligenceHeaderItem*>* items,
   capsule.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       0.0, kIntelligenceSpacingTiny, 0.0, kIntelligenceSpacingTiny);
   capsule.layoutMarginsRelativeArrangement = YES;
+  // Keeps the same margins under the status bar.
+  capsule.insetsLayoutMarginsFromSafeArea = NO;
   return capsule;
 }
 
@@ -420,6 +422,9 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
   [_contentStackView setCustomSpacing:kIntelligenceSpacingSmall
                             afterView:_textStackView];
   _contentStackView.layoutMarginsRelativeArrangement = YES;
+  // The margins only depend on the density, so that the header keeps the same
+  // height wherever it is laid out, e.g. under the status bar.
+  _contentStackView.insetsLayoutMarginsFromSafeArea = NO;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_contentStackView];
   [self updateContentMargins];

@@ -7,13 +7,11 @@
 #import <vector>
 
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "components/actor/core/task_source_info.h"
-#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
@@ -95,14 +93,6 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
   [[GeminiActuationWorklogAppInterface sharedWorklogHelper] stopObservingTask];
 }
 
-+ (void)setWorklogDisplayModeExpanded {
-  // Bypasses the container, which shows the Gemini content instead of the full
-  // worklog at the expanded mode, so that tests can tap the full worklog.
-  [GeminiActuationWorklogAppInterface sharedWorklogHelper]
-      .coordinator.viewController.displayMode =
-      ActuationWorklogDisplayModeExpanded;
-}
-
 + (BOOL)hasActiveTask {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   actor::ActorService* actorService =
@@ -132,8 +122,7 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
 
 + (void)startWorklogTaskWithCredentialSuggestions:(NSArray<NSString*>*)usernames
                                 completionHandler:(void (^)(NSString* username))
-                                                      completionHandler
-                                       nextAction:(NSData*)nextActionProto {
+                                                      completionHandler {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   actor::ActorService* actorService =
       actor::ActorServiceFactory::GetForProfile(profile);
@@ -176,8 +165,6 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
         addObject:[[ActorFormSuggestion alloc] initWithCredential:credential]];
   }
 
-  base::WeakPtr<actor::ActorService> weakActorService =
-      actorService->GetWeakPtr();
   [worklogHelper.interventionDelegate
                   actorTask:taskID
       selectFromSuggestions:suggestions
@@ -185,10 +172,7 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
                               actor::SuggestionSelection> result) {
                      [GeminiActuationWorklogAppInterface
                          handleSelectedSuggestion:result.value().suggestion
-                                          forTask:taskID
-                                     actorService:weakActorService.get()
-                                completionHandler:completionHandler
-                                       nextAction:nextActionProto];
+                                completionHandler:completionHandler];
                    }];
 }
 
@@ -206,15 +190,9 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
 }
 
 // Helper method that invokes `completion` with the username from
-// `selectedSuggestion` (or `nil` if no credential was selected). If a
-// credential was selected and both `nextActionProto` and `actorService` are
-// non-nil, executes the serialized `Action` in `nextActionProto` on
-// `actorService` for `taskID`.
+// `selectedSuggestion` (or `nil` if no credential was selected).
 + (void)handleSelectedSuggestion:(ActorFormSuggestion*)selectedSuggestion
-                         forTask:(actor::ActorTaskId)taskID
-                    actorService:(actor::ActorService*)actorService
-               completionHandler:(void (^)(NSString* username))completion
-                      nextAction:(NSData*)nextActionProto {
+               completionHandler:(void (^)(NSString* username))completion {
   NSString* username = nil;
   if (selectedSuggestion && selectedSuggestion.credential) {
     username =
@@ -222,14 +200,6 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
   }
   if (completion) {
     completion(username);
-  }
-  if (username && nextActionProto && actorService) {
-    optimization_guide::proto::Action action;
-    CHECK(action.ParseFromArray([nextActionProto bytes],
-                                [nextActionProto length]));
-    actorService->PerformActions(taskID, {action}, "Next step",
-                                 /*added_writable_mainframe_origins=*/{},
-                                 base::DoNothing());
   }
 }
 

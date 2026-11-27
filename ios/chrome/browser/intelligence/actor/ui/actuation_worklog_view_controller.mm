@@ -54,8 +54,9 @@ using intelligence::actor::kSpacingLarge;
   // Timeline view embedded inside a scrollview to support vertical growth as
   // steps are added.
   ActuationWorklogView* _fullView;
-  // Scrollable container for the `_fullView`. Visible in
-  // `ActuationWorklogDisplayModeExpanded`.
+  // Scrollable container for the `_fullView`. Always hidden, since the full
+  // worklog is shown inline in Gemini responses.
+  // TODO(crbug.com/585107999): Remove `_scrollView` and `_fullView`.
   UIScrollView* _scrollView;
   // Height of `_compactView`. Adjusted dynamically when its content changes.
   NSLayoutConstraint* _compactHeightConstraint;
@@ -91,16 +92,10 @@ using intelligence::actor::kSpacingLarge;
   CGFloat headerHeight = [self headerHeightForDisplayMode:mode];
   switch (mode) {
     case ActuationWorklogDisplayModeMinimized:
+    case ActuationWorklogDisplayModeExpanded:
       return headerHeight;
     case ActuationWorklogDisplayModeCompact:
       return headerHeight + _compactHeightConstraint.constant;
-    case ActuationWorklogDisplayModeExpanded:
-      // Height needed to show the full timeline without scrolling, including
-      // the bottom inset applied to `_fullView` in its scroll view.
-      return headerHeight +
-             [self fittingHeightForView:_fullView
-                            targetWidth:self.view.bounds.size.width] +
-             kSpacingLarge;
   }
 }
 
@@ -124,7 +119,6 @@ using intelligence::actor::kSpacingLarge;
   _actuationActive = active;
   _fullView.actuating = active;
   [self updateHeader];
-  [self updateVisibility];
 }
 
 - (void)setHeaderContentVariants:(ActuationHeaderContentVariants*)variants {
@@ -211,6 +205,7 @@ using intelligence::actor::kSpacingLarge;
   _scrollView.showsVerticalScrollIndicator = NO;
   _scrollView.showsHorizontalScrollIndicator = NO;
   _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrollView.hidden = YES;
   [self.view addSubview:_scrollView];
 
   _fullView = [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
@@ -249,6 +244,9 @@ using intelligence::actor::kSpacingLarge;
   }
   [_headerView applyConfiguration:
                    [self headerConfigurationForDisplayMode:self.displayMode]];
+  // The header's height depends on its content.
+  // TODO(crbug.com/583897274): Remove once the host owns the header.
+  [self notifyHeightDidChange];
 }
 
 // Builds the header configuration for `mode`, showing the close button when no
@@ -271,14 +269,13 @@ using intelligence::actor::kSpacingLarge;
            secondaryItems:nil];
 }
 
-// Updates visibility of the view and its subviews for `_displayMode`.
+// Updates visibility of the subviews for `_displayMode`. The view's own
+// visibility is owned by the host.
 - (void)updateVisibility {
-  self.view.hidden = !_actuationActive;
   _compactView.hidden = _displayMode != ActuationWorklogDisplayModeCompact;
-  _scrollView.hidden = _displayMode != ActuationWorklogDisplayModeExpanded;
 }
 
-// Notifies the delegate that the compact height may have changed.
+// Notifies the delegate that the fitting heights may have changed.
 - (void)notifyHeightDidChange {
   [self.delegate worklogViewControllerDidChangeHeight:self];
 }

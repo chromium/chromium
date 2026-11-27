@@ -18,14 +18,15 @@
 // Delegate protocol for ActuationWorklogViewController events.
 @protocol ActuationWorklogViewControllerDelegate <NSObject>
 
-// Called when the fitting height of `viewController` in
-// `ActuationWorklogDisplayModeCompact` may have changed.
+// Called when the fitting heights of `viewController` may have changed.
 - (void)worklogViewControllerDidChangeHeight:
     (ActuationWorklogViewController*)viewController;
 
 @end
 
-// View controller displaying the actuation worklog in the Helios sheet.
+// View controller displaying the actuation worklog in the Helios sheet. Its
+// content is laid out from the top of its view, whose height (see
+// `-heightForDisplayMode:`) and visibility are set by the host.
 @interface ActuationWorklogViewController
     : UIViewController <ActuationWorklogConsumer,
                         ActuationWorklogItemViewDelegate>
