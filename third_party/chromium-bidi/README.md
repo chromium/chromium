@@ -486,6 +486,10 @@ There are 2 main components:
 1. ChromeDriver (C++ server), which hosts the WebDriver BiDi WebSocket and HTTP endpoints and manages browser instances.
 2. Front-end BiDi Mapper in `src/bidiMapper` (bundled into `mapperTab.js`). It runs inside the browser, receives BiDi commands from ChromeDriver, and translates them to CDP commands.
 
+### Embedding Mapper
+
+Mapper can also be embedded directly in JavaScript/TypeScript hosts (such as Puppeteer or Playwright) via `BidiMapper.BidiServer`. See [docs/embedding.md](docs/embedding.md) for the required transports and setup details.
+
 ## Contributing
 
 The `chromium-bidi` source code lives in the Chromium repository under `third_party/chromium-bidi`.
