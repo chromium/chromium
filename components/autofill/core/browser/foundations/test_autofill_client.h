@@ -26,7 +26,6 @@
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -41,7 +40,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
-#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
@@ -230,19 +228,6 @@ class TestAutofillClientTemplate : public T {
 
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
-  }
-
-  AtMemoryQueryService* GetAtMemoryQueryService() override {
-    return at_memory_query_service_.get();
-  }
-
-  AtMemoryManager* GetAtMemoryManager() override {
-    if (!at_memory_manager_ &&
-        base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-      at_memory_manager_ =
-          std::make_unique<AtMemoryManager>(this, /*history_service=*/nullptr);
-    }
-    return at_memory_manager_.get();
   }
 
   personal_context::PersonalContextEligibilityState
@@ -453,9 +438,6 @@ class TestAutofillClientTemplate : public T {
   void set_is_tab_in_actor_mode(bool is_in_actor_mode) {
     is_tab_in_actor_mode_ = is_in_actor_mode;
   }
-
-  bool IsGlicEnabled() const override { return is_glic_enabled_; }
-  void set_is_glic_enabled(bool enabled) { is_glic_enabled_ = enabled; }
 
   bool IsAutofillEnabled() const override {
     if (IsAutofillProfileEnabled() ||
@@ -776,11 +758,6 @@ class TestAutofillClientTemplate : public T {
     test_shared_loader_factory_ = url_loader_factory;
   }
 
-  void set_at_memory_query_service(
-      std::unique_ptr<AtMemoryQueryService> at_memory_query_service) {
-    at_memory_query_service_ = std::move(at_memory_query_service);
-  }
-
   void set_identity_credential_delegate(
       std::unique_ptr<IdentityCredentialDelegate>
           identity_credential_delegate) {
@@ -902,7 +879,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
-  std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
   personal_context::PersonalContextEligibilityState
       personal_context_eligibility_state_ =
           personal_context::PersonalContextEligibilityState::kEligible;
@@ -948,9 +924,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<payments::TestPaymentsAutofillClient>(this);
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  // Must be destroyed before `prefs_` because `AtMemoryPersistedStateManager`
-  // observes and references `prefs_`.
-  std::unique_ptr<AtMemoryManager> at_memory_manager_;
   std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_;
 
   GeoIpCountryCode variation_config_country_code_;
@@ -972,8 +945,6 @@ class TestAutofillClientTemplate : public T {
 
   personal_context::TestPersonalContextFirstRunService
       personal_context_first_run_service_;
-
-  bool is_glic_enabled_ = false;
 
   SuggestionHidingReason popup_hidden_reason_ =
       SuggestionHidingReason::kNoSuggestions;

@@ -74,9 +74,6 @@ specific_include_rules = {
   "cross_tab_copy_paste_tracker_unittest\\.cc": [
     "+components/ukm",
   ],
-  "at_memory_metrics_recorder_unittest\\.cc": [
-    "+components/ukm",
-  ],
   "autofill_manager_unittest\\.cc": [
     "+components/ukm",
   ],

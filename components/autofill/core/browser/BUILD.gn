@@ -529,13 +529,6 @@ static_library("browser") {
   sources = [
     "at_memory/at_memory_enablement_util.cc",
     "at_memory/at_memory_enablement_util.h",
-    "at_memory/at_memory_manager.cc",
-    "at_memory/at_memory_manager.h",
-    "at_memory/at_memory_metrics_recorder.cc",
-    "at_memory/at_memory_metrics_recorder.h",
-    "at_memory/at_memory_persisted_state_manager.cc",
-    "at_memory/at_memory_persisted_state_manager.h",
-    "at_memory/at_memory_search_state.h",
     "at_memory/autofill_data_provider.cc",
     "at_memory/autofill_data_provider.h",
     "autofill_ai_form_rationalization.cc",
@@ -1704,8 +1697,6 @@ if (is_android) {
 static_library("test_support") {
   testonly = true
   sources = [
-    "at_memory/at_memory_manager_test_api.h",
-    "at_memory/at_memory_metrics_recorder_test_api.h",
     "autofill_field_test_api.h",
     "crowdsourcing/autofill_crowdsourcing_manager_test_api.h",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.cc",
@@ -2075,9 +2066,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "at_memory/at_memory_enablement_util_unittest.cc",
-    "at_memory/at_memory_manager_unittest.cc",
-    "at_memory/at_memory_metrics_recorder_unittest.cc",
-    "at_memory/at_memory_persisted_state_manager_unittest.cc",
     "at_memory/autofill_data_provider_unittest.cc",
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
