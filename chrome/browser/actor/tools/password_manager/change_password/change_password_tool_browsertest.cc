@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +32,7 @@
 #include "components/actor/core/shared_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_change/mock_password_change_credentials_provider.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -53,7 +55,6 @@ using ::testing::Return;
 
 constexpr char kDefaultOldPassword[] = "provider_current_password";
 constexpr char kDefaultNewPassword[] = "provider_new_password";
-
 
 class ChangePasswordToolBrowserTest : public ActorToolsTest {
  public:
@@ -657,6 +658,70 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   EXPECT_EQ("", EvalJs(main_frame(),
                        "document.getElementById('new_password').value"));
   EXPECT_EQ("", EvalJs(main_frame(), "getStableEventLog()"));
+}
+
+constexpr char kCliOldPassword[] = "cli_mock_old_password";
+constexpr char kCliNewPassword[] = "cli_mock_new_password";
+
+class ChangePasswordToolBrowserTestWithMockPasswords
+    : public ChangePasswordToolBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChangePasswordToolBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        password_manager::kChangePasswordToolMockOldPassword, kCliOldPassword);
+    command_line->AppendSwitchASCII(
+        password_manager::kChangePasswordToolMockNewPassword, kCliNewPassword);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTestWithMockPasswords,
+                       Invoke_SucceedsWithoutActiveFlow) {
+  ASSERT_TRUE(NavigateAndCaptureApc());
+
+  std::optional<DomNode> current_password_node =
+      GetDomNodeOnPage(*main_frame(), "#current_password");
+  std::optional<DomNode> new_password_node =
+      GetDomNodeOnPage(*main_frame(), "#new_password");
+  std::optional<DomNode> confirm_password_node =
+      GetDomNodeOnPage(*main_frame(), "#confirm_password");
+  ASSERT_TRUE(current_password_node);
+  ASSERT_TRUE(new_password_node);
+  ASSERT_TRUE(confirm_password_node);
+
+  EXPECT_CALL(*mock_password_change_service(),
+              GetCredentialsProviderForActorSurface(_))
+      .Times(0);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<ChangePasswordToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          PageTarget(*current_password_node), PageTarget(*new_password_node),
+          PageTarget(*confirm_password_node),
+          /*confirm_button=*/std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(
+      result.Get()[0].tool_result.deprecated_action_result()->message,
+      absl::StrFormat(
+          "Filled old password into field with id %d and new generated "
+          "password into field with id %d and confirmation password into field "
+          "with id %d.",
+          current_password_node->node_id, new_password_node->node_id,
+          confirm_password_node->node_id));
+
+  EXPECT_EQ(kCliOldPassword,
+            EvalJs(main_frame(),
+                   "document.getElementById('current_password').value"));
+  EXPECT_EQ(
+      kCliNewPassword,
+      EvalJs(main_frame(), "document.getElementById('new_password').value"));
+  EXPECT_EQ(kCliNewPassword,
+            EvalJs(main_frame(),
+                   "document.getElementById('confirm_password').value"));
 }
 
 }  // namespace

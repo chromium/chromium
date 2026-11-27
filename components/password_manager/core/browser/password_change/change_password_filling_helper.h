@@ -44,7 +44,8 @@ class ChangePasswordFillingHelper {
   // `actor_surface_id` is the raw value of the target `ActorSurfaceHandle`.
   // `password_change_service` may be null (in which case filling fails with no
   // active password change flow); if non-null, it is retained and must outlive
-  // `this`.
+  // `this`. For evaluations and testing, the service can be overridden via
+  // command-line mock password switches.
   ChangePasswordFillingHelper(
       int32_t actor_surface_id,
       PasswordChangeServiceInterface* password_change_service);
@@ -93,6 +94,8 @@ class ChangePasswordFillingHelper {
   // credentials provided by the credentials provider, evaluates the returned
   // `FormData`, and asynchronously invokes `callback` with the resulting status
   // and message. Requires `ValidateDriverAndTargetFields()` to have succeeded.
+  // For evaluations and testing, the credentials provider can be overridden by
+  // command-line switches.
   void FillChangePasswordForm(
       base::OnceCallback<void(ChangePasswordActionResult)> callback);
 

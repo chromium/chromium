@@ -813,6 +813,7 @@ source_set("browser_tests") {
       "//components/keyed_service/core",
       "//components/page_content_annotations/content",
       "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:password_switches",
       "//components/translate/core/browser",
       "//components/translate/core/common",
     ]

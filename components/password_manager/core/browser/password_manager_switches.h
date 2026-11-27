@@ -26,6 +26,15 @@ inline constexpr char kUserDataDir[] = "user-data-dir";
 // eTLD+1.
 inline constexpr char kPasswordChangeUrl[] = "password-change-url";
 
+// Switches for testing and evaluations only. When set, both switches must be
+// non-empty; they supply the current (old) and new passwords filled by
+// `ChangePasswordFillingHelper`, overriding any active password change flow
+// without requiring one.
+inline constexpr char kChangePasswordToolMockOldPassword[] =
+    "change-password-tool-mock-old-password";
+inline constexpr char kChangePasswordToolMockNewPassword[] =
+    "change-password-tool-mock-new-password";
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SWITCHES_H_

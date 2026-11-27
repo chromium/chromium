@@ -294,6 +294,7 @@ source_set("change_password_filling_helper") {
   deps = [
     ":browser",
     ":password_string",
+    ":password_switches",
     "//components/password_manager/core/browser/actor_login:frame_util",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
@@ -627,6 +628,7 @@ source_set("unit_tests") {
 
   deps = [
     ":change_password_filling_helper",
+    ":password_switches",
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",

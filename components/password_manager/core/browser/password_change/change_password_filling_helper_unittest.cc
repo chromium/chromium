@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -30,6 +31,7 @@
 #include "components/password_manager/core/browser/password_change/mock_password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_change/mock_password_change_service.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
@@ -224,6 +226,8 @@ class ChangePasswordFillingHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  //  TODO(crbug.com/590809986): add an AutofillTestEnvironment  and call the
+  //  helper methods there to create frame tokens, form and field ids, etc.
   autofill::LocalFrameToken frame_token_{base::UnguessableToken::Create()};
   url::Origin main_frame_origin_ =
       url::Origin::Create(GURL("https://example.com"));
@@ -1020,6 +1024,159 @@ TEST_F(ChangePasswordFillingHelperTest,
   EXPECT_TRUE(result.requires_page_stabilization);
   EXPECT_EQ(result.message,
             "Filled new generated password into field with id 20.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_CommandLineMockPasswords_NullService_Succeeds) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchUTF8(
+      kChangePasswordToolMockOldPassword, "cli_old_pass_123");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchUTF8(
+      kChangePasswordToolMockNewPassword, "cli_new_pass_456");
+
+  AddFormManager({MakeFormField(10), MakeFormField(20), MakeFormField(30)});
+  ChangePasswordFillingHelper helper(kActorSurfaceId,
+                                     /*password_change_service=*/nullptr);
+  ASSERT_TRUE(helper
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(
+      helper.ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+          .IsOk());
+
+  autofill::FormData form_data;
+  form_data.set_fields(
+      {MakeFormField(10, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(20, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(30, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true)});
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(autofill::FieldRendererId(10),
+                                     autofill::FieldRendererId(20),
+                                     autofill::FieldRendererId(30),
+                                     PasswordString(u"cli_old_pass_123"),
+                                     PasswordString(u"cli_new_pass_456"), _))
+      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper.FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_TRUE(result.requires_page_stabilization);
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_CommandLineMockPasswords_OverridesProvider) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockOldPassword, "cli_old_password");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockNewPassword, "cli_new_password");
+
+  ASSERT_TRUE(PrepareHelperWithFields(/*has_current=*/true, /*has_new=*/true,
+                                      /*has_confirm=*/true));
+
+  EXPECT_CALL(password_change_service(), GetCredentialsProviderForActorSurface)
+      .Times(0);
+  EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
+  EXPECT_CALL(credentials_provider(), GetNewPassword(_)).Times(0);
+
+  autofill::FormData form_data;
+  form_data.set_fields(
+      {MakeFormField(10, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(20, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(30, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true)});
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(autofill::FieldRendererId(10),
+                                     autofill::FieldRendererId(20),
+                                     autofill::FieldRendererId(30),
+                                     PasswordString(u"cli_old_password"),
+                                     PasswordString(u"cli_new_password"), _))
+      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+}
+
+TEST_F(
+    ChangePasswordFillingHelperTest,
+    FillChangePasswordForm_CommandLineMockPasswords_NewPasswordOnly_OmitsOldPassword) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockOldPassword, "cli_old_password");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockNewPassword, "cli_new_password");
+
+  ASSERT_TRUE(PrepareHelperWithFields(/*has_current=*/false, /*has_new=*/true,
+                                      /*has_confirm=*/false));
+
+  autofill::FormData form_data;
+  form_data.set_fields(
+      {MakeFormField(20, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true)});
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(
+                  autofill::FieldRendererId(), autofill::FieldRendererId(20),
+                  autofill::FieldRendererId(), PasswordString(),
+                  PasswordString(u"cli_new_password"), _))
+      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_CommandLineEmptyMockPasswords_Ignored) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockOldPassword, "");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kChangePasswordToolMockNewPassword, "");
+
+  ASSERT_TRUE(PrepareHelperWithFields(/*has_current=*/true, /*has_new=*/true,
+                                      /*has_confirm=*/false));
+
+  EXPECT_CALL(password_change_service(),
+              GetCredentialsProviderForActorSurface(kActorSurfaceId))
+      .WillOnce(Return(&credentials_provider()));
+  EXPECT_CALL(credentials_provider(), GetOldPassword())
+      .WillOnce(Return(PasswordString(kDefaultOldPassword)));
+  EXPECT_CALL(credentials_provider(), GetNewPassword(form_managers()[0].get()))
+      .WillOnce(Return(PasswordString(kDefaultNewPassword)));
+
+  autofill::FormData form_data;
+  form_data.set_fields(
+      {MakeFormField(10, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(20, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true)});
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(autofill::FieldRendererId(10),
+                                     autofill::FieldRendererId(20),
+                                     autofill::FieldRendererId(),
+                                     PasswordString(kDefaultOldPassword),
+                                     PasswordString(kDefaultNewPassword), _))
+      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
 }
 
 }  // namespace

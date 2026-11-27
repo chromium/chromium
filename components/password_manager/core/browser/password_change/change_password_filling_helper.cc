@@ -8,14 +8,17 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/form_data.h"
@@ -27,6 +30,7 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -173,6 +177,40 @@ ChangePasswordActionResult MapCredentialsProviderError(
           actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
           "Failed to generate a new password.");
   }
+}
+
+struct MockPasswords {
+  PasswordString old_password;
+  PasswordString new_password;
+};
+
+// Reads `kChangePasswordToolMockOldPassword` and
+// `kChangePasswordToolMockNewPassword` for testing and evaluations. Returns
+// `std::nullopt` if neither switch is set (or both are empty). Both switches
+// must be provided together.
+std::optional<MockPasswords> GetMockPasswordsFromCommandLine() {
+  auto read_switch =
+      [](std::string_view switch_name) -> std::optional<PasswordString> {
+    std::string value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(switch_name);
+    if (value.empty()) {
+      return std::nullopt;
+    }
+    return PasswordString(base::UTF8ToUTF16(value));
+  };
+
+  std::optional<PasswordString> old_password =
+      read_switch(kChangePasswordToolMockOldPassword);
+  std::optional<PasswordString> new_password =
+      read_switch(kChangePasswordToolMockNewPassword);
+  if (!old_password && !new_password) {
+    return std::nullopt;
+  }
+  CHECK(old_password && new_password)
+      << "Both --" << kChangePasswordToolMockOldPassword << " and --"
+      << kChangePasswordToolMockNewPassword << " must be non-empty.";
+  return MockPasswords{.old_password = *std::move(old_password),
+                       .new_password = *std::move(new_password)};
 }
 
 }  // namespace
@@ -342,44 +380,53 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
     return;
   }
 
-  PasswordChangeCredentialsProvider* credentials_provider =
-      password_change_service_
-          ? password_change_service_->GetCredentialsProviderForActorSurface(
-                actor_surface_id_)
-          : nullptr;
-
-  if (!credentials_provider) {
-    std::move(callback).Run(MapCredentialsProviderError(
-        PasswordChangeCredentialsProvider::Error::kNoPasswordChangeFlow));
-    return;
-  }
-
   PasswordString old_password;
-  if (current_password_field_id_) {
-    base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
-        old_password_result = credentials_provider->GetOldPassword();
-    if (!old_password_result.has_value()) {
-      std::move(callback).Run(
-          MapCredentialsProviderError(old_password_result.error()));
-      return;
-    }
-    old_password = *std::move(old_password_result);
-  }
-
   PasswordString new_password;
-  if (new_password_field_id_ || confirm_new_password_field_id_) {
-    PasswordFormManager* form_manager =
-        FindParsedPasswordFormManagerForNewPassword(
-            *driver_, new_password_field_id_, confirm_new_password_field_id_);
-    base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
-        new_password_result =
-            credentials_provider->GetNewPassword(form_manager);
-    if (!new_password_result.has_value()) {
-      std::move(callback).Run(
-          MapCredentialsProviderError(new_password_result.error()));
+  if (std::optional<MockPasswords> mock_passwords =
+          GetMockPasswordsFromCommandLine()) {
+    if (current_password_field_id_) {
+      old_password = std::move(mock_passwords->old_password);
+    }
+    if (new_password_field_id_ || confirm_new_password_field_id_) {
+      new_password = std::move(mock_passwords->new_password);
+    }
+  } else {
+    PasswordChangeCredentialsProvider* credentials_provider =
+        password_change_service_
+            ? password_change_service_->GetCredentialsProviderForActorSurface(
+                  actor_surface_id_)
+            : nullptr;
+    if (!credentials_provider) {
+      std::move(callback).Run(MapCredentialsProviderError(
+          PasswordChangeCredentialsProvider::Error::kNoPasswordChangeFlow));
       return;
     }
-    new_password = *std::move(new_password_result);
+
+    if (current_password_field_id_) {
+      base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
+          old_password_result = credentials_provider->GetOldPassword();
+      if (!old_password_result.has_value()) {
+        std::move(callback).Run(
+            MapCredentialsProviderError(old_password_result.error()));
+        return;
+      }
+      old_password = *std::move(old_password_result);
+    }
+
+    if (new_password_field_id_ || confirm_new_password_field_id_) {
+      PasswordFormManager* form_manager =
+          FindParsedPasswordFormManagerForNewPassword(
+              *driver_, new_password_field_id_, confirm_new_password_field_id_);
+      base::expected<PasswordString, PasswordChangeCredentialsProvider::Error>
+          new_password_result =
+              credentials_provider->GetNewPassword(form_manager);
+      if (!new_password_result.has_value()) {
+        std::move(callback).Run(
+            MapCredentialsProviderError(new_password_result.error()));
+        return;
+      }
+      new_password = *std::move(new_password_result);
+    }
   }
 
   // Unset (null) or missing `FieldRendererId`s are ignored by the renderer;
