@@ -63,6 +63,11 @@ constexpr char kPreferredAccountDictOtherDeviceEnabledDataTypesKey[] =
 constexpr char kExternalAppAccountDictGaiaIdKey[] = "gaia_id";
 constexpr char kExternalAppAccountDictTimestampKey[] = "timestamp";
 #endif
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/424385780): Share `BrowserSigninMode` from
+// //components/signin/public/base/ instead of duplicating the disabled value.
+constexpr int kBrowserSigninModeDisabled = 0;
+#endif
 
 constexpr base::TimeDelta kMinPeriodicRefreshInterval = base::Hours(12);
 
@@ -276,6 +281,7 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
                         *identity_manager,
                         *profile_metrics_service) {
   CHECK(signin_client_);
+  CHECK(local_state_);
   CHECK(network_delay_helper_);
   pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
@@ -283,6 +289,14 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
       base::BindRepeating(
           &AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged,
           base::Unretained(this)));
+#if BUILDFLAG(IS_IOS)
+  local_state_pref_change_registrar_.Init(local_state_);
+  local_state_pref_change_registrar_.Add(
+      prefs::kBrowserSigninPolicy,
+      base::BindRepeating(
+          &AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged,
+          base::Unretained(this)));
+#endif
 
   OnSigninAllowedPrefChanged();
 }
@@ -324,8 +338,7 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
-  if (!IsPreferredAccountSelectionEnabled() ||
-      !profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!IsPreferredAccountSelectionEnabled() || !IsSigninAllowed()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -366,7 +379,7 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
 void AccountPreviewDataServiceImpl::GetPreviewDataForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(std::optional<AccountPreviewData>)> callback) {
-  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!IsSigninAllowed()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -452,8 +465,7 @@ void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
     base::TimeDelta timeout) {
   if (!base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccountFRE) ||
-      !identity_manager_ ||
-      !profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+      !identity_manager_ || !IsSigninAllowed()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
@@ -522,7 +534,7 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
     return;
   }
 
-  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!IsSigninAllowed()) {
     ClearExternalAppAccount();
     return;
   }
@@ -732,6 +744,10 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
   CHECK_EQ(identity_manager_, identity_manager);
   identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
+  pref_change_registrar_.RemoveAll();
+#if BUILDFLAG(IS_IOS)
+  local_state_pref_change_registrar_.RemoveAll();
+#endif
   repeating_timer_.reset();
   ClearMemoryData();
 }
@@ -1162,8 +1178,21 @@ void AccountPreviewDataServiceImpl::ResetTimer() {
   CreateAndStartRepeatingTimer();
 }
 
+bool AccountPreviewDataServiceImpl::IsSigninAllowed() const {
+  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    return false;
+  }
+#if BUILDFLAG(IS_IOS)
+  if (local_state_->GetInteger(prefs::kBrowserSigninPolicy) ==
+      kBrowserSigninModeDisabled) {
+    return false;
+  }
+#endif
+  return true;
+}
+
 void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
-  if (profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+  if (IsSigninAllowed()) {
     if (!identity_manager_observation_.IsObserving()) {
       identity_manager_observation_.Observe(identity_manager_);
       CreateAndStartRepeatingTimer();

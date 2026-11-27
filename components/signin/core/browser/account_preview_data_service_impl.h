@@ -167,6 +167,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
   void OnAllAccountsFetchCanceled();
   void FinalizeAllAccountsFetch(bool fetch_completed);
+  bool IsSigninAllowed() const;
   void OnSigninAllowedPrefChanged();
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
@@ -263,6 +264,9 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   bool waiting_for_primary_account_token_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
+#if BUILDFLAG(IS_IOS)
+  PrefChangeRegistrar local_state_pref_change_registrar_;
+#endif
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
 

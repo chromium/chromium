@@ -61,6 +61,16 @@ namespace signin {
 using AccountPreviewPreference =
     AccountPreviewDataService::AccountPreviewPreference;
 
+#if BUILDFLAG(IS_IOS)
+namespace {
+// Values matching `BrowserSigninMode` in
+// //ios/chrome/browser/policy/model/policy_util.h.
+constexpr int kBrowserSigninModeDisabled = 0;
+constexpr int kBrowserSigninModeEnabled = 1;
+constexpr int kBrowserSigninModeForced = 2;
+}  // namespace
+#endif
+
 class AllDataAvailableWaiter {
  public:
   explicit AllDataAvailableWaiter(AccountPreviewDataServiceImpl* service)
@@ -135,6 +145,10 @@ class AccountPreviewDataServiceTest : public testing::Test {
     SigninPrefs::RegisterProfilePrefs(prefs_.registry());
     local_state_.registry()->RegisterStringPref(
         prefs::kGoogleServicesUsernamePattern, std::string());
+#if BUILDFLAG(IS_IOS)
+    local_state_.registry()->RegisterIntegerPref(prefs::kBrowserSigninPolicy,
+                                                 kBrowserSigninModeEnabled);
+#endif
     prefs_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
     prefs_.SetBoolean(prefs::kSigninAllowed, true);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
@@ -2737,6 +2751,18 @@ TEST_F(AccountPreviewDataServiceTest,
 
   // Stored results in prefs should remain intact.
   EXPECT_TRUE(service_->GetPreferredAccountForSignin().has_value());
+
+  // Pref changes after shutdown should be ignored and must not clear stored
+  // results or re-observe the shut-down `IdentityManager`.
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  prefs_.SetBoolean(prefs::kSigninAllowed, true);
+#if BUILDFLAG(IS_IOS)
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeEnabled);
+#endif
+  EXPECT_TRUE(service_->GetPreferredAccountForSignin().has_value());
 }
 
 // This test verifies that there isn't a pending callback for an account
@@ -4722,5 +4748,172 @@ TEST_F(AccountPreviewDataServiceTest, GetPreviewDataForAccountRateLimited) {
   EXPECT_EQ(data->counts[syncer::BOOKMARKS], 11u);
   EXPECT_EQ(data->counts[syncer::PASSWORDS], 22u);
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(AccountPreviewDataServiceTest,
+       BrowserSigninPolicyDisabledSuppressesFetchesAndClearsData) {
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.GetGaiaId()));
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account1.GetGaiaId()).has_value());
+  EXPECT_FALSE(service_->GetPreferredAccountForSignin().has_value());
+
+  // Toggling `kSigninAllowed` while `BrowserSignin` policy is still disabled
+  // must not re-enable fetches. Clear the last-update pref first so an
+  // accidental re-enable would fire the periodic timer immediately.
+  prefs_.ClearPref(prefs::kAccountPreviewDataLastUpdatePref);
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  prefs_.SetBoolean(prefs::kSigninAllowed, true);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.GetGaiaId()));
+
+  // Switching `BrowserSignin` policy to forced re-enables observation and
+  // fires the periodic timer immediately since the last-update pref was
+  // cleared above.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  AllDataAvailableWaiter waiter(service_.get());
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeForced);
+  waiter.Wait();
+
+  EXPECT_TRUE(
+      service_->GetAccountPreviewData(account1.GetGaiaId()).has_value());
+  EXPECT_THAT(service_->GetPreferredAccountForSignin(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account1.GetGaiaId())));
+
+  // Disabling `BrowserSignin` policy dynamically clears cached data and stored
+  // results, and stops observing future account updates.
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account1.GetGaiaId()).has_value());
+  EXPECT_FALSE(service_->GetPreferredAccountForSignin().has_value());
+
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.GetGaiaId()));
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account2.GetGaiaId()).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       BrowserSigninPolicyDisabledAtStartupAndReenabled) {
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  AccountInfo account = MakeRegularAccountAvailable("user@gmail.com");
+  prefs_.ClearPref(prefs::kAccountPreviewDataLastUpdatePref);
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.signin_client(), identity_test_env_.identity_manager(),
+      &sync_service_, &local_state_, &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+
+  // Re-enabling `BrowserSignin` policy starts the periodic timer and fetches
+  // preview data immediately since no update has occurred yet.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  AllDataAvailableWaiter waiter(service_.get());
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeEnabled);
+  waiter.Wait();
+
+  EXPECT_TRUE(service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+  EXPECT_THAT(service_->GetPreferredAccountForSignin(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninAsyncRunsWithNulloptIfPolicyDisabled) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFRE};
+  network_delay_helper_->SetNetworkCallsDelayed(true);
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 ConsentLevel::kSignin);
+  base::HistogramTester histograms;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>>
+      reentrant_future;
+  bool callback_ran = false;
+  service_->GetPreferredAccountForSigninAsync(
+      base::BindLambdaForTesting(
+          [&](std::optional<AccountPreviewPreference> pref) {
+            callback_ran = true;
+            EXPECT_EQ(std::nullopt, pref);
+            // Re-entrant call must not be stranded on a stale barrier and must
+            // run its callback asynchronously.
+            service_->GetPreferredAccountForSigninAsync(
+                reentrant_future.GetCallback(), kDefaultAsyncFetchTimeout);
+            EXPECT_FALSE(reentrant_future.IsReady());
+          }),
+      kDefaultAsyncFetchTimeout);
+  EXPECT_FALSE(callback_ran);
+
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+  EXPECT_FALSE(callback_ran);
+  EXPECT_EQ(std::nullopt, reentrant_future.Get());
+  EXPECT_TRUE(callback_ran);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kCancelled,
+      1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataAndPreferenceForAccountBrowserSigninPolicyDisabled) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  // Attach to ongoing fetch, then disable `BrowserSignin` policy. Both pending
+  // callbacks should be notified with nullopt.
+  base::test::TestFuture<std::optional<AccountPreviewData>>
+      inflight_data_future;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>>
+      inflight_pref_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     inflight_data_future.GetCallback());
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           inflight_pref_future.GetCallback());
+  EXPECT_FALSE(inflight_data_future.IsReady());
+  EXPECT_FALSE(inflight_pref_future.IsReady());
+
+  local_state_.SetInteger(prefs::kBrowserSigninPolicy,
+                          kBrowserSigninModeDisabled);
+  EXPECT_TRUE(inflight_data_future.IsReady());
+  EXPECT_EQ(inflight_data_future.Take(), std::nullopt);
+  EXPECT_TRUE(inflight_pref_future.IsReady());
+  EXPECT_EQ(inflight_pref_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  // Subsequent calls while `BrowserSignin` policy is disabled return nullopt
+  // synchronously without starting a fetch.
+  base::test::TestFuture<std::optional<AccountPreviewData>>
+      disallowed_data_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     disallowed_data_future.GetCallback());
+  EXPECT_TRUE(disallowed_data_future.IsReady());
+  EXPECT_EQ(disallowed_data_future.Take(), std::nullopt);
+
+  base::test::TestFuture<std::optional<AccountPreviewPreference>>
+      disallowed_pref_future;
+  service_->GetPreviewPreferenceForAccount(
+      account.GetGaiaId(), disallowed_pref_future.GetCallback());
+  EXPECT_TRUE(disallowed_pref_future.IsReady());
+  EXPECT_EQ(disallowed_pref_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+}
+#endif
 
 }  // namespace signin
