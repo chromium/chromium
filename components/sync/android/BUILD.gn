@@ -66,6 +66,7 @@ robolectric_library("junit") {
       [ "junit/src/org/chromium/components/sync/SyncServiceImplTest.java" ]
   deps = [
     ":sync_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",

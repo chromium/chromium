@@ -786,7 +786,14 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> SyncServiceImpl::GetJavaObject() {
   if (!sync_service_android_) {
-    sync_service_android_ = std::make_unique<SyncServiceAndroidBridge>(this);
+    // Not `identity_manager_`, which is null if local sync is enabled: the Java
+    // counterpart needs the accounts regardless of that.
+    // TODO(crbug.com/493130564): Move the Android account-settings prefs
+    // cleanup into native `SyncServiceImpl` once
+    // `kMakeIdentityManagerSourceOfAccountsPart2` launches and
+    // `RefreshTokensLoadingState` is moved to native (crbug.com/572579970).
+    sync_service_android_ = std::make_unique<SyncServiceAndroidBridge>(
+        this, sync_client_->GetIdentityManager());
   }
   return sync_service_android_->GetJavaObject();
 }

@@ -15,6 +15,10 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace syncer {
 
 class SyncService;
@@ -31,8 +35,10 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   static SyncService* FromJavaObject(
       const base::android::JavaRef<jobject>& j_sync_service);
 
-  // `native_sync_service` must be non-null and outlive this object.
-  explicit SyncServiceAndroidBridge(SyncService* native_sync_service);
+  // `native_sync_service` and `identity_manager` must be non-null and outlive
+  // this object.
+  SyncServiceAndroidBridge(SyncService* native_sync_service,
+                           signin::IdentityManager* identity_manager);
   ~SyncServiceAndroidBridge() override;
 
   SyncServiceAndroidBridge(const SyncServiceAndroidBridge&) = delete;

@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/local_data_description.h"
@@ -143,12 +144,17 @@ SyncService* SyncServiceAndroidBridge::FromJavaObject(
 }
 
 SyncServiceAndroidBridge::SyncServiceAndroidBridge(
-    SyncService* native_sync_service)
+    SyncService* native_sync_service,
+    signin::IdentityManager* identity_manager)
     : native_sync_service_(native_sync_service) {
   DCHECK(native_sync_service_);
+  // `SyncService` is only created for regular profiles, which always have an
+  // `IdentityManager`.
+  CHECK(identity_manager);
 
   java_ref_.Reset(Java_SyncServiceImpl_Constructor(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      identity_manager->GetJavaObject()));
 
   native_sync_service_->AddObserver(this);
 }

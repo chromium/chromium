@@ -20,8 +20,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.HashMap;
@@ -39,10 +44,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @JNINamespace("syncer")
 @NullMarked
-public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
+public class SyncServiceImpl implements SyncService {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid
     // a dangling pointer.
     private long mSyncServiceAndroidBridge;
+
+    private final IdentityManager mIdentityManager;
+    private final @Nullable IdentityManagerObserver mIdentityManagerObserver;
+    private final @Nullable AccountsChangeObserver mAccountsChangeObserver;
 
     // Sync state changes more often than listeners are added/removed, so using CopyOnWrite.
     private final List<SyncStateChangedListener> mListeners =
@@ -52,18 +61,29 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     @VisibleForTesting
     @CalledByNative
-    SyncServiceImpl(long ptr) {
+    SyncServiceImpl(long ptr, IdentityManager identityManager) {
         mThreadChecker.assertOnValidThread();
         assert ptr != 0;
         mSyncServiceAndroidBridge = ptr;
-        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        accountManagerFacade.addObserver(this);
-        var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
-        if (accountsPromise.isFulfilled()) {
-            // The promise is already fulfilled - call immediately. If the promise is not fulfilled,
-            // `keepSettingsOnlyForAccountManagerAccounts` will be invoked by
-            // `onAccountsChanged` when `AccountManagerFacade` cache gets populated.
-            keepSettingsOnlyForAccountManagerAccounts(accountsPromise.getResult());
+        mIdentityManager = identityManager;
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            mAccountsChangeObserver = null;
+            mIdentityManagerObserver = new IdentityManagerObserver();
+            mIdentityManager.addObserver(mIdentityManagerObserver);
+            mIdentityManagerObserver.maybeKeepSettingsOnlyForAccounts();
+        } else {
+            mIdentityManagerObserver = null;
+            mAccountsChangeObserver = this::onAccountsChanged;
+            AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+            accountManagerFacade.addObserver(mAccountsChangeObserver);
+            var accountsPromise = accountManagerFacade.getAccounts();
+            if (accountsPromise.isFulfilled()) {
+                // The promise is already fulfilled - call immediately. If the promise is not
+                // fulfilled, `keepSettingsOnlyForAccounts` will be invoked by `onAccountsChanged`
+                // when `AccountManagerFacade` cache gets populated.
+                keepSettingsOnlyForAccounts(accountsPromise.getResult());
+            }
         }
     }
 
@@ -71,7 +91,12 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @VisibleForTesting
     @CalledByNative
     void destroy() {
-        AccountManagerFacadeProvider.getInstance().removeObserver(this);
+        if (mIdentityManagerObserver != null) {
+            mIdentityManager.removeObserver(mIdentityManagerObserver);
+        }
+        if (mAccountsChangeObserver != null) {
+            AccountManagerFacadeProvider.getInstance().removeObserver(mAccountsChangeObserver);
+        }
         mSyncServiceAndroidBridge = 0;
     }
 
@@ -354,15 +379,40 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         SyncServiceImplJni.get().triggerRefresh(mSyncServiceAndroidBridge);
     }
 
-    @Override
-    /* AccountsChangeObserver implementation. */
-    public void onAccountsChanged() {
+    private void onAccountsChanged() {
         var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
         assert accountsPromise.isFulfilled();
-        keepSettingsOnlyForAccountManagerAccounts(accountsPromise.getResult());
+        keepSettingsOnlyForAccounts(accountsPromise.getResult());
     }
 
-    private void keepSettingsOnlyForAccountManagerAccounts(List<AccountInfo> accounts) {
+    /** Updates the accounts to keep the settings for, when the accounts on the device change. */
+    private class IdentityManagerObserver implements IdentityManager.Observer {
+        @Override
+        public void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {
+            maybeKeepSettingsOnlyForAccounts();
+        }
+
+        @Override
+        public void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
+            maybeKeepSettingsOnlyForAccounts();
+        }
+
+        @Override
+        public void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
+            maybeKeepSettingsOnlyForAccounts();
+        }
+
+        void maybeKeepSettingsOnlyForAccounts() {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    != RefreshTokensLoadingState.SUCCEEDED) {
+                return;
+            }
+            keepSettingsOnlyForAccounts(
+                    mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+        }
+    }
+
+    private void keepSettingsOnlyForAccounts(List<AccountInfo> accounts) {
         int size = accounts.size();
         String[] gaiaIds = new String[size];
         for (int i = 0; i < size; ++i) {
