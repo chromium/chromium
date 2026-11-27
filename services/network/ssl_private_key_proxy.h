@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/ssl/ssl_private_key.h"
@@ -25,7 +26,8 @@ namespace network {
 // request, sends it over Mojo, and uses the response to invoke the
 // net::SSLPrivateKey::SignCallback. It also handles disconnection of the Mojo
 // pipe, treating it as an error.
-class SSLPrivateKeyProxy : public net::SSLPrivateKey {
+class COMPONENT_EXPORT(NETWORK_SERVICE) SSLPrivateKeyProxy
+    : public net::SSLPrivateKey {
  public:
   SSLPrivateKeyProxy(const std::string& provider_name,
                      const std::vector<uint16_t>& algorithm_preferences,

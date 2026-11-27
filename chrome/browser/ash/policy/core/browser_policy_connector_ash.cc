@@ -457,6 +457,11 @@ bool BrowserPolicyConnectorAsh::IsDeviceEnterpriseManaged() const {
   return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
+ash::PolicyCertificateProvider*
+BrowserPolicyConnectorAsh::GetDevicePolicyCertificateProvider() {
+  return device_network_configuration_updater_.get();
+}
+
 bool BrowserPolicyConnectorAsh::HasMachineLevelPolicies() {
   NOTREACHED() << "This method is only defined for desktop Chrome";
 }

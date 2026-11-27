@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/net_errors.h"
 
 namespace network {
@@ -17,8 +18,10 @@ SSLPrivateKeyProxy::SSLPrivateKeyProxy(
     : provider_name_(provider_name),
       algorithm_preferences_(algorithm_preferences),
       ssl_private_key_(std::move(ssl_private_key)) {
-  ssl_private_key_.set_disconnect_handler(base::BindOnce(
-      &SSLPrivateKeyProxy::HandleSSLPrivateKeyError, base::Unretained(this)));
+  if (ssl_private_key_) {
+    ssl_private_key_.set_disconnect_handler(base::BindOnce(
+        &SSLPrivateKeyProxy::HandleSSLPrivateKeyError, base::Unretained(this)));
+  }
 }
 
 SSLPrivateKeyProxy::~SSLPrivateKeyProxy() = default;
@@ -34,21 +37,26 @@ std::vector<uint16_t> SSLPrivateKeyProxy::GetAlgorithmPreferences() {
 void SSLPrivateKeyProxy::Sign(uint16_t algorithm,
                               base::span<const uint8_t> input,
                               net::SSLPrivateKey::SignCallback callback) {
-  std::vector<uint8_t> input_vector(input.begin(), input.end());
   if (!ssl_private_key_ || !ssl_private_key_.is_connected()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   net::ERR_SSL_CLIENT_AUTH_CERT_NO_PRIVATE_KEY,
-                                  input_vector));
+                                  std::vector<uint8_t>()));
     return;
   }
 
+  std::vector<uint8_t> input_vector(input.begin(), input.end());
   ssl_private_key_->Sign(
       algorithm, input_vector,
-      base::BindOnce(&SSLPrivateKeyProxy::Callback, this, std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&SSLPrivateKeyProxy::Callback, this,
+                         std::move(callback)),
+          int32_t{net::ERR_SSL_CLIENT_AUTH_CERT_NO_PRIVATE_KEY},
+          std::vector<uint8_t>()));
 }
 
 void SSLPrivateKeyProxy::HandleSSLPrivateKeyError() {
+  scoped_refptr<SSLPrivateKeyProxy> self(this);
   ssl_private_key_.reset();
 }
 

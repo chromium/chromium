@@ -27,6 +27,7 @@
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -145,6 +146,7 @@
 #include "chrome/browser/ash/net/network_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/net/system_client_cert_network_observer.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/network_change_manager/network_change_manager_client.h"
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
@@ -294,11 +296,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/common/switches.h"
@@ -815,6 +819,11 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
 
 int ChromeBrowserMainPartsAsh::PreCreateThreads() {
   int result_code = ChromeBrowserMainPartsLinux::PreCreateThreads();
+  if (result_code == content::RESULT_CODE_NORMAL_EXIT &&
+      ash::features::IsLoginScreenProxyClientCertAuthEnabled()) {
+    g_browser_process->system_network_context_manager()
+        ->EnableDefaultURLLoaderNetworkObserver();
+  }
 
   arc_platform_support_ = std::make_unique<arc::ArcPlatformSupportImpl>();
   arc_platform_support_->CheckDlcRequirement();
@@ -1000,6 +1009,35 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());
+
+  if (ash::features::IsLoginScreenProxyClientCertAuthEnabled()) {
+    system_client_cert_observer_ = std::make_unique<
+        SystemClientCertNetworkObserver>(
+        session_manager::SessionManager::Get(),
+        user_manager::UserManager::Get(), g_browser_process->policy_service(),
+        g_browser_process->platform_part()
+            ->browser_policy_connector_ash()
+            ->GetDevicePolicyCertificateProvider(),
+        base::BindRepeating([]() {
+          if (SystemNetworkContextManager::HasInstance()) {
+            SystemNetworkContextManager::GetInstance()->FlushClientCertCache();
+          }
+        }),
+        base::BindRepeating([](int32_t /*network_traffic_annotation_id_hash*/,
+                               base::ByteSize recv_bytes,
+                               base::ByteSize sent_bytes) {
+          // Keep in sync with
+          // `ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate()`.
+          task_manager::TaskManagerInterface::
+              UpdateAccumulatedStatsNetworkForRoute(
+                  content::GlobalRenderFrameHostId(), recv_bytes, sent_bytes);
+        }),
+        SystemClientCertNetworkObserver::CreateDefaultClientCertStoreFactory());
+    g_browser_process->system_network_context_manager()
+        ->SetDefaultURLLoaderNetworkObserverBinder(base::BindRepeating(
+            &SystemClientCertNetworkObserver::BindReceiver,
+            base::Unretained(system_client_cert_observer_.get())));
+  }
 
   // Registers `SmbServiceFactory` with `SessionManagerObserver` to instantiate
   // `SmbService` when the user session task is completed if
@@ -1846,6 +1884,18 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun(). The singleton
   // holds a raw_ptr to PrefService that would otherwise dangle.
   memory::OOMKillsMonitor::GetInstance().Shutdown();
+
+  // Unregister and destroy `system_client_cert_observer_` before
+  // `ChromeBrowserMainPartsLinux::PostMainMessageLoopRun()` runs
+  // `BrowserProcessImpl::StartTearDown()`, which destroys
+  // `SystemNetworkContextManager` and `BrowserPolicyConnectorAsh`.
+  if (system_client_cert_observer_) {
+    if (SystemNetworkContextManager::HasInstance()) {
+      SystemNetworkContextManager::GetInstance()
+          ->SetDefaultURLLoaderNetworkObserverBinder(base::NullCallback());
+    }
+    system_client_cert_observer_.reset();
+  }
 
   // NOTE: Closes ash and destroys `Shell`.
   browser_shutdown::SetShutdownPhase(

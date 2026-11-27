@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <cstdint>
 #include <initializer_list>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
@@ -14,6 +17,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
@@ -61,6 +66,7 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
@@ -98,6 +104,9 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -113,6 +122,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -126,6 +136,8 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_certificate.h"
@@ -143,6 +155,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -167,6 +183,28 @@ namespace em = ::enterprise_management;
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kClientCert1Name[] = "client_1";
 constexpr char kClientCert2Name[] = "client_2";
+
+// DER-encoded X.509 DistinguishedName of `client_1_ca` ("CN=B CA", issuer of
+// `client_1.pem`).
+constexpr auto kClientCert1CaDistinguishedName = std::to_array<uint8_t>(
+    {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x0c,
+     0x04, 0x42, 0x20, 0x43, 0x41});
+
+// DER-encoded X.509 DistinguishedName of `client_2_ca` ("CN=E CA", issuer of
+// `client_2.pem`).
+constexpr auto kClientCert2CaDistinguishedName = std::to_array<uint8_t>(
+    {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x0c,
+     0x04, 0x45, 0x20, 0x43, 0x41});
+
+// DER-encoded X.509 DistinguishedName of `client_root_ca` ("CN=C Root CA",
+// issuer of `client_1_ca.pem` and `client_2_ca.pem`).
+constexpr auto kClientRootCaDistinguishedName = std::to_array<uint8_t>(
+    {0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03,
+     0x0c, 0x09, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 0x20, 0x43, 0x41});
+
+std::string DistinguishedNameToString(base::span<const uint8_t> der_dn) {
+  return std::string(base::as_string_view(der_dn));
+}
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame()";
 constexpr char kSigninWebviewOnLockScreen[] =
@@ -1577,6 +1615,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
     auto* field =
         proto.mutable_device_login_screen_auto_select_certificate_for_urls();
+    field->clear_login_screen_auto_select_certificate_rules();
     for (const std::string& autoselect_pattern : autoselect_patterns) {
       field->add_login_screen_auto_select_certificate_rules(autoselect_pattern);
     }
@@ -1657,12 +1696,13 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
               pref_changed_future.Take());
   }
 
-  // Starts the Test HTTPS server with `ssl_options`.
-  void StartHttpsServer(const net::SSLServerConfig& server_config) {
+  // Starts the Test HTTPS server with `server_config` and `server_cert`.
+  void StartHttpsServer(const net::SSLServerConfig& server_config,
+                        net::EmbeddedTestServer::ServerCertificate server_cert =
+                            net::EmbeddedTestServer::CERT_OK) {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK,
-                                server_config);
+    https_server_->SetSSLConfig(server_cert, server_config);
     https_server_->RegisterRequestHandler(base::BindLambdaForTesting(
         [this](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -1694,6 +1734,38 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     js_checker.Evaluate(base::StringPrintf("%s.src='%s'", webview_path.c_str(),
                                            url.spec().c_str()));
     navigation_observer.Wait();
+
+    base::AutoLock lock(server_ssl_info_lock_);
+    std::optional<net::SSLInfo> server_ssl_info = std::move(server_ssl_info_);
+    server_ssl_info_ = std::nullopt;
+    return server_ssl_info;
+  }
+
+  // Requests `https_server_`'s client-cert test page using the browser
+  // process's SystemNetworkContext
+  // (`g_browser_process->shared_url_loader_factory()`). Returns the
+  // `net::SSLInfo` as observed by the server, or `std::nullopt` if the
+  // handshake was cancelled before reaching the server handler.
+  std::optional<net::SSLInfo> RequestClientCertTestPageViaSystemNetworkContext(
+      std::string_view hostname = {}) {
+    g_browser_process->system_network_context_manager()
+        ->FlushNetworkInterfaceForTesting();
+
+    auto resource_request = std::make_unique<network::ResourceRequest>();
+    resource_request->url =
+        hostname.empty() ? https_server_->GetURL("/client-cert")
+                         : https_server_->GetURL(hostname, "/client-cert");
+    resource_request->load_flags =
+        net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+    auto simple_loader = network::SimpleURLLoader::Create(
+        std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
+    base::test::TestFuture<std::optional<std::string>> future;
+    simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        g_browser_process->shared_url_loader_factory().get(),
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
 
     base::AutoLock lock(server_ssl_info_lock_);
     std::optional<net::SSLInfo> server_ssl_info = std::move(server_ssl_info_);
@@ -1757,13 +1829,16 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
   }
 
   policy::DevicePolicyBuilder device_policy_builder_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // `net::EmbeddedTestServer`'s callbacks run on a background thread, so this
   // field must be protected with a lock.
   base::Lock server_ssl_info_lock_;
   std::optional<net::SSLInfo> server_ssl_info_
       GUARDED_BY(server_ssl_info_lock_);
 
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+ private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
@@ -1819,6 +1894,234 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
       RequestClientCertTestPageInFrame(test::OobeJS(), "$('cros-eula-frame')");
   ASSERT_TRUE(ssl_info);
   EXPECT_FALSE(ssl_info->cert);
+}
+
+class WebviewSystemClientCertsLoginTest : public WebviewClientCertsLoginTest {
+ public:
+  WebviewSystemClientCertsLoginTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kLoginScreenProxyClientCertAuth);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class WebviewSystemClientCertsDisabledLoginTest
+    : public WebviewClientCertsLoginTest {
+ public:
+  WebviewSystemClientCertsDisabledLoginTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kLoginScreenProxyClientCertAuth);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that SystemNetworkContext does not present device client certificates
+// when `kLoginScreenProxyClientCertAuth` is disabled, even if a matching
+// certificate and `DeviceLoginScreenAutoSelectCertificateForUrls` rule exist.
+IN_PROC_BROWSER_TEST_F(WebviewSystemClientCertsDisabledLoginTest,
+                       SystemNetworkContextClientCertNotSentWhenDisabled) {
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"});
+
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+}
+
+// Tests that SystemNetworkContext presents the policy-auto-selected device
+// client certificate on the login screen, and stops presenting it once an
+// unaffiliated user session starts.
+IN_PROC_BROWSER_TEST_F(
+    WebviewSystemClientCertsLoginTest,
+    SystemNetworkContextClientCertBlockedForUnaffiliatedUser) {
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+
+  // Without `DeviceLoginScreenAutoSelectCertificateForUrls`, client certificate
+  // requests on SystemNetworkContext are cancelled.
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+
+  // With a non-matching URL pattern or non-matching certificate filter, client
+  // certificate requests are cancelled.
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "https://other.example.com", "filter": {"ISSUER": {"CN": "B CA"}}})"});
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "Other CA"}}})"});
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+
+  const std::vector<std::string> autoselect_patterns = {
+      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
+  SetAutoSelectCertificatePatterns(autoselect_patterns);
+
+  // On the login screen, SystemNetworkContext presents the auto-selected
+  // device certificate.
+  std::optional<net::SSLInfo> login_screen_ssl_info =
+      RequestClientCertTestPageViaSystemNetworkContext();
+  ASSERT_TRUE(login_screen_ssl_info);
+  ASSERT_TRUE(login_screen_ssl_info->cert);
+  EXPECT_THAT(*login_screen_ssl_info->cert,
+              EqualsCert(std::string(kClientCert1Name)));
+
+  // `test_user_` uses a non-managed `@gmail.com` account without affiliation
+  // configured, so `ProfileUserManagerController::OnProfileAdded()` marks it
+  // unaffiliated on profile creation. `SystemClientCertNetworkObserver`
+  // disallows device client certs, flushes cached client certs and pooled
+  // sockets, and cancels subsequent certificate requests.
+  login_manager_mixin_.LoginWithDefaultContext(test_user_);
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+}
+
+// Tests that SystemNetworkContext continues to present the policy-auto-selected
+// device client certificate when an affiliated user session is active.
+IN_PROC_BROWSER_TEST_F(WebviewSystemClientCertsLoginTest,
+                       SystemNetworkContextClientCertAllowedForAffiliatedUser) {
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+
+  const std::vector<std::string> autoselect_patterns = {
+      R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"};
+  SetAutoSelectCertificatePatterns(autoselect_patterns);
+
+  login_manager_mixin_.LoginWithDefaultContext(test_user_);
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+
+  user_manager::UserManager::Get()->SetUserPolicyStatus(
+      test_user_.account_id, /*is_managed=*/true, /*is_affiliated=*/true);
+
+  std::optional<net::SSLInfo> affiliated_ssl_info =
+      RequestClientCertTestPageViaSystemNetworkContext();
+  ASSERT_TRUE(affiliated_ssl_info);
+  ASSERT_TRUE(affiliated_ssl_info->cert);
+  EXPECT_THAT(*affiliated_ssl_info->cert,
+              EqualsCert(std::string(kClientCert1Name)));
+
+  // Dynamically clearing the auto-select policy flushes cached client certs
+  // and pooled sockets, blocking subsequent requests even in an affiliated
+  // session.
+  SetAutoSelectCertificatePatterns({});
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+}
+
+// Tests that SystemNetworkContext authenticates to an mTLS HTTPS CONNECT proxy
+// using the policy-auto-selected device client certificate without leaking the
+// client certificate to the tunneled origin, and evicts the pooled tunnel once
+// an unaffiliated user session starts.
+IN_PROC_BROWSER_TEST_F(WebviewSystemClientCertsLoginTest,
+                       SystemNetworkContextClientCertViaHttpsConnectProxy) {
+  constexpr char kOriginHostname[] = "a.test";
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot({kClientCert1Name, kClientCert2Name}));
+
+  // Use a non-loopback hostname so requests route through the proxy, and do not
+  // request a client certificate on the origin (e.g. `www.googleapis.com:443`).
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(
+      net::SSLServerConfig(), net::EmbeddedTestServer::CERT_TEST_NAMES));
+
+  // Local HTTPS CONNECT proxy requires a client certificate issued by "B CA"
+  // (`client_1_ca`).
+  net::EmbeddedTestServer https_proxy_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  net::SSLServerConfig proxy_ssl_config;
+  proxy_ssl_config.client_cert_type = net::SSLServerConfig::REQUIRE_CLIENT_CERT;
+  proxy_ssl_config.cert_authorities = {
+      DistinguishedNameToString(kClientCert1CaDistinguishedName)};
+  https_proxy_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK,
+                                  proxy_ssl_config);
+  https_proxy_server.EnableConnectProxy(
+      {net::HostPortPair(kOriginHostname, https_server_->port())});
+  ASSERT_TRUE(https_proxy_server.Start());
+
+  g_browser_process->local_state()->SetDict(
+      ::proxy_config::prefs::kProxy,
+      ProxyConfigDictionary::CreateFixedServers(
+          base::StringPrintf(
+              "https://%s",
+              https_proxy_server.host_port_pair().ToString().c_str()),
+          /*bypass_list=*/""));
+  g_browser_process->system_network_context_manager()
+      ->FlushProxyConfigMonitorForTesting();
+
+  // Without a matching policy rule (or with a rule matching a different host),
+  // the HTTPS proxy handshake fails and never reaches the origin.
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext(kOriginHostname)
+                   .has_value());
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "https://other.example.com", "filter": {"ISSUER": {"CN": "B CA"}}})"});
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext(kOriginHostname)
+                   .has_value());
+
+  // With a rule matching the HTTPS proxy host, the request tunnels through the
+  // mTLS proxy and reaches the origin without leaking the client certificate to
+  // the inner origin TLS handshake.
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "https://127.0.0.1", "filter": {"ISSUER": {"CN": "B CA"}}})"});
+  std::optional<net::SSLInfo> origin_ssl_info =
+      RequestClientCertTestPageViaSystemNetworkContext(kOriginHostname);
+  ASSERT_TRUE(origin_ssl_info);
+  EXPECT_FALSE(origin_ssl_info->cert);
+
+  // Starting an unaffiliated user session flushes the client cert cache and
+  // evicts the pooled HTTPS CONNECT tunnel so subsequent requests cannot reuse
+  // it.
+  login_manager_mixin_.LoginWithDefaultContext(test_user_);
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext(kOriginHostname)
+                   .has_value());
+}
+
+// Tests that SystemNetworkContext uses device ONC untrusted intermediate CA
+// certificates for client certificate chain discovery, and re-binds
+// `SystemClientCertNetworkObserver` when the Network Service restarts after a
+// crash.
+IN_PROC_BROWSER_TEST_F(
+    WebviewSystemClientCertsLoginTest,
+    SystemNetworkContextOncIntermediateCaAndNetworkServiceCrash) {
+  ASSERT_NO_FATAL_FAILURE(SetUpClientCertsInSystemSlot({kClientCert1Name}));
+
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  server_config.cert_authorities = {
+      DistinguishedNameToString(kClientRootCaDistinguishedName)};
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+
+  SetAutoSelectCertificatePatterns(
+      {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"});
+
+  // Without `client_1_ca` configured via device ONC policy, `client_1` cannot
+  // chain to `"C Root CA"`, so no matching certificate is found and the request
+  // is cancelled.
+  EXPECT_FALSE(RequestClientCertTestPageViaSystemNetworkContext().has_value());
+
+  ASSERT_NO_FATAL_FAILURE(SetIntermediateAuthorityInDeviceOncPolicy(
+      net::GetTestCertsDirectory().AppendASCII("client_1_ca.pem")));
+
+  std::optional<net::SSLInfo> ssl_info =
+      RequestClientCertTestPageViaSystemNetworkContext();
+  ASSERT_TRUE(ssl_info);
+  ASSERT_TRUE(ssl_info->cert);
+  EXPECT_THAT(*ssl_info->cert, EqualsCert(std::string(kClientCert1Name)));
+
+  if (!content::IsInProcessNetworkService()) {
+    SimulateNetworkServiceCrash();
+
+    std::optional<net::SSLInfo> post_crash_ssl_info =
+        RequestClientCertTestPageViaSystemNetworkContext();
+    ASSERT_TRUE(post_crash_ssl_info);
+    ASSERT_TRUE(post_crash_ssl_info->cert);
+    EXPECT_THAT(*post_crash_ssl_info->cert,
+                EqualsCert(std::string(kClientCert1Name)));
+  }
 }
 
 namespace {
@@ -2043,9 +2346,7 @@ INSTANTIATE_TEST_SUITE_P(
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
         /*prompt_on_multiple_matches=*/std::nullopt,
         /*ca_certs=*/
-        {// client_1_ca ("B CA")
-         {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03,
-          0x0c, 0x04, 0x42, 0x20, 0x43, 0x41}},
+        {DistinguishedNameToString(kClientCert1CaDistinguishedName)},
         /*manually_select_cert=*/std::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
@@ -2063,28 +2364,24 @@ INSTANTIATE_TEST_SUITE_P(
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
         /*prompt_on_multiple_matches=*/std::nullopt,
         /*ca_certs=*/
-        {// client_root_ca ("C Root CA")
-         {0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03,
-          0x0c, 0x09, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 0x20, 0x43, 0x41}},
+        {DistinguishedNameToString(kClientRootCaDistinguishedName)},
         /*manually_select_cert=*/std::nullopt,
         /*assert_cert=*/kClientCert1Name}));
 
 // Test that if no client certificate is auto-selected using policy on the
 // sign-in frame, the client does not send up any client certificate.
-INSTANTIATE_TEST_SUITE_P(ErrorNoAutoSelect,
-                         SigninFrameWebviewClientCertsLoginTest,
-                         testing::Values(SigninCertParam{
-                             /*client_certs=*/{kClientCert1Name},
-                             /*intermediate_cert=*/std::nullopt,
-                             /*autoselect_patterns=*/{},
-                             /*prompt_on_multiple_matches=*/std::nullopt,
-                             /*ca_certs=*/
-                             {// client_1_ca ("B CA")
-                              {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03,
-                               0x55, 0x04, 0x03, 0x0c, 0x04, 0x42, 0x20, 0x43,
-                               0x41}},
-                             /*manually_select_cert=*/std::nullopt,
-                             /*assert_cert=*/std::nullopt}));
+INSTANTIATE_TEST_SUITE_P(
+    ErrorNoAutoSelect,
+    SigninFrameWebviewClientCertsLoginTest,
+    testing::Values(SigninCertParam{
+        /*client_certs=*/{kClientCert1Name},
+        /*intermediate_cert=*/std::nullopt,
+        /*autoselect_patterns=*/{},
+        /*prompt_on_multiple_matches=*/std::nullopt,
+        /*ca_certs=*/
+        {DistinguishedNameToString(kClientCert1CaDistinguishedName)},
+        /*manually_select_cert=*/std::nullopt,
+        /*assert_cert=*/std::nullopt}));
 
 // Test that client certificate authentication using certificates from the
 // system slot is enabled in the sign-in frame. The server requests
@@ -2100,9 +2397,7 @@ INSTANTIATE_TEST_SUITE_P(
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
         /*prompt_on_multiple_matches=*/std::nullopt,
         /*ca_certs=*/
-        {// client_2_ca ("E CA")
-         {0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03,
-          0x0c, 0x04, 0x45, 0x20, 0x43, 0x41}},
+        {DistinguishedNameToString(kClientCert2CaDistinguishedName)},
         /*manually_select_cert=*/std::nullopt,
         /*assert_cert=*/std::nullopt}));
 
@@ -2121,9 +2416,7 @@ INSTANTIATE_TEST_SUITE_P(
         {R"({"pattern": "*", "filter": {"ISSUER": {"CN": "B CA"}}})"},
         /*prompt_on_multiple_matches=*/std::nullopt,
         /*ca_certs=*/
-        {// client_root_ca ("C Root CA")
-         {0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03,
-          0x0c, 0x09, 0x43, 0x20, 0x52, 0x6f, 0x6f, 0x74, 0x20, 0x43, 0x41}},
+        {DistinguishedNameToString(kClientRootCaDistinguishedName)},
         /*manually_select_cert=*/std::nullopt,
         /*assert_cert=*/std::nullopt}));
 

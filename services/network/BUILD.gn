@@ -534,6 +534,7 @@ source_set("tests") {
     "shared_dictionary/shared_dictionary_writer_on_disk_unittest.cc",
     "socket_data_pump_unittest.cc",
     "ssl_config_service_mojo_unittest.cc",
+    "ssl_private_key_proxy_unittest.cc",
     "stringify_enum_unittest.cc",
     "tcp_bound_socket_unittest.cc",
     "tcp_socket_unittest.cc",

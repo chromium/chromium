@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation_traits.h"
 #include "chromeos/components/onc/certificate_scope.h"
 
 namespace net {
@@ -74,5 +75,23 @@ class PolicyCertificateProvider {
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::PolicyCertificateProvider,
+                               ash::PolicyCertificateProvider::Observer> {
+  static void AddObserver(ash::PolicyCertificateProvider* source,
+                          ash::PolicyCertificateProvider::Observer* observer) {
+    source->AddPolicyProvidedCertsObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::PolicyCertificateProvider* source,
+      ash::PolicyCertificateProvider::Observer* observer) {
+    source->RemovePolicyProvidedCertsObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_

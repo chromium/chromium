@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/build_time.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -1222,6 +1223,25 @@ SystemNetworkContextManager::CreateNetworkContextParams() {
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/578893048): Revisit and simplify this early-startup
+  // receiver-queuing logic so the observer can connect more directly.
+  if (default_url_loader_network_observer_enabled_) {
+    mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+        observer_remote;
+    auto observer_receiver = observer_remote.InitWithNewPipeAndPassReceiver();
+    if (default_url_loader_network_observer_binder_) {
+      default_url_loader_network_observer_binder_.Run(
+          std::move(observer_receiver));
+    } else {
+      pending_default_url_loader_network_observer_receivers_.push_back(
+          std::move(observer_receiver));
+    }
+    network_context_params->default_url_loader_network_observer =
+        std::move(observer_remote);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   return network_context_params;
 }
 
@@ -1257,6 +1277,38 @@ void SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled() {
           : base::FeatureList::IsEnabled(net::features::kEnableTLS13EarlyData);
   content::GetNetworkService()->SetTLS13EarlyDataEnabled(value);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void SystemNetworkContextManager::EnableDefaultURLLoaderNetworkObserver() {
+  CHECK(!network_service_network_context_.is_bound());
+  default_url_loader_network_observer_enabled_ = true;
+}
+
+void SystemNetworkContextManager::SetDefaultURLLoaderNetworkObserverBinder(
+    URLLoaderNetworkObserverBinder binder) {
+  default_url_loader_network_observer_binder_ = std::move(binder);
+  if (default_url_loader_network_observer_binder_) {
+    for (auto& receiver :
+         pending_default_url_loader_network_observer_receivers_) {
+      default_url_loader_network_observer_binder_.Run(std::move(receiver));
+    }
+  } else {
+    default_url_loader_network_observer_enabled_ = false;
+  }
+  pending_default_url_loader_network_observer_receivers_.clear();
+}
+
+void SystemNetworkContextManager::FlushClientCertCache() {
+  if (network_service_network_context_ &&
+      network_service_network_context_.is_connected()) {
+    network_service_network_context_->FlushClientCertCache();
+  }
+  // Reset `url_loader_factory_` so subsequent requests via
+  // `URLLoaderFactoryForSystem` call `CreateURLLoaderFactory()` on
+  // `network_service_network_context_` strictly after `FlushClientCertCache()`.
+  url_loader_factory_.reset();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool SystemNetworkContextManager::HasFailedPreviousRecentLaunch() {
   return network_process_launch_watcher_ &&

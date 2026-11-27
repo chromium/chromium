@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,6 +32,10 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class NetworkAnnotationMonitor;
 class PrefRegistrySimple;
@@ -187,6 +192,28 @@ class SystemNetworkContextManager {
   void FlushNetworkInterfaceForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
+  using URLLoaderNetworkObserverBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>)>;
+
+  // Marks that an embedder-owned default URLLoaderNetworkServiceObserver will
+  // be bound later during startup (in PreProfileInit(), after UserManager
+  // initialization, whereas the System NetworkContext is already created
+  // earlier in PreMainMessageLoopRun()). Must be called before the System
+  // NetworkContext is created.
+  void EnableDefaultURLLoaderNetworkObserver();
+
+  // Binds any PendingReceivers queued during early startup and stores `binder`
+  // to bind new receivers across NetworkService restarts. Pass a null callback
+  // before destroying the bound observer to unregister it and stop queuing new
+  // receivers.
+  void SetDefaultURLLoaderNetworkObserverBinder(
+      URLLoaderNetworkObserverBinder binder);
+
+  // Flushes cached client certificates and pooled mTLS sockets on the System
+  // NetworkContext, and resets `url_loader_factory_` so subsequent requests
+  // run strictly after the flush.
+  void FlushClientCertCache();
+
   // Call |FlushForTesting()| on NetworkAnnotationMonitor. For test use only.
   void FlushNetworkAnnotationMonitorForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -310,6 +337,11 @@ class SystemNetworkContextManager {
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<NetworkAnnotationMonitor> network_annotation_monitor_;
+  bool default_url_loader_network_observer_enabled_ = false;
+  URLLoaderNetworkObserverBinder default_url_loader_network_observer_binder_;
+  std::vector<
+      mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>>
+      pending_default_url_loader_network_observer_receivers_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)

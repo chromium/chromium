@@ -27,6 +27,7 @@ class PrefService;
 namespace ash {
 class DeviceWeeklyScheduledSuspendController;
 class InstallAttributes;
+class PolicyCertificateProvider;
 
 namespace cert_provisioning {
 class CertProvisioningScheduler;
@@ -184,6 +185,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       const {
     return device_network_configuration_updater_.get();
   }
+
+  ash::PolicyCertificateProvider* GetDevicePolicyCertificateProvider();
 
   TPMAutoUpdateModePolicyHandler* GetTPMAutoUpdateModePolicyHandler() const {
     return tpm_auto_update_mode_policy_handler_.get();

@@ -105,6 +105,7 @@ class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SuspendPerfReporter;
+class SystemClientCertNetworkObserver;
 class SystemTokenCertDBInitializer;
 class TokenHandleStoreFactory;
 class UserAddingScreen;
@@ -192,6 +193,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
   std::unique_ptr<BluetoothPrefStateObserver> bluetooth_pref_state_observer_;
   std::unique_ptr<BluetoothLogController> bluetooth_log_controller_;
+  std::unique_ptr<SystemClientCertNetworkObserver> system_client_cert_observer_;
   std::unique_ptr<IdleActionWarningObserver> idle_action_warning_observer_;
   std::unique_ptr<RendererFreezer> renderer_freezer_;
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
