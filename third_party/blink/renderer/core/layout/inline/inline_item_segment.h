@@ -9,6 +9,7 @@
 #include <unicode/uscript.h>
 
 #include <bit>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -39,37 +40,39 @@ class CORE_EXPORT InlineItemSegment {
   DISALLOW_NEW();
 
  public:
-  InlineItemSegment(unsigned end_offset, uint32_t segment_data)
+  InlineItemSegment(wtf_size_t end_offset, uint32_t segment_data)
       : end_offset_(end_offset), segment_data_(segment_data) {}
   InlineItemSegment(const RunSegmenter::RunSegmenterRange& range);
-  InlineItemSegment(unsigned end_offset, const InlineItem& item);
+  InlineItemSegment(wtf_size_t end_offset, const InlineItem& item);
 
   RunSegmenter::RunSegmenterRange ToRunSegmenterRange(
-      unsigned start_offset,
-      unsigned end_offset) const;
+      wtf_size_t start_offset,
+      wtf_size_t end_offset) const;
 
-  unsigned EndOffset() const { return end_offset_; }
+  wtf_size_t EndOffset() const { return end_offset_; }
 
   // Pack/unpack utility functions to store in bit fields.
   // UScriptCode is -1 (USCRIPT_INVALID_CODE) to 199 as of ICU 74.
   // `USCRIPT_CODE_LIMIT` is the max value plus 1, but the plus 1 is necessary
   // to represent -1 (USCRIPT_INVALID_CODE), which is handled separately.
-  static constexpr unsigned kScriptBits =
-      std::bit_width(static_cast<unsigned>(USCRIPT_CODE_LIMIT));
-  static constexpr unsigned kFontFallbackPriorityBits = std::bit_width(
-      static_cast<unsigned>(FontFallbackPriority::kMaxEnumValue));
-  static constexpr unsigned kRenderOrientationBits =
-      std::bit_width(static_cast<unsigned>(
+  static constexpr wtf_size_t kScriptBits =
+      std::bit_width(static_cast<uint32_t>(USCRIPT_CODE_LIMIT));
+  static constexpr wtf_size_t kFontFallbackPriorityBits =
+      std::bit_width(std::to_underlying(FontFallbackPriority::kMaxEnumValue));
+  static constexpr wtf_size_t kRenderOrientationBits =
+      std::bit_width(std::to_underlying(
           OrientationIterator::RenderOrientation::kMaxEnumValue));
-  static constexpr unsigned kSegmentDataBits =
+  static constexpr wtf_size_t kSegmentDataBits =
       kScriptBits + kFontFallbackPriorityBits + kRenderOrientationBits;
 
   static uint32_t PackSegmentData(const RunSegmenter::RunSegmenterRange& range);
-  static RunSegmenter::RunSegmenterRange
-  UnpackSegmentData(unsigned start_offset, unsigned end_offset, uint32_t value);
+  static RunSegmenter::RunSegmenterRange UnpackSegmentData(
+      wtf_size_t start_offset,
+      wtf_size_t end_offset,
+      uint32_t value);
 
  private:
-  unsigned end_offset_;
+  wtf_size_t end_offset_;
   uint32_t segment_data_ : kSegmentDataBits;
 
   friend class InlineItemSegments;
@@ -91,14 +94,14 @@ class CORE_EXPORT InlineItemSegments
  public:
   InlineItemSegments* Clone() const;
 
-  unsigned size() const { return segments_.size(); }
+  wtf_size_t size() const { return segments_.size(); }
   bool IsEmpty() const { return segments_.empty(); }
 
   // Start/end offset of each segment/entire segments.
-  unsigned OffsetForSegment(const InlineItemSegment& segment) const;
-  unsigned EndOffset() const { return segments_.back().EndOffset(); }
+  wtf_size_t OffsetForSegment(const InlineItemSegment& segment) const;
+  wtf_size_t EndOffset() const { return segments_.back().EndOffset(); }
 
-  void ReserveCapacity(unsigned capacity) { segments_.reserve(capacity); }
+  void ReserveCapacity(wtf_size_t capacity) { segments_.reserve(capacity); }
 
   // Append a |InlineItemSegment| using one of its constructors.
   template <class... Args>
@@ -113,10 +116,10 @@ class CORE_EXPORT InlineItemSegments
   // Append mixed-vertical font orientation segments for the specified range.
   // This is separated from |ComputeSegments| because this result depends on
   // fonts.
-  unsigned AppendMixedFontOrientation(const String& text_content,
-                                      unsigned start_offset,
-                                      unsigned end_offset,
-                                      unsigned segment_index);
+  wtf_size_t AppendMixedFontOrientation(const String& text_content,
+                                        wtf_size_t start_offset,
+                                        wtf_size_t end_offset,
+                                        wtf_size_t segment_index);
 
   // Adjust offsets according to the `offset_map`.
   void AdjustOffsets(const TextOffsetMap& offset_map);
@@ -129,10 +132,10 @@ class CORE_EXPORT InlineItemSegments
     STACK_ALLOCATED();
 
    public:
-    Iterator(unsigned start_offset,
-             unsigned end_offset,
+    Iterator(wtf_size_t start_offset,
+             wtf_size_t end_offset,
              base::span<const InlineItemSegment> span,
-             unsigned segment_index);
+             wtf_size_t segment_index);
 
     bool IsDone() const { return range_.start == end_offset_; }
 
@@ -147,26 +150,26 @@ class CORE_EXPORT InlineItemSegments
    private:
     RunSegmenter::RunSegmenterRange range_;
     base::span<const InlineItemSegment> span_;
-    unsigned segment_index_;
-    unsigned start_offset_;
-    unsigned end_offset_;
+    wtf_size_t segment_index_;
+    wtf_size_t start_offset_;
+    wtf_size_t end_offset_;
   };
   using const_iterator = Iterator;
 
   // Returns an iterator for the given offsets.
   //
   // |item_index| is the index of |InlineItem| for the |start_offset|.
-  const_iterator Ranges(unsigned start_offset,
-                        unsigned end_offset,
-                        unsigned item_index) const;
+  const_iterator Ranges(wtf_size_t start_offset,
+                        wtf_size_t end_offset,
+                        wtf_size_t item_index) const;
 
   // Shape runs in the range and return the concatenated |ShapeResult|.
   ShapeResult* ShapeText(const HarfBuzzShaper* shaper,
                          const Font* font,
                          TextDirection direction,
-                         unsigned start_offset,
-                         unsigned end_offset,
-                         unsigned item_index,
+                         wtf_size_t start_offset,
+                         wtf_size_t end_offset,
+                         wtf_size_t item_index,
                          ShapeOptions = ShapeOptions()) const;
 
   void Trace(Visitor* visitor) const {
@@ -175,28 +178,28 @@ class CORE_EXPORT InlineItemSegments
   }
 
  private:
-  unsigned PopulateItemsFromFontOrientation(
-      unsigned start_offset,
-      unsigned end_offset,
+  wtf_size_t PopulateItemsFromFontOrientation(
+      wtf_size_t start_offset,
+      wtf_size_t end_offset,
       OrientationIterator::RenderOrientation,
-      unsigned segment_index);
-  void Split(unsigned index, unsigned offset);
+      wtf_size_t segment_index);
+  void Split(wtf_size_t index, wtf_size_t offset);
 
 #if DCHECK_IS_ON()
-  void CheckOffset(unsigned offset, const InlineItemSegment* segment) const;
+  void CheckOffset(wtf_size_t offset, const InlineItemSegment* segment) const;
 #else
-  void CheckOffset(unsigned offset, const InlineItemSegment* segment) const {}
+  void CheckOffset(wtf_size_t offset, const InlineItemSegment* segment) const {}
 #endif
 
   HeapVector<InlineItemSegment> segments_;
-  HeapVector<unsigned> items_to_segments_;
+  HeapVector<wtf_size_t> items_to_segments_;
 };
 
 inline InlineItemSegments::Iterator::Iterator(
-    unsigned start_offset,
-    unsigned end_offset,
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
     base::span<const InlineItemSegment> span,
-    unsigned segment_index)
+    wtf_size_t segment_index)
     : span_(span),
       segment_index_(segment_index),
       start_offset_(start_offset),

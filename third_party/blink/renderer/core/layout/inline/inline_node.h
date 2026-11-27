@@ -134,7 +134,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   void CheckConsistency() const;
 
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<std::pair<unsigned, SvgCharacterData>>& SvgCharacterDataList()
+  const Vector<std::pair<wtf_size_t, SvgCharacterData>>& SvgCharacterDataList()
       const;
   // This function is available after PrepareLayout(), only for SVG <text>.
   const HeapVector<SvgTextContentRange>& SvgTextLengthRangeList() const;

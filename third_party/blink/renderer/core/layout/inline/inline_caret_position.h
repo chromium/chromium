@@ -41,7 +41,7 @@ struct InlineCaretPosition {
 
   InlineCursor cursor;
   InlineCaretPositionType position_type;
-  std::optional<unsigned> text_offset;
+  std::optional<wtf_size_t> text_offset;
 };
 
 // Given an inline formatting context, a text offset in the context and a text
@@ -52,7 +52,7 @@ struct InlineCaretPosition {
 // |layout_text| in multiple candidates.
 CORE_EXPORT InlineCaretPosition
 ComputeInlineCaretPosition(const LayoutBlockFlow& context,
-                           unsigned offset,
+                           wtf_size_t offset,
                            TextAffinity affinity,
                            const LayoutText* layout_text = nullptr);
 

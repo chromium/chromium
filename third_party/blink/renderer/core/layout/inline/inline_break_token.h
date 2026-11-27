@@ -64,7 +64,7 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
       InlineNode node,
       const ComputedStyle* style,
       const InlineItemTextIndex& start,
-      unsigned flags /* InlineBreakTokenFlags */,
+      uint32_t flags /* InlineBreakTokenFlags */,
       const BlockBreakToken* sub_break_token = nullptr,
       const RubyBreakTokenData* ruby_data = nullptr);
 
@@ -130,7 +130,7 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
                    InlineNode node,
                    const ComputedStyle*,
                    const InlineItemTextIndex& start,
-                   unsigned flags /* InlineBreakTokenFlags */,
+                   uint32_t flags /* InlineBreakTokenFlags */,
                    const BlockBreakToken* sub_break_token,
                    const RubyBreakTokenData* ruby_data);
 

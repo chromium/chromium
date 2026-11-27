@@ -20,7 +20,7 @@ struct SameSizeAsInlineChildLayoutContext {
   void* pointers2[3];
   std::optional<InlineLayoutStateStack> box_states_;
   void* pointers3[1];
-  unsigned number;
+  wtf_size_t number;
   HeapVector<Member<const BlockBreakToken>> tokens_;
   std::optional<LayoutUnit> optional_layout_unit;
   float floating_number[2];
@@ -77,7 +77,7 @@ InlineChildLayoutContext::~InlineChildLayoutContext() {
 
 InlineLayoutStateStack* InlineChildLayoutContext::BoxStatesIfValidForItemIndex(
     const InlineItems& items,
-    unsigned item_index) {
+    wtf_size_t item_index) {
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
     return &*box_states_;
   return nullptr;

@@ -991,8 +991,9 @@ TEST_F(InlineCursorTest, NextSkippingChildren) {
   LayoutBlockFlow* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
   InlineCursor cursor(*block_flow);
-  for (unsigned i = 0; i < 3; ++i)
+  for (wtf_size_t i = 0; i < 3; ++i) {
     cursor.MoveToNext();
+  }
   EXPECT_EQ("text2", ToDebugString(cursor));
   Vector<String> list;
   while (true) {

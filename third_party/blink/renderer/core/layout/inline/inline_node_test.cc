@@ -52,7 +52,7 @@ class InlineNodeForTest : public InlineNode {
   static InlineItems& Items(InlineNodeData& data) { return data.items; }
   void Append(const String& text, LayoutObject* layout_object) {
     InlineNodeData* data = MutableData();
-    unsigned start = data->text_content.length();
+    wtf_size_t start = data->text_content.length();
     data->text_content = data->text_content + text;
     data->items.push_back(MakeGarbageCollected<InlineItem>(
         InlineItem::kText, start, start + text.length(), layout_object));
@@ -61,7 +61,7 @@ class InlineNodeForTest : public InlineNode {
   void Append(UChar character) {
     InlineNodeData* data = MutableData();
     data->text_content = data->text_content + character;
-    unsigned end = data->text_content.length();
+    wtf_size_t end = data->text_content.length();
     data->items.push_back(MakeGarbageCollected<InlineItem>(
         InlineItem::kBidiControl, end - 1, end, nullptr));
     data->is_bidi_enabled_ = true;
@@ -136,9 +136,9 @@ class InlineNodeTest : public RenderingTest {
 
   void ForceLayout() { GetDocument().body()->OffsetTop(); }
 
-  Vector<unsigned> ToEndOffsetList(
+  Vector<wtf_size_t> ToEndOffsetList(
       InlineItemSegments::const_iterator segments) {
-    Vector<unsigned> end_offsets;
+    Vector<wtf_size_t> end_offsets;
     for (const RunSegmenter::RunSegmenterRange& segment : segments)
       end_offsets.push_back(segment.end);
     return end_offsets;
@@ -787,7 +787,7 @@ struct StyleChangeData {
     kParentAndAbove = kParent | kContainer,
     kAll = kText | kParentAndAbove,
   };
-  unsigned needs_collect_inlines;
+  uint32_t needs_collect_inlines;
   std::optional<bool> is_line_dirty;
   std::optional<bool> invalidate_ink_overflow;
 } style_change_data[] = {
@@ -860,7 +860,7 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   // The text and ancestors up to the container should be marked.
-  unsigned changes = StyleChangeData::kNone;
+  uint32_t changes = StyleChangeData::kNone;
   if (text->GetLayoutObject()->NeedsCollectInlines())
     changes |= StyleChangeData::kText;
   if (parent->GetLayoutObject()->NeedsCollectInlines())
@@ -1081,7 +1081,7 @@ TEST_F(InlineNodeTest, SegmentBidiChangeSetsNeedsLayout) {
 TEST_F(InlineNodeTest, InvalidateAddSpan) {
   SetupHtml("t", "<div id=t>before</div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   auto* parent = To<Element>(layout_block_flow_->GetNode());
   Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
@@ -1106,7 +1106,7 @@ TEST_F(InlineNodeTest, InvalidateRemoveSpan) {
 TEST_F(InlineNodeTest, InvalidateAddInnerSpan) {
   SetupHtml("t", "<div id=t><span id=x></span></div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   Element* parent = GetElementById("x");
   ASSERT_TRUE(parent);
@@ -1143,7 +1143,7 @@ TEST_F(InlineNodeTest, InvalidateAddAbsolute) {
             "<style>span { position: absolute; }</style>"
             "<div id=t>before</div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   auto* parent = To<Element>(layout_block_flow_->GetNode());
   Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
@@ -1172,7 +1172,7 @@ TEST_F(InlineNodeTest, InvalidateChangeToAbsolute) {
             "<style>#y { position: absolute; }</style>"
             "<div id=t>before<span id=x></span></div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   Element* span = GetElementById("x");
   ASSERT_TRUE(span);
@@ -1190,7 +1190,7 @@ TEST_F(InlineNodeTest, InvalidateChangeFromAbsolute) {
             "<style>#x { position: absolute; }</style>"
             "<div id=t>before<span id=x></span></div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   Element* span = GetElementById("x");
   ASSERT_TRUE(span);
@@ -1208,7 +1208,7 @@ TEST_F(InlineNodeTest, InvalidateAddFloat) {
             "<style>span { float: left; }</style>"
             "<div id=t>before</div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());
-  unsigned item_count_before = Items().size();
+  wtf_size_t item_count_before = Items().size();
 
   auto* parent = To<Element>(layout_block_flow_->GetNode());
   Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
@@ -1469,33 +1469,33 @@ TEST_F(InlineNodeTest, SegmentRanges) {
 
   // Test EndOffset for the full text. All segment boundaries including the end
   // of the text content should be returned.
-  Vector<unsigned> expect_0_12 = {1u, 7u, 8u, 12u};
+  Vector<wtf_size_t> expect_0_12 = {1u, 7u, 8u, 12u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(0, 12, 0)), expect_0_12);
 
   // Test ranges for each segment that start with 1st item.
-  Vector<unsigned> expect_0_1 = {1u};
+  Vector<wtf_size_t> expect_0_1 = {1u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(0, 1, 0)), expect_0_1);
-  Vector<unsigned> expect_2_3 = {3u};
+  Vector<wtf_size_t> expect_2_3 = {3u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(2, 3, 0)), expect_2_3);
-  Vector<unsigned> expect_7_8 = {8u};
+  Vector<wtf_size_t> expect_7_8 = {8u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(7, 8, 0)), expect_7_8);
 
   // Test ranges that acrosses multiple segments.
-  Vector<unsigned> expect_0_8 = {1u, 7u, 8u};
+  Vector<wtf_size_t> expect_0_8 = {1u, 7u, 8u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(0, 8, 0)), expect_0_8);
-  Vector<unsigned> expect_2_8 = {7u, 8u};
+  Vector<wtf_size_t> expect_2_8 = {7u, 8u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(2, 8, 0)), expect_2_8);
-  Vector<unsigned> expect_2_10 = {7u, 8u, 10u};
+  Vector<wtf_size_t> expect_2_10 = {7u, 8u, 10u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(2, 10, 0)), expect_2_10);
-  Vector<unsigned> expect_7_10 = {8u, 10u};
+  Vector<wtf_size_t> expect_7_10 = {8u, 10u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(7, 10, 0)), expect_7_10);
 
   // Test ranges that starts with 2nd item.
-  Vector<unsigned> expect_8_9 = {9u};
+  Vector<wtf_size_t> expect_8_9 = {9u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(8, 9, 1)), expect_8_9);
-  Vector<unsigned> expect_8_10 = {10u};
+  Vector<wtf_size_t> expect_8_10 = {10u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(8, 10, 1)), expect_8_10);
-  Vector<unsigned> expect_9_12 = {12u};
+  Vector<wtf_size_t> expect_9_12 = {12u};
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(9, 12, 1)), expect_9_12);
 }
 

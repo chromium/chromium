@@ -331,8 +331,8 @@ class CORE_EXPORT InlineCursor {
   // The layout box of text in (start, end) range in local coordinate.
   // Start and end offsets must be between |CurrentTextStartOffset()| and
   // |CurrentTextEndOffset()|. It is error to call other than text.
-  PhysicalRect CurrentLocalRect(unsigned start_offset,
-                                unsigned end_offset) const;
+  PhysicalRect CurrentLocalRect(wtf_size_t start_offset,
+                                wtf_size_t end_offset) const;
   PhysicalRect CurrentLocalSelectionRectForText(
       const LayoutSelectionStatus& selection_status) const;
   PhysicalRect CurrentLocalSelectionRectForReplaced() const;
@@ -346,7 +346,7 @@ class CORE_EXPORT InlineCursor {
 
   // Returns inline position relative to current text fragment for
   // |LocalCaretRect|. It is error to call other than text.
-  LayoutUnit CaretInlinePositionForOffset(unsigned offset) const;
+  LayoutUnit CaretInlinePositionForOffset(wtf_size_t offset) const;
 
   // Converts the given point, relative to the fragment itself, into a position
   // in DOM tree within the range of |this|. This variation ignores the inline
@@ -371,7 +371,7 @@ class CORE_EXPORT InlineCursor {
       const PhysicalOffset& point_in_container) const;
 
   // Returns |PositionWithAffinity| in current text at |text_offset|
-  PositionWithAffinity PositionForPointInText(unsigned text_offset) const;
+  PositionWithAffinity PositionForPointInText(wtf_size_t text_offset) const;
 
   // Returns first/last position of |this| line. |this| should be line box.
   PositionWithAffinity PositionForStartOfLine() const;

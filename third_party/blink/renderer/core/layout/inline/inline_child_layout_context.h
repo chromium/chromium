@@ -55,8 +55,8 @@ class CORE_EXPORT InlineChildLayoutContext {
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
   InlineLayoutStateStack* BoxStatesIfValidForItemIndex(const InlineItems& items,
-                                                       unsigned item_index);
-  void SetItemIndex(const InlineItems& items, unsigned item_index) {
+                                                       wtf_size_t item_index);
+  void SetItemIndex(const InlineItems& items, wtf_size_t item_index) {
     items_ = &items;
     item_index_ = item_index;
   }
@@ -103,7 +103,7 @@ class CORE_EXPORT InlineChildLayoutContext {
 
   // The items and its index this context is set up for.
   const InlineItems* items_ = nullptr;
-  unsigned item_index_ = 0;
+  wtf_size_t item_index_ = 0;
 
   HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 

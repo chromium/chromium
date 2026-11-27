@@ -18,16 +18,16 @@ namespace blink {
 namespace {
 
 // Constants for PackSegmentData() and UnpackSegmentData().
-inline constexpr unsigned kScriptBits = InlineItemSegment::kScriptBits;
-inline constexpr unsigned kFontFallbackPriorityBits =
+inline constexpr wtf_size_t kScriptBits = InlineItemSegment::kScriptBits;
+inline constexpr wtf_size_t kFontFallbackPriorityBits =
     InlineItemSegment::kFontFallbackPriorityBits;
-inline constexpr unsigned kRenderOrientationBits =
+inline constexpr wtf_size_t kRenderOrientationBits =
     InlineItemSegment::kRenderOrientationBits;
 
-inline constexpr unsigned kScriptMask = (1 << kScriptBits) - 1;
-inline constexpr unsigned kFontFallbackPriorityMask =
+inline constexpr uint32_t kScriptMask = (1 << kScriptBits) - 1;
+inline constexpr uint32_t kFontFallbackPriorityMask =
     (1 << kFontFallbackPriorityBits) - 1;
-inline constexpr unsigned kRenderOrientationMask =
+inline constexpr uint32_t kRenderOrientationMask =
     (1 << kRenderOrientationBits) - 1;
 
 static_assert(InlineItemSegment::kSegmentDataBits ==
@@ -35,8 +35,8 @@ static_assert(InlineItemSegment::kSegmentDataBits ==
                       kFontFallbackPriorityBits,
               "kSegmentDataBits must be the sum of these bits");
 
-unsigned SetRenderOrientation(
-    unsigned value,
+uint32_t SetRenderOrientation(
+    uint32_t value,
     OrientationIterator::RenderOrientation render_orientation) {
   DCHECK_NE(render_orientation,
             OrientationIterator::RenderOrientation::kInvalid);
@@ -50,14 +50,14 @@ InlineItemSegment::InlineItemSegment(
     const RunSegmenter::RunSegmenterRange& range)
     : end_offset_(range.end), segment_data_(PackSegmentData(range)) {}
 
-InlineItemSegment::InlineItemSegment(unsigned end_offset,
+InlineItemSegment::InlineItemSegment(wtf_size_t end_offset,
                                      const InlineItem& item)
     : end_offset_(end_offset), segment_data_(item.SegmentData()) {}
 
 uint32_t InlineItemSegment::PackSegmentData(
     const RunSegmenter::RunSegmenterRange& range) {
   DCHECK(range.script == USCRIPT_INVALID_CODE ||
-         static_cast<unsigned>(range.script) <= kScriptMask);
+         static_cast<uint32_t>(range.script) <= kScriptMask);
   DCHECK_LE(std::to_underlying(range.font_fallback_priority),
             kFontFallbackPriorityMask);
   DCHECK_LE(std::to_underlying(range.render_orientation),
@@ -73,8 +73,8 @@ uint32_t InlineItemSegment::PackSegmentData(
 }
 
 RunSegmenter::RunSegmenterRange InlineItemSegment::UnpackSegmentData(
-    unsigned start_offset,
-    unsigned end_offset,
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
     uint32_t value) {
   uint32_t render_orientation = value & kRenderOrientationMask;
   value >>= kRenderOrientationBits;
@@ -90,8 +90,8 @@ RunSegmenter::RunSegmenterRange InlineItemSegment::UnpackSegmentData(
 }
 
 RunSegmenter::RunSegmenterRange InlineItemSegment::ToRunSegmenterRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   DCHECK_LT(start_offset, end_offset);
   DCHECK_LT(start_offset, end_offset_);
   return UnpackSegmentData(start_offset, std::min(end_offset, end_offset_),
@@ -105,13 +105,13 @@ InlineItemSegments* InlineItemSegments::Clone() const {
   return new_segments;
 }
 
-unsigned InlineItemSegments::OffsetForSegment(
+wtf_size_t InlineItemSegments::OffsetForSegment(
     const InlineItemSegment& segment) const {
   return &segment == segments_.data() ? 0 : std::prev(&segment)->EndOffset();
 }
 
 #if DCHECK_IS_ON()
-void InlineItemSegments::CheckOffset(unsigned offset,
+void InlineItemSegments::CheckOffset(wtf_size_t offset,
                                      const InlineItemSegment* segment) const {
   DCHECK_GE(segment, segments_.data());
   DCHECK_LT(segment, base::to_address(segments_.end()));
@@ -121,14 +121,14 @@ void InlineItemSegments::CheckOffset(unsigned offset,
 #endif
 
 InlineItemSegments::Iterator InlineItemSegments::Ranges(
-    unsigned start_offset,
-    unsigned end_offset,
-    unsigned item_index) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
+    wtf_size_t item_index) const {
   DCHECK_LT(start_offset, end_offset);
   DCHECK_LE(end_offset, EndOffset());
 
   // Find the first segment for |item_index|.
-  unsigned segment_index = items_to_segments_[item_index];
+  wtf_size_t segment_index = items_to_segments_[item_index];
   const InlineItemSegment* segment = &segments_[segment_index];
   DCHECK_GE(start_offset, OffsetForSegment(*segment));
   base::span<const InlineItemSegment> span = base::span(segments_);
@@ -136,15 +136,17 @@ InlineItemSegments::Iterator InlineItemSegments::Ranges(
     return Iterator(start_offset, end_offset, span, segment_index);
 
   // The item has multiple segments. Find the segments for |start_offset|.
-  unsigned end_segment_index = item_index + 1 < items_to_segments_.size()
-                                   ? items_to_segments_[item_index + 1]
-                                   : segments_.size();
+  wtf_size_t end_segment_index = item_index + 1 < items_to_segments_.size()
+                                     ? items_to_segments_[item_index + 1]
+                                     : segments_.size();
   CHECK_GT(end_segment_index, segment_index);
   CHECK_LE(end_segment_index, segments_.size());
   auto iter = std::ranges::upper_bound(
       span.subspan(segment_index, end_segment_index - segment_index),
       start_offset,
-      [](unsigned offset, unsigned end_offset) { return offset < end_offset; },
+      [](wtf_size_t offset, wtf_size_t end_offset) {
+        return offset < end_offset;
+      },
       &InlineItemSegment::EndOffset);
   CheckOffset(start_offset, base::to_address(iter));
   return Iterator(start_offset, end_offset, span,
@@ -160,16 +162,16 @@ void InlineItemSegments::ComputeSegments(
   } while (segmenter->Consume(range));
 }
 
-unsigned InlineItemSegments::AppendMixedFontOrientation(
+wtf_size_t InlineItemSegments::AppendMixedFontOrientation(
     const String& text_content,
-    unsigned start_offset,
-    unsigned end_offset,
-    unsigned segment_index) {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
+    wtf_size_t segment_index) {
   DCHECK_LT(start_offset, end_offset);
   OrientationIterator iterator(
       text_content.Span16().subspan(start_offset, end_offset - start_offset),
       FontOrientation::kVerticalMixed);
-  unsigned original_start_offset = start_offset;
+  wtf_size_t original_start_offset = start_offset;
   OrientationIterator::RenderOrientation orientation;
   for (; iterator.Consume(&end_offset, &orientation);
        start_offset = end_offset) {
@@ -180,11 +182,11 @@ unsigned InlineItemSegments::AppendMixedFontOrientation(
   return segment_index;
 }
 
-unsigned InlineItemSegments::PopulateItemsFromFontOrientation(
-    unsigned start_offset,
-    unsigned end_offset,
+wtf_size_t InlineItemSegments::PopulateItemsFromFontOrientation(
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
     OrientationIterator::RenderOrientation render_orientation,
-    unsigned segment_index) {
+    wtf_size_t segment_index) {
   DCHECK_LT(start_offset, end_offset);
   DCHECK_LE(end_offset, segments_.back().EndOffset());
 
@@ -214,10 +216,10 @@ unsigned InlineItemSegments::PopulateItemsFromFontOrientation(
   return segment_index;
 }
 
-void InlineItemSegments::Split(unsigned index, unsigned offset) {
+void InlineItemSegments::Split(wtf_size_t index, wtf_size_t offset) {
   InlineItemSegment& segment = segments_[index];
   DCHECK_LT(offset, segment.EndOffset());
-  unsigned end_offset = segment.EndOffset();
+  wtf_size_t end_offset = segment.EndOffset();
   segment.end_offset_ = offset;
   segments_.insert(index + 1,
                    InlineItemSegment(end_offset, segment.segment_data_));
@@ -231,8 +233,8 @@ void InlineItemSegments::AdjustOffsets(const TextOffsetMap& offset_map) {
 
 void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {
   DCHECK_EQ(items.back()->EndOffset(), EndOffset());
-  unsigned segment_index = 0;
-  unsigned item_index = 0;
+  wtf_size_t segment_index = 0;
+  wtf_size_t item_index = 0;
   items_to_segments_.resize(items.size());
   for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
@@ -247,9 +249,9 @@ void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {
 ShapeResult* InlineItemSegments::ShapeText(const HarfBuzzShaper* shaper,
                                            const Font* font,
                                            TextDirection direction,
-                                           unsigned start_offset,
-                                           unsigned end_offset,
-                                           unsigned item_index,
+                                           wtf_size_t start_offset,
+                                           wtf_size_t end_offset,
+                                           wtf_size_t item_index,
                                            ShapeOptions options) const {
   Vector<RunSegmenter::RunSegmenterRange> ranges;
   for (const RunSegmenter::RunSegmenterRange& range :

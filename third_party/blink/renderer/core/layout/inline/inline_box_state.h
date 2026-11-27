@@ -33,8 +33,8 @@ struct TextFitBlockScale;
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
 struct PendingPositions {
-  unsigned fragment_start;
-  unsigned fragment_end;
+  wtf_size_t fragment_start;
+  wtf_size_t fragment_end;
   FontHeight metrics;
   EVerticalAlign vertical_align;
 };
@@ -47,7 +47,7 @@ struct InlineBoxState {
   DISALLOW_NEW();
 
  public:
-  unsigned fragment_start = 0;
+  wtf_size_t fragment_start = 0;
   Member<const InlineItem> item;
   Member<const ComputedStyle> style;
 
@@ -238,7 +238,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   AnnotationBoxBlockAxisMargins() const;
 
   // Notify when child is inserted at |index| to adjust child indexes.
-  void ChildInserted(unsigned index);
+  void ChildInserted(wtf_size_t index);
 
   // This class keeps indexes to fragments in the line box, and that only
   // appending is allowed. Call this function to move all such data to the line
@@ -323,8 +323,8 @@ class CORE_EXPORT InlineLayoutStateStack {
   // This is public only for WTF_ALLOW_CLEAR_UNUSED_SLOTS_*.
   struct BoxData {
     DISALLOW_NEW();
-    BoxData(unsigned start,
-            unsigned end,
+    BoxData(wtf_size_t start,
+            wtf_size_t end,
             const InlineItem* item,
             LogicalSize size)
         : fragment_start(start),
@@ -332,14 +332,14 @@ class CORE_EXPORT InlineLayoutStateStack {
           item(item),
           rect(LogicalOffset(), size) {}
 
-    BoxData(const BoxData& other, unsigned start, unsigned end)
+    BoxData(const BoxData& other, wtf_size_t start, wtf_size_t end)
         : fragment_start(start),
           fragment_end(end),
           item(other.item),
           rect(other.rect),
           relative_insets(other.relative_insets) {}
 
-    void SetFragmentRange(unsigned start_index, unsigned end_index) {
+    void SetFragmentRange(wtf_size_t start_index, wtf_size_t end_index) {
       fragment_start = start_index;
       fragment_end = end_index;
     }
@@ -352,8 +352,8 @@ class CORE_EXPORT InlineLayoutStateStack {
     }
 
     // The range of child fragments this box contains.
-    unsigned fragment_start;
-    unsigned fragment_end;
+    wtf_size_t fragment_start;
+    wtf_size_t fragment_end;
     // Ruby columns in the above range.
     Member<GCedHeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
@@ -373,8 +373,8 @@ class CORE_EXPORT InlineLayoutStateStack {
     LayoutUnit margin_border_padding_line_left;
     LayoutUnit margin_border_padding_line_right;
 
-    unsigned parent_box_data_index = 0;
-    unsigned fragmented_box_data_index = 0;
+    wtf_size_t parent_box_data_index = 0;
+    wtf_size_t fragmented_box_data_index = 0;
 
     void UpdateFragmentEdges(HeapVector<BoxData, 4>& list);
 
@@ -392,9 +392,9 @@ class CORE_EXPORT InlineLayoutStateStack {
   //
   // Returns the index to process next. It should be given to the next call to
   // this function.
-  unsigned UpdateBoxDataFragmentRange(LogicalLineItems*,
-                                      unsigned index,
-                                      HeapVector<BoxData>* fragmented_boxes);
+  wtf_size_t UpdateBoxDataFragmentRange(LogicalLineItems*,
+                                        wtf_size_t index,
+                                        HeapVector<BoxData>* fragmented_boxes);
 
   // Update edges of inline fragmented boxes.
   void UpdateFragmentedBoxDataEdges(HeapVector<BoxData>* fragmented_boxes);
@@ -413,9 +413,9 @@ class CORE_EXPORT InlineLayoutStateStack {
 struct CORE_EXPORT LogicalRubyColumn
     : public GarbageCollected<LogicalRubyColumn> {
   // Start index of a ruby-base for the corresponding LogicalLineItems.
-  unsigned start_index;
+  wtf_size_t start_index;
   // The number of ruby-base items in the corresponding LogicalLineItems.
-  unsigned size;
+  wtf_size_t size;
   // Inset values applied after bidi reorder.
   std::pair<LayoutUnit, LayoutUnit> base_insets;
 
@@ -437,7 +437,7 @@ struct CORE_EXPORT LogicalRubyColumn
   InlineLayoutStateStack state_stack;
 
   void Trace(Visitor* visitor) const;
-  unsigned EndIndex() const { return start_index + size; }
+  wtf_size_t EndIndex() const { return start_index + size; }
   // Nested <ruby>s in `annotation_items`.
   HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
     return state_stack.RubyColumnList();

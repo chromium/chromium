@@ -91,7 +91,7 @@ bool CanResolveInlineCaretPositionAfterFragment(const InlineCursor& cursor,
 // on |affinity|.
 InlineCaretPositionResolution TryResolveInlineCaretPositionInTextFragment(
     const InlineCursor& cursor,
-    unsigned offset,
+    wtf_size_t offset,
     TextAffinity affinity) {
   if (cursor.Current().IsGeneratedText()) {
     return InlineCaretPositionResolution();
@@ -111,8 +111,8 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionInTextFragment(
   // example, a trailing space of a line is not in any fragment, but its two
   // sides are still different caret positions, so we don't ignore it.
   const TextOffsetRange current_offset = cursor.Current().TextOffset();
-  const unsigned start_offset = current_offset.start;
-  const unsigned end_offset = current_offset.end;
+  const wtf_size_t start_offset = current_offset.start;
+  const wtf_size_t end_offset = current_offset.end;
   if (offset < start_offset &&
       !mapping.HasBidiControlCharactersOnly(offset, start_offset)) {
     return InlineCaretPositionResolution();
@@ -155,12 +155,12 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionInTextFragment(
   return {ResolutionType::kFoundCandidate, candidate};
 }
 
-unsigned GetTextOffsetBefore(const Node& node) {
+wtf_size_t GetTextOffsetBefore(const Node& node) {
   // TODO(xiaochengh): Design more straightforward way to get text offset of
   // atomic inline box.
   DCHECK(node.GetLayoutObject()->IsAtomicInline());
   const Position before_node = Position::BeforeNode(node);
-  std::optional<unsigned> maybe_offset_before =
+  std::optional<wtf_size_t> maybe_offset_before =
       OffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
   // We should have offset mapping for atomic inline boxes.
   DCHECK(maybe_offset_before.has_value());
@@ -172,7 +172,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
 // |kResolved| depending on |affinity|.
 InlineCaretPositionResolution TryResolveInlineCaretPositionByBoxFragmentSide(
     const InlineCursor& cursor,
-    unsigned offset,
+    wtf_size_t offset,
     TextAffinity affinity) {
   const Node* const node = cursor.Current().GetNode();
   // There is no caret position at a pseudo or generated box side.
@@ -182,8 +182,8 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionByBoxFragmentSide(
     return InlineCaretPositionResolution();
   }
 
-  const unsigned offset_before = GetTextOffsetBefore(*node);
-  const unsigned offset_after = offset_before + 1;
+  const wtf_size_t offset_before = GetTextOffsetBefore(*node);
+  const wtf_size_t offset_after = offset_before + 1;
   // TODO(xiaochengh): Ignore bidi control characters before & after the box.
   if (offset != offset_before && offset != offset_after) {
     return InlineCaretPositionResolution();
@@ -208,7 +208,7 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionByBoxFragmentSide(
 
 InlineCaretPositionResolution TryResolveInlineCaretPositionWithFragment(
     const InlineCursor& cursor,
-    unsigned offset,
+    wtf_size_t offset,
     TextAffinity affinity) {
   if (cursor.Current().IsText()) {
     return TryResolveInlineCaretPositionInTextFragment(cursor, offset,
@@ -233,8 +233,8 @@ bool NeedsBidiAdjustment(const InlineCaretPosition& caret_position) {
   }
   DCHECK(caret_position.text_offset.has_value());
   const TextOffsetRange offset = caret_position.cursor.Current().TextOffset();
-  const unsigned start_offset = offset.start;
-  const unsigned end_offset = offset.end;
+  const wtf_size_t start_offset = offset.start;
+  const wtf_size_t end_offset = offset.end;
   DCHECK_GE(*caret_position.text_offset, start_offset);
   DCHECK_LE(*caret_position.text_offset, end_offset);
   // Bidi adjustment is needed only for caret positions at bidi boundaries.
@@ -269,7 +269,7 @@ bool IsUpstreamAfterLineBreak(const InlineCaretPosition& caret_position) {
 
 InlineCaretPosition BetterCandidateBetween(const InlineCaretPosition& current,
                                            const InlineCaretPosition& other,
-                                           unsigned offset) {
+                                           wtf_size_t offset) {
   DCHECK(!other.IsNull());
   if (current.IsNull()) {
     return other;
@@ -382,7 +382,7 @@ InlineCaretPosition ComputeInlineCaretPositionBeforeInline(
 // The main function for compute an InlineCaretPosition. See the comments at the
 // top of this file for details.
 InlineCaretPosition ComputeInlineCaretPosition(const LayoutBlockFlow& context,
-                                               unsigned offset,
+                                               wtf_size_t offset,
                                                TextAffinity affinity,
                                                const LayoutText* layout_text) {
   InlineCursor cursor(context);
@@ -456,7 +456,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
     // See editing/caret/caret-display-locked-crash.html
     return InlineCaretPosition();
   }
-  const std::optional<unsigned> maybe_offset =
+  const std::optional<wtf_size_t> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
     // We can reach here with empty text nodes.
@@ -474,13 +474,13 @@ InlineCaretPosition ComputeInlineCaretPosition(
                 *position.AnchorNode(), position.OffsetInContainerNode()))
           : nullptr;
 
-  const unsigned offset = maybe_offset.value_or(0);
+  const wtf_size_t offset = maybe_offset.value_or(0);
   const TextAffinity affinity = position_with_affinity.Affinity();
   // For upstream position, we use offset before ZWS to distinguish downstream
   // and upstream position when line breaking before ZWS.
   // "    Zabc" where "Z" represents zero-width-space.
   // See AccessibilitySelectionTest.FromCurrentSelectionInTextareaWithAffinity
-  const unsigned adjusted_offset =
+  const wtf_size_t adjusted_offset =
       affinity == TextAffinity::kUpstream && offset &&
               mapping->GetText()[offset - 1] == uchar::kZeroWidthSpace
           ? offset - 1

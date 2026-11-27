@@ -1757,7 +1757,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
 
   const InlineItems& items = Node().ItemsData(/* is_first_line */ false).items;
 
-  unsigned index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
+  wtf_size_t index = GetBreakToken() ? GetBreakToken()->StartItemIndex() : 0;
   for (; index < items.size(); ++index) {
     const InlineItem& item = *items[index];
 

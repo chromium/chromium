@@ -562,7 +562,7 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
   const ComputedStyle& style = *box->style;
   LogicalLineItem& placeholder = (*line_box)[box->fragment_start];
   DCHECK(placeholder.IsPlaceholder());
-  const unsigned fragment_end = line_box->size();
+  const wtf_size_t fragment_end = line_box->size();
   DCHECK(box->item);
   BoxData& box_data = box_data_list_.emplace_back(
       box->fragment_start, fragment_end, box->item, placeholder.Size());
@@ -654,7 +654,7 @@ InlineLayoutStateStack::AnnotationBoxBlockAxisMargins() const {
   return std::make_pair(data.margin_line_over, data.margin_line_under);
 }
 
-void InlineLayoutStateStack::ChildInserted(unsigned index) {
+void InlineLayoutStateStack::ChildInserted(wtf_size_t index) {
   for (InlineBoxState& state : stack_) {
     if (state.fragment_start >= index)
       ++state.fragment_start;
@@ -674,13 +674,14 @@ void InlineLayoutStateStack::PrepareForReorder(LogicalLineItems* line_box) {
     return;
 
   // Set indexes of BoxData to the children of the line box.
-  unsigned box_data_index = 0;
+  wtf_size_t box_data_index = 0;
   for (const BoxData& box_data : box_data_list_) {
     box_data_index++;
     DCHECK((*line_box)[box_data.fragment_start].IsPlaceholder());
-    for (unsigned i = box_data.fragment_start; i < box_data.fragment_end; i++) {
+    for (wtf_size_t i = box_data.fragment_start; i < box_data.fragment_end;
+         ++i) {
       LogicalLineItem& child = (*line_box)[i];
-      unsigned child_box_data_index = child.box_data_index;
+      wtf_size_t child_box_data_index = child.box_data_index;
       if (!child_box_data_index) {
         child.box_data_index = box_data_index;
         continue;
@@ -712,8 +713,9 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
 
   // Scan children and update start/end from their box_data_index.
   HeapVector<BoxData> fragmented_boxes;
-  for (unsigned index = 0; index < line_box->size();)
+  for (wtf_size_t index = 0; index < line_box->size();) {
     index = UpdateBoxDataFragmentRange(line_box, index, &fragmented_boxes);
+  }
 
   // If any inline fragmentation occurred due to BiDi reorder, append them and
   // adjust box edges.
@@ -734,14 +736,14 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
 #endif
 }
 
-unsigned InlineLayoutStateStack::UpdateBoxDataFragmentRange(
+wtf_size_t InlineLayoutStateStack::UpdateBoxDataFragmentRange(
     LogicalLineItems* line_box,
-    unsigned index,
+    wtf_size_t index,
     HeapVector<BoxData>* fragmented_boxes) {
   // Find the first line box item that should create a box fragment.
   for (; index < line_box->size(); index++) {
     LogicalLineItem* start = &(*line_box)[index];
-    const unsigned box_data_index = start->box_data_index;
+    const wtf_size_t box_data_index = start->box_data_index;
     if (!box_data_index)
       continue;
     // |box_data_list_[box_data_index - 1]| is the box for |start| child.
@@ -755,8 +757,8 @@ unsigned InlineLayoutStateStack::UpdateBoxDataFragmentRange(
         box_data_list_[box_data_index - 1].parent_box_data_index;
 
     // Find the end line box item.
-    const unsigned start_index = index;
-    for (index++; index < line_box->size(); index++) {
+    const wtf_size_t start_index = index;
+    for (++index; index < line_box->size(); ++index) {
       LogicalLineItem* end = &(*line_box)[index];
 
       // If we found another box that maybe included in this box, update it
@@ -810,7 +812,7 @@ void InlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
     // Insert the fragmented box to right after the box it was fragmented from.
     // The order in the |box_data_list_| is critical when propagating child
     // fragment data such as OOF to ancestors.
-    const unsigned insert_at = fragmented_box.fragmented_box_data_index;
+    const wtf_size_t insert_at = fragmented_box.fragmented_box_data_index;
     DCHECK_GT(insert_at, 0u);
     fragmented_box.fragmented_box_data_index = 0;
     box_data_list_.insert(insert_at, fragmented_box);
@@ -823,7 +825,7 @@ void InlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
 
     // Set the index of the last fragment to the original box. This is needed to
     // update fragment edges.
-    const unsigned fragmented_from = insert_at - 1;
+    const wtf_size_t fragmented_from = insert_at - 1;
     if (!box_data_list_[fragmented_from].fragmented_box_data_index)
       box_data_list_[fragmented_from].fragmented_box_data_index = insert_at;
   }
@@ -876,8 +878,8 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
   if (!ignore_box_margin_border_padding) {
     // Adjust child offsets for margin/border/padding of inline boxes.
     for (BoxData& box_data : box_data_list_) {
-      unsigned start = box_data.fragment_start;
-      unsigned end = box_data.fragment_end;
+      wtf_size_t start = box_data.fragment_start;
+      wtf_size_t end = box_data.fragment_end;
       DCHECK_GT(end, start);
 
       if (box_data.margin_border_padding_line_left) {
@@ -907,14 +909,14 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
     // Compute line-left and line-right edge of this box by accomodating
     // border/padding of this box and margin/border/padding of descendants
     // boxes, while accumulating its margin/border/padding.
-    unsigned start = box_data.fragment_start;
+    wtf_size_t start = box_data.fragment_start;
     LogicalLineItem& start_child = (*line_box)[start];
     LayoutUnit line_left_offset =
         start_child.rect.offset.inline_offset - start_child.margin_line_left;
     LinePadding& start_padding = accumulated_padding[start];
 
     DCHECK_GT(box_data.fragment_end, start);
-    unsigned last = box_data.fragment_end - 1;
+    wtf_size_t last = box_data.fragment_end - 1;
     LogicalLineItem& last_child = (*line_box)[last];
     LayoutUnit line_right_offset = last_child.rect.offset.inline_offset -
                                    last_child.margin_line_left +
@@ -965,20 +967,20 @@ void InlineLayoutStateStack::ApplyRelativePositioning(
   Vector<LogicalOffset, 32> accumulated_offsets(line_box->size());
 
   if (parent_offset) {
-    for (unsigned index = 0; index < line_box->size(); ++index) {
+    for (wtf_size_t index = 0; index < line_box->size(); ++index) {
       (*line_box)[index].rect.offset += *parent_offset;
       accumulated_offsets[index] = *parent_offset;
     }
   }
 
   for (BoxData& box_data : box_data_list_) {
-    unsigned start = box_data.fragment_start;
-    unsigned end = box_data.fragment_end;
+    wtf_size_t start = box_data.fragment_start;
+    wtf_size_t end = box_data.fragment_end;
     const LogicalOffset relative_offset = ComputeRelativeOffsetForInline(
         box_data.relative_insets, space.GetWritingDirection());
 
     // Move all children for this box.
-    for (unsigned index = start; index < end; index++) {
+    for (wtf_size_t index = start; index < end; ++index) {
       auto& child = (*line_box)[index];
       child.rect.offset += relative_offset;
       accumulated_offsets[index] += relative_offset;
@@ -1011,8 +1013,8 @@ void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
   }
 
   for (BoxData& box_data : box_data_list_) {
-    unsigned start = box_data.fragment_start;
-    unsigned end = box_data.fragment_end;
+    wtf_size_t start = box_data.fragment_start;
+    wtf_size_t end = box_data.fragment_end;
     DCHECK_GT(end, start);
     LogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
@@ -1113,7 +1115,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
     }
   };
 
-  for (unsigned i = fragment_start; i < fragment_end; i++) {
+  for (wtf_size_t i = fragment_start; i < fragment_end; ++i) {
     LogicalLineItem& child = (*line_box)[i];
 
     // If |child| has a fragment created by previous |CreateBoxFragment|, skip
@@ -1134,7 +1136,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
       if (annotation_items.WasPropagated()) {
         continue;
       }
-      for (unsigned i = 0; i < annotation_items.size(); ++i) {
+      for (wtf_size_t i = 0; i < annotation_items.size(); ++i) {
         LogicalLineItem& child = annotation_items[i];
         if (child.children_count) {
           i += child.children_count - 1;
@@ -1253,7 +1255,7 @@ InlineLayoutStateStack::ApplyBaselineShift(wtf_size_t stack_index,
   }
 
   // Check if there are any fragments to move.
-  unsigned fragment_end = line_box->size();
+  wtf_size_t fragment_end = line_box->size();
   if (box->fragment_start == fragment_end)
     return kPositionNotPending;
 
@@ -1478,7 +1480,7 @@ void InlineLayoutStateStack::CheckSame(
   DCHECK_EQ(other.box_data_list_.size(), 0u);
 
   DCHECK_EQ(stack_.size(), other.stack_.size());
-  for (unsigned i = 0; i < stack_.size(); i++) {
+  for (wtf_size_t i = 0; i < stack_.size(); ++i) {
     stack_[i].CheckSame(other.stack_[i]);
   }
 }

@@ -69,12 +69,12 @@ namespace blink {
 namespace {
 
 template <typename Span1, typename Span2>
-unsigned MismatchInternal(const Span1& span1, const Span2& span2) {
+wtf_size_t MismatchInternal(const Span1& span1, const Span2& span2) {
   const auto old_new = std::ranges::mismatch(span1, span2);
-  return static_cast<unsigned>(old_new.in1 - span1.begin());
+  return static_cast<wtf_size_t>(old_new.in1 - span1.begin());
 }
 
-unsigned Mismatch(const String& old_text, const String& new_text) {
+wtf_size_t Mismatch(const String& old_text, const String& new_text) {
   if (old_text.Is8Bit()) {
     const auto old_span8 = old_text.Span8();
     if (new_text.Is8Bit()) {
@@ -90,14 +90,14 @@ unsigned Mismatch(const String& old_text, const String& new_text) {
 }
 
 template <typename Span1, typename Span2>
-unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
+wtf_size_t MismatchFromEnd(const Span1& span1, const Span2& span2) {
   auto rspan1 = std::views::reverse(span1);
   const auto old_new =
       std::ranges::mismatch(rspan1, std::views::reverse(span2));
-  return static_cast<unsigned>(old_new.in1 - rspan1.begin());
+  return static_cast<wtf_size_t>(old_new.in1 - rspan1.begin());
 }
 
-unsigned MismatchFromEnd(StringView old_text, StringView new_text) {
+wtf_size_t MismatchFromEnd(StringView old_text, StringView new_text) {
   if (old_text.Is8Bit()) {
     if (new_text.Is8Bit()) {
       return MismatchFromEnd(old_text.Span8(), new_text.Span8());
@@ -128,8 +128,8 @@ float CalculateWidthForTextCombine(const InlineItemsData& data) {
 }
 
 // Estimate the number of InlineItem to minimize the vector expansions.
-unsigned EstimateInlineItemsCount(const LayoutBlockFlow& block) {
-  unsigned count = 0;
+wtf_size_t EstimateInlineItemsCount(const LayoutBlockFlow& block) {
+  wtf_size_t count = 0;
   for (LayoutObject* child = block.FirstChild(); child;
        child = child->NextSibling()) {
     ++count;
@@ -139,7 +139,7 @@ unsigned EstimateInlineItemsCount(const LayoutBlockFlow& block) {
 
 // Estimate the number of units and ranges in OffsetMapping to minimize vector
 // and hash map expansions.
-unsigned EstimateOffsetMappingItemsCount(const LayoutBlockFlow& block) {
+wtf_size_t EstimateOffsetMappingItemsCount(const LayoutBlockFlow& block) {
   // Cancels out the factor 4 in EstimateInlineItemsCount() to get the number of
   // LayoutObjects.
   // TODO(layout-dev): Unify the two functions and make them less hacky.
@@ -164,7 +164,7 @@ class ReusingTextShaper final {
 
   const ShapeResult* Shape(const InlineItem& start_item,
                            const Font& font,
-                           unsigned end_offset) {
+                           wtf_size_t end_offset) {
     auto ShapeFunc = [&]() -> ShaperResult {
       return ShapeWithoutCache(start_item, font, end_offset);
     };
@@ -187,8 +187,8 @@ class ReusingTextShaper final {
  private:
   ShaperResult ShapeWithoutCache(const InlineItem& start_item,
                                  const Font& font,
-                                 unsigned end_offset) {
-    const unsigned start_offset = start_item.StartOffset();
+                                 wtf_size_t end_offset) {
+    const wtf_size_t start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
     if (!reusable_items_) {
@@ -214,7 +214,7 @@ class ReusingTextShaper final {
 
     ShapeResult* shape_result =
         ShapeResult::CreateEmpty(*reusable_shape_results.front());
-    unsigned offset = start_offset;
+    wtf_size_t offset = start_offset;
     for (const ShapeResult* reusable_shape_result : reusable_shape_results) {
       // In case of pre-wrap having break opportunity after leading space,
       // |offset| can be greater than |reusable_shape_result->StartIndex()|.
@@ -258,8 +258,8 @@ class ReusingTextShaper final {
   }
 
   HeapVector<Member<const ShapeResult>> CollectReusableShapeResults(
-      unsigned start_offset,
-      unsigned end_offset,
+      wtf_size_t start_offset,
+      wtf_size_t end_offset,
       const Font& font,
       TextDirection direction) {
     DCHECK_LT(start_offset, end_offset);
@@ -268,7 +268,7 @@ class ReusingTextShaper final {
       return shape_results;
     const auto start_item_iter = std::lower_bound(
         reusable_items_->begin(), reusable_items_->end(), start_offset,
-        [](const Member<InlineItem>& item, unsigned offset) {
+        [](const Member<InlineItem>& item, wtf_size_t offset) {
           return item->EndOffset() <= offset;
         });
     const wtf_size_t start_item_index =
@@ -302,8 +302,8 @@ class ReusingTextShaper final {
 
   const ShapeResult* Reshape(const InlineItem& start_item,
                              const Font& font,
-                             unsigned start_offset,
-                             unsigned end_offset) {
+                             wtf_size_t start_offset,
+                             wtf_size_t end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
@@ -754,11 +754,11 @@ class InlineNodeDataEditor final {
     const String& new_text = new_data.text_content;
     const auto [start_offset, end_match_length] =
         MatchedLengths(old_text, new_text);
-    const unsigned old_length = old_text.length();
-    const unsigned new_length = new_text.length();
+    const wtf_size_t old_length = old_text.length();
+    const wtf_size_t new_length = new_text.length();
     DCHECK_LE(start_offset, old_length - end_match_length);
     DCHECK_LE(start_offset, new_length - end_match_length);
-    const unsigned end_offset = old_length - end_match_length;
+    const wtf_size_t end_offset = old_length - end_match_length;
     DCHECK_LE(start_offset, end_offset);
     InlineItems items;
     ClearCollectionScope clear_scope(&items);
@@ -800,7 +800,7 @@ class InlineNodeDataEditor final {
       // Inserted text
       const int diff = new_length - old_length;
       {
-        const unsigned inserted_end = AdjustOffset(end_offset, diff);
+        const wtf_size_t inserted_end = AdjustOffset(end_offset, diff);
         const InlineItem& old_item = *old_items.front();
         if (start_offset < inserted_end) {
           items.push_back(MakeGarbageCollected<InlineItem>(
@@ -850,17 +850,18 @@ class InlineNodeDataEditor final {
  private:
   // Find the number of characters that match in the two strings, from the start
   // and from the end.
-  std::pair<unsigned, unsigned> MatchedLengths(const String& old_text,
-                                               const String& new_text) const {
+  std::pair<wtf_size_t, wtf_size_t> MatchedLengths(
+      const String& old_text,
+      const String& new_text) const {
     // Find how many characters match from the start.
-    const unsigned start_match_length = Mismatch(old_text, new_text);
+    const wtf_size_t start_match_length = Mismatch(old_text, new_text);
 
     // Find from the end, excluding the `start_match_length` characters.
-    const unsigned old_length = old_text.length();
-    const unsigned new_length = new_text.length();
-    const unsigned max_end_length = std::min(old_length - start_match_length,
-                                             new_length - start_match_length);
-    const unsigned end_match_length =
+    const wtf_size_t old_length = old_text.length();
+    const wtf_size_t new_length = new_text.length();
+    const wtf_size_t max_end_length = std::min(old_length - start_match_length,
+                                               new_length - start_match_length);
+    const wtf_size_t end_match_length =
         MismatchFromEnd(StringView(old_text, old_length - max_end_length),
                         StringView(new_text, new_length - max_end_length));
     DCHECK_LE(start_match_length, old_length - end_match_length);
@@ -868,7 +869,7 @@ class InlineNodeDataEditor final {
     return {start_match_length, end_match_length};
   }
 
-  static unsigned AdjustOffset(unsigned offset, int delta) {
+  static wtf_size_t AdjustOffset(wtf_size_t offset, int delta) {
     if (delta > 0)
       return offset + delta;
     return offset - (-delta);
@@ -876,11 +877,12 @@ class InlineNodeDataEditor final {
 
   // Returns copy of |item| after |start_offset| (inclusive).
   InlineItem& CopyItemAfter(const InlineItem& item,
-                            unsigned start_offset) const {
+                            wtf_size_t start_offset) const {
     DCHECK_LE(item.start_offset_, start_offset);
     DCHECK_LT(start_offset, item.end_offset_);
-    const unsigned safe_start_offset = GetFirstSafeToReuse(item, start_offset);
-    const unsigned end_offset = item.end_offset_;
+    const wtf_size_t safe_start_offset =
+        GetFirstSafeToReuse(item, start_offset);
+    const wtf_size_t end_offset = item.end_offset_;
     if (end_offset == safe_start_offset) {
       return *MakeGarbageCollected<InlineItem>(item, start_offset, end_offset,
                                                nullptr);
@@ -896,11 +898,11 @@ class InlineNodeDataEditor final {
 
   // Returns copy of |item| before |end_offset| (exclusive).
   InlineItem& CopyItemBefore(const InlineItem& item,
-                             unsigned end_offset) const {
+                             wtf_size_t end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
-    const unsigned safe_end_offset = GetLastSafeToReuse(item, end_offset);
-    const unsigned start_offset = item.start_offset_;
+    const wtf_size_t safe_end_offset = GetLastSafeToReuse(item, end_offset);
+    const wtf_size_t start_offset = item.start_offset_;
     // Nothing to reuse if no characters are safe to reuse.
     if (safe_end_offset <= start_offset) {
       return *MakeGarbageCollected<InlineItem>(item, start_offset, end_offset,
@@ -915,15 +917,15 @@ class InlineNodeDataEditor final {
   }
 
   // See also |GetLastSafeToReuse()|.
-  unsigned GetFirstSafeToReuse(const InlineItem& item,
-                               unsigned start_offset) const {
+  wtf_size_t GetFirstSafeToReuse(const InlineItem& item,
+                                 wtf_size_t start_offset) const {
     DCHECK_LE(item.start_offset_, start_offset);
     DCHECK_LE(start_offset, item.end_offset_);
-    const unsigned end_offset = item.end_offset_;
+    const wtf_size_t end_offset = item.end_offset_;
     // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
     // For font having "fi", |usMaxContext = 2".
-    const unsigned max_context = 2;
-    const unsigned skip = max_context - 1;
+    const wtf_size_t max_context = 2;
+    const wtf_size_t skip = max_context - 1;
     if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
         start_offset + skip >= end_offset)
       return end_offset;
@@ -934,16 +936,16 @@ class InlineNodeDataEditor final {
   }
 
   // See also |GetFirstSafeToReuse()|.
-  unsigned GetLastSafeToReuse(const InlineItem& item,
-                              unsigned end_offset) const {
+  wtf_size_t GetLastSafeToReuse(const InlineItem& item,
+                                wtf_size_t end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
-    const unsigned start_offset = item.start_offset_;
+    const wtf_size_t start_offset = item.start_offset_;
     // TODO(yosin): It is better to utilize OpenType |usMaxContext|.
     // For font having "fi", usMaxContext = 2.
     // For Emoji with ZWJ, usMaxContext = 10. (http://crbug.com/1213235)
-    const unsigned max_context = data_->text_content.Is8Bit() ? 2 : 10;
-    const unsigned skip = max_context - 1;
+    const wtf_size_t max_context = data_->text_content.Is8Bit() ? 2 : 10;
+    const wtf_size_t skip = max_context - 1;
     if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
         end_offset <= start_offset + skip)
       return start_offset;
@@ -970,7 +972,7 @@ class InlineNodeDataEditor final {
 #if DCHECK_IS_ON()
     if (items.empty())
       return;
-    unsigned last_offset = items.front()->start_offset_;
+    wtf_size_t last_offset = items.front()->start_offset_;
     for (const Member<InlineItem>& item_ptr : items) {
       const InlineItem& item = *item_ptr;
       DCHECK_LE(item.start_offset_, item.end_offset_);
@@ -1185,18 +1187,18 @@ const SvgTextChunkOffsets* InlineNode::FindSvgTextChunks(
   StringView ifc_text_view(ifc_text_content);
   for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();
        ++i) {
-    const std::pair<unsigned, SvgCharacterData>& char_data =
+    const std::pair<wtf_size_t, SvgCharacterData>& char_data =
         data.svg_node_data_->character_data_list[i];
     if (!char_data.second.anchored_chunk)
       continue;
-    unsigned addressable_offset = char_data.first;
+    wtf_size_t addressable_offset = char_data.first;
     if (addressable_offset == 0u)
       continue;
-    unsigned text_content_offset = svg_attr_builder.IfcTextContentOffsetAt(i);
+    wtf_size_t text_content_offset = svg_attr_builder.IfcTextContentOffsetAt(i);
     const auto* unit = mapping->GetLastMappingUnit(text_content_offset);
     DCHECK(unit);
     auto result = data.svg_node_data_->chunk_offsets.insert(
-        To<LayoutText>(&unit->GetLayoutObject()), Vector<unsigned>());
+        To<LayoutText>(&unit->GetLayoutObject()), Vector<wtf_size_t>());
     result.stored_value->value.push_back(
         unit->ConvertTextContentToFirstDOMOffset(text_content_offset));
   }
@@ -1229,7 +1231,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
           previous_data->items,
           [](const auto& item) { return item->Type() == InlineItem::kText; });
       if (it != previous_data->items.end()) {
-        unsigned previous_packed_segment = (*it)->segment_data_;
+        uint32_t previous_packed_segment = (*it)->segment_data_;
         for (auto& item_ptr : data->items) {
           InlineItem& item = *item_ptr;
           if (item.Type() == InlineItem::kText) {
@@ -1297,14 +1299,14 @@ void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
 
   // If we don't have |InlineItemSegments| yet, create a segment for the
   // entire content.
-  const unsigned capacity = items.size() + text_content.length() / 10;
+  const wtf_size_t capacity = items.size() + text_content.length() / 10;
   InlineItemSegments* segments = data->segments.Get();
   if (segments) {
     DCHECK(!data->segments->IsEmpty());
     data->segments->ReserveCapacity(capacity);
     DCHECK_EQ(text_content.length(), data->segments->EndOffset());
   }
-  unsigned segment_index = 0;
+  wtf_size_t segment_index = 0;
 
   for (const Member<InlineItem>& item_ptr : items) {
     InlineItem& item = *item_ptr;
@@ -1407,11 +1409,11 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
   // Copy resolved `BidiLevel`s in the `bidi` to the `items`.
   // If a boundary is within an `InlineItem`, this involves splitting.
   wtf_size_t out_of_flow_item_index = 0;
-  unsigned item_index = 0;
-  for (unsigned start = 0; start < text_len;) {
+  wtf_size_t item_index = 0;
+  for (wtf_size_t start = 0; start < text_len;) {
     DCHECK_EQ(items[item_index]->start_offset_, start - out_of_flow_item_index);
     UBiDiLevel level;
-    const unsigned end = bidi.GetLogicalRun(start, &level);
+    const wtf_size_t end = bidi.GetLogicalRun(start, &level);
     if (out_of_flow_items.empty()) {
       item_index = InlineItem::SetBidiLevel(items, item_index, end, level);
     } else {
@@ -1476,7 +1478,7 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
   }
 
   const Font* font = override_font;
-  unsigned previous_text_end_offset = 0u;
+  wtf_size_t previous_text_end_offset = 0u;
 
   for (const auto& item : items) {
     switch (item->Type()) {
@@ -1571,7 +1573,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
          data->segments->EndOffset() == text_content.length());
 
   bool is_letter_spacing_reported = false;
-  for (unsigned index = 0; index < items.size();) {
+  for (wtf_size_t index = 0; index < items.size();) {
     InlineItem& start_item = *items[index];
     if (start_item.Type() != InlineItem::kText || !start_item.Length()) {
       index++;
@@ -1606,8 +1608,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
     });
     is_next_start_of_paragraph = false;
     TextDirection direction = start_item.Direction();
-    unsigned end_index = index + 1;
-    unsigned end_offset = start_item.EndOffset();
+    wtf_size_t end_index = index + 1;
+    wtf_size_t end_offset = start_item.EndOffset();
 
     // Symbol marker is painted as graphics. Create a ShapeResult of space
     // glyphs with the desired size to make it less special for line breaker.
@@ -1626,8 +1628,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
     // Scan forward until an item is encountered that should trigger a shaping
     // break. This ensures that adjacent text items are shaped together whenever
     // possible as this is required for accurate cross-element shaping.
-    unsigned num_text_items = 1;
-    for (; end_index < items.size(); end_index++) {
+    wtf_size_t num_text_items = 1;
+    for (; end_index < items.size(); ++end_index) {
       const InlineItem& item = *items[end_index];
 
       if (item.Type() == InlineItem::kControl) {
@@ -1683,7 +1685,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
     // Results may only be reused if all items in the range remain valid.
     if (previous_text) {
       bool has_valid_shape_results = true;
-      for (unsigned item_index = index; item_index < end_index; item_index++) {
+      for (wtf_size_t item_index = index; item_index < end_index;
+           ++item_index) {
         if (NeedsShaping(*items[item_index])) {
           has_valid_shape_results = false;
           break;
@@ -1695,9 +1698,9 @@ void InlineNode::ShapeText(InlineItemsData* data,
       // re-ordered or removed.
       // TODO(layout-dev): It would probably be faster to check for removed or
       // moved items but for now comparing the string itself will do.
-      unsigned text_start = start_item.StartOffset();
+      wtf_size_t text_start = start_item.StartOffset();
       DCHECK_GE(end_offset, text_start);
-      unsigned text_length = end_offset - text_start;
+      wtf_size_t text_length = end_offset - text_start;
       if (has_valid_shape_results && previous_text &&
           end_offset <= previous_text->length() &&
           StringView(text_content, text_start, text_length) ==
@@ -1828,8 +1831,9 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
     InlineItem* first_line_item = MakeGarbageCollected<InlineItem>(*item);
     first_line_item->SetStyleVariant(StyleVariant::kFirstLine);
     if (needs_reshape && !offset_map.IsEmpty()) [[unlikely]] {
-      unsigned new_start = offset_map.MapOffset(first_line_item->StartOffset());
-      unsigned new_end = offset_map.MapOffset(first_line_item->EndOffset());
+      wtf_size_t new_start =
+          offset_map.MapOffset(first_line_item->StartOffset());
+      wtf_size_t new_end = offset_map.MapOffset(first_line_item->EndOffset());
       first_line_item->SetOffset(new_start, new_end);
     }
     first_line_items->items.push_back(first_line_item);
@@ -1946,7 +1950,7 @@ String CreateTextContentForStickyImagesQuirk(
 String InlineNode::TextContentForStickyImagesQuirk(
     const InlineItemsData& items_data) {
   const String& text_content = items_data.text_content;
-  for (unsigned i = 0; i < items_data.items.size(); ++i) {
+  for (wtf_size_t i = 0; i < items_data.items.size(); ++i) {
     const InlineItem& item = *items_data.items[i];
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
       auto item_span = base::span(items_data.items).subspan(i);
@@ -2113,7 +2117,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       is_after_break = true;
     }
 
-    void AddTabulationCharacters(const InlineItem& item, unsigned length) {
+    void AddTabulationCharacters(const InlineItem& item, wtf_size_t length) {
       DCHECK_GE(length, 1u);
       AddTextUntil(item.Index());
       DCHECK(item.Style());
@@ -2173,7 +2177,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
         if (item.Type() == InlineItem::kAtomicInline ||
             item.Type() == InlineItem::kBlockInInline) {
           // The max-size for atomic inlines are cached in |max_size_cache|.
-          unsigned item_index = item.Index();
+          wtf_size_t item_index = item.Index();
           position += max_size_cache[item_index];
           continue;
         }
@@ -2365,7 +2369,7 @@ void InlineNode::CheckConsistency() const {
 #endif
 }
 
-const Vector<std::pair<unsigned, SvgCharacterData>>&
+const Vector<std::pair<wtf_size_t, SvgCharacterData>>&
 InlineNode::SvgCharacterDataList() const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->character_data_list;

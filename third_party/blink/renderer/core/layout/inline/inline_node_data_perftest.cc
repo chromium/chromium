@@ -42,7 +42,7 @@ TEST(InlineNodeDataPerfTest, CountOnHTML5Spec) {
   document.View()->UpdateAllLifecyclePhasesForTest();
 
   // Walk the layout tree and count InlineNodeData instances.
-  unsigned inline_node_data_count = 0;
+  wtf_size_t inline_node_data_count = 0;
   const LayoutView* layout_view = document.GetLayoutView();
   for (const LayoutObject* object = layout_view; object;
        object = object->NextInPreOrder()) {

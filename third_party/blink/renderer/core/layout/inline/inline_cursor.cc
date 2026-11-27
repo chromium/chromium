@@ -146,10 +146,10 @@ bool ShouldIgnoreForPositionForPoint(const InlineCursor& line) {
 // Bounds the cost of |LayoutObject| descendant traversals for culled inlines
 // in |InlineCursor::MoveToFirstForCulledInline|. A culled inline may have a
 // huge number of descendants (crbug.com/1008523).
-constexpr unsigned kCulledInlineDescendantsLimit = 8;
+constexpr wtf_size_t kCulledInlineDescendantsLimit = 8;
 
 bool HasFewDescendants(const LayoutInline& layout_inline) {
-  unsigned count = 0;
+  wtf_size_t count = 0;
   for (const LayoutObject* descendant = layout_inline.FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(&layout_inline)) {
     if (++count > kCulledInlineDescendantsLimit) {
@@ -272,7 +272,7 @@ bool InlineCursorPosition::HasChildren() const {
 
 InlineCursor InlineCursor::CursorForDescendants() const {
   if (current_.item_) {
-    unsigned descendants_count = current_.item_->DescendantsCount();
+    wtf_size_t descendants_count = current_.item_->DescendantsCount();
     if (descendants_count > 1) {
       DCHECK(root_box_fragment_);
       DCHECK(fragment_items_);
@@ -299,10 +299,10 @@ InlineCursor InlineCursor::CursorForMovingAcrossFragmentainer() const {
 
 void InlineCursor::ExpandRootToContainingBlock() {
   if (fragment_items_) {
-    const unsigned index_diff = base::checked_cast<unsigned>(
-        items_.data() - fragment_items_->Items().data());
+    const wtf_size_t index_diff =
+        CheckedDistance(fragment_items_->Items().data(), items_.data());
     DCHECK_LT(index_diff, fragment_items_->Items().size());
-    const unsigned item_index = ToSpanIndex(current_.item_iter_);
+    const wtf_size_t item_index = ToSpanIndex(current_.item_iter_);
     items_ = fragment_items_->Items();
     // Update the iterator to the one for the new span.
     MoveToItem(items_.begin() + item_index + index_diff);
@@ -523,8 +523,8 @@ StringView InlineCursorPosition::Text(const InlineCursor& cursor) const {
   NOTREACHED();
 }
 
-PhysicalRect InlineCursor::CurrentLocalRect(unsigned start_offset,
-                                            unsigned end_offset) const {
+PhysicalRect InlineCursor::CurrentLocalRect(wtf_size_t start_offset,
+                                            wtf_size_t end_offset) const {
   DCHECK(Current().IsText());
   if (current_.item_) {
     return current_.item_->LocalRect(current_.item_->Text(*fragment_items_),
@@ -584,7 +584,7 @@ PhysicalRect InlineCursor::CurrentRectInFirstContainerFragment() const {
   return rect;
 }
 
-LayoutUnit InlineCursor::CaretInlinePositionForOffset(unsigned offset) const {
+LayoutUnit InlineCursor::CaretInlinePositionForOffset(wtf_size_t offset) const {
   DCHECK(Current().IsText());
   if (current_.item_) {
     return current_.item_->CaretInlinePositionForOffset(
@@ -874,7 +874,7 @@ PositionWithAffinity InlineCursor::PositionForPointInChild(
 }
 
 PositionWithAffinity InlineCursor::PositionForPointInText(
-    unsigned text_offset) const {
+    wtf_size_t text_offset) const {
   DCHECK(Current().IsText()) << this;
   if (HasRoot())
     return Current()->PositionForPointInText(text_offset, *this);
@@ -899,7 +899,7 @@ PositionWithAffinity InlineCursor::PositionForStartOfLine() const {
   }
   if (!IsA<Text>(node))
     return PositionWithAffinity(Position::BeforeNode(*node));
-  const unsigned text_offset =
+  const wtf_size_t text_offset =
       Current().BaseDirection() == first_leaf.Current().ResolvedDirection()
           ? first_leaf.Current().TextOffset().start
           : first_leaf.Current().TextOffset().end;
@@ -1870,7 +1870,7 @@ void InlineCursor::CheckValid(const InlineCursorPosition& position) const {
   if (position.Item()) {
     DCHECK(HasRoot());
     DCHECK_EQ(position.item_, &*position.item_iter_);
-    const unsigned index = ToSpanIndex(position.item_iter_);
+    const wtf_size_t index = ToSpanIndex(position.item_iter_);
     DCHECK_LT(index, items_.size());
   }
 }

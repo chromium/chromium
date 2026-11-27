@@ -15,7 +15,7 @@ namespace {
 
 struct SameSizeAsInlineBreakToken : BreakToken {
   Member<const ComputedStyle> style;
-  unsigned numbers[2];
+  uint32_t numbers[2];
 };
 
 ASSERT_SIZE(InlineBreakToken, SameSizeAsInlineBreakToken);
@@ -41,7 +41,7 @@ InlineBreakToken* InlineBreakToken::Create(
     InlineNode node,
     const ComputedStyle* style,
     const InlineItemTextIndex& start,
-    unsigned flags /* InlineBreakTokenFlags */,
+    uint32_t flags /* InlineBreakTokenFlags */,
     const BlockBreakToken* sub_break_token,
     const RubyBreakTokenData* ruby_data) {
   // We store the children list inline in the break token as a flexible
@@ -71,7 +71,7 @@ InlineBreakToken::InlineBreakToken(PassKey key,
                                    InlineNode node,
                                    const ComputedStyle* style,
                                    const InlineItemTextIndex& start,
-                                   unsigned flags /* InlineBreakTokenFlags */,
+                                   uint32_t flags /* InlineBreakTokenFlags */,
                                    const BlockBreakToken* sub_break_token,
                                    const RubyBreakTokenData* ruby_data)
     : BreakToken(kInlineBreakToken, node, flags), style_(style), start_(start) {
