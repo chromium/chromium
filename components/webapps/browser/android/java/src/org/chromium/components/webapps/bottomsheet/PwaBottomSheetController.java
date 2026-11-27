@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jni_zero.CalledByNative;
@@ -78,10 +79,6 @@ public class PwaBottomSheetController {
                                         .onSheetClosedWithSwipe(mNativePwaBottomSheetController);
                             }
                         }
-                        assumeNonNull(mBottomSheetController);
-                        mBottomSheetController.removeObserver(mBottomSheetObserver);
-                        mWebContentsObserver = null;
-                        mPwaBottomSheetContent = null;
                         destroy();
                         return;
                     }
@@ -258,9 +255,6 @@ public class PwaBottomSheetController {
         if (!bottomSheetController.requestShowContent(mPwaBottomSheetContent, true)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             bottomSheetController.hideContent(mPwaBottomSheetContent, false);
-            bottomSheetController.removeObserver(mBottomSheetObserver);
-            mPwaBottomSheetContent = null;
-            mBottomSheetController = null;
             destroy();
             return;
         }
@@ -308,8 +302,9 @@ public class PwaBottomSheetController {
         controller.addWebAppScreenshot(screenshot);
     }
 
-    private void addWebAppScreenshot(Bitmap screenshot) {
-        assumeNonNull(mScreenshotAdapter);
+    @VisibleForTesting
+    void addWebAppScreenshot(Bitmap screenshot) {
+        if (mScreenshotAdapter == null) return;
         mScreenshotAdapter.addScreenshot(screenshot);
     }
 
@@ -361,8 +356,25 @@ public class PwaBottomSheetController {
         }
     }
 
-    /** Called when the install UI is dismissed to clean up the C++ side. */
-    public void destroy() {
+    /** Returns the active {@link WebContents} for verifying cleanup in tests. */
+    @Nullable WebContents getWebContentsForTesting() {
+        return mWebContents;
+    }
+
+    /** Called when the install UI is dismissed to clean up Java and C++ state. */
+    private void destroy() {
+        if (mBottomSheetController != null) {
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+            mBottomSheetController = null;
+        }
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
+        }
+        mPwaBottomSheetContent = null;
+        mModel = null;
+        mScreenshotAdapter = null;
+        mWebContents = null;
         if (mNativePwaBottomSheetController != null) {
             mNativePwaBottomSheetController.destroy();
             mNativePwaBottomSheetController = null;
