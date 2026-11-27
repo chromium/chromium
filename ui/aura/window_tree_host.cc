@@ -306,7 +306,9 @@ void WindowTreeHost::SetSharedInputMethod(ui::InputMethod* input_method) {
 ui::EventDispatchDetails WindowTreeHost::DispatchKeyEventPostIME(
     ui::KeyEvent* event) {
   // If dispatch to IME is already disabled we shouldn't reach here.
-  CHECK(!dispatcher_->should_skip_ime(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585555550): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!dispatcher_->should_skip_ime());
   dispatcher_->set_skip_ime(true);
 
   // InputMethod::DispatchKeyEvent() is called in PRE_DISPATCH phase, so event
