@@ -250,19 +250,14 @@ template("python_binary") {
   }
 }
 
-# An action() that executes a python_binary() .pyz archive built in
-# $default_toolchain.
-#
-# Variables
-#   python_binary: (required) Label of the python_binary() target (without
-#       toolchain).
-#   All other action() variables are forwarded.
-template("python_action") {
-  action(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+template("_python_action") {
+  target(invoker._action_type, target_name) {
     forward_variables_from(invoker,
                            "*",
-                           TESTONLY_AND_VISIBILITY + [ "python_binary" ])
+                           [
+                             "_action_type",
+                             "python_binary",
+                           ])
     _python_binary = "${invoker.python_binary}($default_toolchain)"
     _pyz_name = get_label_info(_python_binary, "name")
     script =
@@ -271,5 +266,35 @@ template("python_action") {
       deps = []
     }
     deps += [ _python_binary ]
+  }
+}
+
+# An action() that executes a python_binary() .pyz archive built in
+# $default_toolchain.
+#
+# Variables
+#   python_binary: (required) Label of the python_binary() target (without
+#       toolchain).
+#   All other action() variables are forwarded.
+template("python_action") {
+  _python_action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    _action_type = "action"
+  }
+}
+
+# An action_foreach() that executes a python_binary() .pyz archive built in
+# $default_toolchain.
+#
+# Variables
+#   python_binary: (required) Label of the python_binary() target (without
+#       toolchain).
+#   All other action_foreach() variables are forwarded.
+template("python_action_foreach") {
+  _python_action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    _action_type = "action_foreach"
   }
 }

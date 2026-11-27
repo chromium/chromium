@@ -222,7 +222,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/generate_resource_allowlist",
-            "command_prefix": platform.python_bin + " ../../tools/resources/generate_resource_allowlist.py",
+            "command_prefix": platform.python_bin + " obj/tools/resources/generate_resource_allowlist.pyz",
             "indirect_inputs": {
                 "includes": ["*.o", "*.a"],
             },

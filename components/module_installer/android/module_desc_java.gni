@@ -21,8 +21,8 @@ template("module_desc_java") {
   _target_name = target_name
   _srcjar = "$target_gen_dir/${_target_name}__srcjar.srcjar"
 
-  action_with_pydeps("${_target_name}__srcjar") {
-    script = "//components/module_installer/android/module_desc_java.py"
+  python_action("${_target_name}__srcjar") {
+    python_binary = "//components/module_installer/android:module_desc_java"
     outputs = [ _srcjar ]
     args = [
       "--module",

@@ -10,15 +10,15 @@ import("//build/config/python.gni")
 # Variables:
 #   sources: List of .java files annotated with @ModuleInterface.
 template("module_interface_processor") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker,
                            [
                              "sources",
                              "testonly",
                              "visibility",
                            ])
-    script =
-        "//components/module_installer/android/module_interface_processor.py"
+    python_binary =
+        "//components/module_installer/android:module_interface_processor"
     outputs = [ "$target_gen_dir/$target_name.srcjar" ]
     args = [
              "--srcjar",

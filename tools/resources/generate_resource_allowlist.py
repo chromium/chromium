@@ -25,14 +25,16 @@ sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..', '..', 'build'))
 import action_helpers
 import ar
 
-llvm_bindir = os.path.join(
-  os.path.dirname(__file__),
-  '..',
-  '..',
-  'third_party',
-  'llvm-build',
-  'Release+Asserts',
-  'bin',
+llvm_bindir = os.path.normpath(
+  os.path.join(
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    'third_party',
+    'llvm-build',
+    'Release+Asserts',
+    'bin',
+  )
 )
 
 

@@ -20,14 +20,14 @@ import("//build/config/python.gni")
 #     output = "$target_gen_dir/pak_allowlist.txt"
 #   }
 template("generate_resource_allowlist") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
                                  "deps",
                                  "inputs",
                                ])
 
-    script = "//tools/resources/generate_resource_allowlist.py"
+    python_binary = "//tools/resources:generate_resource_allowlist"
     outputs = [ invoker.output ]
 
     depfile = "$target_gen_dir/$target_name.d"

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//build/config/python.gni")
 
 # Declare an Android library factory target.
 #
@@ -73,12 +74,12 @@ template("android_library_factory") {
   _process_factory_target_name = "${target_name}factory"
   _base_gen_dir = "${target_gen_dir}/${target_name}"
 
-  action_foreach_with_pydeps(_process_factory_target_name) {
+  python_action_foreach(_process_factory_target_name) {
     if (defined(invoker.generator_deps)) {
       deps = invoker.generator_deps
     }
 
-    script = "//chrome/android/features/create_stripped_java_factory.py"
+    python_binary = "//chrome/android/features:create_stripped_java_factory"
     sources = invoker.sources
     outputs =
         [ "$_base_gen_dir/{{source_root_relative_dir}}/{{source_file_part}}" ]
