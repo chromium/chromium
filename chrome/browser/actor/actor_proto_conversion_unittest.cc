@@ -784,8 +784,8 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest_NoCapability) {
   ReloadPageToolRequest reload_req(ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(reload_req),
             ClientTool(RuleMetadata::CAPABILITY_UNKNOWN));
-  EXPECT_FALSE(std::ranges::contains(
-      GetAllActorTools(), ClientTool(RuleMetadata::CAPABILITY_UNKNOWN)));
+  EXPECT_FALSE(GetAllActorTools().contains(
+      ClientTool(RuleMetadata::CAPABILITY_UNKNOWN)));
 }
 
 TEST_F(
