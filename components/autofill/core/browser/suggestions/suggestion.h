@@ -12,7 +12,6 @@
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -26,10 +25,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "components/autofill/core/browser/data_model/payments/iban.h"
-#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
@@ -236,64 +232,6 @@ struct Suggestion {
     std::map<FieldType, std::u16string> fields;
   };
 
-  struct AtMemoryPayload final {
-    // `std::string` is used to store the `CreditCard::guid_`.
-    // TODO(crbug.com/505251083): Replace `std::string` with `CreditCard::Guid`
-    // once its added.
-    using Identifier = std::variant<std::monostate,
-                                    Iban::Guid,
-                                    Iban::InstrumentId,
-                                    std::string,
-                                    EntityInstance::EntityId,
-                                    ValuableId>;
-
-    AtMemoryPayload();
-    // `value` is the value to be shown in the suggestion UI and the preview.
-    AtMemoryPayload(std::u16string value, MemoryDataType memory_data_type);
-    AtMemoryPayload(const AtMemoryPayload&);
-    AtMemoryPayload(AtMemoryPayload&&);
-    AtMemoryPayload& operator=(const AtMemoryPayload&);
-    AtMemoryPayload& operator=(AtMemoryPayload&&);
-    ~AtMemoryPayload();
-
-    friend bool operator==(const AtMemoryPayload&,
-                           const AtMemoryPayload&) = default;
-
-    // Text to fill in the trigger field upon accepting the suggestion.
-    std::u16string value;
-
-    // Human-readable type name of the entry.
-    std::u16string type_name;
-
-    // The identifier for the entry (e.g. IBAN Guid or InstrumentId).
-    Identifier identifier;
-
-    // The memory data type of the entry.
-    MemoryDataType memory_data_type = MemoryDataType::kUnknown;
-
-    // Whether the entry is sourced from `PersonalContextService`.
-    bool is_personal_context_sourced = false;
-
-    // The data sources that provided the entry.
-    std::underlying_type_t<MemoryEntrySourceType> sources_bitmask = 0;
-  };
-
-  struct OpenGeminiPayload final {
-    OpenGeminiPayload();
-    explicit OpenGeminiPayload(std::u16string prompt);
-    OpenGeminiPayload(const OpenGeminiPayload&);
-    OpenGeminiPayload(OpenGeminiPayload&&);
-    OpenGeminiPayload& operator=(const OpenGeminiPayload&);
-    OpenGeminiPayload& operator=(OpenGeminiPayload&&);
-    ~OpenGeminiPayload();
-
-    friend bool operator==(const OpenGeminiPayload&,
-                           const OpenGeminiPayload&) = default;
-
-    // The prompt to pass to Gemini when opening it.
-    std::u16string prompt;
-  };
-
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   // TODO(crbug.com/477689220): Directly use BnplIssuer and remove the alias.
@@ -308,8 +246,6 @@ struct Suggestion {
                                IdentityCredentialPayload,
                                AutocompleteEntry,
                                BnplIssuer,
-                               AtMemoryPayload,
-                               OpenGeminiPayload,
                                AutocompleteSearchResultLabelSensitive,
                                PromoCode>;
 
@@ -600,10 +536,6 @@ struct Suggestion {
                  std::holds_alternative<PaymentsPayload>(payload);
         }
         return std::holds_alternative<PaymentsPayload>(payload);
-      case SuggestionType::kAtMemorySearchResult:
-        return std::holds_alternative<AtMemoryPayload>(payload);
-      case SuggestionType::kAtMemoryOpenGemini:
-        return std::holds_alternative<OpenGeminiPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return std::holds_alternative<Guid>(payload) ||
