@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 
-#include <memory>
-
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -87,8 +85,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   scoped_refptr<ExportedCanvasResource> GetResourceForPushFrame(
       bool& should_call_push_frame) override;
-
-  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;

@@ -173,6 +173,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       canvas()->ClearCanvas2DLayerTexture();
     }
   }
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
+    return BaseRenderingContext2D::FlushCanvas(reason);
+  }
   scoped_refptr<StaticBitmapImage> Snapshot() override {
     return BaseRenderingContext2D::Snapshot();
   }
@@ -199,8 +202,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsHibernating() const final;
 
   void WillDrawImage(CanvasImageSource*, bool image_is_texture_backed) final;
-
-  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
  protected:
   void DidFlushRecording(const cc::PaintRecord& recording,

@@ -1929,7 +1929,7 @@ void BaseRenderingContext2D::OnFlushForImage(
   }
 }
 
-std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
+std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   MemoryManagedPaintRecorder* recorder = Recorder();
   if (!recorder || !recorder->HasReleasableDrawOps()) {

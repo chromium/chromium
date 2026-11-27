@@ -398,11 +398,6 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   return true;
 }
 
-std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
-    FlushReason reason) {
-  return FlushCanvasInternal(reason);
-}
-
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
     const {
   return static_cast<OffscreenCanvas*>(Host());

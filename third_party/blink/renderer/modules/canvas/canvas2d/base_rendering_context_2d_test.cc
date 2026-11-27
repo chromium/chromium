@@ -138,7 +138,6 @@ class TestRenderingContext2D final
   using BaseRenderingContext2D::CreateSharedImagePool;
   using BaseRenderingContext2D::CreateSharedImagePoolForSoftwareCompositor;
   using BaseRenderingContext2D::CreateSoftwareSurface;
-  using BaseRenderingContext2D::FlushCanvasInternal;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
   using BaseRenderingContext2D::WritePixelsToBacking;
@@ -182,7 +181,7 @@ class TestRenderingContext2D final
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
     if (HasBacking()) {
-      return FlushCanvasInternal(reason);
+      return BaseRenderingContext2D::FlushCanvas(reason);
     }
     return Recorder()->ReleaseMainRecording();
   }
@@ -1092,7 +1091,7 @@ TEST(BaseRenderingContext2DTest, SubnormalFloatsDisabledDuringSoftwareRaster) {
                                                SkSamplingOptions(), nullptr);
   ASSERT_TRUE(
       cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());
-  context->FlushCanvasInternal(FlushReason::kOther);
+  context->FlushCanvasForTesting(FlushReason::kOther);
   EXPECT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_TRUE(
       cc::ScopedSubnormalFloatDisabler::IsUnsupportedOrInactiveForTesting());

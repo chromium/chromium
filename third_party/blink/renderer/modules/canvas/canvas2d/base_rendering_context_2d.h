@@ -208,7 +208,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual void ResetBacking();
   bool IsSingleBuffered() const;
 
-  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override;
 
   String lang() const;
   void setLang(const String&);
@@ -363,8 +363,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  std::optional<cc::PaintRecord> FlushCanvasInternal(FlushReason reason);
-
   void FlushIfRecordingLimitExceeded();
 
   void ConfigureRecorder(const gfx::Size& size, bool is_graphite);

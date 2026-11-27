@@ -454,11 +454,6 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return &Recorder()->getRecordingCanvas();
 }
 
-std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
-    FlushReason reason) {
-  return FlushCanvasInternal(reason);
-}
-
 void CanvasRenderingContext2D::DidFlushRecording(
     const cc::PaintRecord& recording,
     bool clear_frame,
