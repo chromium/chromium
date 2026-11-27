@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
@@ -25,19 +24,10 @@
 namespace autofill {
 
 EmailVerificationControllerAndroid::EmailVerificationControllerAndroid(
-    content::WebContents* web_contents)
-    : EmailVerificationController(web_contents),
-      open_settings_callback_(base::BindRepeating(
-          [](base::WeakPtr<content::WebContents> web_contents) {
-            if (web_contents) {
-              if (ContentAutofillClient* client =
-                      ContentAutofillClient::FromWebContents(
-                          web_contents.get())) {
-                client->ShowAutofillSettings(SuggestionType::kManageAddress);
-              }
-            }
-          },
-          web_contents->GetWeakPtr())),
+    content::WebContents* web_contents,
+    base::RepeatingClosure open_settings_callback)
+    : EmailVerificationController(web_contents,
+                                  std::move(open_settings_callback)),
       bottom_sheet_bridge_(
           std::make_unique<EmailVerificationBottomSheetBridge>(web_contents)) {}
 
@@ -141,7 +131,7 @@ void EmailVerificationControllerAndroid::ShowVerifiedToastImpl(
     return;
   }
   GetMessageController().Show(AutofillMessageModel::CreateForEmailVerified(
-      url, open_settings_callback_));
+      url, open_settings_callback()));
 }
 
 AutofillMessageController&

@@ -117,6 +117,7 @@ class ToastView : public views::BubbleDialogDelegateView,
   }
   views::ImageView* icon_view_for_testing() { return icon_view_; }
   views::Throbber* throbber_for_testing() { return throbber_; }
+  ui::MenuModel* menu_model_for_testing() { return menu_model_.get(); }
   gfx::LinearAnimation& height_animation_for_testing() {
     return height_animation_;
   }

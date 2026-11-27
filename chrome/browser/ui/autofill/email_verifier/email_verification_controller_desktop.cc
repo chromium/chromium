@@ -20,8 +20,10 @@
 namespace autofill {
 
 EmailVerificationControllerDesktop::EmailVerificationControllerDesktop(
-    content::WebContents* web_contents)
-    : EmailVerificationController(web_contents),
+    content::WebContents* web_contents,
+    base::RepeatingClosure open_settings_callback)
+    : EmailVerificationController(web_contents,
+                                  std::move(open_settings_callback)),
       popup_controller_(web_contents) {}
 
 EmailVerificationControllerDesktop::~EmailVerificationControllerDesktop() =
@@ -82,8 +84,8 @@ void EmailVerificationControllerDesktop::ShowVerifiedToastImpl(
   ToastParams params(ToastId::kEmailVerified);
   params.body_string_replacement_params.push_back(
       base::UTF8ToUTF16(url.host()));
-  params.menu_model = std::make_unique<EmailVerifiedToastMenuModel>(
-      GetBrowserWindowInterface());
+  params.menu_model =
+      std::make_unique<EmailVerifiedToastMenuModel>(open_settings_callback());
   toast_controller->MaybeShowToast(std::move(params));
 }
 

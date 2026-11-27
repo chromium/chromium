@@ -291,6 +291,23 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void ShowEmailVerificationSettings(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  ShowAutofillProfileSettings(web_contents.get());
+#else
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
+    if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
+      chrome::ShowSettingsSubPage(browser, chrome::kContactInfoSubPage);
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 // static
@@ -1378,6 +1395,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     custom_form_control_script_runner_ =
         std::make_unique<CustomFormControlScriptRunner>(*this, index);
   }
+  base::RepeatingClosure open_evp_settings = base::BindRepeating(
+      &ShowEmailVerificationSettings, web_contents->GetWeakPtr());
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_save_update_entity_flow_manager_ =
@@ -1391,10 +1410,12 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   touch_to_fill_autofill_controller_ =
       TouchToFillAutofillController::Create(this);
   email_verification_controller_ =
-      std::make_unique<EmailVerificationControllerAndroid>(web_contents);
+      std::make_unique<EmailVerificationControllerAndroid>(
+          web_contents, std::move(open_evp_settings));
 #else
   email_verification_controller_ =
-      std::make_unique<EmailVerificationControllerDesktop>(web_contents);
+      std::make_unique<EmailVerificationControllerDesktop>(
+          web_contents, std::move(open_evp_settings));
 #endif
 
   if (actor::ActorKeyedService* actor_service =

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -110,7 +111,6 @@
 #include "chrome/browser/ui/android/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
-#include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
 #include "components/autofill/core/browser/ui/mock_autofill_tapjacking_protector.h"
@@ -1606,5 +1606,19 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_EQ(client()->GetSecurityLevelForUmaHistograms(),
             security_state::SECURE);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that running the EVP settings opener callback is a safe no-op when the
+// tab is not attached to a browser window or has already been destroyed.
+TEST_F(ChromeAutofillClientTest, EmailVerification_OpenSettingsNoBrowserNoOp) {
+  base::RepeatingClosure open_settings =
+      test_api(*test_api(*client()).email_verification_controller())
+          .open_settings_callback();
+  open_settings.Run();
+
+  DeleteContents();
+  open_settings.Run();
+}
+#endif
 }  // namespace
 }  // namespace autofill

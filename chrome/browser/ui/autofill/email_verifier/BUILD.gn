@@ -55,12 +55,10 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:generated_resources",
-      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
-      "//chrome/common:constants",
       "//components/tabs:public",
       "//components/vector_icons",
       "//ui/views",
@@ -99,12 +97,14 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/autofill/core/browser",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
@@ -113,18 +113,17 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "email_verification_controller_android_unittest.cc" ]
     deps += [
-      "//chrome/app:generated_resources",
       "//chrome/browser/ui/android/autofill",
       "//chrome/browser/ui/android/autofill:test_support",
       "//chrome/browser/ui/autofill",
       "//components/messages/android",
       "//components/messages/android:test_support",
-      "//ui/base",
     ]
   } else {
     sources += [
       "email_verification_controller_unittest.cc",
       "email_verification_popup_controller_unittest.cc",
+      "email_verified_toast_menu_model_unittest.cc",
     ]
     deps += [
       "//content/public/browser",

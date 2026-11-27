@@ -60,8 +60,8 @@ class EmailVerificationControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    controller_ =
-        std::make_unique<EmailVerificationControllerDesktop>(web_contents());
+    controller_ = std::make_unique<EmailVerificationControllerDesktop>(
+        web_contents(), base::DoNothing());
   }
 
   void TearDown() override {

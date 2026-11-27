@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -26,8 +27,12 @@ void LogPermissionUiStatus(
 }  // namespace
 
 EmailVerificationController::EmailVerificationController(
-    content::WebContents* web_contents)
-    : web_contents_(CHECK_DEREF(web_contents)) {}
+    content::WebContents* web_contents,
+    base::RepeatingClosure open_settings_callback)
+    : web_contents_(CHECK_DEREF(web_contents)),
+      open_settings_callback_(std::move(open_settings_callback)) {
+  CHECK(open_settings_callback_);
+}
 
 EmailVerificationController::~EmailVerificationController() = default;
 

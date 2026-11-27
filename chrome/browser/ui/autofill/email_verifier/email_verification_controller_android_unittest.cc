@@ -75,12 +75,10 @@ class EmailVerificationControllerAndroidTest
     // `EmailVerificationBottomSheetBridge::RequestShowContent()` sees a
     // top-level native window.
     window_->get()->AddChild(web_contents()->GetNativeView());
-    evp_controller_ =
-        std::make_unique<EmailVerificationControllerAndroid>(web_contents());
+    evp_controller_ = std::make_unique<EmailVerificationControllerAndroid>(
+        web_contents(), open_settings_callback_.Get());
     test_api(*evp_controller_)
         .set_message_controller(&mock_message_controller_);
-    test_api(*evp_controller_)
-        .set_open_settings_callback(open_settings_callback_.Get());
     auto mock_bridge = std::make_unique<MockEmailVerificationBottomSheetBridge>(
         web_contents());
     bridge_ = mock_bridge.get();

@@ -32,8 +32,9 @@ class EmailVerificationBottomSheetBridge;
 class EmailVerificationControllerAndroid final
     : public EmailVerificationController {
  public:
-  explicit EmailVerificationControllerAndroid(
-      content::WebContents* web_contents);
+  EmailVerificationControllerAndroid(
+      content::WebContents* web_contents,
+      base::RepeatingClosure open_settings_callback);
   EmailVerificationControllerAndroid(
       const EmailVerificationControllerAndroid&) = delete;
   EmailVerificationControllerAndroid& operator=(
@@ -63,7 +64,6 @@ class EmailVerificationControllerAndroid final
   AutofillMessageController& GetMessageController();
 
   raw_ptr<AutofillMessageController> message_controller_for_testing_ = nullptr;
-  base::RepeatingClosure open_settings_callback_;
   // Bridge for the first-run permission bottom sheet on Android.
   std::unique_ptr<EmailVerificationBottomSheetBridge> bottom_sheet_bridge_;
 

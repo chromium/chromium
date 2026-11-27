@@ -52,7 +52,8 @@ class EmailVerificationController {
     kVerified,
   };
 
-  explicit EmailVerificationController(content::WebContents* web_contents);
+  EmailVerificationController(content::WebContents* web_contents,
+                              base::RepeatingClosure open_settings_callback);
   EmailVerificationController(const EmailVerificationController&) = delete;
   EmailVerificationController& operator=(const EmailVerificationController&) =
       delete;
@@ -88,6 +89,9 @@ class EmailVerificationController {
       AutofillClient::EmailVerificationPermissionUiStatus status);
 
   content::WebContents& web_contents() const { return *web_contents_; }
+  const base::RepeatingClosure& open_settings_callback() const {
+    return open_settings_callback_;
+  }
   bool IsWebContentsVisible() const;
 
   // Platform-specific UI hooks implemented by subclasses.
@@ -151,6 +155,9 @@ class EmailVerificationController {
   base::TimeDelta GetRemainingLoadingDuration() const;
 
   const raw_ref<content::WebContents> web_contents_;
+
+  // Opens the embedder-defined settings page for managing verified emails.
+  const base::RepeatingClosure open_settings_callback_;
 
   // Callback that tears down whichever UI surface is currently active
   // (`HidePopupImpl()` for a first-run permission prompt, or

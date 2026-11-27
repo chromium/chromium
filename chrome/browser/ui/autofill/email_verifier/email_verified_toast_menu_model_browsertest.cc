@@ -2,72 +2,61 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
-
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/menu_model.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
 
 using EmailVerifiedToastMenuModelBrowserTest = InProcessBrowserTest;
 
-// Verifies the menu structure (single 'Manage' item with correct label).
-IN_PROC_BROWSER_TEST_F(EmailVerifiedToastMenuModelBrowserTest, MenuStructure) {
-  EmailVerifiedToastMenuModel model(browser());
-
-  ASSERT_EQ(model.GetItemCount(), 1u);
-  EXPECT_EQ(model.GetCommandIdAt(0),
-            EmailVerifiedToastMenuModel::CommandId::kManage);
-  EXPECT_EQ(model.GetLabelAt(0), l10n_util::GetStringUTF16(IDS_MANAGE));
-}
-
-// Verifies that executing the command records the user action and opens
-// Settings.
+// Verifies that showing the "Email verified" toast through
+// ContentAutofillClient wires the "Manage" menu item through
+// EmailVerificationController to open the contact info settings subpage.
 IN_PROC_BROWSER_TEST_F(EmailVerifiedToastMenuModelBrowserTest,
-                       ExecuteCommandRecordsActionAndNavigates) {
-  EmailVerifiedToastMenuModel model(browser());
+                       ShowVerifiedToastManageItemNavigatesToSettings) {
+  ContentAutofillClient* client = ContentAutofillClient::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_NE(client, nullptr);
+
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
+  client->ShowEmailVerifiedToast(GURL("https://issuer.com"));
 
-  EXPECT_EQ(
-      user_action_tester.GetActionCount("Toast.EmailVerified.ManageClicked"),
-      0);
+  ToastController* toast_controller = ToastController::From(browser());
+  ASSERT_NE(toast_controller, nullptr);
+  ASSERT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kEmailVerified);
 
-  // Execute the "Manage" command.
-  model.ExecuteCommand(EmailVerifiedToastMenuModel::CommandId::kManage,
-                       /*event_flags=*/0);
+  toasts::ToastView* toast_view = toast_controller->GetToastViewForTesting();
+  ASSERT_NE(toast_view, nullptr);
+  ui::MenuModel* menu_model = toast_view->menu_model_for_testing();
+  ASSERT_NE(menu_model, nullptr);
+  ASSERT_EQ(menu_model->GetItemCount(), 1u);
 
-  // Verify the user action was recorded.
+  menu_model->ActivatedAt(0);
+
   EXPECT_EQ(
       user_action_tester.GetActionCount("Toast.EmailVerified.ManageClicked"),
       1);
-
-  // Verify that the settings subpage was opened in a tab.
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       chrome::GetSettingsUrl(chrome::kContactInfoSubPage));
-}
-
-// Verifies that invalid command IDs are ignored and do not record metrics.
-IN_PROC_BROWSER_TEST_F(EmailVerifiedToastMenuModelBrowserTest,
-                       UnknownCommandIgnored) {
-  EmailVerifiedToastMenuModel model(browser());
-  base::UserActionTester user_action_tester;
-
-  model.ExecuteCommand(/*command_id=*/999, /*event_flags=*/0);
-
-  EXPECT_EQ(
-      user_action_tester.GetActionCount("Toast.EmailVerified.ManageClicked"),
-      0);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer", 0);
 }
 
 }  // namespace

@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFIED_TOAST_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFIED_TOAST_MENU_MODEL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "ui/menus/simple_menu_model.h"
-
-class BrowserWindowInterface;
 
 namespace autofill {
 
@@ -19,7 +17,8 @@ class EmailVerifiedToastMenuModel : public ui::SimpleMenuModel,
     kManage = 0,
   };
 
-  explicit EmailVerifiedToastMenuModel(BrowserWindowInterface* window);
+  explicit EmailVerifiedToastMenuModel(
+      base::RepeatingClosure open_settings_callback);
   EmailVerifiedToastMenuModel(const EmailVerifiedToastMenuModel&) = delete;
   EmailVerifiedToastMenuModel& operator=(const EmailVerifiedToastMenuModel&) =
       delete;
@@ -29,7 +28,7 @@ class EmailVerifiedToastMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  raw_ptr<BrowserWindowInterface> window_;
+  const base::RepeatingClosure open_settings_callback_;
 };
 
 }  // namespace autofill

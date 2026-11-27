@@ -48,16 +48,16 @@ class EmailVerificationControllerTestApi {
     static_cast<EmailVerificationControllerAndroid&>(*controller_)
         .message_controller_for_testing_ = message_controller;
   }
-  void set_open_settings_callback(base::RepeatingClosure callback) {
-    static_cast<EmailVerificationControllerAndroid&>(*controller_)
-        .open_settings_callback_ = std::move(callback);
-  }
 #else
   EmailVerificationPopupController& popup_controller() {
     return static_cast<EmailVerificationControllerDesktop&>(*controller_)
         .popup_controller_;
   }
 #endif
+
+  base::RepeatingClosure open_settings_callback() const {
+    return controller_->open_settings_callback_;
+  }
 
   bool is_hide_popup_timer_running() const {
     return controller_->hide_popup_timer_.IsRunning();

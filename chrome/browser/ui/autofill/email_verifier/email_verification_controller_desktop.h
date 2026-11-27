@@ -31,8 +31,9 @@ namespace autofill {
 class EmailVerificationControllerDesktop final
     : public EmailVerificationController {
  public:
-  explicit EmailVerificationControllerDesktop(
-      content::WebContents* web_contents);
+  EmailVerificationControllerDesktop(
+      content::WebContents* web_contents,
+      base::RepeatingClosure open_settings_callback);
   EmailVerificationControllerDesktop(
       const EmailVerificationControllerDesktop&) = delete;
   EmailVerificationControllerDesktop& operator=(
