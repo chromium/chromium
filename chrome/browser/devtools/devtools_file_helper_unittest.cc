@@ -88,6 +88,12 @@ class MockStorage : public DevToolsFileHelper::Storage {
               (override));
 };
 
+std::string ReadFile(const base::FilePath& path) {
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(path, &contents));
+  return contents;
+}
+
 }  // namespace
 
 class DevToolsFileHelperTest : public Test {
@@ -295,6 +301,173 @@ TEST_F(DevToolsFileHelperTest, Append) {
   EXPECT_TRUE(future2.Wait());
 
   EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
+}
+
+TEST_F(DevToolsFileHelperTest, SaveWithoutSaveAsReusesKnownFile) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::string url = "https://example.com/test.txt";
+
+  base::test::TestFuture<const std::string&> first_save;
+  file_helper()->Save(url, "first", /* save_as */ true,
+                      /* is_base64 */ false,
+                      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
+                      first_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(first_save.Wait());
+
+  base::MockCallback<DevToolsFileHelper::SelectFileCallback> select_file;
+  EXPECT_CALL(select_file, Run).Times(0);
+  base::test::TestFuture<const std::string&> second_save;
+  file_helper()->Save(url, "second", /* save_as */ false,
+                      /* is_base64 */ false, select_file.Get(),
+                      second_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(second_save.Wait());
+
+  EXPECT_EQ(ReadFile(tf.path()), "second");
+}
+
+TEST_F(DevToolsFileHelperTest, RestrictedSaveAlwaysShowsSaveAsDialog) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::string url = "https://example.com/test.txt";
+  file_helper()->RestrictToUserMediatedSaves();
+
+  base::test::TestFuture<const std::string&> first_save;
+  file_helper()->Save(url, "first", /* save_as */ false,
+                      /* is_base64 */ false,
+                      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
+                      first_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(first_save.Wait());
+
+  // Saving the same URL again without `save_as` must still ask the user.
+  base::MockCallback<DevToolsFileHelper::SelectFileCallback> select_file;
+  EXPECT_CALL(select_file, Run)
+      .WillOnce(
+          [](DevToolsFileHelper::SelectedCallback,
+             DevToolsFileHelper::CanceledCallback canceled_callback,
+             const base::FilePath&) { std::move(canceled_callback).Run(); });
+  base::test::TestFuture<void> canceled;
+  file_helper()->Save(url, "second", /* save_as */ false,
+                      /* is_base64 */ false, select_file.Get(),
+                      base::DoNothing(), canceled.GetCallback());
+  EXPECT_TRUE(canceled.Wait());
+
+  EXPECT_EQ(ReadFile(tf.path()), "first");
+}
+
+TEST_F(DevToolsFileHelperTest, RestrictedSaveDoesNotUseOrStoreEditedFiles) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::string url = "https://example.com/export.txt";
+
+  // A local save remembers the chosen file in prefs and pre-fills it. (On
+  // Android only the display name is remembered.)
+  base::test::TestFuture<const std::string&> local_save;
+  file_helper()->Save(url, "local", /* save_as */ true,
+                      /* is_base64 */ false,
+                      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
+                      local_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(local_save.Wait());
+  EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles),
+              SizeIs(1));
+  const base::FilePath remembered_path = GetSuggestedSavePath(url);
+  EXPECT_EQ(remembered_path.BaseName(), tf.path().BaseName());
+
+  file_helper()->RestrictToUserMediatedSaves();
+
+  // The remembered path is no longer suggested...
+  const base::FilePath suggested_path = GetSuggestedSavePath(url);
+  EXPECT_NE(suggested_path, remembered_path);
+  EXPECT_EQ(suggested_path,
+            tf.path().DirName().Append(FILE_PATH_LITERAL("export.txt")));
+
+  // ...and new saves are not remembered.
+  base::ScopedTempFile other_tf;
+  ASSERT_TRUE(other_tf.Create());
+  base::test::TestFuture<const std::string&> restricted_save;
+  file_helper()->Save(
+      "https://example.com/other.txt", "remote", /* save_as */ true,
+      /* is_base64 */ false,
+      FakeSelectFileCallback(ui::SelectedFileInfo(other_tf.path())),
+      restricted_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(restricted_save.Wait());
+  EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles),
+              SizeIs(1));
+}
+
+TEST_F(DevToolsFileHelperTest, RestrictedAppendOnlyWritesToUserPickedFiles) {
+  base::ScopedTempFile local_tf;
+  ASSERT_TRUE(local_tf.Create());
+  base::ScopedTempFile remote_tf;
+  ASSERT_TRUE(remote_tf.Create());
+  const std::string local_url = "https://example.com/local.txt";
+  const std::string remote_url = "https://example.com/remote.txt";
+
+  base::test::TestFuture<const std::string&> local_save;
+  file_helper()->Save(
+      local_url, "local", /* save_as */ true,
+      /* is_base64 */ false,
+      FakeSelectFileCallback(ui::SelectedFileInfo(local_tf.path())),
+      local_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(local_save.Wait());
+
+  file_helper()->RestrictToUserMediatedSaves();
+
+  // Files saved before the restriction are forgotten. Append returns without
+  // posting any file task for unknown URLs, so the file can be checked
+  // synchronously.
+  base::MockCallback<base::OnceClosure> unexpected_append;
+  EXPECT_CALL(unexpected_append, Run).Times(0);
+  file_helper()->Append(local_url, " more", unexpected_append.Get());
+  file_helper()->Append(remote_url, " more", unexpected_append.Get());
+  EXPECT_EQ(ReadFile(local_tf.path()), "local");
+
+  base::test::TestFuture<const std::string&> remote_save;
+  file_helper()->Save(
+      remote_url, "remote", /* save_as */ true,
+      /* is_base64 */ false,
+      FakeSelectFileCallback(ui::SelectedFileInfo(remote_tf.path())),
+      remote_save.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(remote_save.Wait());
+
+  base::test::TestFuture<void> appended;
+  file_helper()->Append(remote_url, " more", appended.GetCallback());
+  EXPECT_TRUE(appended.Wait());
+  EXPECT_EQ(ReadFile(remote_tf.path()), "remote more");
+}
+
+TEST_F(DevToolsFileHelperTest, RestrictDuringPendingSaveCancelsSave) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::string url = "https://example.com/pending.txt";
+
+  DevToolsFileHelper::SelectedCallback pending_selected;
+  base::MockCallback<DevToolsFileHelper::SaveCallback> saved;
+  EXPECT_CALL(saved, Run).Times(0);
+  base::test::TestFuture<void> canceled;
+
+  file_helper()->Save(
+      url, "pending", /* save_as */ true, /* is_base64 */ false,
+      base::BindLambdaForTesting(
+          [&](DevToolsFileHelper::SelectedCallback selected_callback,
+              DevToolsFileHelper::CanceledCallback, const base::FilePath&) {
+            pending_selected = std::move(selected_callback);
+          }),
+      saved.Get(), canceled.GetCallback());
+  ASSERT_TRUE(pending_selected);
+
+  // Switching to remote while the local dialog is open invalidates the pending
+  // selection.
+  file_helper()->RestrictToUserMediatedSaves();
+
+  std::move(pending_selected).Run(ui::SelectedFileInfo(tf.path()));
+  EXPECT_TRUE(canceled.Wait());
+  EXPECT_EQ(ReadFile(tf.path()), "");
+
+  base::MockCallback<base::OnceClosure> unexpected_append;
+  EXPECT_CALL(unexpected_append, Run).Times(0);
+  file_helper()->Append(url, " more", unexpected_append.Get());
+  EXPECT_EQ(ReadFile(tf.path()), "");
 }
 
 TEST_F(DevToolsFileHelperTest, SuggestedSavePathUsesLastSaveDirectory) {

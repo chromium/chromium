@@ -437,8 +437,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("showItemInFolder", &Delegate::ShowItemInFolder,
                      AllowedFrontend::kLocalOnly);
   d->RegisterHandler("save", &Delegate::SaveToFile, AllowedFrontend::kAny);
-  d->RegisterHandler("append", &Delegate::AppendToFile,
-                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("append", &Delegate::AppendToFile, AllowedFrontend::kAny);
   d->RegisterHandler("requestFileSystems", &Delegate::RequestFileSystems,
                      AllowedFrontend::kAny);
   d->RegisterHandler("addFileSystem", &Delegate::AddFileSystem,

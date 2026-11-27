@@ -13,9 +13,12 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -25,6 +28,10 @@
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -32,11 +39,13 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -59,6 +68,10 @@
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -88,6 +101,9 @@ class DevToolsUIBindingsLoadNetworkResourceTest : public testing::Test {
  public:
   bool GetDevicesUpdatesEnabled() {
     return bindings_->devices_updates_enabled_;
+  }
+  bool HasPendingRemoteSaveDialog() const {
+    return bindings_->pending_remote_save_dialog_;
   }
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -120,6 +136,12 @@ class DevToolsUIBindingsLoadNetworkResourceTest : public testing::Test {
         method, params));
     run_loop.Run();
     return result;
+  }
+
+  bool DispatchEmbedderMessage(const std::string& method,
+                               const base::ListValue& params) {
+    return bindings_->embedder_message_dispatcher_->Dispatch(base::DoNothing(),
+                                                             method, params);
   }
 
  protected:
@@ -523,6 +545,276 @@ TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
   EXPECT_TRUE(captured_request->site_for_cookies.IsEquivalent(
       net::SiteForCookies::FromOrigin(inspected_origin)));
   EXPECT_FALSE(captured_request->site_for_cookies.IsFirstParty(resource_url));
+}
+
+class DevToolsUIBindingsFileSaveTest
+    : public DevToolsUIBindingsLoadNetworkResourceTest {
+ public:
+  void SetUp() override {
+    DevToolsUIBindingsLoadNetworkResourceTest::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
+    DownloadPrefs::FromBrowserContext(profile_.get())
+        ->SetDownloadPath(temp_dir_.GetPath());
+  }
+
+  void TearDown() override {
+    DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
+        ->SetDownloadManagerDelegateForTesting(nullptr);
+    DevToolsUIBindingsLoadNetworkResourceTest::TearDown();
+  }
+
+ protected:
+  static base::ListValue MakeSaveParams(const std::string& url,
+                                        const std::string& content,
+                                        bool save_as) {
+    base::ListValue params;
+    params.Append(url);
+    params.Append(content);
+    params.Append(save_as);
+    params.Append(false);  // is_base64
+    return params;
+  }
+
+  static base::ListValue MakeAppendParams(const std::string& url,
+                                          const std::string& content) {
+    base::ListValue params;
+    params.Append(url);
+    params.Append(content);
+    return params;
+  }
+
+  static std::string ReadFile(const base::FilePath& path) {
+    std::string content;
+    base::ReadFileToString(path, &content);
+    return content;
+  }
+
+  base::ScopedTempDir temp_dir_;
+};
+
+class HoldOpenSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  HoldOpenSelectFileDialog(int* open_count,
+                           Listener* listener,
+                           std::unique_ptr<ui::SelectFilePolicy> policy)
+      : ui::SelectFileDialog(listener, std::move(policy)),
+        open_count_(open_count) {}
+
+  void CompleteWith(const base::FilePath& path) {
+    if (listener_) {
+      listener_->FileSelected(ui::SelectedFileInfo(path), 0);
+    }
+  }
+
+ protected:
+  void SelectFileImpl(Type,
+                      const std::u16string&,
+                      const base::FilePath&,
+                      const FileTypeInfo*,
+                      int,
+                      const base::FilePath::StringType&,
+                      gfx::NativeWindow,
+                      const GURL*) override {
+    ++(*open_count_);
+  }
+  bool IsRunning(gfx::NativeWindow) const override { return false; }
+  void ListenerDestroyed() override { listener_ = nullptr; }
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+ private:
+  ~HoldOpenSelectFileDialog() override = default;
+
+  raw_ptr<int> open_count_;
+};
+
+class HoldOpenSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit HoldOpenSelectFileDialogFactory(
+      int* open_count,
+      scoped_refptr<HoldOpenSelectFileDialog>* last_dialog)
+      : open_count_(open_count), last_dialog_(last_dialog) {}
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    auto dialog = base::MakeRefCounted<HoldOpenSelectFileDialog>(
+        open_count_, listener, std::move(policy));
+    *last_dialog_ = dialog;
+    return dialog.get();
+  }
+
+ private:
+  raw_ptr<int> open_count_;
+  raw_ptr<scoped_refptr<HoldOpenSelectFileDialog>> last_dialog_;
+};
+
+TEST_F(DevToolsUIBindingsFileSaveTest, RemoteFrontendCanSaveAndAppendToFile) {
+  const base::FilePath target_path = temp_dir_.GetPath().AppendASCII("out.txt");
+  content::ScopedSelectFileDialogFactory dialog_factory(
+      std::vector<base::FilePath>{target_path});
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools-remote/remote/serve_file/inspector.html"));
+
+  const std::string file_url = "https://example.com/export.txt";
+  EXPECT_TRUE(DispatchEmbedderMessage(
+      "save", MakeSaveParams(file_url, "hello ", /*save_as=*/true)));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return ReadFile(target_path) == "hello "; }));
+
+  EXPECT_TRUE(
+      DispatchEmbedderMessage("append", MakeAppendParams(file_url, "world")));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return ReadFile(target_path) == "hello world"; }));
+}
+
+TEST_F(DevToolsUIBindingsFileSaveTest,
+       RemoteFrontendCannotAppendToLocallySavedFileWithoutRemoteSave) {
+  const base::FilePath local_path =
+      temp_dir_.GetPath().AppendASCII("local.txt");
+  const std::string local_url = "https://example.com/local.txt";
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("devtools://devtools/bundled/inspector.html"));
+  {
+    ui::ScopedSetSelectFileDialogFactory dialog_factory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{local_path}));
+    EXPECT_TRUE(DispatchEmbedderMessage(
+        "save", MakeSaveParams(local_url, "local", /*save_as=*/true)));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return ReadFile(local_path) == "local"; }));
+  }
+
+  // Navigating to a remote frontend and calling `append` directly (without any
+  // remote `save` first) must not write to the file saved while local.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools-remote/remote/serve_file/inspector.html"));
+  EXPECT_TRUE(
+      DispatchEmbedderMessage("append", MakeAppendParams(local_url, " more")));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ReadFile(local_path), "local");
+}
+
+TEST_F(DevToolsUIBindingsFileSaveTest,
+       RemoteFrontendCanOnlyWriteToFilesPickedInSaveAsDialog) {
+  const base::FilePath local_path =
+      temp_dir_.GetPath().AppendASCII("local.txt");
+  const base::FilePath remote_path =
+      temp_dir_.GetPath().AppendASCII("remote.txt");
+
+  // The local frontend saves a file.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("devtools://devtools/bundled/inspector.html"));
+  const std::string local_url = "https://example.com/local.txt";
+  {
+    ui::ScopedSetSelectFileDialogFactory dialog_factory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{local_path}));
+    EXPECT_TRUE(DispatchEmbedderMessage(
+        "save", MakeSaveParams(local_url, "local", /*save_as=*/true)));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return ReadFile(local_path) == "local"; }));
+  }
+
+  // The same bindings now host a remote frontend.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools-remote/remote/serve_file/inspector.html"));
+
+  // A save without `save_as` still shows the Save As dialog.
+  const std::string remote_url = "https://example.com/remote.txt";
+  content::SelectFileDialogParams dialog_params;
+  {
+    ui::ScopedSetSelectFileDialogFactory dialog_factory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{remote_path}, &dialog_params));
+    EXPECT_TRUE(DispatchEmbedderMessage(
+        "save", MakeSaveParams(remote_url, "remote", /*save_as=*/false)));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !HasPendingRemoteSaveDialog() && ReadFile(remote_path) == "remote";
+    }));
+  }
+  EXPECT_EQ(dialog_params.type, ui::SelectFileDialog::SELECT_SAVEAS_FILE);
+
+  // Saving the same URL again asks the user again; canceling writes nothing.
+  dialog_params = content::SelectFileDialogParams();
+  {
+    ui::ScopedSetSelectFileDialogFactory dialog_factory(
+        std::make_unique<content::CancellingSelectFileDialogFactory>(
+            &dialog_params));
+    EXPECT_TRUE(DispatchEmbedderMessage(
+        "save", MakeSaveParams(remote_url, "overwritten", /*save_as=*/false)));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return dialog_params.type == ui::SelectFileDialog::SELECT_SAVEAS_FILE;
+    }));
+  }
+
+  // Appending to the file the local frontend saved is ignored, while
+  // appending to the file the user picked for the remote frontend works.
+  EXPECT_TRUE(
+      DispatchEmbedderMessage("append", MakeAppendParams(local_url, " more")));
+  EXPECT_TRUE(
+      DispatchEmbedderMessage("append", MakeAppendParams(remote_url, " more")));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return ReadFile(remote_path) == "remote more"; }));
+  EXPECT_EQ(ReadFile(local_path), "local");
+
+  // Remote saves are not remembered in prefs.
+  EXPECT_THAT(profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles),
+              testing::SizeIs(1));
+}
+
+TEST_F(DevToolsUIBindingsFileSaveTest,
+       RemoteFrontendAllowsOnlyOnePendingSaveDialog) {
+  const base::FilePath first_path =
+      temp_dir_.GetPath().AppendASCII("first.txt");
+  const base::FilePath second_path =
+      temp_dir_.GetPath().AppendASCII("second.txt");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools-remote/remote/serve_file/inspector.html"));
+
+  int open_count = 0;
+  scoped_refptr<HoldOpenSelectFileDialog> last_dialog;
+  ui::ScopedSetSelectFileDialogFactory dialog_factory(
+      std::make_unique<HoldOpenSelectFileDialogFactory>(&open_count,
+                                                        &last_dialog));
+
+  EXPECT_TRUE(DispatchEmbedderMessage(
+      "save",
+      MakeSaveParams("https://example.com/1.txt", "first", /*save_as=*/true)));
+  EXPECT_EQ(open_count, 1);
+  ASSERT_TRUE(last_dialog);
+
+  // A second save while the first dialog is still open must be rejected.
+  EXPECT_TRUE(DispatchEmbedderMessage(
+      "save",
+      MakeSaveParams("https://example.com/2.txt", "second", /*save_as=*/true)));
+  EXPECT_EQ(open_count, 1);
+
+  last_dialog->CompleteWith(first_path);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !HasPendingRemoteSaveDialog() && ReadFile(first_path) == "first";
+  }));
+
+  // Once the first dialog finishes, another save can open a dialog.
+  EXPECT_TRUE(DispatchEmbedderMessage(
+      "save",
+      MakeSaveParams("https://example.com/2.txt", "second", /*save_as=*/true)));
+  EXPECT_EQ(open_count, 2);
+  last_dialog->CompleteWith(second_path);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !HasPendingRemoteSaveDialog() && ReadFile(second_path) == "second";
+  }));
 }
 
 TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {

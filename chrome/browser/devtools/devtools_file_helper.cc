@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
@@ -231,22 +232,28 @@ void DevToolsFileHelper::Save(const std::string& url,
                               SelectFileCallback select_file_callback,
                               SaveCallback save_callback,
                               CanceledCallback canceled_callback) {
+  if (user_mediated_saves_only_) {
+    save_as = true;
+  }
   auto it = saved_files_.find(url);
   if (it != saved_files_.end() && !save_as) {
-    SaveToFileSelected(url, content, is_base64, std::move(save_callback),
+    SaveToFileSelected(url, content, is_base64,
+                       /*expected_user_mediated_saves_only=*/false,
+                       std::move(save_callback), base::DoNothing(),
                        ui::SelectedFileInfo(it->second));
     return;
   }
 
-  const base::DictValue& file_map =
-      profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles);
   base::FilePath initial_path;
-
-  if (const base::Value* path_value =
-          file_map.Find(devtools::Md5OfUrlAsHexForDevTools(url))) {
-    std::optional<base::FilePath> path = base::ValueToFilePath(*path_value);
-    if (path) {
-      initial_path = std::move(*path);
+  if (!user_mediated_saves_only_) {
+    const base::DictValue& file_map =
+        profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles);
+    if (const base::Value* path_value =
+            file_map.Find(devtools::Md5OfUrlAsHexForDevTools(url))) {
+      std::optional<base::FilePath> path = base::ValueToFilePath(*path_value);
+      if (path) {
+        initial_path = std::move(*path);
+      }
     }
   }
 
@@ -275,11 +282,14 @@ void DevToolsFileHelper::Save(const std::string& url,
     }
   }
 
+  auto [cancel_on_dialog, cancel_on_stale] =
+      base::SplitOnceCallback(std::move(canceled_callback));
   std::move(select_file_callback)
       .Run(base::BindOnce(&DevToolsFileHelper::SaveToFileSelected,
                           weak_factory_.GetWeakPtr(), url, content, is_base64,
-                          std::move(save_callback)),
-           std::move(canceled_callback), initial_path);
+                          user_mediated_saves_only_, std::move(save_callback),
+                          std::move(cancel_on_stale)),
+           std::move(cancel_on_dialog), initial_path);
 }
 
 void DevToolsFileHelper::Append(const std::string& url,
@@ -294,30 +304,47 @@ void DevToolsFileHelper::Append(const std::string& url,
       std::move(callback));
 }
 
+void DevToolsFileHelper::RestrictToUserMediatedSaves() {
+  if (user_mediated_saves_only_) {
+    return;
+  }
+  user_mediated_saves_only_ = true;
+  saved_files_.clear();
+}
+
 void DevToolsFileHelper::SaveToFileSelected(
     const std::string& url,
     std::string content,
     bool is_base64,
+    bool expected_user_mediated_saves_only,
     SaveCallback callback,
+    CanceledCallback canceled_callback,
     const ui::SelectedFileInfo& file_info) {
+  if (expected_user_mediated_saves_only != user_mediated_saves_only_) {
+    std::move(canceled_callback).Run();
+    return;
+  }
   GetLastSavePath() = file_info.path();
   saved_files_[url] = file_info;
 
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsEditedFiles);
-  base::DictValue& files_map = update.Get();
+  if (!user_mediated_saves_only_) {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kDevToolsEditedFiles);
+    base::DictValue& files_map = update.Get();
 
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, the selected file path can be a content URL that isn't supposed
-  // to be shown to the user. In that case, store the display name instead.
-  base::FilePath path_in_prefs = file_info.display_name.empty()
-                                     ? file_info.path()
-                                     : base::FilePath(file_info.display_name);
+    // On Android, the selected file path can be a content URL that isn't
+    // supposed to be shown to the user. In that case, store the display name
+    // instead.
+    base::FilePath path_in_prefs = file_info.display_name.empty()
+                                       ? file_info.path()
+                                       : base::FilePath(file_info.display_name);
 #else
-  base::FilePath path_in_prefs = file_info.path();
+    base::FilePath path_in_prefs = file_info.path();
 #endif  // BUILDFLAG(IS_ANDROID)
-  files_map.Set(devtools::Md5OfUrlAsHexForDevTools(url),
-                base::FilePathToValue(path_in_prefs));
+    files_map.Set(devtools::Md5OfUrlAsHexForDevTools(url),
+                  base::FilePathToValue(path_in_prefs));
+  }
 
   std::string file_system_path = file_info.path().AsUTF8Unsafe();
   // Run 'SaveCallback' only once we have actually written the file, but

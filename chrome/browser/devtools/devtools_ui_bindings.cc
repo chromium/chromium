@@ -1511,22 +1511,34 @@ void DevToolsUIBindings::SaveToFile(const std::string& url,
                                     const std::string& content,
                                     bool save_as,
                                     bool is_base64) {
-  if (!is_local_frontend_) {
-    CanceledFileSaveAs(url);
-    return;
+  const bool is_remote = !is_local_frontend_;
+  if (is_remote) {
+    if (pending_remote_save_dialog_) {
+      CanceledFileSaveAs(url, /*is_remote=*/false);
+      return;
+    }
+    // Remote frontends may only write to files the user picks in a Save As
+    // dialog shown for this save.
+    file_helper_.RestrictToUserMediatedSaves();
+    pending_remote_save_dialog_ = true;
   }
   file_helper_.Save(
       url, content, save_as, is_base64,
       base::BindOnce(&DevToolsSelectFileDialog::SelectFile, web_contents_,
                      ui::SelectFileDialog::SELECT_SAVEAS_FILE),
       base::BindOnce(&DevToolsUIBindings::FileSavedAs,
-                     weak_factory_.GetWeakPtr(), url),
+                     weak_factory_.GetWeakPtr(), url, is_remote),
       base::BindOnce(&DevToolsUIBindings::CanceledFileSaveAs,
-                     weak_factory_.GetWeakPtr(), url));
+                     weak_factory_.GetWeakPtr(), url, is_remote));
 }
 
 void DevToolsUIBindings::AppendToFile(const std::string& url,
                                       const std::string& content) {
+  if (!is_local_frontend_) {
+    // Drops files saved while the frontend was still local, so that a remote
+    // frontend can only append to files the user picked for it.
+    file_helper_.RestrictToUserMediatedSaves();
+  }
   file_helper_.Append(url, content,
                       base::BindOnce(&DevToolsUIBindings::AppendedTo,
                                      weak_factory_.GetWeakPtr(), url));
@@ -2772,12 +2784,21 @@ void DevToolsUIBindings::DevicesUpdated(const std::string& source,
 }
 
 void DevToolsUIBindings::FileSavedAs(const std::string& url,
+                                     bool is_remote,
                                      const std::string& file_system_path) {
+  if (is_remote) {
+    pending_remote_save_dialog_ = false;
+  }
+  // Do not expose local filesystem paths to remote frontends.
   CallClientMethod("DevToolsAPI", "savedURL", base::Value(url),
-                   base::Value(file_system_path));
+                   base::Value(is_local_frontend_ ? file_system_path : ""));
 }
 
-void DevToolsUIBindings::CanceledFileSaveAs(const std::string& url) {
+void DevToolsUIBindings::CanceledFileSaveAs(const std::string& url,
+                                            bool is_remote) {
+  if (is_remote) {
+    pending_remote_save_dialog_ = false;
+  }
   CallClientMethod("DevToolsAPI", "canceledSaveURL", base::Value(url));
 }
 

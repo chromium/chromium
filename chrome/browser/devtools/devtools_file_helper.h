@@ -118,6 +118,13 @@ class DevToolsFileHelper {
               const std::string& content,
               base::OnceClosure callback);
 
+  // Restricts Save and Append to files the user picks in a Save As dialog
+  // from now on: forgets files associated with URLs so far, makes every Save
+  // show the Save As dialog, and neither reads nor stores the URL to path
+  // mapping in prefs. Used for remote (untrusted) DevTools frontends. This
+  // cannot be undone.
+  void RestrictToUserMediatedSaves();
+
   // Opens a folder selector dialog, asking the user to select a folder
   // on the local file system to be added as file system with the given
   // |type|. Once the user selects a folder, it shows an infobar by means
@@ -192,7 +199,9 @@ class DevToolsFileHelper {
   void SaveToFileSelected(const std::string& url,
                           std::string content,
                           bool is_base64,
+                          bool expected_user_mediated_saves_only,
                           SaveCallback callback,
+                          CanceledCallback canceled_callback,
                           const ui::SelectedFileInfo& file_info);
   void InnerAddFileSystem(
       const HandlePermissionsCallback& show_info_bar_callback,
@@ -236,6 +245,7 @@ class DevToolsFileHelper {
   raw_ptr<DevToolsFileHelper::Storage> storage_;
   typedef std::map<std::string, ui::SelectedFileInfo> SelectedFileInfoMap;
   SelectedFileInfoMap saved_files_;
+  bool user_mediated_saves_only_ = false;
   PrefChangeRegistrar pref_change_registrar_;
   PathToType file_system_paths_;
   std::set<std::string> connected_automatic_file_systems_;

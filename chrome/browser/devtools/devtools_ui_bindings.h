@@ -414,8 +414,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                         const std::vector<std::string>& removed_paths) override;
 
   // DevToolsFileHelper callbacks.
-  void FileSavedAs(const std::string& url, const std::string& file_system_path);
-  void CanceledFileSaveAs(const std::string& url);
+  void FileSavedAs(const std::string& url,
+                   bool is_remote,
+                   const std::string& file_system_path);
+  void CanceledFileSaveAs(const std::string& url, bool is_remote);
   void AppendedTo(const std::string& url);
   void ConnectAutomaticFileSystemDone(DispatchCallback callback, bool success);
   void IndexingTotalWorkCalculated(int request_id,
@@ -558,6 +560,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   base::UnguessableToken session_id_for_logging_;
   bool is_local_frontend_ = false;
   bool has_previous_frontend_host_ = false;
+  bool pending_remote_save_dialog_ = false;
   std::optional<int> last_sent_caret_blink_interval_ms_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
