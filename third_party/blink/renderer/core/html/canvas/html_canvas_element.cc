@@ -1754,8 +1754,6 @@ void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
       context_ &&
       context_->CreationAttributes().will_read_frequently ==
           CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DLayerBridge.WillReadFrequently",
-                        will_read_frequently);
 
   RasterModeHint hint = ShouldAccelerate() && !will_read_frequently
                             ? RasterModeHint::kPreferGPU
