@@ -4759,10 +4759,6 @@ crbug.com/1191123 gamepad/gamepad-polling-access.html [ Failure Pass ]
 # Image decode failures due to document destruction.
 crbug.com/721435 external/wpt/html/semantics/embedded-content/the-img-element/decode/image-decode-iframe.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disabled for rendering difference between HarfBuzz and HarfRust.
-# This entry should be removed when HarfRustShaping flag is enabled again.
-crbug.com/427409139 [ Mac ] svg/text/combining-character-queries.html [ Failure Pass ]
-
 # Sheriff failures 2017-05-23
 crbug.com/725470 editing/shadow/doubleclick-on-meter-in-shadow-crash.html [ Crash Failure Pass Timeout ]
 
