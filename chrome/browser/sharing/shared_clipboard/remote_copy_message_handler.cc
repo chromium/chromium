@@ -65,6 +65,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             data:
               "An image URL, from a Google storage service like blobstore."
             destination: GOOGLE_OWNED_SERVICE
+            static_content: true
           }
           policy {
             cookies_allowed: NO
