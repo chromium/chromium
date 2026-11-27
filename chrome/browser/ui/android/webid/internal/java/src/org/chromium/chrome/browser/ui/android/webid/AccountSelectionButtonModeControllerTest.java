@@ -1217,6 +1217,122 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     @Test
+    public void testIdpPickerAutoReauthnClearsRowsAndBack() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2));
+        completeIdpPickerLogin(/* itemIndex= */ 1);
+        assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
+        clearInvocations(mMockBottomSheetController);
+
+        assertTrue(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mDanAccount,
+                        /* isAutoReauthn= */ true));
+
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, headerModel.get(TYPE));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_MULTI_IDP_REQUEST));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(0, mSheetAccountItems.size());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertFalse(mBottomSheetContent.handleBackPress());
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Choose an account to continue", subtitle.getText().toString());
+    }
+
+    @Test
+    public void testMultiIdpAccountChooserAutoReauthnShowsVerifySheet() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2));
+        clearInvocations(mMockBottomSheetController);
+
+        assertTrue(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mDanAccount,
+                        /* isAutoReauthn= */ true));
+
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(0, mSheetAccountItems.size());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertFalse(mBottomSheetContent.handleBackPress());
+    }
+
+    @Test
+    public void testMultiIdpPermissionModalAutoReauthnRefreshesHeaderBeforeVerify() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2));
+        clickAccountRow(/* itemIndex= */ 0);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, mMediator.getHeaderType());
+        clearInvocations(mMockBottomSheetController);
+
+        assertTrue(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mDanAccount,
+                        /* isAutoReauthn= */ true));
+
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, headerModel.get(TYPE));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(0, mSheetAccountItems.size());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertFalse(mBottomSheetContent.handleBackPress());
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+        assertEquals("Choose an account to continue", subtitle.getText().toString());
+        assertEquals(View.GONE, mContentView.findViewById(R.id.arrow_range_icon).getVisibility());
+    }
+
+    @Test
+    public void testSingleIdpAccountChooserAutoReauthnShowsVerifySheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount, mNewUserAccountWithoutFields),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        clearInvocations(mMockBottomSheetController);
+
+        assertTrue(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mAnaAccount,
+                        /* isAutoReauthn= */ true));
+
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, headerModel.get(TYPE));
+        assertEquals(mIdpData.getIdpForDisplay(), headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(0, mSheetAccountItems.size());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertFalse(mBottomSheetContent.handleBackPress());
+    }
+
+    @Test
+    public void testIdpPickerAutoReauthnReturnsFalseWhenVerifySheetFails() {
+        showMultiIdpAccountChooser(Arrays.asList(mNewUserAccount, mNewUserAccountForIdp2));
+        completeIdpPickerLogin(/* itemIndex= */ 1);
+        assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        assertFalse(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mDanAccount,
+                        /* isAutoReauthn= */ true));
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+    }
+
+    @Test
     public void testIdpPickerClosedSheetTypeRecordsAccountSelection() {
         showMultiIdpAccountChooser(Collections.emptyList());
         assertEquals(HeaderType.IDP_PICKER, mModel.get(ItemProperties.HEADER).get(TYPE));

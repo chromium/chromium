@@ -419,8 +419,10 @@ class AccountSelectionMediator {
         boolean canGoBack =
                 !mWasDismissed
                         && ((mSelectedAccount != null
-                                        && assumeNonNull(mAccounts).size() != 1
-                                        && mHeaderType != HeaderType.VERIFY)
+                                        && mAccounts != null
+                                        && mAccounts.size() != 1
+                                        && mHeaderType != HeaderType.VERIFY
+                                        && mHeaderType != HeaderType.VERIFY_AUTO_REAUTHN)
                                 || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                 || (mHeaderType == HeaderType.IDP_PICKER
                                         && hasUsableAccounts(assumeNonNull(mAccounts))));
@@ -692,10 +694,10 @@ class AccountSelectionMediator {
                     /* areAccountsClickable= */ false)) {
                 return false;
             }
-            updateBackPressBehavior();
         } else {
             assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
-            // Auto reauthn is triggered without showAccounts so we need to update the sheet
+            // Auto re-authn may be triggered without showAccounts() (passive mode) or when
+            // transitioning off an interactive sheet (active mode), so update the sheet
             // explicitly.
             if (!updateSheet(
                     Arrays.asList(account),
@@ -704,6 +706,7 @@ class AccountSelectionMediator {
                 return false;
             }
         }
+        updateBackPressBehavior();
         return true;
     }
 
@@ -975,15 +978,25 @@ class AccountSelectionMediator {
         if (mWasDismissed) {
             return false;
         }
+        @HeaderType int previousHeaderType = mHeaderType;
         mRpData = rpData;
-        mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.VERIFY;
-        mSelectedAccount = account;
 
-        // Auto re-authn in active mode does not update the loading UI.
-        if (mRpMode == RpMode.ACTIVE && isAutoReauthn) {
+        // Auto re-authn in active mode does not update the loading UI, except when transitioning
+        // off an interactive sheet where rows, buttons, or a stale header must be replaced first.
+        if (mRpMode == RpMode.ACTIVE
+                && isAutoReauthn
+                && (previousHeaderType == HeaderType.LOADING
+                        || previousHeaderType == HeaderType.NONE
+                        || previousHeaderType == HeaderType.VERIFY_AUTO_REAUTHN)) {
+            mHeaderType = HeaderType.VERIFY_AUTO_REAUTHN;
+            mSelectedAccount = account;
             return true;
         }
 
+        maybeUpdateMultiIdpAccountChooserHeader();
+
+        mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.VERIFY;
+        mSelectedAccount = account;
         return showVerifySheet(mSelectedAccount);
     }
 
@@ -1108,6 +1121,31 @@ class AccountSelectionMediator {
         return true;
     }
 
+    // Updates the header to the multi-IDP active-mode account chooser without calling
+    // `showContent()`, so callers about to enter `VERIFY` or `VERIFY_AUTO_REAUTHN` replace a stale
+    // `IDP_PICKER` or multi-IDP `REQUEST_PERMISSION_MODAL` header in a single
+    // `requestShowContent()` call.
+    private void maybeUpdateMultiIdpAccountChooserHeader() {
+        if (mRpMode != RpMode.ACTIVE) {
+            return;
+        }
+        boolean isStaleMultiIdpHeader =
+                mHeaderType == HeaderType.IDP_PICKER
+                        || (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
+                                && mIsMultiIdpRequest);
+        if (!isStaleMultiIdpHeader) {
+            return;
+        }
+        assert mIsMultiIdpRequest;
+        assert assertNonNull(mIdpDataListForShowAccounts).size() > 1;
+        mSelectedAccount = null;
+        mHeaderType = HeaderType.SIGN_IN;
+        setIsShowingMultipleIdps(true);
+        mIdpForDisplay = null;
+        updateHeader(
+                /* headerIcon= */ null, /* shouldCircleCrop= */ false, /* rpBrandIcon= */ null);
+    }
+
     private boolean showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
@@ -1127,25 +1165,8 @@ class AccountSelectionMediator {
                     newlySignedInAccount.isBrowserTrustedSignIn()
                             && mHeaderType != HeaderType.LOADING;
             if (shouldShowVerifyingSheet) {
-                boolean shouldRefreshMultiIdpHeader =
-                        mHeaderType == HeaderType.IDP_PICKER
-                                || (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
-                                        && mIsMultiIdpRequest);
+                maybeUpdateMultiIdpAccountChooserHeader();
                 mHeaderType = HeaderType.SIGN_IN;
-                if (shouldRefreshMultiIdpHeader) {
-                    // Active-mode VERIFY reuses the previous sheet's header views. Refresh the
-                    // header to the multi-IDP chooser when coming from IDP_PICKER (matching
-                    // desktop) or a multi-IDP REQUEST_PERMISSION_MODAL so a stale provider header
-                    // is not left above the spinner.
-                    assert mIsMultiIdpRequest;
-                    assert mIsShowingMultipleIdps;
-                    assert mSelectedAccount == null;
-                    mIdpForDisplay = null;
-                    updateHeader(
-                            /* headerIcon= */ null,
-                            /* shouldCircleCrop= */ false,
-                            /* rpBrandIcon= */ null);
-                }
                 mSelectedAccount = newlySignedInAccount;
                 mDelegate.onAccountSelected(mSelectedAccount);
                 if (didAccountSelectionChangeUi(HeaderType.SIGN_IN)) {

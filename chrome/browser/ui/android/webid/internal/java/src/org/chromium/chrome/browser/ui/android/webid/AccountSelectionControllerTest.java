@@ -538,6 +538,48 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     }
 
     @Test
+    public void testAutoReauthnClearsBackPressBehaviorFromConfirmationSheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount, mNewUserAccountWithoutFields),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
+        assertEquals(
+                mRpMode == RpMode.ACTIVE ? HeaderType.REQUEST_PERMISSION_MODAL : HeaderType.SIGN_IN,
+                mMediator.getHeaderType());
+        assertTrue(mBottomSheetContent.getBackPressStateChangedSupplier().get());
+        clearInvocations(mMockBottomSheetController);
+
+        assertTrue(
+                mMediator.showVerifyingDialog(
+                        new RelyingPartyData(
+                                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                        mAnaAccount,
+                        /* isAutoReauthn= */ true));
+
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mMediator.getHeaderType());
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, headerModel.get(TYPE));
+        assertEquals(mIdpData.getIdpForDisplay(), headerModel.get(IDP_FOR_DISPLAY));
+        if (mRpMode == RpMode.ACTIVE) {
+            assertEquals(0, mSheetAccountItems.size());
+            assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+            assertEquals(mTestEtldPlusOne, subtitle.getText().toString());
+        } else {
+            assertEquals(1, mSheetAccountItems.size());
+            assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+        }
+        assertFalse(mBottomSheetContent.getBackPressStateChangedSupplier().get());
+        assertFalse(mBottomSheetContent.handleBackPress());
+        assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mMediator.getHeaderType());
+    }
+
+    @Test
     public void testShowDataSharingConsentForSingleNewAccount() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
