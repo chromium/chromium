@@ -8,7 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_surface.h"
-#include "chrome/browser/actor/tools/execution_engine_dispatcher.h"
+#include "chrome/browser/actor/execution_engine_dispatcher.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "content/public/browser/web_contents.h"

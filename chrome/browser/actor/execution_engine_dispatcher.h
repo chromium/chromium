@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_EXECUTION_ENGINE_DISPATCHER_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_EXECUTION_ENGINE_DISPATCHER_H_
+#ifndef CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_DISPATCHER_H_
+#define CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_DISPATCHER_H_
 
 #include <memory>
 #include <variant>
@@ -48,4 +48,4 @@ void MergeFollowupResult(ToolResultWithLatencyInfo& target,
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_EXECUTION_ENGINE_DISPATCHER_H_
+#endif  // CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_DISPATCHER_H_
