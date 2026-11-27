@@ -397,7 +397,15 @@ class SyncConfirmationUIDialogPixelTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {
+// TODO(crbug.com/590922356): Re-enable on Win after COM leak is resolved
+// on M156 (see also crrev.com/c/8842366 on M158).
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest,
+                       MAYBE_InvokeUi_default) {
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
