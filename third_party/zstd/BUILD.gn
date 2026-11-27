@@ -66,6 +66,15 @@ source_set("headers") {
     "src/lib/zstd_errors.h",
   ]
   configs += [ ":zstd_hide_symbols" ]
+
+  # Simply depend on :compress and/or :decompress.
+  #
+  # //build/linux/unbundle breaks otherwise.
+  # TODO(crbug.com/590883542): remove //net:net_deps
+  visibility = [
+    ":*",
+    "//net:net_deps",
+  ]
 }
 
 source_set("common") {
@@ -104,6 +113,11 @@ source_set("common") {
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
   public_deps = [ ":headers" ]
+
+  # Simply depend on :compress and/or :decompress.
+  #
+  # //build/linux/unbundle breaks otherwise.
+  visibility = [ ":*" ]
 }
 
 source_set("decompress") {

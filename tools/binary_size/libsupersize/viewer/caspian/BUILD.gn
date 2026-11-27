@@ -33,7 +33,6 @@ source_set("caspian-lib") {
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils_portable",
     "//third_party/zstd:decompress",
-    "//third_party/zstd:headers",
   ]
   public_deps = [
     "//third_party/abseil-cpp:absl",
