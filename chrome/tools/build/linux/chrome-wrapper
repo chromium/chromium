@@ -63,7 +63,7 @@ Terminal=false
 Icon=$HERE/product_logo_48.png
 Type=Application
 Categories=Application;Network;WebBrowser;
-MimeType=text/html;text/xml;application/xhtml_xml;
+MimeType=text/html;text/xml;application/xhtml+xml;
 EOF
 }
 
