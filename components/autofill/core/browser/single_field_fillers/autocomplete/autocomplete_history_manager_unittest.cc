@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -1886,6 +1887,46 @@ TEST_F(AutocompleteHistoryManagerTest,
   EXPECT_CALL(
       *(web_data_service_.get()),
       AddFormFields(ElementsAre(Property(&FormFieldData::value, u"Jane Doe"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
+}
+
+// Tests that fields classified as passwords by the on-device Password Manager
+// ML model are not saved in autocomplete history even when
+// `AutofillField::Type()` remains `UNKNOWN_TYPE`.
+TEST_F(AutocompleteHistoryManagerTest,
+       PredictedTypeBasedFiltering_PasswordManagerMlPrediction) {
+  FormData form = test::GetFormData(
+      {.fields = {{.name = u"f0", .value = u"ml_pwd"},
+                  {.name = u"f1", .value = u"ml_account_creation_pwd"},
+                  {.name = u"f2", .value = u"ml_new_pwd"},
+                  {.name = u"f3", .value = u"ml_probably_new_pwd"},
+                  {.name = u"f4", .value = u"ml_confirm_pwd"},
+                  {.name = u"f5", .value = u"ml_otp"},
+                  {.name = u"f6", .value = u"alice"}}});
+  FormStructure form_structure{form};
+  ASSERT_EQ(7u, form_structure.field_count());
+
+  form_structure.field(0)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, PASSWORD);
+  form_structure.field(1)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning,
+      ACCOUNT_CREATION_PASSWORD);
+  form_structure.field(2)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, NEW_PASSWORD);
+  form_structure.field(3)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, PROBABLY_NEW_PASSWORD);
+  form_structure.field(4)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, CONFIRMATION_PASSWORD);
+  form_structure.field(5)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, ONE_TIME_CODE);
+  form_structure.field(6)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, USERNAME);
+
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"alice"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);

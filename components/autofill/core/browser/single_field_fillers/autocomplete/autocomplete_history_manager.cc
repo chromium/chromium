@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
@@ -208,14 +209,20 @@ bool IsFieldTypeSaveable(FieldType field_type) {
 }
 
 // Returns true if the predicted field types on `field` are eligible to be saved
-// in autocomplete history. Checks both the overall computed type and all server
+// in autocomplete history. Checks the overall computed type, all server
 // predictions (since Password Manager inspects every entry in
-// `server_predictions()`, not only index 0).
+// `server_predictions()`, not only index 0), and on-device Password Manager ML
+// predictions (which `AutofillField::GetComputedPredictionResult()` only
+// surfaces for `ONE_TIME_CODE`).
 bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
   if (!field) {
     return true;
   }
   if (!std::ranges::all_of(field->Type().GetTypes(), IsFieldTypeSaveable)) {
+    return false;
+  }
+  if (!IsFieldTypeSaveable(field->heuristic_type(
+          HeuristicSource::kPasswordManagerMachineLearning))) {
     return false;
   }
   return std::ranges::all_of(
