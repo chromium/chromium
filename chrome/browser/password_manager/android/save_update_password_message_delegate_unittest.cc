@@ -3441,6 +3441,17 @@ class SaveUpdatePasswordMessageDelegateTrustedVaultTest
     return reprompt_shown;
   }
 
+  [[nodiscard]] bool ResolveTrustedVaultErrorInStoreAndSync() {
+    account_store_->ReturnErrorOnRequest(std::nullopt);
+    if (!NotifyAccountStoreAboutErrorAndWait(
+            password_manager::ActionableError::kNoError)) {
+      return false;
+    }
+    sync_service().GetUserSettings()->SetTrustedVaultKeyRequired(false);
+    sync_service().FireStateChanged();
+    return true;
+  }
+
   void ExpectSaveAndConfirmationMessage(
       MockPasswordFormManagerForUI* form_manager) {
     EXPECT_CALL(*form_manager, Save()).WillOnce([this]() {
@@ -4361,4 +4372,136 @@ TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
   testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
   ExpectDismissMessageCall();
   delegate()->DismissAllActiveUI();
+}
+
+// Tests that if the trusted vault error resolves in the background while the
+// user is in `kWaitingForDeviceLock`, completing Device Lock calls
+// `SaveAfterTrustedVaultResolution()`, showing the confirmation message and
+// logging `kSavedSuccessfully`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    TrustedVaultErrorResolvedWhileWaitingForDeviceLock_SavesWithConfirmationAndLogsOutcome) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+  TriggerActionClick();
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+  EXPECT_FALSE(is_password_saved());
+
+  ASSERT_TRUE(ResolveTrustedVaultErrorInStoreAndSync());
+  EXPECT_FALSE(is_password_saved());
+
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kSavedSuccessfully, 1);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if the trusted vault error resolves in the background while the
+// initial save prompt is showing (with Device Lock not required), clicking the
+// primary button saves with confirmation and lets Java's `PRIMARY_ACTION`
+// dismissal record `CLICKED_ACCEPT` instead of `NO_DIRECT_INTERACTION`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+    TrustedVaultErrorResolvedBeforePrimaryButtonClick_SavesWithConfirmationAndLogsAccepted) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+
+  ASSERT_TRUE(ResolveTrustedVaultErrorInStoreAndSync());
+  EXPECT_FALSE(is_password_saved());
+
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+  TriggerActionClick();
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if the trusted vault error resolves in the background while
+// `PasswordEditDialog` is open, accepting the dialog saves the password to the
+// account store, shows the confirmation message, and records `CLICKED_ACCEPT`
+// and `kSavedSuccessfully`.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    TrustedVaultErrorResolvedBeforeAcceptingEditDialog_SavesWithConfirmationAndLogsAccepted) {
+  base::HistogramTester histogram_tester;
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt(empty_best_matches());
+
+  ASSERT_TRUE(ResolveTrustedVaultErrorInStoreAndSync());
+  EXPECT_FALSE(is_password_saved());
+
+  testing::Mock::VerifyAndClearExpectations(mock_dialog);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  testing::Mock::VerifyAndClearExpectations(raw_form_manager);
+  EXPECT_CALL(*mock_dialog, Dismiss()).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  ExpectSaveAndConfirmationMessage(raw_form_manager);
+
+  TriggerDialogAcceptedCallback(/*username=*/kUsername, /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kSavedSuccessfully, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  testing::Mock::VerifyAndClearExpectations(message_dispatcher_bridge());
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that if password syncing is disabled while the initial save prompt
+// blocked by a trusted vault error is still open, clicking Continue abandons
+// error resolution without saving to the profile store or starting key
+// retrieval.
+TEST_F(SaveUpdatePasswordMessageDelegateTrustedVaultTest,
+       PasswordSyncDisabledWhileInitialPromptOpen_ContinueAbandonsResolution) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI* raw_form_manager =
+      EnqueueTrustedVaultSavePrompt();
+
+  DisablePasswordSync();
+  sync_service().FireStateChanged();
+
+  EXPECT_CALL(*message_dispatcher_bridge(), DismissMessage).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  TriggerActionClick();
+
+  EXPECT_FALSE(is_password_saved());
+  EXPECT_FALSE(sync_service().HasObserver(delegate()));
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectUniqueSample(kOutcomeHistogram,
+                                      Outcome::kErrorResolutionAbandoned, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }

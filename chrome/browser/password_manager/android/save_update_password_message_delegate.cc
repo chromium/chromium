@@ -239,6 +239,9 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   const bool is_saving_blocked_by_trusted_vault_error =
       IsSavingBlockedByTrustedVaultError();
+  if (is_saving_blocked_by_trusted_vault_error) {
+    is_in_trusted_vault_error_flow_ = true;
+  }
 
   std::u16string description =
       GetMessageDescription(pending_credentials, update_password,
@@ -733,6 +736,10 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
   UpdatePasswordFormUsernameAndPassword(
       username, PasswordString(std::u16string(password)),
       passwords_state_.form_manager());
+  if (password_manager_util::IsLocalPasswordUpdate(
+          passwords_state_.form_manager())) {
+    is_in_trusted_vault_error_flow_ = false;
+  }
   StartSavePasswordFlow();
 }
 

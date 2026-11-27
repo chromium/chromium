@@ -251,9 +251,9 @@ class SaveUpdatePasswordMessageDelegate
   // dismissal callbacks from UI bridges (e.g. HandleDialogDismissed).
   bool is_programmatic_dismissal_ = false;
 
-  // True while an in-context trusted vault recovery flow is active (from when
-  // key retrieval starts until the credential is saved or the prompt state is
-  // cleared).
+  // True once a save prompt blocked by a trusted vault error is created (or
+  // in-context key retrieval starts) until the credential is saved, edited to a
+  // local-only password update, or the prompt state is cleared.
   bool is_in_trusted_vault_error_flow_ = false;
 
   State state_ = State::kIdle;
