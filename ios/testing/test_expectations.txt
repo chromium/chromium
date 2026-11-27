@@ -771,3 +771,5 @@ crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/t
 crbug.com/591068135 [ iOS26 iPhone Simulator ] SharedTabGroupsTestCase/testCancelShareGroupOnAccountSwitch [Pass Failure]
 crbug.com/579560993 AutofillAIEGTest/testSubmitRedressForm [ Pass Failure ]
 crbug.com/591086829 [ Simulator ] TipsNotificationsTestCase/testEnhancedSafeBrowsingNotification [ Pass Failure ]
+crbug.com/586594739 [ iOS27 Simulator ] AddressViewControllerTestCase/testDoNotEditHomeAndWorkAddressFromOverflowMenu [ Pass Failure ]
+crbug.com/586594739 [ iOS27 Simulator ] AddressViewControllerTestCase/testDoNotEditNamEmailFromOverflowMenu [ Pass Failure ]
