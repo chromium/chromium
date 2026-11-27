@@ -115,6 +115,21 @@ base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
   return base::unexpected(SVGParseStatus::kParsingFailed);
 }
 
+// Parses the <number> form of the 'rotate' attribute, in degrees. A missing
+// attribute or a value that is not a <number> gives the initial value, 0.
+// https://svgwg.org/specs/animations/#RotateAttribute
+float ParseRotateAngle(const AtomicString& rotate) {
+  // The value is null when the attribute is removed.
+  if (rotate.IsNull()) {
+    return 0;
+  }
+  return VisitCharacters(rotate, [](auto chars) {
+    float angle = 0;
+    // Anything left over after the number, as in "45deg", makes it invalid.
+    return ParseNumber(chars, angle) && chars.empty() ? angle : 0.0f;
+  });
+}
+
 // Used to collect the points of each path segment for discrete calcMode.
 struct PointCollector {
   STACK_ALLOCATED();
@@ -179,6 +194,11 @@ void SVGAnimateMotionElement::ParseAttribute(
   if (params.name == svg_names::kPathAttr) {
     path_ = BuildPathFromString(params.new_value);
     AnimationAttributeChanged();
+    return;
+  }
+
+  if (params.name == svg_names::kRotateAttr) {
+    rotate_angle_ = ParseRotateAngle(params.new_value);
     return;
   }
 
@@ -392,8 +412,11 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
       position.tangent_in_degrees += 180;
       break;
     case kRotateAngle:
-      // If rotate=<number> was supported, it would be applied here.
-      position.tangent_in_degrees = 0;
+      // A constant rotation, independent of the direction of motion.
+      position.tangent_in_degrees =
+          RuntimeEnabledFeatures::SvgAnimateMotionRotateAngleEnabled()
+              ? rotate_angle_
+              : 0;
       break;
   }
   transform.Rotate(position.tangent_in_degrees);

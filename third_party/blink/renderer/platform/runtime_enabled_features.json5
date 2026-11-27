@@ -6915,6 +6915,12 @@
       status: "stable",
     },
     {
+      // Apply rotate="<number>" on <animateMotion> as a constant rotation.
+      // https://crbug.com/543906425
+      name: "SvgAnimateMotionRotateAngle",
+      status: "stable",
+    },
+    {
       name: "SvgAvoidResettingFilterQualityForTiledPattern",
       status: "stable",
     },

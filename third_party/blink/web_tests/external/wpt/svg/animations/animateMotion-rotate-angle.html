@@ -26,6 +26,10 @@
   <rect id="bogus-rotate" width="10" height="10">
     <animateMotion from="0,0" to="200,0" rotate="bogus" fill="freeze" dur="4s"/>
   </rect>
+  <!-- The value is a <number>, so an angle with a unit is not valid. -->
+  <rect id="angle-with-unit" width="10" height="10">
+    <animateMotion from="0,0" to="200,0" rotate="45deg" fill="freeze" dur="4s"/>
+  </rect>
   <!-- Control: rotate="auto" follows the direction of motion. -->
   <rect id="auto" width="10" height="10">
     <animateMotion from="0,0" to="0,200" rotate="auto" fill="freeze" dur="4s"/>
@@ -95,6 +99,12 @@ promise_test(async () => {
   rootSVGElement.setCurrentTime(2);
   assert_animation_transform('bogus-rotate', 0, 100, 0);
 }, 'an unparseable rotate value applies no rotation');
+
+promise_test(async () => {
+  await ready;
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_transform('angle-with-unit', 0, 100, 0);
+}, 'rotate="45deg" is not a <number> and applies no rotation');
 
 promise_test(async () => {
   await ready;

@@ -91,6 +91,10 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   Vector<gfx::PointF> discrete_points_;
   // Index into `discrete_points_`, set by `UpdateKeyframeValues()`.
   wtf_size_t discrete_path_index_ = 0;
+
+  // The 'rotate' attribute parsed as a <number>, in degrees. Zero if the
+  // attribute is missing or is not a <number> (including the keywords).
+  float rotate_angle_ = 0;
 };
 
 }  // namespace blink

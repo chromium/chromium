@@ -1,0 +1,105 @@
+<!doctype html>
+<title>Changing a numeric 'rotate' value on &lt;animateMotion></title>
+<link rel="help" href="https://w3c.github.io/svgwg/specs/animations/#RotateAttribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<svg id="svg" width="400" height="400">
+  <!-- All animations move down the y axis, so rotate="auto" is 90 degrees and
+       cannot be confused with any of the numeric values used below. -->
+  <rect id="number-to-number" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" rotate="45" fill="freeze" dur="4s"/>
+  </rect>
+  <rect id="number-to-auto" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" rotate="45" fill="freeze" dur="4s"/>
+  </rect>
+  <rect id="auto-to-number" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" rotate="auto" fill="freeze" dur="4s"/>
+  </rect>
+  <rect id="number-to-invalid" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" rotate="45" fill="freeze" dur="4s"/>
+  </rect>
+  <rect id="number-removed" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" rotate="45" fill="freeze" dur="4s"/>
+  </rect>
+  <rect id="none-to-number" width="10" height="10">
+    <animateMotion from="0,0" to="0,200" fill="freeze" dur="4s"/>
+  </rect>
+</svg>
+<script>
+const rootSVGElement = document.getElementById('svg');
+
+// The rotation is post-multiplied onto the translation computed for the motion.
+function assert_animation_rotation(id, angleInDegrees, tx, ty) {
+  const ctm = document.getElementById(id).getCTM();
+  const expected = new DOMMatrix().translate(tx, ty).rotate(angleInDegrees);
+  for (const component of ['a', 'b', 'c', 'd', 'e', 'f']) {
+    assert_approx_equals(ctm[component], expected[component], 1e-4,
+                         `${id}: matrix ${component}`);
+  }
+}
+
+function animationFor(id) {
+  return document.getElementById(id).firstElementChild;
+}
+
+// Document begin is the moment the load event is triggered, so the timeline
+// cannot be sampled until after that event has been dispatched. Yield once
+// before pausing and driving it manually.
+promise_setup(() => new Promise(resolve => {
+  window.addEventListener('load', () => requestAnimationFrame(() => {
+    rootSVGElement.pauseAnimations();
+    resolve();
+  }));
+}));
+
+// Each test samples at 1s (y = 50), changes 'rotate', and samples again at 2s
+// (y = 100) so that the new value is observed on a fresh sample.
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('number-to-number', 45, 0, 50);
+  animationFor('number-to-number').setAttribute('rotate', '-30');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('number-to-number', -30, 0, 100);
+}, 'changing rotate from one number to another uses the new angle');
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('number-to-auto', 45, 0, 50);
+  animationFor('number-to-auto').setAttribute('rotate', 'auto');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('number-to-auto', 90, 0, 100);
+}, 'changing rotate from a number to "auto" follows the direction of motion');
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('auto-to-number', 90, 0, 50);
+  animationFor('auto-to-number').setAttribute('rotate', '60');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('auto-to-number', 60, 0, 100);
+}, 'changing rotate from "auto" to a number uses the angle');
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('number-to-invalid', 45, 0, 50);
+  animationFor('number-to-invalid').setAttribute('rotate', 'bogus');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('number-to-invalid', 0, 0, 100);
+}, 'changing rotate from a number to an unparseable value applies no rotation');
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('number-removed', 45, 0, 50);
+  animationFor('number-removed').removeAttribute('rotate');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('number-removed', 0, 0, 100);
+}, 'removing a numeric rotate attribute applies no rotation');
+
+promise_test(async () => {
+  rootSVGElement.setCurrentTime(1);
+  assert_animation_rotation('none-to-number', 0, 0, 50);
+  animationFor('none-to-number').setAttribute('rotate', '45');
+  rootSVGElement.setCurrentTime(2);
+  assert_animation_rotation('none-to-number', 45, 0, 100);
+}, 'adding a numeric rotate attribute uses the angle');
+</script>
