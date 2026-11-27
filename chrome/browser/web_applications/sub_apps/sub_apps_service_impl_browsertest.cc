@@ -500,6 +500,88 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(actual.error(), SubAppsServiceResultCode::kWrongContext);
 }
 
+// Binding SubAppsService after the parent app is no longer installed (e.g.
+// WebContents without an associated installed app) must return kWrongContext
+// on RPCs rather than triggering mojo::ReportBadMessage.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       CallsFailGracefullyWhenBoundWithoutInstalledApp) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+
+  {
+    auto* sync_bridge = &provider().sync_bridge_unsafe();
+    auto update = sync_bridge->BeginUpdate();
+    update->DeleteApp(parent_app_id_);
+  }
+
+  // Bind after deleting the app so CreateIfAllowed sees no installed app.
+  BindRemote(iwa_frame);
+
+  auto add_result = CallAdd({kSubAppPath});
+  ASSERT_FALSE(add_result.has_value());
+  EXPECT_EQ(add_result.error(), SubAppsServiceResultCode::kWrongContext);
+
+  auto list_result = CallList();
+  ASSERT_FALSE(list_result.has_value());
+  EXPECT_EQ(list_result.error(), SubAppsServiceResultCode::kWrongContext);
+
+  auto remove_result = CallRemove({kSubAppPath});
+  ASSERT_FALSE(remove_result.has_value());
+  EXPECT_EQ(remove_result.error(), SubAppsServiceResultCode::kWrongContext);
+  EXPECT_TRUE(iwa_frame->IsRenderFrameLive());
+}
+
+// Verify that sub-app installation succeeds when the sub-app page eagerly calls
+// window.subApps.list() during the background manifest fetch, where the
+// temporary WebContents has no WebAppTabHelper attached.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       AddSucceedsWhenSubAppCallsListDuringInstall) {
+  constexpr char kEagerSubAppPath[] = "/sub_eager/page.html";
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kSubApps,
+              /*self=*/true,
+              /*origins=*/{}))
+          .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
+          .AddHtml(kEagerSubAppPath, R"(
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Eager Sub App</title>
+                <link rel="manifest" href="./manifest.webmanifest"/>
+                <link rel="icon" href="/subapps_icon.png"/>
+                <script src="./eager_list.js"></script>
+              </head>
+              <body><h1>Eager Sub App</h1></body>
+            </html>
+          )")
+          .AddJs("/sub_eager/eager_list.js",
+                 "window.subApps.list().catch(() => {});")
+          .AddResource("/sub_eager/manifest.webmanifest", R"({
+            "name": "sub_eager",
+            "icons": [{
+              "src": "/subapps_icon.png",
+              "sizes": "512x512",
+              "type": "image/png"
+            }],
+            "start_url": "/sub_eager/page.html",
+            "display": "standalone"
+          })",
+                       "application/manifest+json")
+          .BuildBundle();
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo parent_app = app->InstallChecked(profile());
+  parent_app_id_ = parent_app.app_id();
+
+  content::RenderFrameHost* iwa_frame = OpenApp(parent_app_id_);
+  BindRemote(iwa_frame);
+
+  ExpectCallAdd({{kEagerSubAppPath, SubAppsServiceAddResultType::kSuccess}},
+                {kEagerSubAppPath});
+  EXPECT_TRUE(iwa_frame->IsRenderFrameLive());
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
 // Add call should fail if the call wasn't made from the context of parent app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        AddFailNotInParentAppContext) {

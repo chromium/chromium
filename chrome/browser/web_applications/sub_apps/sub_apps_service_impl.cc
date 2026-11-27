@@ -318,7 +318,7 @@ IsolatedWebAppMetricsHelper::LogSubAppInstallResult MapAddCallErrorCodeToMetric(
 SubAppsServiceImpl::SubAppsServiceImpl(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<SubAppsService> receiver,
-    webapps::AppId parent_app_id,
+    std::optional<webapps::AppId> parent_app_id,
     base::SelfDeletingPassKey key)
     : DocumentService(render_frame_host, std::move(receiver), key),
       parent_app_id_(std::move(parent_app_id)) {}
@@ -350,17 +350,15 @@ void SubAppsServiceImpl::CreateIfAllowed(
     return;
   }
 
-  std::optional<webapps::AppId> parent_app_id =
-      GetTopmostAppId(*render_frame_host);
-  if (!parent_app_id) {
-    mojo::ReportBadMessage("Not an installed app");
-    return;
-  }
-
   // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
+  // Do not call mojo::ReportBadMessage if `GetTopmostAppId` is empty, since
+  // legitimate non-app WebContents (such as background manifest fetches during
+  // sub-app installation) can reach this endpoint; RPCs will return
+  // `kWrongContext` via `IsContextValid()`.
   base::MakeSelfDeleting<SubAppsServiceImpl>(
-      *render_frame_host, std::move(receiver), *std::move(parent_app_id));
+      *render_frame_host, std::move(receiver),
+      GetTopmostAppId(*render_frame_host));
 }
 
 void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
@@ -373,7 +371,7 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
 
   const WebAppRegistrar& registrar = provider().registrar_unsafe();
   url::Origin parent_origin =
-      url::Origin::Create(registrar.GetAppStartUrl(parent_app_id_));
+      url::Origin::Create(registrar.GetAppStartUrl(*parent_app_id_));
 
   int add_call_id = next_add_call_id_++;
   AddCallInfo& add_call_info = add_call_info_[add_call_id];
@@ -431,7 +429,7 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
   }
 
   // Check total limit of sub apps installed.
-  size_t current_count = registrar.GetAllSubAppIds(parent_app_id_).size();
+  size_t current_count = registrar.GetAllSubAppIds(*parent_app_id_).size();
 
   // Return all as failed if sub app limit is reached.
   // It is possible to check and install only sub apps that do not exceed the
@@ -448,7 +446,8 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
     return;
   }
 
-  auto parent_manifest_id = registrar.GetAppById(parent_app_id_)->manifest_id();
+  auto parent_manifest_id =
+      registrar.GetAppById(*parent_app_id_)->manifest_id();
   CollectInstallData(add_call_id, std::move(install_urls), parent_manifest_id);
 }
 
@@ -499,7 +498,7 @@ void SubAppsServiceImpl::ProcessInstallData(
   AddCallInfo& add_call_info =
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
   auto parent_manifest_id =
-      provider().registrar_unsafe().GetAppById(parent_app_id_)->manifest_id();
+      provider().registrar_unsafe().GetAppById(*parent_app_id_)->manifest_id();
 
   for (auto& [install_url, install_info] : install_data) {
     if (!install_info) {
@@ -529,11 +528,11 @@ void SubAppsServiceImpl::ProcessInstallData(
       continue;
     }
 
-    install_info->parent_app_id = parent_app_id_;
+    install_info->parent_app_id = *parent_app_id_;
     install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     bool scope_overlaps_with_other_apps = AppsScopesOverlap(
-        install_info->scope, parent_app_id_, add_call_info.install_infos,
+        install_info->scope, *parent_app_id_, add_call_info.install_infos,
         provider().registrar_unsafe());
 
     if (scope_overlaps_with_other_apps) {
@@ -570,7 +569,7 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
     default:
       provider().ui_manager().ShowSubAppsInstallDialog(
           content::WebContents::FromRenderFrameHost(&render_frame_host()),
-          add_call_info.install_infos, parent_app_id_,
+          add_call_info.install_infos, *parent_app_id_,
           base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
                          weak_ptr_factory_.GetWeakPtr(), add_call_id));
       return;
@@ -663,7 +662,7 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
   const WebAppRegistrar& registrar = provider().registrar_unsafe();
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
   for (const webapps::AppId& sub_app_id :
-       registrar.GetAllSubAppIds(parent_app_id_)) {
+       registrar.GetAllSubAppIds(*parent_app_id_)) {
     std::optional<webapps::ManifestId> manifest_id =
         registrar.GetAppManifestId(sub_app_id);
     if (!manifest_id.has_value()) {
@@ -702,8 +701,8 @@ void SubAppsServiceImpl::Remove(const std::vector<std::string>& manifest_ids,
       .Done(base::BindOnce(
           &SubAppsServiceImpl::NotifyUninstall, weak_ptr,
           GetProfile(render_frame_host())->GetWeakPtr(),
-          base::UTF8ToUTF16(registrar.GetAppShortName(parent_app_id_)),
-          registrar.GetAppStartUrl(parent_app_id_),
+          base::UTF8ToUTF16(registrar.GetAppShortName(*parent_app_id_)),
+          registrar.GetAppStartUrl(*parent_app_id_),
           std::move(result_callback)));
 }
 
@@ -721,7 +720,7 @@ void SubAppsServiceImpl::RemoveSubApp(
   WebAppRegistrar& registrar = provider().registrar_unsafe();
 
   std::optional<webapps::ManifestId> parent_manifest_id =
-      registrar.GetAppManifestId(parent_app_id_);
+      registrar.GetAppManifestId(*parent_app_id_);
   if (!parent_manifest_id.has_value()) {
     return ReportBadMessageAndDeleteThis("Invalid parent manifest id");
   }
@@ -736,7 +735,7 @@ void SubAppsServiceImpl::RemoveSubApp(
 
   // Verify that the app we're trying to remove exists, is installed and that
   // its parent_app is the parent app of this service.
-  if (!app || parent_app_id_ != app->parent_app_id() ||
+  if (!app || *parent_app_id_ != app->parent_app_id() ||
       !registrar.AppMatches(sub_app_id,
                             WebAppFilter::IsAppSurfaceableToUser())) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
@@ -859,9 +858,9 @@ void SubAppsServiceImpl::ReportAddMetricsAndRunCallback(
 }
 
 bool SubAppsServiceImpl::IsContextValid() const {
-  return render_frame_host().IsActive() &&
+  return render_frame_host().IsActive() && parent_app_id_.has_value() &&
          provider().registrar_unsafe().AppMatches(
-             parent_app_id_, !WebAppFilter::IsIsolatedSubApp());
+             *parent_app_id_, !WebAppFilter::IsIsolatedSubApp());
 }
 
 WebAppProvider& SubAppsServiceImpl::provider() const {

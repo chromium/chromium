@@ -80,7 +80,7 @@ class SubAppsServiceImpl
   SubAppsServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver,
-      webapps::AppId parent_app_id,
+      std::optional<webapps::AppId> parent_app_id,
       base::SelfDeletingPassKey key);
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
   SubAppsServiceImpl& operator=(const SubAppsServiceImpl&) = delete;
@@ -148,15 +148,18 @@ class SubAppsServiceImpl
       RemoveCallback result_callback,
       std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> remove_results);
 
-  // False if the frame is inactive or the parent app was uninstalled.
+  // False if the frame is inactive, has no associated app, or the parent app
+  // was uninstalled.
   bool IsContextValid() const;
 
   WebAppProvider& provider() const;
 
   ~SubAppsServiceImpl() override;
 
-  // The frame's app, or its parent app if the frame is a sub-app.
-  const webapps::AppId parent_app_id_;
+  // The frame's app, or its parent app if the frame is a sub-app. May be
+  // std::nullopt if the WebContents has no associated installed app (e.g.,
+  // background install-info fetching), in which case RPCs return kWrongContext.
+  const std::optional<webapps::AppId> parent_app_id_;
 
   int next_add_call_id_ = 0;
   std::map<int, AddCallInfo> add_call_info_;
