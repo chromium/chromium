@@ -456,9 +456,6 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  if (!canvas()) {
-    return std::nullopt;
-  }
   return FlushCanvasInternal(reason);
 }
 
