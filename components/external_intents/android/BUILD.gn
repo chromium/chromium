@@ -37,15 +37,13 @@ android_library("java") {
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
+  assert_no_deps = [ "//chrome/*" ]
   resources_package = "org.chromium.components.external_intents"
 }
 
 android_resources("java_resources") {
   sources = []
-  deps = [
-    "//components/browser_ui/strings/android:browser_ui_strings_grd",
-    "//components/browser_ui/widget/android:java_resources",
-  ]
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 
 generate_jni("jni_headers") {
