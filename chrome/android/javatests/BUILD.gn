@@ -1919,6 +1919,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/test/memory_leaks/ChromeInstrumentationLeaks.java",
     "src/org/chromium/chrome/test/memory_leaks/LeakCanaryCheckerLeakDetectionTest.java",
     "src/org/chromium/chrome/test/memory_leaks/PublicTransitLeakTest.java",
+    "src/org/chromium/chrome/test/transit/AutoResetCtaTransitTestRuleNightModeTest.java",
     "src/org/chromium/chrome/test/transit/AutoResetCtaTransitTestRuleTest.java",
   ]
 
