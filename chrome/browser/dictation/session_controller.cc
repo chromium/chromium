@@ -6,20 +6,16 @@
 
 #include <algorithm>
 #include <memory>
-#include <ostream>
+#include <utility>
 
-#include "base/containers/unique_ptr_adapters.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/state_transitions.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/dictation/dictation_keyed_service.h"
-#include "chrome/browser/dictation/dom_target.h"
 #include "chrome/browser/dictation/features.h"
-#include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
@@ -27,59 +23,35 @@
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/accelerator_table.h"
-#include "components/input/native_web_keyboard_event.h"
-#include "content/public/browser/editable_level.h"
-#include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_keyboard_event.h"
-#include "third_party/blink/public/mojom/input/focus_type.mojom.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/events/blink/blink_event_util.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace dictation {
 
-namespace {
+SessionController::StreamEntry::StreamEntry(
+    std::unique_ptr<Target> target,
+    std::unique_ptr<StreamProvider> provider)
+    : target(std::move(target)), provider(std::move(provider)) {}
 
-// Returns true if `key_event` is the key combination described by
-// `accelerator`.
-bool MatchesAccelerator(const blink::WebKeyboardEvent& key_event,
-                        const ui::Accelerator& accelerator) {
-  if (accelerator.IsEmpty()) {
-    return false;
-  }
-  return key_event.windows_key_code == accelerator.key_code() &&
-         ui::Accelerator::MaskOutKeyEventFlags(
-             ui::WebEventModifiersToEventFlags(key_event.GetModifiers())) ==
-             ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers());
-}
-
-}  // namespace
+SessionController::StreamEntry::~StreamEntry() = default;
 
 SessionController::SessionController(SessionControllerDelegate& delegate)
-    : delegate_(delegate),
-      key_press_event_callback_(
-          base::BindRepeating(&SessionController::HandleKeyPressEvent,
-                              base::Unretained(this))) {
+    : delegate_(delegate) {
   VT_LOG(GetBrowserContext()) << "=== Session Started";
 }
 
 SessionController::~SessionController() {
   CHECK(state_ != SessionState::kInactive ||
-        (!attached_stream_provider_ && finalizing_stream_providers_.empty()));
-  if (attached_stream_provider_) {
+        (!attached_stream_ && finalizing_streams_.empty()));
+  ClearCurrentTarget();
+  if (attached_stream_) {
     EndDictationStream(DictationStreamEndTrigger::kDestructor);
   }
-  UnregisterKeyPressCallback();
+  for (auto& entry : finalizing_streams_) {
+    entry->provider->DetachTarget();
+  }
   if (is_wake_lock_active_) {
     GetWakeLock()->CancelWakeLock();
     is_wake_lock_active_ = false;
@@ -101,13 +73,16 @@ void SessionController::StartDictationStream(
   // finalization state which could flash states the UI.
   CHECK(state_ == SessionState::kInactive ||
         state_ == SessionState::kFinalizing);
-  CHECK(!attached_stream_provider_);
+  CHECK(!attached_stream_);
 
   if (is_shutting_down_) {
     VT_LOG(GetBrowserContext()) << "\tAborting session shutdown";
     is_shutting_down_ = false;
     auto_session_end_timer_.Stop();
   }
+
+  ClearCurrentTarget();
+  idle_target_.reset();
 
   last_used_target_id_ = target->GetGlobalDOMNodeId();
   if (last_used_target_id_) {
@@ -117,23 +92,18 @@ void SessionController::StartDictationStream(
     VT_LOG(GetBrowserContext()) << "Starting DictationStream on custom target";
   }
 
-  content::RenderFrameHost* target_rfh =
-      last_used_target_id_
-          ? last_used_target_id_->document.AsRenderFrameHostIfValid()
-          : nullptr;
-  Observe(content::WebContents::FromRenderFrameHost(target_rfh));
-
   RecordDictationStreamStartTrigger(trigger);
   stream_trigger_time_ = trigger_time;
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
-  stream_provider->BindToTargetAndConnect(std::move(target));
-  attached_stream_provider_ = std::move(stream_provider);
+  Target* const raw_target = target.get();
+  attached_stream_ = std::make_unique<StreamEntry>(std::move(target),
+                                                   std::move(stream_provider));
 
-  if (target_rfh) {
-    RegisterKeyPressCallback(target_rfh->GetRenderWidgetHost());
-  }
+  current_target_ = raw_target;
+  current_target_->SetDelegate(this);
+  current_target_->SetStreamActive(true);
 
   MoveToState(SessionState::kStreamInitializing);
 
@@ -141,142 +111,40 @@ void SessionController::StartDictationStream(
     ui_->OnStartedStream(
         last_used_target_id_.value_or(content::GlobalDOMNodeId()));
   }
+
+  attached_stream_->provider->BindToTargetAndConnect(*raw_target);
 }
 
-void SessionController::DidGetUserInteraction(
-    const blink::WebInputEvent& event) {
-  if (event.GetType() != blink::WebInputEvent::Type::kRawKeyDown &&
-      event.GetType() != blink::WebInputEvent::Type::kKeyDown &&
-      event.GetType() != blink::WebInputEvent::Type::kChar) {
-    return;
-  }
-
-  const auto& key_event = static_cast<const blink::WebKeyboardEvent&>(event);
-  if (key_event.windows_key_code == ui::VKEY_TAB) {
-    // Don't handle tab key presses here. Let stream ending for those be handled
-    // by the focus change logic.
-    return;
-  }
-
-  if (key_event.windows_key_code == ui::VKEY_ESCAPE) {
-    if (attached_stream_provider_) {
-      EndDictationStream(DictationStreamEndTrigger::kEscapeKey);
-    } else {
-      FinalizeAndShutdown(DictationStreamEndTrigger::kEscapeKey);
-    }
-    return;
-  }
-
-  // Special case to ignore the accelerator used to focus inactive popups for
-  // accessibility so it's not treated as typing that ends the stream.
-  ui::Accelerator focus_accelerator;
-  if (GetAcceleratorForCommandId(IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY,
-                                 &focus_accelerator) &&
-      MatchesAccelerator(key_event, focus_accelerator)) {
-    return;
-  }
-
-  // Ignore the Dictation hotkey itself. On surfaces where the key event reaches
-  // the renderer before the accelerator is handled (e.g. the Glic side panel),
-  // treating it as typing would end the stream here. ToggleHotkeyHandler()
-  // would then find no attached stream to toggle off and start a new one
-  // instead, so dictation could never be stopped with the hotkey.
-  Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
-  CHECK(profile);
-  if (MatchesAccelerator(key_event, GetDictationHotkeyFromPrefs(profile)) ||
-      MatchesAccelerator(key_event,
-                         GetDictationPressAndHoldHotkeyFromPrefs(profile))) {
-    return;
-  }
-
-  // While the hotkey hold watcher is active, any non-chord key press is
-  // handled by `HotkeyHoldWatcher` (ending with `kHotkeyHoldAbort`), and
-  // synthetic IME composition events (`VKEY_PROCESSKEY` on macOS during key
-  // auto-repeat while `_hasMarkedText` is true) must not be treated as user
-  // typing.
-  const DictationKeyedService* const service =
-      DictationKeyedService::Get(profile);
-  CHECK(service);
-  if (!service->is_hold_watcher_active()) {
-    // If the user starts typing, end the stream.
-    const bool event_has_text = !base::IsUnicodeControl(key_event.text[0]);
-    if (attached_stream_provider_ &&
-        web_contents()->IsFocusedElementEditable() && event_has_text) {
-      EndDictationStream(DictationStreamEndTrigger::kUserTyping);
-    }
+void SessionController::OnTargetRequestEndStream(
+    DictationStreamEndTrigger trigger) {
+  if (attached_stream_) {
+    EndDictationStream(trigger);
   }
 }
 
-void SessionController::OnFocusChangedInPage(
-    const content::FocusedNodeDetails& details) {
-  if (attached_stream_provider_ && attached_stream_provider_->GetTarget()) {
-    if (DomTarget* dom_target =
-            attached_stream_provider_->GetTarget()->AsDomTarget()) {
-      dom_target->OnFocusChanged(details);
-    }
-  }
-  for (auto& provider : finalizing_stream_providers_) {
-    if (provider->GetTarget()) {
-      if (DomTarget* dom_target = provider->GetTarget()->AsDomTarget()) {
-        dom_target->OnFocusChanged(details);
-      }
-    }
-  }
-
-  if (details.focus_type == blink::mojom::FocusType::kNone ||
-      details.focus_type == blink::mojom::FocusType::kScript) {
-    return;
-  }
-
-  if (attached_stream_provider_) {
-    EndDictationStream(DictationStreamEndTrigger::kFocusChange);
-  }
+void SessionController::OnTargetRequestEndSession(
+    DictationStreamEndTrigger trigger) {
+  FinalizeAndShutdown(trigger);
 }
 
-void SessionController::PrimaryPageChanged(content::Page& page) {
-  // Shut down the whole session immediately upon navigating away from the page
-  // associated with the session (closes bubble and stops typing).
+void SessionController::OnTargetInvalidated() {
   if (ui_) {
     ui_->OnStopped();
   }
   EndSessionAsynchronously();
-}
-
-void SessionController::PrimaryMainFrameRenderProcessGone(
-    base::TerminationStatus status) {
-  // If the page crashes, immediately end the session.
-  if (ui_) {
-    ui_->OnStopped();
-  }
-  EndSessionAsynchronously();
-}
-
-void SessionController::WebContentsDestroyed() {
-  // If the target WebContents is destroyed (e.g. an overlay WebUI is closed
-  // while the host tab remains open), immediately end the session.
-  if (ui_) {
-    ui_->OnStopped();
-  }
-  EndSessionAsynchronously();
-}
-
-void SessionController::RenderWidgetHostDestroyed(
-    content::RenderWidgetHost* widget_host) {
-  CHECK_EQ(widget_host, render_widget_host_observation_.GetSource());
-  UnregisterKeyPressCallback();
 }
 
 void SessionController::EndDictationStream(DictationStreamEndTrigger trigger) {
   VT_LOG(GetBrowserContext()) << __func__;
-  CHECK(attached_stream_provider_);
+  CHECK(attached_stream_);
   CHECK(state_ == SessionState::kStreamInitializing ||
         state_ == SessionState::kTranscribing);
   is_shutting_down_ = true;
-  UnregisterKeyPressCallback();
-  attached_stream_provider_->Stop(trigger);
+  attached_stream_->target->SetStreamActive(false);
+  attached_stream_->provider->Stop(trigger);
   // TODO(b/525943882): Consider whether an initializing stream should be
   // immediately moved to deletion, rather than finalizing.
-  finalizing_stream_providers_.insert(std::move(attached_stream_provider_));
+  finalizing_streams_.insert(std::move(attached_stream_));
   MoveToState(SessionState::kFinalizing);
 }
 
@@ -287,7 +155,7 @@ void SessionController::UpdateAudioLevel(float audio_level) {
 }
 
 void SessionController::UiRequestEndSession() {
-  if (attached_stream_provider_) {
+  if (attached_stream_) {
     EndDictationStream(DictationStreamEndTrigger::kCancelButton);
   }
   // EndSession will destroy `this` which owns other objects that call into here
@@ -298,7 +166,7 @@ void SessionController::UiRequestEndSession() {
 void SessionController::FinalizeAndShutdown(DictationStreamEndTrigger trigger) {
   VT_LOG(GetBrowserContext()) << __func__;
   is_shutting_down_ = true;
-  if (attached_stream_provider_) {
+  if (attached_stream_) {
     EndDictationStream(trigger);
   } else if (state_ == SessionState::kInactive) {
     // EndSession will destroy `this` which owns other objects that call into
@@ -324,27 +192,37 @@ void SessionController::DidUpdateStreamProviderState(
     StreamErrorReason reason) {
   using StreamState = StreamProvider::StreamState;
 
-  const bool is_attached = attached_stream_provider_.get() == &stream_provider;
+  const bool is_attached =
+      attached_stream_ && attached_stream_->provider.get() == &stream_provider;
   const bool is_failure = stream_provider.GetState() == StreamState::kFailed;
 
   if (stream_provider.GetState() == StreamState::kComplete ||
       stream_provider.GetState() == StreamState::kFailed) {
-    std::unique_ptr<StreamProvider> provider_to_delete;
+    std::unique_ptr<StreamEntry> completed_entry;
     if (is_attached) {
       is_shutting_down_ = true;
-      UnregisterKeyPressCallback();
-      provider_to_delete = std::move(attached_stream_provider_);
+      completed_entry = std::move(attached_stream_);
+      completed_entry->target->SetStreamActive(false);
     } else {
-      auto it = std::ranges::find_if(finalizing_stream_providers_,
-                                     base::MatchesUniquePtr(&stream_provider));
-      if (it != finalizing_stream_providers_.end()) {
-        provider_to_delete =
-            std::move(finalizing_stream_providers_.extract(it).value());
+      auto it = std::ranges::find_if(
+          finalizing_streams_,
+          [&stream_provider](const std::unique_ptr<StreamEntry>& entry) {
+            return entry->provider.get() == &stream_provider;
+          });
+      if (it != finalizing_streams_.end()) {
+        completed_entry = std::move(finalizing_streams_.extract(it).value());
       }
     }
 
-    if (provider_to_delete) {
-      to_delete_stream_providers_.insert(std::move(provider_to_delete));
+    if (completed_entry) {
+      completed_entry->provider->DetachTarget();
+      to_delete_stream_providers_.insert(std::move(completed_entry->provider));
+      if (current_target_ == completed_entry->target.get()) {
+        // Keep the current target alive while `SessionController` is idle so
+        // it can continue reporting target events (e.g. a second Escape press
+        // or page navigation).
+        idle_target_ = std::move(completed_entry->target);
+      }
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&SessionController::PurgeToDeleteStreamProviders,
@@ -353,10 +231,10 @@ void SessionController::DidUpdateStreamProviderState(
   }
 
   // Update SessionState based on provider states.
-  if (attached_stream_provider_) {
-    switch (attached_stream_provider_->GetState()) {
+  if (attached_stream_) {
+    switch (attached_stream_->provider->GetState()) {
       case StreamState::kInitializing:
-        // An initializing stream pust the controller into the initiailzing
+        // An initializing stream puts the controller into the initializing
         // state at creation time.
         CHECK_EQ(state_, SessionState::kStreamInitializing);
         break;
@@ -369,7 +247,7 @@ void SessionController::DidUpdateStreamProviderState(
         NOTREACHED();
     }
   } else {
-    if (!finalizing_stream_providers_.empty()) {
+    if (!finalizing_streams_.empty()) {
       MoveToState(SessionState::kFinalizing);
     } else {
       MoveToState(SessionState::kInactive);
@@ -395,6 +273,14 @@ SessionController::AddSessionStateChangedCallback(
 void SessionController::FlushWakeLockForTesting() {
   if (wake_lock_) {
     wake_lock_.FlushForTesting();  // IN-TEST
+  }
+}
+
+void SessionController::ClearCurrentTarget() {
+  if (current_target_) {
+    current_target_->SetStreamActive(false);
+    current_target_->SetDelegate(nullptr);
+    current_target_ = nullptr;
   }
 }
 
@@ -502,9 +388,10 @@ void SessionController::EndSessionAsynchronously() {
 void SessionController::EndSessionSynchronously() {
   auto_session_end_timer_.Stop();
   // Stop the stream now, as `kEnded` can't be left once entered.
-  if (attached_stream_provider_) {
+  if (attached_stream_) {
     EndDictationStream(DictationStreamEndTrigger::kDestructor);
   }
+  ClearCurrentTarget();
   MoveToState(SessionState::kEnded);
   delegate_->EndSession();
   // WARNING: `this` is deleted, do not add code below here.
@@ -516,39 +403,6 @@ void SessionController::PurgeToDeleteStreamProviders() {
 
 content::BrowserContext* SessionController::GetBrowserContext() const {
   return delegate_->GetBrowserContext();
-}
-
-void SessionController::RegisterKeyPressCallback(
-    content::RenderWidgetHost* widget_host) {
-  UnregisterKeyPressCallback();
-  if (!widget_host) {
-    return;
-  }
-  widget_host->AddKeyPressEventCallback(key_press_event_callback_);
-  render_widget_host_observation_.Observe(widget_host);
-}
-
-void SessionController::UnregisterKeyPressCallback() {
-  if (render_widget_host_observation_.IsObserving()) {
-    render_widget_host_observation_.GetSource()->RemoveKeyPressEventCallback(
-        key_press_event_callback_);
-    render_widget_host_observation_.Reset();
-  }
-}
-
-bool SessionController::HandleKeyPressEvent(
-    const input::NativeWebKeyboardEvent& event) {
-  if (!attached_stream_provider_) {
-    return false;
-  }
-
-  if (event.windows_key_code != ui::VKEY_RETURN ||
-      (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers)) {
-    return false;
-  }
-
-  EndDictationStream(DictationStreamEndTrigger::kEnterKey);
-  return true;
 }
 
 }  // namespace dictation

@@ -5,15 +5,13 @@
 #ifndef CHROME_BROWSER_DICTATION_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_DICTATION_SESSION_CONTROLLER_H_
 
-#include <iosfwd>
 #include <memory>
 #include <optional>
 
 #include "base/callback_list.h"
-#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/dictation/metrics.h"
@@ -22,16 +20,13 @@
 #include "chrome/browser/dictation/stream_provider_delegate.h"
 #include "chrome/browser/dictation/target.h"
 #include "content/public/browser/global_dom_node_id.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
-namespace input {
-struct NativeWebKeyboardEvent;
-}  // namespace input
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace dictation {
 
@@ -40,13 +35,12 @@ class SessionControllerDelegate;
 class SessionUi;
 class StreamProvider;
 
-// The session_controller is a coordinating class between the StreamProvider and
-// the UI. It manages Profile-level state and transitions and synchronizes the
-// dictation system.
+// The session_controller is a coordinating class between the StreamProvider,
+// Target, and UI. It manages Profile-level state and transitions and
+// synchronizes the dictation system.
 class SessionController : public SessionUiDelegate,
                           public StreamProviderDelegate,
-                          public content::WebContentsObserver,
-                          public content::RenderWidgetHostObserver {
+                          public Target::Delegate {
  public:
   explicit SessionController(SessionControllerDelegate& delegate);
   ~SessionController() override;
@@ -70,18 +64,10 @@ class SessionController : public SessionUiDelegate,
       StreamProvider::StreamState old_state,
       StreamErrorReason reason = StreamErrorReason::kNone) override;
 
-  // content::WebContentsObserver:
-  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
-  void OnFocusChangedInPage(
-      const content::FocusedNodeDetails& details) override;
-  void PrimaryPageChanged(content::Page& page) override;
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override;
-  void WebContentsDestroyed() override;
-
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostDestroyed(
-      content::RenderWidgetHost* widget_host) override;
+  // Target::Delegate:
+  void OnTargetRequestEndStream(DictationStreamEndTrigger trigger) override;
+  void OnTargetRequestEndSession(DictationStreamEndTrigger trigger) override;
+  void OnTargetInvalidated() override;
 
   // Starts a new dictation stream by creating and attaching a new stream
   // provider bound to `target`. An existing stream must have been detached
@@ -101,7 +87,7 @@ class SessionController : public SessionUiDelegate,
   void EndSessionSynchronously();
 
   StreamProvider* attached_stream_provider() const {
-    return attached_stream_provider_.get();
+    return attached_stream_ ? attached_stream_->provider.get() : nullptr;
   }
 
   // The DOM node ID the latest stream was started on, or nullopt for non-DOM
@@ -111,6 +97,7 @@ class SessionController : public SessionUiDelegate,
   }
 
   SessionUi* ui_for_testing() { return ui_.get(); }
+  Target* current_target_for_testing() { return current_target_.get(); }
 
   bool is_auto_session_end_timer_running_for_testing() const {
     return auto_session_end_timer_.IsRunning();
@@ -119,35 +106,50 @@ class SessionController : public SessionUiDelegate,
   void FlushWakeLockForTesting();
 
  private:
+  struct StreamEntry {
+    StreamEntry(std::unique_ptr<Target> target,
+                std::unique_ptr<StreamProvider> provider);
+    ~StreamEntry();
+
+    // Declared before `provider` so `provider` is destroyed first (releasing
+    // any non-owning reference to `target` before `target` is destroyed).
+    std::unique_ptr<Target> target;
+    std::unique_ptr<StreamProvider> provider;
+  };
+
+  void ClearCurrentTarget();
   void MoveToState(SessionState new_state);
   void UpdateWakeLock();
   device::mojom::WakeLock* GetWakeLock();
   void EndSessionAsynchronously();
   void PurgeToDeleteStreamProviders();
   content::BrowserContext* GetBrowserContext() const;
-  void RegisterKeyPressCallback(content::RenderWidgetHost* widget_host);
-  void UnregisterKeyPressCallback();
-
-  // Intercepts Enter key presses during an active stream to end the stream and
-  // prevent the newline from being inserted into the targeted element. See also
-  // `DidGetUserInteraction`, which handles other user typing that should end
-  // the stream without preventing the typed input from reaching the element.
-  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   const base::raw_ref<SessionControllerDelegate> delegate_;
 
   SessionState state_ = SessionState::kInactive;
   bool is_shutting_down_ = false;
 
-  // The currently attached stream provider. The state of this provider is used
-  // to drive the current state of dictation in the UI.
-  std::unique_ptr<StreamProvider> attached_stream_provider_;
+  // Target retained after its stream finishes so it can continue observing
+  // target-surface lifecycle/input events (e.g. a second Escape press or
+  // navigation) while the session is `kInactive`.
+  std::unique_ptr<Target> idle_target_;
 
-  // Stream providers that are finalizing.
-  absl::flat_hash_set<std::unique_ptr<StreamProvider>>
-      finalizing_stream_providers_;
+  // Stream entries that are finalizing.
+  absl::flat_hash_set<std::unique_ptr<StreamEntry>> finalizing_streams_;
 
-  // Stream providers that are queued to be deleted asynchronously.
+  // The currently attached stream entry. The state of its provider is used to
+  // drive the current state of dictation in the UI.
+  std::unique_ptr<StreamEntry> attached_stream_;
+
+  // Non-owning pointer to the target currently using `this` as its
+  // `Target::Delegate`. Owned by `attached_stream_`, `finalizing_streams_`, or
+  // `idle_target_`. Declared after those owners so it is destroyed first, and
+  // explicitly cleared in `~SessionController()`.
+  raw_ptr<Target> current_target_ = nullptr;
+
+  // Stream providers that are queued to be deleted asynchronously after
+  // `DetachTarget()` has been called.
   absl::flat_hash_set<std::unique_ptr<StreamProvider>>
       to_delete_stream_providers_;
 
@@ -173,11 +175,6 @@ class SessionController : public SessionUiDelegate,
   // supported.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
   bool is_wake_lock_active_ = false;
-
-  content::RenderWidgetHost::KeyPressEventCallback key_press_event_callback_;
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      render_widget_host_observation_{this};
 
   base::WeakPtrFactory<SessionController> weak_ptr_factory_{this};
 };
