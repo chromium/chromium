@@ -253,8 +253,10 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
 
   PageContextWrapperConfig config =
       PageContextWrapperConfigBuilder()
-          .SetUseRichExtraction(true)
+          .SetDefaultRichExtraction(true)
           .SetUseRichExtractionWithActionable(true)
+          .SetIncludeSameSiteOnly(true)
+          .SetExtractAutofill(true)
           .Build();
 
   __block NSData* resultData = nil;

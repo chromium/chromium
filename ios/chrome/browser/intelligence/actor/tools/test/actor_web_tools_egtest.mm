@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/autofill/test/autofill_app_interface.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_tools_base_test_case.h"
@@ -954,6 +955,109 @@ void AssertKeyboardStaysHidden() {
         return value.is_string() && value.GetString() == "100";
       });
   GREYAssertTrue(success, @"Slider value did not reach 100 after drag");
+}
+
+#pragma mark - Tab Observation Tests
+
+// Tests that `fetchLatestAPC` (using the tab observation config) redacts a
+// cross-site iframe, records it in `ScreenshotInfo.iframe_info` for screenshot
+// redaction, and populates `coarse_autofill_field_type` on recognized address
+// form fields.
+- (void)testFetchLatestAPC_redactsCrossSiteIframeAndExtractsAutofill {
+  const std::string iframeText = "Cross-site iframe text";
+  GURL crossSiteIframeURL =
+      [self URLForHTML:base::StringPrintf("<p>%s</p>", iframeText.c_str())
+                server:self.crossOriginServer];
+  // The test servers run on 127.0.0.1, and different ports are still
+  // same-site, so use a different host to make the iframe cross-site.
+  GURL::Replacements hostReplacements;
+  hostReplacements.SetHostStr("localhost");
+  crossSiteIframeURL = crossSiteIframeURL.ReplaceComponents(hostReplacements);
+
+  const std::string mainHTML = base::StringPrintf(
+      R"(
+      <form name='address_form' id='address_form'>
+        Name: <input type='text' name='name' id='name' autocomplete='name'><br/>
+        Address: <input type='text' name='address' id='address'
+                        autocomplete='street-address'><br/>
+        City: <input type='text' name='city' id='city'
+                     autocomplete='address-level2'><br/>
+        State: <input type='text' name='state' id='state'
+                      autocomplete='address-level1'><br/>
+        Zip: <input type='text' name='zip' id='zip'
+                    autocomplete='postal-code'><br/>
+      </form>
+      <iframe id='cross_site_iframe' src='%s'></iframe>
+      )",
+      crossSiteIframeURL.spec().c_str());
+
+  const GURL mainURL = [self URLForHTML:mainHTML];
+  GREYAssertNotEqual(mainURL.host(), crossSiteIframeURL.host(),
+                     @"Main frame and iframe must use distinct hosts.");
+
+  [ChromeEarlGrey loadURL:mainURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Address:"];
+  [ChromeEarlGrey waitForWebStateFrameContainingText:iframeText];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Address form was not cached by Autofill.");
+
+  NSData* apcData = [ActorAppInterface fetchLatestAPC];
+  GREYAssertNotNil(apcData, @"Failed to fetch APC.");
+  optimization_guide::proto::PageContext pageContext;
+  GREYAssertTrue(pageContext.ParseFromArray([apcData bytes], [apcData length]),
+                 @"Failed to parse PageContext.");
+
+  const optimization_guide::proto::AnnotatedPageContent& apc =
+      pageContext.annotated_page_content();
+  const optimization_guide::proto::ContentNode& rootNode = apc.root_node();
+  const std::string mainFrameToken =
+      apc.main_frame_data().document_identifier().serialized_token();
+
+  // The cross-site iframe is redacted, and none of its content is extracted.
+  FindNodeResult iframeResult = FindNodeWithPredicate(
+      rootNode,
+      [](const optimization_guide::proto::ContentNode& node) {
+        return node.content_attributes().attribute_type() ==
+               optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME;
+      },
+      mainFrameToken);
+  GREYAssertTrue(iframeResult.node != nullptr,
+                 @"Expected an iframe node in the APC tree.");
+  GREYAssertEqual(iframeResult.node->content_attributes()
+                      .iframe_data()
+                      .redacted_frame_metadata()
+                      .reason(),
+                  optimization_guide::proto::
+                      IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE,
+                  @"Expected the cross-site iframe to be redacted.");
+  GREYAssertTrue(
+      FindNodeWithText(rootNode, iframeText, mainFrameToken).node == nullptr,
+      @"Cross-site iframe content must not be extracted.");
+
+  // The redacted iframe is recorded for server-side screenshot redaction.
+  GREYAssertTrue(apc.gemini_in_chrome_page_metadata()
+                         .screenshot_info()
+                         .iframe_info_size() > 0,
+                 @"Expected `iframe_info` for the cross-site iframe.");
+
+  // The address field carries its Autofill coarse type.
+  FindNodeResult addressFieldResult = FindNodeWithPredicate(
+      rootNode,
+      [](const optimization_guide::proto::ContentNode& node) {
+        return node.content_attributes().has_form_control_data() &&
+               node.content_attributes().form_control_data().field_name() ==
+                   "address";
+      },
+      mainFrameToken);
+  GREYAssertTrue(addressFieldResult.node != nullptr,
+                 @"Expected an address form control node.");
+  const optimization_guide::proto::FormControlData& formControlData =
+      addressFieldResult.node->content_attributes().form_control_data();
+  GREYAssertEqual(formControlData.coarse_autofill_field_type_size(), 1,
+                  @"Expected `coarse_autofill_field_type` to be set.");
+  GREYAssertEqual(formControlData.coarse_autofill_field_type(0),
+                  optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS,
+                  @"Expected an address coarse type on the address field.");
 }
 
 @end

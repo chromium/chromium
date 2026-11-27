@@ -426,10 +426,17 @@ void ActorService::StartTabObservation(ActorTaskId task_id,
           last_committed_url, task_id, MakeBrowserTrackUUID(task_id),
           "RequestTabObservation", /*details=*/{});
 
+  // Includes Autofill annotations and paid content markers, like desktop.
+  // Cross-site frames stay excluded: they are redacted in the APC and
+  // recorded in `ScreenshotInfo.iframe_info` for server-side blackout.
+  // TODO(crbug.com/590593880): Include cross-site frames, like desktop, once
+  // `ScreenshotInfo.iframe_info` covers all grafted iframes, so the server can
+  // still black out cross-site frames in the screenshot.
   PageContextWrapperConfigBuilder builder;
-  builder.SetUseRichExtraction(true);
+  builder.SetDefaultRichExtraction(true);
   builder.SetUseRichExtractionWithActionable(true);
   builder.SetIncludeSameSiteOnly(true);
+  builder.SetExtractAutofill(true);
   builder.SetSnapshotCachePolicy(
       PageContextWrapperConfig::SnapshotCachePolicy::kBypassCache);
   PageContextWrapperConfig config = builder.Build();
