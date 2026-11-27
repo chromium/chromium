@@ -653,13 +653,26 @@ public class NtpCustomizationUtils {
      * @param fileName The file name of the upload image file to create.
      */
     public static File createThemeImageFileInDir(String fileName, String dirName) {
-        File themeImageDir = new File(ContextUtils.getApplicationContext().getFilesDir(), dirName);
+        File file = getThemeImageFileWithoutCreatingDir(fileName, dirName);
+        File themeImageDir = file.getParentFile();
         // Check if the directory already exists; if not, create it.
-        if (!themeImageDir.exists()) {
+        if (themeImageDir != null && !themeImageDir.exists()) {
             themeImageDir.mkdirs();
         }
 
-        return new File(themeImageDir, fileName);
+        return file;
+    }
+
+    /**
+     * Returns the {@link File} for a theme image in {@code dirName} without creating directories on
+     * disk.
+     *
+     * @param fileName The file name of the image.
+     * @param dirName The subdirectory name under the app files directory.
+     */
+    private static File getThemeImageFileWithoutCreatingDir(String fileName, String dirName) {
+        return new File(
+                new File(ContextUtils.getApplicationContext().getFilesDir(), dirName), fileName);
     }
 
     /** Returns a unique file name from the path. */
@@ -1715,13 +1728,33 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Applies the daily refresh theme collection image by overwriting the current theme collection
-     * image settings with the daily refresh settings. This includes updating SharedPreferences and
-     * renaming the background image file.
+     * Makes the pre-fetched daily refresh image the current background. Copies its info, matrices,
+     * and primary color in SharedPreferences, clears the daily refresh keys, and moves the image
+     * file on a background thread.
+     *
+     * <p>When NTP theme sync is enabled, the image is moved into {@code theme_collection_images/}
+     * under its URL file name. Otherwise, it is moved to the main background file.
      */
     public static void commitThemeCollectionDailyRefresh() {
+        @Nullable CustomBackgroundInfo dailyRefreshInfo =
+                getDailyRefreshCustomBackgroundInfoFromSharedPreference();
+        if (dailyRefreshInfo == null) return;
+
+        @Nullable String fileIdHash =
+                isNTPCustomizationSyncEnabled()
+                        ? getFileName(dailyRefreshInfo.backgroundUrl.getPath())
+                        : null;
+        // Build the path without touching disk on the UI thread. The directory is created on the
+        // background thread.
+        File targetFile =
+                fileIdHash != null
+                        ? getThemeImageFileWithoutCreatingDir(
+                                fileIdHash, NTP_THEME_COLLECTION_IMAGES_DIR)
+                        : createBackgroundImageFile();
+
         // 1. Overwrite current theme collection image info with daily refresh image info in
         // SharedPreferences.
+        setBackgroundImageFilePathToSharedPreference(targetFile.getAbsolutePath());
         BackgroundImageInfo dailyRefreshNtpBackgroundImageInfo =
                 readDailyRefreshNtpBackgroundImageInfo();
         if (dailyRefreshNtpBackgroundImageInfo != null) {
@@ -1736,41 +1769,46 @@ public class NtpCustomizationUtils {
         } else {
             removeCustomizedPrimaryColorFromSharedPreference();
         }
-        CustomBackgroundInfo dailyRefreshCustomBackgroundInfo =
-                getDailyRefreshCustomBackgroundInfoFromSharedPreference();
-        if (dailyRefreshCustomBackgroundInfo != null) {
-            setCustomBackgroundInfoToSharedPreference(dailyRefreshCustomBackgroundInfo);
-        }
+        setCustomBackgroundInfoToSharedPreference(dailyRefreshInfo);
 
         // 2. Remove the daily refresh info from SharedPreferences.
         removeDailyRefreshNtpBackgroundImageInfo();
         removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
         removeDailyRefreshCustomBackgroundInfoFromSharedPreference();
 
-        // 3. Atomically swap the image files in the background.
+        // 3. Move the image file on a background thread.
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                File dailyRefreshBackgroundImageFile = createDailyRefreshBackgroundImageFile();
-                if (!dailyRefreshBackgroundImageFile.exists()) {
-                    return null;
-                }
-
-                File mainFile = createBackgroundImageFile();
-                // Delete the old main file before renaming. This is necessary because renameTo
-                // might fail if the destination file already exists on some systems.
-                if (mainFile.exists()) {
-                    mainFile.delete();
-                }
-
-                if (!dailyRefreshBackgroundImageFile.renameTo(mainFile)) {
-                    Log.i(TAG, "Failed to rename daily refresh background image file.");
-                    // As a fallback, try to delete the daily refresh file to clean up.
-                    dailyRefreshBackgroundImageFile.delete();
-                }
+                moveDailyRefreshImageFile(targetFile);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Moves the daily refresh image file to {@code targetFile}, replacing any existing file. If the
+     * move fails, the daily refresh file is deleted to clean up. Runs on a background thread.
+     *
+     * @param targetFile The destination file for the rotated background image.
+     */
+    private static void moveDailyRefreshImageFile(File targetFile) {
+        File dailyRefreshBackgroundImageFile = createDailyRefreshBackgroundImageFile();
+        if (!dailyRefreshBackgroundImageFile.exists()) return;
+
+        File parentDir = targetFile.getParentFile();
+        if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            Log.i(TAG, "Failed to create directory for daily refresh background image file.");
+            return;
+        }
+
+        // On Android, renameTo replaces an existing file directly. Do not delete targetFile first,
+        // so a shared image file is kept if the rename fails.
+        if (dailyRefreshBackgroundImageFile.renameTo(targetFile)) return;
+
+        Log.i(TAG, "Failed to rename daily refresh background image file.");
+        // As a fallback, try to delete the daily refresh file to clean up.
+        dailyRefreshBackgroundImageFile.delete();
     }
 
     /**

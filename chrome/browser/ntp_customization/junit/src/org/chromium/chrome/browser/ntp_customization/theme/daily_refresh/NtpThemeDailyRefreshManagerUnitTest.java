@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
@@ -60,6 +61,9 @@ import java.io.File;
 public class NtpThemeDailyRefreshManagerUnitTest {
     private static final String COLLECTION_ID = "id";
     private static final String DAILY_REFRESH_COLLECTION_ID = "id_daily";
+    private static final String FILE_ID_HASH = "fileIdHash";
+    // The rotated image URL. Its file name ("page2") is used as the file ID hash.
+    private static final GURL ROTATED_IMAGE_URL = JUnitTestGURLs.BLUE_2;
     // The timestamp a daily refresh under test was applied at.
     private static final long APPLIED_DAILY_REFRESH_TIMESTAMP = 100;
 
@@ -87,6 +91,8 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         NtpCustomizationUtils.maybeDeleteFile(
                 NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
         NtpCustomizationUtils.maybeDeleteFile(NtpCustomizationUtils.createBackgroundImageFile());
+        NtpCustomizationUtils.deleteThemeImageFileDir(
+                NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         mFakeTime.resetTimes();
     }
@@ -580,6 +586,29 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                 /* isDailyUpdateApplied= */ false, customFile.getAbsolutePath());
     }
 
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testGetFileIdHashForThemeCollection_syncEnabled() {
+        assertEquals(FILE_ID_HASH, getFileIdHashForThemeCollection());
+
+        mManager.setDailyUpdateStatusForThemeCollection(
+                APPLIED_DAILY_REFRESH_TIMESTAMP, /* shouldApply= */ true);
+        // The saved path still points to the old image until the rotation is committed.
+        assertEquals(
+                NtpCustomizationUtils.getFileName(ROTATED_IMAGE_URL.getPath()),
+                getFileIdHashForThemeCollection());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testGetFileIdHashForThemeCollection_syncDisabled_returnsNull() {
+        assertNull(getFileIdHashForThemeCollection());
+
+        mManager.setDailyUpdateStatusForThemeCollection(
+                APPLIED_DAILY_REFRESH_TIMESTAMP, /* shouldApply= */ true);
+        assertNull(getFileIdHashForThemeCollection());
+    }
+
     private void testReadNtpBackgroundImageForThemeCollectionImpl(
             boolean isDailyUpdateApplied, @Nullable String filePath) {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -593,9 +622,30 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         if (isDailyUpdateApplied) {
             mManager.setDailyUpdateStatusForThemeCollection(100, /* shouldApply= */ true);
         }
+        if (filePath != null) {
+            NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(filePath);
+        }
         mManager.readNtpBackgroundImageForThemeCollection(
-                (result) -> assertNotNull(result), /* executor= */ Runnable::run, filePath);
+                (result) -> assertNotNull(result), /* executor= */ Runnable::run);
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    /**
+     * Sets the saved image path to theme_collection_images/{@link #FILE_ID_HASH} and returns the
+     * file ID hash for {@link #ROTATED_IMAGE_URL}.
+     */
+    private @Nullable String getFileIdHashForThemeCollection() {
+        String savedPath =
+                NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting(FILE_ID_HASH)
+                        .getAbsolutePath();
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(savedPath);
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        ROTATED_IMAGE_URL,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        return mManager.getNtpBackgroundImageFileIdHashForThemeCollection(info);
     }
 
     /** Sets the background to the theme collection {@link #COLLECTION_ID} with daily refresh. */

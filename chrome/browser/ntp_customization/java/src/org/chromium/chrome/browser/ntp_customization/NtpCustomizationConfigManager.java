@@ -146,11 +146,12 @@ public class NtpCustomizationConfigManager {
 
         mBackgroundType = NtpCustomizationUtils.getNtpBackgroundType();
         mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
-        String filePath = NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference();
-        String fileIdHash = NtpCustomizationUtils.getFileIdHashFromFilePath(filePath);
 
         if (mBackgroundType == NtpBackgroundType.IMAGE_FROM_DISK) {
             mIsInitialized = true;
+            String filePath =
+                    NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference();
+            String fileIdHash = NtpCustomizationUtils.getFileIdHashFromFilePath(filePath);
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
             @Nullable
             @ColorInt
@@ -184,6 +185,10 @@ public class NtpCustomizationConfigManager {
                 NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
             } else {
                 mIsInitialized = true;
+                String fileIdHash =
+                        ntpThemeDailyRefreshManager
+                                .getNtpBackgroundImageFileIdHashForThemeCollection(
+                                        customBackgroundInfo);
                 BackgroundImageInfo imageInfo =
                         ntpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection();
                 @Nullable
@@ -194,8 +199,7 @@ public class NtpCustomizationConfigManager {
                         (bitmap) -> {
                             onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
                         },
-                        EXECUTOR,
-                        filePath);
+                        EXECUTOR);
                 mCustomBackgroundInfo = customBackgroundInfo;
                 mNtpBackgroundData =
                         new NtpBackgroundDataThemeCollection(

@@ -100,13 +100,16 @@ public class NtpThemeDailyRefreshManager {
      * applied, it reads the image for the refreshed theme.
      */
     public void readNtpBackgroundImageForThemeCollection(
-            Callback<@Nullable Bitmap> callback, Executor executor, @Nullable String filePath) {
+            Callback<@Nullable Bitmap> callback, Executor executor) {
         if (mIsDailyUpdateApplied) {
             NtpCustomizationUtils.readDailyRefreshNtpBackgroundImage(callback, executor);
             return;
         }
 
-        NtpCustomizationUtils.readNtpBackgroundImage(callback, executor, filePath);
+        NtpCustomizationUtils.readNtpBackgroundImage(
+                callback,
+                executor,
+                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
     }
 
     /**
@@ -119,6 +122,28 @@ public class NtpThemeDailyRefreshManager {
         }
 
         return NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+    }
+
+    /**
+     * Returns the file ID hash for a theme collection image, or null when theme sync is off.
+     *
+     * <p>If a daily refresh just rotated to a new image, the saved path is still the old image, so
+     * this gets the file name from the new image's URL. Otherwise, it reads the hash from the saved
+     * path.
+     *
+     * @param customBackgroundInfo The current {@link CustomBackgroundInfo}. Already points to the
+     *     new image during a daily refresh.
+     */
+    public @Nullable String getNtpBackgroundImageFileIdHashForThemeCollection(
+            CustomBackgroundInfo customBackgroundInfo) {
+        if (!NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) return null;
+
+        if (mIsDailyUpdateApplied) {
+            return NtpCustomizationUtils.getFileName(customBackgroundInfo.backgroundUrl.getPath());
+        }
+
+        return NtpCustomizationUtils.getFileIdHashFromFilePath(
+                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
     }
 
     /**

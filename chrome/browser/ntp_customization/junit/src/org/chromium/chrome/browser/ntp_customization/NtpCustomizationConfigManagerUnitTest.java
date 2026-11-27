@@ -973,6 +973,9 @@ public class NtpCustomizationConfigManagerUnitTest {
                 .thenReturn(mBackgroundImageInfo);
         when(mNtpThemeDailyRefreshManager.getNtpCustomBackgroundInfoForThemeCollection())
                 .thenReturn(customBackgroundInfo);
+        when(mNtpThemeDailyRefreshManager.getNtpBackgroundImageFileIdHashForThemeCollection(
+                        customBackgroundInfo))
+                .thenReturn(FILE_ID_HASH);
 
         // 3. Create a new instance, which will trigger the constructor logic.
         NtpCustomizationConfigManager configManager =
@@ -981,7 +984,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // 4. Verify that the manager tried to read the background image.
         verify(mNtpThemeDailyRefreshManager)
                 .readNtpBackgroundImageForThemeCollection(
-                        mBitmapCallbackCaptor.capture(), any(Executor.class), eq(null));
+                        mBitmapCallbackCaptor.capture(), any(Executor.class));
 
         // 5. Add a listener and simulate the bitmap becoming available.
         configManager.addListener(mListener, mContext, /* skipNotify= */ true);
@@ -1000,6 +1003,10 @@ public class NtpCustomizationConfigManagerUnitTest {
         // 7. Verify internal state is correct.
         assertEquals(NtpBackgroundType.THEME_COLLECTION, configManager.getBackgroundType());
         assertEquals(customBackgroundInfo, configManager.getCustomBackgroundInfo());
+        assertEquals(
+                FILE_ID_HASH,
+                ((NtpBackgroundDataThemeCollection) configManager.getNtpBackgroundData())
+                        .getFileIdHash());
     }
 
     @Test
@@ -1018,7 +1025,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertNull(configManager.getNtpBackgroundData());
         assertNull(configManager.getCustomBackgroundInfo());
         verify(mNtpThemeDailyRefreshManager, never())
-                .readNtpBackgroundImageForThemeCollection(any(), any(), any());
+                .readNtpBackgroundImageForThemeCollection(any(), any());
         assertPrefsRemoved(NTP_CUSTOMIZATION_BACKGROUND_TYPE, NTP_CUSTOMIZATION_PRIMARY_COLOR);
         assertPersistedBackgroundType(NtpBackgroundType.DEFAULT);
         verify(mNtpThemeStateProvider, never()).notifyCustomBackgroundChanged();

@@ -130,7 +130,12 @@ public class NtpCustomizationUtilsUnitTest {
     private static final String STREAM_ERROR_MESSAGE = "Stream error";
     private static final String COLLECTION_ID = "id";
     private static final String DAILY_REFRESH_COLLECTION_ID = "daily_id";
+    // Old and new images for daily refresh tests. Their URL file names ("page1", "page2") are used
+    // as file names in theme_collection_images/ when NTP theme sync is enabled.
+    private static final GURL PREVIOUS_IMAGE_URL = JUnitTestGURLs.BLUE_1;
+    private static final GURL ROTATED_IMAGE_URL = JUnitTestGURLs.BLUE_2;
     private static final float DAILY_REFRESH_LANDSCAPE_SCALE = 2.f;
+    private static final int DAILY_REFRESH_PRIMARY_COLOR = Color.GREEN;
     // Material falls back to this when no candidate color survives quantization, e.g. for a fully
     // transparent or otherwise chroma-less bitmap. See the vendored
     // third_party/material_color_utilities/src/java/score/Score.java (Score#score fallback).
@@ -171,6 +176,8 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.maybeDeleteFile(NtpCustomizationUtils.createBackgroundImageFile());
         NtpCustomizationUtils.maybeDeleteFile(
                 NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
+        NtpCustomizationUtils.deleteThemeImageFileDir(
+                NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR);
         mEdgeToEdgeStateProvider.detach();
     }
 
@@ -1505,86 +1512,72 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testCommitThemeCollectionDailyRefresh() {
-        // 1. Set up daily refresh info.
-        // BackgroundImageInfo for daily refresh
-        Matrix portraitMatrix = new Matrix();
-        portraitMatrix.setScale(1.f, 1.f);
-        Matrix landscapeMatrix = new Matrix();
-        landscapeMatrix.setScale(2.f, 2.f);
-        BackgroundImageInfo dailyRefreshImageInfo =
-                new BackgroundImageInfo(
-                        portraitMatrix, landscapeMatrix, new Point(100, 200), new Point(200, 100));
-        NtpCustomizationUtils.updateDailyRefreshBackgroundImageInfo(dailyRefreshImageInfo);
-
-        // Primary color for daily refresh
-        int dailyRefreshColor = Color.GREEN;
-        NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(
-                dailyRefreshColor);
-
-        // CustomBackgroundInfo for daily refresh
-        CustomBackgroundInfo dailyRefreshCustomInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_2,
-                        /* collectionId= */ "daily_id",
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
-        NtpCustomizationUtils.setDailyRefreshCustomBackgroundInfoToSharedPreference(
-                dailyRefreshCustomInfo);
-
-        // Create daily refresh background image file.
-        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
-        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshFile);
-        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
-        assertTrue(dailyRefreshFile.exists());
-
-        // Ensure main file doesn't exist yet, or is different.
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testCommitThemeCollectionDailyRefresh_syncDisabled_movesToMainFile() {
+        setUpDailyRefreshRotationToCommit();
         File mainFile = NtpCustomizationUtils.createBackgroundImageFile();
-        if (mainFile.exists()) {
-            mainFile.delete();
-        }
         assertFalse(mainFile.exists());
 
-        // 2. Call the method under test.
         NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
         RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
-        // 3. Assertions.
-        // Check that regular preferences are updated.
-        BackgroundImageInfo mainImageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
-        assertNotNull(mainImageInfo);
+        assertDailyRefreshCommitted();
         assertEquals(
-                BackgroundImageInfo.matrixToString(portraitMatrix),
-                BackgroundImageInfo.matrixToString(mainImageInfo.getPortraitMatrix()));
-        assertEquals(
-                BackgroundImageInfo.matrixToString(landscapeMatrix),
-                BackgroundImageInfo.matrixToString(mainImageInfo.getLandscapeMatrix()));
-
-        assertEquals(
-                Integer.valueOf(dailyRefreshColor),
-                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-
-        CustomBackgroundInfo mainCustomInfo =
-                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
-        assertNotNull(mainCustomInfo);
-        assertEquals(dailyRefreshCustomInfo.backgroundUrl, mainCustomInfo.backgroundUrl);
-        assertEquals(dailyRefreshCustomInfo.collectionId, mainCustomInfo.collectionId);
-
-        // Check that daily refresh preferences are removed.
-        assertNull(NtpCustomizationUtils.readDailyRefreshNtpBackgroundImageInfo());
-        assertNull(
-                NtpCustomizationUtils.getDailyRefreshCustomizedPrimaryColorFromSharedPreference());
-        assertNull(NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
-
-        // Check file rename.
+                mainFile.getAbsolutePath(),
+                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
         assertTrue(mainFile.exists());
-        assertFalse(dailyRefreshFile.exists());
+        assertFalse(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
+    }
 
-        // Verify committing when daily refresh primary color is unset clears the existing primary
-        // color.
+    @Test
+    public void testCommitThemeCollectionDailyRefresh_noPrimaryColor_clearsCurrentColor() {
+        setUpDailyRefreshRotationToCommit();
+        NtpCustomizationUtils.removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
+
         NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+    }
+
+    @Test
+    public void testCommitThemeCollectionDailyRefresh_noDailyRefreshInfo_doesNothing() {
+        File previousFile = setUpDailyRefreshRotationToCommit();
+        NtpCustomizationUtils.removeDailyRefreshCustomBackgroundInfoFromSharedPreference();
+
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The current background and its image file are untouched.
+        assertEquals(
+                PREVIOUS_IMAGE_URL,
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference().backgroundUrl);
+        assertEquals(
+                previousFile.getAbsolutePath(),
+                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        assertEquals(
+                Integer.valueOf(Color.RED),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        assertTrue(previousFile.exists());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testCommitThemeCollectionDailyRefresh_syncEnabled_movesToThemeCollectionDir() {
+        setUpDailyRefreshRotationToCommit();
+        File rotatedFile = getThemeCollectionImageFile(ROTATED_IMAGE_URL);
+        assertFalse(rotatedFile.exists());
+
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
+
+        assertDailyRefreshCommitted();
+        assertEquals(
+                rotatedFile.getAbsolutePath(),
+                NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        assertTrue(rotatedFile.exists());
+        assertFalse(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
+        assertFalse(NtpCustomizationUtils.createBackgroundImageFile().exists());
     }
 
     @Test
@@ -2353,6 +2346,15 @@ public class NtpCustomizationUtilsUnitTest {
                 /* isDailyRefreshEnabled= */ false);
     }
 
+    /** Returns the info of an image of {@link #DAILY_REFRESH_COLLECTION_ID} with daily refresh. */
+    private static CustomBackgroundInfo createDailyRefreshInfo(GURL url) {
+        return new CustomBackgroundInfo(
+                url,
+                DAILY_REFRESH_COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ true);
+    }
+
     /**
      * Sets the background to a theme collection with daily refresh, and starts saving the next
      * daily refresh image of the collection.
@@ -2361,27 +2363,12 @@ public class NtpCustomizationUtilsUnitTest {
      */
     private static CustomBackgroundInfo startSavingDailyRefreshBackgroundInfo() {
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_2,
-                        DAILY_REFRESH_COLLECTION_ID,
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true));
-        CustomBackgroundInfo customBackgroundInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_1,
-                        DAILY_REFRESH_COLLECTION_ID,
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
-        Matrix landscapeMatrix = new Matrix();
-        landscapeMatrix.setScale(DAILY_REFRESH_LANDSCAPE_SCALE, DAILY_REFRESH_LANDSCAPE_SCALE);
+                createDailyRefreshInfo(JUnitTestGURLs.URL_2));
+        CustomBackgroundInfo customBackgroundInfo = createDailyRefreshInfo(JUnitTestGURLs.URL_1);
         NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
                 customBackgroundInfo,
-                Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888),
-                new BackgroundImageInfo(
-                        new Matrix(),
-                        landscapeMatrix,
-                        /* portraitWindowSize= */ null,
-                        /* landscapeWindowSize= */ null));
+                Bitmap.createBitmap(/* width= */ 10, /* height= */ 10, Bitmap.Config.ARGB_8888),
+                createPrefetchedImageInfo());
         return customBackgroundInfo;
     }
 
@@ -2437,5 +2424,83 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(expectedInfo.attributionLine1, restoredInfo.attributionLine1);
         assertEquals(expectedInfo.attributionLine2, restoredInfo.attributionLine2);
         assertEquals(expectedInfo.attributionActionUrl, restoredInfo.attributionActionUrl);
+    }
+
+    /** Returns the info of {@link #ROTATED_IMAGE_URL} with daily refresh and attributions. */
+    private static CustomBackgroundInfo createRotatedDailyRefreshInfo() {
+        return new CustomBackgroundInfo(
+                ROTATED_IMAGE_URL,
+                DAILY_REFRESH_COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ true,
+                /* attributionLine1= */ "Rotated attribution line 1",
+                /* attributionLine2= */ "Rotated attribution line 2",
+                JUnitTestGURLs.URL_3);
+    }
+
+    /**
+     * Sets up a theme collection background ({@link #PREVIOUS_IMAGE_URL}) and a pre-fetched next
+     * image ({@link #ROTATED_IMAGE_URL}) ready to commit.
+     *
+     * @return The current image file in theme_collection_images/.
+     */
+    private static File setUpDailyRefreshRotationToCommit() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.THEME_COLLECTION);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(
+                createDailyRefreshInfo(PREVIOUS_IMAGE_URL));
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        File previousFile = getThemeCollectionImageFile(PREVIOUS_IMAGE_URL);
+        saveBitmapToFile(previousFile);
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(
+                previousFile.getAbsolutePath());
+
+        NtpCustomizationUtils.updateDailyRefreshBackgroundImageInfo(createPrefetchedImageInfo());
+        NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(
+                DAILY_REFRESH_PRIMARY_COLOR);
+        NtpCustomizationUtils.setDailyRefreshCustomBackgroundInfoToSharedPreference(
+                createRotatedDailyRefreshInfo());
+        saveBitmapToFile(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
+        return previousFile;
+    }
+
+    /** Returns the matrices of the pre-fetched daily refresh image. */
+    private static BackgroundImageInfo createPrefetchedImageInfo() {
+        Matrix landscapeMatrix = new Matrix();
+        landscapeMatrix.setScale(DAILY_REFRESH_LANDSCAPE_SCALE, DAILY_REFRESH_LANDSCAPE_SCALE);
+        return new BackgroundImageInfo(
+                new Matrix(),
+                landscapeMatrix,
+                /* portraitWindowSize= */ null,
+                /* landscapeWindowSize= */ null);
+    }
+
+    /** Returns the file of a theme collection image in theme_collection_images/. */
+    private static File getThemeCollectionImageFile(GURL url) {
+        return NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting(
+                NtpCustomizationUtils.getFileName(url.getPath()));
+    }
+
+    /** Saves a bitmap to {@code file} and waits for it to exist. */
+    private static void saveBitmapToFile(File file) {
+        NtpCustomizationUtils.saveBitmapImageToFile(
+                Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888),
+                file);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(file.exists());
+    }
+
+    /**
+     * Asserts that the rotated image from {@link #setUpDailyRefreshRotationToCommit} is now saved
+     * as the current background and the daily refresh keys are cleared.
+     */
+    private static void assertDailyRefreshCommitted() {
+        assertRestoredCustomBackgroundInfo(createRotatedDailyRefreshInfo());
+        assertEquals(
+                Integer.valueOf(DAILY_REFRESH_PRIMARY_COLOR),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        assertEquals(
+                createPrefetchedImageInfo(), NtpCustomizationUtils.readNtpBackgroundImageInfo());
+        assertNoDailyRefreshDataSaved();
     }
 }
