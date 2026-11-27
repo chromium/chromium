@@ -945,9 +945,10 @@ void BackendImpl::OnEntryDestroyEnd() {
 
 void BackendImpl::OnSyncBackendOpComplete() {
   if (consider_evicting_at_op_end_) {
-    if (data_->header.num_bytes > max_size_ && !read_only_ &&
-        (up_ticks_ > kTrimDelay || user_flags_ & kNoRandom))
+    if (!disabled_ && data_ && data_->header.num_bytes > max_size_ &&
+        !read_only_ && (up_ticks_ > kTrimDelay || user_flags_ & kNoRandom)) {
       eviction_.TrimCache(false);
+    }
     consider_evicting_at_op_end_ = false;
   }
 }
@@ -1223,7 +1224,7 @@ base::RepeatingTimer* BackendImpl::GetTimerForTest() {
 }
 
 int BackendImpl::SelfCheck() {
-  if (!init_) {
+  if (!init_ || !data_) {
     LOG(ERROR) << "Init failed";
     return ERR_INIT_FAILED;
   }
@@ -1591,6 +1592,9 @@ void BackendImpl::StoreStats() {
 
 void BackendImpl::RestartCache(bool failure) {
   TRACE_EVENT0("disk_cache", "BackendImpl::RestartCache");
+  if (!data_ || !index_) {
+    return;
+  }
 
   int64_t errors = stats_.GetCounter(Stats::FATAL_ERROR);
   int64_t full_dooms = stats_.GetCounter(Stats::DOOM_CACHE);
@@ -1598,23 +1602,34 @@ void BackendImpl::RestartCache(bool failure) {
   int64_t last_report = stats_.GetCounter(Stats::LAST_REPORT);
 
   PrepareForRestart();
+  bool cleanup_succeeded = false;
   if (failure) {
     DCHECK(!num_refs_);
     DCHECK(open_entries_.empty());
-    CleanupDirectorySync(path_);
+    cleanup_succeeded = CleanupDirectorySync(path_);
   } else {
-    DeleteCache(path_, false);
+    cleanup_succeeded = DeleteCache(path_, /*remove_folder=*/false);
   }
 
-  // Don't call Init() if directed by the unit test: we are simulating a failure
-  // trying to re-enable the cache.
+  // Don't call Init() if directed by the unit test, or if cleaning up the
+  // previous cache directory failed.
   if (unit_test_) {
     init_ = true;  // Let the destructor do proper cleanup.
-  } else if (SyncInit() == net::OK) {
+  } else if (cleanup_succeeded && SyncInit() == net::OK) {
     stats_.SetCounter(Stats::FATAL_ERROR, errors);
     stats_.SetCounter(Stats::DOOM_CACHE, full_dooms);
     stats_.SetCounter(Stats::DOOM_RECENT, partial_dooms);
     stats_.SetCounter(Stats::LAST_REPORT, last_report);
+  } else {
+    disabled_ = true;
+    consider_evicting_at_op_end_ = false;
+    timer_.reset();
+    data_ = nullptr;
+    index_table_ = {};
+    index_ = nullptr;
+    block_files_.CloseFiles();
+    rankings_.Reset();
+    init_ = true;  // Let CleanupCache() drain any in-flight I/O.
   }
 }
 
@@ -1627,10 +1642,16 @@ void BackendImpl::PrepareForRestart() {
     new_eviction_ = false;
 
   disabled_ = true;
-  data_->header.crash = 0;
-  index_->Flush();
+  consider_evicting_at_op_end_ = false;
+  if (data_) {
+    data_->header.crash = 0;
+  }
+  if (index_) {
+    index_->Flush();
+  }
   index_ = nullptr;
   data_ = nullptr;
+  index_table_ = {};
   block_files_.CloseFiles();
   rankings_.Reset();
   init_ = false;

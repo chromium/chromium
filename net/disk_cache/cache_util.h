@@ -27,18 +27,27 @@ NET_EXPORT_PRIVATE BASE_DECLARE_FEATURE(
     kChangeGeneratedCodeCacheSizeExperiment);
 
 // Moves the cache files from the given path to another location.
-// Fails if the destination exists already, or if it doesn't have
-// permission for the operation.  This is basically a rename operation
-// for the cache directory.  Returns true if successful.  On ChromeOS,
-// this moves the cache contents, and leaves the empty cache
-// directory.
+// Fails if `from_path` is not a regular directory, if the destination exists
+// already, or if it doesn't have permission for the operation. This is a rename
+// operation for the cache directory without a copy fallback. Returns true if
+// successful. On ChromeOS, this moves the cache contents, and leaves the empty
+// cache directory.
 NET_EXPORT_PRIVATE bool MoveCache(const base::FilePath& from_path,
                                   const base::FilePath& to_path);
 
 // Deletes the cache files stored on |path|, and optionally also attempts to
-// delete the folder itself.
-NET_EXPORT_PRIVATE void DeleteCache(const base::FilePath& path,
+// delete the folder itself. Returns true if all targeted entries were deleted
+// or did not exist, and false on error.
+NET_EXPORT_PRIVATE bool DeleteCache(const base::FilePath& path,
                                     bool remove_folder);
+
+namespace internal {
+// Deletes all entries inside `path` without removing `path` itself. `path` must
+// already have trailing separators stripped. Returns true if `path` does not
+// exist or all entries were deleted, and false if `path` is a symlink, is not a
+// directory, or deletion fails.
+bool DeleteCacheContents(const base::FilePath& path);
+}  // namespace internal
 
 // Deletes the given directory recursively, asynchronously. `callback` will
 // called with whether the operation succeeded.

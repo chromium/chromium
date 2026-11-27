@@ -8,12 +8,15 @@
 
 #include <map>
 #include <optional>
+#include <string>
 
 #include "base/byte_size.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -88,7 +91,7 @@ TEST_F(CacheUtilTest, MoveCache) {
 }
 
 TEST_F(CacheUtilTest, DeleteCache) {
-  disk_cache::DeleteCache(cache_dir_, false);
+  EXPECT_TRUE(disk_cache::DeleteCache(cache_dir_, false));
   EXPECT_TRUE(base::PathExists(cache_dir_));  // cache dir stays
   EXPECT_FALSE(base::PathExists(dir1_));
   EXPECT_FALSE(base::PathExists(file1_));
@@ -97,7 +100,7 @@ TEST_F(CacheUtilTest, DeleteCache) {
 }
 
 TEST_F(CacheUtilTest, DeleteCacheAndDir) {
-  disk_cache::DeleteCache(cache_dir_, true);
+  EXPECT_TRUE(disk_cache::DeleteCache(cache_dir_, true));
   EXPECT_FALSE(base::PathExists(cache_dir_));  // cache dir is gone
   EXPECT_FALSE(base::PathExists(dir1_));
   EXPECT_FALSE(base::PathExists(file1_));
@@ -168,13 +171,223 @@ TEST_F(CacheUtilTest,
        CleanupDirectorySucceedsWhenTargetDirectoryIsInaccessible) {
   base::RunLoop run_loop;
 
+  // Make a child directory inaccessible so asynchronous recursive deletion
+  // cannot remove it, while renaming `cache_dir_` itself still succeeds on all
+  // POSIX platforms (on macOS < 26, `rename(2)` returns EACCES if `cache_dir_`
+  // itself has mode 0).
+  ASSERT_TRUE(base::SetPosixFilePermissions(dir1_, /*mode=*/0));
+#if !BUILDFLAG(IS_MAC)
   ASSERT_TRUE(base::SetPosixFilePermissions(cache_dir_, /*mode=*/0));
+#endif
   disk_cache::CleanupDirectory(cache_dir_,
                                base::BindLambdaForTesting([&](bool result) {
                                  EXPECT_TRUE(result);
                                  run_loop.Quit();
                                }));
   run_loop.Run();
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(base::PathExists(cache_dir_));
+#endif
+}
+
+TEST_F(CacheUtilTest, MoveCacheFailsForSymlinkAndRenameFailure) {
+  const base::FilePath external_dir =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("external_dir"));
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  const base::FilePath sample_file =
+      external_dir.Append(FILE_PATH_LITERAL("sample_data.txt"));
+  ASSERT_TRUE(base::WriteFile(sample_file, "sample_data"));
+
+  ASSERT_TRUE(base::DeletePathRecursively(cache_dir_));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir, cache_dir_));
+
+  EXPECT_FALSE(disk_cache::MoveCache(cache_dir_, dest_dir_));
+  EXPECT_FALSE(
+      disk_cache::MoveCache(cache_dir_.AsEndingWithSeparator(), dest_dir_));
+  EXPECT_FALSE(base::PathExists(dest_dir_));
+
+  // Pre-existing destination directory should fail without copying.
+  ASSERT_TRUE(base::CreateDirectory(dest_dir_));
+  EXPECT_FALSE(disk_cache::MoveCache(cache_dir_, dest_dir_));
+  EXPECT_TRUE(base::IsDirectoryEmpty(dest_dir_));
+  ASSERT_TRUE(base::DeletePathRecursively(dest_dir_));
+
+  // Read-only parent directory causes rename to fail; MoveCache should return
+  // false without falling back to copying.
+  const base::FilePath ro_parent =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("ro_parent"));
+  ASSERT_TRUE(base::CreateDirectory(ro_parent));
+  const base::FilePath ro_dir = ro_parent.Append(FILE_PATH_LITERAL("CacheDir"));
+  ASSERT_TRUE(base::CreateDirectory(ro_dir));
+  ASSERT_TRUE(
+      base::WriteFile(ro_dir.Append(FILE_PATH_LITERAL("entry01")), "data"));
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(base::SetPosixFilePermissions(
+      ro_dir, base::FILE_PERMISSION_READ_BY_USER |
+                  base::FILE_PERMISSION_EXECUTE_BY_USER));
+#endif
+  ASSERT_TRUE(base::SetPosixFilePermissions(
+      ro_parent, base::FILE_PERMISSION_READ_BY_USER |
+                     base::FILE_PERMISSION_EXECUTE_BY_USER));
+  base::ScopedClosureRunner restore_perms(base::BindOnce(
+      [](const base::FilePath& parent, const base::FilePath& child) {
+        base::SetPosixFilePermissions(parent, base::FILE_PERMISSION_USER_MASK);
+        base::SetPosixFilePermissions(child, base::FILE_PERMISSION_USER_MASK);
+      },
+      ro_parent, ro_dir));
+  EXPECT_FALSE(disk_cache::MoveCache(ro_dir, dest_dir_));
+  EXPECT_FALSE(
+      base::PathExists(dest_dir_.Append(FILE_PATH_LITERAL("entry01"))));
+  base::DeletePathRecursively(dest_dir_);
+
+  // Destination symlink should also be rejected.
+  const base::FilePath real_source =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("RealCache"));
+  ASSERT_TRUE(base::CreateDirectory(real_source));
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("missing_target")),
+      dest_dir_));
+  EXPECT_FALSE(disk_cache::MoveCache(real_source, dest_dir_));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(sample_file, &contents));
+  EXPECT_EQ("sample_data", contents);
+}
+
+TEST_F(CacheUtilTest, CleanupDirectorySkipsSymlinkSlots) {
+  const base::FilePath external_dir =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("external_dir"));
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  const base::FilePath sample_file =
+      external_dir.Append(FILE_PATH_LITERAL("sample_data.txt"));
+  ASSERT_TRUE(base::WriteFile(sample_file, "sample_data"));
+
+  ASSERT_TRUE(base::DeletePathRecursively(cache_dir_));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir, cache_dir_));
+
+  {
+    base::RunLoop run_loop;
+    disk_cache::CleanupDirectory(cache_dir_,
+                                 base::BindLambdaForTesting([&](bool result) {
+                                   EXPECT_FALSE(result);
+                                   run_loop.Quit();
+                                 }));
+    run_loop.Run();
+  }
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("old_Cache_000"))));
+
+  // Restore a real cache directory while old_Cache_000 is a dangling symlink.
+  ASSERT_TRUE(base::DeletePathRecursively(cache_dir_));
+  ASSERT_TRUE(base::CreateDirectory(cache_dir_));
+  ASSERT_TRUE(base::WriteFile(file1_, "cached_entry"));
+  const base::FilePath broken_temp_link =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("old_Cache_000"));
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("nonexistent")),
+      broken_temp_link));
+
+  base::RunLoop run_loop;
+  disk_cache::CleanupDirectory(cache_dir_,
+                               base::BindLambdaForTesting([&](bool result) {
+                                 EXPECT_TRUE(result);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(base::IsLink(broken_temp_link));
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(sample_file, &contents));
+  EXPECT_EQ("sample_data", contents);
+}
+
+TEST_F(CacheUtilTest, DeleteCacheHandlesSymlinkPaths) {
+  const base::FilePath external_dir =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("external_dir"));
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  const base::FilePath sample_file =
+      external_dir.Append(FILE_PATH_LITERAL("sample_data.txt"));
+  ASSERT_TRUE(base::WriteFile(sample_file, "sample_data"));
+
+  ASSERT_TRUE(base::DeletePathRecursively(cache_dir_));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir, cache_dir_));
+
+  EXPECT_FALSE(disk_cache::DeleteCache(cache_dir_, /*remove_folder=*/false));
+  EXPECT_FALSE(disk_cache::DeleteCache(cache_dir_.AsEndingWithSeparator(),
+                                       /*remove_folder=*/false));
+  EXPECT_TRUE(base::IsLink(cache_dir_));
+  EXPECT_TRUE(base::PathExists(sample_file));
+
+  EXPECT_TRUE(disk_cache::DeleteCache(cache_dir_.AsEndingWithSeparator(),
+                                      /*remove_folder=*/true));
+  EXPECT_FALSE(base::IsLink(cache_dir_));
+  EXPECT_TRUE(base::PathExists(sample_file));
+
+  // Deleting contents of a real directory containing a child symlink and nested
+  // subdirectory unlinks the link and removes the subdirectory without
+  // affecting the link target.
+  ASSERT_TRUE(base::CreateDirectory(cache_dir_));
+  const base::FilePath child_link =
+      cache_dir_.Append(FILE_PATH_LITERAL("child_link"));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir, child_link));
+  const base::FilePath nested_dir =
+      cache_dir_.Append(FILE_PATH_LITERAL("nested_dir"));
+  ASSERT_TRUE(base::CreateDirectory(nested_dir));
+  const base::FilePath nested_file =
+      nested_dir.Append(FILE_PATH_LITERAL("nested_file"));
+  ASSERT_TRUE(base::WriteFile(nested_file, "nested"));
+  EXPECT_TRUE(disk_cache::DeleteCache(cache_dir_, /*remove_folder=*/false));
+  EXPECT_TRUE(base::DirectoryExists(cache_dir_));
+  EXPECT_FALSE(base::IsLink(child_link));
+  EXPECT_FALSE(base::PathExists(nested_dir));
+  EXPECT_TRUE(base::PathExists(sample_file));
+
+  // Deleting contents of a dangling symlink or regular file returns false.
+  const base::FilePath dangling_link =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("dangling_link"));
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("missing_target")),
+      dangling_link));
+  EXPECT_FALSE(disk_cache::DeleteCache(dangling_link, /*remove_folder=*/false));
+  EXPECT_TRUE(base::IsLink(dangling_link));
+  EXPECT_FALSE(disk_cache::DeleteCache(sample_file, /*remove_folder=*/false));
+  EXPECT_TRUE(base::PathExists(sample_file));
+
+  // Deleting contents of a non-existent directory succeeds as a no-op.
+  EXPECT_TRUE(disk_cache::DeleteCache(
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("missing_cache")),
+      /*remove_folder=*/false));
+}
+
+TEST_F(CacheUtilTest, AncestorSymlinkAllowed) {
+  const base::FilePath real_parent =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("real_parent"));
+  const base::FilePath symlink_parent =
+      tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("symlink_parent"));
+  ASSERT_TRUE(base::CreateDirectory(real_parent));
+  ASSERT_TRUE(base::CreateSymbolicLink(real_parent, symlink_parent));
+
+  const base::FilePath cache_under_link =
+      symlink_parent.Append(FILE_PATH_LITERAL("SubCache"));
+  ASSERT_TRUE(base::CreateDirectory(cache_under_link));
+  const base::FilePath entry_file =
+      cache_under_link.Append(FILE_PATH_LITERAL("entry01"));
+  ASSERT_TRUE(base::WriteFile(entry_file, "entry_data"));
+
+  EXPECT_TRUE(
+      disk_cache::DeleteCache(cache_under_link, /*remove_folder=*/false));
+  EXPECT_TRUE(base::DirectoryExists(cache_under_link));
+  EXPECT_FALSE(base::PathExists(entry_file));
+
+  ASSERT_TRUE(base::WriteFile(entry_file, "entry_data"));
+  const base::FilePath moved_cache =
+      symlink_parent.Append(FILE_PATH_LITERAL("MovedSubCache"));
+  EXPECT_TRUE(disk_cache::MoveCache(cache_under_link, moved_cache));
+  EXPECT_TRUE(
+      base::PathExists(moved_cache.Append(FILE_PATH_LITERAL("entry01"))));
 }
 #endif
 
