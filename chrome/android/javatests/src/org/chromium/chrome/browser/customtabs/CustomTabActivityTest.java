@@ -411,7 +411,7 @@ public class CustomTabActivityTest {
                         ApplicationProvider.getApplicationContext(),
                         0,
                         new Intent(),
-                        IntentUtils.getPendingIntentMutabilityFlag(true));
+                        IntentUtils.getPendingIntentMutabilityFlag(false));
 
         bundle.putInt(CustomTabsIntent.KEY_ID, sIdToIncrement++);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
@@ -862,7 +862,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/382122726")
     public void testBottomBar_withTint() {
         final int numItems = 3;
         final Bitmap expectedIcon = createTestBitmap(48, 24);
