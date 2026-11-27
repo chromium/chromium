@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">下載中…</translation>
 <translation id="1651617469580841801">使用 Google 智慧鏡頭時，系統會將網頁標題、網址和內容 (包括 PDF) 傳送給 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">在 Chrome 無痕視窗中開啟連結(&amp;G)</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - 你正在與 Google 搜尋分享這個分頁</translation>
 <translation id="1682634494516646069">Google Chrome 無法讀取及寫入資料目錄：<ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">在網址列或搜尋框中輸入時，Chrome 會將這些內容傳送給貴機構的搜尋、AI 和代理工具，為你提供建議。</translation>
 <translation id="1698376642261615901">Google Chrome 瀏覽器開啟網頁和執行應用程式的速度奇快無比！除了執行速度迅速、穩定且容易使用之外，內建防護機制還可讓你安心瀏覽網頁，無需擔心受到網路釣魚與惡意軟體的威脅。</translation>
@@ -252,6 +253,7 @@
 <translation id="3380249972812870825">如要開啟 Chrome 內建 Gemini，請按下 <ph name="GLOBAL_HOTKEY" /> 鍵</translation>
 <translation id="3392127217442962664">Chrome 已加入可在裝置上執行的 AI 模型，網站和 Chrome 可將其用於下列功能：</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
+<translation id="3404531968986217414">透過 Google 搜尋發起新對話串</translation>
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3438681572027105609">如要在所有裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
 <translation id="3450887623636316740">這個檔案可能不安全<ph name="LINE_BREAK" />下載之後，你可以提供密碼，讓 Chrome 幫忙檢查。該檔案的相關資訊將傳送給 Google 安全瀏覽功能，但檔案內容和密碼只會保存在裝置上。</translation>
@@ -393,6 +395,7 @@
 <translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="5043786843026425788">進一步瞭解如何透過 Chrome 使用 Google 智慧鏡頭搜尋</translation>
 <translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
+<translation id="507983337152787026">透過 Google 搜尋發起新對話串</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{「進階保護」要求你重新啟動 Chrome，以套用更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chrome，以套用更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="5105120510934353742">如果之後要更新 Google Chrome，需使用 macOS 13 以上版本。這部電腦目前搭載的版本為 macOS 12。</translation>
 <translation id="5114340746415930644">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="USER_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
@@ -417,6 +420,7 @@
 <translation id="524751727772074981">使用 Chrome 內建 Gemini，隨時隨地都能提問</translation>
 <translation id="5247617065091903691">你可以固定 Google 搜尋側邊面板，方便在瀏覽網頁時提問</translation>
 <translation id="5271833978500241046">搭配 Chrome 中的其他 Gemini 功能一起使用</translation>
+<translation id="528611299569739095">這個受管理的瀏覽器可以使用由「<ph name="DOMAIN" />」設定的工作用 Gemini。這項功能可搜尋資訊，並根據貴機構的檔案和服務提供解答。切換時必須重新啟動 Chrome。</translation>
 <translation id="5320351714793324716">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁</translation>
 <translation id="5321325624576443340">Google 智慧鏡頭目前無法使用，請稍後再試。</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
@@ -441,7 +445,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600352656975192682">將 Chrome 釘選到工作列，隨時都能快速存取</translation>
 <translation id="5602351063754773347">Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">切換至由「<ph name="DOMAIN" />」管理的 Gemini Enterprise</translation>
 <translation id="5610759359710387751">打造你專屬的 Chrome</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{取消與 Google 搜尋分享分頁}other{取消與 Google 搜尋分享 # 個分頁}}</translation>
 <translation id="5649156266046089790">你可以用 Chrome 設定檔分隔各種 Chrome 資料，例如建立親朋好友的專屬設定檔，或依工作和娛樂分設不同設定檔。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
@@ -535,6 +541,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據貴機構規定，Chrome 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chrome 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
 <translation id="6426623519983252346">下次開啟 iOS 版 Chrome 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
+<translation id="6431496891888891615">你可以切換至原本與 Google 帳戶相關聯且不受「<ph name="DOMAIN" />」管理的 Gemini。切換時必須重新啟動 Chrome。</translation>
 <translation id="6434035853014503219">感謝你選擇 Chrome 為預設瀏覽器！</translation>
 <translation id="6438015621983209660">在手機上使用 Chrome，享有更全面的安全瀏覽強化防護功能</translation>
 <translation id="6442774133615368941">在 Chrome iOS 應用程式使用相機購物、翻譯及辨識所見事物</translation>
@@ -571,6 +578,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">加快 Chrome 的運作速度</translation>
 <translation id="6734827584173583205">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限。</translation>
+<translation id="6737759643107005803">切換回不受「<ph name="DOMAIN" />」管理的 Gemini</translation>
 <translation id="674891594898436429">關閉這個分頁進行中的搜尋</translation>
 <translation id="6750954913813541382">Chrome 會將你在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防範攻擊的能力會稍微降低。這項設定已開啟。</translation>
@@ -649,6 +657,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入帳戶就能在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊。按下 <ph name="SHORTCUT" /> 可變更 Google 服務設定。</translation>
 <translation id="7496017508659652909">Chrome 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">你正在與 Google 搜尋分享這個分頁</translation>
 <translation id="7514258452813684157">Google 更新工具服務</translation>
 <translation id="7515191208480168435">固定 Google 智慧鏡頭可方便之後存取。</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
@@ -736,6 +745,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8291415872436043161">下載 Chrome</translation>
 <translation id="829923460755755423">新增 Google 密碼管理工具的捷徑</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{與 Google 搜尋分享分頁}other{與 Google 搜尋分享 # 個分頁}}</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321058241987390452">大功告成！現在使用 Google 搜尋面板，就能在瀏覽網頁時輕鬆提問</translation>
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
@@ -790,6 +800,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8712767363896337380">即將更新為最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" />目前已登入。如果想分開儲存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能存取<ph name="DEVICE" />中的閱讀清單和其他資料。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{與 Google 搜尋分享分頁}other{與 Google 搜尋分享 # 個分頁}}</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8747073452963259673">搜尋區域的左下角：左側 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome 會釋出閒置分頁占用的記憶體，將更多電腦資源提供給使用中的分頁和其他應用程式，同時保持 Chrome 快速運作。當你切回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
@@ -841,6 +852,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />，Google 會員。</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{取消與 Google 搜尋分享分頁}other{取消與 Google 搜尋分享 # 個分頁}}</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="983803489796659991">更新伺服器沒有應用程式的任何雜湊資料，因此安裝失敗。</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可以切換不同的 Chrome 設定檔</translation>

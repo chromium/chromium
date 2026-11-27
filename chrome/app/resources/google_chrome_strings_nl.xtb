@@ -75,6 +75,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1640672724030957280">Bezig met downloaden...</translation>
 <translation id="1651617469580841801">Als je Google Lens gebruikt, worden de paginatitel, URL en content, waaronder pdf's, naar Google gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Link openen in een Chrome-inco&amp;gnitovenster</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Je deelt dit tabblad met Google Zoeken</translation>
 <translation id="1682634494516646069">Chrome kan niet lezen van en schrijven naar de gegevensdirectory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3380249972812870825">Druk op <ph name="GLOBAL_HOTKEY" /> om Gemini in Chrome te openen</translation>
 <translation id="3392127217442962664">Chrome heeft AI toegevoegd die op je apparaat wordt uitgevoerd. Sites en Chrome kunnen het gebruiken voor functies zoals:</translation>
 <translation id="3396977131400919238">Er is tijdens de installatie een probleem opgetreden met het besturingssysteem. Download Google Chrome opnieuw.</translation>
+<translation id="3404531968986217414">Nieuw gesprek starten met Google Zoeken</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3438681572027105609">Log in bij Chrome om onder andere je wachtwoorden te gebruiken op al je apparaten</translation>
 <translation id="3450887623636316740">Dit bestand kan gevaarlijk zijn<ph name="LINE_BREAK" />Chrome kan deze download voor je checken als je het wachtwoord verstrekt. Informatie over het bestand wordt naar Google Safe Browsing gestuurd, maar de content en het wachtwoord van het bestand blijven op je apparaat staan.</translation>
@@ -399,6 +401,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="5003967926796347400">Klik op Google Wachtwoordmanager</translation>
 <translation id="5043786843026425788">Meer informatie over zoeken met Google Lens in Chrome</translation>
 <translation id="504867494566807945">Open links in Chrome vanuit elke app. Voor snelle toegang wordt Chrome vastgezet op je taakbalk.</translation>
+<translation id="507983337152787026">Nieuw gesprek starten met Google Zoeken</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Voor Geavanceerde beveiliging moet je Chrome herstarten om een update toe te passen. Er is een incognito- of geïsoleerd venster geopend. Het wordt niet opnieuw geopend na de herstart.}other{Voor Geavanceerde beveiliging moet je Chrome herstarten om een update toe te passen. Er zijn # incognito- en geïsoleerde vensters geopend in verschillende profielen. Ze worden niet opnieuw geopend na de herstart.}}</translation>
 <translation id="5105120510934353742">Als je toekomstige Google Chrome-updates wilt krijgen, heb je macOS 13 of hoger nodig. Deze computer gebruikt macOS 12.</translation>
 <translation id="5114340746415930644">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="USER_EMAIL" /> te gebruiken en op te slaan</translation>
@@ -425,6 +428,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="524751727772074981">Stel een vraag met Gemini in Chrome, zonder je tabblad te verlaten</translation>
 <translation id="5247617065091903691">Je kunt het zijvenster met Google Zoeken vastzetten om vragen te stellen terwijl je browst</translation>
 <translation id="5271833978500241046">Gebruik ze samen met andere Gemini-functies in Chrome</translation>
+<translation id="528611299569739095">Deze beheerde browser kan Gemini gebruiken die is ingesteld voor werk door <ph name="DOMAIN" />. Deze kan informatie vinden en antwoorden geven op basis van de bestanden en services van de organisatie. Als je wilt overschakelen, moet je Chrome herstarten.</translation>
 <translation id="5320351714793324716">Als je cookies toestaat, kan Chrome deze gebruiken voor vooraf laden.</translation>
 <translation id="5321325624576443340">Google Lens is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="5346389065299425353">Verfijn je zoekopdracht door meerdere tabbladen, bestanden en tools toe te voegen</translation>
@@ -447,7 +451,9 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5600352656975192682">Zet Chrome vast op je taakbalk om er op elk moment snel toegang toe te hebben</translation>
 <translation id="5602351063754773347">Chrome raadt je aan deze extensie te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Overschakelen naar Gemini Enterprise, beheerd door <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Ga Chrome gebruiken</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Tabblad niet meer delen met Google Zoeken}other{# tabbladen niet meer delen met Google Zoeken}}</translation>
 <translation id="5649156266046089790">Met Chrome-profielen kun je alle Chrome-gegevens gescheiden houden. Maak profielen voor vrienden en familie of maak onderscheid tussen werk en privé.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="566568153320186256">Chrome spaart de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie over Energiebesparing<ph name="END_LINK" /></translation>
@@ -541,6 +547,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6417690341895039567">{COUNT,plural, =1{Je organisatie sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je organisatie sluit Chrome automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="6418662306461808273">Overschakelen naar bestaand Chrome-profiel?</translation>
 <translation id="6426623519983252346">De volgende keer dat je Chrome iOS opent, zie je een prompt om <ph name="FEATURE_NAME" /> te proberen.</translation>
+<translation id="6431496891888891615">Je kunt overschakelen naar Gemini die oorspronkelijk aan je Google-account was gekoppeld en niet wordt beheerd door <ph name="DOMAIN" />. Als je wilt overschakelen, moet je Chrome herstarten.</translation>
 <translation id="6434035853014503219">Bedankt dat je Chrome hebt gekozen als je standaardbrowser.</translation>
 <translation id="6438015621983209660">Gebruik de uitgebreide versie van Safe Browsing met Chrome op je telefoon</translation>
 <translation id="6442774133615368941">Winkel, vertaal en herken wat je ziet met je camera in de Chrome iOS-app</translation>
@@ -577,6 +584,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6712881677154121168">Downloadfout: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Maak Chrome sneller</translation>
 <translation id="6734827584173583205">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="COUNT" /> verwijderd.</translation>
+<translation id="6737759643107005803">Terugschakelen naar Gemini die niet wordt beheerd door <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Actieve zoekopdracht in dit tabblad sluiten</translation>
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
 <translation id="6760235774835597023">Versnelt sites met de V8-engine van Chrome, maar maakt Chrome iets minder goed bestand tegen aanvallen. Deze instelling staat aan.</translation>
@@ -655,6 +663,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7481213027396403996">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="749228101751499733">Als je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chrome. <ph name="SHORTCUT" /> kan de instellingen van je Google-services wijzigen.</translation>
 <translation id="7496017508659652909">Chrome laadt pagina's vooraf, zodat je sneller kunt browsen en zoeken. <ph name="BEGIN_LINK" />Meer informatie over hoe je pagina's vooraf laadt<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Je deelt dit tabblad met Google Zoeken</translation>
 <translation id="7514258452813684157">Google Updater-service</translation>
 <translation id="7515191208480168435">Je kunt Google Lens vastzetten voor snelle toegang</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -742,6 +751,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8291415872436043161">Chrome downloaden</translation>
 <translation id="829923460755755423">Voeg een snelkoppeling toe naar Google Wachtwoordmanager</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Tabblad delen met Google Zoeken}other{# tabbladen delen met Google Zoeken}}</translation>
 <translation id="8313851650939857356">Opstartfout: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Geslaagd Je kunt nu makkelijk vragen stellen terwijl je browst met het Google Zoeken-deelvenster</translation>
 <translation id="8336463659890584292">Als een site vraagt om links op de sitepagina privé vooraf te laden, gebruikt Chrome de servers van Google. Je identiteit wordt dan verborgen voor de vooraf geladen site, maar Google leert welke sites vooraf worden geladen.</translation>
@@ -796,6 +806,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="8712767363896337380">Bijna klaar met updaten. Start Chrome opnieuw om de update af te ronden.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chrome in op je eigen profiel als <ph name="USER_EMAIL_ADDRESS" />. Je krijgt ook onder andere je leeslijst van <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Uitloggen bij Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Tabblad delen met Google Zoeken}other{# tabbladen delen met Google Zoeken}}</translation>
 <translation id="873133009373065397">Google Chrome kan de standaardbrowser niet bepalen of instellen</translation>
 <translation id="8747073452963259673">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome maakt geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie over Geheugenbesparing<ph name="END_LINK" /></translation>
@@ -847,6 +858,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-lidmaatschap.</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="93760716455950538">Chrome OS Flex opnieuw opstarten</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Tabblad niet meer delen met Google Zoeken}other{# tabbladen niet meer delen met Google Zoeken}}</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan schakelen tussen Chrome-profielen</translation>

@@ -1638,7 +1638,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3727850735097852673">Aby używać Menedżera haseł Google z pękiem kluczy macOS, uruchom ponownie Chrome i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="3728173127485570463">Przeglądarka Chrome nie będzie już wymagać odcisku palca do autouzupełniania haseł</translation>
 <translation id="3729811201279509483">Dodaj karty ręcznie</translation>
-<translation id="3732370487905329239">Przybliżona data dostawy</translation>
 <translation id="3736564442532774454">Przeglądarka Chrome próbuje uzupełnić informacje poufne na stronie <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Przeglądarką zarządza administrator.</translation>
 <translation id="3739842843727261045">Opcja Lubię powoduje przesłanie opinii z informacją, że te wyniki Ci się podobają</translation>
@@ -2742,7 +2741,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5540224163453853">Nie udało się znaleźć tego artykułu.</translation>
 <translation id="5541086400771735334">Zestaw tac odbiorczych 7</translation>
 <translation id="5541546772353173584">Dodaj adres e-mail</translation>
-<translation id="5541735141423273733">Data przylotu</translation>
 <translation id="5543452229212526547">Twój tekst oraz zawartość i adres URL strony, na której piszesz, zostaną przesłane do Google. Twoje treści nie będą wykorzystywane przez weryfikatorów do ulepszania AI. Organizacja może w dowolnym momencie zmienić te ustawienia.</translation>
 <translation id="5543722831081909240">180 stopni</translation>
 <translation id="5546252337258681768">Urządzenie odblokowane</translation>
@@ -3195,7 +3193,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6311410654831092784">Karton</translation>
 <translation id="6311642842034740437">Lokalizacja z nazwą</translation>
 <translation id="6312113039770857350">Strona internetowa jest niedostępna</translation>
-<translation id="6313189007657889655">Identyfikator zamówienia</translation>
 <translation id="6316110367871394043">Przesyłanie pliku do usługi <ph name="CLOUD_PROVIDER" /> zostało wstrzymane</translation>
 <translation id="63172326633386613">Zarządzaj ustawieniami ułatwień dostępu</translation>
 <translation id="6319672966240656136">Ta witryna pozostanie zablokowana, ponieważ Twoje konto jest objęte programem ochrony zaawansowanej Google. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>

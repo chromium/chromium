@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubí</translation>
 <translation id="1921351128855867012">Avanzar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="1984328900355667246">Reprodución non dispoñible</translation>
+<translation id="2009730553732772041">O contido e o URL da páxina na que estás compartiranse con Google para xerar o audio. Podes modificar esta opción na configuración en calquera momento.</translation>
 <translation id="2019727681730021602">Reprodución estándar</translation>
 <translation id="2224347680315897176">Sen alteracións</translation>
 <translation id="2575502321843437554">O contido non era suficientemente interesante</translation>
 <translation id="2611765907167846862">Serea</translation>
 <translation id="3023502830214299618">A reprodución non está dispoñible para esta páxina neste momento. Téntao de novo máis tarde.</translation>
+<translation id="3431227249425330101">Para continuar, queres permitir que Chrome use o contido da páxina para a función Escoitar esta páxina?</translation>
 <translation id="3493899379487634969">Cal foi o problema?</translation>
 <translation id="3730775656877876887">Xerando reprodución de IA</translation>
 <translation id="3778044272390020426">Menú de opcións de comentarios negativos</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Reprodutor de Escoitar esta páxina</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7138678301420049075">Outros</translation>
+<translation id="7161867604252594316">A función Escoitar esta páxina está desactivada</translation>
 <translation id="7221920857098237570">Amable</translation>
 <translation id="7237590978482584900">Despreocupada</translation>
 <translation id="7282547042039404307">Suave</translation>

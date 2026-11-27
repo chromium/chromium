@@ -7974,15 +7974,6 @@ gli utenti non potranno modificarla o eseguirne l'override.</translation>
       Il valore <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> può essere una versione esatta, ad esempio "13305.0.0" oppure un prefisso di versione, ad esempio "13305".
       I valori <ph name="WARNING_PERIOD_PROPERTY_NAME" /> e <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sono facoltativi e specificati in numero di giorni. Il valore predefinito è 0, a indicare nessun periodo di avviso.
       Il valore <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> è una proprietà facoltativa, il cui valore predefinito è False.</translation>
-<translation id="5876812185674131521">Impedisce l'eliminazione manuale dei cookie di <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Questa policy ha lo scopo di impedire agli utenti di effettuare un accesso non autorizzato a <ph name="YOUTUBE_PRODUCT_NAME" /> dopo aver cancellato manualmente i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> dalla pagina delle impostazioni del sito.
-
-Se la policy viene attivata, i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> non possono essere eliminati manualmente.
-
-Se la policy viene disattivata o se non viene configurata, i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> possono essere eliminati normalmente.
-
-Nota: questa policy impedisce solo l'eliminazione manuale dall'interfaccia utente delle impostazioni del sito. Non impedisce l'eliminazione automatica da parte della policy <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> o della policy<ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Inoltre, se la policy <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> è attivata, gli utenti possono comunque cancellare tutti i cookie tramite la finestra di dialogo Cancella dati di navigazione.</translation>
 <translation id="5879014913445067283">Consente di controllare la funzione Condivisioni file di rete tramite il protocollo <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Attiva la funzione Tocca per cercare</translation>
 <translation id="5882345429632338713">Ritardo prima di avviare il browser alternativo (in millisecondi)</translation>
@@ -10451,13 +10442,6 @@ Se questa policy viene disattivata o se non viene configurata, le impostazioni r
           Se imposti questa policy, gli utenti non potranno modificarla o eseguirne l'override.
 
           Se questa policy non viene configurata, la funzione di correzione del colore è inizialmente disattivata, ma può essere attivata dall'utente in qualsiasi momento.</translation>
-<translation id="7324627441366994249">Consente di impostare un elenco di pattern URL che specificano i siti in cui le integrazioni dell'app Gemini non possono agire direttamente sulle pagine web.
-
-Gli URL che non corrispondono né alla lista consentita né alla lista bloccata utilizzano <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Gli URL che corrispondono sia alla lista consentita sia alla lista bloccata sono consentiti.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Chrome non può bloccare le navigazioni ai protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
 <translation id="7331098674887251788">Consente alle integrazioni dell'app Gemini di agire direttamente sulle pagine web</translation>
@@ -11744,13 +11728,6 @@ Se il valore viene impostato su true o se la policy non viene configurata, dovra
 Se viene impostata su false, gli utenti potranno partecipare senza trovarsi su una rete gestita.</translation>
 <translation id="8183108371184777472">Impedisci l'avvio della finestra del browser</translation>
 <translation id="8185312100223853315">Etichetta del profilo</translation>
-<translation id="8186370194423312090">Consente di impostare un elenco di pattern URL che specificano i siti in cui le integrazioni dell'app Gemini possono agire direttamente sulle pagine web.
-
-Gli URL che non corrispondono né alla lista consentita né alla lista bloccata utilizzano <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Gli URL che corrispondono sia alla lista consentita sia alla lista bloccata sono consentiti.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Consenti il feedback degli utenti</translation>
 <translation id="8190271041226151932">Questa impostazione consente le integrazioni delle app Gemini.
 

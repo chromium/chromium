@@ -1638,7 +1638,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3727850735097852673">Google'i paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chrome ja lubage Keychainile juurdepääs. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
 <translation id="3728173127485570463">Chrome'i brauser ei nõua enam paroolide automaatseks täitmiseks teie sõrmejälge</translation>
 <translation id="3729811201279509483">Vahelehtede käsitsi lisamine</translation>
-<translation id="3732370487905329239">Hinnanguline kohaletoimetamise kuupäev</translation>
 <translation id="3736564442532774454">Chrome’i brauser proovib rakenduses <ph name="APP_NAME" /> sisestada teie delikaatset teavet.</translation>
 <translation id="3738166223076830879">Teie brauserit haldab teie administraator.</translation>
 <translation id="3739842843727261045">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile</translation>
@@ -2742,7 +2741,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5540224163453853">Taotletud artiklit ei õnnestunud leida.</translation>
 <translation id="5541086400771735334">Postkast 7</translation>
 <translation id="5541546772353173584">E-posti aadressi lisamine</translation>
-<translation id="5541735141423273733">Saabumiskuupäev</translation>
 <translation id="5543452229212526547">Teie tekst ning lehe sisu ja URL, millele kirjutate, saadetakse Google'ile. Ülevaatajad ei kasuta AI täiustamiseks teie sisu. Teie organisatsioon saab neid seadeid igal ajal muuta.</translation>
 <translation id="5543722831081909240">180 kraadi</translation>
 <translation id="5546252337258681768">Seadme lukustus avati</translation>
@@ -3195,7 +3193,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6311410654831092784">Kartong</translation>
 <translation id="6311642842034740437">Nimega asukoht</translation>
 <translation id="6312113039770857350">Veebileht ei ole saadaval</translation>
-<translation id="6313189007657889655">Tellimuse ID</translation>
 <translation id="6316110367871394043">Faili üleslaadimine kohta <ph name="CLOUD_PROVIDER" /> on peatatud</translation>
 <translation id="63172326633386613">Juurdepääsetavuse seadete haldamine</translation>
 <translation id="6319672966240656136">See sait jääb blokeerituks, kuna kuulute Google’i täiustatud kaitse programmi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>

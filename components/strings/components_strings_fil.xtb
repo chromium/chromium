@@ -1641,7 +1641,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3727850735097852673">Para magamit ang Google Password Manager sa macOS Keychain, ilunsad ulit ang Chrome at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="3728173127485570463">Hindi na ire-require ng Chrome browser ang iyong fingerprint para i-autofill ang mga password</translation>
 <translation id="3729811201279509483">Manual na magdagdag ng mga tab</translation>
-<translation id="3732370487905329239">Tinantyang petsa ng paghahatid</translation>
 <translation id="3736564442532774454">Sinusubukan ng Chrome browser na ilagay ang iyong sensitibong impormasyon sa <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Pinapamahalaan ng iyong administrator ang browser mo.</translation>
 <translation id="3739842843727261045">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito</translation>
@@ -2747,7 +2746,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5540224163453853">Hindi mahanap ang hiniling na artikulo.</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Magdagdag ng Email</translation>
-<translation id="5541735141423273733">Petsa ng pagdating</translation>
 <translation id="5543452229212526547">Ipapadala sa Google ang iyong text at ang content at URL ng page kung saan ka nagsusulat. Hindi gagamitin ng mga taong tagasuri ang iyong content para pahusayin ang AI. Posibleng baguhin ng iyong organisasyon ang mga setting na ito anumang oras.</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5546252337258681768">Naka-unlock ang device</translation>
@@ -3200,7 +3198,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6311410654831092784">Card Stock</translation>
 <translation id="6311642842034740437">Ibinigay na lokasyon</translation>
 <translation id="6312113039770857350">Hindi available ang webpage</translation>
-<translation id="6313189007657889655">Order ID</translation>
 <translation id="6316110367871394043">Na-pause ang pag-upload ng file sa <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="63172326633386613">Pamahalaan ang mga setting ng pagiging accessible</translation>
 <translation id="6319672966240656136">Mananatiling naka-block ang site na ito dahil nasa ilalim ka ng Programang Advanced na Proteksyon ng Google. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>

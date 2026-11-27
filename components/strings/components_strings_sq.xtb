@@ -1638,7 +1638,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3727850735097852673">Për të përdorur "Menaxherin e fjalëkalimeve të Google" me macOS Keychain, rihap Chrome dhe lejo qasjen për Keychain. Skedat e tua do të hapen përsëri pas rihapjes.</translation>
 <translation id="3728173127485570463">Shfletuesi Chrome nuk do të kërkojë më gjurmën tënde të gishtit për të plotësuar fjalëkalimet</translation>
 <translation id="3729811201279509483">Shto skedat manualisht</translation>
-<translation id="3732370487905329239">Data e parashikuar e dërgesës</translation>
 <translation id="3736564442532774454">Shfletuesi Chrome po përpiqet të plotësojë informacionet e tua delikate në <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Shfletuesi yt menaxhohet nga administratori yt.</translation>
 <translation id="3739842843727261045">Opsioni i gishtave tregon se të pëlqejnë këto rezultate</translation>
@@ -2742,7 +2741,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5540224163453853">Artikulli i kërkuar nuk u gjet.</translation>
 <translation id="5541086400771735334">Kutia postare 7</translation>
 <translation id="5541546772353173584">Shto email</translation>
-<translation id="5541735141423273733">Data e mbërritjes</translation>
 <translation id="5543452229212526547">Teksti yt, përmbajtja dhe URL-ja e faqes ku po shkruan do të dërgohen te Google. Përmbajtja jote nuk do të përdoret nga shqyrtuesit njerëzorë për përmirësimin e IA-së. Organizata jote mund t'i ndryshojë këtë cilësime në çdo kohë.</translation>
 <translation id="5543722831081909240">180 gradë</translation>
 <translation id="5546252337258681768">Pajisja u shkyç</translation>
@@ -3194,7 +3192,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6311410654831092784">Karton i hollë</translation>
 <translation id="6311642842034740437">Vendndodhja e emërtuar</translation>
 <translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
-<translation id="6313189007657889655">ID-ja e porosisë</translation>
 <translation id="6316110367871394043">Ngarkimi i skedarëve te "<ph name="CLOUD_PROVIDER" />" është vendosur në pauzë</translation>
 <translation id="63172326633386613">Menaxho cilësimet e qasshmërisë</translation>
 <translation id="6319672966240656136">Ky sajt do të qëndrojë i bllokuar sepse je në "Programin e 'Mbrojtjes së përparuar'" të Google. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>

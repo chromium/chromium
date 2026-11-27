@@ -1638,7 +1638,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3727850735097852673">Pour utiliser le Gestionnaire de mots de passe de Google avec le trousseau macOS, relancez Chrome et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="3728173127485570463">Le navigateur Chrome n'exigera plus votre empreinte digitale pour saisir automatiquement les mots de passe</translation>
 <translation id="3729811201279509483">Ajouter des onglets manuellement</translation>
-<translation id="3732370487905329239">Date de livraison estimée</translation>
 <translation id="3736564442532774454">Le navigateur Chrome tente de saisir vos informations sensibles sur <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3739842843727261045">"J'aime" indique que ces résultats vous conviennent</translation>
@@ -2742,7 +2741,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5540224163453853">Impossible de trouver l'article demandé.</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse e-mail</translation>
-<translation id="5541735141423273733">Date d'arrivée</translation>
 <translation id="5543452229212526547">Votre texte ainsi que le contenu et l'URL de la page sur laquelle vous écrivez seront envoyés à Google. Votre contenu ne sera pas utilisé par des réviseurs humains pour améliorer l'IA. Votre organisation peut modifier ces paramètres à tout moment.</translation>
 <translation id="5543722831081909240">180 degrés</translation>
 <translation id="5546252337258681768">Appareil déverrouillé</translation>
@@ -3195,7 +3193,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6311410654831092784">Papier cartonné</translation>
 <translation id="6311642842034740437">Lieu-dit</translation>
 <translation id="6312113039770857350">Page Web non disponible</translation>
-<translation id="6313189007657889655">ID de commande</translation>
 <translation id="6316110367871394043">Importation de fichiers vers <ph name="CLOUD_PROVIDER" /> suspendue</translation>
 <translation id="63172326633386613">Gérer les paramètres d'accessibilité</translation>
 <translation id="6319672966240656136">Ce site restera bloqué, car le Programme Protection Avancée de Google est activé. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>

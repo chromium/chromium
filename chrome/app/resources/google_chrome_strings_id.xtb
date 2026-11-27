@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Mengunduh...</translation>
 <translation id="1651617469580841801">Saat Anda menggunakan Google Lens, judul halaman, URL, dan konten halaman, termasuk PDF, akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Buka Link di Jendela Sa&amp;maran Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Anda membagikan tab ini ke Google Penelusuran</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca dan menulis ke direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke alat penelusuran, AI, dan agen milik organisasi Anda untuk mendapatkan saran.</translation>
 <translation id="1698376642261615901">Google Chrome adalah browser web yang menjalankan halaman dan aplikasi web secepat kilat. Cepat, stabil, dan mudah digunakan. Jelajahi web secara lebih aman dengan perlindungan terhadap software perusak dan phishing yang disertakan dalam Google Chrome.</translation>
@@ -254,6 +255,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3380249972812870825">Untuk membuka Gemini di Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome kini dilengkapi AI yang berjalan di perangkat Anda. Situs dan Chrome dapat memanfaatkannya untuk berbagai fitur seperti:</translation>
 <translation id="3396977131400919238">Terjadi error pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
+<translation id="3404531968986217414">Mulai rangkaian percakapan baru dengan Google Penelusuran</translation>
 <translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3438681572027105609">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
 <translation id="3450887623636316740">File ini mungkin berbahaya<ph name="LINE_BREAK" />Chrome dapat memeriksa hasil download ini untuk Anda jika Anda memberikan sandi. Info tentang file ini akan dikirim ke Google Safe Browsing, tetapi konten dan sandi file tidak dikirim ke luar perangkat Anda.</translation>
@@ -396,6 +398,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5003967926796347400">Klik “Pengelola Sandi Google”</translation>
 <translation id="5043786843026425788">Pelajari lebih lanjut cara menelusuri dengan Google Lens di Chrome</translation>
 <translation id="504867494566807945">Buka link di Chrome dari aplikasi apa pun. Selain itu, Chrome akan disematkan ke taskbar Anda untuk memudahkan akses.</translation>
+<translation id="507983337152787026">Mulai Rangkaian Percakapan Baru dengan Google Penelusuran</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="5105120510934353742">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu macOS 13 atau yang lebih baru. Komputer ini menggunakan macOS 12.</translation>
 <translation id="5114340746415930644">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="USER_EMAIL" /></translation>
@@ -420,6 +423,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="524751727772074981">Tanya apa saja, langsung dari tempat Anda berada, dengan Gemini di Chrome</translation>
 <translation id="5247617065091903691">Anda dapat menyematkan panel samping Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="5271833978500241046">Gunakan bersama fitur Gemini lainnya di Chrome</translation>
+<translation id="528611299569739095">Browser terkelola ini dapat menggunakan Gemini yang disiapkan untuk kantor oleh <ph name="DOMAIN" />. Gemini dapat menemukan info dan memberikan jawaban yang didasarkan pada file dan layanan organisasi. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="5320351714793324716">Jika Anda mengizinkan cookie, Chrome dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="5321325624576443340">Google Lens tidak tersedia. Coba lagi nanti.</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
@@ -442,7 +446,9 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5600352656975192682">Sematkan Chrome ke taskbar untuk mengaksesnya dengan cepat kapan saja</translation>
 <translation id="5602351063754773347">Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Beralih ke Gemini Enterprise yang dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Sesuaikan</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Berhenti berbagi tab dengan Google Penelusuran}other{Berhenti berbagi # tab dengan Google Penelusuran}}</translation>
 <translation id="5649156266046089790">Dengan profil Chrome, Anda dapat memisahkan semua data Chrome Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, sehingga Chrome memblokirnya.</translation>
 <translation id="566568153320186256">Chrome akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Energi<ph name="END_LINK" /></translation>
@@ -536,6 +542,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="6426623519983252346">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chrome iOS.</translation>
+<translation id="6431496891888891615">Anda dapat beralih ke Gemini yang awalnya dikaitkan dengan Akun Google Anda dan tidak dikelola oleh <ph name="DOMAIN" />. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="6434035853014503219">Terima kasih telah memilih Chrome sebagai browser default Anda.</translation>
 <translation id="6438015621983209660">Manfaatkan Safe Browsing yang Disempurnakan dengan Chrome di ponsel</translation>
 <translation id="6442774133615368941">Gunakan kamera di aplikasi Chrome versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
@@ -572,6 +579,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6712881677154121168">Error download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Buat Chrome lebih cepat</translation>
 <translation id="6734827584173583205">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya.</translation>
+<translation id="6737759643107005803">Beralih kembali ke Gemini yang tidak dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Tutup penelusuran aktif di tab ini</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
 <translation id="6760235774835597023">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan. Setelan ini aktif.</translation>
@@ -650,6 +658,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7481213027396403996">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="749228101751499733">Saat Anda login, Anda dapat menggunakan sandi Anda dan lainnya dari Akun Google Anda di Chrome. <ph name="SHORTCUT" /> dapat mengubah setelan layanan Google Anda.</translation>
 <translation id="7496017508659652909">Chrome akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara melakukan pramuat halaman<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Anda membagikan tab ini ke Google Penelusuran</translation>
 <translation id="7514258452813684157">Layanan Google Updater</translation>
 <translation id="7515191208480168435">Anda dapat menyematkan Google Lens agar mudah diakses</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -735,6 +744,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="8291415872436043161">Download Chrome</translation>
 <translation id="829923460755755423">Tambahkan pintasan ke Pengelola Sandi Google</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Bagikan Tab ke Google Penelusuran}other{Bagikan # Tab ke Google Penelusuran}}</translation>
 <translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Berhasil! Kini Anda dapat dengan mudah mengajukan pertanyaan saat menjelajah dengan panel Google Penelusuran</translation>
 <translation id="8336463659890584292">Saat sebuah situs meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan menggunakan server Google. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat, tetapi Google akan mempelajari situs apa yang dipramuat.</translation>
@@ -789,6 +799,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8712767363896337380">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan daftar bacaan dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Logout dari Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Bagikan tab ke Google Penelusuran}other{Bagikan # tab ke Google Penelusuran}}</translation>
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menyetel browser default</translation>
 <translation id="8747073452963259673">pojok kiri bawah area penelusuran: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chrome tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Memori<ph name="END_LINK" /></translation>
@@ -840,6 +851,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Langganan Google.</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulai ulang ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Berhenti Berbagi Tab dengan Google Penelusuran}other{Berhenti Berbagi # Tab dengan Google Penelusuran}}</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>

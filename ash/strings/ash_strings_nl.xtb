@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Selecteer het bestand en druk op <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Kan bestand niet openen}other{Kan bestanden niet openen}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+ nog 1}other{+ nog #}}</translation>
 <translation id="1283126956823499975">Er is iets misgegaan bij het instellen van het apparaat</translation>
 <translation id="1285992161347843613">Telefoon vinden</translation>
 <translation id="1287002645302686982">Er is al een opgeslagen bureau met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -2189,6 +2190,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6249795363855770621">Kan niet markeren als afgerond. Probeer het opnieuw als je online bent.</translation>
 <translation id="625369703868467034">Status van netwerk</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ nog 1 link}other{+ nog # links}}</translation>
 <translation id="6259776178973198997">Informatie over Wifi Direct-eigenaren vernieuwen</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activeren...</translation>

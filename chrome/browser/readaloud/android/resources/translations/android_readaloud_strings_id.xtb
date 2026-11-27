@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubi</translation>
 <translation id="1921351128855867012">Maju cepat <ph name="NUMBER_OF_SECONDS" /> detik</translation>
 <translation id="1984328900355667246">Pemutaran tidak tersedia</translation>
+<translation id="2009730553732772041">Konten dan URL halaman yang sedang Anda buka akan dibagikan kepada Google untuk membuat audio. Anda dapat memperbarui pilihan ini di setelan kapan saja.</translation>
 <translation id="2019727681730021602">Pemutaran standar</translation>
 <translation id="2224347680315897176">Stabil</translation>
 <translation id="2575502321843437554">Tidak cukup menarik</translation>
 <translation id="2611765907167846862">Tenang</translation>
 <translation id="3023502830214299618">Sayangnya, pemutaran tidak tersedia untuk halaman ini saat ini. Coba lagi nanti.</translation>
+<translation id="3431227249425330101">Untuk melanjutkan, izinkan Chrome menggunakan konten halaman untuk Dengarkan halaman ini?</translation>
 <translation id="3493899379487634969">Apa yang salah?</translation>
 <translation id="3730775656877876887">Membuat pemutaran AI</translation>
 <translation id="3778044272390020426">Menu opsi masukan negatif</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Pemutar “Dengarkan halaman ini”</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7138678301420049075">Lainnya</translation>
+<translation id="7161867604252594316">“Dengarkan halaman ini” nonaktif</translation>
 <translation id="7221920857098237570">Lembut</translation>
 <translation id="7237590978482584900">Segar</translation>
 <translation id="7282547042039404307">Halus</translation>

@@ -1638,7 +1638,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3727850735097852673">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chrome in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="3728173127485570463">Brskalnik Chrome ne bo več zahteval vašega prstnega odtisa za samodejno izpolnjevanje gesel</translation>
 <translation id="3729811201279509483">Ročno dodajanje zavihkov</translation>
-<translation id="3732370487905329239">Predvideni datum dostave</translation>
 <translation id="3736564442532774454">Brskalnik Chrome poskuša izpolniti vaše občutljive podatke v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Brskalnik upravlja vaš skrbnik.</translation>
 <translation id="3739842843727261045">S palcem gor pošljete povratne informacije, da so vam ti rezultati všeč</translation>
@@ -2742,7 +2741,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5540224163453853">Zahtevanega članka ni bilo mogoče najti.</translation>
 <translation id="5541086400771735334">Nabiralnik 7</translation>
 <translation id="5541546772353173584">Dodajanje e-poštnega naslova</translation>
-<translation id="5541735141423273733">Datum prihoda</translation>
 <translation id="5543452229212526547">Vaše besedilo ter vsebina in URL strani, na kateri pišete, bodo poslani Googlu. Vaše vsebine ne bodo uporabljali pregledovalci zaradi izboljšanja umetne inteligence. Organizacija lahko te nastavitve kadar koli spremeni.</translation>
 <translation id="5543722831081909240">180-stopinjsko</translation>
 <translation id="5546252337258681768">Naprava je odklenjena</translation>
@@ -3195,7 +3193,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6311410654831092784">Card Stock</translation>
 <translation id="6311642842034740437">Poimenovana lokacija</translation>
 <translation id="6312113039770857350">Spletna stran ni na voljo</translation>
-<translation id="6313189007657889655">ID naročila</translation>
 <translation id="6316110367871394043">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> je bilo začasno zaustavljeno</translation>
 <translation id="63172326633386613">Upravljanje nastavitev funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="6319672966240656136">To spletno mesto bo ostalo blokirano, ker uporabljate Googlov program dodatne zaščite. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>

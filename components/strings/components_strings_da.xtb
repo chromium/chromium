@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Billede, du har kopieret</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Du kan afslutte fuld skærm ved at trække fra toppen og trykke på knappen Tilbage</translation>
 <translation id="1132789342529761192">Upload anbefales ikke</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, markeret, menupunkt. Vælg for at deaktivere deling</translation>
 <translation id="11370190534773372">Kortoplysningerne er udfyldt</translation>
 <translation id="1138458427267715730">Få underretninger, når prisen falder på produktet på et hvilket som helst website på nettet</translation>
 <translation id="1142713751288681188">Papirtype</translation>
@@ -928,6 +929,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2526062290525841862">Hvis du vil køre denne app, skal du genaktivere udviklertilstanden for isolerede webapps</translation>
 <translation id="2526280916094749336">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Din CVC er på forsiden af dit kort. Det er den 4-cifrede kode øverst til højre over dit kortnummer.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, markeret</translation>
 <translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
 <translation id="2530042584066815841">Lås og brug af mus</translation>
 <translation id="2535585790302968248">Åbn en ny inkognitofane for at browse privat</translation>
@@ -1012,6 +1014,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2666092431469916601">Top</translation>
 <translation id="2666117266261740852">Luk andre faner eller apps</translation>
 <translation id="266935134738038806">Besøg website</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, menupunkt. Vælg for at aktivere deling</translation>
 <translation id="2672201172023654893">Din browser administreres ikke.</translation>
 <translation id="2674170444375937751">Er du sikker på, at du vil slette disse sider fra din historik?</translation>
 <translation id="2675716371350192683">Dit indhold bruges ikke til at forbedre AI. Din organisation kan til enhver tid ændre disse indstillinger.</translation>
@@ -1638,7 +1641,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3727850735097852673">Hvis du vil bruge Google Adgangs­kode­admin­istrator med macOS-nøgleringen, skal du genstarte Chrome og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="3728173127485570463">Chrome-browseren kræver ikke længere dit fingeraftryk for at udfylde adgangskoder automatisk</translation>
 <translation id="3729811201279509483">Tilføj faner manuelt</translation>
-<translation id="3732370487905329239">Forventet leveringsdato</translation>
 <translation id="3736564442532774454">Chrome-browseren forsøger at udfylde dine følsomme oplysninger i <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Din browser administreres af din administrator.</translation>
 <translation id="3739842843727261045">Hvis du giver et like, indsendes der feedback om, at du kan lide disse resultater</translation>
@@ -1993,6 +1995,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> er opdateret</translation>
 <translation id="4298148761711700950">Betal øjeblikkeligt uden QR-upload</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Cookies for dette website synkroniseres på tværs af dine ChromeOS-enheder. Gå til <ph name="SYNC_SETTINGS" /> for at administrere, hvad du synkroniserer.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" />-kilde <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Navnet på genvejen overskrider den maksimalt tilladte længde på <ph name="MAX_LENGTH" /> tegn.</translation>
@@ -2202,6 +2205,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
+<translation id="468826602575103388">Vælg for at deaktivere deling</translation>
 <translation id="4690205240253392065">Vælg en udbyder af Betal senere</translation>
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
@@ -2742,7 +2746,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5540224163453853">Den anmodede artikel blev ikke fundet.</translation>
 <translation id="5541086400771735334">Postkasse 7</translation>
 <translation id="5541546772353173584">Tilføj mailadresse</translation>
-<translation id="5541735141423273733">Ankomstdato</translation>
 <translation id="5543452229212526547">Din tekst, indholdet og webadressen på den side, du skriver på, sendes til Google. Dit indhold bruges ikke af menneskelige kontrollanter til at forbedre AI. Din organisation kan til enhver tid ændre disse indstillinger.</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5546252337258681768">Enheden er låst op</translation>
@@ -3195,7 +3198,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6311410654831092784">Karton</translation>
 <translation id="6311642842034740437">Stednavn</translation>
 <translation id="6312113039770857350">Websiden er ikke tilgængelig</translation>
-<translation id="6313189007657889655">Ordre-id</translation>
 <translation id="6316110367871394043">Filupload til <ph name="CLOUD_PROVIDER" /> er blevet sat på pause</translation>
 <translation id="63172326633386613">Administrer indstillinger for hjælpefunktioner</translation>
 <translation id="6319672966240656136">Dette website forbliver blokeret, fordi du er tilmeldt Googles program Avanceret beskyttelse. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -4176,6 +4178,7 @@ Yderligere oplysninger:
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943397946612013052">Blokering af download</translation>
 <translation id="7943893128817522649">Websitet kan anmode om tilladelse til automatisk at downloade flere filer</translation>
+<translation id="7947144323420971076">Vælg for at aktivere deling</translation>
 <translation id="7947285636476623132">Kontrollér, om udløbsåret er korrekt, og prøv igen.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="7947964969544524438">Gem dit Known Traveler Number på en sikker måde</translation>
@@ -4303,6 +4306,7 @@ Yderligere oplysninger:
 <translation id="8172809706700703589">Opret en pakkeliste til min rejse</translation>
 <translation id="8174047975335711832">Enhedsoplysninger</translation>
 <translation id="8175053171643471349">Administrer loyalitetskort</translation>
+<translation id="817536628389054635">Kontaktoplysninger blev udfyldt: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome tilbyder at gemme dine kort på din Google-konto, fordi du er logget ind. Du kan ændre dette i indstillingerne.</translation>
 <translation id="8176440868214972690">Administratoren af denne enhed har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> blev blokeret på grund af indhold}one{<ph name="FILE_COUNT" /> fil blev blokeret på grund af indhold}other{<ph name="FILE_COUNT" /> filer blev blokeret på grund af indhold}}</translation>

@@ -1640,7 +1640,6 @@
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="3728173127485570463">पासवर्ड ऑटोफिल करण्यासाठी Chrome ब्राउझरला यापुढे तुमच्या फिंगरप्रिंटची आवश्यकता असणार नाही</translation>
 <translation id="3729811201279509483">मॅन्युअली टॅब जोडा</translation>
-<translation id="3732370487905329239">डिलिव्हरीची अंदाजे तारीख</translation>
 <translation id="3736564442532774454">Chrome ब्राउझर हा <ph name="APP_NAME" /> वर तुमची संवेदनशील माहिती भरण्याचा प्रयत्न करत आहे.</translation>
 <translation id="3738166223076830879">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="3739842843727261045">थंब्स अपवर क्लिक केल्यावर तुम्हाला हे परिणाम आवडले आहेत असा फीडबॅक सबमिट केला जातो</translation>
@@ -2746,7 +2745,6 @@
 <translation id="5540224163453853">विनंती केलेला लेख शोधू शकलो नाही.</translation>
 <translation id="5541086400771735334">मेलबॉक्स ७</translation>
 <translation id="5541546772353173584">ईमेल जोडा</translation>
-<translation id="5541735141423273733">आगमनाची तारीख</translation>
 <translation id="5543452229212526547">तुमचा मजकूर आणि आशय व तुम्ही ज्या पेजवर लिहीत आहात त्याची URL या गोष्टी Google ला पाठवल्या जातील. तुमचा आशय मानवी परीक्षणकर्ते AI मध्ये सुधारणा करण्यासाठी वापरणार नाहीत. तुमची संस्था ही सेटिंग्ज कधीही बदलू शकते.</translation>
 <translation id="5543722831081909240">१८० अंश</translation>
 <translation id="5546252337258681768">डिव्हाइस अनलॉक केले आहे</translation>
@@ -3200,7 +3198,6 @@
 <translation id="6311410654831092784">कार्ड स्टॉक</translation>
 <translation id="6311642842034740437">नाव दिलेली स्थाने</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नाही</translation>
-<translation id="6313189007657889655">ऑर्डर आयडी</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> वर फाइल अपलोड थांबवले गेले आहे</translation>
 <translation id="63172326633386613">अ‍ॅक्सेसिबिलिटी सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6319672966240656136">तुम्ही Google च्या Advanced Protection Program अंतर्गत असल्यामुळे ही साइट ब्लॉक केलेली राहील. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>

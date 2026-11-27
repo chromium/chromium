@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1651617469580841801">Quan utilitzes Google Lens, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'envien a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Estàs compartint aquesta pestanya amb la Cerca de Google</translation>
 <translation id="1682634494516646069">Google Chrome no pot llegir ni escriure en el directori de dades: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
 <translation id="1698376642261615901">Google Chrome és un navegador web que executa pàgines web i aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navega d'una manera més segura pel web amb la protecció integrada contra programari maliciós i llocs de pesca de credencials a Google Chrome.</translation>
@@ -254,6 +255,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3380249972812870825">Per obrir Gemini a Chrome, prem <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome ha afegit una IA que s'executa al dispositiu. Els llocs web i Chrome la poden utilitzar per a funcions com ara:</translation>
 <translation id="3396977131400919238">Hi ha hagut un error en el sistema operatiu durant la instal·lació. Torna a baixar Google Chrome.</translation>
+<translation id="3404531968986217414">Inicia un fil de discussió nou amb la Cerca de Google</translation>
 <translation id="3428747202529429621">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="3438681572027105609">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="3450887623636316740">Aquest fitxer pot ser perillós<ph name="LINE_BREAK" />Chrome pot comprovar aquesta baixada per tu si proporciones la contrasenya. La informació sobre el fitxer s'envia a Navegació segura de Google, però el contingut i la contrasenya del fitxer es queden al dispositiu.</translation>
@@ -396,6 +398,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5003967926796347400">Fes clic a Gestor de contrasenyes de Google</translation>
 <translation id="5043786843026425788">Més informació sobre la cerca amb Google Lens a Chrome</translation>
 <translation id="504867494566807945">Obre enllaços a Chrome des de qualsevol aplicació. A més, perquè sigui més fàcil accedir-hi, es fixa a la barra de tasques.</translation>
+<translation id="507983337152787026">Inicia un fil de discussió nou amb la Cerca de Google</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="5105120510934353742">Per obtenir actualitzacions de Google Chrome en un futur, necessitaràs macOS 13 o una versió posterior. Aquest ordinador utilitza macOS 12.</translation>
 <translation id="5114340746415930644">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chrome al teu compte, <ph name="USER_EMAIL" /></translation>
@@ -420,6 +423,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="524751727772074981">Fes una pregunta, des d'on siguis, amb Gemini a Chrome</translation>
 <translation id="5247617065091903691">Pots fixar el tauler lateral de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="5271833978500241046">Utilitza-les juntament amb altres funcions de Gemini a Chrome</translation>
+<translation id="528611299569739095">Aquest navegador gestionat pot utilitzar Gemini que <ph name="DOMAIN" /> ha configurat per a la feina. Pot cercar informació i proporcionar respostes basades en els fitxers i els serveis de l'organització. Per canviar, cal reiniciar Chrome.</translation>
 <translation id="5320351714793324716">Si permets les galetes, Chrome pot utilitzar-les en la precàrrega</translation>
 <translation id="5321325624576443340">Google Lens no està disponible. Torna-ho a provar més tard.</translation>
 <translation id="5346389065299425353">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines</translation>
@@ -442,7 +446,9 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5600352656975192682">Fixa Chrome a la barra de tasques per accedir-hi ràpidament en qualsevol moment</translation>
 <translation id="5602351063754773347">Chrome et recomana que la suprimeixis. <ph name="BEGIN_LINK" />Més informació sobre les extensions admeses<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Canvia a Gemini Enterprise gestionat per <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Personalitza Chrome al teu gust</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Deixa de compartir la pestanya amb la Cerca de Google}other{Deixa de compartir # pestanyes amb la Cerca de Google}}</translation>
 <translation id="5649156266046089790">Els perfils de Chrome et permeten separar tot el teu contingut de Chrome. Crea perfils per a amics i familiars, o separa la feina de la diversió.</translation>
 <translation id="565744775970812598">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
 <translation id="566568153320186256">Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
@@ -536,6 +542,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6417690341895039567">{COUNT,plural, =1{La teva organització tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
 <translation id="6426623519983252346">Veuràs una indicació per provar <ph name="FEATURE_NAME" /> la propera vegada que obris Chrome a iOS.</translation>
+<translation id="6431496891888891615">Pots canviar a l'assistent de Gemini associat originalment al teu Compte de Google i que no gestiona <ph name="DOMAIN" />. Per canviar, cal reiniciar Chrome.</translation>
 <translation id="6434035853014503219">Gràcies per triar Chrome com a navegador predeterminat.</translation>
 <translation id="6438015621983209660">Amplia la funció Navegació segura millorada amb Chrome al telèfon</translation>
 <translation id="6442774133615368941">Compra, tradueix i identifica el que veus amb la càmera a l'aplicació Chrome per a iOS</translation>
@@ -572,6 +579,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6712881677154121168">Error de baixada: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Fes que Chrome sigui més ràpid</translation>
 <translation id="6734827584173583205">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
+<translation id="6737759643107005803">Torna a l'assistent de Gemini que no gestiona <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Ignora la cerca activa en aquesta pestanya</translation>
 <translation id="6750954913813541382">Per corregir els errors d'ortografia, Chrome envia a Google el text que escrius al navegador</translation>
 <translation id="6760235774835597023">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs. Aquesta opció de configuració està activada.</translation>
@@ -650,6 +658,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="749228101751499733">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
 <translation id="7496017508659652909">Chrome precarrega les pàgines perquè la navegació i la cerca siguin més ràpides. <ph name="BEGIN_LINK" />Obtén més informació sobre la precàrrega de pàgines<ph name="END_LINK" />.</translation>
+<translation id="7512102939658787283">Estàs compartint aquesta pestanya amb la Cerca de Google</translation>
 <translation id="7514258452813684157">Servei de l'actualitzador de Google</translation>
 <translation id="7515191208480168435">Pots fixar Google Lens per accedir-hi fàcilment</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -737,6 +746,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8291415872436043161">Baixa Chrome</translation>
 <translation id="829923460755755423">Afegeix una drecera al gestor de contrasenyes de Google</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Comparteix la pestanya amb la Cerca de Google}other{Comparteix # pestanyes amb la Cerca de Google}}</translation>
 <translation id="8313851650939857356">Error d'arrencada: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el tauler de la Cerca de Google.</translation>
 <translation id="8336463659890584292">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
@@ -791,6 +801,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8712767363896337380">Gairebé has acabat amb l'actualització. Reinicia Chrome per acabar l'actualització.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs la llista de lectura i altres dades de <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Tanca la sessió de Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Comparteix la pestanya amb la Cerca de Google}other{Comparteix # pestanyes amb la Cerca de Google}}</translation>
 <translation id="873133009373065397">Google Chrome no pot determinar ni definir el navegador predeterminat</translation>
 <translation id="8747073452963259673">extrem inferior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="BOTTOM" /> % per baix</translation>
 <translation id="8748735421235723888">Chrome allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chrome. Les pestanyes inactives s'activen de nou automàticament quan hi tornes. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi de memòria<ph name="END_LINK" />.</translation>
@@ -842,6 +853,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Subscripció a Google.</translation>
 <translation id="922152298093051471">Personalitza Chrome</translation>
 <translation id="93760716455950538">Reinicia ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Deixa de compartir la pestanya amb la Cerca de Google}other{Deixa de compartir # pestanyes amb la Cerca de Google}}</translation>
 <translation id="945522503751344254">Envia comentaris</translation>
 <translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>

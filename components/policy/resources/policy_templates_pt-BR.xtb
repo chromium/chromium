@@ -8140,15 +8140,6 @@ e serão desativadas por padrão se a política não for definida. Se você defi
       Aqui, <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> pode ser uma versão exata, como "13305.0.0", ou um prefixo de versão, como "13305".
       O <ph name="WARNING_PERIOD_PROPERTY_NAME" /> e o <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> são valores opcionais especificados em número de dias. O valor padrão para eles é 0 dia, o que significa que não há um período de aviso.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> é uma propriedade opcional definida como falsa por padrão.</translation>
-<translation id="5876812185674131521">Impede a exclusão manual de cookies do <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Esta política tem como objetivo impedir que os usuários acessem o <ph name="YOUTUBE_PRODUCT_NAME" /> sem autorização depois de limpar manualmente os cookies do <ph name="YOUTUBE_PRODUCT_NAME" /> na página de configurações do site.
-
-Se a política for ativada, os cookies do <ph name="YOUTUBE_PRODUCT_NAME" /> não poderão ser excluídos manualmente.
-
-Se a política for desativada ou não for definida, os cookies do <ph name="YOUTUBE_PRODUCT_NAME" /> poderão ser excluídos normalmente.
-
-Observação: esta política impede apenas a exclusão manual da interface de configurações do site. Ela não impede a exclusão automatizada pelas políticas <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> ou <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Além disso, se a política <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> estiver ativada, os usuários ainda poderão limpar todos os cookies na caixa de diálogo Limpar Dados de Navegação.</translation>
 <translation id="5879014913445067283">Controla a detecção de compartilhamentos de arquivos de rede por meio do <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Ativar "Pesquisa por toque"</translation>
 <translation id="5882345429632338713">Atraso para iniciar um navegador alternativo (milésimos de segundo)</translation>
@@ -10712,13 +10703,6 @@ Se esta política for desativada ou não for definida, as configurações de con
           Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
 
           Se esta política não for definida, o recurso de correção de cor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="7324627441366994249">Permite definir uma lista de padrões do URL que especificam sites em que integrações do app Gemini não podem agir diretamente em páginas da web.
-
-Os URLs que não correspondem à lista de permissões nem à lista de bloqueio usam <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Os URLs que correspondem à lista de permissões e à lista de bloqueio são permitidos.
-
-Encontre informações detalhadas sobre padrões do URL válidos em https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Impedir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="7326394567531622570">Semelhante a Wipe (valor 2), mas tenta preservar os tokens de login para que o usuário não precise fazer login novamente.</translation>
 <translation id="7331098674887251788">Permitir que as integrações do app do Gemini atuem diretamente nas páginas da Web</translation>
@@ -12030,13 +12014,6 @@ Se o valor for "true" ou não for definido, eles precisarão estar em uma rede g
 Se o valor for "false", será possível participar sem estar em uma rede gerenciada.</translation>
 <translation id="8183108371184777472">Suprimir a inicialização da janela do navegador</translation>
 <translation id="8185312100223853315">Rótulo do perfil</translation>
-<translation id="8186370194423312090">Permite definir uma lista de padrões de URL que especificam sites em que integrações do app Gemini podem agir diretamente em páginas da web.
-
-Os URLs que não correspondem à lista de permissões nem à lista de bloqueio usam <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Os URLs que correspondem à lista de permissões e à lista de bloqueio são permitidos.
-
-Encontre informações detalhadas sobre padrões do URL válidos em https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Permitir feedback do usuário</translation>
 <translation id="8190271041226151932">Esta configuração permite integrações dos apps do Gemini.
 

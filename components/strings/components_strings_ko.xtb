@@ -1641,7 +1641,6 @@
 <translation id="3727850735097852673">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="3728173127485570463">Chrome 브라우저에서 비밀번호를 자동 완성하기 위해 더 이상 지문이 필요하지 않습니다.</translation>
 <translation id="3729811201279509483">수동으로 탭 추가</translation>
-<translation id="3732370487905329239">배송 예정일</translation>
 <translation id="3736564442532774454">Chrome 브라우저가 <ph name="APP_NAME" />에서 민감한 정보를 입력하려고 합니다.</translation>
 <translation id="3738166223076830879">관리자가 관리하는 브라우저입니다.</translation>
 <translation id="3739842843727261045">좋아요를 누르면 이러한 결과가 마음에 든다는 의견이 제출됩니다</translation>
@@ -2747,7 +2746,6 @@
 <translation id="5540224163453853">요청한 글을 찾지 못했습니다.</translation>
 <translation id="5541086400771735334">메일박스 7</translation>
 <translation id="5541546772353173584">이메일 추가</translation>
-<translation id="5541735141423273733">도착 날짜</translation>
 <translation id="5543452229212526547">텍스트와 작성 중인 페이지의 콘텐츠 및 URL이 Google로 전송됩니다. 인적 검토자가 AI를 개선하기 위해 내 콘텐츠를 사용하지 않습니다. 조직에서 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="5543722831081909240">180도</translation>
 <translation id="5546252337258681768">기기가 잠금 해제됨</translation>
@@ -3200,7 +3198,6 @@
 <translation id="6311410654831092784">카드 용지</translation>
 <translation id="6311642842034740437">이름이 지정된 위치</translation>
 <translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
-<translation id="6313189007657889655">주문 ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />에 대한 파일 업로드가 일시중지되었습니다</translation>
 <translation id="63172326633386613">접근성 설정 관리</translation>
 <translation id="6319672966240656136">Google의 고급 보호 프로그램에 가입되어 있으므로 이 사이트는 차단된 상태로 유지됩니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>

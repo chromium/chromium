@@ -8014,15 +8014,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
       이때 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />은 '13305.0.0'과 같은 정확한 버전 또는 '13305'와 같은 버전 접두어 중 하나를 의미합니다.
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> 및 <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />는 일 단위로 지정되는 선택적인 값입니다. 기본값은 0일이며, 이는 경고 기간이 없다는 의미입니다.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" />는 기본값이 False인 선택적인 속성입니다.</translation>
-<translation id="5876812185674131521"><ph name="YOUTUBE_PRODUCT_NAME" /> 쿠키의 수동 삭제를 방지합니다.
-
-이 정책은 사용자가 사이트 설정 페이지에서 <ph name="YOUTUBE_PRODUCT_NAME" /> 쿠키를 수동으로 삭제한 후 무단으로 <ph name="YOUTUBE_PRODUCT_NAME" />에 액세스하는 일을 방지합니다.
-
-이 정책을 사용 설정하면 <ph name="YOUTUBE_PRODUCT_NAME" /> 쿠키가 수동으로 삭제되는 일이 방지됩니다.
-
-이 정책을 사용 중지하거나 값을 설정하지 않으면 <ph name="YOUTUBE_PRODUCT_NAME" /> 쿠키의 정상적인 삭제가 가능합니다.
-
-참고: 이 정책은 사이트 설정 UI에서만 수동 삭제를 방지합니다. <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 또는 <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> 정책에 의한 자동 삭제는 방지하지 않습니다. 이에 더해, <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> 정책이 사용 설정된 경우에도 사용자는 '인터넷 사용 기록 삭제' 대화상자를 통해 모든 쿠키를 삭제할 수 있습니다.</translation>
 <translation id="5879014913445067283"><ph name="NETBIOS_NAME" />을(를) 통한 네트워크 파일 공유 검색 제어</translation>
 <translation id="588135807064822874">터치하여 검색 사용</translation>
 <translation id="5882345429632338713">대체 브라우저 실행 전 대기 시간(밀리초)</translation>
@@ -10476,13 +10467,6 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
           정책을 설정하면 사용자가 변경하거나 재정의할 수 없습니다.
 
           정책을 설정하지 않으면 처음에는 색상 보정 기능이 사용 중지되지만 사용자가 언제든지 사용 설정할 수 있습니다.</translation>
-<translation id="7324627441366994249">URL 패턴 목록을 설정하여 Gemini 앱 통합이 웹페이지에서 직접 작동해서는 안 되는 사이트를 지정할 수 있습니다.
-
-허용 목록 또는 차단 목록과 일치하지 않는 URL에는 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />가 사용됩니다.
-
-허용 목록 및 차단 목록과 일치하는 URL은 허용됩니다.
-
-유효한 URL 패턴에 관해 자세히 알아보려면 https://support.google.com/chrome/a?p=url_blocklist_filter_format 페이지를 참고하세요.</translation>
 <translation id="7325801934761922681">Chrome이 샌드박스 처리된 iframe 내부에서 외부 프로토콜로 이동을 차단하지 못하도록 방지</translation>
 <translation id="7326394567531622570">완전 삭제(값 2)와 유사하지만, 사용자가 다시 로그인할 필요가 없도록 로그인 토큰을 저장합니다.</translation>
 <translation id="7331098674887251788">Gemini 앱 통합이 웹페이지에서 직접 작동하도록 허용합니다.</translation>
@@ -11776,13 +11760,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 값을 false로 설정하면 관리 네트워크에 있지 않아도 참여할 수 있습니다.</translation>
 <translation id="8183108371184777472">브라우저 창 실행 억제</translation>
 <translation id="8185312100223853315">프로필 라벨</translation>
-<translation id="8186370194423312090">URL 패턴 목록을 설정하여 Gemini 앱 통합이 웹페이지에서 직접 작동해도 되는 사이트를 지정할 수 있습니다.
-
-허용 목록 또는 차단 목록과 일치하지 않는 URL에는 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />가 사용됩니다.
-
-허용 목록 및 차단 목록과 일치하는 URL은 허용됩니다.
-
-유효한 URL 패턴에 관해 자세히 알아보려면 https://support.google.com/chrome/a?p=url_blocklist_filter_format 페이지를 참고하세요.</translation>
 <translation id="8186911565834244165">사용자 의견 허용</translation>
 <translation id="8190271041226151932">이 설정은 Gemini 앱 통합을 허용합니다.
 

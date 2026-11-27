@@ -519,6 +519,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1570990174567554976">Bókamerkjamappan „<ph name="BOOKMARK_TITLE" />“ búin til.</translation>
 <translation id="1571041387761170095">Engin léleg eða endurnýtt aðgangsorð</translation>
 <translation id="1571304935088121812">Afrita notandanafn</translation>
+<translation id="1571371559291327711">&amp;Finna, breyta og fleiri verkfæri</translation>
 <translation id="1571738973904005196">Skoða flipann: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gestur)</translation>
 <translation id="1573127087832371028">Lýstu vandamálinu</translation>
@@ -966,6 +967,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="204914487372604757">Búa til flýtileið</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2051669996101374349">Nota HTTPS þegar hægt er og fá viðvörun áður en síðum sem styðja það ekki er hlaðið. Þú getur ekki breytt þessari stillingu vegna þess að þú ert með kveikt á ítarlegri vernd.</translation>
+<translation id="2052353138844549871">Ekki er mælt með að nota Gemini Enterprise á óstýrðum prófíl</translation>
 <translation id="2052723746739622752">Losa Gemini</translation>
 <translation id="2061366302742593739">Ekkert til að sýna</translation>
 <translation id="2061589908388230480">Ef Chromium finnur eitt aðgangsorðanna þinna í opinberu öryggisbroti getur Google-aðgangsorðastjórnun boðist til að breyta því fyrir þig ef þú ert skráð(ur) inn. <ph name="BEGIN_LINK" />Nánar um sjálfvirka breytingu aðgangsorða<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Heimildar óskað, ýttu á Ctrl + Áfram til að svara</translation>
 <translation id="2349610121459545414">Halda áfram að veita þessu vefsvæði aðgang að staðsetningunni þinni</translation>
 <translation id="2350133097354918058">Endurhlaðið</translation>
+<translation id="2351165193188463938">Nú vafrarðu með Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Myndavél og hljóðnemi eru leyfð</translation>
 <translation id="2353682139907904963">Festu nýjar viðbætur við tækjastikuna</translation>
@@ -1281,6 +1284,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2409709393952490731">Nota síma eða spjaldtölvu</translation>
 <translation id="2410940059315936967">Vefsvæði sem þú skoðar getur fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Fótspor sem viðkomandi önnur vefsvæði nota kallast fótspor þriðju aðila.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Í fókus á einum flipa}one{Í fókus á # flipa}other{Í fókus á # flipum}}</translation>
 <translation id="2413009156320833859">Sérsníddu vafrann enn frekar með viðbótum frá <ph name="BEGIN_LINK1" />vefverslun Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Halda áfram að leita að <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dökkt</translation>
@@ -1690,6 +1694,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2849926636739429924">Fleiri valkostir fyrir <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Lokað</translation>
 <translation id="2851291081585704741">Þú ert ekki á netinu</translation>
+<translation id="2851527955600412545">Fyrirtækið þitt uppfærði reglur sínar fyrir Gemini Enterprise í Chrome. Ekki er víst að spjallferillinn þinn sé fluttur yfir.</translation>
 <translation id="285237063405807022">(hleður)</translation>
 <translation id="2853121255651601031">Aðgangsorð vistað</translation>
 <translation id="2855243985454069333">Eyðir ferli í öllum samstilltum tækjum</translation>
@@ -2639,6 +2644,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3810593934879994994"><ph name="ORIGIN" /> getur skoðað skrár í eftirfarandi möppum</translation>
 <translation id="3810770279996899697">Aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
 <translation id="3810973564298564668">Stjórna</translation>
+<translation id="3811424142236602772">Skoðaðu með Gemini, sem <ph name="DOMAIN" /> setti upp fyrir vinnu. Spyrðu spurninga á meðan þú vafrar með því að deila flipum sem samhengi og fáðu svör sem byggja á skrám og þjónustum fyrirtækisins þíns.</translation>
 <translation id="3812525830114410218">Ógilt vottorð</translation>
 <translation id="3813296892522778813">Opnaðu <ph name="BEGIN_LINK_CHROMIUM" />aðstoð Google Chrome<ph name="END_LINK_CHROMIUM" /> ef þú finnur ekki það sem þú leitar að.</translation>
 <translation id="3815509884387832993">Hlustaðu á þessa síðu eins og hún sé hlaðvarp með gervigreindarspilun með því að nota hnappinn „Kveikja á gervigreindarspilun“ á tækjastiku lesstillingar</translation>
@@ -3236,6 +3242,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4500055235123625757">Gemini getur svarað spurningum um vídeó eða hljóð sem þú hefur spilað á <ph name="LINK_BEGIN" />sumum vefsvæðum<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Þýða valið yfir á <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Hægrismelltu á flipa og veldu „Bæta flipa við nýjan hóp“</translation>
+<translation id="450300557121092531">Flipar eftir tæki</translation>
 <translation id="4503362512377701151">Þú sérð nýlega notaða flipahópa til að hjálpa þér að halda auðveldlega áfram þar sem frá var horfið.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4562155266774382038">Loka tillögu</translation>
 <translation id="4563883094055457792">Endurheimta tvískiptan skjá</translation>
 <translation id="456449593072900590">Eyða þegar honum er lokað</translation>
+<translation id="4564636746145660922">Athugaðu tenginguna og reyndu síðan aftur.</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4565465014351935093">Aðeins sýna á síðunni „Nýr flipi“</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
@@ -3461,6 +3469,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="475088594373173692">Fyrsti notandi</translation>
 <translation id="4751925628341802838">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4754590344707355551">Gerðu vafrann þinn enn betri með viðbótum</translation>
+<translation id="4754903312643763797">Aðrir skilmálar um gagnavernd kunna að gilda</translation>
 <translation id="4756130875344525429">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4756378406049221019">Stöðva/endurhlaða</translation>
 <translation id="4756388243121344051">Ferill</translation>
@@ -4143,6 +4152,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5509914365760201064">Útgefandi: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Fá lýsingar á myndum frá Google</translation>
 <translation id="5512739112435045339">Losaðu um pláss í tækinu. Reyndu svo að sækja aftur</translation>
+<translation id="5513121759801003159">Spjallferillinn þinn verður ekki fluttur</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Sjá fleiri valkosti fyrir <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Er þetta heimasíðan sem þú bjóst við?</translation>
@@ -4951,6 +4961,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6451861213630784801">Þú ert skráð(ur) út</translation>
 <translation id="6453191633103419909">Útsendingargæði flipa/skjás</translation>
 <translation id="6453306703004115497">Þýtt yfir á <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Leita í gervigreind í tæki</translation>
 <translation id="645433497989692531">Þetta mun eyða vefskoðunargögnum varanlega úr þessu tæki. Til að endurheimta gögnin skaltu skrá þig inn sem</translation>
 <translation id="6455264371803474013">Á tilteknum vefsvæðum</translation>
 <translation id="6455521402703088376">Slökkt • Útgefandi þessarar viðbótar afturkallaði hana</translation>
@@ -5123,6 +5134,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="663569763553406962">Sjáðu hvaða viðbætur geta lesið eða breytt vefsvæði</translation>
 <translation id="6636258750460740634">Ferill</translation>
 <translation id="6636623428211296678">Skoðaðu fleiri stillingar hér að neðan eða ljúktu þessu núna</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Slökkt er á færnieiginleikanum eins og stendur. Uppfærðu stillingar Chrome til að hefjast handa.</translation>
 <translation id="6639554308659482635">SQLite-minni</translation>
 <translation id="6640268266988685324">Opna flipa</translation>
@@ -5256,6 +5268,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6785779729084003225">Notaðu <ph name="FOCUS_TOGGLE_HOTKEY" /> til að opna Gemini í Chrome</translation>
 <translation id="67862343314499040">Fjólublár</translation>
 <translation id="6786480815699355166">Aðeins er hægt að þýða tungumál sem eru studd fyrir skjátexta í rauntíma</translation>
+<translation id="6786498102134843646">Svör verða ekki byggð á skrám eða þjónustum sem <ph name="DOMAIN" /> stýrir</translation>
 <translation id="6786747875388722282">Viðbætur</translation>
 <translation id="6786804673213172567">Flokkur 3: HÁTT</translation>
 <translation id="6787531944787756058">notandanafn <ph name="USER_EMAIL" /> er aðeins vistað í þessu tæki. Sjá nánar</translation>
@@ -5418,6 +5431,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6941514251635934269">Spyrja um þetta skjal</translation>
 <translation id="694168622559714949">Stjórnandinn stillti sjálfgefið tungumál sem er ekki hægt að breyta.</translation>
 <translation id="6941953303876950920">Endurræsing er nauðsynleg til að halda áfram að vafra með Gemini</translation>
+<translation id="6943803108751887058">Ýttu á Escape til að loka</translation>
 <translation id="6944854424004126054">Endurheimta glugga</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="694592694773692225">Lokað á framsendingu á þessari síðu.</translation>
@@ -5743,6 +5757,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7293774463163321848">Hægt er að eyða leitarferli, Gemini-ferli og aðgangsorðum í umsjónarstillingum þeirra</translation>
 <translation id="7296503797589217366">Veldu möppu <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Vistaðu upplýsingar í Google-veski af síðum sem þú skoðar</translation>
+<translation id="7297535265731442945">Gemini Enterprise var uppfært</translation>
 <translation id="7297726121602187087">Dökkgrænn</translation>
 <translation id="7298195798382681320">Ráðlagt</translation>
 <translation id="7299515639584427954">Breyta sjálfgefnu forriti fyrir studda tengla?</translation>
@@ -5764,6 +5779,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="731827437403763009">Nýjungar á sviði gervigreindar</translation>
 <translation id="7319983568955948908">Hætta að deila</translation>
 <translation id="7321545336522791733">Ekki næst í þjón</translation>
+<translation id="7321838786611890851">Samskipti þín við Gemini eru hugsanlega ekki varin með þeim hætti sem <ph name="DOMAIN" /> hefur stillt og aðrir skilmálar um gagnavernd kunna að gilda</translation>
 <translation id="7322515217754205362">Heimildir vefsvæðis</translation>
 <translation id="7324020307732396723">Opna tungumálastillingar</translation>
 <translation id="7325209047678309347">Pappír er fastur</translation>
@@ -6060,6 +6076,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7653354650639364202">{0,plural, =1{Loka einangruðum glugga}one{Loka einangruðum (# gluggi)}other{Loka einangruðum (# gluggar)}}</translation>
 <translation id="7654941827281939388">Þegar er verið að nota þennan reikning í þessari tölvu.</translation>
 <translation id="7655411746932645568">Vefsvæði geta beðið um að tengjast raðtengjum</translation>
+<translation id="7656674791025857763">Skráðu þig inn til að nota <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Lítill sparnaður</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Aðrar aðgerðir<ph name="END_LINK_GOOGLE" /> kunna að vera vistaðar á Google-reikningnum þínum ef þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
@@ -6271,6 +6288,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7904492297081735975">&amp;Opna bókamerkjastjórnun</translation>
 <translation id="7907312522152480478">Til að sækja flipana þína úr öðrum tækjum skaltu staðfesta að þetta sért þú og samstilla feril þinn og flipa. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7907837847548254634">Auðkenna hlut í fókus í stutta stund</translation>
+<translation id="7908205867885088429">Nánar um að endurstilla stillingar</translation>
 <translation id="7908835530772972485">Eyða gögnum þegar þú lokar öllum gluggum</translation>
 <translation id="7909324225945368569">Endurnefndu prófílinn þinn</translation>
 <translation id="7909969815743704077">Sótt í huliðsstillingu</translation>
@@ -6662,6 +6680,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8323317289166663449">Lesa og breyta öllum gögnum í tölvunni þinni og á öllum vefsvæðum</translation>
 <translation id="8323518750352551353">Aðgreind skoðun?</translation>
 <translation id="8323744572398547859">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
+<translation id="8324035203198677529">Fyrirtækið þitt slökkti á Gemini Enterprise í Chrome. Þú getur haldið áfram að nota Gemini í Chrome en það mun ekki lengur finna eða vísa í upplýsingar sem fyrirtækið þitt stjórnar. Ekki er víst að spjallferillinn þinn sé fluttur yfir.</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>
 <translation id="8327386430364625757">Stærðfræðileg leturgerð</translation>
@@ -6868,6 +6887,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8551388862522347954">Leyfi</translation>
 <translation id="8552102814346875916">Vista á listann „halda þessum vefsvæðum ávallt virkum“</translation>
 <translation id="8552947739661397736">Taka yfir verkefni, Gemini er með stjórn</translation>
+<translation id="8555042096950728024">Dragðu eða notaðu örvalyklana til að endurraða</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - stækkað efni sýnt</translation>
 <translation id="8557022314818157177">Haltu áfram að ýta á öryggislykilinn þinn þangað til fingrafarið greinist</translation>
 <translation id="8557100046150195444">Snertiauðkenni til að halda áfram</translation>
@@ -6960,6 +6980,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8651806635673244884">Þú getur fært flipana aftur efst með því að hægrismella á hvaða flipa sem er og velja „Sýna flipa lárétt“</translation>
 <translation id="8652400352452647993">Villa í pakkaviðbót</translation>
 <translation id="8654151524613148204">Skráin er of stór til að tölvan þín geti unnið með hana. Sorrí, Stína.</translation>
+<translation id="8654872240409864765">Fyrirtækið þitt setti upp Gemini Enterprise í Chrome. Spyrðu Gemini um hvað sem er á meðan þú vafrar og fáðu svör sem byggja á skrám og þjónustum í fyrirtækinu þínu.</translation>
 <translation id="8657393004602556571">Viltu hætta við ábendingarnar?</translation>
 <translation id="865857184419171576">Þýða skjátexta yfir á</translation>
 <translation id="865936634714975126">Bættu fyrirspurnarbreytu við vefslóðina til að velja gerðir þegar síðu er hlaðið. Dæmi: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7123,6 +7144,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8813937837706331325">Miðlungs sparnaður</translation>
 <translation id="8815742860876889867">Opna tengil í einangruðum glugga</translation>
 <translation id="881799181680267069">Fela aðra</translation>
+<translation id="8820301999480837183">Hópurinn „<ph name="GROUP_NAME" />“ er í fókus</translation>
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8821206216942230957">Reikningurinn þinn hefur ekki aðgang að Gemini í Chrome</translation>
 <translation id="8823514049557262177">Afrita tenglate&amp;xta</translation>
@@ -7162,6 +7184,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8863753581171631212">Opna tengil í <ph name="APP" /> í nýjum glugga</translation>
 <translation id="8864055848767439877">Deilir <ph name="TAB_NAME" /> í <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Aðgangsorðið þitt er vistað</translation>
+<translation id="8865924457197342642">Gemini Enterprise er ekki lengur í boði</translation>
 <translation id="8866424952450451412">Stjórnaðu sérsniðnu verkflæðunum þínum sem knúin eru af</translation>
 <translation id="8867102760244540173">Leita á flipum...</translation>
 <translation id="8867568208303837180">Sendir...</translation>
@@ -7374,6 +7397,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9096776523567481218">ekki sett upp staðbundið</translation>
 <translation id="9099383880226822604">Regnskógur</translation>
 <translation id="9100765901046053179">Ítarlegar stillingar</translation>
+<translation id="9100928301185810363">Í fókus á ónefndum hópi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Til að varpa skaltu veita Chrome aðgang að: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Staðarnet &gt; Chrome</translation>
 <translation id="9103868373786083162">Ýttu til að fara til baka, farðu í efnisvalmyndina til að sjá ferilinn</translation>
 <translation id="9107096627210171112">Þýða...</translation>

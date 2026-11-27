@@ -2577,6 +2577,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3771721161825963003">Zobrazit karty svisle</translation>
 <translation id="3771851622616482156">Z tohoto webu budete odhlášeni (i na otevřených kartách)</translation>
 <translation id="3772951945682043324">Žádné nedávno zavřené karty</translation>
+<translation id="3775389358290351377">Přepnout poskytovatele (tabulátor)</translation>
 <translation id="3775432569830822555">Certifikát serveru SSL</translation>
 <translation id="3776508619697147021">Weby mohou žádat o automatické stažení několika souborů</translation>
 <translation id="3776796446459804932">Toto rozšíření porušuje zásady Internetového obchodu Chrome.</translation>
@@ -3040,6 +3041,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="429530814437327574">Zobrazit nad sebou</translation>
 <translation id="4296632172536745000">Vaše původní heslo pro tento web bylo nalezeno v seznamu dat prozrazených při porušení zabezpečení údajů. Dne <ph name="DATE" /> jste nástroj <ph name="BRAND" /> požádali o automatickou změnu hesla.</translation>
 <translation id="42981349822642051">Rozbalit</translation>
+<translation id="4298381759837744019">Vyhledat v nastavení „<ph name="QUERY" />“</translation>
 <translation id="4298660926525614540">Názvy vyměnitelných úložišť</translation>
 <translation id="4299022904780065004">Nové &amp;anonymní okno</translation>
 <translation id="4301231341924904092">Změňte mi ho</translation>
@@ -4270,6 +4272,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="568984110402742489">Zpětnou vazbu nelze odeslat</translation>
 <translation id="5691772641933328258">Otisk prstu nebyl rozpoznán</translation>
+<translation id="5693100627879528952">Další informace o nastavení vyhledávače a vyhledávání na webu</translation>
 <translation id="5693255400847650006">Používá se mikrofon</translation>
 <translation id="5693806089748511108">Vaše dovednosti</translation>
 <translation id="5694689722959820210">Vytvořit skupinu karet</translation>

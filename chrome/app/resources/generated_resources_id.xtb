@@ -519,6 +519,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1570990174567554976">Folder bookmark '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="1571041387761170095">Tidak ada sandi yang lemah atau digunakan ulang</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
+<translation id="1571371559291327711">&amp;Cari, edit, dan alat lainnya</translation>
 <translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tamu)</translation>
 <translation id="1573127087832371028">Jelaskan masalahnya</translation>
@@ -965,6 +966,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="204914487372604757">Buat pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2051669996101374349">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya. Anda tidak dapat mengubah setelan ini karena Anda mengaktifkan Perlindungan Lanjutan.</translation>
+<translation id="2052353138844549871">Penggunaan Gemini Enterprise dengan profil yang tidak dikelola mungkin tidak disarankan</translation>
 <translation id="2052723746739622752">Lepas sematan Gemini</translation>
 <translation id="2061366302742593739">Tidak ada yang dapat ditampilkan</translation>
 <translation id="2061589908388230480">Jika Chromium menemukan salah satu sandi Anda dalam pelanggaran data publik, Pengelola Sandi Google dapat menawarkan untuk mengubah sandi Anda jika Anda sedang login. <ph name="BEGIN_LINK" />Selengkapnya tentang perubahan otomatis sandi<ph name="END_LINK" /></translation>
@@ -1233,6 +1235,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Izin diminta, tekan Ctrl + Forward untuk merespons</translation>
 <translation id="2349610121459545414">Terus izinkan situs ini mengakses lokasi Anda</translation>
 <translation id="2350133097354918058">Dimuat ulang</translation>
+<translation id="2351165193188463938">Anda kini menjelajah dengan Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon diizinkan</translation>
 <translation id="2353682139907904963">Sematkan ekstensi baru ke Toolbar</translation>
@@ -1280,6 +1283,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2409709393952490731">Gunakan ponsel atau tablet</translation>
 <translation id="2410940059315936967">Situs yang Anda buka dapat menyematkan konten dari situs lain, misalnya gambar, iklan, dan teks. Cookie yang disetel oleh situs lain ini disebut cookie pihak ketiga.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Berfokus pada 1 tab}other{Berfokus pada # tab}}</translation>
 <translation id="2413009156320833859">Sesuaikan browser Anda lebih lanjut dengan ekstensi dari <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Lanjutkan menjelajah untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Gelap</translation>
@@ -1689,6 +1693,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2849926636739429924">Opsi lainnya untuk <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Ditutup</translation>
 <translation id="2851291081585704741">Anda offline</translation>
+<translation id="2851527955600412545">Organisasi Anda telah memperbarui kebijakannya untuk Gemini Enterprise di Chrome. Histori percakapan Anda mungkin tidak akan dipindahkan.</translation>
 <translation id="285237063405807022">(memuat)</translation>
 <translation id="2853121255651601031">Sandi Sudah Disimpan</translation>
 <translation id="2855243985454069333">Menghapus histori dari semua perangkat yang disinkronkan</translation>
@@ -2638,6 +2643,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3810593934879994994"><ph name="ORIGIN" /> dapat melihat file dalam folder berikut ini</translation>
 <translation id="3810770279996899697">Pengelola Sandi memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="3810973564298564668">Kelola</translation>
+<translation id="3811424142236602772">Jelajahi dengan Gemini, yang disiapkan oleh <ph name="DOMAIN" /> untuk kantor. Ajukan pertanyaan saat Anda menjelajah dengan membagikan tab sebagai konteks, dan dapatkan jawaban yang didasarkan pada file serta layanan organisasi Anda.</translation>
 <translation id="3812525830114410218">Sertifikat buruk</translation>
 <translation id="3813296892522778813">Buka <ph name="BEGIN_LINK_CHROMIUM" />bantuan Google Chrome<ph name="END_LINK_CHROMIUM" /> jika tidak dapat menemukan yang Anda cari</translation>
 <translation id="3815509884387832993">Dengarkan halaman ini seperti podcast dengan pemutaran AI menggunakan tombol Aktifkan Pemutaran AI di toolbar Mode baca</translation>
@@ -3235,6 +3241,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4500055235123625757">Gemini dapat menjawab pertanyaan tentang video atau audio yang telah Anda putar di <ph name="LINK_BEGIN" />beberapa situs<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Terjemahkan pilihan ke <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Klik kanan tab dan pilih "Tambahkan tab ke grup baru"</translation>
+<translation id="450300557121092531">Tab menurut perangkat</translation>
 <translation id="4503362512377701151">Anda melihat grup tab yang baru-baru ini digunakan untuk membantu Anda melanjutkan dari bagian yang terakhir dibuka dengan mudah.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3287,6 +3294,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4562155266774382038">Tutup saran</translation>
 <translation id="4563883094055457792">P&amp;ulihkan tampilan terpisah</translation>
 <translation id="456449593072900590">Hapus saat keluar</translation>
+<translation id="4564636746145660922">Periksa koneksi Anda, lalu coba lagi.</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4565465014351935093">Hanya Tampilkan di Halaman Tab Baru</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
@@ -3460,6 +3468,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="475088594373173692">Pengguna pertama</translation>
 <translation id="4751925628341802838">Untuk mengakses histori dari perangkat lain, login dan sinkronkan histori serta tab Anda ke <ph name="EMAIL" />. Anda juga akan mendapatkan ekstensi dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4754590344707355551">Tingkatkan browser Anda dengan ekstensi</translation>
+<translation id="4754903312643763797">Persyaratan privasi data yang berbeda mungkin berlaku</translation>
 <translation id="4756130875344525429">Untuk mengakses histori dari <ph name="DEVICE" />, login dan sinkronkan histori serta tab Anda ke <ph name="EMAIL" />. Anda juga akan mendapatkan info tersimpan dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4756378406049221019">Hentikan/Muat Ulang</translation>
 <translation id="4756388243121344051">&amp;Riwayat</translation>
@@ -4142,6 +4151,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5509914365760201064">Penerbit: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Dapatkan Deskripsi Gambar dari Google</translation>
 <translation id="5512739112435045339">Kosongkan ruang penyimpanan di perangkat. Lalu, coba download lagi</translation>
+<translation id="5513121759801003159">Histori percakapan Anda tidak akan ditransfer</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Lihat opsi lainnya untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Apakah ini beranda yang Anda harapkan?</translation>
@@ -4950,6 +4960,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6451861213630784801">Anda Telah Logout</translation>
 <translation id="6453191633103419909">Kualitas Proyeksi Tab/Layar</translation>
 <translation id="6453306703004115497">Diterjemahkan ke <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Telusuri AI di perangkat</translation>
 <translation id="645433497989692531">Tindakan ini akan menghapus data penjelajahan Anda dari perangkat ini secara permanen. Untuk memulihkan data, login sebagai</translation>
 <translation id="6455264371803474013">Di situs tertentu</translation>
 <translation id="6455521402703088376">Nonaktif • Ekstensi ini dibatalkan publikasinya oleh developer</translation>
@@ -5120,6 +5131,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="663569763553406962">Lihat ekstensi yang dapat membaca atau mengubah situs</translation>
 <translation id="6636258750460740634">Histori</translation>
 <translation id="6636623428211296678">Jelajahi setelan lainnya di bawah atau selesaikan sekarang</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Fitur Keahlian saat ini dinonaktifkan. Perbarui Setelan Chrome Anda untuk memulai.</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
 <translation id="6640268266988685324">Tab Terbuka</translation>
@@ -5253,6 +5265,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6785779729084003225">Gunakan <ph name="FOCUS_TOGGLE_HOTKEY" /> untuk membuka Gemini di Chrome</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Hanya bahasa Teks Otomatis yang didukung yang dapat diterjemahkan</translation>
+<translation id="6786498102134843646">Respons tidak akan didasarkan pada file atau layanan yang dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6786804673213172567">Tingkat 3: TINGGI</translation>
 <translation id="6787531944787756058">nama pengguna <ph name="USER_EMAIL" /> hanya disimpan ke perangkat ini. Lihat detail</translation>
@@ -5415,6 +5428,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6941514251635934269">Tanyakan tentang dokumen ini</translation>
 <translation id="694168622559714949">Administrator telah menyetel bahasa default yang tidak dapat diubah.</translation>
 <translation id="6941953303876950920">Perlu peluncuran kembali untuk terus menjelajah dengan Gemini</translation>
+<translation id="6943803108751887058">Tekan Escape untuk menutup</translation>
 <translation id="6944854424004126054">Pulihkan jendela</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="694592694773692225">Pengalihan diblokir di halaman ini.</translation>
@@ -5741,6 +5755,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7293774463163321848">Histori penelusuran, histori Gemini, dan sandi dapat dihapus di setelan pengelolaannya</translation>
 <translation id="7296503797589217366">Pilih folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Simpan info ke Google Wallet dari halaman yang Anda lihat</translation>
+<translation id="7297535265731442945">Gemini Enterprise telah diperbarui</translation>
 <translation id="7297726121602187087">Hijau tua</translation>
 <translation id="7298195798382681320">Direkomendasikan</translation>
 <translation id="7299515639584427954">Ubah aplikasi default untuk link yang didukung?</translation>
@@ -5762,6 +5777,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="731827437403763009">Inovasi AI</translation>
 <translation id="7319983568955948908">Hentikan Berbagi</translation>
 <translation id="7321545336522791733">Server tidak dapat dijangkau</translation>
+<translation id="7321838786611890851">Interaksi Anda dengan Gemini mungkin tidak memiliki perlindungan yang disiapkan oleh <ph name="DOMAIN" />, dan persyaratan privasi data yang berbeda mungkin berlaku</translation>
 <translation id="7322515217754205362">Izin situs</translation>
 <translation id="7324020307732396723">Buka Setelan Bahasa</translation>
 <translation id="7325209047678309347">Kertas macet</translation>
@@ -6058,6 +6074,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7653354650639364202">{0,plural, =1{Tutup Jendela Terisolasi}other{Tutup Jendela Terisolasi (# jendela)}}</translation>
 <translation id="7654941827281939388">Akun ini sudah digunakan di komputer ini.</translation>
 <translation id="7655411746932645568">Situs dapat meminta untuk terhubung ke port serial</translation>
+<translation id="7656674791025857763">Login untuk menggunakan <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Penghematan kecil</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Bentuk aktivitas lainnya<ph name="END_LINK_GOOGLE" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="7658239707568436148">Batal</translation>
@@ -6269,6 +6286,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7904492297081735975">&amp;Buka pengelola bookmark</translation>
 <translation id="7907312522152480478">Untuk mengakses tab Anda dari perangkat lain, verifikasi diri Anda dan sinkronkan histori serta tab Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="7907837847548254634">Tampilkan sorotan cepat pada objek yang menjadi fokus</translation>
+<translation id="7908205867885088429">Pelajari lebih lanjut cara memulihkan setelan ke default</translation>
 <translation id="7908835530772972485">Hapus data saat Anda menutup semua jendela</translation>
 <translation id="7909324225945368569">Ganti nama profil Anda</translation>
 <translation id="7909969815743704077">Didownload dalam mode Samaran</translation>
@@ -6660,6 +6678,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8323317289166663449">Membaca dan mengubah semua data Anda di komputer dan semua situs</translation>
 <translation id="8323518750352551353">Pisahkan Penjelajahan?</translation>
 <translation id="8323744572398547859">Untuk mengakses tab Anda dari perangkat lain, login dan sinkronkan histori. Anda juga akan mendapatkan sandi dan info Anda yang lain di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
+<translation id="8324035203198677529">Organisasi Anda menonaktifkan Gemini Enterprise di Chrome. Anda dapat terus menggunakan Gemini di Chrome, tetapi Gemini tidak akan lagi menemukan atau merujuk ke informasi yang dikelola oleh organisasi Anda. Histori percakapan Anda mungkin tidak akan dipindahkan.</translation>
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>
 <translation id="8327386430364625757">Font matematika</translation>
@@ -6866,6 +6885,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8551388862522347954">Lisensi</translation>
 <translation id="8552102814346875916">Simpan ke daftar "selalu aktifkan situs ini"</translation>
 <translation id="8552947739661397736">Ambil alih tugas, Gemini saat ini memegang kontrol</translation>
+<translation id="8555042096950728024">Tarik atau gunakan tombol panah untuk mengatur ulang</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - konten yang diperluas ditampilkan</translation>
 <translation id="8557022314818157177">Terus sentuh kunci keamanan Anda hingga sidik jari terekam</translation>
 <translation id="8557100046150195444">Touch ID untuk melanjutkan</translation>
@@ -6958,6 +6978,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8651806635673244884">Anda dapat memindahkan tab kembali ke atas dengan mengklik kanan tab mana pun dan memilih “Tampilkan tab secara horizontal”</translation>
 <translation id="8652400352452647993">Error ekstensi pack</translation>
 <translation id="8654151524613148204">Maaf, file terlalu besar untuk ditangani komputer Anda.</translation>
+<translation id="8654872240409864765">Organisasi Anda telah menyiapkan Gemini Enterprise di Chrome. Tanyakan apa saja kepada Gemini selagi Anda menjelajah, dan dapatkan jawaban yang didasarkan pada file dan layanan di seluruh organisasi Anda.</translation>
 <translation id="8657393004602556571">Ingin menghapus masukan?</translation>
 <translation id="865857184419171576">Terjemahkan teks ke</translation>
 <translation id="865936634714975126">Tambahkan parameter kueri di URL untuk memilih jenis saat pemuatan halaman. Contoh: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7121,6 +7142,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8813937837706331325">Penghematan sedang</translation>
 <translation id="8815742860876889867">Buka link di J&amp;endela terisolasi</translation>
 <translation id="881799181680267069">Sembunyikan Lainnya</translation>
+<translation id="8820301999480837183">Berfokus pada grup <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8821206216942230957">Akun Anda tidak memiliki akses ke Gemini di Chrome</translation>
 <translation id="8823514049557262177">Salin te&amp;ks link</translation>
@@ -7160,6 +7182,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8863753581171631212">Buka link di <ph name="APP" /> baru</translation>
 <translation id="8864055848767439877">Membagikan <ph name="TAB_NAME" /> ke <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Sandi Anda disimpan</translation>
+<translation id="8865924457197342642">Gemini Enterprise tidak lagi tersedia</translation>
 <translation id="8866424952450451412">Kelola alur kerja kustom Anda yang didukung oleh</translation>
 <translation id="8867102760244540173">Telusuri tab ...</translation>
 <translation id="8867568208303837180">Mengirim...</translation>
@@ -7372,6 +7395,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9096776523567481218">tidak diinstal secara lokal</translation>
 <translation id="9099383880226822604">Hutan hujan</translation>
 <translation id="9100765901046053179">Setelan lanjutan</translation>
+<translation id="9100928301185810363">Berfokus pada grup tanpa nama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Untuk melakukan transmisi, beri Chrome akses di: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Jaringan Lokal &gt; Chrome</translation>
 <translation id="9103868373786083162">Tekan untuk kembali ke menu konteks guna melihat histori</translation>
 <translation id="9107096627210171112">T&amp;erjemahkan...</translation>

@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Veldu skrána og ýttu á <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Ekki er hægt að opna skrána}one{Ekki er hægt að opna skrárnar}other{Ekki er hægt að opna skrárnar}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 í viðbót}one{+# í viðbót}other{+# í viðbót}}</translation>
 <translation id="1283126956823499975">Eitthvað fór úrskeiðis við uppsetningu tækisins</translation>
 <translation id="1285992161347843613">Staðsetja síma</translation>
 <translation id="1287002645302686982">Vistað skrifborð með heitið <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
@@ -2191,6 +2192,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6249795363855770621">Tókst ekki að merkja sem lokið. Reyndu aftur þegar nettenging er til staðar.</translation>
 <translation id="625369703868467034">Ástand nets</translation>
 <translation id="6254629735336163724">Læst á lárétt</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 tengill í viðbót}one{+# tengill í viðbót}other{+# tenglar í viðbót}}</translation>
 <translation id="6259776178973198997">Endurnýja upplýsingar um WiFi Direct-eigendur</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Virkjar...</translation>

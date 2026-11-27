@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubí</translation>
 <translation id="1921351128855867012">Avança ràpidament <ph name="NUMBER_OF_SECONDS" /> segons</translation>
 <translation id="1984328900355667246">La reproducció no està disponible</translation>
+<translation id="2009730553732772041">El contingut i l'URL de la pàgina en què et trobes es compartiran amb Google per generar àudio. Pots actualitzar aquesta opció a la configuració en qualsevol moment.</translation>
 <translation id="2019727681730021602">Reproducció estàndard</translation>
 <translation id="2224347680315897176">Estable</translation>
 <translation id="2575502321843437554">No és prou atractiu</translation>
 <translation id="2611765907167846862">Serè</translation>
 <translation id="3023502830214299618">En aquests moments, la reproducció no està disponible per a aquesta pàgina. Torna-ho a provar més tard.</translation>
+<translation id="3431227249425330101">Per continuar, vols permetre que Chrome utilitzi el contingut de la pàgina per a Escolta aquesta pàgina?</translation>
 <translation id="3493899379487634969">Quin problema hi ha hagut?</translation>
 <translation id="3730775656877876887">S'està generant la reproducció amb IA</translation>
 <translation id="3778044272390020426">Menú d'opcions dels comentaris negatius</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Reproductor "Escolta aquesta pàgina"</translation>
 <translation id="7051308646573997571">Corall</translation>
 <translation id="7138678301420049075">Altres</translation>
+<translation id="7161867604252594316">"Escolta aquesta pàgina" està desactivat</translation>
 <translation id="7221920857098237570">Agradable</translation>
 <translation id="7237590978482584900">Despreocupada</translation>
 <translation id="7282547042039404307">Suau</translation>

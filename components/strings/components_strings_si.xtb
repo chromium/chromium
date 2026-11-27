@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">macOS Keychain සමග Google මුරපද කළමනාකරු භාවිත කිරීමට, Chrome යළි දියත් කර Keychain ප්‍රවේශයට ඉඩ දෙන්න. ඔබේ පටිත්ත යළි දියත් කිරීමෙන් පසු නැවත විවෘත වෙයි.</translation>
 <translation id="3728173127485570463">Chrome බ්‍රවුසරයට තවදුරටත් මුරපද ස්වයංව පිරවීමට ඔබේ ඇඟිලි සලකුණ අවශ්‍ය නොවේ</translation>
 <translation id="3729811201279509483">පටිති හස්තීයව එක් කරන්න</translation>
-<translation id="3732370487905329239">ඇස්තමේන්තුගත බෙදා හැරීමේ දිනය</translation>
 <translation id="3736564442532774454">Chrome බ්‍රවුසරය <ph name="APP_NAME" /> හි ඔබේ සංවේදී තතු පිරවීමට උත්සාහ කරයි.</translation>
 <translation id="3738166223076830879">ඔබේ බ්‍රවුසරය ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි.</translation>
 <translation id="3739842843727261045">ලකුණක් ඉහළට ඔබ මෙම ප්‍රතිඵල වලට කැමති බවට ප්‍රතිපෝෂණය ඉදිරිපත් කරයි</translation>
@@ -2742,7 +2741,6 @@
 <translation id="5540224163453853">ඉල්ලා සිටි ලිපිය සොයා ගත නොහැකි විය.</translation>
 <translation id="5541086400771735334">තැපැල් පෙට්ටිය 7</translation>
 <translation id="5541546772353173584">ඊ-තැපෑල එක් කරන්න</translation>
-<translation id="5541735141423273733">පැමිණෙන දිනය</translation>
 <translation id="5543452229212526547">ඔබ ලියන පිටුවේ ඔබේ පෙළ, අන්තර්ගතය සහ URL එක Google වෙත යවනු ලැබේ. AI වැඩි දියුණු කිරීමට ඔබේ අන්තර්ගතය මානව සමාලෝචකයින් විසින් භාවිතා නොකරනු ඇත. ඔබේ සංවිධානය ඕනෑම අවස්ථාවක දී මෙම සැකසීම් වෙනස් කළ හැක.</translation>
 <translation id="5543722831081909240">අංශක 180</translation>
 <translation id="5546252337258681768">උපාංගය අගුළු හරින ලදි</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">කාඩ්පත් තොගය</translation>
 <translation id="6311642842034740437">නම් කරන ලද ස්ථානය</translation>
 <translation id="6312113039770857350">වෙබ් පිටුව ලබා ගත නොහැකිය</translation>
-<translation id="6313189007657889655">ඇණවුම් ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> වෙත ගොනු උඩුගත කිරීම විරාම කර ඇත</translation>
 <translation id="63172326633386613">ප්‍රවේශ්‍යතා සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="6319672966240656136">ඔබ Google හි උසස් ආරක්ෂණ වැඩසටහන යටතේ සිටින බැවින් මෙම අඩවිය අවහිරව පවතිනු ඇත. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>

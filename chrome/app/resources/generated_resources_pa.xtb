@@ -519,6 +519,7 @@
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਬਣਾਇਆ ਗਿਆ।</translation>
 <translation id="1571041387761170095">ਕੋਈ ਵੀ ਕਮਜ਼ੋਰ ਜਾਂ ਮੁੜ-ਵਰਤਿਆ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="1571304935088121812">ਵਰਤੋਂਕਾਰ ਨਾਮ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="1571371559291327711">&amp;ਲੱਭੋ, ਸੰਪਾਦਨ ਕਰੋ ਅਤੇ ਹੋਰ ਟੂਲ</translation>
 <translation id="1571738973904005196">ਇਹ ਟੈਬ ਦੇਖੋ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ਮਹਿਮਾਨ)</translation>
 <translation id="1573127087832371028">ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ</translation>
@@ -966,6 +967,7 @@
 <translation id="204914487372604757">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
 <translation id="2051669996101374349">ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ HTTPS ਦੀ ਵਰਤੋਂ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀ ਪ੍ਰਾਪਤ ਕਰੋ ਜੋ ਇਸਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲ ਨਹੀਂ ਸਕਦੇ ਕਿਉਂਕਿ ਤੁਸੀਂ ਅਡਵਾਂਸ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="2052353138844549871">Gemini Enterprise ਨੂੰ ਗੈਰ-ਪ੍ਰਬੰਧਿਤ ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਵਰਤਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="2052723746739622752">Gemini ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="2061366302742593739">ਦਿਖਾਉਣ ਲਈ ਕੁਝ ਨਹੀਂ</translation>
 <translation id="2061589908388230480">ਜੇ Chromium ਨੂੰ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਜਨਤਕ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਦਾ ਹੈ, ਤਾਂ Google Password Manager ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸੁਵਿਧਾ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ Ctrl + Forward ਨੂੰ ਦਬਾਓ</translation>
 <translation id="2349610121459545414">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2350133097354918058">ਰੀਲੋਡ ਹੋਈ</translation>
+<translation id="2351165193188463938">ਤੁਸੀਂ ਹੁਣ Gemini Enterprise ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="2353682139907904963">ਨਵੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਟੂਲਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰੋ</translation>
@@ -1281,6 +1284,7 @@
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2409709393952490731">ਫ਼ੋਨ ਜਾਂ ਟੈਬਲੈੱਟ ਵਰਤੋ</translation>
 <translation id="2410940059315936967">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਹ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਤੋਂ ਸਮੱਗਰੀ ਨੂੰ ਪਰੋ ਸਕਦੀ ਹੈ, ਉਦਾਹਰਨ ਲਈ, ਚਿੱਤਰ, ਵਿਗਿਆਪਨ ਅਤੇ ਲਿਖਤ। ਇਨ੍ਹਾਂ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸੈੱਟ ਕੀਤੀਆਂ ਗਈਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਕਿਹਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{1 ਟੈਬ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਗਿਆ}one{# ਟੈਬ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਗਿਆ}other{# ਟੈਬਾਂ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome ਵੈੱਬ ਸਟੋਰ<ph name="END_LINK1" /> ਤੋਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨਾਲ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਹੋਰ ਵੀ ਜ਼ਿਆਦਾ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ਲਈ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
@@ -1692,6 +1696,7 @@
 <translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> ਲਈ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="285033512555869047">ਬੰਦ ਹੈ</translation>
 <translation id="2851291081585704741">ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ</translation>
+<translation id="2851527955600412545">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ Chrome ਵਿੱਚ Gemini Enterprise ਲਈ ਆਪਣੀਆਂ ਨੀਤੀਆਂ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਚੈਟ ਇਤਿਹਾਸ ਨਾ ਲਿਜਾਇਆ ਜਾਵੇ।</translation>
 <translation id="285237063405807022">(ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ)</translation>
 <translation id="2853121255651601031">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2855243985454069333">ਸਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਤਿਹਾਸ ਮਿਟਾਉਂਦਾ ਹੈ</translation>
@@ -2641,6 +2646,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੇ ਫੋਲਡਰਾਂ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ</translation>
 <translation id="3810770279996899697">Password Manager ਨੂੰ MacOS Keychain ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="3811424142236602772">Gemini ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋ, ਜਿਸਦਾ ਸੈੱਟਅੱਪ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੰਮ ਲਈ ਕੀਤਾ ਗਿਆ ਹੈ। ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਸਮੇਂ ਟੈਬਾਂ ਨੂੰ ਸੰਦਰਭ ਵਜੋਂ ਸਾਂਝਾ ਕਰ ਕੇ ਸਵਾਲ ਪੁੱਛੋ ਅਤੇ ਆਪਣੀ ਸੰਸਥਾ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਦੇ ਆਧਾਰ 'ਤੇ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="3812525830114410218">ਖ਼ਰਾਬ ਸਰਟੀਫਿਕੇਟ</translation>
 <translation id="3813296892522778813">ਜੇਕਰ ਤੁਹਾਨੂੰ ਉਹ ਚੀਜ਼ ਨਹੀਂ ਮਿਲਦੀ ਜਿਸਨੂੰ ਤੁਸੀਂ ਲੱਭ ਰਹੇ ਹੋ ਤਾਂ <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome ਮਦਦ<ph name="END_LINK_CHROMIUM" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="3815509884387832993">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਟੂਲਬਾਰ ਵਿੱਚ 'AI ਪਲੇਬੈਕ ਚਾਲੂ ਕਰੋ' ਬਟਨ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਇਸ ਪੰਨੇ ਨੂੰ AI ਪਲੇਬੈਕ ਨਾਲ ਪੌਡਕਾਸਟ ਵਾਂਗ ਸੁਣੋ</translation>
@@ -3238,6 +3244,7 @@
 <translation id="4500055235123625757">Gemini ਤੁਹਾਡੇ ਵੱਲੋਂ <ph name="LINK_BEGIN" />ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ<ph name="LINK_END" /> 'ਤੇ ਚਲਾਏ ਗਏ ਵੀਡੀਓ ਜਾਂ ਆਡੀਓ ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4500647907053779331">&amp;ਚੁਣੀ ਹੋਈ ਲਿਖਤ ਦਾ <ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="4502477450742595012">ਟੈਬ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਅਤੇ "ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ" ਨੂੰ ਚੁਣੋ</translation>
+<translation id="450300557121092531">ਡੀਵਾਈਸ ਮੁਤਾਬਕ ਟੈਬਾਂ</translation>
 <translation id="4503362512377701151">ਤੁਸੀਂ ਆਪਣੇ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੇ ਗਏ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਦੇਖ ਰਹੇ ਹੋ, ਤਾਂ ਜੋ ਤੁਹਾਨੂੰ ਆਸਾਨੀ ਨਾਲ ਉੱਥੋਂ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲ ਸਕੇ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3290,6 +3297,7 @@
 <translation id="4562155266774382038">ਸੁਝਾਅ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="4563883094055457792">ਸਪਲਿਟ ਵਿਊ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="456449593072900590">ਬਾਹਰ ਜਾਣ 'ਤੇ ਮਿਟਾਓ</translation>
+<translation id="4564636746145660922">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ, ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4565465014351935093">ਸਿਰਫ਼ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਦਿਖਾਓ</translation>
 <translation id="4566417217121906555">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਮਿਊਟ ਕਰੋ</translation>
@@ -3463,6 +3471,7 @@
 <translation id="475088594373173692">ਪਹਿਲਾ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="4751925628341802838">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣਾ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ <ph name="EMAIL" /> ਨਾਲ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4754590344707355551">ਐਕਸਟੈਂਸ਼ਨਾਂ ਨਾਲ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="4754903312643763797">ਵੱਖ-ਵੱਖ ਡਾਟਾ ਪਰਦੇਦਾਰੀ ਨਿਯਮ ਲਾਗੂ ਹੋ ਸਕਦੇ ਹਨ</translation>
 <translation id="4756130875344525429"><ph name="DEVICE" /> ਤੋਂ ਆਪਣਾ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ <ph name="EMAIL" /> ਨਾਲ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4756378406049221019">ਬੰਦ ਕਰੋ/ਮੁੜ-ਲੋਡ ਕਰੋ</translation>
 <translation id="4756388243121344051">&amp;ਇਤਿਹਾਸ</translation>
@@ -4144,6 +4153,7 @@
 <translation id="5509914365760201064">ਜਾਰੀਕਰਤਾ: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google ਤੋਂ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="5512739112435045339">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ। ਫਿਰ, ਦੁਬਾਰਾ ਤੋਂ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="5513121759801003159">ਤੁਹਾਡਾ ਚੈਟ ਇਤਿਹਾਸ ਟ੍ਰਾਂਸਫ਼ਰ ਨਹੀਂ ਹੋਵੇਗਾ</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157"><ph name="EXTENSION_NAME" /> ਲਈ ਹੋਰ ਵਿਕਲਪ ਦੇਖੋ</translation>
 <translation id="5521078259930077036">ਕੀ ਇਹ ਉਹੀ ਹੋਮ ਪੰਨਾ ਹੈ ਜਿਸਦੀ ਤੁਸੀਂ ਆਸ ਕਰ ਰਹੇ ਸੀ?</translation>
@@ -4952,6 +4962,7 @@
 <translation id="6451861213630784801">ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਹੋ ਗਏ ਹੋ</translation>
 <translation id="6453191633103419909">ਟੈਬ/ਸਕ੍ਰੀਨ ਪ੍ਰੋਜੈਕਸ਼ਨ ਕੁਆਲਿਟੀ</translation>
 <translation id="6453306703004115497"><ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="6454212815056355439">ਡੀਵਾਈਸ 'ਤੇ AI ਖੋਜੋ</translation>
 <translation id="645433497989692531">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਡਾਟਾ ਮੁੜ-ਹਾਸਲ ਕਰਨ ਲਈ, ਇਸ ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6455264371803474013">ਕੁਝ ਖਾਸ ਸਾਈਟਾਂ 'ਤੇ</translation>
 <translation id="6455521402703088376">ਬੰਦ • ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਇਸਦੇ ਵਿਕਾਸਕਾਰ ਵੱਲੋਂ ਅਣਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
@@ -5124,6 +5135,7 @@
 <translation id="663569763553406962">ਦੇਖੋ ਕਿ ਕਿਹੜੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਪੜ੍ਹ ਜਾਂ ਬਦਲ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6636258750460740634">ਇਤਿਹਾਸ</translation>
 <translation id="6636623428211296678">ਹੇਠਾਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ ਜਾਂ ਹੁਣੇ ਪੂਰਾ ਕਰੋ</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">ਫ਼ਿਲਹਾਲ ਹੁਨਰ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੈ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਆਪਣੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="6639554308659482635">SQLite ਮੈਮਰੀ</translation>
 <translation id="6640268266988685324">ਟੈਬ ਖੋਲ੍ਹੋ</translation>
@@ -5257,6 +5269,7 @@
 <translation id="6785779729084003225">Chrome ਵਿੱਚ Gemini ਖੋਲ੍ਹਣ ਲਈ <ph name="FOCUS_TOGGLE_HOTKEY" /> ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="67862343314499040">ਬੈਂਗਣੀ</translation>
 <translation id="6786480815699355166">ਸਿਰਫ਼ ਲਾਈਵ ਸੁਰਖੀਆਂ ਲਈ ਸਮਰਥਿਤ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="6786498102134843646">ਜਵਾਬ <ph name="DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਫ਼ਾਈਲਾਂ ਜਾਂ ਸੇਵਾਵਾਂ 'ਤੇ ਆਧਾਰਿਤ ਨਹੀਂ ਹੋਣਗੇ</translation>
 <translation id="6786747875388722282">ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="6786804673213172567">ਟੀਅਰ 3: ਜ਼ਿਆਦਾ</translation>
 <translation id="6787531944787756058">ਵਰਤੋਂਕਾਰ ਨਾਮ <ph name="USER_EMAIL" /> ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਵੇਰਵੇ ਦੇਖੋ</translation>
@@ -5419,6 +5432,7 @@
 <translation id="6941514251635934269">ਇਸ ਦਸਤਾਵੇਜ਼ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="694168622559714949">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇੱਕ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਭਾਸ਼ਾ ਸੈੱਟ ਕੀਤੀ ਹੈ ਜਿਸਨੂੰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6941953303876950920">Gemini ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="6943803108751887058">ਬੰਦ ਕਰਨ ਲਈ Escape ਦਬਾਓ</translation>
 <translation id="6944854424004126054">window ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="694592694773692225">ਇਸ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ।</translation>
@@ -5744,6 +5758,7 @@
 <translation id="7293774463163321848">ਖੋਜ ਇਤਿਹਾਸ, Gemini ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀਆਂ ਪ੍ਰਬੰਧਨ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਮਿਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="7297228218361240128">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਣ ਵਾਲੇ ਪੰਨਿਆਂ ਤੋਂ Google Wallet ਵਿੱਚ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ</translation>
+<translation id="7297535265731442945">Gemini Enterprise ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="7297726121602187087">ਗੂੜ੍ਹਾ ਹਰਾ</translation>
 <translation id="7298195798382681320">ਸਿਫ਼ਾਰਿਸ਼ ਕੀਤਾ</translation>
 <translation id="7299515639584427954">ਕੀ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕਾਂ ਵਾਸਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
@@ -5765,6 +5780,7 @@
 <translation id="731827437403763009">AI ਸੰਬੰਧੀ ਕਾਢਾਂ</translation>
 <translation id="7319983568955948908">ਸ਼ੇਅਰਿੰਗ ਰੋਕੋ</translation>
 <translation id="7321545336522791733">ਸਰਵਰ ਪਹੁੰਚਯੋਗ ਨਹੀਂ</translation>
+<translation id="7321838786611890851">Gemini ਨਾਲ ਤੁਹਾਡੀਆਂ ਅੰਤਰਕਿਰਿਆਵਾਂ ਵਿੱਚ <ph name="DOMAIN" /> ਵੱਲੋਂ ਸੈੱਟਅੱਪ ਕੀਤੀਆਂ ਸੁਰੱਖਿਆਵਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੀਆਂ ਅਤੇ ਵੱਖ-ਵੱਖ ਡਾਟਾ ਪਰਦੇਦਾਰੀ ਨਿਯਮ ਲਾਗੂ ਹੋ ਸਕਦੇ ਹਨ</translation>
 <translation id="7322515217754205362">ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ</translation>
 <translation id="7324020307732396723">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7325209047678309347">ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
@@ -6061,6 +6077,7 @@
 <translation id="7653354650639364202">{0,plural, =1{ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋ ਬੰਦ ਕਰੋ}one{ਆਇਸੋਲੇਟਿਡ (# ਵਿੰਡੋ) ਬੰਦ ਕਰੋ}other{ਆਇਸੋਲੇਟਿਡ (# ਵਿੰਡੋਆਂ) ਬੰਦ ਕਰੋ}}</translation>
 <translation id="7654941827281939388">ਇਹ ਖਾਤਾ ਪਹਿਲਾਂ ਹੀ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7655411746932645568">ਸਾਈਟਾਂ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="7656674791025857763"><ph name="ASSISTANT_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7657090467145778067">ਥੋੜ੍ਹੀਆਂ ਬਚਤਾਂ</translation>
 <translation id="7657218410916651670">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GOOGLE" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK_GOOGLE" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
@@ -6272,6 +6289,7 @@
 <translation id="7904492297081735975">&amp;ਬੁੱਕਮਾਰਕ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="7907312522152480478">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ ਅਤੇ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7907837847548254634">ਫੋਕਸ ਕੀਤੀ ਗਈ ਵਸਤੂ ਨੂੰ ਤੁਰੰਤ ਉਜਾਗਰ ਕਰ ਕੇ ਦਿਖਾਓ</translation>
+<translation id="7908205867885088429">ਸੈਟਿੰਗਾਂ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ 'ਤੇ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="7908835530772972485">ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਵੇਲੇ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="7909324225945368569">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="7909969815743704077">ਗੁਮਨਾਮ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕੀਤਾ</translation>
@@ -6663,6 +6681,7 @@
 <translation id="8323317289166663449">ਆਪਣੇ ਕੰਪਿਊਟਰ ਅਤੇ ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਸਾਰਾ ਡਾਟਾ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="8323518750352551353">ਕੀ ਵੱਖਰੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕਰਨੀ ਹੈ?</translation>
 <translation id="8323744572398547859">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="8324035203198677529">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ Chrome ਵਿੱਚ Gemini Enterprise ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਤੁਸੀਂ Chrome ਵਿੱਚ Gemini ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਪਰ ਇਹ ਹੁਣ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਨੂੰ ਨਹੀਂ ਲੱਭੇਗਾ ਜਾਂ ਉਸਦਾ ਹਵਾਲਾ ਨਹੀਂ ਦੇਵੇਗਾ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਚੈਟ ਇਤਿਹਾਸ ਨਾ ਲਿਜਾਇਆ ਜਾਵੇ।</translation>
 <translation id="8325413836429495820">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8326478304147373412">PKCS #7, ਪ੍ਰਮਾਣ-ਪੱਤਰ ਚੇਨ</translation>
 <translation id="8327386430364625757">ਗਣਿਤਕ ਫ਼ੌਂਟ</translation>
@@ -6869,6 +6888,7 @@
 <translation id="8551388862522347954">ਲਸੰਸ</translation>
 <translation id="8552102814346875916">"ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਕਿਰਿਆਸ਼ੀਲ ਰੱਖੋ" ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8552947739661397736">ਕਾਰਜ ਸੰਭਾਲੋ, ਫ਼ਿਲਹਾਲ ਕੰਟਰੋਲ Gemini ਕੋਲ ਹੈ</translation>
+<translation id="8555042096950728024">ਮੁੜ-ਵਿਵਸਥਿਤ ਕਰਨ ਲਈ ਘਸੀਟੋ ਜਾਂ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - ਵਿਸਤ੍ਰਿਤ ਸਮੱਗਰੀ ਦਿਖਾਈ ਗਈ</translation>
 <translation id="8557022314818157177">ਤੁਹਾਡੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਕੈਪਚਰ ਹੋਣ ਤੱਕ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="8557100046150195444">ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਪਰਸ਼ ਆਈਡੀ</translation>
@@ -6961,6 +6981,7 @@
 <translation id="8651806635673244884">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਟੈਬ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ ਅਤੇ “ਟੈਬਾਂ ਨੂੰ ਲੇਟਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ” ਨੂੰ ਚੁਣ ਕੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵਾਪਸ ਸਿਖਰ 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="8652400352452647993">ਪੈਕ ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="8654151524613148204">ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵੱਲੋਂ ਹੈਂਡਲ ਕਰਨ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ। ਮਾਫ਼ ਕਰਨਾ।</translation>
+<translation id="8654872240409864765">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ Chrome ਵਿੱਚ Gemini Enterprise ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਹੈ। ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਸਮੇਂ Gemini ਤੋਂ ਕਿਸੇ ਵੀ ਚੀਜ਼ ਬਾਰੇ ਪੁੱਛੋ ਅਤੇ ਆਪਣੀ ਸੰਸਥਾ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਦੇ ਆਧਾਰ 'ਤੇ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="8657393004602556571">ਕੀ ਤੁਸੀਂ ਵਿਚਾਰ ਨੂੰ ਬਰਖਾਸਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="865857184419171576">ਸੁਰਖੀਆਂ ਦਾ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="865936634714975126">ਪੰਨਾ ਲੋਡ ਹੋਣ 'ਤੇ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ URL ਵਿੱਚ ਪੁੱਛਗਿੱਛ ਸੰਬੰਧੀ ਪੈਰਾਮੀਟਰ ਸ਼ਾਮਲ ਕਰੋ। ਉਦਾਹਰਨ: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7124,6 +7145,7 @@
 <translation id="8813937837706331325">ਦਰਮਿਆਨੀਆਂ ਬਚਤਾਂ</translation>
 <translation id="8815742860876889867">ਲਿੰਕ ਅਲੱਗ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="881799181680267069">ਹੋਰਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
+<translation id="8820301999480837183"><ph name="GROUP_NAME" /> ਗਰੁੱਪ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8820817407110198400">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="8821206216942230957">ਤੁਹਾਡੇ ਖਾਤੇ ਕੋਲ Chrome ਵਿੱਚ Gemini ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੈ</translation>
 <translation id="8823514049557262177">ਕਾਪੀ ਲਿੰਕ ਲਿ&amp;ਖਤ</translation>
@@ -7163,6 +7185,7 @@
 <translation id="8863753581171631212">ਨਵੀਂ <ph name="APP" /> ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8864104359314908853">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="8865924457197342642">Gemini Enterprise ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="8866424952450451412">ਇਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਆਪਣੇ ਵਿਉਂਤਬੱਧ ਕਾਰਜ-ਪ੍ਰਵਾਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8867102760244540173">ਖੋਜ ਟੈਬਾਂ...</translation>
 <translation id="8867568208303837180">ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -7375,6 +7398,7 @@
 <translation id="9096776523567481218">ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9099383880226822604">ਬਰਸਾਤੀ ਜੰਗਲ</translation>
 <translation id="9100765901046053179">ਉੱਨਤ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="9100928301185810363">ਬੇਨਾਮ ਗਰੁੱਪ - <ph name="GROUP_CONTENTS" /> 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9103341231213089378">ਕਾਸਟ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਦਿਓ: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; ਸਥਾਨਕ ਨੈੱਟਵਰਕ &gt; Chrome</translation>
 <translation id="9103868373786083162">ਇਤਿਹਾਸ ਦੇਖਣ ਲਈ ਪਿੱਛੇ ਜਾਓ, ਸੰਦਰਭੀ ਮੀਨੂ ਦਬਾਓ</translation>
 <translation id="9107096627210171112">ਅ&amp;ਨੁਵਾਦ...</translation>

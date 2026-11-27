@@ -1638,7 +1638,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3727850735097852673">I ddefnyddio Rheolwr Cyfrineiriau Google gyda macOS Keychain, ail-lansiwch Chrome a chaniatáu mynediad Keychain. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="3728173127485570463">Ni fydd angen eich olion bysedd ar borwr Chrome mwyach i lenwi cyfrineiriau'n awtomatig</translation>
 <translation id="3729811201279509483">Ychwanegu tabiau yn bwrpasol</translation>
-<translation id="3732370487905329239">Amcangyfrif o'r dyddiad dosbarthu</translation>
 <translation id="3736564442532774454">Mae porwr Chrome yn ceisio llenwi'ch gwybodaeth sensitif ar <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Rheolir eich porwr gan eich gweinyddwr</translation>
 <translation id="3739842843727261045">Mae bawd i fyny yn cyflwyno adborth eich bod yn hoffi y canlyniadau hyn</translation>
@@ -2742,7 +2741,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5540224163453853">Methu â dod o hyd i'r erthygl y gofynnwyd amdani.</translation>
 <translation id="5541086400771735334">Blwch negeseuon 7</translation>
 <translation id="5541546772353173584">Ychwanegu E-bost</translation>
-<translation id="5541735141423273733">Dyddiad cyrraedd</translation>
 <translation id="5543452229212526547">Bydd eich testun a chynnwys ac URL y dudalen rydych chi'n ysgrifennu arni yn cael eu hanfon at Google. Ni fydd eich cynnwys yn cael ei ddefnyddio gan adolygwyr dynol i wella AI. Gall eich sefydliad newid y gosodiadau hyn unrhyw bryd.</translation>
 <translation id="5543722831081909240">180 gradd</translation>
 <translation id="5546252337258681768">Dyfais wedi'i datgloi</translation>
@@ -3195,7 +3193,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6311410654831092784">Stoc Cerdyn</translation>
 <translation id="6311642842034740437">Lleoliad sydd wedi'i enwi</translation>
 <translation id="6312113039770857350">Nid yw'r dudalen we ar gael</translation>
-<translation id="6313189007657889655">Cyfeirnod yr archeb</translation>
 <translation id="6316110367871394043">Mae uwchlwytho ffeil i <ph name="CLOUD_PROVIDER" /> wedi'i seibio</translation>
 <translation id="63172326633386613">Rheoli gosodiadau hygyrchedd</translation>
 <translation id="6319672966240656136">Bydd y wefan hon yn parhau i fod wedi'i rhwystro oherwydd eich bod o dan Raglen Diogelwch Uwch Google. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>

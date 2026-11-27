@@ -1638,7 +1638,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3727850735097852673">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="3728173127485570463">Chrome browser will no longer require your fingerprint to autofill passwords</translation>
 <translation id="3729811201279509483">Manually add tabs</translation>
-<translation id="3732370487905329239">Estimated delivery date</translation>
 <translation id="3736564442532774454">Chrome browser is trying to fill your sensitive info on <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Your browser is managed by your administrator.</translation>
 <translation id="3739842843727261045">Thumbs up submits feedback that you like these results</translation>
@@ -2742,7 +2741,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5540224163453853">Could not find the requested article.</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Add Email</translation>
-<translation id="5541735141423273733">Arrival date</translation>
 <translation id="5543452229212526547">Your text and the content and URL of the page that you're writing on will be sent to Google. Your content will not be used by human reviewers to improve AI. Your organisation may change these settings at any time.</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5546252337258681768">Device unlocked</translation>
@@ -3195,7 +3193,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6311410654831092784">Card stock</translation>
 <translation id="6311642842034740437">Named location</translation>
 <translation id="6312113039770857350">Web page not available</translation>
-<translation id="6313189007657889655">Order ID</translation>
 <translation id="6316110367871394043">File upload to <ph name="CLOUD_PROVIDER" /> has been paused</translation>
 <translation id="63172326633386613">Manage accessibility settings</translation>
 <translation id="6319672966240656136">This site will remain blocked because you are under Google's Advanced Protection Programme. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>

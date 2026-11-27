@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chrome ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="3728173127485570463">‏דפדפן Chrome לא ידרוש יותר את טביעת האצבע שלך כדי למלא אוטומטית סיסמאות</translation>
 <translation id="3729811201279509483">הוספה ידנית של כרטיסיות</translation>
-<translation id="3732370487905329239">מועד מסירה משוער</translation>
 <translation id="3736564442532774454">‏דפדפן Chrome מנסה למלא את המידע הרגיש שלך ב-<ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="3739842843727261045">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה</translation>
@@ -2747,7 +2746,6 @@ Del</translation>
 <translation id="5540224163453853">לא ניתן היה למצוא את הפריט המבוקש.</translation>
 <translation id="5541086400771735334">תיבת דואר 7</translation>
 <translation id="5541546772353173584">הוספת כתובת אימייל</translation>
-<translation id="5541735141423273733">תאריך ההגעה</translation>
 <translation id="5543452229212526547">‏הטקסט, התוכן וכתובת ה-URL של הדף שבו מתבצעת הכתיבה יישלחו אל Google. בודקים אנושיים לא ישתמשו בתוכן שלך כדי לשפר את ה-AI. הארגון שלך יכול לשנות את ההגדרות האלה בכל שלב.</translation>
 <translation id="5543722831081909240">180 מעלות</translation>
 <translation id="5546252337258681768">נעילת המכשיר בוטלה</translation>
@@ -3200,7 +3198,6 @@ Del</translation>
 <translation id="6311410654831092784">Card Stock</translation>
 <translation id="6311642842034740437">מיקום עם שם</translation>
 <translation id="6312113039770857350">דף האינטרנט אינו זמין</translation>
-<translation id="6313189007657889655">מזהה הזמנה</translation>
 <translation id="6316110367871394043">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> הושהתה</translation>
 <translation id="63172326633386613">ניהול ההגדרות בנושא נגישות</translation>
 <translation id="6319672966240656136">‏האתר הזה יישאר חסום כי החשבון שלך פועל במסגרת תוכנית ההגנה המתקדמת של Google. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>

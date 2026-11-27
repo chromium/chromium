@@ -75,6 +75,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1640672724030957280">Sækir...</translation>
 <translation id="1651617469580841801">Þegar þú notar Google-linsu verða titill síðu, vefslóð og innihald, að meðtöldum PDF-skjölum, send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Opna tengil í h&amp;uliðsglugga í Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Þú deilir þessum flipa með Google-leit</translation>
 <translation id="1682634494516646069">Google Chrome getur ekki lesið eða skrifað í gagnamöppu sína:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3380249972812870825">Ýttu á <ph name="GLOBAL_HOTKEY" /> til að opna Gemini í Chrome</translation>
 <translation id="3392127217442962664">Chrome bætti við gervigreind sem keyrir í tækinu þínu. Vefsvæði og Chrome geta notað hana fyrir eiginleika á borð við:</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
+<translation id="3404531968986217414">Byrja nýjan þráð með Google-leit</translation>
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google-forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3438681572027105609">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum og fleiru í öllum tækjunum þínum</translation>
 <translation id="3450887623636316740">Þessi skrá kann að vera hættuleg<ph name="LINE_BREAK" />Chrome getur athugað niðurhalið fyrir þig ef þú gefur upp aðgangsorðið. Upplýsingar um skrána verða sendar í örugga vefskoðun Google en efni og aðgangsorð hennar verða eftir í tækinu þínu.</translation>
@@ -400,6 +402,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5003967926796347400">Smelltu á „Google-aðgangsorðastjórnun“</translation>
 <translation id="5043786843026425788">Nánar um leit með Google-linsu í Chrome</translation>
 <translation id="504867494566807945">Opnaðu tengla úr hvaða forriti sem er í Chrome og festu vafrann þar að auki á forritastikuna þína til að hafa greiðan aðgang að honum</translation>
+<translation id="507983337152787026">Hefja nýjan þráð með Google-leit</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. Huliðsgluggi eða einangraður gluggi er opinn. Hann opnast ekki aftur að endurræsingu lokinni.}one{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. # gluggi (huliðsgluggar og einangraðir gluggar) er opinn á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}other{Ítarleg vernd krefst þess að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggar og einangraðir gluggar eru opnir á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}}</translation>
 <translation id="5105120510934353742">Til að halda áfram að fá uppfærslur fyrir Google Chrome þarftu macOS 13 eða nýrri útgáfu. Þessi tölva notar macOS 12.</translation>
 <translation id="5114340746415930644">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="USER_EMAIL" /></translation>
@@ -426,6 +429,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="524751727772074981">Spyrðu að hverju sem er, hvar sem er, með Gemini í Chrome</translation>
 <translation id="5247617065091903691">Þú getur fest hliðarglugga Google-leitar til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="5271833978500241046">Notaðu hana samhliða öðrum Gemini-eiginleikum í Chrome</translation>
+<translation id="528611299569739095">Þessi stýrði vafri getur notað Gemini sem <ph name="DOMAIN" /> setti upp fyrir vinnu. Hann getur fundið upplýsingar og veitt svör sem byggð eru á skrám og þjónustum fyrirtækisins. Þú þarft að endurræsa Chrome til að skipta.</translation>
 <translation id="5320351714793324716">Ef þú leyfir fótspor kann Chrome að nota þau við forhleðslu</translation>
 <translation id="5321325624576443340">Google-linsa er ekki tiltæk. Reyndu aftur síðar.</translation>
 <translation id="5346389065299425353">Dýpkaðu leitina þína með því að bæta við mörgum flipum, skrám og verkfærum</translation>
@@ -450,7 +454,9 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5600352656975192682">Festu Chrome við forritastikuna til að hafa það ávallt við höndina</translation>
 <translation id="5602351063754773347">Chrome mælir með að þú fjarlægir hana. <ph name="BEGIN_LINK" />Nánar um studdar viðbætur<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Skipta yfir í Gemini Enterprise sem <ph name="DOMAIN" /> stjórnar</translation>
 <translation id="5610759359710387751">Gerðu Chrome að þínu</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Hætta að deila flipa með Google-leit}one{Hætta að deila # flipa með Google-leit}other{Hætta að deila # flipum með Google-leit}}</translation>
 <translation id="5649156266046089790">Þú getur aðskilið allt efnið þitt á Chrome með Chrome-prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> gæti verið skaðleg skrá og Chrome útilokaði hana.</translation>
 <translation id="566568153320186256">Chromium sparar rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
@@ -544,6 +550,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
 <translation id="6426623519983252346">Þú munt sjá ábendingu um að prófa <ph name="FEATURE_NAME" /> næst þegar þú opnar Chrome iOS.</translation>
+<translation id="6431496891888891615">Þú getur skipt yfir í Gemini sem var upphaflega tengt við Google-reikninginn þinn og er ekki stýrt af <ph name="DOMAIN" />. Þú þarft að endurræsa Chrome til að skipta.</translation>
 <translation id="6434035853014503219">Takk fyrir að velja Chrome sem sjálfgefinn vafra!</translation>
 <translation id="6438015621983209660">Framlengdu Enn öruggari vefskoðun með Chrome í símanum þínum</translation>
 <translation id="6442774133615368941">Notaðu myndavélina þína í Chrome iOS-forritinu til að versla, þýða og bera kennsl á það sem þú sérð</translation>
@@ -580,6 +587,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6712881677154121168">Niðurhalsvilla: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Láttu Chrome vinna hraðar</translation>
 <translation id="6734827584173583205">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til viðbótar.</translation>
+<translation id="6737759643107005803">Skipta aftur yfir í Gemini sem er ekki stýrt af <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Hunsa virka leit í þessum flipa</translation>
 <translation id="6750954913813541382">Til að lagfæra stafsetningarvillur sendir Chrome textann sem þú skrifar í vafranum til Google</translation>
 <translation id="6760235774835597023">Styttir hleðslutíma vefsvæða með V8-vél Chrome en gerir Chrome örlítið berskjaldaðri gagnvart árásum. Kveikt er á þessari stillingu.</translation>
@@ -658,6 +666,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7481213027396403996">Njóttu hámarksöryggis Chrome</translation>
 <translation id="749228101751499733">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome. <ph name="SHORTCUT" /> getur breytt stillingum þínum fyrir Google-þjónustur.</translation>
 <translation id="7496017508659652909">Chrome forhleður síðum sem tryggir þér hraða vefskoðun og leit. <ph name="BEGIN_LINK" />Nánar um að forhlaða síðum<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Þú deilir þessum flipa með Google-leit</translation>
 <translation id="7514258452813684157">Uppfærsluþjónusta Google</translation>
 <translation id="7515191208480168435">Þú getur fest Google-linsu til að auðvelda þér aðgang að henni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -744,6 +753,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8286862437124483331">Google Chrome er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8291415872436043161">Sækja Chrome</translation>
 <translation id="829923460755755423">Bæta flýtileið við Google-aðgangsorðastjórnun</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Deila flipa með Google-leit}one{Deila # flipa með Google-leit}other{Deila # flipum með Google-leit}}</translation>
 <translation id="8313851650939857356">Villa í ræsingu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Þetta tókst! Nú geturðu spurt spurninga á auðveldan hátt á meðan þú vafrar með Google-leitarsvæðinu</translation>
 <translation id="8336463659890584292">Þegar vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðunni sinni notar Chrome Google-þjóna. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig en Google lærir að þekkja hvaða vefsvæðum er forhlaðið.</translation>
@@ -798,6 +808,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8712767363896337380">Næstum því uppfært! Endurræstu Chrome til að ljúka við uppfærsluna.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Skrá út af Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Deila flipa með Google-leit}one{Deila # flipa með Google-leit}other{Deila # flipum með Google-leit}}</translation>
 <translation id="873133009373065397">Google Chrome getur ekki ákvarðað eða stillt sjálfgefinn vafra</translation>
 <translation id="8747073452963259673">neðsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, neðst <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome endurheimtir minni úr óvirkum flipum. Þetta veitir virkum flipum og öðrum forritum meiri tölvugögn og heldur Chrome hröðum. Óvirkir flipar virkjast aftur sjálfkrafa þegar þú opnar þá. <ph name="BEGIN_LINK" />Nánar um minnissparnað<ph name="END_LINK" /></translation>
@@ -849,6 +860,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-aðild.</translation>
 <translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="93760716455950538">Endurræsa ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Hætta að deila flipa með Google-leit}one{Hætta að deila # flipa með Google-leit}other{Hætta að deila # flipum með Google-leit}}</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> getur skipt á milli Chrome prófíla</translation>

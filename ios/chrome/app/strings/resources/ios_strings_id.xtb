@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Fitur yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1622717322707146952">Pilih “Tambahkan ke Google Kalender“ atau “Tambahkan ke Apple Calendar“.</translation>
 <translation id="1629162218487290695">Verifikasi diri Anda…</translation>
+<translation id="1633084385573994059">Jangan gunakan situs ini</translation>
 <translation id="1634520742547161889">BB/TT</translation>
 <translation id="1636234353664774105">Dapatkan rute ke tujuan dengan panduan belokan demi belokan menggunakan fitur navigasi</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Jangan izinkan situs menggunakan mikrofon Anda</translation>
 <translation id="2104436223719117661">Penelusuran trending</translation>
 <translation id="21133533946938348">Sematkan Tab</translation>
+<translation id="2113761902638026426">Izinkan Gemini membuka <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Jaga privasi penjelajahan Anda dengan beralih ke mode Samaran</translation>
 <translation id="2119636449201577317">Buka di…</translation>
 <translation id="2119962645034852864">Beberapa layanan tidak tersedia untuk akun Anda</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">Hasil edit disimpan</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akun ini dikelola.</translation>
 <translation id="3365529507898144230">Simpan di Foto</translation>
+<translation id="3371168305258344914">Gemini akan melakukan tindakan di situs yang mungkin memiliki info sensitif Anda</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
 <translation id="3378214228000661758">Buat kunci sandi untuk</translation>
@@ -1510,6 +1513,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="567881659373499783">Versi <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Untuk menggunakan dan menyimpan sandi di Akun Google Anda, verifikasi diri Anda.</translation>
 <translation id="5684761169742812828">Sandi ini terekspos dalam pelanggaran data di internet. Jika Anda tidak memiliki waktu untuk mengubahnya sekarang, Google merekomendasikan untuk menyimpan peringatan ini sebagai pengingat untuk Anda.</translation>
+<translation id="5691020463738411542">Sinkronkan preferensi Safe Browsing di seluruh perangkat</translation>
 <translation id="5694848685995373177">Disimpan di Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Anda dapat mengubah tampilan situs default ke mode desktop di setelan, lalu setelan konten</translation>
 <translation id="5702108177581350218">Jika Anda membagikan salinan nama pengguna dan sandi, anggota keluarga Anda dapat mengisinya menggunakan Pengelola Sandi Google.</translation>
@@ -1588,6 +1592,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5948605885471592910">Lihat dan kelola semua tab dan grup yang terbuka</translation>
 <translation id="5952641243319721872">Yakin ingin menghapus pilihan?</translation>
 <translation id="5956112131836209882">Tab dari grup tab. <ph name="TAB_INDEX_IN_GROUP" /> dari <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Mulai tugas</translation>
 <translation id="595769230373966252">Telusuri dengan <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Buka link di sini lain kali</translation>
 <translation id="5963939892571022323">Link ke sorotan tidak dapat dibuat.</translation>
@@ -1808,6 +1813,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="656065428026159829">Lihat lebih banyak</translation>
 <translation id="6565899972286925956">Buat apa saja</translation>
 <translation id="6571070086367343653">Edit kartu kredit</translation>
+<translation id="6571502147204686607">Lindungi diri Anda dari situs yang tidak aman</translation>
 <translation id="6574092468346088891">Aktifkan notifikasi untuk Pemeriksaan Keamanan</translation>
 <translation id="6579867704846662339">Anda dapat memilih untuk membuka URL masuk dari aplikasi lain dalam mode Samaran.</translation>
 <translation id="6585618849026997638">Anda dapat kembali ke halaman yang penting bagi Anda dengan menambahkan bookmark</translation>
@@ -2248,6 +2254,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7921559948846049514">Pilih tema, warna, atau hal lainnya untuk latar belakang Anda</translation>
 <translation id="792357691529995513">Tidak ditemukan masalah</translation>
 <translation id="7925108652071887026">Mengisi otomatis data</translation>
+<translation id="7926290435065552539">Jaga keamanan sandi Anda</translation>
 <translation id="7926975587469166629">Nama panggilan kartu</translation>
 <translation id="792762900715361006">Ambil Foto atau Video</translation>
 <translation id="7927711904086083099">Tidak dipilih</translation>
@@ -2666,6 +2673,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="9144230693397287797">Dapatkan info terbaru untuk pengingat yang Anda tetapkan dan tab dari perangkat lain</translation>
 <translation id="914781932147356857">Tandai semua…</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
+<translation id="914964947703922647">Tinjau tugas</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9152637745605628097">Pilih dari tema, warna, atau upload gambar</translation>
 <translation id="9153159728062222866">Tak Perlu Lagi Salin &amp; Tempel</translation>

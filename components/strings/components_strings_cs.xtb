@@ -1634,7 +1634,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3727850735097852673">Pokud Správce hesel Google chcete používat s Klíčenkou systému macOS, restartujte Chrome a povolte přístup ke Klíčence. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="3728173127485570463">Prohlížeč Chrome už nebude k automatickému vyplňování hesel vyžadovat váš otisk prstu</translation>
 <translation id="3729811201279509483">Ruční přidání karet</translation>
-<translation id="3732370487905329239">Odhadované datum doručení</translation>
 <translation id="3736564442532774454">Prohlížeč Chrome se pokouší vyplnit vaše citlivé údaje na webu <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Váš prohlížeč spravuje administrátor.</translation>
 <translation id="3739842843727261045">Palec nahoru odešle zpětnou vazbu, že se vám tyto výsledky líbí</translation>
@@ -2738,7 +2737,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5540224163453853">Požadovaný článek nebyl nalezen.</translation>
 <translation id="5541086400771735334">Schránka 7</translation>
 <translation id="5541546772353173584">Přidání e-mailu</translation>
-<translation id="5541735141423273733">Datum příletu</translation>
 <translation id="5543452229212526547">Váš text a obsah a adresa URL stránky, na které píšete, se odešlou do Googlu. Váš obsah nebudou používat kontroloři k vylepšování umělé inteligence. Vaše organizace může tato nastavení kdykoli změnit.</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5546252337258681768">Zařízení bylo odemknuto</translation>
@@ -3190,7 +3188,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6311410654831092784">Tvrdý papír</translation>
 <translation id="6311642842034740437">Pojmenované místo</translation>
 <translation id="6312113039770857350">Webová stránka není k dispozici</translation>
-<translation id="6313189007657889655">ID objednávky</translation>
 <translation id="6316110367871394043">Nahrávání souboru do úložiště <ph name="CLOUD_PROVIDER" /> bylo pozastaveno</translation>
 <translation id="63172326633386613">Správa nastavení přístupnosti</translation>
 <translation id="6319672966240656136">Tento web zůstane zablokován, protože využíváte program pokročilé ochrany od Googlu. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>

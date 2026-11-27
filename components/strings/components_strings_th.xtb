@@ -1637,7 +1637,6 @@
 <translation id="3727850735097852673">หากต้องการใช้เครื่องมือจัดการรหัสผ่านบน Google กับ Keychain ของ macOS ให้เปิด Chrome อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="3728173127485570463">เบราว์เซอร์ Chrome จะไม่ต้องใช้ลายนิ้วมือในการป้อนรหัสผ่านอัตโนมัติอีกต่อไป</translation>
 <translation id="3729811201279509483">เพิ่มแท็บด้วยตนเอง</translation>
-<translation id="3732370487905329239">วันที่จัดส่งโดยประมาณ</translation>
 <translation id="3736564442532774454">เบราว์เซอร์ Chrome กำลังพยายามป้อนข้อมูลที่ละเอียดอ่อนของคุณใน <ph name="APP_NAME" /></translation>
 <translation id="3738166223076830879">เบราว์เซอร์ของคุณจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="3739842843727261045">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบผลการค้นหาเหล่านี้</translation>
@@ -2741,7 +2740,6 @@
 <translation id="5540224163453853">ไม่พบบทความที่ขอ</translation>
 <translation id="5541086400771735334">กล่องจดหมาย 7</translation>
 <translation id="5541546772353173584">เพิ่มอีเมล</translation>
-<translation id="5541735141423273733">วันที่มาถึง</translation>
 <translation id="5543452229212526547">ระบบจะส่งข้อความ เนื้อหา และ URL ของหน้าที่คุณเขียนไปยัง Google เจ้าหน้าที่ตรวจสอบจะไม่ใช้เนื้อหาของคุณเพื่อปรับปรุง AI องค์กรของคุณอาจเปลี่ยนการตั้งค่าเหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="5543722831081909240">180 องศา</translation>
 <translation id="5546252337258681768">ปลดล็อกอุปกรณ์แล้ว</translation>
@@ -3194,7 +3192,6 @@
 <translation id="6311410654831092784">แผ่นไม้บางๆ</translation>
 <translation id="6311642842034740437">สถานที่ที่มีชื่อ</translation>
 <translation id="6312113039770857350">หน้าเว็บไม่พร้อมใช้งาน</translation>
-<translation id="6313189007657889655">รหัสคำสั่งซื้อ</translation>
 <translation id="6316110367871394043">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> หยุดชั่วคราว</translation>
 <translation id="63172326633386613">จัดการการตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="6319672966240656136">เว็บไซต์นี้จะยังคงถูกบล็อกเนื่องจากคุณอยู่ในโปรแกรมการปกป้องขั้นสูงของ Google <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>

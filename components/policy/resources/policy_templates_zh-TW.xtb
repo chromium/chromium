@@ -7687,15 +7687,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
       此處的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 可以指確切版本 (例如「13305.0.0」)，也可以指版本前置字元 (例如「13305」)。
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> 和 <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> 是選用值，以天數為單位。這兩個期間的預設值是 0 天，表示無警告期。
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 是選用屬性，預設值為 False。</translation>
-<translation id="5876812185674131521">禁止手動刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-這項政策旨在防止使用者從網站設定頁面手動清除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie，之後擅自存取 <ph name="YOUTUBE_PRODUCT_NAME" />。
-
-如果將這項政策設為啟用，使用者就無法手動刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-如果設為停用或未設定，就能正常刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-注意：這項政策只會禁止使用者透過網站設定介面手動刪除，但不會阻止 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 或 <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> 政策自動刪除資料。此外，如果啟用 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> 政策，使用者仍可透過「清除瀏覽資料」對話方塊清除所有 Cookie。</translation>
 <translation id="5879014913445067283">控制能否透過 <ph name="NETBIOS_NAME" /> 搜尋網路檔案共用區</translation>
 <translation id="588135807064822874">啟用「輕觸搜尋」功能</translation>
 <translation id="5882345429632338713">在啟動替代瀏覽器前的延遲時間 (以毫秒為單位)</translation>
@@ -10022,13 +10013,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
           如果設定這項政策，使用者將無法變更或覆寫設定。
 
           如果未設定這項政策，系統預設會停用色彩校正功能，但使用者隨時可以啟用。</translation>
-<translation id="7324627441366994249">你可以設定網址模式清單，指定哪些網站不允許 Gemini 應用程式整合功能直接在網頁執行動作。
-
-如果網址既不符合許可清單也不符合封鎖清單，則會使用 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />。
-
-如果網址同時符合許可清單和封鎖清單，系統會允許存取該網址。
-
-如要進一步瞭解有效的模式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="7325801934761922681">禁止 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="7326394567531622570">與 Wipe (值 2) 類似，但會嘗試保留登入憑證，因此使用者不必重新登入。</translation>
 <translation id="7331098674887251788">允許 Gemini 應用程式整合功能直接在網頁執行動作</translation>
@@ -11276,13 +11260,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 如果設為 False，使用者不必連上受管理的網路，也能加入課程。</translation>
 <translation id="8183108371184777472">禁止啟動瀏覽器視窗</translation>
 <translation id="8185312100223853315">設定檔標籤</translation>
-<translation id="8186370194423312090">你可以設定網址模式清單，指定 Gemini 應用程式整合功能可直接在哪些網站的網頁執行動作。
-
-如果網址既不符合許可清單也不符合封鎖清單，則會使用 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />。
-
-如果網址同時符合許可清單和封鎖清單，系統會允許存取該網址。
-
-如要進一步瞭解有效的模式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="8186911565834244165">允許使用者意見回饋功能</translation>
 <translation id="8190271041226151932">你可以透過這項設定允許整合 Gemini 應用程式。
 

@@ -519,6 +519,7 @@
 <translation id="1570990174567554976">Kirjanmerkkikansio "<ph name="BOOKMARK_TITLE" />" luotu.</translation>
 <translation id="1571041387761170095">Ei heikkoja tai uudelleenkäytettyjä salasanoja</translation>
 <translation id="1571304935088121812">Kopioi käyttäjänimi</translation>
+<translation id="1571371559291327711">&amp;Etsi, muokkaa ja muita työkaluja</translation>
 <translation id="1571738973904005196">Näytä välilehti <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (vieras)</translation>
 <translation id="1573127087832371028">Kuvaile ongelmaa</translation>
@@ -965,6 +966,7 @@
 <translation id="204914487372604757">Luo pikakuvake</translation>
 <translation id="2050339315714019657">Pysty</translation>
 <translation id="2051669996101374349">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä. Tätä asetusta ei voi muuttaa, koska Lisäsuojaus on käytössä.</translation>
+<translation id="2052353138844549871">Gemini Enterprisen käyttöä hallitsemattomalla profiililla ei ehkä suositella</translation>
 <translation id="2052723746739622752">Irrota Gemini</translation>
 <translation id="2061366302742593739">Ei näytettäviä tietoja</translation>
 <translation id="2061589908388230480">Jos Chromium löytää yhden salasanoistasi julkisesta tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena. <ph name="BEGIN_LINK" />Lue lisää automaattisesta salasanan vaihdosta<ph name="END_LINK" /></translation>
@@ -1233,6 +1235,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Lupaa pyydetty, vastaa painamalla Ctrl + seuraava</translation>
 <translation id="2349610121459545414">Salli sijaintitietojen käyttö tälle sivustolle myös jatkossa</translation>
 <translation id="2350133097354918058">Päivitetty</translation>
+<translation id="2351165193188463938">Selaat nyt Gemini Enterprisella</translation>
 <translation id="2352662711729498748">&lt; 1 Mt</translation>
 <translation id="2353297238722298836">Kamera ja mikrofoni sallittu</translation>
 <translation id="2353682139907904963">Kiinnitä uudet laajennukset yläpalkkiin</translation>
@@ -1280,6 +1283,7 @@
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2409709393952490731">Käytä puhelinta tai tablettia</translation>
 <translation id="2410940059315936967">Avaamasi sivusto voi upottaa muiden sivustojen sisältöä, esim. kuvia, mainoksia ja tekstiä. Muiden sivustojen asettamia evästeitä kutsutaan kolmannen osapuolen evästeiksi.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Tarkennetaan yhteen välilehteen}other{Tarkennetaan # välilehteen}}</translation>
 <translation id="2413009156320833859">Yksilöi selaintasi entistä enemmän <ph name="BEGIN_LINK1" />Chrome Web Storen<ph name="END_LINK1" /> laajennuksilla</translation>
 <translation id="2414159296888870200">Jatka selaamista: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tumma</translation>
@@ -1689,6 +1693,7 @@
 <translation id="2849926636739429924">Lisää vaihtoehtoja: <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Suljettu</translation>
 <translation id="2851291081585704741">Olet offline-tilassa</translation>
+<translation id="2851527955600412545">Organisaatio on päivittänyt käytännöt Gemini Enterpriselle Chromessa. Keskusteluhistoria ei ehkä siirry.</translation>
 <translation id="285237063405807022">(ladataan)</translation>
 <translation id="2853121255651601031">Salasana tallennettu</translation>
 <translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
@@ -2638,6 +2643,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" /> saa nähdä seuraavien kansioiden tiedostot</translation>
 <translation id="3810770279996899697">Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
+<translation id="3811424142236602772">Selaa Geminillä, jonka <ph name="DOMAIN" /> on määrittänyt työkäyttöön. Esitä kysymyksiä selatessasi jakamalla välilehtiä kontekstina, niin saat vastauksia, jotka perustuvat organisaation tiedostoihin ja palveluihin.</translation>
 <translation id="3812525830114410218">Virheellinen varmenne</translation>
 <translation id="3813296892522778813">Jos et löydä etsimääsi, siirry <ph name="BEGIN_LINK_CHROMIUM" />Google Chromen ohjeisiin<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3815509884387832993">Kuuntele tämä sivu kuin podcastia tekoälytoistolla käyttämällä Laita tekoälytoisto päälle ‐painiketta lukutilan työkalupalkissa</translation>
@@ -3232,6 +3238,7 @@
 <translation id="4500055235123625757">Gemini voi vastata kysymyksiin <ph name="LINK_BEGIN" />joillakin verkkosivustoilla<ph name="LINK_END" /> toistamastasi videosta tai audiosta.</translation>
 <translation id="4500647907053779331">&amp;Käännä valinta kielelle <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Klikkaa välilehteä kakkospainikkeella ja valitse Lisää välilehti uuteen ryhmään</translation>
+<translation id="450300557121092531">Välilehdet laitteen mukaan</translation>
 <translation id="4503362512377701151">Näet äskettäin käyttämäsi välilehtiryhmät, jotta voit helposti jatkaa siitä, mihin jäit.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3284,6 +3291,7 @@
 <translation id="4562155266774382038">Hylkää ehdotus</translation>
 <translation id="4563883094055457792">Palauta jaettu näkymä</translation>
 <translation id="456449593072900590">Poista suljettaessa</translation>
+<translation id="4564636746145660922">Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4565465014351935093">Näytä vain Uusi välilehti ‑sivulla</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
@@ -3457,6 +3465,7 @@
 <translation id="475088594373173692">Ensimmäinen käyttäjä</translation>
 <translation id="4751925628341802838">Jos haluat nähdä historian muilta laitteilta, kirjaudu sisään ja synkronoi historia ja välilehdet tilille <ph name="EMAIL" />. Voit myös käyttää laajennuksia ja muita ominaisuuksia kaikilla laitteillasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4754590344707355551">Selaimen tehostaminen laajennuksilla</translation>
+<translation id="4754903312643763797">Muita datan yksityisyyttä koskevia ehtoja saatetaan soveltaa</translation>
 <translation id="4756130875344525429">Jos haluat nähdä historian (<ph name="DEVICE" />), kirjaudu sisään ja synkronoi historia ja välilehdet tilille <ph name="EMAIL" />. Voit myös käyttää tallennettuja tietoja ja muuta kaikilla laitteillasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4756378406049221019">Pysäytä/päivitä</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
@@ -4139,6 +4148,7 @@
 <translation id="5509914365760201064">Myöntäjä: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Käytä Googlen kuvaselityksiä</translation>
 <translation id="5512739112435045339">Vapauta tallennustilaa laitteeltasi. Yritä sitten latausta uudelleen</translation>
+<translation id="5513121759801003159">Keskusteluhistoria ei siirry</translation>
 <translation id="5514315914873062345">Sarkain</translation>
 <translation id="5515048886012998157">Näytä lisää vaihtoehtoja: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Onko tämä haluamasi etusivu?</translation>
@@ -4947,6 +4957,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6451861213630784801">Olet kirjautunut ulos</translation>
 <translation id="6453191633103419909">Välilehden tai näytön heijastuksen laatu</translation>
 <translation id="6453306703004115497">Käännetty kielelle <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Hae laitepohjaista tekoälyä</translation>
 <translation id="645433497989692531">Tämä poistaa pysyvästi selausdatasi tältä laitteelta. Jos haluat palauttaa datan, kirjaudu sisään tällä tilillä:</translation>
 <translation id="6455264371803474013">Tietyillä sivustoilla</translation>
 <translation id="6455521402703088376">Pois päältä • Kehittäjä on perunut laajennuksen julkaisun</translation>
@@ -5117,6 +5128,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="663569763553406962">Katso, mitkä laajennukset voivat lukea tai muuttaa sivustoa</translation>
 <translation id="6636258750460740634">Historia</translation>
 <translation id="6636623428211296678">Katso muita asetuksia alla tai lopeta nyt</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Taito-ominaisuus on tällä hetkellä poissa käytöstä. Aloita päivittämällä Chromen asetukset.</translation>
 <translation id="6639554308659482635">SQLiten käyttämä muisti</translation>
 <translation id="6640268266988685324">Avaa välilehti</translation>
@@ -5250,6 +5262,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6785779729084003225">Avaa Gemini in Chrome painamalla <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="67862343314499040">Lila</translation>
 <translation id="6786480815699355166">Vain tuettuja livetekstityksen kieliä voidaan kääntää</translation>
+<translation id="6786498102134843646">Vastaukset eivät perustu tiedostoihin tai palveluihin, joita <ph name="DOMAIN" /> hallinnoi</translation>
 <translation id="6786747875388722282">Laajennukset</translation>
 <translation id="6786804673213172567">Taso 3: KORKEA</translation>
 <translation id="6787531944787756058">käyttäjätunnus <ph name="USER_EMAIL" /> tallennetaan vain tälle laitteelle. Katso tiedot</translation>
@@ -5412,6 +5425,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6941514251635934269">Kysy tästä dokumentista</translation>
 <translation id="694168622559714949">Järjestelmänvalvojasi on määrittänyt oletuskielen, jota ei voi muuttaa.</translation>
 <translation id="6941953303876950920">Uudelleenkäynnistys tarvitaan, jotta voit jatkaa selaamista Geminillä</translation>
+<translation id="6943803108751887058">Sulje painamalla Esc</translation>
 <translation id="6944854424004126054">Palauta ikkuna</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="694592694773692225">Uudelleenohjaus estettiin tällä sivulla.</translation>
@@ -5738,6 +5752,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7293774463163321848">Hakuhistoria, Gemini-historia ja salasanat voi poistaa niiden hallinta-asetuksista</translation>
 <translation id="7296503797589217366">Valitse kansio <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Tallenna tietoja Google Walletiin katselemiltasi sivuilta</translation>
+<translation id="7297535265731442945">Gemini Enterprise on päivitetty</translation>
 <translation id="7297726121602187087">Tummanvihreä</translation>
 <translation id="7298195798382681320">Suositus</translation>
 <translation id="7299515639584427954">Vaihdetaanko tuetut linkit avaava oletussovellus?</translation>
@@ -5759,6 +5774,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="731827437403763009">Tekoälyinnovaatiot</translation>
 <translation id="7319983568955948908">Lopeta jakaminen</translation>
 <translation id="7321545336522791733">Palvelimeen ei saada yhteyttä.</translation>
+<translation id="7321838786611890851">Keskusteluillasi Geminin kanssa ei välttämättä ole verkkotunnuksen (<ph name="DOMAIN" />) asettamia suojauksia, ja niihin saatetaan soveltaa muita datan yksityisyyttä koskevia ehtoja</translation>
 <translation id="7322515217754205362">Sivustoluvat</translation>
 <translation id="7324020307732396723">Avaa kieliasetukset</translation>
 <translation id="7325209047678309347">Paperi on juuttunut</translation>
@@ -6055,6 +6071,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7653354650639364202">{0,plural, =1{Sulje eristetty selainikkuna}other{Sulje eristetyt ikkunat (# ikkunaa)}}</translation>
 <translation id="7654941827281939388">Tämä tili on jo käytössä tässä tietokoneessa.</translation>
 <translation id="7655411746932645568">Sivustot saavat pyytää lupaa sarjaportteihin yhdistämiseen</translation>
+<translation id="7656674791025857763"><ph name="ASSISTANT_NAME" /> edellyttää sisäänkirjautumista</translation>
 <translation id="7657090467145778067">Pienet säästöt</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Muita toimintoja<ph name="END_LINK_GOOGLE" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.</translation>
 <translation id="7658239707568436148">Peru</translation>
@@ -6266,6 +6283,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7904492297081735975">&amp;Avaa kirjanmerkkien hallinta</translation>
 <translation id="7907312522152480478">Vahvista henkilöllisyytesi ja synkronoi historia ja välilehdet, jotta voit käyttää välilehtiä muilta laitteilta. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="7907837847548254634">Korosta hetkeksi kohdistettu kohde</translation>
+<translation id="7908205867885088429">Lue lisää asetusten palauttamisesta oletusarvoihin</translation>
 <translation id="7908835530772972485">Poista dataa, kun kaikki ikkunat suljetaan</translation>
 <translation id="7909324225945368569">Profiilin nimeäminen uudelleen</translation>
 <translation id="7909969815743704077">Ladattiin incognito-tilassa</translation>
@@ -6657,6 +6675,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8323317289166663449">Lukea ja muokata kaikkea dataasi tietokoneellasi ja kaikilla sivustoilla</translation>
 <translation id="8323518750352551353">Erillinen selaus?</translation>
 <translation id="8323744572398547859">Jos haluat käyttää välilehtiä muilta laitteilta, kirjaudu sisään ja synkronoi historia. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
+<translation id="8324035203198677529">Organisaatio on laittanut Gemini Enterprisen pois päältä Chromessa. Voit jatkaa Gemini in Chromen käyttöä, mutta se ei enää löydä tai viittaa organisaation hallinnoimiin tietoihin. Keskusteluhistoria ei ehkä siirry.</translation>
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>
 <translation id="8327386430364625757">Matemaattinen fontti</translation>
@@ -6863,6 +6882,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8551388862522347954">Käyttöoikeudet</translation>
 <translation id="8552102814346875916">Tallenna "Pidä nämä sivustot aina aktiivisina" ‐listaan</translation>
 <translation id="8552947739661397736">Ota tehtävä haltuun, Gemini ohjaa tällä hetkellä</translation>
+<translation id="8555042096950728024">Järjestä uudelleen vetämällä tai nuolinäppäimillä</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – laajennettu sisältö näkyvissä</translation>
 <translation id="8557022314818157177">Jatka suojausavaimen koskettamista, kunnes sormenjälki tallennetaan</translation>
 <translation id="8557100046150195444">Jatka käyttämällä Touch ID:tä</translation>
@@ -6955,6 +6975,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8651806635673244884">Voit siirtää välilehdet takaisin yläreunaan klikkaamalla mitä tahansa välilehteä kakkospainikkeella ja valitsemalla "Näytä välilehdet vaakasuunnassa"</translation>
 <translation id="8652400352452647993">Virhe: pakattu laajennus</translation>
 <translation id="8654151524613148204">Tiedosto on liian suuri käsiteltäväksi.</translation>
+<translation id="8654872240409864765">Organisaatio on ottanut Gemini Enterprisen käyttöön Chromessa. Kysy Geminiltä mitä tahansa selatessasi, niin saat vastauksia, jotka perustuvat organisaation tiedostoihin ja palveluihin.</translation>
 <translation id="8657393004602556571">Hylätäänkö palaute?</translation>
 <translation id="865857184419171576">Käännä tekstitykset kielelle</translation>
 <translation id="865936634714975126">Lisää URL-osoitteeseen kyselyparametri, jotta voit valita tyyppejä sivun lataamisen yhteydessä. Esimerkki: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7118,6 +7139,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8813937837706331325">Kohtalaiset säästöt</translation>
 <translation id="8815742860876889867">Avaa linkki eri&amp;stetyssä ikkunassa</translation>
 <translation id="881799181680267069">Piilota muut</translation>
+<translation id="8820301999480837183">Keskitytään ryhmään: <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8821206216942230957">Tililläsi ei ole pääsyä Gemini in Chromeen</translation>
 <translation id="8823514049557262177">Kopioi linkin te&amp;ksti</translation>
@@ -7157,6 +7179,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8863753581171631212">Avaa linkki uudessa ikkunassa (<ph name="APP" />)</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> jaetaan, vastaanottaja: <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Salasana on tallennettu</translation>
+<translation id="8865924457197342642">Gemini Enterprise ei ole enää saatavilla</translation>
 <translation id="8866424952450451412">Hallinnoi omia työnkulkuja, jotka toimivat tämän avulla:</translation>
 <translation id="8867102760244540173">Hae välilehtiä…</translation>
 <translation id="8867568208303837180">Lähetetään...</translation>
@@ -7369,6 +7392,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9096776523567481218">ei asennettu paikallisesti</translation>
 <translation id="9099383880226822604">Sademetsä</translation>
 <translation id="9100765901046053179">Lisäasetukset</translation>
+<translation id="9100928301185810363">Tarkennetaan nimettömään ryhmään – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Striimaa antamalla Chromelle pääsyoikeus täällä: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Paikallinen verkko &gt; Chrome</translation>
 <translation id="9103868373786083162">Siirry taaksepäin painamalla tai avaa historia kontekstivalikon kautta.</translation>
 <translation id="9107096627210171112">K&amp;äännä…</translation>

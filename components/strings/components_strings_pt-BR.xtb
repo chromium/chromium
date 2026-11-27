@@ -1638,7 +1638,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="3728173127485570463">O navegador Chrome não vai mais exigir sua impressão digital para preencher senhas automaticamente</translation>
 <translation id="3729811201279509483">Adicionar guias manualmente</translation>
-<translation id="3732370487905329239">Data estimada de envio</translation>
 <translation id="3736564442532774454">O navegador Chrome está tentando preencher suas informações sensíveis no app <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Seu navegador é gerenciado pelo administrador.</translation>
 <translation id="3739842843727261045">O botão "Gostei" envia feedback informando que você gostou desses resultados</translation>
@@ -2742,7 +2741,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
 <translation id="5541086400771735334">Caixa de e-mails 7</translation>
 <translation id="5541546772353173584">Adicione um E-mail</translation>
-<translation id="5541735141423273733">Data de chegada</translation>
 <translation id="5543452229212526547">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google. Seu conteúdo não será usado por revisores humanos para melhorar a IA. Sua organização pode mudar essas configurações a qualquer momento.</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5546252337258681768">Dispositivo desbloqueado</translation>
@@ -3195,7 +3193,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6311410654831092784">Cartolina</translation>
 <translation id="6311642842034740437">Local nomeado</translation>
 <translation id="6312113039770857350">Página da Web não disponível</translation>
-<translation id="6313189007657889655">Código do pedido</translation>
 <translation id="6316110367871394043">O upload do arquivo para <ph name="CLOUD_PROVIDER" /> foi pausado</translation>
 <translation id="63172326633386613">Gerenciar configurações de acessibilidade</translation>
 <translation id="6319672966240656136">Este site vai permanecer bloqueado porque você está no Programa Proteção Avançada do Google. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>

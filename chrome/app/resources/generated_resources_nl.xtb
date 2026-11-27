@@ -518,6 +518,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1570990174567554976">Bookmarkmap <ph name="BOOKMARK_TITLE" /> gemaakt.</translation>
 <translation id="1571041387761170095">Geen zwakke of hergebruikte wachtwoorden</translation>
 <translation id="1571304935088121812">Gebruikersnaam kopiëren</translation>
+<translation id="1571371559291327711">&amp;Zoeken, bewerken en meer tools</translation>
 <translation id="1571738973904005196">Tabblad bekijken: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gast)</translation>
 <translation id="1573127087832371028">Beschrijf het probleem</translation>
@@ -956,6 +957,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2051669996101374349">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen. Je kunt deze instelling niet wijzigen, omdat je Geavanceerde beveiliging hebt aangezet.</translation>
+<translation id="2052353138844549871">Het wordt misschien niet aanbevolen om Gemini Enterprise te gebruiken met een onbeheerd profiel</translation>
 <translation id="2052723746739622752">Gemini losmaken</translation>
 <translation id="2061366302742593739">Niets om te laten zien</translation>
 <translation id="2061589908388230480">Als Chromium een van je wachtwoorden vindt bij een openbaar gegevenslek, kan Google Wachtwoordmanager aanbieden om je wachtwoord te wijzigen als je bent ingelogd. <ph name="BEGIN_LINK" />Meer informatie over geautomatiseerde wachtwoordwijziging<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
 <translation id="2349610121459545414">Toestaan dat deze site toegang tot je locatie blijft houden</translation>
 <translation id="2350133097354918058">Opnieuw geladen</translation>
+<translation id="2351165193188463938">Je browst nu met Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2353682139907904963">Nieuwe extensies vastzetten op de werkbalk</translation>
@@ -1268,6 +1271,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="2408955596600435184">Je pincode invoeren</translation>
 <translation id="2409709393952490731">Een telefoon of tablet gebruiken</translation>
 <translation id="2410940059315936967">Een site die je bezoekt, kan content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Cookies die door deze andere sites worden ingesteld, worden cookies van derden genoemd.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Focus geplaatst op 1 tabblad}other{Focus geplaatst op # tabbladen}}</translation>
 <translation id="2413009156320833859">Pas je browser verder aan met extensies uit de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Browsen hervatten voor <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -1677,6 +1681,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2849926636739429924">Meer opties voor <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Gesloten</translation>
 <translation id="2851291081585704741">Je bent offline</translation>
+<translation id="2851527955600412545">Je organisatie heeft een update uitgevoerd voor het beleid voor Gemini Enterprise in Chrome. Je gespreksgeschiedenis wordt misschien niet overgezet.</translation>
 <translation id="285237063405807022">(laden)</translation>
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
 <translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd.</translation>
@@ -2624,6 +2629,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan bestanden bekijken in de volgende mappen</translation>
 <translation id="3810770279996899697">Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
 <translation id="3810973564298564668">Beheren</translation>
+<translation id="3811424142236602772">Browse met Gemini, ingesteld door <ph name="DOMAIN" /> voor werk. Stel vragen terwijl je browst door tabbladen als context te delen en krijg antwoorden op basis van de bestanden en services van je organisatie.</translation>
 <translation id="3812525830114410218">Verkeerd certificaat</translation>
 <translation id="3813296892522778813">Ga naar de <ph name="BEGIN_LINK_CHROMIUM" />Hulp van Google Chrome<ph name="END_LINK_CHROMIUM" /> als je niet kunt vinden wat je zoekt</translation>
 <translation id="3815509884387832993">Luister naar deze pagina alsof het een podcast is met AI-weergave via de knop AI-weergave aanzetten in de werkbalk van de leesmodus</translation>
@@ -3220,6 +3226,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4500055235123625757">Gemini kan vragen beantwoorden over de video of audio die je hebt afgespeeld op <ph name="LINK_BEGIN" />bepaalde websites<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Selectie vertalen naar het <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Klik met de rechtermuisknop op een tabblad en selecteer Tabblad toevoegen aan nieuwe groep</translation>
+<translation id="450300557121092531">Tabbladen per apparaat</translation>
 <translation id="4503362512377701151">Je ziet je recent gebruikte tabbladgroepen, zodat je makkelijk verder kunt gaan waar je gebleven was.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3272,6 +3279,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4562155266774382038">Suggestie afwijzen</translation>
 <translation id="4563883094055457792">Gesplitste weergave h&amp;erstellen</translation>
 <translation id="456449593072900590">Verwijderen bij afsluiten</translation>
+<translation id="4564636746145660922">Controleer je verbinding en probeer het opnieuw.</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4565465014351935093">Alleen tonen op de pagina Nieuw tabblad</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
@@ -3445,6 +3453,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="475088594373173692">Eerste gebruiker</translation>
 <translation id="4751925628341802838">Log in en synchroniseer je geschiedenis en tabbladen met <ph name="EMAIL" /> om de geschiedenis van je andere apparaten te krijgen. Je kunt ook onder andere je extensies op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4754590344707355551">Breid je browser uit met extensies</translation>
+<translation id="4754903312643763797">Er kunnen andere voorwaarden voor privacy van gegevens van toepassing zijn</translation>
 <translation id="4756130875344525429">Als je je geschiedenis van <ph name="DEVICE" /> wilt krijgen, log je in en synchroniseer je je geschiedenis en tabbladen met <ph name="EMAIL" />. Je kunt ook onder andere je opgeslagen informatie op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4756378406049221019">Stoppen/opnieuw laden</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
@@ -4125,6 +4134,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5509914365760201064">Uitgever: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Afbeeldingsbeschrijvingen ophalen van Google</translation>
 <translation id="5512739112435045339">Maak ruimte vrij op je apparaat. Probeer daarna opnieuw te downloaden.</translation>
+<translation id="5513121759801003159">Je chatgeschiedenis wordt niet overgezet</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Meer opties bekijken voor <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Is dit de homepage die je had verwacht?</translation>
@@ -4930,6 +4940,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6451861213630784801">Je bent uitgelogd</translation>
 <translation id="6453191633103419909">Weergavekwaliteit van tabblad/scherm</translation>
 <translation id="6453306703004115497">Vertaald naar het <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Zoeken naar AI op het apparaat</translation>
 <translation id="645433497989692531">Hiermee worden je browsegegevens op dit apparaat definitief verwijderd. Als je de gegevens wilt herstellen, log je in als</translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
 <translation id="6455521402703088376">Uit • De publicatie van deze extensie is ongedaan gemaakt door de ontwikkelaar</translation>
@@ -5100,6 +5111,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="663569763553406962">Bekijken welke extensies een site kunnen lezen of wijzigen</translation>
 <translation id="6636258750460740634">Geschiedenis</translation>
 <translation id="6636623428211296678">Bekijk hieronder meer instellingen of rond nu af</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">De functie Vaardigheden staat op dit moment uit. Update je Chrome-instellingen om aan de slag te gaan.</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
 <translation id="6640268266988685324">Geopend tabblad</translation>
@@ -5233,6 +5245,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6785779729084003225">Gebruik <ph name="FOCUS_TOGGLE_HOTKEY" /> om Gemini in Chrome te openen</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Alleen ondersteunde talen voor Live ondertiteling kunnen worden vertaald</translation>
+<translation id="6786498102134843646">Reacties worden niet gebaseerd op bestanden of services die worden beheerd door <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786804673213172567">Niveau 3: HOOG</translation>
 <translation id="6787531944787756058">Gebruikersnaam <ph name="USER_EMAIL" /> is alleen op dit apparaat opgeslagen. Details bekijken</translation>
@@ -5395,6 +5408,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6941514251635934269">Vragen stellen over dit document</translation>
 <translation id="694168622559714949">Je beheerder heeft een standaardtaal ingesteld die je niet kunt aanpassen.</translation>
 <translation id="6941953303876950920">Herstart vereist om te blijven browsen met Gemini</translation>
+<translation id="6943803108751887058">Druk op Escape om te sluiten</translation>
 <translation id="6944854424004126054">Venster herstellen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="694592694773692225">Omleiding geblokkeerd op deze pagina.</translation>
@@ -5721,6 +5735,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7293774463163321848">Zoekgeschiedenis, Gemini-geschiedenis en wachtwoorden kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="7296503797589217366">Map <ph name="FOLDER_TITLE" /> selecteren</translation>
 <translation id="7297228218361240128">Informatie opslaan in Google Wallet vanaf pagina's die je bekijkt</translation>
+<translation id="7297535265731442945">Gemini Enterprise heeft een update gekregen</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7298195798382681320">Aanbevolen</translation>
 <translation id="7299515639584427954">Standaard-app voor ondersteunde links wijzigen?</translation>
@@ -5742,6 +5757,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="731827437403763009">AI-innovaties</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
+<translation id="7321838786611890851">Je interacties met Gemini hebben misschien niet de beveiligingsmaatregelen die zijn ingesteld door <ph name="DOMAIN" /> en er kunnen andere voorwaarden voor privacy van gegevens van toepassing zijn</translation>
 <translation id="7322515217754205362">Siterechten</translation>
 <translation id="7324020307732396723">Taalinstellingen openen</translation>
 <translation id="7325209047678309347">Er is een papierstoring</translation>
@@ -6038,6 +6054,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7653354650639364202">{0,plural, =1{Geïsoleerd venster sluiten}other{Geïsoleerd venster sluiten (# vensters)}}</translation>
 <translation id="7654941827281939388">Dit account wordt al gebruikt op deze computer.</translation>
 <translation id="7655411746932645568">Sites kunnen vragen of ze verbinding mogen maken met seriële poorten</translation>
+<translation id="7656674791025857763">Log in om <ph name="ASSISTANT_NAME" /> te gebruiken</translation>
 <translation id="7657090467145778067">Kleine besparingen</translation>
 <translation id="7657218410916651670">Er kunnen <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
@@ -6249,6 +6266,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7904492297081735975">Bookmarkmanager &amp;openen</translation>
 <translation id="7907312522152480478">Als je de tabbladen van je andere apparaten wilt krijgen, laat je verifiëren dat jij het bent en synchroniseer je je geschiedenis en tabbladen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="7907837847548254634">Een snelle markering bekijken op het object waarop de focus is geplaatst</translation>
+<translation id="7908205867885088429">Meer informatie over hoe je de standaardinstellingen herstelt</translation>
 <translation id="7908835530772972485">Gegevens verwijderen als je alle vensters sluit</translation>
 <translation id="7909324225945368569">Naam van je profiel wijzigen</translation>
 <translation id="7909969815743704077">Gedownload in incognitomodus</translation>
@@ -6640,6 +6658,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8323317289166663449">Al je gegevens op je computer en alle websites lezen en wijzigen</translation>
 <translation id="8323518750352551353">Browsen scheiden?</translation>
 <translation id="8323744572398547859">Log in en synchroniseer je geschiedenis om de tabbladen van je andere apparaten te krijgen. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
+<translation id="8324035203198677529">Je organisatie heeft Gemini Enterprise in Chrome uitgezet. Je kunt Gemini in Chrome blijven gebruiken, maar deze kan geen informatie meer vinden die door je organisatie wordt beheerd of hiernaar verwijzen. Je gespreksgeschiedenis wordt misschien niet overgezet.</translation>
 <translation id="8325413836429495820">Geen toestemming om je klembord te bekijken</translation>
 <translation id="8326478304147373412">PKCS nr. 7, certificaatketen</translation>
 <translation id="8327386430364625757">Wiskundig lettertype</translation>
@@ -6846,6 +6865,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8551388862522347954">Licenties</translation>
 <translation id="8552102814346875916">Opslaan in de lijst Deze sites altijd actief houden</translation>
 <translation id="8552947739661397736">Taak overnemen, Gemini heeft op dit moment de controle</translation>
+<translation id="8555042096950728024">Sleep of gebruik de pijltoetsen om opnieuw te ordenen</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" />: uitgevouwen content getoond</translation>
 <translation id="8557022314818157177">Blijf je beveiligingssleutel aanraken totdat je vingerafdruk is geregistreerd</translation>
 <translation id="8557100046150195444">Gebruik Touch ID om door te gaan</translation>
@@ -6938,6 +6958,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8651806635673244884">Je kunt je tabbladen weer naar de bovenkant verplaatsen door met de rechtermuisknop op een tabblad te klikken en Tabbladen horizontaal tonen te selecteren.</translation>
 <translation id="8652400352452647993">Fout met pakketextensie</translation>
 <translation id="8654151524613148204">Je computer kan het bestand vanwege de grootte helaas niet verwerken.</translation>
+<translation id="8654872240409864765">Je organisatie heeft Gemini Enterprise ingesteld in Chrome. Vraag Gemini naar alles terwijl je browst en krijg antwoorden op basis van bestanden en services in je organisatie</translation>
 <translation id="8657393004602556571">Wil je de feedback verwijderen?</translation>
 <translation id="865857184419171576">Ondertiteling vertalen naar het</translation>
 <translation id="865936634714975126">Voeg een queryparameter toe in de URL om typen te selecteren bij het laden van de pagina. Voorbeeld: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7102,6 +7123,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8813937837706331325">Gemiddelde besparingen</translation>
 <translation id="8815742860876889867">Link openen in geïsoleerd venster</translation>
 <translation id="881799181680267069">Verberg andere</translation>
+<translation id="8820301999480837183">Focus op groep <ph name="GROUP_NAME" /> geplaatst</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821206216942230957">Je account heeft geen toegang tot Gemini in Chrome</translation>
 <translation id="8823514049557262177">Lin&amp;ktekst kopiëren</translation>
@@ -7141,6 +7163,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8863753581171631212">Link openen in nieuw <ph name="APP" />-venster</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wordt gedeeld met <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Je wachtwoord is opgeslagen</translation>
+<translation id="8865924457197342642">Gemini Enterprise is niet meer beschikbaar</translation>
 <translation id="8866424952450451412">Je aangepaste workflows beheren met</translation>
 <translation id="8867102760244540173">Tabbladen zoeken...</translation>
 <translation id="8867568208303837180">Verzenden...</translation>
@@ -7353,6 +7376,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9096776523567481218">niet lokaal geïnstalleerd</translation>
 <translation id="9099383880226822604">Regenwoud</translation>
 <translation id="9100765901046053179">Geavanceerde instellingen</translation>
+<translation id="9100928301185810363">Focus geplaatst op naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Als je wilt casten, geef je Chrome toegang via <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokaal netwerk &gt; Chrome</translation>
 <translation id="9103868373786083162">Druk op Terug &gt; contextmenu om de geschiedenis te bekijken</translation>
 <translation id="9107096627210171112">Ve&amp;rtalen...</translation>

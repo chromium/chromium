@@ -2587,6 +2587,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3771721161825963003">Varaqlarni vertikal chiqarish</translation>
 <translation id="3771851622616482156">Bu saytdagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="3772951945682043324">Yaqinda yopilgan varaqlar topilmadi</translation>
+<translation id="3775389358290351377">Provayderni almashtirish (Tab)</translation>
 <translation id="3775432569830822555">SSL server sertifikati</translation>
 <translation id="3776508619697147021">Saytlar birdaniga bir nechta fayl yuklab olishga ruxsat soʻrashi mumkin</translation>
 <translation id="3776796446459804932">Bu kengaytma Chrome internet-do'koni siyosatini buzmoqda.</translation>
@@ -3052,6 +3053,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="429530814437327574">Ustma-ust chiqarish</translation>
 <translation id="4296632172536745000">Bu saytdagi asl parolingizning ommaviy oshkor qilingani aniqlandi. <ph name="DATE" /> sanasida <ph name="BRAND" /> orqali parolingizni avtomatik almashtirishni soʻragansiz.</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
+<translation id="4298381759837744019">Sozlamalarda “<ph name="QUERY" />” qidirish</translation>
 <translation id="4298660926525614540">Tashqi xotira nomlari</translation>
 <translation id="4299022904780065004">Yangi &amp;inkognito oynasi</translation>
 <translation id="4301231341924904092">Parolni avtomatik almashtirish</translation>
@@ -4289,6 +4291,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="5689516760719285838">Joylashuv</translation>
 <translation id="568984110402742489">Fikr-mulohaza yuborilmadi</translation>
 <translation id="5691772641933328258">Barmoq izi aniqlanmadi</translation>
+<translation id="5693100627879528952">Qidiruv vositasi va sayt qidiruvi sozlamalari haqida batafsil</translation>
 <translation id="5693255400847650006">Mikrofon ishlatilmoqda</translation>
 <translation id="5693806089748511108">Sohalaringiz</translation>
 <translation id="5694689722959820210">Varaqlar guruhini yaratish</translation>

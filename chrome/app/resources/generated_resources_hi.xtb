@@ -2592,6 +2592,7 @@
 <translation id="3771721161825963003">टैब को वर्टिकल तरीके से दिखाएं</translation>
 <translation id="3771851622616482156">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="3772951945682043324">हाल ही में कोई टैब बंद नहीं किया गया है</translation>
+<translation id="3775389358290351377">खोज की सेवा देने वाली कंपनी बदलें (Tab)</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
 <translation id="3776508619697147021">साइटें कई फ़ाइलों को अपने-आप डाउनलोड करने के लिए पूछ सकती हैं</translation>
 <translation id="3776796446459804932">यह एक्सटेंशन Chrome वेब स्टोर नीति का उल्लंघन करता है.</translation>
@@ -3055,6 +3056,7 @@
 <translation id="429530814437327574">स्टैक करके दिखाएं</translation>
 <translation id="4296632172536745000">इस साइट से जुड़ा आपका ओरिजनल पासवर्ड, सार्वजनिक तौर पर लीक हो चुका है. आपने <ph name="DATE" /> को <ph name="BRAND" /> से, अपने खाते का पासवर्ड अपने-आप बदलने के लिए कहा था.</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
+<translation id="4298381759837744019">सेटिंग में “<ph name="QUERY" />” खोजें</translation>
 <translation id="4298660926525614540">डिवाइस के हटाए जा सकने वाले स्टोरेज के नाम</translation>
 <translation id="4299022904780065004">नई गुप्त विंडो</translation>
 <translation id="4301231341924904092">मेरे लिए इसे बदलें</translation>
@@ -4287,6 +4289,7 @@
 <translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="568984110402742489">सुझाव, शिकायत या राय सबमिट नहीं की जा सकती</translation>
 <translation id="5691772641933328258">फ़िंगरप्रिंट नहीं पहचाना गया</translation>
+<translation id="5693100627879528952">सर्च इंजन और साइट खोज की सेटिंग के बारे में ज़्यादा जानें</translation>
 <translation id="5693255400847650006">माइक्रोफ़ोन इस्तेमाल हो रहा है</translation>
 <translation id="5693806089748511108">आपकी स्किल</translation>
 <translation id="5694689722959820210">टैब ग्रुप बनाएं</translation>

@@ -8149,15 +8149,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Aquí el valor de <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> puede ser exacto, como "13305.0.0", o el prefijo de una versión, como "13305".
       Los valores <ph name="WARNING_PERIOD_PROPERTY_NAME" /> y <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> son opcionales y se especifican en número de días. El valor predeterminado de esos valores es 0 días, lo que significa que no hay un período de advertencia.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> es una propiedad opcional cuyo valor predeterminado es falso.</translation>
-<translation id="5876812185674131521">Impide la eliminación manual de las cookies de <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Esta política tiene como objetivo impedir que los usuarios accedan a <ph name="YOUTUBE_PRODUCT_NAME" /> sin autorización después de borrar manualmente sus cookies de <ph name="YOUTUBE_PRODUCT_NAME" /> desde la página de configuración del sitio.
-
-Si habilitas la política, se evitará que se borren manualmente las cookies de <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Si inhabilitas la política o no estableces un valor, las cookies de <ph name="YOUTUBE_PRODUCT_NAME" /> se podrán borrar normalmente.
-
-Nota: Esta política solo impide la eliminación manual desde la IU de configuración del sitio. No impide la eliminación automática por parte de las políticas <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> o <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Además, si habilitas la política <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />, los usuarios podrán borrar todas sus cookies a través del diálogo Borrar datos de navegación.</translation>
 <translation id="5879014913445067283">Controla la detección de archivos compartidos en la red a través de <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Habilitar Tocar para buscar</translation>
 <translation id="5882345429632338713">Retraso antes de ejecutar otro navegador (milisegundos)</translation>
@@ -10728,13 +10719,6 @@ Si inhabilitas esta política o no la estableces, no se permitirá la configurac
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de corrección de colores estará inhabilitada en un principio, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="7324627441366994249">Permite establecer una lista de patrones de URL que especifique en qué sitios las integraciones de la app de Gemini no pueden actuar directamente en las páginas web.
-
-Las URLs que no coinciden con la lista de entidades permitidas ni con la lista de entidades bloqueadas utilizan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Se permiten las URLs que coinciden con la lista de entidades permitidas y la lista de entidades bloqueadas.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Impedir que Chrome bloquee la navegación a protocolos externos dentro del iframe de la zona de pruebas</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta preservar los tokens de acceso para que el usuario no tenga que volver a acceder.</translation>
 <translation id="7331098674887251788">Permite que las integraciones de la app de Gemini actúen directamente en las páginas web.</translation>
@@ -12047,13 +12031,6 @@ Si el valor se establece como verdadero o no se establece, deben estar en una re
 Si se establece como falso, pueden unirse sin estar en una red administrada.</translation>
 <translation id="8183108371184777472">Impide la ejecución de la ventana del navegador</translation>
 <translation id="8185312100223853315">Etiqueta de perfil</translation>
-<translation id="8186370194423312090">Permite establecer una lista de patrones de URL que especifique en qué sitios las integraciones de la app de Gemini pueden actuar de directamente en las páginas web.
-
-Las URLs que no coinciden con la lista de entidades permitidas ni con la lista de entidades bloqueadas utilizan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Se permiten las URLs que coinciden con la lista de entidades permitidas y la lista de entidades bloqueadas.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Permite que los usuarios hagan comentarios</translation>
 <translation id="8190271041226151932">Esta configuración permite las integraciones de la app de Gemini.
 

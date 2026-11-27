@@ -7834,15 +7834,6 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
       <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> kan in dit geval een exacte versie zijn (zoals '13305.0.0') of een versievoorvoegsel (zoals '13305').
       De <ph name="WARNING_PERIOD_PROPERTY_NAME" /> en <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> zijn optionele waarden die worden opgegeven als een aantal dagen. De standaardwaarde is 0 dagen, wat inhoudt dat er geen waarschuwingsperiode is.
       De <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> is een optionele property met False als standaardwaarde.</translation>
-<translation id="5876812185674131521">Voorkomt dat <ph name="YOUTUBE_PRODUCT_NAME" />-cookies handmatig worden verwijderd.
-
-Dit beleid is bedoeld om te voorkomen dat gebruikers niet-geautoriseerde toegang krijgen tot <ph name="YOUTUBE_PRODUCT_NAME" /> nadat ze hun <ph name="YOUTUBE_PRODUCT_NAME" />-cookies handmatig hebben gewist via de pagina met site-instellingen.
-
-Als je het beleid toepast, kunnen <ph name="YOUTUBE_PRODUCT_NAME" />-cookies niet handmatig worden verwijderd.
-
-Als je het beleid niet toepast of niet instelt, kunnen <ph name="YOUTUBE_PRODUCT_NAME" />-cookies normaal worden verwijderd.
-
-Opmerking: Dit beleid voorkomt alleen handmatige verwijdering via de UI van de site-instellingen. Het voorkomt niet dat items automatisch worden verwijderd op basis van het beleid van <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> of <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Als het beleid <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> aanstaat, kunnen gebruikers bovendien nog steeds al hun cookies wissen via het dialoogvenster Browsegegevens wissen.</translation>
 <translation id="5879014913445067283">Bepaalt de detectiemethode van 'Network File Shares' via <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">'Tikken om te zoeken' toestaan</translation>
 <translation id="5882345429632338713">Vertraging voor starten van alternatieve browser (in milliseconden)</translation>
@@ -10234,13 +10225,6 @@ Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in d
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
 
           Als je dit beleid niet instelt, staat de functie voor kleurcorrectie in eerste instantie uit. Gebruikers kunnen deze functie op elk moment aanzetten.</translation>
-<translation id="7324627441366994249">Hiermee kun je een lijst met URL-patronen instellen om aan te geven op welke sites Gemini-app-integraties niet rechtstreeks acties kunnen uitvoeren op webpagina's.
-
-URL's die niet overeenkomen met de toelatingslijst of de blokkeerlijst, gebruiken <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URL's die overeenkomen met zowel de toelatingslijst als de blokkeerlijst, zijn toegestaan.
-
-Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige URL-patronen.</translation>
 <translation id="7325801934761922681">Voorkomen dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="7326394567531622570">Vergelijkbaar met Wipe (waarde 2), maar probeert inlogtokens te behouden, zodat de gebruiker niet opnieuw hoeft in te loggen.</translation>
 <translation id="7331098674887251788">Hiermee kunnen Gemini-app-integraties rechtstreeks acties uitvoeren op webpagina's</translation>
@@ -11517,13 +11501,6 @@ Als de waarde is ingesteld op Waar of niet is ingesteld, moeten ze zich op een b
 Als je het beleid instelt op Onwaar, kunnen ze deelnemen zonder dat ze zich binnen een beheerd netwerk bevinden.</translation>
 <translation id="8183108371184777472">Lancering van browservenster onderdrukken</translation>
 <translation id="8185312100223853315">Profiellabel</translation>
-<translation id="8186370194423312090">Hiermee kun je een lijst met URL-patronen instellen om aan te geven op welke sites Gemini-app-integraties rechtstreeks acties kunnen uitvoeren op webpagina's.
-
-URL's die niet overeenkomen met de toelatingslijst of de blokkeerlijst, gebruiken <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URL's die overeenkomen met zowel de toelatingslijst als de blokkeerlijst, zijn toegestaan.
-
-Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige URL-patronen.</translation>
 <translation id="8186911565834244165">Gebruikersfeedback toestaan</translation>
 <translation id="8190271041226151932">Met deze instelling worden Gemini-app-integraties toegestaan.
 

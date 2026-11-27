@@ -518,6 +518,7 @@
 <translation id="1570990174567554976">已建立「<ph name="BOOKMARK_TITLE" />」書籤資料夾。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
+<translation id="1571371559291327711">搜尋、編輯與更多工具 (&amp;F)</translation>
 <translation id="1571738973904005196">查看分頁：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1573127087832371028">說明問題</translation>
@@ -956,6 +957,7 @@
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2051669996101374349">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告。由於「進階保護」功能已啟用，因此你無法變更這項設定。</translation>
+<translation id="2052353138844549871">不建議在未受管理的設定檔中使用 Gemini Enterprise</translation>
 <translation id="2052723746739622752">取消固定 Gemini</translation>
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
 <translation id="2061589908388230480">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動變更密碼的功能<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
 <translation id="2349610121459545414">繼續允許這個網站存取你的位置資訊</translation>
 <translation id="2350133097354918058">已重新載入</translation>
+<translation id="2351165193188463938">你正在使用 Gemini Enterprise 瀏覽網頁</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
 <translation id="2353682139907904963">將新的擴充功能固定到工具列</translation>
@@ -1268,6 +1271,7 @@
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2409709393952490731">使用手機或平板電腦</translation>
 <translation id="2410940059315936967">你造訪的網站可能會嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 稱為第三方 Cookie。</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{已聚焦於 1 個分頁}other{已聚焦於 # 個分頁}}</translation>
 <translation id="2413009156320833859">如要進一步自訂瀏覽器，可以使用 <ph name="BEGIN_LINK1" />Chrome 線上應用程式商店<ph name="END_LINK1" />中的擴充功能</translation>
 <translation id="2414159296888870200">繼續瀏覽<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色</translation>
@@ -1677,6 +1681,7 @@
 <translation id="2849926636739429924">「<ph name="TAB_GROUP_NAME" />」的更多選項</translation>
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2851291081585704741">你已離線</translation>
+<translation id="2851527955600412545">貴機構已更新適用於 Chrome 內建 Gemini Enterprise 的政策。對話記錄可能不會一併轉移。</translation>
 <translation id="285237063405807022">(載入中)</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
@@ -2624,6 +2629,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" /> 可以查看下列資料夾中的檔案</translation>
 <translation id="3810770279996899697">密碼管理工具需要 macOS 鑰匙圈存取權</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3811424142236602772">你可以使用由「<ph name="DOMAIN" />」設定的工作用 Gemini 瀏覽網頁。瀏覽網頁時，你可以分享分頁做為背景資訊，並根據貴機構的檔案和服務取得解答。</translation>
 <translation id="3812525830114410218">錯誤的憑證</translation>
 <translation id="3813296892522778813">如果你找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3815509884387832993">使用閱讀模式工具列中的「開啟 AI 播放功能」按鈕，透過 AI 播放內容模式朗讀網頁，就像聆聽 Podcast 一樣</translation>
@@ -3220,6 +3226,7 @@
 <translation id="4500055235123625757">你在<ph name="LINK_BEGIN" />某些網站<ph name="LINK_END" />播放影音內容時，Gemini 可以回答相關問題。</translation>
 <translation id="4500647907053779331">將所選內容翻譯成<ph name="LANGUAGE" /> (&amp;T)</translation>
 <translation id="4502477450742595012">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
+<translation id="450300557121092531">各裝置的分頁</translation>
 <translation id="4503362512377701151">系統顯示最近使用的分頁群組，方便你接續先前的瀏覽進度。<ph name="BREAK" /><ph name="BREAK" />你可以透過三點選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>
 <translation id="4505469832694348179">使用這個 QR code 下載 Chrome，然後登入 Google 帳戶。</translation>
@@ -3269,6 +3276,7 @@
 <translation id="4562155266774382038">關閉建議</translation>
 <translation id="4563883094055457792">還原分割畫面(&amp;E)</translation>
 <translation id="456449593072900590">結束時刪除</translation>
+<translation id="4564636746145660922">請檢查連線，然後再試一次。</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4565465014351935093">僅在新分頁顯示</translation>
 <translation id="4566417217121906555">關閉麥克風</translation>
@@ -3442,6 +3450,7 @@
 <translation id="475088594373173692">第一位使用者</translation>
 <translation id="4751925628341802838">如要存取其他裝置的歷史記錄，請登入帳戶，並將歷史記錄和分頁同步到 <ph name="EMAIL" />。這樣一來，擴充功能和其他資料也能同步到所有裝置。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務提供個人化體驗。</translation>
 <translation id="4754590344707355551">用擴充功能強化瀏覽器</translation>
+<translation id="4754903312643763797">可能適用不同的資料隱私權條款</translation>
 <translation id="4756130875344525429">如要存取「<ph name="DEVICE" />」的歷史記錄，請登入帳戶，並將歷史記錄和分頁同步到 <ph name="EMAIL" />。這樣一來，儲存的資訊和其他資料也能同步到所有裝置。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務提供個人化體驗。</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
@@ -4122,6 +4131,7 @@
 <translation id="5509914365760201064">發行者：<ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
 <translation id="5512739112435045339">請先釋出裝置空間，然後再下載一次</translation>
+<translation id="5513121759801003159">對話記錄不會轉移</translation>
 <translation id="5514315914873062345">Tab 鍵</translation>
 <translation id="5515048886012998157">顯示更多「<ph name="EXTENSION_NAME" />」的選項</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
@@ -4927,6 +4937,7 @@
 <translation id="6451861213630784801">你已登出帳戶</translation>
 <translation id="6453191633103419909">分頁/螢幕畫面投影品質</translation>
 <translation id="6453306703004115497">翻譯為<ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">搜尋裝置端 AI</translation>
 <translation id="645433497989692531">這項操作會將你的瀏覽資料從這部裝置中永久刪除。如要還原資料，請以下列身分登入：</translation>
 <translation id="6455264371803474013">特定網站</translation>
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發布這項擴充功能</translation>
@@ -5097,6 +5108,7 @@
 <translation id="663569763553406962">查看哪些擴充功能可讀取或變更網站</translation>
 <translation id="6636258750460740634">瀏覽記錄</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">「技能」功能目前已停用。如要開始使用，請更新 Chrome 設定。</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
@@ -5230,6 +5242,7 @@
 <translation id="6785779729084003225">使用 <ph name="FOCUS_TOGGLE_HOTKEY" /> 開啟 Chrome 內建 Gemini</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786480815699355166">只能翻譯支援的即時字幕語言</translation>
+<translation id="6786498102134843646">相關回覆將不會以受「<ph name="DOMAIN" />」管理的檔案或服務為基準</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786804673213172567">第 3 級：高</translation>
 <translation id="6787531944787756058">使用者名稱 <ph name="USER_EMAIL" /> 只會儲存到這部裝置。查看詳細資料</translation>
@@ -5392,6 +5405,7 @@
 <translation id="6941514251635934269">詢問有關這份文件的問題</translation>
 <translation id="694168622559714949">管理員設定的預設語言不可變更。</translation>
 <translation id="6941953303876950920">必須重新啟動，才能繼續透過 Gemini 瀏覽網頁</translation>
+<translation id="6943803108751887058">按下 Escape 鍵即可關閉</translation>
 <translation id="6944854424004126054">還原視窗</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在這個網頁禁止重新導向。</translation>
@@ -5718,6 +5732,7 @@
 <translation id="7293774463163321848">搜尋記錄、Gemini 記錄和密碼可透過各自的管理設定刪除</translation>
 <translation id="7296503797589217366">選取資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">將瀏覽網頁中的資訊儲存至 Google 錢包</translation>
+<translation id="7297535265731442945">Gemini Enterprise 已更新</translation>
 <translation id="7297726121602187087">深綠色</translation>
 <translation id="7298195798382681320">建議採用</translation>
 <translation id="7299515639584427954">是否變更開啟支援連結的預設應用程式？</translation>
@@ -5739,6 +5754,7 @@
 <translation id="731827437403763009">AI 創新功能</translation>
 <translation id="7319983568955948908">停止共用</translation>
 <translation id="7321545336522791733">無法連上伺服器</translation>
+<translation id="7321838786611890851">你與 Gemini 的互動可能無法套用「<ph name="DOMAIN" />」設定的保護措施，且可能適用不同的資料隱私權條款</translation>
 <translation id="7322515217754205362">網站權限</translation>
 <translation id="7324020307732396723">開啟語言設定</translation>
 <translation id="7325209047678309347">印表機發生卡紙</translation>
@@ -6035,6 +6051,7 @@
 <translation id="7653354650639364202">{0,plural, =1{關閉隔離視窗}other{關閉隔離視窗 (# 個視窗)}}</translation>
 <translation id="7654941827281939388">已有人在這台電腦上使用這個帳戶。</translation>
 <translation id="7655411746932645568">網站可以要求連線至序列埠</translation>
+<translation id="7656674791025857763">請登入以使用 <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">節省量：小</translation>
 <translation id="7657218410916651670">在你登入後，<ph name="BEGIN_LINK_GOOGLE" />其他形式的活動<ph name="END_LINK_GOOGLE" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -6246,6 +6263,7 @@
 <translation id="7904492297081735975">開啟書籤管理員(&amp;O)</translation>
 <translation id="7907312522152480478">如要取得其他裝置上的分頁，請驗證身分並同步處理歷史記錄和分頁。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="7907837847548254634">在聚焦的物件上顯示短暫的醒目效果</translation>
+<translation id="7908205867885088429">進一步瞭解如何將設定還原為預設值</translation>
 <translation id="7908835530772972485">在關閉所有視窗後刪除資料</translation>
 <translation id="7909324225945368569">重新命名設定檔</translation>
 <translation id="7909969815743704077">已在無痕模式中下載</translation>
@@ -6637,6 +6655,7 @@
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
 <translation id="8323518750352551353">要分開保存瀏覽資料嗎？</translation>
 <translation id="8323744572398547859">如要取得其他裝置上的分頁，請登入並同步處理歷史記錄。你也可以在登入的裝置上使用儲存的密碼等資料。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="8324035203198677529">貴機構已關閉 Chrome 內建 Gemini Enterprise。你可以繼續使用 Chrome 內建 Gemini，但系統將不再尋找或參考由貴機構管理的資訊。對話記錄可能不會一併轉移。</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327386430364625757">數學字型</translation>
@@ -6843,6 +6862,7 @@
 <translation id="8551388862522347954">授權</translation>
 <translation id="8552102814346875916">儲存到「一律啟用這些網站」清單</translation>
 <translation id="8552947739661397736">接手工作，目前由 Gemini 控管</translation>
+<translation id="8555042096950728024">拖曳或使用方向鍵即可重新排列</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 已顯示展開的內容</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557100046150195444">使用 Touch ID 以繼續操作</translation>
@@ -6935,6 +6955,7 @@
 <translation id="8651806635673244884">如要將分頁移回頂端，請在任一分頁按一下滑鼠右鍵，然後選取「水平顯示分頁」</translation>
 <translation id="8652400352452647993">封裝擴充功能錯誤</translation>
 <translation id="8654151524613148204">很抱歉，檔案過大，你的電腦無法處理。</translation>
+<translation id="8654872240409864765">貴機構已設定 Chrome 內建 Gemini Enterprise。瀏覽網頁時，你可以隨時向 Gemini 提出任何問題，並根據貴機構的檔案和服務取得解答。</translation>
 <translation id="8657393004602556571">你要捨棄這則意見嗎？</translation>
 <translation id="865857184419171576">將字幕翻譯為</translation>
 <translation id="865936634714975126">在網址中新增查詢參數，以便在網頁載入時選取類型，例如 chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7098,6 +7119,7 @@
 <translation id="8813937837706331325">節省量：中</translation>
 <translation id="8815742860876889867">在隔離視窗中開啟連結(&amp;S)</translation>
 <translation id="881799181680267069">隱藏其他</translation>
+<translation id="8820301999480837183">已聚焦於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821206216942230957">你的帳戶無法存取 Chrome 內建 Gemini</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
@@ -7137,6 +7159,7 @@
 <translation id="8863753581171631212">另外在「<ph name="APP" />」中開啟連結</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8864104359314908853">已儲存密碼</translation>
+<translation id="8865924457197342642">Gemini Enterprise 已無法使用</translation>
 <translation id="8866424952450451412">管理採用以下技術的自訂工作流程：</translation>
 <translation id="8867102760244540173">搜尋分頁...</translation>
 <translation id="8867568208303837180">傳送中… </translation>
@@ -7349,6 +7372,7 @@
 <translation id="9096776523567481218">未安裝在本機</translation>
 <translation id="9099383880226822604">雨林</translation>
 <translation id="9100765901046053179">進階設定</translation>
+<translation id="9100928301185810363">已聚焦於未命名群組 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">如要投放，請前往「<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />」&gt;「區域網路」&gt;「Chrome」並授予 Chrome 權限</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>

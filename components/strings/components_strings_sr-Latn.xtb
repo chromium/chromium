@@ -1638,7 +1638,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3727850735097852673">Da biste koristili Google menadžer lozinki sa macOS Keychain-om, ponovo pokrenite Chrome i dozvolite pristup Keychain-u. Kartice će se ponovo otvoriti posle ponovnog pokretanja.</translation>
 <translation id="3728173127485570463">Chrome pregledač više neće zahtevati otisak prsta za automatsko popunjavanje lozinki</translation>
 <translation id="3729811201279509483">Ručno dodajte kartice</translation>
-<translation id="3732370487905329239">Procenjeni datum isporuke</translation>
 <translation id="3736564442532774454">Chrome pregledač pokušava da unese osetljive informacije u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Administrator upravlja pregledačem.</translation>
 <translation id="3739842843727261045">Opcija Sviđa mi se šalje povratne informacije da vam se sviđaju ovi rezultati</translation>
@@ -2742,7 +2741,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5540224163453853">Nismo pronašli zahtevani članak.</translation>
 <translation id="5541086400771735334">7. poštansko sanduče</translation>
 <translation id="5541546772353173584">Dodajte imejl</translation>
-<translation id="5541735141423273733">Datum dolaska</translation>
 <translation id="5543452229212526547">Vaš tekst i sadržaj i URL stranice na kojoj pišete biće poslati Google-u. Osobe koje pregledaju neće koristiti vaš sadržaj za poboljšanje veštačke inteligencije. Organizacija može da promeni ova podešavanja u svakom trenutku.</translation>
 <translation id="5543722831081909240">180 stepeni</translation>
 <translation id="5546252337258681768">Uređaj je otključan</translation>
@@ -3194,7 +3192,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6311410654831092784">Tvrdi papir</translation>
 <translation id="6311642842034740437">Imenovana lokacija</translation>
 <translation id="6312113039770857350">Veb-stranica nije dostupna</translation>
-<translation id="6313189007657889655">ID porudžbine</translation>
 <translation id="6316110367871394043">Otpremanje fajla u <ph name="CLOUD_PROVIDER" /> je pauzirano</translation>
 <translation id="63172326633386613">Upravljajte podešavanjima pristupačnosti</translation>
 <translation id="6319672966240656136">Ovaj sajt će ostati blokiran jer ste deo Google programa napredne zaštite. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>

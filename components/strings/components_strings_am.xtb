@@ -1637,7 +1637,6 @@
 <translation id="3727850735097852673">Google የይለፍ ቃል አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chrome ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="3728173127485570463">የChrome አሳሽ የይለፍ ቃላትን በራስ-ሰር ለመሙላት የጣት አሻራዎን አይፈልግም</translation>
 <translation id="3729811201279509483">ትሮችን በእጅ ያክሉ</translation>
-<translation id="3732370487905329239">የተገመተው የማስረከቢያ ቀን</translation>
 <translation id="3736564442532774454">Chrome አሳሽ <ph name="APP_NAME" /> ላይ የእርስዎን ልዩ ጥንቃቄ የሚያስፈልገው መረጃ ለመሙላት እየሞከረ ነው።</translation>
 <translation id="3738166223076830879">የእርስዎ አሳሽ በእርስዎ አስተዳዳሪ የሚተዳደር ነው።</translation>
 <translation id="3739842843727261045">አሪፍ የሚለው እርስዎ እነዚህን ውጤቶች እንደወደዱ ግብረመልስ ያቀርባል</translation>
@@ -2741,7 +2740,6 @@
 <translation id="5540224163453853">የተጠየቀውን ጽሁፍ ማግኘት አልተቻለም።</translation>
 <translation id="5541086400771735334">የመልዕክት ሳጥን 7</translation>
 <translation id="5541546772353173584">ኢሜይል ያክሉ</translation>
-<translation id="5541735141423273733">የመድረሻ ቀን</translation>
 <translation id="5543452229212526547">የእርስዎ ጽሑፍ እና እርስዎ የሚጽፉበት ገጽ ይዘት እና ዩአርኤል ወደ Google ይላካሉ። የእርስዎ ይዘት ሰው ሠራሽ አስተውሎትን ለማሻሻል በሰው ገምጋሚዎች ጥቅም ላይ አይውልም። ድርጅትዎ በማንኛውም ጊዜ እነዚህን ቅንብሮች ሊለውጥ ይችላል።</translation>
 <translation id="5543722831081909240">180 ዲግሪ</translation>
 <translation id="5546252337258681768">መሣሪያ ተከፍቷል</translation>
@@ -3194,7 +3192,6 @@
 <translation id="6311410654831092784">የካርድ ክምችት</translation>
 <translation id="6311642842034740437">የተሰየመ አካባቢ</translation>
 <translation id="6312113039770857350">ድረ-ገፅ አይገኝም</translation>
-<translation id="6313189007657889655">የትዕዛዝ መታወቂያ</translation>
 <translation id="6316110367871394043">ወደ <ph name="CLOUD_PROVIDER" /> የተደረገው የፋይል ሰቀላ ባለበት ቆሟል</translation>
 <translation id="63172326633386613">የተደራሽነት ቅንብሮችን ያቀናብሩ</translation>
 <translation id="6319672966240656136">በGoogle የላቀ ጥበቃ ፕሮግራም ስር ስለሆኑ ይህ ጣቢያ እንደያገደ ይቆያል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>

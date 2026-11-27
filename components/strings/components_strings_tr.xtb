@@ -1638,7 +1638,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3727850735097852673">Google Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chrome'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chrome yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="3728173127485570463">Chrome tarayıcının şifreleri otomatik olarak doldurması için artık parmak iziniz gerekmeyecek</translation>
 <translation id="3729811201279509483">Sekmeleri manuel olarak ekleme</translation>
-<translation id="3732370487905329239">Tahmini teslim tarihi</translation>
 <translation id="3736564442532774454">Chrome tarayıcı, <ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya çalışıyor.</translation>
 <translation id="3738166223076830879">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir.</translation>
 <translation id="3739842843727261045">Beğenme düğmesini tıkladığınızda bu sonuçların hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
@@ -2742,7 +2741,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5540224163453853">İstenen makale bulunamadı.</translation>
 <translation id="5541086400771735334">Posta kutusu 7</translation>
 <translation id="5541546772353173584">E-posta Adresi Ekleyin</translation>
-<translation id="5541735141423273733">Varış tarihi</translation>
 <translation id="5543452229212526547">Metniniz, üzerinde yazdığınız sayfanın URL'si ve içeriği Google'a gönderilir. İçeriğiniz, yapay zekayı iyileştirmek için inceleme uzmanları tarafından kullanılmaz. Kuruluşunuz istediği zaman bu ayarları değiştirebilir.</translation>
 <translation id="5543722831081909240">180 derece</translation>
 <translation id="5546252337258681768">Cihazın kilidi açıldı</translation>
@@ -3195,7 +3193,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6311410654831092784">Kalın Kağıt</translation>
 <translation id="6311642842034740437">Adlandırılmış konum</translation>
 <translation id="6312113039770857350">Web sayfası mevcut değil</translation>
-<translation id="6313189007657889655">Sipariş kimliği</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> konumuna dosya yükleme işlemi duraklatıldı</translation>
 <translation id="63172326633386613">Erişilebilirlik ayarlarını yönet</translation>
 <translation id="6319672966240656136">Google'ın Gelişmiş Koruma Programı kapsamında olduğunuz için bu site engellenmeye devam edecek. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>

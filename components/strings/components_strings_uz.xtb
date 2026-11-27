@@ -1636,7 +1636,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3727850735097852673">MacOS Keychain bilan Google Parol menejeridan foydalanish uchun Chrome brauzerini qayta ishga tushiring va Keychainʼdan foydalanish ruxsatini bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="3728173127485570463">Chrome endi parollarni avtomatik kiritishda barmoq izingizni talab qilmaydi</translation>
 <translation id="3729811201279509483">Varaqlarni mustaqil kiritish</translation>
-<translation id="3732370487905329239">Taxminiy yetkazish sanasi</translation>
 <translation id="3736564442532774454">Chrome <ph name="APP_NAME" /> sahifasida maxfiy axborotni kiritishga urinmoqda.</translation>
 <translation id="3738166223076830879">Brauzeringiz administrator tomonidan boshqariladi.</translation>
 <translation id="3739842843727261045">Ijobiy baho bosilsa, bu natijalarning sizga yoqqani haqida fikr-mulohaza yuboriladi</translation>
@@ -2742,7 +2741,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5540224163453853">So‘ralgan maqola topilmadi.</translation>
 <translation id="5541086400771735334">Pochta qutisi 7</translation>
 <translation id="5541546772353173584">Email manzilini qo‘shing</translation>
-<translation id="5541735141423273733">Kelish sanasi</translation>
 <translation id="5543452229212526547">Matningiz va siz yozayotgan sahifaning kontenti va URL manzili Googlega yuboriladi. AI sifatini yaxshilashda odam muharrirlar kontentingizdan foydalanmaydi. Tashkilotingiz bu sozlamalarni istalgan vaqt oʻzgartirishi mumkin.</translation>
 <translation id="5543722831081909240">180 dajara</translation>
 <translation id="5546252337258681768">Qurilma qulfdan chiqarildi</translation>
@@ -3194,7 +3192,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6311410654831092784">Kartochkalar</translation>
 <translation id="6311642842034740437">Joy nomi</translation>
 <translation id="6312113039770857350">Veb-sahifa mavjud emas</translation>
-<translation id="6313189007657889655">Buyurtma identifikatori</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> omboriga fayl yuklash pauza qilindi</translation>
 <translation id="63172326633386613">Qulaylik sozlamalarini boshqarish</translation>
 <translation id="6319672966240656136">Google Kuchaytirilgan himoya dasturiga yozilganingiz uchun bu sayt bloklangan holatda qoladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>

@@ -1638,7 +1638,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3727850735097852673">For å bruke Google Passordlagring med en macOS-nøkkelring, start Chrome på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="3728173127485570463">Chrome-nettleseren trenger ikke lenger fingeravtrykket ditt for å autofylle passord</translation>
 <translation id="3729811201279509483">Legg til faner manuelt</translation>
-<translation id="3732370487905329239">Anslått leveringsdato</translation>
 <translation id="3736564442532774454">Chrome-nettleseren prøver å fylle ut sensitiv informasjon på <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Nettleseren administreres av administratoren din.</translation>
 <translation id="3739842843727261045">Tommel opp sender tilbakemelding om at du liker disse resultatene</translation>
@@ -2742,7 +2741,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5540224163453853">Den forespurte artikkelen ble ikke funnet.</translation>
 <translation id="5541086400771735334">Postkasse 7</translation>
 <translation id="5541546772353173584">Legg til e-post</translation>
-<translation id="5541735141423273733">Ankomstdato</translation>
 <translation id="5543452229212526547">Teksten din, samt innholdet på og nettadressen til siden du skriver på, sendes til Google. Innholdet ditt blir ikke brukt av menneskelige evaluerere for å forbedre AI. Organisasjonen din kan endre disse innstillingene når som helst.</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5546252337258681768">Enheten er ulåst</translation>
@@ -3195,7 +3193,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6311410654831092784">Papp</translation>
 <translation id="6311642842034740437">Navngitt sted</translation>
 <translation id="6312113039770857350">Nettsiden er ikke tilgjengelig</translation>
-<translation id="6313189007657889655">Bestillings-ID</translation>
 <translation id="6316110367871394043">Filopplastingen til <ph name="CLOUD_PROVIDER" /> er satt på pause</translation>
 <translation id="63172326633386613">Administrer tilgjengelighetsinnstillinger</translation>
 <translation id="6319672966240656136">Dette nettstedet forblir blokkert fordi du er underlagt Googles Avansert beskyttelse-program. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>

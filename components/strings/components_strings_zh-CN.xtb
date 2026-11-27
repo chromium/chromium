@@ -1634,7 +1634,6 @@
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728173127485570463">Chrome 浏览器将不再需要您的指纹来自动填充密码</translation>
 <translation id="3729811201279509483">手动添加标签页</translation>
-<translation id="3732370487905329239">预计送达日期</translation>
 <translation id="3736564442532774454">Chrome 浏览器正尝试在 <ph name="APP_NAME" /> 上填充您的敏感信息。</translation>
 <translation id="3738166223076830879">您的浏览器由管理员管理。</translation>
 <translation id="3739842843727261045">选择“我喜欢”可对这些结果给予正面反馈</translation>
@@ -2738,7 +2737,6 @@
 <translation id="5540224163453853">找不到请求的文章。</translation>
 <translation id="5541086400771735334">信箱 7</translation>
 <translation id="5541546772353173584">添加电子邮件地址</translation>
-<translation id="5541735141423273733">到达日期</translation>
 <translation id="5543452229212526547">您的文本以及您撰写时所在网页的内容和网址会发送给 Google。人工审核员不会使用您的内容来改进 AI 技术。您的组织可能会随时更改这些设置。</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5546252337258681768">设备已解锁</translation>
@@ -3190,7 +3188,6 @@
 <translation id="6311410654831092784">卡纸</translation>
 <translation id="6311642842034740437">具有特定名称的地点</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
-<translation id="6313189007657889655">订单 ID</translation>
 <translation id="6316110367871394043">已暂停向“<ph name="CLOUD_PROVIDER" />”上传文件</translation>
 <translation id="63172326633386613">管理无障碍设置</translation>
 <translation id="6319672966240656136">由于您已加入 Google 的高级保护计划，此网站将继续被屏蔽。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>

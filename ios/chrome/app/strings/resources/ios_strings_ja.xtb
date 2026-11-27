@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">マイクを必要とする機能は動作しなくなります</translation>
 <translation id="1622717322707146952">[Google カレンダーに追加] または [Apple カレンダーに追加] を選択します。</translation>
 <translation id="1629162218487290695">本人確認…</translation>
+<translation id="1633084385573994059">このサイトを使用しない</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">サイトにマイクの使用を許可しない</translation>
 <translation id="2104436223719117661">急上昇ワード</translation>
 <translation id="21133533946938348">タブを固定</translation>
+<translation id="2113761902638026426">Gemini に <ph name="SITE_DOMAIN" /> へのアクセスを許可しますか？</translation>
 <translation id="2117650889962717098">シークレット モードに切り替えることで、ブラウジングのプライバシーを保護できます</translation>
 <translation id="2119636449201577317">アプリで開く…</translation>
 <translation id="2119962645034852864">お使いのアカウントでは一部のサービスをご利用いただけません</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">編集内容を保存しました</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。このアカウントは管理対象です。</translation>
 <translation id="3365529507898144230">写真に保存</translation>
+<translation id="3371168305258344914">Gemini がアクセスしようとしているサイトには、あなたのプライベートな情報が含まれている可能性があります</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3377063233124932127">保存したブックマークやパスワードなどが上部に表示されます。</translation>
 <translation id="3378214228000661758">次のパスキーを作成</translation>
@@ -1510,6 +1513,7 @@
 <translation id="567881659373499783">バージョン <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Google アカウントでパスワードを使用して保存するには、本人確認を行ってください。</translation>
 <translation id="5684761169742812828">このパスワードはインターネット上のデータ侵害で漏洩しました。今すぐパスワードを変更できない場合は、この警告を残し、後で確認することをおすすめします。</translation>
+<translation id="5691020463738411542">セーフ ブラウジングの設定をデバイス間で同期</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> のドライブに保存しました。</translation>
 <translation id="570209299585559496">[設定] の [コンテンツの設定] で、デフォルトのサイトビューをデスクトップに変更できます</translation>
 <translation id="5702108177581350218">ユーザー名とパスワードを共有すると、ファミリー メンバーは Google パスワード マネージャーを使用してそれらを入力できます。</translation>
@@ -1588,6 +1592,7 @@
 <translation id="5948605885471592910">開いているすべてのタブを表示、管理します</translation>
 <translation id="5952641243319721872">選択を解除してもよろしいですか？</translation>
 <translation id="5956112131836209882">タブグループのタブ。<ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />。</translation>
+<translation id="595662449352471176">タスクを開始</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>
 <translation id="5963694076845073027">次回からここでリンクを開く</translation>
 <translation id="5963939892571022323">選択箇所へのリンクを作成できません。</translation>
@@ -1808,6 +1813,7 @@
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6565899972286925956">あらゆるものを作成できます</translation>
 <translation id="6571070086367343653">クレジットカードの編集</translation>
+<translation id="6571502147204686607">安全でないサイトから保護</translation>
 <translation id="6574092468346088891">安全チェックの通知をオンにする</translation>
 <translation id="6579867704846662339">他のアプリで受け取った URL をシークレット モードで開くよう選択できます。</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
@@ -2248,6 +2254,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7921559948846049514">背景のテーマや色などを選択できます</translation>
 <translation id="792357691529995513">問題は検出されませんでした</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
+<translation id="7926290435065552539">パスワードを安全に保護</translation>
 <translation id="7926975587469166629">カードのニックネーム</translation>
 <translation id="792762900715361006">写真または動画を撮影</translation>
 <translation id="7927711904086083099">選択されていません</translation>
@@ -2666,6 +2673,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9144230693397287797">設定したリマインダーと、他のデバイスのタブに関する最新情報を受け取ります</translation>
 <translation id="914781932147356857">すべてマーク…</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
+<translation id="914964947703922647">タスクを確認</translation>
 <translation id="9149866541089851383">編集...</translation>
 <translation id="9152637745605628097">テーマや色を選択したり、画像をアップロードしたりできます</translation>
 <translation id="9153159728062222866">コピーと貼り付けを不要に</translation>

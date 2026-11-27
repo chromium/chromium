@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Изберете файла и натиснете <ph name="KEY" /></translation>
 <translation id="1279938420744323401">„<ph name="DISPLAY_NAME" />“ (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлът не може да се отвори}other{Файловете не могат да се отворят}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+ още 1}other{+ още #}}</translation>
 <translation id="1283126956823499975">Нещо се обърка при настройването на устройството</translation>
 <translation id="1285992161347843613">Намиране на телефона</translation>
 <translation id="1287002645302686982">Вече има запазен работен кът на име „<ph name="DESK_TEMPLATE_NAME" />“</translation>
@@ -2190,6 +2191,7 @@
 <translation id="6249795363855770621">Задачата не бе означена като завършена. Опитайте отново, когато сте онлайн.</translation>
 <translation id="625369703868467034">Състояние на мрежата</translation>
 <translation id="6254629735336163724">Заключено в хоризонтална ориентация</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ още 1 връзка}other{+ още # връзки}}</translation>
 <translation id="6259776178973198997">Опресняване на информацията за собствениците в Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: Активира се...</translation>

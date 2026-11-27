@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Funktioner, der skal bruge en mikrofon, fungerer ikke</translation>
 <translation id="1622717322707146952">Vælg "Føj til Google Kalender" eller "Føj til Apple Kalender".</translation>
 <translation id="1629162218487290695">Verificer din identitet…</translation>
+<translation id="1633084385573994059">Brug ikke dette website</translation>
 <translation id="1634520742547161889">MM/ÅÅ</translation>
 <translation id="1636234353664774105">Få en detaljeret rutevejledning til din destination ved hjælp af navigationsfunktionen</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Tillad ikke, at websites anvender din mikrofon</translation>
 <translation id="2104436223719117661">Populære søgninger</translation>
 <translation id="21133533946938348">Fastgør fane</translation>
+<translation id="2113761902638026426">Vil du lade Gemini gå til <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Hold din internetaktivitet privat ved at skifte til inkognitotilstand</translation>
 <translation id="2119636449201577317">Åbn i…</translation>
 <translation id="2119962645034852864">Visse tjenester er ikke tilgængelige for din konto</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">Ændringerne er gemt</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dette er en administreret konto</translation>
 <translation id="3365529507898144230">Gem i Fotos</translation>
+<translation id="3371168305258344914">Gemini er ved at foretage en handling på et website, der muligvis har dine følsomme oplysninger</translation>
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
 <translation id="3377063233124932127">Du finder nu dine gemte bogmærker, adgangskoder m.m. øverst.</translation>
 <translation id="3378214228000661758">Opret en adgangsnøgle til</translation>
@@ -1510,6 +1513,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto.</translation>
 <translation id="5684761169742812828">Denne adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden på internettet. Hvis du ikke har tid til at ændre den lige nu, anbefaler Google, at du gemmer denne advarsel for at minde dig selv om det senere.</translation>
+<translation id="5691020463738411542">Synkroniser præferencer for Beskyttet browsing på tværs af enheder</translation>
 <translation id="5694848685995373177">Gemt i Drev for <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Du kan ændre websitets standardvisning til computervenlig visning ved at gå til Indstillinger efterfulgt af Indstillinger for indhold</translation>
 <translation id="5702108177581350218">Når du deler en kopi af dit brugernavn og din adgangskode, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangs­kode­admin­istrator.</translation>
@@ -1588,6 +1592,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5948605885471592910">Se og administrer alt det, du har åbent</translation>
 <translation id="5952641243319721872">Er du sikker på, at du vil kassere dit valg?</translation>
 <translation id="5956112131836209882">Fanen Fanegruppe. <ph name="TAB_INDEX_IN_GROUP" /> af <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Start opgave</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Åbn links her næste gang</translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
@@ -1808,6 +1813,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6565899972286925956">Opret hvad som helst</translation>
 <translation id="6571070086367343653">Rediger kreditkort</translation>
+<translation id="6571502147204686607">Beskyt dig selv mod usikre websites</translation>
 <translation id="6574092468346088891">Aktivér notifikationer om Sikkerhedstjek</translation>
 <translation id="6579867704846662339">Du kan vælge at åbne indgående webadresser fra andre apps i inkognito.</translation>
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>
@@ -2248,6 +2254,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7921559948846049514">Vælg et tema, en farve eller andet til din baggrund</translation>
 <translation id="792357691529995513">Der blev ikke fundet nogen problemer</translation>
 <translation id="7925108652071887026">AutoFyld-data</translation>
+<translation id="7926290435065552539">Beskyt dine adgangskoder</translation>
 <translation id="7926975587469166629">Kortets kaldenavn</translation>
 <translation id="792762900715361006">Tag et billede, eller optag en video</translation>
 <translation id="7927711904086083099">Ikke valgt</translation>
@@ -2666,6 +2673,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="9144230693397287797">Modtag opdateringer om påmindelser, du har indstillet, og faner fra andre enheder</translation>
 <translation id="914781932147356857">Markér alle…</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
+<translation id="914964947703922647">Gennemgå opgave</translation>
 <translation id="9149866541089851383">Rediger...</translation>
 <translation id="9152637745605628097">Vælg mellem temaer og farver, eller upload et billede</translation>
 <translation id="9153159728062222866">Slip for at kopiere og indsætte</translation>

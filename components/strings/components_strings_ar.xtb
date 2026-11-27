@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">‏لاستخدام "مدير كلمات المرور في Google" في تطبيق macOS Keychain، يجب إعادة تشغيل Chrome ومنحه إذن الوصول إلى التطبيق. وستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="3728173127485570463">‏لن يطلب متصفِّح Chrome بصمة إصبعك لملء كلمات المرور تلقائيًا</translation>
 <translation id="3729811201279509483">إضافة علامات تبويب يدويًا</translation>
-<translation id="3732370487905329239">تاريخ التسليم المقدَّر</translation>
 <translation id="3736564442532774454">‏يحاول متصفِّح Chrome تعبئة معلوماتك الحسّاسة على "<ph name="APP_NAME" />".</translation>
 <translation id="3738166223076830879">يتولّى مشرفك إدارة متصفِّحك.</translation>
 <translation id="3739842843727261045">يمكنك النقر على زر "أعجبني" إذا أعجبتك هذه النتائج</translation>
@@ -2742,7 +2741,6 @@
 <translation id="5540224163453853">تعذر العثور على المقالة المطلوبة</translation>
 <translation id="5541086400771735334">صندوق البريد الإلكتروني 7</translation>
 <translation id="5541546772353173584">إضافة البريد الإلكتروني</translation>
-<translation id="5541735141423273733">تاريخ الوصول</translation>
 <translation id="5543452229212526547">‏سيُرسَل إلى Google النص والمحتوى وعنوان URL للصفحة التي كتبت عليها النص، ولكن لن يستخدم المراجعون ذلك المحتوى لتحسين ميزات الذكاء الاصطناعي. وقد تغيّر مؤسستك هذه الإعدادات في أي وقت.</translation>
 <translation id="5543722831081909240">180 درجة</translation>
 <translation id="5546252337258681768">تم فتح قفل الجهاز</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">بطاقات من الورق المقوّى</translation>
 <translation id="6311642842034740437">موقع جغرافي باسم محدَّد</translation>
 <translation id="6312113039770857350">صفحة الويب غير متاحة</translation>
-<translation id="6313189007657889655">مُعرّف الطلب</translation>
 <translation id="6316110367871394043">تم إيقاف تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> مؤقتًا</translation>
 <translation id="63172326633386613">إدارة إعدادات تسهيل الاستخدام</translation>
 <translation id="6319672966240656136">‏سيظل هذا الموقع الإلكتروني محظورًا بسبب اشتراكك في "برنامج الحماية المتقدّمة" من Google. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>

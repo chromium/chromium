@@ -519,6 +519,7 @@
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />'ৰ বুকমাৰ্ক ফ’ল্ডাৰ সৃষ্টি কৰা হ’ল।</translation>
 <translation id="1571041387761170095">কোনো দুৰ্বল পাছৱৰ্ড অথবা পুনৰ্ব্যৱহৃত পাছৱৰ্ড নাই</translation>
 <translation id="1571304935088121812">ব্যৱহাৰকাৰীৰ নামটোৰ প্ৰতিলিপি কৰক</translation>
+<translation id="1571371559291327711">বিচাৰক, সম্পাদনা কৰক আৰু অধিক সঁজুলি(&amp;)</translation>
 <translation id="1571738973904005196">টেবটো চাওক: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1573127087832371028">সমস্যাটো বৰ্ণনা কৰক</translation>
@@ -966,6 +967,7 @@
 <translation id="204914487372604757">শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2051669996101374349">সম্ভৱ হ’লে HTTPS ব্যৱহাৰ কৰক আৰু এইটো সমৰ্থন নকৰা ছাইটসমূহ ল’ড কৰাৰ পূৰ্বে সকীয়নি লাভ কৰক। আপুনি এই ছেটিং সলনি কৰিব নোৱাৰে, কাৰণ আপুনি সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধা সক্ষম কৰিছে।</translation>
+<translation id="2052353138844549871">এটা অপৰিচালিত প্ৰ’ফাইলৰ সৈতে Gemini Enterprise ব্যৱহাৰ কৰাটো চুপাৰিছ কৰা নহ’বও পাৰে</translation>
 <translation id="2052723746739622752">Gemini আনপিন কৰক</translation>
 <translation id="2061366302742593739">দেখুৱাবলৈ একো নাই</translation>
 <translation id="2061589908388230480">যদি Chromiumএ আপোনাৰ কোনো পাছৱৰ্ড ৰাজহুৱা ডেটা উলংঘনত পায়, তেন্তে আপুনি ছাইন ইন হৈ থাকিলে Google Password Managerএ আপোনাৰ পাছৱৰ্ড সলনি কৰিবলৈ ক’ব পাৰে। <ph name="BEGIN_LINK" />স্বয়ংক্ৰিয়ভাৱে পাছৱৰ্ড সলনি কৰাৰ বিষয়ে অধিক<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - অনুমতিৰ বাবে অনুৰোধ জনোৱা হৈছে, সঁহাৰি জনাবলৈ ক’ণ্ট্ৰল + ফৰৱাৰ্ডত টিপক</translation>
 <translation id="2349610121459545414">এই ছাইটটোক আপোনাৰ অৱস্থান এক্সেছ কৰি থাকিবলৈ দিয়ক</translation>
 <translation id="2350133097354918058">পুনৰ ল'ড কৰা হৈছে</translation>
+<translation id="2351165193188463938">আপুনি এতিয়া Gemini Enterpriseৰ জৰিয়তে ব্ৰাউজ কৰি আছে</translation>
 <translation id="2352662711729498748">&lt; ১ এমবি</translation>
 <translation id="2353297238722298836">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2353682139907904963">টুলবাৰত নতুন এক্সটেনশ্বনসমূহ পিন কৰক</translation>
@@ -1281,6 +1284,7 @@
 <translation id="2408955596600435184">আপোনাৰ পিন দিয়ক</translation>
 <translation id="2409709393952490731">এটা ফ’ন অথবা টেবলেট ব্যৱহাৰ কৰক</translation>
 <translation id="2410940059315936967">আপুনি চোৱা এটা ছাইটে অন্য এটা ছাইটৰ পৰা প্ৰতিচ্ছবি, বিজ্ঞাপন আৰু পাঠৰ দৰে সমল এম্বেড কৰিব পাৰে। এই অন্য ছাইটসমূহে ছেট কৰা কুকিসমূহক তৃতীয় পক্ষৰ কুকি বুলি কোৱা হয়।</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{১ টা টেবত ফ’কাছ কৰা হৈছে}one{# টা টেবত ফ’কাছ কৰা হৈছে}other{# টা টেবত ফ’কাছ কৰা হৈছে}}</translation>
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" />ৰ এক্সটেনশ্বনৰ জৰিয়তে আপোনাৰ ব্ৰাউজাৰটো আৰু বেছি কাষ্টমাইজ কৰক</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ব্ৰাউজ কৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
@@ -1690,6 +1694,7 @@
 <translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" />ৰ বাবে অধিক বিকল্প</translation>
 <translation id="285033512555869047">বন্ধ আছে</translation>
 <translation id="2851291081585704741">আপুনি অফলাইন হৈ আছে</translation>
+<translation id="2851527955600412545">আপোনাৰ প্ৰতিষ্ঠানে Chromeত Gemini Enterpriseৰ বাবে ইয়াৰ নীতিসমূহ আপডে’ট কৰিছে। আপোনাৰ চাটৰ ইতিহাস স্থানান্তৰ নহ’বও পাৰে।</translation>
 <translation id="285237063405807022">(ল’ড কৰি থকা হৈছে)</translation>
 <translation id="2853121255651601031">পাছৱৰ্ড ছেভ কৰা হ’ল</translation>
 <translation id="2855243985454069333">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে</translation>
@@ -2639,6 +2644,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ চাব পাৰে</translation>
 <translation id="3810770279996899697">Password Managerএ MacOS কীচেইন এক্সেছ কৰাৰ প্ৰয়োজন</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
+<translation id="3811424142236602772"><ph name="DOMAIN" />এ কামৰ বাবে ছেট আপ কৰা Geminiৰ জৰিয়তে ব্ৰাউজ কৰক। ব্ৰাউজ কৰি থকাৰ সময়তে টেবসমূহ প্ৰসংগ হিচাপে শ্বেয়াৰ কৰি প্ৰশ্ন সোধক আৰু আপোনাৰ প্ৰতিষ্ঠানৰ ফাইল তথা সেৱাসমূহৰ ওপৰত ভিত্তি কৰি উত্তৰ লাভ কৰক।</translation>
 <translation id="3812525830114410218">বেয়া প্ৰমাণপত্ৰ</translation>
 <translation id="3813296892522778813">আপুনি বিচাৰি থকা সমল পোৱা নাই যদি <ph name="BEGIN_LINK_CHROMIUM" />Google Chromeৰ সহায়<ph name="END_LINK_CHROMIUM" />লৈ যাওক</translation>
 <translation id="3815509884387832993">ৰীডিং ম’ডৰ টুলবাৰত AI প্লে’বেকৰ বুটামটো অন কৰক ব্যৱহাৰ কৰি এই পৃষ্ঠাখন AI প্লে’বেকৰ জৰিয়তে প’ডকাষ্টৰ দৰে শুনক</translation>
@@ -3235,6 +3241,7 @@
 <translation id="4500055235123625757">Geminiএ আপুনি <ph name="LINK_BEGIN" />কিছুমান ৱেবছাইট<ph name="LINK_END" />ত প্লে’ কৰা ভিডিঅ’ বা অডিঅ’ৰ বিষয়ে প্ৰশ্নৰ উত্তৰ দিব পাৰে।</translation>
 <translation id="4500647907053779331">&amp;বাছনি কৰা খিনি <ph name="LANGUAGE" />লৈ অনুবাদ কৰক</translation>
 <translation id="4502477450742595012">এটা টেবত ৰাইট-ক্লিক কৰক আৰু "নতুন গোটত টেব যোগ দিয়ক" বাছনি কৰক</translation>
+<translation id="450300557121092531">ডিভাইচ অনুসৰি টেব</translation>
 <translation id="4503362512377701151">আপুনি আপোনাৰ শেহতীয়াকৈ ব্যৱহৃত টেবৰ গোটসমূহ দেখিছে যাতে আপুনি য’ত এৰিছিল তাৰ পৰাই আৰম্ভ কৰাত সহায় হয়।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3287,6 +3294,7 @@
 <translation id="4562155266774382038">পৰামৰ্শ অগ্ৰাহ্য কৰক</translation>
 <translation id="4563883094055457792">স্প্লিট ভিউ পুনঃস্থাপন কৰক</translation>
 <translation id="456449593072900590">বাহিৰ হওঁতে মচা হ'ব</translation>
+<translation id="4564636746145660922">আপোনাৰ সংযোগটো পৰীক্ষা কৰক, তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4565465014351935093">কেৱল নতুন টেবৰ পৃষ্ঠাত দেখুৱাওক</translation>
 <translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
@@ -3460,6 +3468,7 @@
 <translation id="475088594373173692">প্ৰথম ব্যৱহাৰকাৰী</translation>
 <translation id="4751925628341802838">আপোনাৰ অন্য ডিভাইচৰ পৰা আপোনাৰ ইতিহাস পাবলৈ, ছাইন ইন কৰক আৰু আপোনাৰ ইতিহাস আৰু টেব <ph name="EMAIL" />ৰ সৈতে ছিংক কৰক। আপুনি লগতে আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ এক্সটেনশ্বন আৰু অধিক বস্তু পাব। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="4754590344707355551">এক্সটেনশ্বনৰ জৰিয়তে আপোনাৰ ব্ৰাউজাৰটো উন্নত কৰক</translation>
+<translation id="4754903312643763797">ডেটা বিষয়ক গোপনীয়তাৰ বিভিন্ন চৰ্তাৱলী প্ৰযোজ্য হ’ব পাৰে</translation>
 <translation id="4756130875344525429"><ph name="DEVICE" />ৰ পৰা আপোনাৰ ইতিহাস পাবলৈ, ছাইন ইন কৰক আৰু আপোনাৰ ইতিহাস আৰু টেবসমূহ <ph name="EMAIL" />ৰ সৈতে ছিংক কৰক। আপুনি লগতে আপোনাৰ আটাইবোৰ ডিভাইচত ছেভ কৰা তথ্য আৰু অধিক পাব। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="4756378406049221019">বন্ধ কৰক/পুনৰ ল'ড কৰক</translation>
 <translation id="4756388243121344051">&amp;ইতিহাস</translation>
@@ -4142,6 +4151,7 @@
 <translation id="5509914365760201064">প্ৰদানকাৰী: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Googleৰ পৰা প্ৰতিচ্ছবিৰ বিৱৰণ পাওক</translation>
 <translation id="5512739112435045339">আপোনাৰ ডিভাইচত ঠাই খালী কৰক। তাৰ পাছত পুনৰ ডাউনল’ড কৰিবলৈ চাওক</translation>
+<translation id="5513121759801003159">আপোনাৰ চাটৰ ইতিহাস স্থানান্তৰ কৰা নহ’ব</translation>
 <translation id="5514315914873062345">টেব</translation>
 <translation id="5515048886012998157"><ph name="EXTENSION_NAME" />ৰ বাবে অধিক বিকল্প চাওক</translation>
 <translation id="5521078259930077036">আপুনি বিচৰা গৃহ পৃষ্ঠা এইটো হয়নে?</translation>
@@ -4950,6 +4960,7 @@
 <translation id="6451861213630784801">আপুনি ছাইন আউট হৈ আছে</translation>
 <translation id="6453191633103419909">টেব/স্ক্ৰীন প্ৰজেকশ্বনৰ গুণগত মান</translation>
 <translation id="6453306703004115497"><ph name="LANGUAGE" />লৈ অনুবাদ কৰা হৈছে</translation>
+<translation id="6454212815056355439">অন-ডিভাইচ AI-ৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="645433497989692531">এই কাৰ্যটোৱে এই ডিভাইচটোৰ পৰা আপোনাৰ ব্ৰাউজিঙৰ ডেটা স্থায়ীভাৱে মচি পেলাব। ডেটাখিনি পুনৰুদ্ধাৰ কৰিবলৈ, এই হিচাপে ছাইন ইন কৰক</translation>
 <translation id="6455264371803474013">বিশেষ ছাইটসমূহত</translation>
 <translation id="6455521402703088376">অফ আছে • এই এক্সটেনশ্বনটো ইয়াৰ বিকাশকৰ্তাই অপ্ৰকাশিত কৰিছে</translation>
@@ -5122,6 +5133,7 @@
 <translation id="663569763553406962">কি কি এক্সটেনশ্বনে এটা ছাইট পঢ়িব অথবা সলনি কৰিব পাৰে চাওক</translation>
 <translation id="6636258750460740634">ইতিহাস</translation>
 <translation id="6636623428211296678">তলত অধিক ছেটিং অন্বেষণ কৰক অথবা এতিয়া শেষ কৰক</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">দক্ষতাৰ সুবিধাটো বৰ্তমান অক্ষম কৰা হৈছে। আৰম্ভ কৰিবলৈ আপোনাৰ Chromeৰ ছেটিং আপডে’ট কৰক।</translation>
 <translation id="6639554308659482635">SQLite মেম'ৰী</translation>
 <translation id="6640268266988685324">খোলা টেব</translation>
@@ -5255,6 +5267,7 @@
 <translation id="6785779729084003225">Chromeত Gemini খুলিবলৈ <ph name="FOCUS_TOGGLE_HOTKEY" /> ব্যৱহাৰ কৰক</translation>
 <translation id="67862343314499040">বেঙুনীয়া</translation>
 <translation id="6786480815699355166">কেৱল সমর্থিত লাইভ কেপশ্বনৰ ভাষাসমূহ অনুবাদ কৰিব পাৰি</translation>
+<translation id="6786498102134843646">সঁহাৰিসমূহ <ph name="DOMAIN" />ৰ দ্বাৰা পৰিচালিত ফাইল বা সেৱাসমূহৰ ওপৰত আধাৰিত নহ’ব</translation>
 <translation id="6786747875388722282">এক্সটেনশ্বনসমূহ</translation>
 <translation id="6786804673213172567">টায়াৰ ৩: উচ্চ</translation>
 <translation id="6787531944787756058">ব্যৱহাৰকাৰীৰ নাম <ph name="USER_EMAIL" /> কেৱল এই ডিভাইচটোতহে ছেভ কৰা হৈছে। সবিশেষ চাওক</translation>
@@ -5417,6 +5430,7 @@
 <translation id="6941514251635934269">এই ডক্‌টোৰ বিষয়ে সোধক</translation>
 <translation id="694168622559714949">আপোনাৰ প্ৰশাসকে এটা ডিফ’ল্ট ভাষা ছেট কৰিছে যিটো সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="6941953303876950920">Geminiৰ সৈতে ব্ৰাউজিং অব্যাহত ৰাখিবলৈ পুনৰ লঞ্চ কৰাৰ আৱশ্যক</translation>
+<translation id="6943803108751887058">বন্ধ কৰিবলৈ এস্কে’প টিপক</translation>
 <translation id="6944854424004126054">ৱিণ্ড’ পুনৰুদ্ধাৰ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="694592694773692225">এই পৃষ্ঠাটোত ৰিডাইৰেক্টৰ সুবিধা অৱৰোধ কৰা আছে।</translation>
@@ -5742,6 +5756,7 @@
 <translation id="7293774463163321848">সন্ধানৰ ইতিহাস, Geminiৰ ইতিহাস আৰু পাছৱৰ্ড তেওঁৰ পৰিচালনাৰ ছেটিঙত মচিব পাৰি</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="7297228218361240128">আপুনি চোৱা পৃষ্ঠাসমূহৰ পৰা Google Walletত তথ্য ছেভ কৰক</translation>
+<translation id="7297535265731442945">Gemini Enterprise আপডে’ট কৰা হৈছে</translation>
 <translation id="7297726121602187087">গাঢ় সেউজীয়া</translation>
 <translation id="7298195798382681320">চুপাৰিছ কৰা</translation>
 <translation id="7299515639584427954">সমৰ্থিত লিংকসমূহৰ বাবে ডিফ’ল্ট এপ্‌টো সলনি কৰিবনে?</translation>
@@ -5763,6 +5778,7 @@
 <translation id="731827437403763009">AIৰ অভিনৱত্ব</translation>
 <translation id="7319983568955948908">শ্বেয়াৰ কৰা বন্ধ কৰক</translation>
 <translation id="7321545336522791733">ছাৰ্ভাৰৰ লগত সংযোগ কৰিব পৰা নাই</translation>
+<translation id="7321838786611890851">Geminiৰ সৈতে আপোনাৰ ভাব-বিনিময়ত <ph name="DOMAIN" />এ ছেট আপ কৰা সুৰক্ষা নাথাকিব পাৰে আৰু ডেটা বিষয়ক গোপনীয়তাৰ বিভিন্ন চৰ্তাৱলী প্ৰযোজ্য হ’ব পাৰে</translation>
 <translation id="7322515217754205362">ছাইটৰ অনুমতি</translation>
 <translation id="7324020307732396723">ভাষাৰ ছেটিং খোলক</translation>
 <translation id="7325209047678309347">পেপাৰখন ফচিছে</translation>
@@ -6059,6 +6075,7 @@
 <translation id="7653354650639364202">{0,plural, =1{আইচ’লেটেড ৱিণ্ড’ বন্ধ কৰক}one{আইচ’লেটেড (# খন ৱিণ্ড’) বন্ধ কৰক}other{আইচ’লেটেড (# খন ৱিণ্ড’) বন্ধ কৰক}}</translation>
 <translation id="7654941827281939388">এই একাউণ্টটো এই কম্পিউটাৰটোত ইতিমধ্যেই ব্যৱহাৰ কৰি থকা হৈছে।</translation>
 <translation id="7655411746932645568">ছাইটসমূহে ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="7656674791025857763"><ph name="ASSISTANT_NAME" /> ব্যৱহাৰ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="7657090467145778067">কম ৰাহি</translation>
 <translation id="7657218410916651670">আপুনি ছাইন ইন হৈ থকাৰ সময়ত আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK_GOOGLE" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK_GOOGLE" /> ছেভ কৰা হ’ব পাৰে। আপুনি যিকোনো সময়তে সেইবোৰ মচিব পাৰে।</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
@@ -6270,6 +6287,7 @@
 <translation id="7904492297081735975">&amp;বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="7907312522152480478">আপোনাৰ অন্য ডিভাইচৰ টেবসমূহ পাবলৈ এইগৰাকী আপুনি বুলি সত্যাপন কৰক আৰু আপোনাৰ ইতিহাস আৰু টেব ছিংক কৰক। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="7907837847548254634">ফ’কাছ কৰা বস্তুটোত এটা তাৎক্ষণিক হাইলাইট দেখুৱাওক</translation>
+<translation id="7908205867885088429">ছেটিং ডিফ’ল্টলৈ পুনঃস্থাপন কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="7908835530772972485">আপুনি আটাইবোৰ ৱিণ্ড’ বন্ধ কৰিলে ডেটা মচক</translation>
 <translation id="7909324225945368569">আপোনাৰ প্ৰ’ফাইলটোৰ নতুন নাম দিয়ক</translation>
 <translation id="7909969815743704077">ইনক’গনিট’ ম’ডত ডাউনল’ড কৰা হৈছে</translation>
@@ -6661,6 +6679,7 @@
 <translation id="8323317289166663449">আপোনাৰ কম্পিউটাৰ আৰু আটাইবোৰ ৱেবছাইটৰ ডেটা পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
 <translation id="8323518750352551353">ব্ৰাউজিং পৃথক কৰিবনে?</translation>
 <translation id="8323744572398547859">আপোনাৰ অন্য ডিভাইচৰ টেবসমূহ পাবলৈ ছাইন ইন কৰক আৰু ইতিহাস ছিংক কৰক। আপুনি লগতে আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড আৰু অধিক লাভ কৰিব। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
+<translation id="8324035203198677529">আপোনাৰ প্ৰতিষ্ঠানে Chromeত Gemini Enterprise অফ কৰিছে। আপুনি Chromeত Gemini ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ই আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰা তথ্য আৰু বিচাৰি নাপাব বা সেইবোৰৰ প্ৰসংগ উল্লেখ নকৰিব। আপোনাৰ চাটৰ ইতিহাস স্থানান্তৰ নহ’বও পাৰে।</translation>
 <translation id="8325413836429495820">আপোনাৰ ক্লিপব’ৰ্ড চোৱাৰ অনুমতি নাই</translation>
 <translation id="8326478304147373412">PKCS #7, প্ৰমাণপত্ৰ চ্চেইন</translation>
 <translation id="8327386430364625757">গাণিতিক ফণ্ট</translation>
@@ -6867,6 +6886,7 @@
 <translation id="8551388862522347954">অনুজ্ঞাপত্ৰসমূহ</translation>
 <translation id="8552102814346875916">"এই ছাইটসমূহ সদায় সক্ৰিয় কৰি ৰাখক"ৰ সূচীত ছেভ কৰক</translation>
 <translation id="8552947739661397736">কাৰ্যটোৰ দায়িত্ব লওক, বৰ্তমান Geminiৰ হাতত নিয়ন্ত্ৰণ আছে</translation>
+<translation id="8555042096950728024">পুনৰ সজাবলৈ টানি আনি এৰক বা কাঁড় চিহ্নসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - বিস্তাৰিত সমলসমূহ দেখুওৱা হৈছে</translation>
 <translation id="8557022314818157177">আপোনাৰ ফিংগাৰপ্ৰিণ্টটো কেপশ্বাৰ নকৰা পর্যন্ত আপোনাৰ সুৰক্ষা চাবিটো স্পৰ্শ কৰি থাকক</translation>
 <translation id="8557100046150195444">অব্যাহত ৰাখিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
@@ -6959,6 +6979,7 @@
 <translation id="8651806635673244884">আপুনি যিকোনো টেবত ৰাইট-ক্লিক কৰি আৰু “টেবসমূহ আনুভূমিকভাৱে দেখুৱাওক” বাছনি কৰি আপোনাৰ টেবসমূহ পুনৰ একেবাৰে ওপৰলৈ স্থানান্তৰ কৰিব পাৰে</translation>
 <translation id="8652400352452647993">এক্সটেনশ্বনৰ আসোঁৱাহ পেক কৰক</translation>
 <translation id="8654151524613148204">ফাইলটো আপোনাৰ কম্পিউটাৰৰ বাবে অতি ডাঙৰ। দুঃখিত।</translation>
+<translation id="8654872240409864765">আপোনাৰ প্ৰতিষ্ঠানে Chromeত Gemini Enterprise ছেট আপ কৰিছে। ব্ৰাউজ কৰাৰ সময়ত Geminiক যিকোনো কথা সোধক আৰু আপোনাৰ প্ৰতিষ্ঠানৰ ফাইল তথা সেৱাসমূহৰ ওপৰত ভিত্তি কৰি উত্তৰ লাভ কৰক।</translation>
 <translation id="8657393004602556571">আপুনি মতামতটো বাতিল কৰিব বিচাৰেনে?</translation>
 <translation id="865857184419171576">কেপশ্বন এইটো ভাষালৈ অনুবাদ কৰক</translation>
 <translation id="865936634714975126">পৃষ্ঠা ল’ডৰ প্ৰকাৰসমূহ বাছনি কৰিবলৈ URLত এটা কুৱেৰীৰ পৰম যোগ দিয়ক। যেনে: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7122,6 +7143,7 @@
 <translation id="8813937837706331325">মধ্যমীয়া ৰাহি</translation>
 <translation id="8815742860876889867">লিংকটো আইচ’লেটেড উইণ্ড’ত খোলক</translation>
 <translation id="881799181680267069">অন্যবোৰ লুকুৱাওক</translation>
+<translation id="8820301999480837183">গোট <ph name="GROUP_NAME" />ত ফ’কাছ কৰা হৈছে</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821206216942230957">আপোনাৰ একাউণ্টৰ Chromeত Geminiৰ এক্সেছ নাই</translation>
 <translation id="8823514049557262177">লিংকৰ পা&amp;ঠ প্ৰতিলিপি কৰক</translation>
@@ -7161,6 +7183,7 @@
 <translation id="8863753581171631212">লিংক নতুন <ph name="APP" />ত খোলক</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" />ক <ph name="APP_NAME" />লৈ শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="8864104359314908853">আপোনাৰ পাছৱৰ্ড ছেভ কৰা হৈছে</translation>
+<translation id="8865924457197342642">Gemini Enterprise আৰু উপলব্ধ নহয়</translation>
 <translation id="8866424952450451412">ইয়াৰ দ্বাৰা পৰিচালিত আপোনাৰ কাষ্টম ৱৰ্কফ্ল’ পৰিচালনা কৰক</translation>
 <translation id="8867102760244540173">সন্ধানৰ টেব...</translation>
 <translation id="8867568208303837180">পঠিয়াই থকা হৈছে...</translation>
@@ -7373,6 +7396,7 @@
 <translation id="9096776523567481218">স্থানীয়ভাৱে ইনষ্টল হৈ থকা নাই</translation>
 <translation id="9099383880226822604">বৰ্ষাৰণ্য</translation>
 <translation id="9100765901046053179">উন্নত ছেটিংসমূহ</translation>
+<translation id="9100928301185810363">নামবিহীন গোটত ফ’কাছ কৰা হৈছে - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">কাষ্ট কৰিবলৈ ইয়াত Chromeক এক্সেছ দিয়ক: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; স্থানীয় নেটৱৰ্ক &gt; Chrome</translation>
 <translation id="9103868373786083162">উভতি যাবলৈ টিপক, ইতিহাস চাবলৈ প্ৰসংগ মেনুলৈ যাওক</translation>
 <translation id="9107096627210171112">অনুবাদ কৰক...</translation>

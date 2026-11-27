@@ -7789,15 +7789,6 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
       此处的“<ph name="CHROMEOS_VERSION_PROPERTY_NAME" />”既可以是确切版本（如“13305.0.0”），也可以是版本前缀（如“13305”）。
       “<ph name="WARNING_PERIOD_PROPERTY_NAME" />”和“<ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />”都是可选值，在使用时应以天数为单位指定。这两个期限的默认值都是 0 天，表示没有警告期。
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 是一项可选属性，默认值为 False。</translation>
-<translation id="5876812185674131521">防止手动删除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-此政策旨在防止用户从网站设置页面手动清除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie 后，访问未经授权的 <ph name="YOUTUBE_PRODUCT_NAME" />。
-
-如果启用此政策，系统会阻止用户手动删除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-如果停用此政策或不设置任何值，系统会允许用户正常删除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
-
-注意：此政策仅能阻止从网站设置界面中手动删除，而不会阻止通过 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 或 <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> 政策自动删除。此外，如果您启用了 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> 政策，则用户仍可通过“清除浏览数据”对话框清除所有 Cookie。</translation>
 <translation id="5879014913445067283">控制网络文件共享功能是否通过“<ph name="NETBIOS_NAME" />”来搜索共享文件</translation>
 <translation id="588135807064822874">启用“轻触搜索”功能</translation>
 <translation id="5882345429632338713">在启动替代浏览器之前的延迟时间（以毫秒为单位）</translation>
@@ -10182,13 +10173,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果未设置此政策，色彩校正功能最初会处于停用状态，但用户可以随时启用该功能。</translation>
-<translation id="7324627441366994249">允许设置网址格式清单，指定 Gemini 应用集成功能无法直接对哪些网站的网页执行操作。
-
-如果网址既不符合许可清单也不符合屏蔽清单，系统会使用 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />。
-
-如果网址同时符合许可清单和屏蔽清单，则允许 Gemini 应用集成功能执行操作。
-
-如需详细了解有效网址格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="7325801934761922681">不允许 Chrome 阻止导航到沙盒化 iframe 内的外部协议</translation>
 <translation id="7326394567531622570">与 Wipe（值 2）类似，但该选项会尝试保留登录令牌，以使用户无需再次登录。</translation>
 <translation id="7331098674887251788">允许 Gemini 应用集成功能直接对网页执行操作</translation>
@@ -11453,13 +11437,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 如果此政策的值设为 false，这些设备无需连上受管理的网络即可加入此课程。</translation>
 <translation id="8183108371184777472">禁止启动浏览器窗口</translation>
 <translation id="8185312100223853315">个人资料标签</translation>
-<translation id="8186370194423312090">允许设置网址格式清单，指定 Gemini 应用集成功能可以直接对哪些网站的网页执行操作。
-
-如果网址既不符合许可清单也不符合屏蔽清单，系统会使用 <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />。
-
-如果网址同时符合许可清单和屏蔽清单，则允许 Gemini 应用集成功能执行操作。
-
-如需详细了解有效网址格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="8186911565834244165">允许用户提供反馈</translation>
 <translation id="8190271041226151932">此设置会控制 Gemini 应用集成。
 

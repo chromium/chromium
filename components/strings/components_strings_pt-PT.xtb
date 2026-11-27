@@ -1638,7 +1638,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3727850735097852673">Para usar o Gestor de Palavras-passe da Google com o Porta-chaves macOS, reinicie o Chrome e permita o acesso ao Porta-chaves. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="3728173127485570463">O navegador Chrome vai deixar de exigir a sua impressão digital para o preenchimento automático de palavras-passe</translation>
 <translation id="3729811201279509483">Adicione separadores manualmente</translation>
-<translation id="3732370487905329239">Data de entrega prevista</translation>
 <translation id="3736564442532774454">O navegador Chrome está a tentar preencher as suas informações confidenciais na app <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">O seu navegador é gerido pelo seu administrador.</translation>
 <translation id="3739842843727261045">A opção Gosto envia feedback a indicar que gosta destes resultados</translation>
@@ -2742,7 +2741,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
 <translation id="5541086400771735334">Caixa de correio 7</translation>
 <translation id="5541546772353173584">Adicionar email</translation>
-<translation id="5541735141423273733">Data de chegada</translation>
 <translation id="5543452229212526547">O seu texto e o conteúdo e o URL da página em que está a escrever vão ser enviados para a Google. O seu conteúdo não vai ser usado por revisores humanos para melhorar a IA. A sua organização pode alterar estas definições em qualquer altura.</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5546252337258681768">Dispositivo desbloqueado</translation>
@@ -3195,7 +3193,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6311410654831092784">Cartolina</translation>
 <translation id="6311642842034740437">Localização com nome</translation>
 <translation id="6312113039770857350">Página Web não disponível</translation>
-<translation id="6313189007657889655">ID da encomenda</translation>
 <translation id="6316110367871394043">O carregamento do ficheiro para o <ph name="CLOUD_PROVIDER" /> foi pausado</translation>
 <translation id="63172326633386613">Gerir definições de acessibilidade</translation>
 <translation id="6319672966240656136">Este site vai permanecer bloqueado porque está no Programa de Proteção avançada da Google. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>

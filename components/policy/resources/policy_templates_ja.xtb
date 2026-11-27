@@ -7603,15 +7603,6 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
       「<ph name="CHROMEOS_VERSION_PROPERTY_NAME" />」には、正確なバージョン（13305.0.0 など）かバージョンのプレフィックス（13305 など）を指定できます。
       「<ph name="WARNING_PERIOD_PROPERTY_NAME" />」と「<ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />」には、日数を指定します（省略可）。デフォルトの値は 0 日で、この場合は警告期間がないことを意味します。
       「<ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" />」は省略可能なプロパティで、デフォルト値は False です。</translation>
-<translation id="5876812185674131521"><ph name="YOUTUBE_PRODUCT_NAME" /> の Cookie の手動での削除を制限します。
-
-このポリシーは、ユーザーがサイト設定ページから <ph name="YOUTUBE_PRODUCT_NAME" /> の Cookie を手動で削除した後に、未承認の <ph name="YOUTUBE_PRODUCT_NAME" /> にアクセスするのを防ぐことを目的としています。
-
-このポリシーを有効に設定した場合、<ph name="YOUTUBE_PRODUCT_NAME" /> の Cookie は手動で削除できなくなります。
-
-このポリシーを無効に設定するか未設定のままにした場合、<ph name="YOUTUBE_PRODUCT_NAME" /> の Cookie は通常どおり削除できます。
-
-注: このポリシーは、サイト設定の UI を使用した手動での削除のみを制限するものです。<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> ポリシーまたは <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> ポリシーによる自動削除を制限することはできません。また、<ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> ポリシーが有効になっている場合でも、ユーザーは [閲覧履歴データの削除] ダイアログですべての Cookie を削除できます。</translation>
 <translation id="5879014913445067283">ネットワーク ファイル共有の検出の際に <ph name="NETBIOS_NAME" /> を有効にするかどうかを設定する</translation>
 <translation id="588135807064822874">タップして検索を有効にする</translation>
 <translation id="5882345429632338713">代替ブラウザ起動までの待機時間（ミリ秒）</translation>
@@ -9897,13 +9888,6 @@ EphemeralNetworkPolicies 機能がデフォルトで有効になると、この�
           このポリシーを設定した場合、ユーザーが設定を変更またはオーバーライドすることはできません。
 
           このポリシーを未設定のままにした場合、初期設定では色補正機能が無効になりますが、ユーザーはいつでも有効にできます。</translation>
-<translation id="7324627441366994249">ウェブページ上で Gemini アプリの統合の直接実行をブロックするサイトの URL パターンのリストを指定できます。
-
-許可リストとブロックリストのどちらにも一致しない URL には、<ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" /> が使用されます。
-
-許可リストとブロックリストの両方に一致する URL には、直接実行が許可されます。
-
-有効な URL パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="7325801934761922681">サンドボックス化された iframe 内で外部プロトコルへの移動を Chrome がブロックしないようにする</translation>
 <translation id="7326394567531622570">このオプションは Wipe（値 2）と似ていますが、ログイン トークンを保持するように動作します（この場合、ユーザーの再ログインが不要になります）。</translation>
 <translation id="7331098674887251788">Gemini アプリの統合を許可し、ウェブページで直接操作できるようにする</translation>
@@ -11110,13 +11094,6 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 false に設定した場合、管理対象のネットワークに接続されているかどうかに関係なく参加を許可します。</translation>
 <translation id="8183108371184777472">ブラウザ ウィンドウの起動を抑制する</translation>
 <translation id="8185312100223853315">プロフィール ラベル</translation>
-<translation id="8186370194423312090">ウェブページ上で Gemini アプリの統合の直接実行を許可するサイトの URL パターンのリストを指定できます。
-
-許可リストとブロックリストのどちらにも一致しない URL には、<ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" /> が使用されます。
-
-許可リストとブロックリストの両方に一致する URL には、直接実行が許可されます。
-
-有効な URL パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。</translation>
 <translation id="8186911565834244165">ユーザーからのフィードバックを許可する</translation>
 <translation id="8190271041226151932">この設定では、Gemini アプリの統合を許可します。
 

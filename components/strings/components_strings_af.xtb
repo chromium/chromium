@@ -1638,7 +1638,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3727850735097852673">Herbegin Chrome en laat Keychain toegang toe om Google Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="3728173127485570463">Chrome-blaaier sal nie meer jou vingerafdruk benodig om wagwoorde te outovul nie</translation>
 <translation id="3729811201279509483">Voeg oortjies handmatig by</translation>
-<translation id="3732370487905329239">Beraamde afleweringsdatum</translation>
 <translation id="3736564442532774454">Chrome-blaaier probeer om jou sensitiewe inligting op <ph name="APP_NAME" /> in te vul.</translation>
 <translation id="3738166223076830879">Jou administrateur bestuur jou blaaier.</translation>
 <translation id="3739842843727261045">Opduim stuur terugvoer dat jy van hierdie resultate hou</translation>
@@ -2742,7 +2741,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5540224163453853">Kon nie die versoekte artikel vind nie.</translation>
 <translation id="5541086400771735334">Posbus 7</translation>
 <translation id="5541546772353173584">Voeg e-posadres by</translation>
-<translation id="5541735141423273733">Aankomsdatum</translation>
 <translation id="5543452229212526547">Jou teks en die inhoud en URL van die bladsy waarop jy skryf, sal na Google toe gestuur word. Jou inhoud sal nie deur mense wat kontrolering uitvoer gebruik word om KI te verbeter nie. Jou organisasie kan enige tyd hierdie instellings verander.</translation>
 <translation id="5543722831081909240">180 grade</translation>
 <translation id="5546252337258681768">Toestel is ontsluit</translation>
@@ -3195,7 +3193,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6311410654831092784">Dik papier</translation>
 <translation id="6311642842034740437">Benoemde ligging</translation>
 <translation id="6312113039770857350">Webbladsy is nie beskikbaar nie</translation>
-<translation id="6313189007657889655">Bestelling-ID</translation>
 <translation id="6316110367871394043">Lêeroplaai na <ph name="CLOUD_PROVIDER" /> is onderbreek</translation>
 <translation id="63172326633386613">Bestuur toeganklikheidsinstellings</translation>
 <translation id="6319672966240656136">Hierdie werf sal geblokkeer bly want jy is onder Google se Gevorderde Beskerming-program. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>

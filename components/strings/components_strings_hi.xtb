@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">macOS Keychain के साथ Google Password Manager का इस्तेमाल करने के लिए, Chrome को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="3728173127485570463">Chrome ब्राउज़र में पासवर्ड ऑटोमैटिक भरने के लिए, अब फ़िंगरप्रिंट की ज़रूरत नहीं होगी</translation>
 <translation id="3729811201279509483">मैन्युअल तरीके से टैब जोड़ने की सुविधा</translation>
-<translation id="3732370487905329239">डिलीवरी की अनुमानित तारीख</translation>
 <translation id="3736564442532774454">Chrome ब्राउज़र, <ph name="APP_NAME" /> पर आपकी संवेदनशील जानकारी भरने की कोशिश कर रहा है.</translation>
 <translation id="3738166223076830879">आपका एडमिन आपके ब्राउज़र को मैनेज करता है.</translation>
 <translation id="3739842843727261045">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं</translation>
@@ -2742,7 +2741,6 @@
 <translation id="5540224163453853">अनुरोध किया गया लेख नहीं ढूंढा जा सका.</translation>
 <translation id="5541086400771735334">मेलबॉक्स 7</translation>
 <translation id="5541546772353173584">ईमेल जोड़ें</translation>
-<translation id="5541735141423273733">पहुंचने की तारीख</translation>
 <translation id="5543452229212526547">जिस पेज पर लिखा जा रहा है उसका टेक्स्ट, कॉन्टेंट, और यूआरएल, Google को भेजा जाएगा. एआई को बेहतर बनाने के लिए, समीक्षा करने वाले लोग आपके कॉन्टेंट का इस्तेमाल नहीं करेंगे. आपका संगठन इन सेटिंग को किसी भी समय बदल सकता है.</translation>
 <translation id="5543722831081909240">180 डिग्री</translation>
 <translation id="5546252337258681768">डिवाइस को अनलॉक कर दिया गया</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">कार्ड स्टॉक</translation>
 <translation id="6311642842034740437">जगह का नाम</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नहीं है</translation>
-<translation id="6313189007657889655">ऑर्डर आईडी</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> में फ़ाइल अपलोड करने की प्रोसेस को रोक दिया गया है</translation>
 <translation id="63172326633386613">सुलभता सेटिंग मैनेज करें</translation>
 <translation id="6319672966240656136">यह साइट ब्लॉक ही रहेगी, क्योंकि आपने Google के Advanced Protection Program के लिए ऑप्ट-इन किया है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>

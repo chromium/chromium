@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">ৰুবী</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> ছেকেণ্ড ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
 <translation id="1984328900355667246">প্লে’বেক উপলব্ধ নহয়</translation>
+<translation id="2009730553732772041">অডিঅ’ সৃষ্টি কৰিবলৈ আপুনি বৰ্তমান থকা পৃষ্ঠাখনৰ সমল আৰু URL Googleৰ সৈতে শ্বেয়াৰ কৰা হ’ব। আপুনি যিকোনো সময়তে ছেটিঙত এই বাছনিটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="2019727681730021602">মানক প্লে’বেক</translation>
 <translation id="2224347680315897176">স্থিৰ</translation>
 <translation id="2575502321843437554">পৰ্যাপ্তৰূপে অংশগ্ৰহণমূলক নহয়</translation>
 <translation id="2611765907167846862">শান্ত</translation>
 <translation id="3023502830214299618">দুৰ্ভাগ্যবশতঃ, এই সময়ত এই পৃষ্ঠাৰ বাবে প্লে’বেক উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="3431227249425330101">অব্যাহত ৰাখিবলৈ, Chromeক এই পৃষ্ঠাখন শুনক সুবিধাটোৰ বাবে পৃষ্ঠাৰ সমল ব্যৱহাৰ কৰিবলৈ দিবনে?</translation>
 <translation id="3493899379487634969">কি ভুল হ’ল?</translation>
 <translation id="3730775656877876887">AI প্লে'বেক সৃষ্টি কৰি থকা হৈছে</translation>
 <translation id="3778044272390020426">নেতিবাচক মতামতৰ বিকল্পৰ মেনু</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“এই পৃষ্ঠাখন শুনক” প্লে’য়াৰ</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7138678301420049075">অন্য</translation>
+<translation id="7161867604252594316">“এই পৃষ্ঠাখন শুনক” সুবিধাটো বন্ধ হৈ আছে</translation>
 <translation id="7221920857098237570">সাধাৰণ</translation>
 <translation id="7237590978482584900">আনন্দময়</translation>
 <translation id="7282547042039404307">মসৃণ</translation>

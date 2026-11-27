@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Spol <ph name="NUMBER_OF_SECONDS" /> sekunder frem</translation>
 <translation id="1984328900355667246">Afspilning er ikke tilgængelig</translation>
+<translation id="2009730553732772041">Indholdet og webadressen på den side, du befinder dig på, deles med Google for at generere lyd. Du kan til enhver tid opdatere dette valg i indstillingerne.</translation>
 <translation id="2019727681730021602">Standardafspilning</translation>
 <translation id="2224347680315897176">Stabil</translation>
 <translation id="2575502321843437554">Ikke engagerende nok</translation>
 <translation id="2611765907167846862">Rolig</translation>
 <translation id="3023502830214299618">Afspilning på denne side er ikke tilgængelig i øjeblikket. Prøv igen senere.</translation>
+<translation id="3431227249425330101">Vil du fortsætte ved at give Chrome tilladelse til at bruge sideindhold til funktionen Få oplæst denne side?</translation>
 <translation id="3493899379487634969">Hvad var der galt?</translation>
 <translation id="3730775656877876887">AI-afspilning genereres</translation>
 <translation id="3778044272390020426">Menu med valgmuligheder for negativ feedback</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Afspilleren "Lyt til denne side"</translation>
 <translation id="7051308646573997571">Koralrød</translation>
 <translation id="7138678301420049075">Andet</translation>
+<translation id="7161867604252594316">"Få oplæst denne side" er slået fra</translation>
 <translation id="7221920857098237570">Blid</translation>
 <translation id="7237590978482584900">Luftig</translation>
 <translation id="7282547042039404307">Problemfri</translation>

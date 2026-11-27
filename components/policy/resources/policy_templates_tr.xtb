@@ -8013,15 +8013,6 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
       Burada <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> ile kastedilen, "13305.0.0" gibi bir tam sürüm veya "13305" gibi bir sürüm öneki olabilir.
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> ve <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />, gün sayısı şeklinde belirtilen isteğe bağlı değerlerdir. Bunlar için varsayılan değer 0 gündür ve uyarı süresi olmadığı anlamına gelir.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" />, varsayılan değeri False (Yanlış) olan isteğe bağlı bir özelliktir.</translation>
-<translation id="5876812185674131521"><ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin manuel olarak silinmesini engeller.
-
-Bu politika, kullanıcıların site ayarları sayfasından <ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerini manuel olarak temizledikten sonra <ph name="YOUTUBE_PRODUCT_NAME" /> hizmetlerine yetkisiz erişmesini engellemeyi amaçlar.
-
-Politika, Etkin değerine ayarlanırsa <ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin manuel olarak silinmesi engellenir.
-
-Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="YOUTUBE_PRODUCT_NAME" /> çerezleri normal şekilde silinebilir.
-
-Not: Bu politika yalnızca site ayarları kullanıcı arayüzünden manuel silme işlemini engeller. <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> veya <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> politikalarıyla otomatik silme işlemini engellemez. Ayrıca, <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> politikası etkinleştirilirse kullanıcılar, Tarama Verilerini Temizle iletişim kutusunu kullanarak tüm çerezlerini temizleyebilir.</translation>
 <translation id="5879014913445067283"><ph name="NETBIOS_NAME" /> aracılığıyla Ağ Üzerinde Dosya Paylaşımı keşfini kontrol et</translation>
 <translation id="588135807064822874">Dokun ve Ara'yı etkinleştir</translation>
 <translation id="5882345429632338713">Alternatif tarayıcı açılmadan önce geçecek süre (milisaniye)</translation>
@@ -10479,13 +10470,6 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları aya
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
 
           Bu politika ayarlanmadan bırakılırsa renk düzeltme özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar bunu istediği zaman etkinleştirebilir.</translation>
-<translation id="7324627441366994249">Gemini uygulaması entegrasyonlarının web sayfalarında doğrudan işlem yapamayacağı sitelerin belirtildiği URL kalıpları listesinin ayarlanmasına olanak tanır.
-
-İzin verilenler listesi veya engellenenler listesiyle eşleşmeyen URL'lerde <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" /> kullanılır.
-
-Hem izin verilenler hem de engellenenler listesiyle eşleşen URL'lere izin verilir.
-
-Geçerli url kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.</translation>
 <translation id="7325801934761922681">Chrome'un, korumalı alana alınmış iframe içerisindeki harici protokollerde gezinmeyi engellemesini önle</translation>
 <translation id="7326394567531622570">Wipe (2 değeri) seçeneğine benzer, ancak kullanıcının tekrar oturum açmak zorunda kalmaması için giriş jetonlarını saklar.</translation>
 <translation id="7331098674887251788">Gemini uygulaması entegrasyonlarının doğrudan web sayfalarında işlem yapmasına izin verir</translation>
@@ -11791,13 +11775,6 @@ Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa cihazlar�
 Politika, Yanlış değerine ayarlanırsa yönetilen bir ağa bağlanmadan sınıfa katılabilirler.</translation>
 <translation id="8183108371184777472">Tarayıcı penceresini başlatmayı engelleme</translation>
 <translation id="8185312100223853315">Profil Etiketi</translation>
-<translation id="8186370194423312090">Gemini uygulaması entegrasyonlarının web sayfalarında doğrudan işlem yapabileceği sitelerin belirtildiği URL kalıpları listesinin ayarlanmasına olanak tanır.
-
-İzin verilenler listesi veya engellenenler listesiyle eşleşmeyen URL'lerde <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" /> kullanılır.
-
-Hem izin verilenler hem de engellenenler listesiyle eşleşen URL'lere izin verilir.
-
-Geçerli url kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.</translation>
 <translation id="8186911565834244165">Kullanıcı geri bildirimine izin ver</translation>
 <translation id="8190271041226151932">Bu ayar, Gemini uygulaması entegrasyonlarına izin verir.
 

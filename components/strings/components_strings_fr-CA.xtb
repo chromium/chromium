@@ -1638,7 +1638,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3727850735097852673">Pour utiliser le gestionnaire de mots de passe Google avec le trousseau macOS, relancez Chrome et autorisez l'accès au trousseau. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="3728173127485570463">Le navigateur Chrome n'aura plus besoin de votre empreinte digitale pour remplir automatiquement les mots de passe</translation>
 <translation id="3729811201279509483">Ajouter manuellement des onglets</translation>
-<translation id="3732370487905329239">Date de livraison approximative</translation>
 <translation id="3736564442532774454">Le navigateur Chrome tente de remplir vos infos sensibles dans <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3739842843727261045">La mention J'aime indique que vous aimez ces résultats</translation>
@@ -2742,7 +2741,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5540224163453853">Impossible de trouver l'article demandé.</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse de courriel</translation>
-<translation id="5541735141423273733">Date d'arrivée</translation>
 <translation id="5543452229212526547">Le texte, le contenu et l'URL de la page sur laquelle vous écrivez seront envoyés à Google. Votre contenu ne sera pas utilisé par des réviseurs humains afin d'améliorer l'IA. Votre organisation peut modifier ces paramètres à tout moment.</translation>
 <translation id="5543722831081909240">180 degrés</translation>
 <translation id="5546252337258681768">Appareil déverrouillé</translation>
@@ -3195,7 +3193,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6311410654831092784">Papier cartonné</translation>
 <translation id="6311642842034740437">Lieu-dit</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
-<translation id="6313189007657889655">Numéro de commande</translation>
 <translation id="6316110367871394043">Téléversement du fichier vers <ph name="CLOUD_PROVIDER" /> suspendu</translation>
 <translation id="63172326633386613">Gérer les paramètres d'accessibilité</translation>
 <translation id="6319672966240656136">Ce site restera bloqué, car vous faites partie du programme de protection avancée de Google. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>

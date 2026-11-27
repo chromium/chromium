@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">macOS Keychain ဖြင့် Google Password Manager သုံးရန် Chrome ကို ပြန်ဖွင့်ပြီး Keychain သုံးခွင့်ပြုပါ။ ပြန်ဖွင့်ပြီးနောက် သင့်တဘ်များ ပြန်ပွင့်ပါမည်။</translation>
 <translation id="3728173127485570463">Chrome ဘရောင်ဇာတွင် စကားဝှက်များ အော်တိုဖြည့်ရန် သင့်လက်ဗွေမလိုတော့ပါ</translation>
 <translation id="3729811201279509483">တဘ်များကို ကိုယ်တိုင်ထည့်ခြင်း</translation>
-<translation id="3732370487905329239">ခန့်မှန်းထားသော ပေးပို့ရက်</translation>
 <translation id="3736564442532774454">Chrome ဘရောင်ဇာသည် <ph name="APP_NAME" /> တွင် သင်၏သတိထားရမည့် အချက်အလက်ကို ဖြည့်ရန် ကြိုးစားနေသည်။</translation>
 <translation id="3738166223076830879">သင်၏ ဘရောင်ဇာကို သင့်ကြီးကြပ်သူက စီမံခန့်ခွဲထားပါသည်။</translation>
 <translation id="3739842843727261045">‘လက်မထောင်’ ပေးပို့ပြီး ဤရလဒ်များကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်</translation>
@@ -2743,7 +2742,6 @@
 <translation id="5540224163453853">တောင်းဆိုထားသည့် အကြောင်းအရာ မတွေ့ပါ။</translation>
 <translation id="5541086400771735334">စာတိုက်ပုံး ၇</translation>
 <translation id="5541546772353173584">အီးမေးလ် ထည့်ပါ</translation>
-<translation id="5541735141423273733">ဆိုက်ရောက်ရက်စွဲ</translation>
 <translation id="5543452229212526547">သင်၏စာသား၊ အချက်အလက်နှင့် သင်ရေးသားနေသော စာမျက်နှာ၏ URL တို့ကို Google ထံသို့ ပို့မည်။ ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက AI ပိုကောင်းလာစေရန်အတွက် သင့်အချက်အလက်များကို သုံးမည်မဟုတ်ပါ။ သင့်အဖွဲ့အစည်းက ဤဆက်တင်များကို အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="5543722831081909240">၁၈၀ ဒီဂရီ</translation>
 <translation id="5546252337258681768">စက်ကို လော့ခ်ဖွင့်ထားသည်</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">ကတ်စတော့</translation>
 <translation id="6311642842034740437">တည်နေရာအမည်</translation>
 <translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
-<translation id="6313189007657889655">မှာယူမှု ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> သို့ အပ်လုဒ်လုပ်သော ဖိုင်ကို ခဏရပ်ထားသည်</translation>
 <translation id="63172326633386613">အများသုံးနိုင်မှု ဆက်တင်များ စီမံရန်</translation>
 <translation id="6319672966240656136">သင်သည် Google ၏ Advanced Protection Program အောက်တွင် ရှိနေသောကြောင့် ဤဝဘ်ဆိုက်ကို ဆက်ပိတ်ထားပါမည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>

@@ -1637,7 +1637,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="3728173127485570463">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izi tələb etməyəcək</translation>
 <translation id="3729811201279509483">Tabları manual olaraq əlavə edin</translation>
-<translation id="3732370487905329239">Təxmini çatdırılma tarixi</translation>
 <translation id="3736564442532774454">Chrome brauzeri <ph name="APP_NAME" /> tətbiqində həssas məlumatları doldurmağa çalışır.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3739842843727261045">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir</translation>
@@ -2743,7 +2742,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5540224163453853">Tələb olunan məqaləni tapmaq alınmadı.</translation>
 <translation id="5541086400771735334">Poçt qutusu 7</translation>
 <translation id="5541546772353173584">E-poçt Əlavə Edin</translation>
-<translation id="5541735141423273733">Gəliş tarixi</translation>
 <translation id="5543452229212526547">Mətn, yazdığınız səhifənin kontent və URL-i Google-a göndəriləcək. Kontentiniz insan redaktorlar tərəfindən Sİ-ni təkmilləşdirmək üçün istifadə edilməyəcək. Təşkilatınız bu ayarları istənilən vaxt dəyişə bilər.</translation>
 <translation id="5543722831081909240">180 dərəcə</translation>
 <translation id="5546252337258681768">Cihaz kiliddən çıxarıldı</translation>
@@ -3196,7 +3194,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6311410654831092784">Çoxqatlı nazik karton</translation>
 <translation id="6311642842034740437">Adlandırılmış məkan</translation>
 <translation id="6312113039770857350">Veb səhifə əlçatan deyil</translation>
-<translation id="6313189007657889655">Sifariş ID-si</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> üzrə fayl yükləməsi durduruldu</translation>
 <translation id="63172326633386613">Əlçatımlılıq ayarlarını idarə edin</translation>
 <translation id="6319672966240656136">Google-un Qabaqcıl Qoruma Proqramı əhatəsində olduğunuz üçün bu sayt blokda qalacaq. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>

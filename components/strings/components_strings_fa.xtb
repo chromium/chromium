@@ -1639,7 +1639,6 @@
 <translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3728173127485570463">‏مرورگر Chrome ازاین‌پس برای تکمیل خودکار گذرواژه‌ها نیازی به اثر انگشت شما نخواهد داشت</translation>
 <translation id="3729811201279509483">افزودن دستی زبانه‌ها</translation>
-<translation id="3732370487905329239">تاریخ تحویل تخمینی</translation>
 <translation id="3736564442532774454">‏مرورگر Chrome می‌خواهد اطلاعات حساس شما را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="3738166223076830879">سرپرست شما مرورگرتان را مدیریت می‌کند.</translation>
 <translation id="3739842843727261045">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید</translation>
@@ -2743,7 +2742,6 @@
 <translation id="5540224163453853">مقاله درخواستی یافت نشد.</translation>
 <translation id="5541086400771735334">صندوق پست ۷</translation>
 <translation id="5541546772353173584">افزودن ایمیل</translation>
-<translation id="5541735141423273733">تاریخ ورود</translation>
 <translation id="5543452229212526547">‏نوشتار، محتوا، و نشانی وب صفحه‌ای که در آن درحال نوشتن هستید به Google ارسال می‌شوند. افراد بازبین از محتوای شما برای بهبود هوش مصنوعی استفاده نخواهند کرد. سازمان شما هرزمان بخواهد می‌تواند این تنظیمات را تغییر دهد.</translation>
 <translation id="5543722831081909240">۱۸۰ درجه</translation>
 <translation id="5546252337258681768">دستگاه آزاد است</translation>
@@ -3196,7 +3194,6 @@
 <translation id="6311410654831092784">دسته کاغذ مقوایی</translation>
 <translation id="6311642842034740437">مکان نام‌گذاری‌شده</translation>
 <translation id="6312113039770857350">صفحه وب در دسترس نیست</translation>
-<translation id="6313189007657889655">شناسه سفارش</translation>
 <translation id="6316110367871394043">بارگذاری فایل در <ph name="CLOUD_PROVIDER" /> موقتاً متوقف شده است</translation>
 <translation id="63172326633386613">مدیریت تنظیمات دسترس‌پذیری</translation>
 <translation id="6319672966240656136">‏این سایت مسدود خواهد ماند زیرا «برنامه محافظت پیشرفته Google» را فعال کرده‌اید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>

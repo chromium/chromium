@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> – Du deler denne fane med Google Søgning</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
 <translation id="1698376642261615901">Google Chrome er en webbrowser, som kører websider og apps med lynets hast. Den er hurtig, stabil og nem at bruge. Surf mere sikkert med indbygget beskyttelse mod malware og phishing i Google Chrome.</translation>
@@ -254,6 +255,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3380249972812870825">Tryk på <ph name="GLOBAL_HOTKEY" /> for at åbne Gemini i Chrome</translation>
 <translation id="3392127217442962664">Chrome har tilføjet AI, der kører på din enhed. Websites og Chrome kan bruge den til funktioner som f.eks.:</translation>
 <translation id="3396977131400919238">Der opstod en fejl ved operativsystemet under installation. Download Google Chrome igen.</translation>
+<translation id="3404531968986217414">Start en ny tråd med Google Søgning</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3438681572027105609">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chrome</translation>
 <translation id="3450887623636316740">Denne fil kan være skadelig<ph name="LINE_BREAK" />Chrome kan tjekke denne download for dig, hvis du angiver adgangskoden. Oplysninger om filen sendes til Google Beskyttet browsing, men filens indhold og adgangskoden forbliver på din enhed.</translation>
@@ -396,6 +398,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5003967926796347400">Klik på "Google Adgangs­kode­admin­istrator"</translation>
 <translation id="5043786843026425788">Få flere oplysninger om at søge med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Åbn links i Chrome fra en hvilken som helst app. Den fastgøres også til proceslinjen, så du nemt kan tilgå den.</translation>
+<translation id="507983337152787026">Start en ny tråd med Google Søgning</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. Der er et åbent inkognitovindue eller isoleret vindue. Det åbnes ikke igen, når du har genstartet.}one{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. Der er # inkognitovindue og isoleret vindue åbent på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}other{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. Der er # inkognitovinduer og isolerede vinduer åbne på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}}</translation>
 <translation id="5105120510934353742">Hvis du vil have Google Chrome-opdateringer fremover, skal du have macOS 13 eller nyere. Denne computer anvender macOS 12.</translation>
 <translation id="5114340746415930644">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="USER_EMAIL" /></translation>
@@ -420,6 +423,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="524751727772074981">Spørg om alt, lige der hvor du er, med Gemini i Chrome</translation>
 <translation id="5247617065091903691">Du kan fastgøre sidepanelet i Google Søgning, så du kan stille spørgsmål, mens du browser</translation>
 <translation id="5271833978500241046">Brug dem sammen med andre Gemini-funktioner i Chrome</translation>
+<translation id="528611299569739095">Denne administrerede browser kan bruge Gemini, der er konfigureret til arbejdsbrug af <ph name="DOMAIN" />. Den kan finde oplysninger og give svar, der er baseret på organisationens filer og tjenester. Hvis du vil skifte, skal du genstarte Chrome.</translation>
 <translation id="5320351714793324716">Hvis du tillader cookies, kan Chrome bruge dem under forudindlæsning</translation>
 <translation id="5321325624576443340">Google Lens er ikke tilgængelig. Prøv igen senere.</translation>
 <translation id="5346389065299425353">Gør din søgning mere dybdegående ved at tilføje flere faner, filer og værktøjer</translation>
@@ -442,7 +446,9 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5600352656975192682">Fastgør Chrome til proceslinjen, så du hurtigt kan få adgang til den</translation>
 <translation id="5602351063754773347">Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Skift til Gemini Enterprise, der administreres af <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Gør Chrome til dit eget</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Stop med at dele fane med Google Søgning}one{Ophæv deling af # fane med Google Søgning}other{Ophæv deling af # faner med Google Søgning}}</translation>
 <translation id="5649156266046089790">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
 <translation id="566568153320186256">Chrome sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
@@ -536,6 +542,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6417690341895039567">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
 <translation id="6426623519983252346">Du får en meddelelse om at prøve <ph name="FEATURE_NAME" />, næste gang du åbner Chrome til iOS.</translation>
+<translation id="6431496891888891615">Du kan skifte til den Gemini-assistent, der oprindeligt var knyttet til din Google-konto, og som ikke administreres af <ph name="DOMAIN" />. Hvis du vil skifte, skal du genstarte Chrome.</translation>
 <translation id="6434035853014503219">Tak, fordi du har valgt Chrome som din standardbrowser.</translation>
 <translation id="6438015621983209660">Udvid anvendelsen af Udvidet beskyttet browsing med Chrome på din telefon</translation>
 <translation id="6442774133615368941">Køb, oversæt og identificer det, du ser gennem dit kamera, i Chrome-appen til iOS</translation>
@@ -572,6 +579,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6712881677154121168">Downloadfejl: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Gør Chrome hurtigere</translation>
 <translation id="6734827584173583205">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> andre.</translation>
+<translation id="6737759643107005803">Skift tilbage til Gemini, der ikke administreres af <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Luk den aktive søgning på denne fane</translation>
 <translation id="6750954913813541382">Chrome sender den tekst, du angiver i browseren, til Google for at rette stavefejl</translation>
 <translation id="6760235774835597023">Gør websites hurtigere ved hjælp af Chromes V8-maskine, men gør Chrome en smule mindre modstandsdygtig over for angreb. Denne indstilling er aktiveret.</translation>
@@ -650,6 +658,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
 <translation id="7496017508659652909">Chrome forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Du deler denne fane med Google Søgning</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
@@ -737,6 +746,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8291415872436043161">Download Chrome</translation>
 <translation id="829923460755755423">Tilføj en genvej til Google Adgangs­kode­admin­istrator</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Del fane med Google Søgning}one{Del # fane med Google Søgning}other{Del # faner med Google Søgning}}</translation>
 <translation id="8313851650939857356">Opstartsfejl: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Sådan! Nu kan du nemt stille spørgsmål, mens du browser, med panelet Google Søgning</translation>
 <translation id="8336463659890584292">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chrome Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
@@ -791,6 +801,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Log ud af Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Del fane med Google Søgning}one{Del # fane med Google Søgning}other{Del # faner med Google Søgning}}</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8747073452963259673">nederste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, nederste <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">Chrome frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
@@ -842,6 +853,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-medlemskab.</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="93760716455950538">Genstart ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Stop med at dele fane med Google Søgning}one{Ophæv deling af # fane med Google Søgning}other{Ophæv deling af # faner med Google Søgning}}</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="983803489796659991">Installationen mislykkedes, fordi opdateringsserveren ikke har nogen hash-data for appen.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan skifte mellem Chrome-profiler</translation>

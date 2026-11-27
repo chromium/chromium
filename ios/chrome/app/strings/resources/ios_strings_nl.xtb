@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Functies waarvoor een microfoon nodig is, werken niet</translation>
 <translation id="1622717322707146952">Selecteer Toevoegen aan Google Agenda of Toevoegen aan Apple Agenda.</translation>
 <translation id="1629162218487290695">Bevestig dat jij het bent…</translation>
+<translation id="1633084385573994059">Deze site niet gebruiken</translation>
 <translation id="1634520742547161889">MM/JJ</translation>
 <translation id="1636234353664774105">Met de navigatiefunctie krijg je stapsgewijze routeaanwijzingen voor je bestemming</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Niet toestaan dat sites je microfoon gebruiken</translation>
 <translation id="2104436223719117661">Trending zoekopdrachten</translation>
 <translation id="21133533946938348">Tabblad vastzetten</translation>
+<translation id="2113761902638026426">Gemini naar <ph name="SITE_DOMAIN" /> laten gaan?</translation>
 <translation id="2117650889962717098">Schakel over naar de incognitomodus om privé te browsen</translation>
 <translation id="2119636449201577317">Openen in…</translation>
 <translation id="2119962645034852864">Sommige services zijn niet beschikbaar voor je account</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">Bewerkingen opgeslagen</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dit account wordt beheerd.</translation>
 <translation id="3365529507898144230">Opslaan in Foto's</translation>
+<translation id="3371168305258344914">Gemini staat op het punt actie te ondernemen op een site die misschien je gevoelige informatie heeft</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="3377063233124932127">Je opgeslagen bookmarks, wachtwoorden enz. staan nu bovenaan.</translation>
 <translation id="3378214228000661758">Maak een toegangssleutel voor</translation>
@@ -1510,6 +1513,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="567881659373499783">Versie <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Bevestig dat jij het bent om wachtwoorden in je Google-account te gebruiken en op te slaan.</translation>
 <translation id="5684761169742812828">Dit wachtwoord is openbaar gemaakt bij een gegevenslek op internet. Als je nu geen tijd hebt om het aan te passen, raadt Google je aan deze waarschuwing ter herinnering te laten staan.</translation>
+<translation id="5691020463738411542">Voorkeuren voor Safe Browsing synchroniseren op verschillende apparaten</translation>
 <translation id="5694848685995373177">In Drive opgeslagen voor <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Je kunt de standaard siteweergave veranderen in desktop via Instellingen en daarna Contentinstellingen</translation>
 <translation id="5702108177581350218">Als je een kopie van je gebruikersnaam en wachtwoord deelt, kan je gezinslid deze gegevens invullen via Google Wachtwoordmanager.</translation>
@@ -1588,6 +1592,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5948605885471592910">Alles bekijken en beheren wat je geopend hebt</translation>
 <translation id="5952641243319721872">Weet je zeker dat je je selectie niet wilt opslaan?</translation>
 <translation id="5956112131836209882">Tabblad in tabbladgroep. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Taak starten</translation>
 <translation id="595769230373966252">Zoeken met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Open links de volgende keer hier</translation>
 <translation id="5963939892571022323">Er kan geen link naar de markering worden gemaakt.</translation>
@@ -1808,6 +1813,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="656065428026159829">Meer bekijken</translation>
 <translation id="6565899972286925956">Maak wat je wilt</translation>
 <translation id="6571070086367343653">Creditcard bewerken</translation>
+<translation id="6571502147204686607">Bescherm jezelf tegen onveilige sites</translation>
 <translation id="6574092468346088891">Meldingen van Veiligheidscheck aanzetten</translation>
 <translation id="6579867704846662339">Je kunt ervoor kiezen om inkomende URL's van andere apps te openen in de incognitomodus.</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
@@ -2248,6 +2254,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7921559948846049514">Kies een thema, kleur of meer voor je achtergrond</translation>
 <translation id="792357691529995513">Geen problemen gevonden</translation>
 <translation id="7925108652071887026">Gegevens van Automatisch invullen</translation>
+<translation id="7926290435065552539">Bescherm je wachtwoorden</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>
 <translation id="792762900715361006">Foto of video maken</translation>
 <translation id="7927711904086083099">Niet geselecteerd</translation>
@@ -2666,6 +2673,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9144230693397287797">Krijg updates voor herinneringen die je instelt en tabbladen van andere apparaten</translation>
 <translation id="914781932147356857">Alles markeren…</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
+<translation id="914964947703922647">Taak controleren</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9152637745605628097">Kies uit thema's en kleuren of upload een afbeelding</translation>
 <translation id="9153159728062222866">Sla kopiëren en plakken over</translation>

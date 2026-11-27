@@ -7999,15 +7999,6 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
       Ở đây, <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> có thể là phiên bản chính xác, chẳng hạn như "13305.0.0" hoặc chỉ có tiền tố của phiên bản, chẳng hạn như "13305".
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> và <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> là các giá trị không bắt buộc, được chỉ định theo số ngày. Giá trị mặc định là 0 ngày, tức là không có khoảng thời gian cảnh báo.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> là một thuộc tính không bắt buộc có giá trị mặc định là False.</translation>
-<translation id="5876812185674131521">Ngăn chặn việc xoá cookie thủ công trên <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Chính sách này nhằm mục đích ngăn chặn người dùng truy cập <ph name="YOUTUBE_PRODUCT_NAME" /> trái phép sau khi xoá thủ công cookie trên <ph name="YOUTUBE_PRODUCT_NAME" /> khỏi trang cài đặt trang web.
-
-Nếu bạn đặt chính sách này thành Enabled (Bật), thì cookie trên <ph name="YOUTUBE_PRODUCT_NAME" /> sẽ không bị xoá thủ công.
-
-Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, thì cookie trên <ph name="YOUTUBE_PRODUCT_NAME" /> sẽ được xoá một cách bình thường.
-
-Lưu ý: Chính sách này chỉ ngăn chặn việc xoá thủ công từ giao diện người dùng cài đặt trang web. Chính sách này không ngăn chặn việc tự động xoá theo chính sách <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> hoặc chính sách <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Ngoài ra, nếu bạn đặt chính sách <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> thành enabled (bật), thì người dùng vẫn có thể xoá tất cả cookie của họ thông qua hộp thoại Xoá dữ liệu duyệt web.</translation>
 <translation id="5879014913445067283">Kiểm soát tính năng phát hiện Chia sẻ tệp trong mạng thông qua <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Bật tính năng Chạm để tìm kiếm</translation>
 <translation id="5882345429632338713">Hoãn lại trước khi chạy trình duyệt thay thế (mili giây)</translation>
@@ -10487,13 +10478,6 @@ Nếu bạn tắt hoặc không đặt chính sách này, thì các chế độ 
           Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này thì ban đầu, tính năng chỉnh màu sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="7324627441366994249">Cho phép thiết lập danh sách các mẫu URL chỉ định những trang web mà các thành phần tích hợp của ứng dụng Gemini không thể trực tiếp hành động trên các trang web.
-
-Những URL không khớp với danh sách cho phép hoặc danh sách chặn sẽ sử dụng <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Những URL khớp với cả danh sách cho phép và danh sách chặn đều được cho phép.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Không cho phép Chrome chặn các thao tác di chuyển đến những giao thức bên ngoài nằm bên trong iframe hộp cát</translation>
 <translation id="7326394567531622570">Tương tự như Wipe (giá trị 2) nhưng cố gắng giữ lại mã đăng nhập để người dùng không phải đăng nhập lại.</translation>
 <translation id="7331098674887251788">Cho phép tích hợp ứng dụng Gemini để trực tiếp thực hiện hành động trên các trang web</translation>
@@ -11790,13 +11774,6 @@ Nếu bạn đặt giá trị thành true (đúng) hoặc không đặt giá tr�
 Nếu bạn đặt giá trị thành false (sai), thì người dùng có thể tham gia lớp mà không cần kết nối vào mạng được quản lý.</translation>
 <translation id="8183108371184777472">Ngăn cửa sổ trình duyệt chạy</translation>
 <translation id="8185312100223853315">Nhãn hồ sơ</translation>
-<translation id="8186370194423312090">Cho phép thiết lập danh sách các mẫu URL chỉ định những trang web mà các thành phần tích hợp của ứng dụng Gemini có thể trực tiếp hành động trên các trang web.
-
-Những URL không khớp với danh sách cho phép hoặc danh sách chặn sẽ sử dụng <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Những URL khớp với cả danh sách cho phép và danh sách chặn đều được cho phép.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Cho phép người dùng phản hồi</translation>
 <translation id="8190271041226151932">Chế độ cài đặt này cho phép tích hợp ứng dụng Gemini.
 

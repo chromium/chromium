@@ -7793,15 +7793,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Mit <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> ist entweder eine exakte Versionsangabe wie "13305.0.0" oder ein Versionspräfix wie "13305" gemeint.
       Die Werte für <ph name="WARNING_PERIOD_PROPERTY_NAME" /> und <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sind optional und werden in Tagen angegeben. Der Standardwert liegt bei 0 Tagen.
       Das Attribut <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> ist optional und der Standardwert "False".</translation>
-<translation id="5876812185674131521">Verhindert das manuelle Löschen von <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies.
-
-Diese Richtlinie soll verhindern, dass Nutzer nach dem manuellen Löschen ihrer <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies über die Seite mit den Websiteeinstellungen ohne Autorisierung auf <ph name="YOUTUBE_PRODUCT_NAME" /> zugreifen.
-
-Wenn die Richtlinie aktiviert ist, können <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies nicht manuell gelöscht werden.
-
-Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies normal gelöscht werden.
-
-Hinweis: Diese Richtlinie verhindert nur das manuelle Löschen über die Benutzeroberfläche der Websiteeinstellungen. Sie verhindert nicht das automatische Löschen durch die Richtlinien „<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />“ oder „<ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />“. Wenn die Richtlinie „<ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />“ aktiviert ist, können Nutzer außerdem alle ihre Cookies über das Dialogfeld „Browserdaten löschen“ löschen.</translation>
 <translation id="5879014913445067283">Steuerung der Erkennung von Netzwerkfreigaben über <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">"Zum Suchen antippen" aktivieren</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
@@ -10186,13 +10177,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Farbkorrektur erst einmal deaktiviert, kann jedoch jederzeit vom Nutzer aktiviert werden.</translation>
-<translation id="7324627441366994249">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites Gemini-App-Integrationen keine direkten Aktionen auf Webseiten ausführen dürfen.
-
-URLs, die weder mit der Zulassungs- noch mit der Sperrliste übereinstimmen, verwenden <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URLs, die sowohl mit der Zulassungs- als auch mit der Sperrliste übereinstimmen, sind zulässig.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
 <translation id="7331098674887251788">Ermöglicht es Gemini-App-Integrationen, Aktionen direkt auf Webseiten auszuführen</translation>
@@ -11455,13 +11439,6 @@ Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, müssen sie mi
 Wenn er auf „false“ gesetzt ist, können sie ohne Verbindung zu einem verwalteten Netzwerk beitreten.</translation>
 <translation id="8183108371184777472">Öffnen des Browserfensters verhindern</translation>
 <translation id="8185312100223853315">Profillabel</translation>
-<translation id="8186370194423312090">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites Gemini-App-Integrationen direkte Aktionen auf Webseiten ausführen dürfen.
-
-URLs, die weder mit der Zulassungs- noch mit der Sperrliste übereinstimmen, verwenden <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URLs, die sowohl mit der Zulassungs- als auch mit der Sperrliste übereinstimmen, sind zulässig.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Nutzerfeedback zulassen</translation>
 <translation id="8190271041226151932">Mit dieser Einstellung werden Gemini-App-Integrationen zugelassen.
 

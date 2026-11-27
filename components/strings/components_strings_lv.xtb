@@ -1637,7 +1637,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3727850735097852673">Lai izmantotu Google paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chrome un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="3728173127485570463">Paroļu automātiskai aizpildei pārlūkā Chrome vairs nebūs jāizmanto pirksta nospiedums.</translation>
 <translation id="3729811201279509483">Manuāla ciļņu pievienošana</translation>
-<translation id="3732370487905329239">Paredzētais piegādes datums</translation>
 <translation id="3736564442532774454">Pārlūkā Chrome tiek mēģināts ievadīt jūsu sensitīvo informāciju lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Jūsu pārlūku pārvalda administrators.</translation>
 <translation id="3739842843727261045">Nospiežot pogu “Patīk”, varat norādīt, ka jums patīk šie rezultāti.</translation>
@@ -2740,7 +2739,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5540224163453853">Pieprasīto rakstu nevarēja atrast.</translation>
 <translation id="5541086400771735334">7. pastkaste</translation>
 <translation id="5541546772353173584">E-pasta adreses pievienošana</translation>
-<translation id="5541735141423273733">Ielidošanas datums</translation>
 <translation id="5543452229212526547">Jūsu teksts, saturs un tās lapas URL, kurā rakstāt, tiks nosūtīts uzņēmumam Google. Pārskatītāji neizmantos jūsu saturu, lai uzlabotu MI. Jūsu organizācija var jebkurā laikā mainīt šos iestatījumus.</translation>
 <translation id="5543722831081909240">Par 180 grādiem</translation>
 <translation id="5546252337258681768">Ierīce ir atbloķēta</translation>
@@ -3193,7 +3191,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6311410654831092784">Līmēts kartons</translation>
 <translation id="6311642842034740437">Atrašanās vieta ar nosaukumu</translation>
 <translation id="6312113039770857350">Tīmekļa lapa nav pieejama</translation>
-<translation id="6313189007657889655">Pasūtījuma ID</translation>
 <translation id="6316110367871394043">Failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /> ir pārtraukta</translation>
 <translation id="63172326633386613">Pārvaldīt pieejamības iestatījumus</translation>
 <translation id="6319672966240656136">Šī vietne joprojām būs bloķēta, jo piedalāties Google papildu aizsardzības programmā. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" />.</translation>

@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ ଶୀର୍ଷରୁ ଡ୍ରାଗ କରନ୍ତୁ ଏବଂ ପଛକୁ ଫେରନ୍ତୁ ବଟନକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="1132789342529761192">ଅପଲୋଡ କରିବାକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, ଯାଞ୍ଚ କରାଯାଇଛି, ମେନୁ ଆଇଟମ। ସେୟାରିଂ ବନ୍ଦ କରିବାକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="11370190534773372">କାର୍ଡ ବିବରଣୀ ପୂରଣ କରାଯାଇଛି</translation>
 <translation id="1138458427267715730">ସମଗ୍ର ୱେବରେ ଯେ କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ହେଲେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="1142713751288681188">କାଗଜର ପ୍ରକାର</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">ଏହି ଆପ ଚଲାଇବାକୁ Isolated Web App ଡେଭେଲପର ମୋଡକୁ ପୁଣି-ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2526280916094749336">ସେଭ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକୁ ଆପଣ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ। ଏହି ଠିକଣାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT" />ରେ ସେଭ କରାଯିବ।</translation>
 <translation id="2527451058878391043">ଆପଣଙ୍କର CVC ଆପଣଙ୍କ କାର୍ଡର ସାମ୍ନାପଟେ ଅଛି। ଏହା ଆପଣଙ୍କ କାର୍ଡ ନମ୍ବର ଉପରେ ଶୀର୍ଷ ଡାହାଣରେ ଥିବା 4-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ ଅଟେ।</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="2529899080962247600">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="2530042584066815841">ମାଉସ ଲକ ଏବଂ ବ୍ୟବହାର</translation>
 <translation id="2535585790302968248">ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">ଶୀର୍ଷ</translation>
 <translation id="2666117266261740852">ଅନ୍ୟ ଟାବ୍ କିମ୍ୱା ଆପ୍‍ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, ମେନୁ ଆଇଟମ। ସେୟାରିଂ ଚାଲୁ କରିବାକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2672201172023654893">ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ପରିଚାଳିତ ନୁହେଁ।</translation>
 <translation id="2674170444375937751">ଆପଣଙ୍କ ଇତିବୃତ୍ତିରୁ ଏହି ପୃଷ୍ଠାଗୁଡିକ ଆପଣ ବିଲୋପ କରିବାକୁ ଚାହୁଁଥିବାର ନିଶ୍ଚିତ କି?</translation>
 <translation id="2675716371350192683">AIକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ବିଷୟବସ୍ତୁକୁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ। ଆପଣଙ୍କ ସଂସ୍ଥା ଯେ କୌଣସି ସମୟରେ ଏହି ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>
@@ -1635,7 +1638,6 @@
 <translation id="3727850735097852673">MacOS କୀଚେନ ସହ Google Password Manager ବ୍ୟବହାର କରିବା ପାଇଁ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରି କୀଚେନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପୁଣି ଲଞ୍ଚ ହେବା ପରେ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ପୁଣି ଖୋଲିବ।</translation>
 <translation id="3728173127485570463">Chrome ବ୍ରାଉଜର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିବାକୁ ଆଉ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ଆବଶ୍ୟକ କରିବ ନାହିଁ</translation>
 <translation id="3729811201279509483">ମାନୁଆଲୀ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="3732370487905329239">ଡେଲିଭରୀର ଆନୁମାନିକ ତାରିଖ</translation>
 <translation id="3736564442532774454">Chrome ବ୍ରାଉଜର <ph name="APP_NAME" />ରେ ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ସୂଚନା ପୂରଣ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="3738166223076830879">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="3739842843727261045">ଥମ୍ବସ ଅପ 'ଆପଣ ଏହି ଫଳାଫଳକୁ ପସନ୍ଦ କରନ୍ତି' ବୋଲି ମତାମତ ଦାଖଲ କରିଥାଏ</translation>
@@ -1990,6 +1992,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ପୃଷ୍ଠା ପାଇଁ ଥମ୍ବନେଲ୍</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> ଅପଡେଟ କରାଯାଇଛି</translation>
 <translation id="4298148761711700950">QR ଅପଲୋଡ ବିନା ତୁରନ୍ତ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">ଏହି ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକ ଆପଣଙ୍କ ସମଗ୍ର ChromeOS ଡିଭାଇସରେ ସିଙ୍କ ହୋଇଛି। ଆପଣ ଯାହା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ <ph name="SYNC_SETTINGS" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> ସୋର୍ସ <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">ସର୍ଟକଟର ନାମ ଅନୁମତି ଦିଆଯାଇଥିବା ସର୍ବାଧିକ <ph name="MAX_LENGTH" /> କେରେକ୍ଟର ଲମ୍ବକୁ ଅତିକ୍ରମ କରିଛି।</translation>
@@ -2199,6 +2202,7 @@
 <translation id="4682496302933121474">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବେ?</translation>
 <translation id="468314109939257734">ଆପଣଙ୍କ ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ଦେଖନ୍ତୁ</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
+<translation id="468826602575103388">ସେୟାରିଂ ବନ୍ଦ କରିବାକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4690205240253392065">ଏକ 'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ପ୍ରଦାନକାରୀ ବାଛନ୍ତୁ</translation>
 <translation id="469028408546145398">'ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ' ବଟନ, ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4692623383562244444">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
@@ -2739,7 +2743,6 @@
 <translation id="5540224163453853">ଅନୁରୋଧ କରାଯାଇଥିବା ଲେଖାଟି ମିଳିଲା ନାହିଁ।</translation>
 <translation id="5541086400771735334">ମେଲବକ୍ସ 7</translation>
 <translation id="5541546772353173584">ଇମେଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="5541735141423273733">ଆଗମନ ତାରିଖ</translation>
 <translation id="5543452229212526547">ଆପଣଙ୍କ ଟେକ୍ସଟ ଓ ବିଷୟବସ୍ତୁ ଏବଂ ଆପଣ ଲେଖୁଥିବା ପୃଷ୍ଠାର URL Googleକୁ ପଠାଯିବ। AIକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ବିଷୟବସ୍ତୁକୁ ମାନବ ରିଭ୍ୟୁଅରମାନଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯିବ ନାହିଁ। ଆପଣଙ୍କ ସଂସ୍ଥା ଯେ କୌଣସି ସମୟରେ ଏହି ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>
 <translation id="5543722831081909240">180 ଡିଗ୍ରୀ</translation>
 <translation id="5546252337258681768">ଡିଭାଇସକୁ ଅନଲକ କରାଯାଇଛି</translation>
@@ -3191,7 +3194,6 @@
 <translation id="6311410654831092784">କାର୍ଡ ଷ୍ଟକ</translation>
 <translation id="6311642842034740437">ନାମ ଥିବା ଲୋକେସନ</translation>
 <translation id="6312113039770857350">ୱେବ୍ ପୃଷ୍ଠା ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="6313189007657889655">ଅର୍ଡର ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />ରେ ଫାଇଲ ଅପଲୋଡକୁ ବିରତ କରାଯାଇଛି</translation>
 <translation id="63172326633386613">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6319672966240656136">ଆପଣ Googleର Advanced Protection Program ଅଧୀନରେ ଥିବା ଯୋଗୁଁ ଏହି ସାଇଟ ବ୍ଲକ ହୋଇ ରହିବ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -4171,6 +4173,7 @@
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7943397946612013052">ଡାଉନଲୋଡ କରିବା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7943893128817522649">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="7947144323420971076">ସେୟାରିଂ ଚାଲୁ କରିବାକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7947285636476623132">ଆପଣଙ୍କ କ୍ରେଡିଟ୍‍ କାର୍ଡ ଅବଧି ସମାପ୍ତିର ବର୍ଷ ଦେଖନ୍ତୁ ଏବଂ ପୁଣି ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="7947964969544524438">ଜଣା ଟ୍ରାଭେଲର ନମ୍ବରକୁ ସୁରକ୍ଷିତ ଭାବେ ସେଭ କରନ୍ତୁ</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8172809706700703589">ମୋ ଟ୍ରିପ ପାଇଁ ଏକ ପେକିଂ ତାଲିକା ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8174047975335711832">ଡିଭାଇସ୍‌ ସୂଚନା</translation>
 <translation id="8175053171643471349">ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="817536628389054635">କଣ୍ଟାକ୍ଟ ସୂଚନା ପୂରଣ କରାଯାଇଛି: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ କାର୍ଡଗୁଡ଼ିକ ସେଭ୍‍ କରିବାକୁ Chrome ଅଫର୍‍ ଦେଉଛି କାରଣ ଆପଣ ସାଇନ୍‍ ଇନ୍‍ କରିଛନ୍ତି। ଆପଣ ସେଟିଂସ୍‌ରେ ଏହି ଆଚରଣର ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="8176440868214972690">ଏହି ଡିଭାଇସର ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛନ୍ତି।</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" />କୁ ବିଷୟବସ୍ତୁ ପାଇଁ ବ୍ଲକ କରାଯାଇଛି}other{<ph name="FILE_COUNT" />ଟି ଫାଇଲକୁ ବିଷୟବସ୍ତୁ ପାଇଁ ବ୍ଲକ କରାଯାଇଛି}}</translation>

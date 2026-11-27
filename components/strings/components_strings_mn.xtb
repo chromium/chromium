@@ -1639,7 +1639,6 @@
 <translation id="3727850735097852673">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="3728173127485570463">Chrome хөтөч цаашид нууц үгнүүдийг автоматаар бөглөхөд хурууны хээг тань шаардахгүй</translation>
 <translation id="3729811201279509483">Табуудыг гар аргаар нэмэх</translation>
-<translation id="3732370487905329239">Хүргэлтийн тооцоолсон огноо</translation>
 <translation id="3736564442532774454">Chrome хөтөч таны эмзэг мэдээллийг <ph name="APP_NAME" /> дээр бөглөхөөр оролдож байна.</translation>
 <translation id="3738166223076830879">Танай администратор хөтчийг тань удирддаг.</translation>
 <translation id="3739842843727261045">Сайн тэмдэглэгээ нь танд эдгээр илэрц таалагдсан талаарх санал хүсэлтийг илгээнэ</translation>
@@ -2743,7 +2742,6 @@
 <translation id="5540224163453853">Хүссэн өгүүлэлийг олж чадсангүй.</translation>
 <translation id="5541086400771735334">Шуудангийн хайрцаг 7</translation>
 <translation id="5541546772353173584">Имэйл нэмэх</translation>
-<translation id="5541735141423273733">Ирэх огноо</translation>
 <translation id="5543452229212526547">Таны текст, контент, дээр нь бичиж буй хуудасны URL-г Google-д илгээдэг. Таны контентыг ХОУ-ыг сайжруулахын тулд хянагч хүмүүс ашиглахгүй. Танай байгууллага хүссэн үедээ эдгээр тохиргоог өөрчилж болзошгүй.</translation>
 <translation id="5543722831081909240">180 хэм</translation>
 <translation id="5546252337258681768">Төхөөрөмжийн түгжээг тайлсан</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">Картон цаас</translation>
 <translation id="6311642842034740437">Нэртэй байршил</translation>
 <translation id="6312113039770857350">Веб хуудас боломжгүй байна</translation>
-<translation id="6313189007657889655">Захиалгын ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />-д файл байршуулахыг түр зогсоосон</translation>
 <translation id="63172326633386613">Хүртээмжтэй тохиргоог удирдах</translation>
 <translation id="6319672966240656136">Та Google-н Дэвшилтэт хамгаалалтын хөтөлбөрт байгаа тул энэ сайтыг блоклосон хэвээр үлдэнэ. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>

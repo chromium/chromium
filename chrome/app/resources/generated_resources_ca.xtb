@@ -518,6 +518,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1570990174567554976">S'ha creat la carpeta d'adreces d'interès "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">No tens cap contrasenya poc segura o reutilitzada</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
+<translation id="1571371559291327711">&amp;Cerca, edita i més eines</translation>
 <translation id="1571738973904005196">Mostra la pestanya <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidat)</translation>
 <translation id="1573127087832371028">Descriu el problema</translation>
@@ -956,6 +957,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="204914487372604757">Crea la drecera</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051669996101374349">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol. No pots canviar aquesta opció de configuració perquè tens activada la Protecció avançada.</translation>
+<translation id="2052353138844549871">És possible que no es recomani utilitzar Gemini Enterprise amb un perfil no gestionat</translation>
 <translation id="2052723746739622752">Deixa de fixar Gemini</translation>
 <translation id="2061366302742593739">No hi ha res per mostrar</translation>
 <translation id="2061589908388230480">Si Chromium troba que una de les teves contrasenyes s'ha fet pública a causa d'una violació de les dades, el gestor de contrasenyes de Google et pot oferir canviar-la si tens la sessió iniciada. <ph name="BEGIN_LINK" />Més informació sobre el canvi automàtic de contrasenyes<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />. S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
 <translation id="2349610121459545414">Continua permetent que aquest lloc web accedeixi a la meva ubicació</translation>
 <translation id="2350133097354918058">S'ha tornat a carregar</translation>
+<translation id="2351165193188463938">Ara estàs navegant amb Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">La càmera i el micròfon es poden utilitzar</translation>
 <translation id="2353682139907904963">Fixa les extensions noves a la barra d'eines</translation>
@@ -1268,6 +1271,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2408955596600435184">Introdueix el PIN</translation>
 <translation id="2409709393952490731">Utilitza un telèfon o una tauleta</translation>
 <translation id="2410940059315936967">Els llocs web que visites poden incrustar contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{S'ha posat el focus en 1 pestanya}other{S'ha posat el focus en # pestanyes}}</translation>
 <translation id="2413009156320833859">Personalitza encara més el navegador amb extensions de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" />.</translation>
 <translation id="2414159296888870200">Reprèn la navegació per a <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Fosc</translation>
@@ -1677,6 +1681,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2849926636739429924">Més opcions per a <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">tancat</translation>
 <translation id="2851291081585704741">No tens connexió</translation>
+<translation id="2851527955600412545">La teva organització ha actualitzat les seves polítiques per a Gemini Enterprise a Chrome. És possible que l'historial de xats no es transfereixi.</translation>
 <translation id="285237063405807022">(s'està carregant)</translation>
 <translation id="2853121255651601031">S'ha desat la contrasenya</translation>
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
@@ -2624,6 +2629,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="3810593934879994994"><ph name="ORIGIN" /> pot veure els fitxers de les carpetes següents</translation>
 <translation id="3810770279996899697">El gestor de contrasenyes necessita accés al clauer de macOS</translation>
 <translation id="3810973564298564668">Gestiona</translation>
+<translation id="3811424142236602772">Navega amb Gemini, configurat per <ph name="DOMAIN" /> per a la feina. Fes preguntes mentre navegues compartint pestanyes com a context i obtén respostes basades en els fitxers i els serveis de la teva organització.</translation>
 <translation id="3812525830114410218">Certificat incorrecte</translation>
 <translation id="3813296892522778813">Si no trobes el que busques, ves a l'<ph name="BEGIN_LINK_CHROMIUM" />ajuda de Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3815509884387832993">Escolta aquesta pàgina com si fos un pòdcast amb la reproducció amb IA mitjançant el botó Activa la reproducció amb IA de la barra d'eines del mode de lectura</translation>
@@ -3220,6 +3226,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="4500055235123625757">Gemini pot respondre a preguntes sobre el vídeo o l'àudio que has reproduït en <ph name="LINK_BEGIN" />alguns llocs web<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">Tradueix la selecció a <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Fes clic amb el botó dret en una pestanya i selecciona "Afegeix una pestanya a un grup nou"</translation>
+<translation id="450300557121092531">Pestanyes per dispositiu</translation>
 <translation id="4503362512377701151">Veus els grups de pestanyes que has utilitzat recentment perquè puguis continuar fàcilment a partir del punt on ho havies deixat.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3272,6 +3279,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="4562155266774382038">Ignora el suggeriment</translation>
 <translation id="4563883094055457792">R&amp;estaura la vista dividida</translation>
 <translation id="456449593072900590">Suprimeix en sortir</translation>
+<translation id="4564636746145660922">Comprova la connexió i torna-ho a provar.</translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4565465014351935093">Mostra només a la pàgina Pestanya nova</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
@@ -3445,6 +3453,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="475088594373173692">Primer usuari</translation>
 <translation id="4751925628341802838">Per accedir a l'historial dels teus altres dispositius, inicia la sessió i sincronitza l'historial i les pestanyes amb <ph name="EMAIL" />. També obtindràs les extensions i altres dades en tots els teus dispositius. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4754590344707355551">Millora el navegador amb extensions</translation>
+<translation id="4754903312643763797">És possible que s'apliquin condicions de privadesa de dades diferents</translation>
 <translation id="4756130875344525429">Per accedir a l'historial <ph name="DEVICE" />, inicia la sessió i sincronitza l'historial i les pestanyes amb <ph name="EMAIL" />. També obtindràs la informació desada i altres dades en tots els teus dispositius. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4756378406049221019">Atura/Torna a carregar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
@@ -4126,6 +4135,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="5509914365760201064">Emissor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obtén descripcions d'imatges de Google</translation>
 <translation id="5512739112435045339">Allibera espai al dispositiu. A continuació, torna a provar de baixar el fitxer.</translation>
+<translation id="5513121759801003159">L'historial de xats no es transferirà</translation>
 <translation id="5514315914873062345">Tabulador</translation>
 <translation id="5515048886012998157">Mostra més opcions per a <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Aquesta pàgina d'inici és la que esperàveu?</translation>
@@ -4932,6 +4942,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6451861213630784801">Tens la sessió tancada</translation>
 <translation id="6453191633103419909">Qualitat de projecció de la pestanya o de la pantalla</translation>
 <translation id="6453306703004115497">Traduït a <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Cerca IA al dispositiu</translation>
 <translation id="645433497989692531">Amb aquesta acció, les dades de navegació d'aquest dispositiu se suprimiran permanentment. Per recuperar-les, inicia la sessió com a</translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
 <translation id="6455521402703088376">Desactivada • El desenvolupador de l'extensió ha anul·lat la seva publicació</translation>
@@ -5102,6 +5113,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="663569763553406962">Consulta quines extensions poden llegir un lloc web o fer-hi modificacions</translation>
 <translation id="6636258750460740634">Historial</translation>
 <translation id="6636623428211296678">Explora més opcions de configuració a continuació o acaba ara</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">La funció Habilitats està desactivada en aquest moment. Actualitza la configuració de Chrome per començar.</translation>
 <translation id="6639554308659482635">Memòria SQLite</translation>
 <translation id="6640268266988685324">Obre la pestanya</translation>
@@ -5235,6 +5247,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6785779729084003225">Utilitza <ph name="FOCUS_TOGGLE_HOTKEY" /> per obrir Gemini a Chrome</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Només es poden traduir els idiomes de Subtítols instantanis admesos</translation>
+<translation id="6786498102134843646">Les respostes no es basaran en els fitxers ni els serveis gestionats per <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6786804673213172567">Nivell 3: ALT</translation>
 <translation id="6787531944787756058">el nom d'usuari <ph name="USER_EMAIL" /> només està desat en aquest dispositiu. Mostra els detalls</translation>
@@ -5397,6 +5410,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6941514251635934269">Pregunta sobre aquest document</translation>
 <translation id="694168622559714949">L'administrador ha definit un idioma predeterminat que no es pot modificar.</translation>
 <translation id="6941953303876950920">Cal reiniciar per continuar navegant amb Gemini</translation>
+<translation id="6943803108751887058">Prem Escapada per tancar</translation>
 <translation id="6944854424004126054">Restaura la finestra</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="694592694773692225">S'ha bloquejat la redirecció en aquesta pàgina.</translation>
@@ -5723,6 +5737,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7293774463163321848">L'historial de cerques, l'historial de Gemini i les contrasenyes es poden suprimir a la configuració de gestió corresponent</translation>
 <translation id="7296503797589217366">Selecciona la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Desa informació de les pàgines que consultes a Google Wallet</translation>
+<translation id="7297535265731442945">Gemini Enterprise s'ha actualitzat</translation>
 <translation id="7297726121602187087">Verd fosc</translation>
 <translation id="7298195798382681320">Recomanada</translation>
 <translation id="7299515639584427954">Vols canviar l'aplicació predeterminada per als enllaços compatibles?</translation>
@@ -5744,6 +5759,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="731827437403763009">Innovacions d'IA</translation>
 <translation id="7319983568955948908">Deixa de compartir</translation>
 <translation id="7321545336522791733">No s'ha pogut accedir al servidor</translation>
+<translation id="7321838786611890851">És possible que les teves interaccions amb Gemini no tinguin les proteccions configurades per <ph name="DOMAIN" /> i que s'hi apliquin condicions de privadesa de dades diferents</translation>
 <translation id="7322515217754205362">Permisos del lloc web</translation>
 <translation id="7324020307732396723">Obre la configuració d'idioma</translation>
 <translation id="7325209047678309347">El paper s'ha encallat</translation>
@@ -6040,6 +6056,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7653354650639364202">{0,plural, =1{Tanca la finestra aïllada}other{Tanca les finestres aïllades (#)}}</translation>
 <translation id="7654941827281939388">Aquest compte ja s'està utilitzant en aquest ordinador.</translation>
 <translation id="7655411746932645568">Els llocs web poden demanar permís per connectar-se a ports en sèrie</translation>
+<translation id="7656674791025857763">Inicia la sessió per utilitzar <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Estalvi baix</translation>
 <translation id="7657218410916651670">És possible que <ph name="BEGIN_LINK_GOOGLE" />altres tipus d'activitats<ph name="END_LINK_GOOGLE" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
@@ -6251,6 +6268,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7904492297081735975">&amp;Obre el gestor d'adreces d'interès</translation>
 <translation id="7907312522152480478">Per accedir a les pestanyes dels teus altres dispositius, verifica la teva identitat i sincronitza l'historial i les pestanyes. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="7907837847548254634">Marca breument l'objecte que té el focus posat</translation>
+<translation id="7908205867885088429">Més informació sobre com pots restaurar la configuració predeterminada</translation>
 <translation id="7908835530772972485">Suprimeix les dades en tancar totes les finestres.</translation>
 <translation id="7909324225945368569">Canvia el nom del perfil</translation>
 <translation id="7909969815743704077">S'ha baixat en mode d'incògnit</translation>
@@ -6642,6 +6660,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8323317289166663449">Llegir i canviar totes les dades de l'ordinador i de tots els llocs web</translation>
 <translation id="8323518750352551353">Vols separar la navegació?</translation>
 <translation id="8323744572398547859">Per accedir a les pestanyes dels teus altres dispositius, inicia la sessió i sincronitza l'historial. També obtindràs les contrasenyes i altres dades en tots els teus dispositius. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
+<translation id="8324035203198677529">La teva organització ha desactivat Gemini Enterprise a Chrome. Pots continuar utilitzant Gemini a Chrome, però ja no cercarà informació gestionada per la teva organització ni hi farà referència. És possible que l'historial de xats no es transfereixi.</translation>
 <translation id="8325413836429495820">Sense permís per veure el porta-retalls</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificats</translation>
 <translation id="8327386430364625757">Font matemàtica</translation>
@@ -6848,6 +6867,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8552102814346875916">Desa a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="8552947739661397736">Vull assumir el control de la tasca. Actualment, el té Gemini.</translation>
+<translation id="8555042096950728024">Arrossega o utilitza les tecles de fletxa per canviar l'ordre</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" />: es mostra el contingut ampliat</translation>
 <translation id="8557022314818157177">Continua tocant la clau de seguretat fins que es capturi l'empremta digital</translation>
 <translation id="8557100046150195444">Utilitza Touch ID per continuar</translation>
@@ -6940,6 +6960,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8651806635673244884">Pots tornar a moure les pestanyes a la part superior fent clic amb el botó dret en qualsevol pestanya i seleccionant Mostra les pestanyes horitzontalment</translation>
 <translation id="8652400352452647993">Error de l'empaquetatge d'extensió</translation>
 <translation id="8654151524613148204">El fitxer és massa gran perquè el vostre equip el pugui gestionar.</translation>
+<translation id="8654872240409864765">La teva organització ha configurat Gemini Enterprise a Chrome. Pregunta el que vulguis a Gemini mentre navegues i obtén respostes basades en els fitxers i els serveis de la teva organització.</translation>
 <translation id="8657393004602556571">Vols descartar els comentaris?</translation>
 <translation id="865857184419171576">Tradueix els subtítols a</translation>
 <translation id="865936634714975126">Afegeix un paràmetre de consulta a l'URL per seleccionar els tipus en carregar la pàgina. Exemple: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7103,6 +7124,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8813937837706331325">Estalvi mitjà</translation>
 <translation id="8815742860876889867">Obre l'enllaç en una finestra a&amp;ïllada</translation>
 <translation id="881799181680267069">Ocultar la resta</translation>
+<translation id="8820301999480837183">S'ha posat el focus al grup <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8821206216942230957">El teu compte no té accés a Gemini a Chrome</translation>
 <translation id="8823514049557262177">Copia el te&amp;xt de l'enllaç</translation>
@@ -7142,6 +7164,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8863753581171631212">Obre l'enllaç en una finestra nova de l'aplicació <ph name="APP" /></translation>
 <translation id="8864055848767439877">S'està compartint <ph name="TAB_NAME" /> amb <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">La contrasenya s'ha desat</translation>
+<translation id="8865924457197342642">Gemini Enterprise ja no està disponible</translation>
 <translation id="8866424952450451412">Gestiona els teus fluxos de treball personalitzats amb la tecnologia de</translation>
 <translation id="8867102760244540173">Cerca pestanyes...</translation>
 <translation id="8867568208303837180">S'està enviant...</translation>
@@ -7354,6 +7377,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9096776523567481218">no està instal·lada localment</translation>
 <translation id="9099383880226822604">Selva</translation>
 <translation id="9100765901046053179">Configuració avançada</translation>
+<translation id="9100928301185810363">S'ha posat el focus al grup sense nom (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="9103341231213089378">Per emetre-la, dona accés a Chrome a <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Xarxa local &gt; Chrome</translation>
 <translation id="9103868373786083162">Premeu per anar cap enrere, menú contextual per veure l'historial</translation>
 <translation id="9107096627210171112">T&amp;radueix...</translation>

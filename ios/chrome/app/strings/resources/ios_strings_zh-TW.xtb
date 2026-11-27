@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">需要麥克風的功能將無法運作</translation>
 <translation id="1622717322707146952">選取「新增至 Google 日曆」或「新增至 Apple 行事曆」。</translation>
 <translation id="1629162218487290695">驗證你的身分</translation>
+<translation id="1633084385573994059">不使用這個網站</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用導航功能即時規劃前往目的地的路線</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">禁止網站使用麥克風</translation>
 <translation id="2104436223719117661">熱門搜尋</translation>
 <translation id="21133533946938348">固定分頁</translation>
+<translation id="2113761902638026426">要允許 Gemini 前往「<ph name="SITE_DOMAIN" />」嗎？</translation>
 <translation id="2117650889962717098">切換到無痕模式，保護瀏覽隱私</translation>
 <translation id="2119636449201577317">開啟方式…</translation>
 <translation id="2119962645034852864">你的帳戶無法使用某些服務</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">已儲存編輯內容</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> 是代管帳戶</translation>
 <translation id="3365529507898144230">儲存到相簿</translation>
+<translation id="3371168305258344914">Gemini 即將執行操作的網站上可能含有你的私密資訊</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
 <translation id="3378214228000661758">使用以下名稱建立密碼金鑰：</translation>
@@ -1510,6 +1513,7 @@
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">如要將密碼儲存到 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
 <translation id="5684761169742812828">這組密碼因網際網路資料侵害事件遭到外洩。如果無法立即變更密碼，Google 建議你保留這則警告，做為日後提醒。</translation>
+<translation id="5691020463738411542">在各裝置上同步安全瀏覽偏好設定</translation>
 <translation id="5694848685995373177">已儲存到 <ph name="USER_EMAIL" /> 的雲端硬碟。</translation>
 <translation id="570209299585559496">如要將預設網站檢視畫面變更為電腦版，請依序前往「設定」&gt;「內容設定」</translation>
 <translation id="5702108177581350218">當你分享使用者名稱和密碼副本後，家庭成員就能使用 Google 密碼管理工具填寫這類資訊。</translation>
@@ -1588,6 +1592,7 @@
 <translation id="5948605885471592910">查看及管理所有開啟的項目</translation>
 <translation id="5952641243319721872">確定要捨棄所選項目嗎？</translation>
 <translation id="5956112131836209882">分頁群組分頁。第 <ph name="TAB_INDEX_IN_GROUP" /> 個，共 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 個。</translation>
+<translation id="595662449352471176">開始任務</translation>
 <translation id="595769230373966252">使用「<ph name="SEARCH_PROVIDER" />」搜尋</translation>
 <translation id="5963694076845073027">下次直接在這裡開啟連結</translation>
 <translation id="5963939892571022323">無法建立醒目顯示文字的連結。</translation>
@@ -1808,6 +1813,7 @@
 <translation id="656065428026159829">顯示更多</translation>
 <translation id="6565899972286925956">創作任何內容</translation>
 <translation id="6571070086367343653">編輯信用卡</translation>
+<translation id="6571502147204686607">防範不安全網站</translation>
 <translation id="6574092468346088891">開啟安全檢查通知</translation>
 <translation id="6579867704846662339">你可以選擇以無痕模式開啟其他應用程式傳入的網址。</translation>
 <translation id="6585618849026997638">你可以將重要網頁加入書籤，方便日後查看</translation>
@@ -2248,6 +2254,7 @@
 <translation id="7921559948846049514">為背景選擇主題、顏色等</translation>
 <translation id="792357691529995513">未發現任何問題</translation>
 <translation id="7925108652071887026">自動填入資料</translation>
+<translation id="7926290435065552539">確保密碼安全無虞</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
 <translation id="792762900715361006">拍攝相片或影片</translation>
 <translation id="7927711904086083099">未選取</translation>
@@ -2666,6 +2673,7 @@
 <translation id="9144230693397287797">接收你在其他裝置上設定的提醒和分頁最新動態</translation>
 <translation id="914781932147356857">全部標示…</translation>
 <translation id="9148126808321036104">重新登入</translation>
+<translation id="914964947703922647">查看任務</translation>
 <translation id="9149866541089851383">編輯...</translation>
 <translation id="9152637745605628097">選擇主題、顏色或上傳圖片</translation>
 <translation id="9153159728062222866">免去複製貼上的麻煩</translation>

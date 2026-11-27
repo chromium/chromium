@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Mikrofonia edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1622717322707146952">Valitse "Lisää Google Kalenteriin" tai "Lisää Apple-kalenteriin".</translation>
 <translation id="1629162218487290695">Vahvista henkilöllisyytesi…</translation>
+<translation id="1633084385573994059">Älä käytä tätä sivustoa</translation>
 <translation id="1634520742547161889">KK/VV</translation>
 <translation id="1636234353664774105">Saat tarkat reittiohjeet määränpäähän navigointiominaisuuden avulla</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Älä salli sivustojen käyttää mikrofoniasi</translation>
 <translation id="2104436223719117661">Trendaavat haut</translation>
 <translation id="21133533946938348">Kiinnitä välilehti</translation>
+<translation id="2113761902638026426">Saako Gemini siirtyä tänne: <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Selaa yksityisesti incognito-tilassa</translation>
 <translation id="2119636449201577317">Avaa…</translation>
 <translation id="2119962645034852864">Osa palveluista ei ole käytettävissä tililläsi</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">Muokkaukset tallennettu</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Tämä on hallinnoitu tili</translation>
 <translation id="3365529507898144230">Tallenna Kuviin</translation>
+<translation id="3371168305258344914">Gemini on aloittamassa toimintaa sivustolla, joka saattaa sisältää arkaluontoisia tietoja</translation>
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="3377063233124932127">Tallennetut kirjanmerkit, salasanat ja muut tiedot ovat nyt ylhäällä.</translation>
 <translation id="3378214228000661758">Luo avainkoodi:</translation>
@@ -1510,6 +1513,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja Google-tililläsi.</translation>
 <translation id="5684761169742812828">Tämä salasana vaarantui tietosuojaloukkauksessa internetissä. Jos sinulla ei ole aikaa muuttaa sitä juuri nyt, Google suosittelee, että säilytät tämän varoituksen myöhempää varten.</translation>
+<translation id="5691020463738411542">Synkronoi selaussuoja-asetukset laitteiden välillä</translation>
 <translation id="5694848685995373177">Tallennettu Driveen tilille <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Voit vaihtaa sivuston oletusnäkymän tietokonenäkymään kohdasta Asetukset &gt; Sisältöasetukset</translation>
 <translation id="5702108177581350218">Kun jaat kopion käyttäjätunnuksestasi ja salasanastasi, perheenjäsenesi voi täyttää ne Googlen Salasanojen avulla.</translation>
@@ -1588,6 +1592,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5948605885471592910">Katso ja hallinnoi kaikkia auki olevia välilehtiä</translation>
 <translation id="5952641243319721872">Haluatko varmasti hylätä tekemäsi valinnat?</translation>
 <translation id="5956112131836209882">Välilehtiryhmän välilehti. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Aloita tehtävä</translation>
 <translation id="595769230373966252">Hae tällä: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Avaa linkit täällä seuraavalla kerralla</translation>
 <translation id="5963939892571022323">Korostukseen ei voi luoda linkkiä.</translation>
@@ -1808,6 +1813,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6565899972286925956">Luo mitä tahansa</translation>
 <translation id="6571070086367343653">Luottokortin muokkaus</translation>
+<translation id="6571502147204686607">Suojaudu vaarallisilta sivustoilta</translation>
 <translation id="6574092468346088891">Laita turvatarkistusilmoitukset päälle</translation>
 <translation id="6579867704846662339">Voit halutessasi avata muista sovelluksista saapuvat URL-osoitteet incognito-tilassa.</translation>
 <translation id="6585618849026997638">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>
@@ -2248,6 +2254,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7921559948846049514">Valitse taustalle esimerkiksi teema tai väri</translation>
 <translation id="792357691529995513">Ongelmia ei havaittu</translation>
 <translation id="7925108652071887026">Tietojen automaattinen täyttö</translation>
+<translation id="7926290435065552539">Pidä salasanat turvassa</translation>
 <translation id="7926975587469166629">Kortin lyhytnimi</translation>
 <translation id="792762900715361006">Ota kuva tai kuvaa video</translation>
 <translation id="7927711904086083099">Ei valittu</translation>
@@ -2666,6 +2673,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="9144230693397287797">Voit saada ilmoituksia asettamistasi muistutuksista ja välilehdistä muilta laitteilta</translation>
 <translation id="914781932147356857">Merkitse kaikki…</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
+<translation id="914964947703922647">Tarkista tehtävä</translation>
 <translation id="9149866541089851383">Muokkaa...</translation>
 <translation id="9152637745605628097">Valitse teema tai väri tai lataa kuva</translation>
 <translation id="9153159728062222866">Ohita kopioiminen ja liittäminen</translation>

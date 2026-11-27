@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">ଫାଇଲ ଚୟନ କରି <ph name="KEY" />କୁ ଦବାନ୍ତୁ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ଫାଇଲକୁ ଖୋଲାଯାଇପାରିବ ନାହିଁ}other{ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲାଯାଇପାରିବ ନାହିଁ}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 ଅଧିକ}other{+# ଅଧିକ}}</translation>
 <translation id="1283126956823499975">ଡିଭାଇସ ସେଟ ଅପ କରିବାରେ କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="1285992161347843613">ଫୋନର ଅବସ୍ଥାନ ନିରୂପଣ କରନ୍ତୁ</translation>
 <translation id="1287002645302686982">ପୂର୍ବରୁ <ph name="DESK_TEMPLATE_NAME" /> ନାମରେ ସେଭ କରାଯାଇଥିବା ଏକ ଡେସ୍କ ଅଛି</translation>
@@ -2189,6 +2190,7 @@
 <translation id="6249795363855770621">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି ଭାବେ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ। ଅନଲାଇନ ହେଲେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="625369703868467034">ନେଟୱାର୍କ ହେଲଥ୍</translation>
 <translation id="6254629735336163724">ଭୂସମାନ୍ତର ଭାବରେ ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 ଅଧିକ ଲିଙ୍କ}other{+# ଅଧିକ ଲିଙ୍କ}}</translation>
 <translation id="6259776178973198997">ୱାଇଫାଇ ଡାଇରେକ୍ଟ ମାଲିକ ସୂଚନାକୁ ରିଫ୍ରେସ କରନ୍ତୁ</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />। <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ସକ୍ରିୟ ହେଉଛି...</translation>

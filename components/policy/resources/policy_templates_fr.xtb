@@ -7871,15 +7871,6 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       Dans le cas présent, <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> peut désigner une version exacte comme "13305.0.0" ou le préfixe d'une version tel que "13305".
       La <ph name="WARNING_PERIOD_PROPERTY_NAME" /> et la <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sont des valeurs facultatives exprimées en nombre de jours. Elles sont définies par défaut sur 0 jour, ce qui signifie qu'il n'y a pas de période d'avertissement.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> est une propriété facultative dont la valeur par défaut est "False".</translation>
-<translation id="5876812185674131521">Empêche la suppression manuelle des cookies <ph name="YOUTUBE_PRODUCT_NAME" />.
-
-Cette règle vise à empêcher les utilisateurs d'accéder à <ph name="YOUTUBE_PRODUCT_NAME" /> alors qu'ils n'y sont pas autorisés, après avoir supprimé manuellement les cookies <ph name="YOUTUBE_PRODUCT_NAME" /> à partir de la page des paramètres du site.
-
-Si cette règle est activée, les cookies <ph name="YOUTUBE_PRODUCT_NAME" /> ne peuvent pas être supprimés manuellement.
-
-Si cette règle est désactivée ou qu'elle n'est pas configurée, les cookies <ph name="YOUTUBE_PRODUCT_NAME" /> peuvent être supprimés normalement.
-
-Remarque : Cette règle empêche uniquement la suppression manuelle depuis l'UI des paramètres du site. Elle n'empêche pas la suppression automatique par les règles <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> ou <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. De plus, si la règle <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> est activée, les utilisateurs peuvent toujours effacer tous leurs cookies via la boîte de dialogue "Effacer les données de navigation".</translation>
 <translation id="5879014913445067283">Contrôler la découverte des partages de fichiers sur le réseau via <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Activer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="5882345429632338713">Délai avant le lancement du navigateur secondaire (en millisecondes)</translation>
@@ -10273,13 +10264,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
           Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la fonctionnalité de correction des couleurs est initialement désactivée, mais l'utilisateur peut l'activer à tout moment.</translation>
-<translation id="7324627441366994249">Permet de définir une liste de formats d'URL indiquant les sites sur lesquels les intégrations de l'appli Gemini ne peuvent pas agir directement sur les pages Web.
-
-Les URL qui ne correspondent ni à la liste d'autorisation, ni à la liste de blocage utilisent <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Les URL correspondant à la fois à la liste d'autorisation et à la liste de blocage sont autorisées.
-
-Pour en savoir plus sur les formats d‘URL valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Empêcher Chrome de bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7326394567531622570">Semblable à l'option "Nettoyer" (valeur 2), celle-ci essaie de conserver les jetons de connexion pour éviter à l'utilisateur de devoir se reconnecter.</translation>
 <translation id="7331098674887251788">Autorise les intégrations de l'appli Gemini à agir directement sur les pages Web</translation>
@@ -11557,13 +11541,6 @@ Si la règle est définie sur "True" ou n'est pas configurée, les appareils doi
 Si la règle est définie sur "False", les utilisateurs peuvent rejoindre une session sans être connectés à un réseau géré.</translation>
 <translation id="8183108371184777472">Empêcher l'ouverture de la fenêtre du navigateur</translation>
 <translation id="8185312100223853315">Libellé du profil</translation>
-<translation id="8186370194423312090">Permet de définir une liste de formats d'URL indiquant les sites sur lesquels les intégrations de l'appli Gemini peuvent agir directement sur les pages Web.
-
-Les URL qui ne correspondent ni à la liste d'autorisation, ni à la liste de blocage utilisent <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-Les URL correspondant à la fois à la liste d'autorisation et à la liste de blocage sont autorisées.
-
-Pour en savoir plus sur les formats d‘URL valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Autoriser les commentaires des utilisateurs</translation>
 <translation id="8190271041226151932">Ce paramètre autorise les intégrations de l'appli Gemini.
 

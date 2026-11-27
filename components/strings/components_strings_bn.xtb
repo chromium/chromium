@@ -1642,7 +1642,6 @@
 <translation id="3727850735097852673">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chrome আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="3728173127485570463">পাসওয়ার্ড অটোফিল করার জন্য Chrome ব্রাউজারকে আপনার ফিঙ্গারপ্রিন্ট আর ব্যবহার করতে হবে না</translation>
 <translation id="3729811201279509483">ট্যাব ম্যানুয়ালি যোগ করুন</translation>
-<translation id="3732370487905329239">ডেলিভারির আনুমানিক তারিখ</translation>
 <translation id="3736564442532774454">Chrome ব্রাউজার <ph name="APP_NAME" />-এ আপনার সংবেদনশীল তথ্য পূরণ করার চেষ্টা করছে।</translation>
 <translation id="3738166223076830879">আপনার অ্যাডমিনিস্ট্রেটর ব্রাউজারটি ম্যানেজ করেন।</translation>
 <translation id="3739842843727261045">আপনি যে এইসব ফলাফল পছন্দ করেন, 'থাম্বস-আপ' আইকন সেই মতামত জমা দেয়</translation>
@@ -2748,7 +2747,6 @@
 <translation id="5540224163453853">অনুরোধকৃত নিবন্ধ খুঁজে পাওয়া যায়নি৷</translation>
 <translation id="5541086400771735334">মেলবক্স ৭</translation>
 <translation id="5541546772353173584">ইমেল আইডি যোগ করুন</translation>
-<translation id="5541735141423273733">অ্যারাইভালের তারিখ</translation>
 <translation id="5543452229212526547">আপনার টেক্সট ও কন্টেন্ট এবং আপনি লিখছেন যে পৃষ্ঠায় তার URL, Google-এর কাছে পাঠানো হবে। AI উন্নত করার জন্য হিউম্যান রিভিউয়ার আপনার কন্টেন্ট ব্যবহার করবেন না। আপনার প্রতিষ্ঠান এইসব সেটিংস যেকোনও সময় পরিবর্তন করতে পারে।</translation>
 <translation id="5543722831081909240">১৮০ ডিগ্রী</translation>
 <translation id="5546252337258681768">ডিভাইস আনলক করা হয়েছে</translation>
@@ -3200,7 +3198,6 @@
 <translation id="6311410654831092784">কার্ড স্টক</translation>
 <translation id="6311642842034740437">লোকেশনের নাম</translation>
 <translation id="6312113039770857350">Webpage not available</translation>
-<translation id="6313189007657889655">অর্ডার আইডি</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />-এ ফাইল আপলোড করা প্রক্রিয়া পজ করা হয়েছে</translation>
 <translation id="63172326633386613">অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন</translation>
 <translation id="6319672966240656136">Google-এর উন্নত সুরক্ষা প্রোগ্রাম চালু করায় এই ব্লক করা থাকবে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>

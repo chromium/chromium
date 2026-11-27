@@ -1632,7 +1632,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3727850735097852673">Wenn du den Google Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch einzufügen</translation>
 <translation id="3729811201279509483">Tabs manuell hinzufügen</translation>
-<translation id="3732370487905329239">Voraussichtlicher Liefertermin</translation>
 <translation id="3736564442532774454">Der Chrome-Browser versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
@@ -2736,7 +2735,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5540224163453853">Der gewünschte Artikel wurde nicht gefunden.</translation>
 <translation id="5541086400771735334">Ablage 7</translation>
 <translation id="5541546772353173584">E-Mail-Adresse hinzufügen</translation>
-<translation id="5541735141423273733">Anreisedatum</translation>
 <translation id="5543452229212526547">Dein Text sowie der Inhalt und die URL der Seite, auf der du schreibst, werden an Google gesendet. Deine Inhalte werden nicht von Prüfern verwendet, um die KI zu verbessern. Diese Einstellungen können jederzeit von deiner Organisation geändert werden.</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5546252337258681768">Gerät entsperrt</translation>
@@ -3188,7 +3186,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6311410654831092784">Cardstock</translation>
 <translation id="6311642842034740437">Benannter Standort</translation>
 <translation id="6312113039770857350">Webseite nicht verfügbar</translation>
-<translation id="6313189007657889655">Bestell-ID</translation>
 <translation id="6316110367871394043">Dateiupload in <ph name="CLOUD_PROVIDER" /> wurde pausiert</translation>
 <translation id="63172326633386613">Einstellungen für Bedienungshilfen verwalten</translation>
 <translation id="6319672966240656136">Diese Website bleibt gesperrt, weil du das erweiterte Sicherheitsprogramm von Google nutzt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>

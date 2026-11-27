@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1006344083777662909">Jaat tämän välilehden Haulle</translation>
 <translation id="1026101648481255140">Jatka asennusta</translation>
 <translation id="1029669172902658969">Päivitä &amp;Chromium-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="1040916596585577953">Chromium suosittelee tämän laajennuksen tarkistamista</translation>
@@ -84,6 +85,7 @@
 <translation id="1880495786739455486">Voit avata sivupaneelin Haun uudelleen esittääksesi kysymyksiä selaamisen aikana</translation>
 <translation id="1880677175115548835">Valitse tekstiä</translation>
 <translation id="188102464690227119">Yläpalkin "Sivupaneelin Haku" ‑painikkeella on uusi kuvake. Klikkaa sitä esittääksesi kysymyksiä selaamisen aikana sivupaneelin Haussa.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> – Jaat tämän välilehden Haulle</translation>
 <translation id="1896836275755235458">Chromium säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää Virransäästöstä<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromiumin päivityspalvelu</translation>
 <translation id="1929939181775079593">Chromium ei vastaa. Käynnistetäänkö uudelleen?</translation>
@@ -103,6 +105,7 @@
 <translation id="2086476982681781442">Chromium on estänyt tämän latauksen, koska tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
 <translation id="208726765006323911">Näet kehotteen kokeilla ominaisuutta (<ph name="FEATURE_NAME" />) seuraavan kerran, kun avaat Chromiumin iOS:llä.</translation>
 <translation id="2099452623287920103">Salasanat ja muu Chromium-data tallennetaan Google-tilillesi ja poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromiumissa, kirjaudu takaisin sisään.</translation>
+<translation id="2104346008417283366">Voit vaihtaa Geminiin, joka on alun perin liitetty Google-tiliisi ja jota <ph name="DOMAIN" /> ei hallinnoi. Vaihtaminen edellyttää Chromiumin uudelleenkäynnistystä.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
 <translation id="2135919691573380097">Ilmoita sivustosta</translation>
@@ -270,6 +273,7 @@
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
 <translation id="3945058413678539331">Chromium yrittää kopioida salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="3950481960271781644">Kirjaudu Chromiumiin, niin voit käyttää esimerkiksi tallennettuja tietoja kaikilla laitteilla</translation>
+<translation id="3956384805063254165">Tämä hallinnoitu selain voi käyttää Geminiä, jonka <ph name="DOMAIN" /> on ottanut käyttöön työkäyttöä varten. Se voi löytää tietoja ja tarjota vastauksia organisaation tiedostojen ja palveluiden perusteella. Vaihtaminen edellyttää Chromiumin uudelleenkäynnistystä.</translation>
 <translation id="395904275706073188">Suojattuja sivuja ei voi lukea. Kokeile toista sivua.</translation>
 <translation id="3962647064319009959">Lue, miten Chromium pitää sinut turvassa</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
@@ -362,6 +366,7 @@
 <translation id="494490797786467921">Sulje Chromiumin kirjautumisikkuna klikkaamalla</translation>
 <translation id="4950660488495335294">Kun käytät Chromium-profiileja, voit pitää kaiken Chromium-sisällön erillään. Luo profiileja kavereita ja perhettä varten tai tee ero työn ja hauskanpidon välille.</translation>
 <translation id="4992938037305302429">Tilisi Chromiumissa</translation>
+<translation id="5088350632679445418">Aloita uusi viestiketju Haulla</translation>
 <translation id="5123973130450702873">Chromium tarvitsee luvan käsien liikkeen seuraamiseen</translation>
 <translation id="5141988424377517949">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
@@ -400,6 +405,7 @@
 <translation id="5473971139929175403">Chromium ei ehkä toimi oikein, koska sen käyttöä tällä Linux-jakelulla ei enää tueta.</translation>
 <translation id="5475924890392386523">Chromium on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
 <translation id="5496810170689441661">Chromium yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Peru välilehden jakaminen Haulle}other{Peru # välilehden jakaminen Haulle}}</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Avaa PDF-tiedostot Chromiumissa</translation>
 <translation id="5557035028197464376">Haku Chromessa kiinnitetty yläpalkkiin!</translation>
@@ -410,8 +416,10 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Saat myös tallennetut tiedot ja muuta sisältöä laitteelta (<ph name="DEVICE" />).</translation>
 <translation id="5579324208890605088">Käynnistysvirhe: Suorita asennusohjelma tavallisena käyttäjänä, ei järjestelmänvalvojana.</translation>
 <translation id="5580770360767802657">Chromiumin käyttäminen oletuksena ja kiinnittäminen</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Jaa välilehti Haulle}other{Jaa # välilehteä Haulle}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä selainikkunaa ei avata uudelleen.}}</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
+<translation id="5608863008645990586">Vaihda Gemini Enterpriseen, jota <ph name="DOMAIN" /> hallinnoi</translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> on valmis. Voit käynnistää Chromiumin uudelleen nyt tai asettaa sen päivittymään, kun näyttö on seuraavan kerran päällä ja käyttämättä <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
 <translation id="5643865575100044307">Poista laitteen sivustodata aina, kun suljet Chromiumin</translation>
@@ -505,6 +513,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6455857529632101747">Tervetuloa Chromium-profiileihin</translation>
 <translation id="6460614424172581323">Seuraavan kerran kun avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen käyttää välilehtiryhmiä.</translation>
 <translation id="6466344609055215035">Poista tili Chromiumista</translation>
+<translation id="6475125381371849386">Aloita uusi viestiketju Haulla</translation>
 <translation id="6475912303565314141">Määrittää myös Chromiumin aloitussivun.</translation>
 <translation id="6510925080656968729">Poista Chromium</translation>
 <translation id="651535675648445253">Pikakuvakkeet avautuvat Chromiumissa</translation>
@@ -519,6 +528,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6598877126913850652">Siirry Chromiumin ilmoitusasetuksiin</translation>
 <translation id="6600016381025017075">Hae mitä tahansa tältä sivulta</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Jaa välilehti Haulle}other{Jaa # välilehteä Haulle}}</translation>
 <translation id="6637855549677695722">Kun seuraavan kerran avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen ottaa käyttöön Googlen parhaat suojausominaisuudet.</translation>
 <translation id="6637908313088374648">Chromium käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="6644846457769259194">Päivitetään laitetta (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -533,6 +543,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu profiilihakemisto tai käytä Chromiumin uudempaa versiota.</translation>
 <translation id="6729124504294600478">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromiumin verkko- ja sovellustoimintaan ja linkitettyihin Googlen palveluihin</translation>
 <translation id="6734291798041940871">Chromium on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
+<translation id="6737759643107005803">Vaihda takaisin Geminiin, jota <ph name="DOMAIN" /> ei hallinnoi</translation>
 <translation id="6742093177587589736">Kirjaudu sisään Chromiumiin, niin voit käyttää salasanoja, kirjanmerkkejä ja muita tietoja kaikilla laitteillasi. Tämä kirjanmerkki tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="674891594898436429">Hylkää aktiivinen haku tällä välilehdellä</translation>
 <translation id="6751374565094704799">Nopeuttaa sivustoja Chromiumin V8-moottorilla, mutta heikentää Chromiumin suojaa hyökkäyksiä vastaan. Tämä asetus on päällä.</translation>
@@ -728,6 +739,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8556055872671007529">Joissakin Chromiumin ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="8556420416730706394">Kiinnitä kuvahaku klikkaamalla sivupaneelin yläreunan Kiinnitä-painiketta, niin löydät sen helposti</translation>
 <translation id="856656450041460113">Hakukielilista</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Peru välilehden jakaminen Haulle}other{Peru # välilehden jakaminen Haulle}}</translation>
 <translation id="8576826849825683917">Useat organisaatiot ylläpitävät Chromiumia</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8619360774459241877">Käynnistetään Chromiumia…</translation>

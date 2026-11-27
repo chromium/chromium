@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Les funcions que necessiten un micròfon no funcionaran</translation>
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
 <translation id="1629162218487290695">Verifica la teva identitat…</translation>
+<translation id="1633084385573994059">No utilitzis aquest lloc web</translation>
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtén indicacions fins a la teva destinació amb instruccions pas a pas amb la funció de navegació</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">No permetis que els llocs web utilitzin el micròfon</translation>
 <translation id="2104436223719117661">Cerques del moment</translation>
 <translation id="21133533946938348">Fixa la pestanya</translation>
+<translation id="2113761902638026426">Vols permetre que Gemini vagi a <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Mantén la navegació privada canviant al mode d'incògnit</translation>
 <translation id="2119636449201577317">Obre a…</translation>
 <translation id="2119962645034852864">Alguns serveis no estan disponibles per al teu compte</translation>
@@ -767,6 +769,7 @@
 <translation id="3350976670663926380">Els canvis s'han desat</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Aquest compte està gestionat.</translation>
 <translation id="3365529507898144230">Desa a Fotos</translation>
+<translation id="3371168305258344914">Gemini està a punt de dur a terme accions en un lloc web que pot tenir informació sensible teva</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
 <translation id="3378214228000661758">Crea una clau d'accés per a</translation>
@@ -1510,6 +1513,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="567881659373499783">Versió <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Per utilitzar i desar contrasenyes al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="5684761169742812828">Aquesta contrasenya ha quedat exposada en una violació de les dades a Internet. Si no tens temps per canviar-la ara, Google et recomana que conservis aquest advertiment com a recordatori.</translation>
+<translation id="5691020463738411542">Sincronitza les preferències de navegació segura entre dispositius</translation>
 <translation id="5694848685995373177">S'ha desat a Drive per a <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors anant a la configuració i, després, a la configuració del contingut</translation>
 <translation id="5702108177581350218">Si comparteixes una còpia del teu nom d'usuari i de la teva contrasenya, el membre de la família podrà emplenar-los amb el gestor de contrasenyes de Google.</translation>
@@ -1588,6 +1592,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5948605885471592910">Consulta i gestiona tot el que tens obert</translation>
 <translation id="5952641243319721872">Confirmes que vols descartar la selecció?</translation>
 <translation id="5956112131836209882">Pestanya del grup de pestanyes. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Inicia la tasca</translation>
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Obre els enllaços aquí la propera vegada</translation>
 <translation id="5963939892571022323">No es pot crear un enllaç al text marcat.</translation>
@@ -1808,6 +1813,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="656065428026159829">Mostra'n més</translation>
 <translation id="6565899972286925956">Crea qualsevol cosa</translation>
 <translation id="6571070086367343653">Edita la targeta de crèdit</translation>
+<translation id="6571502147204686607">Protegeix-te de llocs web no segurs</translation>
 <translation id="6574092468346088891">Activa les notificacions de Comprovació de seguretat</translation>
 <translation id="6579867704846662339">Pots triar si vols obrir els URL entrants d'altres aplicacions en incògnit.</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
@@ -2248,6 +2254,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7921559948846049514">Tria un tema, un color o més per al fons</translation>
 <translation id="792357691529995513">No s'ha trobat cap problema</translation>
 <translation id="7925108652071887026">Dades d'emplenament automàtic</translation>
+<translation id="7926290435065552539">Protegeix les teves contrasenyes</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
 <translation id="792762900715361006">Fes una foto o un vídeo</translation>
 <translation id="7927711904086083099">Sense seleccionar</translation>
@@ -2666,6 +2673,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="9144230693397287797">Rep notificacions dels recordatoris que estableixis i de les pestanyes d'altres dispositius</translation>
 <translation id="914781932147356857">Marca-ho tot com a…</translation>
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
+<translation id="914964947703922647">Revisa la tasca</translation>
 <translation id="9149866541089851383">Edita...</translation>
 <translation id="9152637745605628097">Tria entre temes i colors, o penja una imatge</translation>
 <translation id="9153159728062222866">Omet la funció Copia i enganxa</translation>

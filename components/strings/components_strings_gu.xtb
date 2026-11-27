@@ -1638,7 +1638,6 @@
 <translation id="3727850735097852673">macOS કીચેન સાથે Google Password Managerનો ઉપયોગ કરવા માટે, Chromeને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="3728173127485570463">પાસવર્ડ ઑટોમૅટિક રીતે ભરવા માટે Chrome બ્રાઉઝરને હવેથી તમારી ફિંગરપ્રિન્ટની જરૂર નથી</translation>
 <translation id="3729811201279509483">મેન્યુઅલી ટૅબ ઉમેરો</translation>
-<translation id="3732370487905329239">ડિલિવરીની અંદાજિત તારીખ</translation>
 <translation id="3736564442532774454">Chrome બ્રાઉઝર <ph name="APP_NAME" /> પર તમારી સંવેદનશીલ માહિતી ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="3738166223076830879">તમારા વ્યવસ્થાપક દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3739842843727261045">થમ્બ્સ અપ, આ પરિણામો તમને પસંદ આવ્યા એવો પ્રતિસાદ સબમિટ કરે છે</translation>
@@ -2742,7 +2741,6 @@
 <translation id="5540224163453853">વિનંતી કરેલ લેખ શોધી શકાયો નથી.</translation>
 <translation id="5541086400771735334">મેઇલબૉક્સ 7</translation>
 <translation id="5541546772353173584">ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
-<translation id="5541735141423273733">પહોંચવાની તારીખ</translation>
 <translation id="5543452229212526547">તમારી ટેક્સ્ટ તેમજ તમે જે પેજ પર લખી રહ્યાં છો તેનું કન્ટેન્ટ અને URL Googleને મોકલવામાં આવશે. AIને બહેતર બનાવવા માટે માનવ રિવ્યૂઅર દ્વારા તમારા કન્ટેન્ટનો ઉપયોગ કરવામાં આવશે નહીં. તમારી સંસ્થા કોઈપણ સમયે આ સેટિંગ બદલી શકે છે.</translation>
 <translation id="5543722831081909240">180 ડિગ્રી</translation>
 <translation id="5546252337258681768">ડિવાઇસ અનલૉક કર્યું</translation>
@@ -3195,7 +3193,6 @@
 <translation id="6311410654831092784">કાર્ડ સ્ટોક</translation>
 <translation id="6311642842034740437">આ નામથી ઓળખાતું લોકેશન</translation>
 <translation id="6312113039770857350">વેબપેજ ઉપલબ્ધ નથી</translation>
-<translation id="6313189007657889655">ઑર્ડર ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> પર ફાઇલ અપલોડ કરવાની પ્રક્રિયા થોભાવવામાં આવી છે</translation>
 <translation id="63172326633386613">ઍક્સેસિબિલિટી સેટિંગ મેનેજ કરો</translation>
 <translation id="6319672966240656136">આ સાઇટ બ્લૉક થયેલી રહેશે કારણ કે તમે Googleના અદ્યતન સુરક્ષા પ્રોગ્રામ હેઠળ છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>

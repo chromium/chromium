@@ -75,6 +75,7 @@
 <translation id="1640672724030957280">ଡାଉନଲୋଡ ହେଉଛି…</translation>
 <translation id="1651617469580841801">ଆପଣ Google Lens ବ୍ୟବହାର କଲେ, PDFଗୁଡ଼ିକ ସମେତ ପୃଷ୍ଠାର ଟାଇଟେଲ, URL ଏବଂ ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଯାଏ। <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Chrome ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - ଆପଣ ଏହି ଟାବକୁ Google Search ସହିତ ସେୟାର କରୁଛନ୍ତି</translation>
 <translation id="1682634494516646069">Google Chrome ଏହାର ଡାଟା ଡିରେକ୍ଟୋରୀକୁ ପଢ଼ି ଓ ଲେଖି ପାରିବ ନାହିଁ:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@
 <translation id="3380249972812870825">Chromeରେ Gemini ଖୋଲିବା ପାଇଁ <ph name="GLOBAL_HOTKEY" /> ଦବାନ୍ତୁ</translation>
 <translation id="3392127217442962664">Chrome ଆପଣଙ୍କ ଡିଭାଇସରେ ଚାଲୁଥିବା AI ଯୋଗ କରିଛି। ସାଇଟ ଏବଂ Chrome ଏହାକୁ ଏହିପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ବ୍ୟବହାର କରିପାରିବ:</translation>
 <translation id="3396977131400919238">ସଂସ୍ଥାପନ ସମୟରେ ଏକ ସଞ୍ଚାଳନ ସିଷ୍ଟମ୍ ତ୍ରୁଟି ସଂଘଠିତ ହୋଇଛି । ଦୟାକରି Google Chrome ପୁନଃ ଡାଉନଲୋଡ୍ କରନ୍ତୁ ।</translation>
+<translation id="3404531968986217414">Google Search ସହ ନୂଆ ଥ୍ରେଡ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
 <translation id="3438681572027105609">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3450887623636316740">ଏହି ଫାଇଲ ବିପଦଜନକ ହୋଇପାରେ<ph name="LINE_BREAK" />ଯଦି ଆପଣ ପାସୱାର୍ଡ ପ୍ରଦାନ କରନ୍ତି ତେବେ Chrome ଆପଣଙ୍କ ପାଇଁ ଏହି ଡାଉନଲୋଡକୁ ଯାଞ୍ଚ କରିପାରିବ। ଫାଇଲ ବିଷୟରେ ସୂଚନା Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଯାଏ, କିନ୍ତୁ ଫାଇଲ ବିଷୟବସ୍ତୁ ଏବଂ ପାସୱାର୍ଡ ଆପଣଙ୍କ ଡିଭାଇସରେ ରହିଥାଏ।</translation>
@@ -399,6 +401,7 @@
 <translation id="5003967926796347400">“Google Password Manager”ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="5043786843026425788">Chromeରେ Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="504867494566807945">ଯେ କୌଣସି ଆପରୁ Chromeରେ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ। ଏହା ସହିତ ସହଜ ଆକ୍ସେସ ପାଇଁ, ଏହା ଆପଣଙ୍କ ଟାସ୍କବାରରେ ପିନ ହୋଇଯାଏ।</translation>
+<translation id="507983337152787026">Google Search ସହ ନୂଆ ଥ୍ରେଡ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{ଏକ ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ଆପଣ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ ବୋଲି ଉନ୍ନତ ସୁରକ୍ଷା ଆବଶ୍ୟକ କରେ। ଇନକଗ୍ନିଟୋ କିମ୍ବା ଆଇସୋଲେଟେଡ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି। ଆପଣ ପୁଣି ଲଞ୍ଚ କରିବା ପରେ ଏହା ପୁଣି ଖୋଲିବ ନାହିଁ।}other{ଏକ ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ଆପଣ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ ବୋଲି ଉନ୍ନତ ସୁରକ୍ଷା ଆବଶ୍ୟକ କରେ। ସମଗ୍ର ପ୍ରୋଫାଇଲରେ # ଇନକଗ୍ନିଟୋ ଏବଂ ଆଇସୋଲେଟେଡ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି। ଆପଣ ପୁଣି ଲଞ୍ଚ କରିବା ପରେ ସେଗୁଡ଼ିକ ପୁଣି ଖୋଲିବ ନାହିଁ।}}</translation>
 <translation id="5105120510934353742">ଭବିଷ୍ୟତରେ Google Chromeର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଆପଣଙ୍କୁ macOS 13 କିମ୍ବା ତା'ପରର ଭର୍ସନ ଆବଶ୍ୟକ ହେବ। ଏହି କମ୍ପ୍ୟୁଟରରେ macOS 12 ଭର୍ସନ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="5114340746415930644">ଆପଣଙ୍କ <ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ</translation>
@@ -425,6 +428,7 @@
 <translation id="524751727772074981">Chromeରେ Gemini ମାଧ୍ୟମରେ ଆପଣ ଯେଉଁଠାରେ ଅଛନ୍ତି ସେଠାରେ ଯାହା ବି ଚାହିଁବେ ପଚାରନ୍ତୁ</translation>
 <translation id="5247617065091903691">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Google Search ସାଇଡ ପେନେଲକୁ ପିନ କରିପାରିବେ</translation>
 <translation id="5271833978500241046">Chromeରେ ଅନ୍ୟ Gemini ଫିଚର ସହିତ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="528611299569739095">ଏହି ପରିଚାଳିତ ବ୍ରାଉଜର <ph name="DOMAIN" /> ଦ୍ୱାରା ୱାର୍କ ପାଇଁ ସେଟ ଅପ କରାଯାଇଥିବା Geminiକୁ ବ୍ୟବହାର କରିପାରିବ। ଏହା ସୂଚନା ଖୋଜିପାରିବ ଏବଂ ସଂସ୍ଥାର ଫାଇଲ ଏବଂ ସର୍ଭିସେସରେ ଆଧାରିତ ଉତ୍ତର ପ୍ରଦାନ କରିପାରିବ। ସ୍ୱିଚ କରିବା ପାଇଁ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="5320351714793324716">ଯଦି ଆପଣ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତି, ତେବେ Chrome ପ୍ରିଲୋଡ କରିବା ବେଳେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରେ</translation>
 <translation id="5321325624576443340">Google Lens ଉପଲବ୍ଧ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5346389065299425353">ଏକାଧିକ ଟାବ, ଫାଇଲ ଏବଂ ଟୁଲ ଯୋଗ କରି ଆପଣଙ୍କ ସର୍ଚ୍ଚକୁ ଗଭୀର କରନ୍ତୁ</translation>
@@ -449,7 +453,9 @@
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5600352656975192682">Chromeକୁ ଯେ କୌଣସି ସମୟରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ଏହାକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="5602351063754773347">ଆପଣ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chrome ସୁପାରିଶ କରେ। <ph name="BEGIN_LINK" />ସପୋର୍ଟ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586"><ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ Gemini Enterpriseକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="5610759359710387751">Chromeକୁ ନିଜର କରନ୍ତୁ</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Google Search ସହ ଟାବକୁ ଅନସେୟାର କରନ୍ତୁ}other{Google Search ସହ # ଟାବକୁ ଅନସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="5649156266046089790">Chrome ପ୍ରୋଫାଇଲ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ସାମଗ୍ରୀକୁ Chromeରେ ଅଲଗା କରିପାରିବେ। ଆପଣଙ୍କ ସାଙ୍ଗ ଏବଂ ପରିବାର ପାଇଁ ପ୍ରୋଫାଇଲ ତିଆରି କରନ୍ତୁ କିମ୍ବା କାର୍ଯ୍ୟ ଏବଂ ମଜା ମଧ୍ୟରେ ବିଭାଜିତ କରନ୍ତୁ।</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ Chrome ଏହାକୁ ବ୍ଲକ୍ କରିଦେଇଛି।</translation>
 <translation id="566568153320186256">Chrome ସ୍ମୁଥ ସ୍କ୍ରୋଲିଂ ଏବଂ ଭିଡିଓ ଫ୍ରେମ ରେଟ ପରି ବେକଗ୍ରାଉଣ୍ଡ କାର୍ଯ୍ୟକଳାପ ଏବଂ ଭିଜୁଆଲ ଇଫେକ୍ଟଗୁଡ଼ିକୁ ସୀମିତ କରି ବେଟେରୀ ପାୱାରକୁ ସଂରକ୍ଷିତ କରିଥାଏ। <ph name="BEGIN_LINK" />ଏନର୍ଜି ସେଭର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -543,6 +549,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{1 ମିନିଟ ପାଇଁ Chromeକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ। ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରାଯାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{# ମିନିଟ ପାଇଁ Chromeକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ। ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରାଯାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
 <translation id="6418662306461808273">ପୂର୍ବରୁ ଥିବା Chrome ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="6426623519983252346">ଆଗାମୀ ଥର ଆପଣ Chrome iOS ଖୋଲିଲେ <ph name="FEATURE_NAME" />କୁ ବ୍ୟବହାର କରି ଦେଖିବା ପାଇଁ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
+<translation id="6431496891888891615">ଆପଣ ମୂଳତଃ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ସମ୍ବନ୍ଧିତ ଏବଂ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉନଥିବା Geminiକୁ ସ୍ୱିଚ କରିପାରିବେ। ସ୍ୱିଚ କରିବା ପାଇଁ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="6434035853014503219">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ Chromeକୁ ବାଛିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ!</translation>
 <translation id="6438015621983209660">ଆପଣଙ୍କ ଫୋନରେ Chrome ସହ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6442774133615368941">Chrome iOS ଆପରେ ଆପଣଙ୍କ କେମେରା ମାଧ୍ୟମରେ ଆପଣ ଯାହା ଦେଖନ୍ତି, ତାହାକୁ କ୍ରୟ, ଅନୁବାଦ ଏବଂ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
@@ -579,6 +586,7 @@
 <translation id="6712881677154121168">ଡାଉନଲୋଡ ତ୍ରୁଟି: <ph name="DOWNLOAD_ERROR" />।</translation>
 <translation id="6718739135284199302">Chromeକୁ ଅଧିକ ଦ୍ରୁତ କରନ୍ତୁ</translation>
 <translation id="6734827584173583205">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ <ph name="COUNT" /> ଅଧିକ କାଢ଼ି ଦେଇଛି।</translation>
+<translation id="6737759643107005803"><ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉନଥିବା Geminiକୁ ପୁଣି ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="674891594898436429">ଏହି ଟାବରେ ସକ୍ରିୟ ସର୍ଚ୍ଚକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
 <translation id="6760235774835597023">Chromeର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromeକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ। ଏହି ସେଟିଂ ଚାଲୁ ଅଛି।</translation>
@@ -657,6 +665,7 @@
 <translation id="7481213027396403996">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="749228101751499733">ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ Chromeରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ବ୍ୟବହାର କରିପାରିବେ। <ph name="SHORTCUT" /> ଆପଣଙ୍କ Google ସେବା ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="7496017508659652909">Chrome ବ୍ରାଉଜ ଓ ସର୍ଚ୍ଚ କରିବା କାର୍ଯ୍ୟକୁ ଦ୍ରୁତ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରେ। <ph name="BEGIN_LINK" />ପ୍ରିଲୋଡ ପୃଷ୍ଠାଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">ଆପଣ ଏହି ଟାବକୁ Google Search ସହିତ ସେୟାର କରୁଛନ୍ତି</translation>
 <translation id="7514258452813684157">Google ଅପଡେଟର ସେବା</translation>
 <translation id="7515191208480168435">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ Google Lensକୁ ପିନ କରିପାରିବେ</translation>
 <translation id="7535429826459677826">Google Chrome ଡେଭ୍‍</translation>
@@ -744,6 +753,7 @@
 <translation id="8286862437124483331">Google Chrome ପାସ୍‌ୱର୍ଡ ଦେଖାଇବାକୁ ଚାହୁଁଛି। ଏହାକୁ ଅନୁମତି ଦେବାପାଇଁ ଆପଣଙ୍କର Windows ପାସ୍‌ୱର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="8291415872436043161">Chrome ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="829923460755755423">Google Password Managerରେ ଏକ ସର୍ଟକଟ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Google Search ସହ ଟାବକୁ ସେୟାର କରନ୍ତୁ}other{Google Search ସହ # ଟାବକୁ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="8313851650939857356">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8321058241987390452">ସଫଳ! ଆପଣ ବର୍ତ୍ତମାନ Google Search ପେନେଲ ସହ ବ୍ରାଉଜ କରିବା ସମୟରେ ସହଜରେ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ</translation>
 <translation id="8336463659890584292">ଯେତେବେଳେ ଏକ ସାଇଟ ତା'ର ପୃଷ୍ଠାରେ ଲିଙ୍କଗୁଡ଼ିକୁ ବ୍ୟକ୍ତିଗତ ଭାବେ ପ୍ରିଲୋଡ କରିବାକୁ କୁହେ, Chrome Google ସର୍ଭରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ। ଏହା ପ୍ରିଲୋଡ କରାଯାଇଥିବା ସାଇଟରୁ ଆପଣଙ୍କ ପରିଚୟକୁ ଲୁଚାଇଥାଏ, କିନ୍ତୁ କେଉଁ ସାଇଟଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରାଯାଏ ତାହା Google ଜାଣିପାରେ।</translation>
@@ -798,6 +808,7 @@
 <translation id="8712767363896337380">ପ୍ରାୟ ଅପ ଟୁ ଡେଟ! ଅପଡେଟ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ <ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="8718062187489036808">Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Google Search ସହ ଟାବକୁ ସେୟାର କରନ୍ତୁ}other{Google Search ସହ # ଟାବକୁ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="873133009373065397">Google Chrome ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନିର୍ଦ୍ଧାରଣ କିମ୍ବା ସେଟ୍ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8747073452963259673">ସର୍ଚ୍ଚ ଏରିଆର ନିମ୍ନ ବାମପଟ କୋଣ: ବାମପଟୁ <ph name="LEFT" />%, ନିମ୍ନରୁ <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକରୁ ମେମୋରୀ ଖାଲି କରେ। ଏହା ସକ୍ରିୟ ଟାବ ଏବଂ ଅନ୍ୟ ଆପ୍ସକୁ ଅଧିକ କମ୍ପ୍ୟୁଟର ରିସୋର୍ସ ଦେଇ Chromeକୁ ଦ୍ରୁତ ଭାବେ କାର୍ଯ୍ୟ କରିବାକୁ ଦିଏ। ଆପଣ ଆପଣଙ୍କ ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକୁ ପୁଣି ଫେରି ଆସିଲେ, ସେଗୁଡ଼ିକ ସ୍ଵତଃ ସକ୍ରିୟ ହୋଇଯାଏ। <ph name="BEGIN_LINK" />ମେମୋରୀ ସେଭର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -849,6 +860,7 @@
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />। Google ସଦସ୍ୟତା।</translation>
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="93760716455950538">ChromeOS Flexକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Google Search ସହ ଟାବକୁ ଅନସେୟାର କରନ୍ତୁ}other{Google Search ସହ # ଟାବକୁ ଅନସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="983803489796659991">ଅପଡେଟ ସର୍ଭରରେ ଆପ୍ଲିକେସନ ପାଇଁ କୌଣସି ହାସ ଡାଟା ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ବ୍ୟବହାର କରି Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରାଯାଇପାରିବ</translation>

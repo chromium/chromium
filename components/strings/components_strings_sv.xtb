@@ -1638,7 +1638,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3727850735097852673">Om du vill använda Google Lösenordshantering med en macOS-nyckelring ska du starta om Chrome och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="3728173127485570463">Du behöver inte längre registrera ditt fingeravtryck för att Chrome-webbläsaren ska fylla i lösenord automatiskt</translation>
 <translation id="3729811201279509483">Lägg till flikar manuellt</translation>
-<translation id="3732370487905329239">Beräknat leveransdatum</translation>
 <translation id="3736564442532774454">Chrome-webbläsaren försöker fylla i dina känsliga uppgifter på <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Webbläsaren hanteras av administratören.</translation>
 <translation id="3739842843727261045">Gilla-markera för att visa att du gillar dessa resultat</translation>
@@ -2742,7 +2741,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5540224163453853">Det gick inte att hitta den önskade artikeln.</translation>
 <translation id="5541086400771735334">Postfack 7</translation>
 <translation id="5541546772353173584">Lägg till e-postadress</translation>
-<translation id="5541735141423273733">Ankomstdatum</translation>
 <translation id="5543452229212526547">Din text samt innehållet på och webbadressen till sidan du skriver på skickas till Google. Ditt innehåll används inte av mänskliga granskare för att förbättra AI. Din organisation kan ändra dessa inställningar när som helst.</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5546252337258681768">Enheten är upplåst</translation>
@@ -3195,7 +3193,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6311410654831092784">Kartongark</translation>
 <translation id="6311642842034740437">Namngiven plats</translation>
 <translation id="6312113039770857350">Webbsidan är inte tillgänglig</translation>
-<translation id="6313189007657889655">Beställnings-id</translation>
 <translation id="6316110367871394043">Filuppladdningen till <ph name="CLOUD_PROVIDER" /> har pausats</translation>
 <translation id="63172326633386613">Hantera tillgänglighetsinställningar</translation>
 <translation id="6319672966240656136">Webbplatsen blockeras eftersom du omfattas av programmet Avancerat skydd. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>

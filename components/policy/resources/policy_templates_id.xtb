@@ -8161,15 +8161,6 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
       <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> di sini bisa merupakan versi yang tepat seperti '13305.0.0' atau awalan versi, seperti '13305'.
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> dan <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> adalah nilai opsional yang ditentukan dalam jumlah hari. Nilai defaultnya adalah 0 hari, yang artinya tidak ada periode peringatan.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> adalah properti opsional dengan nilai default sebagai Salah (False).</translation>
-<translation id="5876812185674131521">Mencegah penghapusan cookie <ph name="YOUTUBE_PRODUCT_NAME" /> secara manual.
-
-Kebijakan ini dirancang untuk mencegah pengguna mengakses <ph name="YOUTUBE_PRODUCT_NAME" /> yang tidak sah setelah mereka menghapus cookie <ph name="YOUTUBE_PRODUCT_NAME" /> secara manual melalui halaman setelan situs.
-
-Jika kebijakan ini disetel ke Aktif, cookie <ph name="YOUTUBE_PRODUCT_NAME" /> tidak dapat dihapus secara manual.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, cookie <ph name="YOUTUBE_PRODUCT_NAME" /> dapat dihapus secara normal.
-
-Catatan: Kebijakan ini hanya mencegah penghapusan manual dari UI setelan situs. Kebijakan ini tidak mencegah penghapusan otomatis oleh kebijakan <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> atau <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Selain itu, jika kebijakan <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> disetel ke aktif, pengguna masih dapat menghapus semua cookie mereka melalui dialog Hapus Data Penjelajahan.</translation>
 <translation id="5879014913445067283">Mengontrol penemuan Berbagi File Jaringan melalui <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Mengaktifkan Sentuh untuk Menelusuri</translation>
 <translation id="5882345429632338713">Penundaan sebelum meluncurkan browser alternatif (milidetik)</translation>
@@ -10744,13 +10735,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan 
           Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak disetel, fitur koreksi warna pada awalnya akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="7324627441366994249">Memungkinkan untuk menetapkan daftar pola URL yang menentukan situs tempat integrasi aplikasi Gemini tidak dapat langsung bertindak di halaman web.
-
-URL yang tidak cocok dengan daftar yang diizinkan atau daftar yang tidak diizinkan menggunakan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URL yang cocok dengan daftar yang diizinkan dan daftar yang tidak diizinkan akan diizinkan.
-
-Untuk informasi selengkapnya tentang pola yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="7325801934761922681">Cegah Chrome memblokir navigasi ke protokol eksternal di dalam iframe sandbox</translation>
 <translation id="7326394567531622570">Serupa dengan Wipe (nilai 2), namun mencoba untuk mempertahankan token login sehingga pengguna tidak perlu login lagi.</translation>
 <translation id="7331098674887251788">Mengizinkan integrasi aplikasi Gemini untuk langsung bertindak di halaman web</translation>
@@ -12058,13 +12042,6 @@ Jika nilai disetel ke benar (true) atau tidak disetel, pengguna harus berada di 
 Jika nilai disetel ke salah (false), pengguna dapat bergabung tanpa harus berada di jaringan terkelola.</translation>
 <translation id="8183108371184777472">Sembunyikan peluncuran jendela browser</translation>
 <translation id="8185312100223853315">Label Profil</translation>
-<translation id="8186370194423312090">Memungkinkan untuk menetapkan daftar pola URL yang menentukan situs tempat integrasi aplikasi Gemini dapat langsung bertindak di halaman web.
-
-URL yang tidak cocok dengan daftar yang diizinkan atau daftar yang tidak diizinkan menggunakan <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
-
-URL yang cocok dengan daftar yang diizinkan dan daftar yang tidak diizinkan akan diizinkan.
-
-Untuk informasi selengkapnya tentang pola yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Izinkan masukan pengguna</translation>
 <translation id="8190271041226151932">Setelan ini mengizinkan integrasi aplikasi Gemini.
 

@@ -1634,7 +1634,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3727850735097852673">Ak chcete používať Správcu hesiel Google s Kľúčenkou systému macOS, znova spustite Chrome a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
 <translation id="3728173127485570463">Prehliadač Chrome už nebude vyžadovať odtlačok prsta na automatické dopĺňanie hesiel</translation>
 <translation id="3729811201279509483">Manuálne pridávanie kariet</translation>
-<translation id="3732370487905329239">Odhadovaný dátum doručenia</translation>
 <translation id="3736564442532774454">Prehliadač Chrome sa pokúša doplniť vaše citlivé údaje v aplikácii <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Prehliadač je ovládaný vaším správcom.</translation>
 <translation id="3739842843727261045">Označením palcom hore odošlete spätnú väzbu, že sa vám tieto výsledky páčili</translation>
@@ -2738,7 +2737,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5540224163453853">Požadovaný článok sa nepodarilo nájsť.</translation>
 <translation id="5541086400771735334">Poštová schránka č. 7</translation>
 <translation id="5541546772353173584">Pridanie e-mailu</translation>
-<translation id="5541735141423273733">Dátum príchodu</translation>
 <translation id="5543452229212526547">Váš text, obsah a webová adresa stránky, na ktorej píšete, budú odoslané Googlu. Kontrolóri nebudú pomocou vášho obsahu zlepšovať umelú inteligenciu. Vaša organizácia môže tieto nastavenia kedykoľvek zmeniť.</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5546252337258681768">Zariadenie bolo odomknuté</translation>
@@ -3190,7 +3188,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6311410654831092784">Tvrdý papier</translation>
 <translation id="6311642842034740437">Pomenované miesto</translation>
 <translation id="6312113039770857350">Webová stránka nie je k dispozícii</translation>
-<translation id="6313189007657889655">ID objednávky</translation>
 <translation id="6316110367871394043">Nahrávanie súboru do služby <ph name="CLOUD_PROVIDER" /> bolo pozastavené</translation>
 <translation id="63172326633386613">Spravovať nastavenia dostupnosti</translation>
 <translation id="6319672966240656136">Tento web zostane zablokovaný, pretože používate program rozšírenej ochrany od Googlu. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
