@@ -8769,6 +8769,23 @@
             ]
         }
     ],
+    "EnableQuicV6ToV4Migration": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261127",
+                    "enable_features": [
+                        "EnableQuicV6ToV4Migration"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
