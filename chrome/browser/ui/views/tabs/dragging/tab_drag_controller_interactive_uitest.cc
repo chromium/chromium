@@ -4487,10 +4487,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
         ASSERT_EQ(drag_controller->Drag(
                       target_center + gfx::Vector2d(0, GetDetachY(tab_strip2))),
                   TabDragController::Liveness::kAlive);
-      }),
 
-      // Release input to ensure the nested run loop does actually exit.
-      ReleaseDrag(),
+        // Release input to ensure the nested run loop does actually exit.
+        // This must happen in the same step as the Drag() calls above.
+        // Releasing in a later step, e.g. via ReleaseDrag(), leaves the drag
+        // running on Windows and the test hangs.
+        ASSERT_TRUE(
+            ui_controls::SendMouseEvents(ui_controls::LEFT, ui_controls::UP));
+      }),
+      WaitForState(kTabDragActiveState, false),
 
       // The drag should have ended.
       Do([&]() {
