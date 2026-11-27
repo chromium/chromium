@@ -132,9 +132,10 @@ bool FocusSearch::IsFocusable(View* v) {
   CHECK(root_, base::NotFatalUntil::M163);
   // Sanity Check. Currently the FocusManager keyboard accessibility mode is
   // only used on Mac, for which |accessibility_mode_| is false.
-  CHECK(!(accessibility_mode_ &&
-          root_->GetWidget()->GetFocusManager()->keyboard_accessible()),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/587845340): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!(accessibility_mode_ &&
+           root_->GetWidget()->GetFocusManager()->keyboard_accessible()));
   if (accessibility_mode_ ||
       root_->GetWidget()->GetFocusManager()->keyboard_accessible()) {
     return v && v->GetViewAccessibility().IsAccessibilityFocusable();
