@@ -182,6 +182,8 @@ Practical advice:
 #### Optimizing Native Code
  * If there's a notable increase in `.data.rel.ro`:
    * Ensure there are not [excessive relocations][relocations].
+   * See the [relocations playbook](relocations_playbook.md) for concrete
+     techniques to move static data into `.rodata`.
  * If there's a notable increase in `.rodata`:
    * See if it would make sense to compress large symbols here by moving them to
      .pak files.

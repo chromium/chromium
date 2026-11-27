@@ -104,7 +104,9 @@ python tools\win\pe_summarize.py out\Release\chrome.dll
 
 ## Can I avoid them?
 It's not practical to avoid them altogether, but there are times when you can be
-smart about them.
+smart about them. See
+[//docs/speed/binary_size/relocations_playbook.md](/docs/speed/binary_size/relocations_playbook.md)
+for a playbook of techniques to move static tables out of `.data.rel.ro`.
 
 For Example:
 ```c++
