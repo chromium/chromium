@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
@@ -94,6 +95,12 @@ zucchini::status::Code MainApply(MainParams params) {
 zucchini::status::Code MainVerify(MainParams params) {
   CHECK_EQ(1U, params.file_paths->size());
   return zucchini::VerifyPatch((*params.file_paths)[0]);
+}
+
+zucchini::status::Code MainInfo(MainParams params) {
+  CHECK_EQ(0U, params.file_paths->size());
+  zucchini::PrintInfo(*params.out);
+  return kStatusSuccess;
 }
 
 zucchini::status::Code MainRead(MainParams params) {

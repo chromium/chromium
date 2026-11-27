@@ -30,6 +30,11 @@ bool ParseElementMatch(BufferSource* source, ElementMatch* element_match) {
     return false;
   }
   uint16_t element_version = DisassemblerVersionOfType(exe_type);
+  if (element_version == kInvalidVersion) {
+    LOG(ERROR) << "Unsupported ExecutableType found: "
+               << CastExecutableTypeToString(exe_type) << ".";
+    return false;
+  }
   if (element_version != unsafe_element_header.version) {
     LOG(ERROR) << "Element version doesn't match. Expected: " << element_version
                << ", Actual: " << unsafe_element_header.version << ".";

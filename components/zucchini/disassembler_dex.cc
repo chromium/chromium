@@ -905,7 +905,7 @@ ExecutableType DisassemblerDex::GetExeType() const {
 }
 
 std::string DisassemblerDex::GetExeTypeString() const {
-  return base::StringPrintf("DEX (version %d)", dex_version_);
+  return base::StringPrintf("%s (version %d)", kExeTypeString, dex_version_);
 }
 
 std::vector<ReferenceGroup> DisassemblerDex::MakeReferenceGroups() const {

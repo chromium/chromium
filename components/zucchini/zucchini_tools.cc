@@ -10,9 +10,12 @@
 #include <algorithm>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -20,11 +23,35 @@
 #include "components/zucchini/element_detection.h"
 #include "components/zucchini/ensemble_matcher.h"
 #include "components/zucchini/heuristic_ensemble_matcher.h"
+#include "components/zucchini/image_utils.h"
 #include "components/zucchini/imposed_ensemble_matcher.h"
 #include "components/zucchini/io_utils.h"
+#include "components/zucchini/version_info.h"
 #include "components/zucchini/zucchini.h"
 
 namespace zucchini {
+
+void PrintInfo(std::ostream& out) {
+  out << "Version: " << kMajorVersion << "." << kMinorVersion << std::endl;
+  out << "Supported architectures:" << std::endl;
+
+  const base::span<const DisassemblerVersionInfo> disassemblers =
+      GetSupportedDisassemblers();
+  size_t max_name_len = 0;
+  for (const auto& info : disassemblers) {
+    max_name_len = std::max(max_name_len, info.name.size());
+  }
+
+  // Each architecture currently supports a single version, so default, gen,
+  // and apply print the same value; separate columns are kept for upcoming
+  // multi-version disassembler support.
+  for (const auto& info : disassemblers) {
+    out << "  " << CastExecutableTypeToString(info.exe_type) << "  "
+        << info.name << std::string(max_name_len - info.name.size() + 2, ' ')
+        << "default=" << info.version << "  gen=[" << info.version
+        << "]  apply=[" << info.version << "]" << std::endl;
+  }
+}
 
 status::Code ReadReferences(ConstBufferView image,
                             bool do_dump,

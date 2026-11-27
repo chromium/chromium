@@ -316,9 +316,11 @@ test("zucchini_unittests") {
     "typed_value_unittest.cc",
     "zucchini_apply_unittest.cc",
     "zucchini_gen_unittest.cc",
+    "zucchini_tools_unittest.cc",
   ]
 
   deps = [
+    ":buildflags",
     ":zucchini_io",
     ":zucchini_lib",
     "//base",

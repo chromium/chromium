@@ -198,6 +198,14 @@ TEST(PatchTest, SerializeElementMatchTooSmall) {
       &buffer_sink));
 }
 
+TEST(PatchTest, SerializeElementMatchUnsupportedExe) {
+  ByteVector buffer(28);
+  BufferSink buffer_sink(buffer.data(), buffer.size());
+  EXPECT_FALSE(patch::SerializeElementMatch(
+      ElementMatch{{{1, 2}, kExeTypeUnknown}, {{3, 4}, kExeTypeUnknown}},
+      &buffer_sink));
+}
+
 TEST(PatchTest, ParseSerializeBuffer) {
   auto TestSerialize = [](const ByteVector& expected, const ByteVector& value) {
     size_t size = patch::SerializedBufferSize(value);

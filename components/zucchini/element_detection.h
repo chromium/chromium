@@ -6,10 +6,13 @@
 #define COMPONENTS_ZUCCHINI_ELEMENT_DETECTION_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
@@ -17,6 +20,16 @@
 namespace zucchini {
 
 class Disassembler;
+
+// Describes an enabled executable type and its supported disassembler version.
+struct DisassemblerVersionInfo {
+  ExecutableType exe_type;
+  std::string_view name;
+  uint16_t version;
+};
+
+// Returns version metadata for all enabled executable types in this build.
+base::span<const DisassemblerVersionInfo> GetSupportedDisassemblers();
 
 // Attempts to detect an executable located at start of |image|. If found,
 // returns the corresponding disassembler. Otherwise returns null.

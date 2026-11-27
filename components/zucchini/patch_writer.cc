@@ -19,8 +19,14 @@ namespace patch {
 
 bool SerializeElementMatch(const ElementMatch& element_match,
                            BufferSink* sink) {
-  if (!element_match.IsValid())
+  if (!element_match.IsValid()) {
     return false;
+  }
+  uint16_t element_version =
+      DisassemblerVersionOfType(element_match.exe_type());
+  if (element_version == kInvalidVersion) {
+    return false;
+  }
 
   PatchElementHeader element_header;
   element_header.old_offset =
@@ -32,7 +38,7 @@ bool SerializeElementMatch(const ElementMatch& element_match,
   element_header.new_length =
       base::checked_cast<uint32_t>(element_match.new_element.size);
   element_header.exe_type = element_match.exe_type();
-  element_header.version = DisassemblerVersionOfType(element_match.exe_type());
+  element_header.version = element_version;
 
   return sink->PutValue<PatchElementHeader>(element_header);
 }

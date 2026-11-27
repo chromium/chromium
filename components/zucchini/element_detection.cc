@@ -5,9 +5,11 @@
 #include "components/zucchini/element_detection.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
@@ -40,6 +42,38 @@ enum : size_t { kMinProgramSize = 16 };
 }  // namespace
 
 /******** Utility Functions ********/
+
+// Keep in sync with MakeDisassemblerOfType().
+base::span<const DisassemblerVersionInfo> GetSupportedDisassemblers() {
+  // DisassemblerNoOp::GetExeTypeString() returns "(Unknown)" for fallback
+  // detection output; use a clearer label for -info.
+  static const auto kDisassemblers = std::to_array<DisassemblerVersionInfo>({
+      {kExeTypeNoOp, "No-op (raw)", DisassemblerNoOp::kVersion},
+#if BUILDFLAG(ENABLE_WIN)
+      {kExeTypeWin32X86, Win32X86Traits::kExeTypeString,
+       DisassemblerWin32X86::kVersion},
+      {kExeTypeWin32X64, Win32X64Traits::kExeTypeString,
+       DisassemblerWin32X64::kVersion},
+#endif  // BUILDFLAG(ENABLE_WIN)
+#if BUILDFLAG(ENABLE_ELF)
+      {kExeTypeElfX86, Elf32IntelTraits::kExeTypeString,
+       DisassemblerElfX86::kVersion},
+      {kExeTypeElfX64, Elf64IntelTraits::kExeTypeString,
+       DisassemblerElfX64::kVersion},
+      {kExeTypeElfAArch32, ElfAArch32Traits::kExeTypeString,
+       DisassemblerElfAArch32::kVersion},
+      {kExeTypeElfAArch64, ElfAArch64Traits::kExeTypeString,
+       DisassemblerElfAArch64::kVersion},
+#endif  // BUILDFLAG(ENABLE_ELF)
+#if BUILDFLAG(ENABLE_DEX)
+      {kExeTypeDex, DisassemblerDex::kExeTypeString, DisassemblerDex::kVersion},
+#endif  // BUILDFLAG(ENABLE_DEX)
+#if BUILDFLAG(ENABLE_ZTF)
+      {kExeTypeZtf, DisassemblerZtf::kExeTypeString, DisassemblerZtf::kVersion},
+#endif  // BUILDFLAG(ENABLE_ZTF)
+  });
+  return base::span<const DisassemblerVersionInfo>(kDisassemblers);
+}
 
 std::unique_ptr<Disassembler> MakeDisassemblerWithoutFallback(
     ConstBufferView image) {
@@ -103,6 +137,7 @@ std::unique_ptr<Disassembler> MakeDisassemblerWithoutFallback(
   return nullptr;
 }
 
+// Keep in sync with GetSupportedDisassemblers().
 std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
                                                      ExecutableType exe_type) {
   switch (exe_type) {
@@ -139,37 +174,13 @@ std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
 }
 
 uint16_t DisassemblerVersionOfType(ExecutableType exe_type) {
-  switch (exe_type) {
-#if BUILDFLAG(ENABLE_WIN)
-    case kExeTypeWin32X86:
-      return DisassemblerWin32X86::kVersion;
-    case kExeTypeWin32X64:
-      return DisassemblerWin32X64::kVersion;
-#endif  // BUILDFLAG(ENABLE_WIN)
-#if BUILDFLAG(ENABLE_ELF)
-    case kExeTypeElfX86:
-      return DisassemblerElfX86::kVersion;
-    case kExeTypeElfX64:
-      return DisassemblerElfX64::kVersion;
-    case kExeTypeElfAArch32:
-      return DisassemblerElfAArch32::kVersion;
-    case kExeTypeElfAArch64:
-      return DisassemblerElfAArch64::kVersion;
-#endif  // BUILDFLAG(ENABLE_ELF)
-#if BUILDFLAG(ENABLE_DEX)
-    case kExeTypeDex:
-      return DisassemblerDex::kVersion;
-#endif  // BUILDFLAG(ENABLE_DEX)
-#if BUILDFLAG(ENABLE_ZTF)
-    case kExeTypeZtf:
-      return DisassemblerZtf::kVersion;
-#endif  // BUILDFLAG(ENABLE_ZTF)
-    case kExeTypeNoOp:
-      return DisassemblerNoOp::kVersion;
-    default:
-      // If an architecture is disabled then null is handled gracefully.
-      return kInvalidVersion;
+  for (const DisassemblerVersionInfo& info : GetSupportedDisassemblers()) {
+    if (info.exe_type == exe_type) {
+      return info.version;
+    }
   }
+  // If an architecture is disabled then kInvalidVersion is handled gracefully.
+  return kInvalidVersion;
 }
 
 std::optional<Element> DetectElementFromDisassembler(ConstBufferView image) {

@@ -5,12 +5,33 @@
 #include "components/zucchini/element_detection.h"
 
 #include <map>
+#include <set>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "components/zucchini/buffer_view.h"
+#include "components/zucchini/buildflags.h"
+#include "components/zucchini/disassembler_no_op.h"
 #include "components/zucchini/image_utils.h"
+#include "components/zucchini/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_DEX)
+#include "components/zucchini/disassembler_dex.h"
+#endif  // BUILDFLAG(ENABLE_DEX)
+
+#if BUILDFLAG(ENABLE_ELF)
+#include "components/zucchini/disassembler_elf.h"
+#endif  // BUILDFLAG(ENABLE_ELF)
+
+#if BUILDFLAG(ENABLE_WIN)
+#include "components/zucchini/disassembler_win32.h"
+#endif  // BUILDFLAG(ENABLE_WIN)
+
+#if BUILDFLAG(ENABLE_ZTF)
+#include "components/zucchini/disassembler_ztf.h"
+#endif  // BUILDFLAG(ENABLE_ZTF)
 
 namespace zucchini {
 namespace {
@@ -106,6 +127,74 @@ TEST_F(ElementDetectionTest, ElementFinder) {
       TestElementFinder({0, 1, 1, 0, 2, 2, 2}));
   EXPECT_EQ(ElementVector({{{4, 3}, kExeTypeWin32X64}}),
             TestElementFinder({0, 1, 1, 0, 2, 2, 2}, /* init_pos= */ 3U));
+}
+
+TEST(ElementDetectionVersionTest, GetSupportedDisassemblers) {
+  const base::span<const DisassemblerVersionInfo> disassemblers =
+      GetSupportedDisassemblers();
+  ASSERT_FALSE(disassemblers.empty());
+
+  std::set<ExecutableType> seen;
+  for (const auto& info : disassemblers) {
+    EXPECT_TRUE(seen.insert(info.exe_type).second);
+    EXPECT_FALSE(info.name.empty());
+    EXPECT_NE(info.version, kInvalidVersion);
+  }
+  EXPECT_EQ(DisassemblerVersionOfType(kExeTypeUnknown), kInvalidVersion);
+
+  EXPECT_EQ(1U, seen.count(kExeTypeNoOp));
+  EXPECT_EQ(DisassemblerNoOp::kVersion,
+            DisassemblerVersionOfType(kExeTypeNoOp));
+#if BUILDFLAG(ENABLE_WIN)
+  EXPECT_EQ(1U, seen.count(kExeTypeWin32X86));
+  EXPECT_EQ(1U, seen.count(kExeTypeWin32X64));
+  EXPECT_EQ(DisassemblerWin32X86::kVersion,
+            DisassemblerVersionOfType(kExeTypeWin32X86));
+  EXPECT_EQ(DisassemblerWin32X64::kVersion,
+            DisassemblerVersionOfType(kExeTypeWin32X64));
+#else
+  EXPECT_EQ(0U, seen.count(kExeTypeWin32X86));
+  EXPECT_EQ(0U, seen.count(kExeTypeWin32X64));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeWin32X86));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeWin32X64));
+#endif
+#if BUILDFLAG(ENABLE_ELF)
+  EXPECT_EQ(1U, seen.count(kExeTypeElfX86));
+  EXPECT_EQ(1U, seen.count(kExeTypeElfX64));
+  EXPECT_EQ(1U, seen.count(kExeTypeElfAArch32));
+  EXPECT_EQ(1U, seen.count(kExeTypeElfAArch64));
+  EXPECT_EQ(DisassemblerElfX86::kVersion,
+            DisassemblerVersionOfType(kExeTypeElfX86));
+  EXPECT_EQ(DisassemblerElfX64::kVersion,
+            DisassemblerVersionOfType(kExeTypeElfX64));
+  EXPECT_EQ(DisassemblerElfAArch32::kVersion,
+            DisassemblerVersionOfType(kExeTypeElfAArch32));
+  EXPECT_EQ(DisassemblerElfAArch64::kVersion,
+            DisassemblerVersionOfType(kExeTypeElfAArch64));
+#else
+  EXPECT_EQ(0U, seen.count(kExeTypeElfX86));
+  EXPECT_EQ(0U, seen.count(kExeTypeElfX64));
+  EXPECT_EQ(0U, seen.count(kExeTypeElfAArch32));
+  EXPECT_EQ(0U, seen.count(kExeTypeElfAArch64));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeElfX86));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeElfX64));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeElfAArch32));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeElfAArch64));
+#endif
+#if BUILDFLAG(ENABLE_DEX)
+  EXPECT_EQ(1U, seen.count(kExeTypeDex));
+  EXPECT_EQ(DisassemblerDex::kVersion, DisassemblerVersionOfType(kExeTypeDex));
+#else
+  EXPECT_EQ(0U, seen.count(kExeTypeDex));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeDex));
+#endif
+#if BUILDFLAG(ENABLE_ZTF)
+  EXPECT_EQ(1U, seen.count(kExeTypeZtf));
+  EXPECT_EQ(DisassemblerZtf::kVersion, DisassemblerVersionOfType(kExeTypeZtf));
+#else
+  EXPECT_EQ(0U, seen.count(kExeTypeZtf));
+  EXPECT_EQ(kInvalidVersion, DisassemblerVersionOfType(kExeTypeZtf));
+#endif
 }
 
 }  // namespace

@@ -74,6 +74,7 @@ constexpr Command kCommands[] = {
     {"apply", "-apply <old_file> <patch_file> <new_file> [-keep]", 3,
      &MainApply},
     {"verify", "-verify <patch_file>", 1, &MainVerify},
+    {"info", "-info", 0, &MainInfo},
     {"read", "-read <exe> [-dump]", 1, &MainRead},
     {"detect", "-detect <archive_file> [-start-scan-at=#]", 1, &MainDetect},
     {"match",

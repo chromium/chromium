@@ -167,6 +167,12 @@ I/O to interface with zucchini_lib.
 zucchini: Stand-alone executable that parses command-line arguments, and passes
 the results to zucchini_io. Also implements various helper flows.
 
+### Command-Line Inspection
+
+Run `zucchini -info` to inspect the Zucchini format version and each compiled-in
+architecture's supported patch generation (`gen`) and application (`apply`)
+versions, along with its default version.
+
 ## Zucchini Ensemble Patch Format
 
 ### Types

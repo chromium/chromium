@@ -123,6 +123,7 @@ class ZtfTranslator {
 // Disassembler for Zucchini Text Format (ZTF).
 class DisassemblerZtf : public Disassembler {
  public:
+  static constexpr char kExeTypeString[] = "Zucchini Text Format";
   static constexpr uint16_t kVersion = 1;
 
   // Target Pools

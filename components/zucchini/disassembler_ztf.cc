@@ -510,7 +510,7 @@ ExecutableType DisassemblerZtf::GetExeType() const {
 }
 
 std::string DisassemblerZtf::GetExeTypeString() const {
-  return "Zucchini Text Format";
+  return kExeTypeString;
 }
 
 std::vector<ReferenceGroup> DisassemblerZtf::MakeReferenceGroups() const {

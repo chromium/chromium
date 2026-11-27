@@ -17,6 +17,9 @@ namespace zucchini {
 // The functions below are called to print diagnosis information, so outputs are
 // printed using std::ostream instead of LOG().
 
+// Prints Zucchini version and supported executable type versions.
+void PrintInfo(std::ostream& out);
+
 // Prints stats on references found in |image|. If |do_dump| is true, then
 // prints all references (locations and targets).
 status::Code ReadReferences(ConstBufferView image,

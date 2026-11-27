@@ -40,6 +40,9 @@ zucchini::status::Code MainApply(MainParams params);
 // Command Function: Verify patch format and compatibility.
 zucchini::status::Code MainVerify(MainParams params);
 
+// Command Function: Print Zucchini version and supported architectures.
+zucchini::status::Code MainInfo(MainParams params);
+
 // Command Function: Read and dump references from an executable.
 zucchini::status::Code MainRead(MainParams params);
 
