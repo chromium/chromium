@@ -2554,12 +2554,10 @@ crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/naviga
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/590922754 external/wpt/css/css-grid/grid-lanes/alignment/grid-lanes-align-content-contain-size-001.html [ Failure ]
-crbug.com/590962353 external/wpt/css/css-page/page-name-multicol-001-print.html [ Failure ]
 crbug.com/590922755 external/wpt/css/motion/offset-path-ray-out-of-flow-move-001.html [ Failure ]
 crbug.com/591016647 external/wpt/digital-credentials/abort-during-validation.https.html [ Crash Failure Pass Timeout ]
 crbug.com/591014522 external/wpt/svg/text/reftests/text-path-transformed-fill-box-path-after-text.html [ Failure ]
 crbug.com/590998586 external/wpt/webdriver/tests/bidi/script/call_function/this.py [ Failure ]
-crbug.com/590962353 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/page-name-multicol-001-print.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-atomic-inline-001.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-inline-box-001.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-inline-box-002.html [ Failure ]
@@ -4584,6 +4582,7 @@ crbug.com/1494858 external/wpt/css/css-page/page-name-flex-001-print.html [ Fail
 crbug.com/1494858 external/wpt/css/css-page/page-name-flex-002-print.html [ Failure ]
 crbug.com/1494858 external/wpt/css/css-page/page-name-flex-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
+crbug.com/590962353 external/wpt/css/css-page/page-name-multicol-001-print.html [ Failure ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/346088869 external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 crbug.com/468760502 external/wpt/css/css-multicol/multicol-under-vertical-rl-scroll.html [ Failure Pass ]
