@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/page_transition_types.h"
@@ -2490,9 +2491,17 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
 
 // Tests that a session already attached to a normal tab cannot auto-attach
 // to or receive CDP events for WebUI guest workers.
+// TODO(crbug.com/591012184): Leaking COM refs on Windows on M158.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker \
+  DISABLED_AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker
+#else
+#define MAYBE_AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker \
+  AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker
+#endif
 IN_PROC_BROWSER_TEST_P(
     WebViewGuestDebuggerApiTest,
-    AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker) {
+    MAYBE_AlreadyAttachedSessionCannotAutoAttachToWebUiWebViewGuestWorker) {
   if (GetParam()) {
     GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
   }
