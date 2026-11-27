@@ -380,6 +380,8 @@ const TAG_CLIPPATH = 'CLIPPATH';
 const TAG_PATTERN = 'PATTERN';
 
 // Common tags.
+const TAG_HTML = 'HTML';
+const TAG_BODY = 'BODY';
 const TAG_IFRAME = 'IFRAME';
 const TAG_IMG = 'IMG';
 const TAG_A = 'A';
@@ -626,6 +628,9 @@ const STYLE_VALUE_SCROLL = 'scroll';
 const STYLE_VALUE_CLIP = 'clip';
 const STYLE_VALUE_HIDDEN = 'hidden';
 const STYLE_VALUE_NONE = 'none';
+const STYLE_VALUE_VISIBLE = 'visible';
+const STYLE_VALUE_SIZE = 'size';
+const STYLE_VALUE_INLINE_SIZE = 'inline-size';
 
 
 // Type alias for accessing webkit-specific fullscreen document properties that
@@ -3835,6 +3840,9 @@ function isAnchoredOffscreen(
  * @param attributes The attributes object where geometry will be stored.
  * @param context The clipping context inherited from parent elements.
  * @param actionableMode Whether to extract actionable information.
+ * @param overflowPropagatedToViewport Whether `element`'s `overflow` applies to
+ *     the viewport instead of its own box, in which case it does not clip its
+ *     descendants.
  * @param styleCache The style cache to use for computing styles.
  * @return The new ClippingContext for this element's children, based on
  *     positioning styles.
@@ -3845,6 +3853,7 @@ function addNodeGeometry(
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
     extractPasswordScreenshotRedactions: boolean,
+    overflowPropagatedToViewport: boolean,
     styleCache?: StyleCache): ClippingContext {
   // Process element nodes when in actionable mode, or if it may contain
   // sensitive fields (payments, OTP, or passwords) that should be redacted.
@@ -3929,7 +3938,8 @@ function addNodeGeometry(
   // descendants for which it forms a containing block.
   const overflowX = style?.overflowX || '';
   const overflowY = style?.overflowY || '';
-  const clipsOverflow = isClippedStyle(overflowX) || isClippedStyle(overflowY);
+  const clipsOverflow = !overflowPropagatedToViewport &&
+      (isClippedStyle(overflowX) || isClippedStyle(overflowY));
 
   // Mirror Blink's WalkChildren recursion state: an element fixed to the
   // viewport escapes ancestor overflow containers, while a fixed element
@@ -4181,7 +4191,8 @@ function maybeGenerateContentNode(
       const nextClippingContext = addNodeGeometry(
           element, contentNode.contentAttributes, parentContext, actionableMode,
           includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-          extractPasswordScreenshotRedactions, styleCache);
+          extractPasswordScreenshotRedactions,
+          /*overflowPropagatedToViewport=*/ false, styleCache);
       // Synthesized button <input> label TEXT nodes have no DOM node for
       // TreeWalker to visit, so copy the host <input>'s geometry here.
       if (actionableMode && contentNode.childrenNodes.length > 0 &&
@@ -4857,6 +4868,27 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
 }
 
 
+/**
+ * Returns true when `style` applies CSS containment that prevents `<body>`
+ * overflow propagation to the viewport in WebKit: `contain`, or a size
+ * `container-type`. `content-visibility` only blocks propagation on `<html>`,
+ * so the caller checks it there.
+ */
+function hasContainmentForOverflowPropagation(
+    style: CSSStyleDeclaration|null|undefined): boolean {
+  if (!style) {
+    return false;
+  }
+  const contain = style.contain;
+  if (contain && contain !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  // `container-type` can combine several keywords.
+  const containerTypes = style.containerType?.split(' ') ?? [];
+  return containerTypes.includes(STYLE_VALUE_SIZE) ||
+      containerTypes.includes(STYLE_VALUE_INLINE_SIZE);
+}
+
 // TODO(crbug.com/485796293): Wrap this in a class.
 /**
  * Extracts the annotated page content of the document starting from the body
@@ -4906,9 +4938,9 @@ export function extractAnnotatedPageContent(
 
   // Pre-calculate root font size.
   let fontSize: number|undefined = undefined;
-  const rootStyle = documentWindow.getComputedStyle(document.documentElement);
-  if (rootStyle) {
-    const parsedSize = parseFloat(rootStyle.fontSize);
+  const htmlStyle = documentWindow.getComputedStyle(document.documentElement);
+  if (htmlStyle) {
+    const parsedSize = parseFloat(htmlStyle.fontSize);
     if (!isNaN(parsedSize) && parsedSize > 0) {
       fontSize = parsedSize;
     }
@@ -4963,6 +4995,26 @@ export function extractAnnotatedPageContent(
       viewportRect;
   let initialFixedClip: Rect|null|undefined;
 
+  // `body`'s `overflow` applies to the viewport rather than to `body`'s own box
+  // when `<html>` keeps visible overflow and neither sets containment (CSS
+  // Overflow 3 § 3.3, Blink's `Document::ViewportDefiningElement()`). Computed
+  // styles still report it on `body`, whose box is often only as tall as the
+  // viewport (`height: 100%`) while its content scrolls past it. The checks
+  // follow WebKit where it differs from Blink, as confirmed with
+  // `ProbeBodyScrollOffset`: only `<html>`'s `overflow-x` matters, and
+  // `content-visibility: auto` blocks propagation on `<html>` but not on
+  // `<body>` (`hidden` is treated the same way). `<body>`'s computed style is
+  // read last so the cheaper checks can short-circuit it.
+  const bodyOverflowPropagatedToViewport = actionableMode &&
+      getStandardTagName(document.documentElement) === TAG_HTML &&
+      getStandardTagName(root) === TAG_BODY &&
+      htmlStyle?.overflowX === STYLE_VALUE_VISIBLE &&
+      htmlStyle?.contentVisibility !== STYLE_VALUE_AUTO &&
+      htmlStyle?.contentVisibility !== STYLE_VALUE_HIDDEN &&
+      !hasContainmentForOverflowPropagation(htmlStyle) &&
+      !hasContainmentForOverflowPropagation(getComputedStyleForElement(
+          root, styleCache));
+
   // Stack to track the current ancestry chain. At this point it is known that
   // that there is at least a root node that is walkable.
   // We use this to find the correct parent for the current node without
@@ -4979,7 +5031,7 @@ export function extractAnnotatedPageContent(
           get fixedClip() {
             if (initialFixedClip === undefined) {
               initialFixedClip = (isInsideUnreachableOverflowContainer ||
-                                  formsContainingBlockForFixed(rootStyle)) ?
+                                  formsContainingBlockForFixed(htmlStyle)) ?
                   initialClip :
                   null;
             }
@@ -4991,14 +5043,15 @@ export function extractAnnotatedPageContent(
         },
         actionableMode, includeSensitivePaymentsForRedaction,
         extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,
-        styleCache),
+        bodyOverflowPropagatedToViewport, styleCache),
   }];
 
   // Matching Blink's `LayoutView`, the root node of each frame should stand for
   // that frame's viewport because consumers use the main frame root's visible
   // box as the reference frame of the tab screenshot (e.g. server-side
-  // Set-of-Marks). `body` geometry still clips its descendants through the
-  // clipping context above.
+  // Set-of-Marks). When `body`'s overflow does not propagate to the viewport,
+  // `body` geometry still clips its descendants through the clipping context
+  // above.
   if (actionableMode) {
     rootNode.contentAttributes.geometry =
         createViewportGeometry(viewportGeometry);

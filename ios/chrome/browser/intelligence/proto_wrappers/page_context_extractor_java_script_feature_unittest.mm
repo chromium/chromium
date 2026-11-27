@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 
 #import <algorithm>
+#import <limits>
 
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -3917,4 +3919,232 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   const base::ListValue* deep_children = deep_input.FindList("childrenNodes");
   ASSERT_TRUE(deep_children);
   EXPECT_TRUE(deep_children->empty());
+}
+
+namespace {
+
+constexpr int kShortOverflowBodyHeight = 50;
+constexpr int kOverflowedChildPaddingTop = 200;
+constexpr int kBodyScrollProbeOffset = 10;
+constexpr char kBelowTheFoldId[] = "below-the-fold";
+constexpr char kBelowTheFoldText[] = "BelowTheFold";
+
+// Returns a standards-mode HTML document whose `body` is a short
+// `overflow: auto` box (`kShortOverflowBodyHeight` tall) while `extra_css`
+// applies. Unless `extra_css` blocks propagation (e.g. non-visible `html`
+// `overflow-x` or containment), `body`'s overflow propagates to the viewport so
+// `body`'s own box clips nothing. The
+// paragraph uses wrapper `padding-top` rather than `margin-top` because a
+// child margin would collapse through a non-scroll-container `body`.
+std::string BuildShortOverflowAutoBodyHtml(std::string_view extra_css) {
+  return base::StrCat({
+      "<!DOCTYPE html><html><head>"
+      "<meta name=\"viewport\" content=\"width=device-width, "
+      "initial-scale=1.0\">"
+      "<style>body { height: ",
+      base::NumberToString(kShortOverflowBodyHeight),
+      "px; overflow: auto; margin: 0; }",
+      extra_css,
+      "</style></head><body>"
+      "<div style=\"padding-top: ",
+      base::NumberToString(kOverflowedChildPaddingTop),
+      "px;\">"
+      "<p id=\"",
+      kBelowTheFoldId,
+      "\" style=\"margin: 0;\">",
+      kBelowTheFoldText,
+      "</p></div></body></html>",
+  });
+}
+
+// Evaluates a numeric JavaScript expression in `feature`'s world.
+double EvaluateNumberInFeatureWorld(
+    web::WebState* web_state,
+    PageContextExtractorJavaScriptFeature* feature,
+    NSString* script) {
+  id result = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+      web_state, script, feature);
+  return [result isKindOfClass:[NSNumber class]]
+             ? [result doubleValue]
+             : std::numeric_limits<double>::quiet_NaN();
+}
+
+// Scrolls `document.body` by `kBodyScrollProbeOffset`, restores `scrollTop` to
+// `0`, and returns the offset `body` reached (`0` when `body`'s overflow
+// propagated to the viewport; `kBodyScrollProbeOffset` when `body` is its own
+// scroll container).
+double ProbeBodyScrollOffset(web::WebState* web_state,
+                             PageContextExtractorJavaScriptFeature* feature) {
+  return EvaluateNumberInFeatureWorld(
+      web_state, feature,
+      [NSString stringWithFormat:
+                    @"(() => { const body = document.body; body.scrollTop = %d;"
+                    @" const offset = body.scrollTop; body.scrollTop = 0; "
+                    @"return offset; })()",
+                    kBodyScrollProbeOffset]);
+}
+
+// Recursively searches `node` for a text node whose `textContent` equals
+// `expected_text`.
+const base::DictValue* FindTextNodeByContent(const base::DictValue& node,
+                                             std::string_view expected_text) {
+  const std::string* text_content =
+      node.FindStringByDottedPath("contentAttributes.textInfo.textContent");
+  if (text_content && *text_content == expected_text) {
+    return &node;
+  }
+  const base::ListValue* children = node.FindList("childrenNodes");
+  if (!children) {
+    return nullptr;
+  }
+  for (const base::Value& child : *children) {
+    if (!child.is_dict()) {
+      continue;
+    }
+    if (const base::DictValue* match =
+            FindTextNodeByContent(child.GetDict(), expected_text)) {
+      return match;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+// Tests that when `body`'s non-visible `overflow` propagates to the viewport,
+// content that overflows `body`'s box while remaining inside the viewport keeps
+// an unclipped `visibleBoundingBox`. This covers the cases where WebKit still
+// propagates although Blink would not: `content-visibility` on `body`, and
+// `overflow-y: clip` alone on `html`.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_PropagatedOverflowBodyDoesNotClipDescendants) {
+  web_state()->GetView().frame = CGRectMake(0, 0, 400, 800);
+  struct PropagationCase {
+    const char* rule;
+    const char* nonce;
+  };
+  for (const PropagationCase& test_case : {
+           PropagationCase{"", "nonce_default"},
+           PropagationCase{"body { content-visibility: auto; }",
+                           "nonce_body_content_visibility"},
+           PropagationCase{"html { overflow-y: clip; }",
+                           "nonce_html_overflow_y_clip"},
+       }) {
+    SCOPED_TRACE(test_case.rule);
+    const std::string html = BuildShortOverflowAutoBodyHtml(test_case.rule);
+    web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                        test_server_.GetURL(kMainPagePath), web_state());
+
+    // Computed styles still report `overflow-y: auto` on `body` even though
+    // WebKit propagated it to the viewport.
+    ASSERT_EQ(
+        EvaluateNumberInFeatureWorld(
+            web_state(), feature(),
+            @"getComputedStyle(document.body).overflowY === 'auto' ? 1 : 0"),
+        1.0);
+    ASSERT_EQ(ProbeBodyScrollOffset(web_state(), feature()), 0.0);
+    const double overflowed_top =
+        EvaluateNumberInFeatureWorld(web_state(), feature(),
+                                     @"document.getElementById('below-the-fold'"
+                                     @").getBoundingClientRect().top");
+    ASSERT_EQ(overflowed_top, kOverflowedChildPaddingTop);
+    ASSERT_LT(overflowed_top,
+              EvaluateNumberInFeatureWorld(
+                  web_state(), feature(),
+                  @"window.visualViewport ? window.visualViewport.height : "
+                  @"document.documentElement.clientHeight"));
+
+    std::optional<base::Value> result_value = RunExtraction(
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+        /*include_cross_origin_frame_content=*/false,
+        /*use_rich_extraction=*/true,
+        /*use_rich_extraction_with_actionable=*/true,
+        /*extract_paid_content=*/false,
+        /*attempt_paid_content_json_fixing=*/false, test_case.nonce,
+        base::Seconds(1));
+
+    ASSERT_TRUE(result_value.has_value());
+    ASSERT_TRUE(result_value->is_dict());
+    const base::DictValue* root_node =
+        result_value->GetDict().FindDict("rootNode");
+    ASSERT_TRUE(root_node);
+    const base::DictValue* overflowed_child =
+        FindTextNodeByContent(*root_node, kBelowTheFoldText);
+    ASSERT_TRUE(overflowed_child);
+    const base::DictValue* visible_box = overflowed_child->FindDictByDottedPath(
+        "contentAttributes.geometry.visibleBoundingBox");
+    ASSERT_TRUE(visible_box);
+    const base::DictValue* outer_box = overflowed_child->FindDictByDottedPath(
+        "contentAttributes.geometry.outerBoundingBox");
+    ASSERT_TRUE(outer_box);
+    EXPECT_EQ(*visible_box, *outer_box);
+  }
+}
+
+// Tests that when `html` sets non-visible `overflow-x` or `content-visibility`,
+// or either `html` or `body` applies CSS containment (`contain` or a size
+// `container-type`), `body`'s `overflow` remains on its own box rather than
+// propagating to the viewport, so `body` still clips descendants outside its
+// box.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_NonPropagatingOverflowBodyClipsDescendants) {
+  web_state()->GetView().frame = CGRectMake(0, 0, 400, 800);
+  struct NonPropagationCase {
+    const char* rule;
+    const char* nonce;
+  };
+  for (const NonPropagationCase& test_case : {
+           NonPropagationCase{"html { overflow: hidden; }",
+                              "nonce_html_overflow"},
+           NonPropagationCase{"html { overflow-x: clip; }",
+                              "nonce_html_overflow_x_clip"},
+           NonPropagationCase{"html { content-visibility: auto; }",
+                              "nonce_html_content_visibility"},
+           NonPropagationCase{"html { contain: layout; }", "nonce_html"},
+           NonPropagationCase{"body { contain: layout; }", "nonce_body"},
+           NonPropagationCase{"body { container-type: inline-size; }",
+                              "nonce_body_container_type"},
+           NonPropagationCase{"html { container-type: size; }",
+                              "nonce_html_container_type"},
+       }) {
+    SCOPED_TRACE(test_case.rule);
+    const std::string html = BuildShortOverflowAutoBodyHtml(test_case.rule);
+    web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                        test_server_.GetURL(kMainPagePath), web_state());
+
+    ASSERT_EQ(ProbeBodyScrollOffset(web_state(), feature()),
+              kBodyScrollProbeOffset);
+    const double overflowed_top =
+        EvaluateNumberInFeatureWorld(web_state(), feature(),
+                                     @"document.getElementById('below-the-fold'"
+                                     @").getBoundingClientRect().top");
+    ASSERT_GT(overflowed_top, kShortOverflowBodyHeight);
+    ASSERT_LT(overflowed_top,
+              EvaluateNumberInFeatureWorld(
+                  web_state(), feature(),
+                  @"window.visualViewport ? window.visualViewport.height : "
+                  @"document.documentElement.clientHeight"));
+
+    std::optional<base::Value> result_value = RunExtraction(
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+        /*include_cross_origin_frame_content=*/false,
+        /*use_rich_extraction=*/true,
+        /*use_rich_extraction_with_actionable=*/true,
+        /*extract_paid_content=*/false,
+        /*attempt_paid_content_json_fixing=*/false, test_case.nonce,
+        base::Seconds(1));
+
+    ASSERT_TRUE(result_value.has_value());
+    ASSERT_TRUE(result_value->is_dict());
+    const base::DictValue* root_node =
+        result_value->GetDict().FindDict("rootNode");
+    ASSERT_TRUE(root_node);
+    const base::DictValue* clipped_child =
+        FindTextNodeByContent(*root_node, kBelowTheFoldText);
+    ASSERT_TRUE(clipped_child);
+    EXPECT_TRUE(clipped_child->FindDictByDottedPath(
+        "contentAttributes.geometry.outerBoundingBox"));
+    EXPECT_FALSE(clipped_child->FindDictByDottedPath(
+        "contentAttributes.geometry.visibleBoundingBox"));
+  }
 }
