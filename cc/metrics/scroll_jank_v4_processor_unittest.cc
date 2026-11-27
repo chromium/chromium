@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/tracing/test_trace_processor.h"
@@ -554,8 +555,8 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     expected_results.ExpectIsNotJanky(640);
 
     histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 2 * 100 / 64,
-        1);
+        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
+        base::ClampCeil(2 * 100.0 / 64), 1);
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
   }
@@ -650,7 +651,8 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
     histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 3 * 100 / 99, 1);
+        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
+        base::ClampCeil(3 * 100.0 / 99), 1);
   }
 
   absl::Status status = trace_processor_.StopAndParseTrace();
@@ -1300,7 +1302,8 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     // the processor should emit fixed window histograms now because it has
     // seen 64 frames in total.
     histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 1, 1);
+        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
+        base::ClampCeil(1 * 100.0 / 64), 1);
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
   }
@@ -1515,7 +1518,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        3 * 100 / 127 /* Frames 11, 35 & 65 */, 1);
+        base::ClampCeil(3 * 100.0 / 127) /* Frames 11, 35 & 65 */, 1);
   }
 
   absl::Status status = trace_processor_.StopAndParseTrace();

@@ -261,6 +261,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
+// When enabled, the `Event.ScrollJank.DelayedFramesPercentage4.*` UMA
+// histograms are rounded up (ceiling) instead of down (floor) to the nearest
+// integer percentage.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollJankV4MetricRoundPercentageUp);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the V4 scroll jank metric will report statistics via
 // `View.reportAppJankStats()` on Android at the end of each damaging scroll.

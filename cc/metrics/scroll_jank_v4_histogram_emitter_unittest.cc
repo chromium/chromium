@@ -5,10 +5,14 @@
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -167,23 +171,24 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        15 * 100 / 64 /* Frames 11, 21-22, 31-33, 41-44 & 51-55 */, 1);
+        // Frames 11, 21-22, 31-33, 41-44 & 51-55.
+        base::ClampCeil(15 * 100.0 / 64), 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        3 * 100 / 64 /* Frames 11 & 21-22 */, 1);
+        base::ClampCeil(3 * 100.0 / 64) /* Frames 11 & 21-22 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        4 * 100 / 64 /* Frames 11 & 31-33 */, 1);
+        base::ClampCeil(4 * 100.0 / 64) /* Frames 11 & 31-33 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
-        5 * 100 / 64 /* Frames 11 & 41-44 */, 1);
+        base::ClampCeil(5 * 100.0 / 64) /* Frames 11 & 41-44 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFling",
-        6 * 100 / 64 /* Frames 11 & 51-55 */, 1);
+        base::ClampCeil(6 * 100.0 / 64) /* Frames 11 & 51-55 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
         4 + 1 + 2 + 3 + 4 + 5 /* Frames 11, 21-22, 31-33, 41-44 & 51-55 */, 1);
@@ -280,7 +285,8 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
     histogram_emitter_->OnScrollEnded();
 
     histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 5 * 100 / 7, 1);
+        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
+        base::ClampCeil(5 * 100.0 / 7), 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -354,7 +360,8 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
     delete histogram_emitter_.release();
 
     histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 1 * 100 / 3, 1);
+        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
+        base::ClampCeil(1 * 100.0 / 3), 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -405,7 +412,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 32 /* Frame 11 */, 1);
+        base::ClampCeil(1 * 100.0 / 32) /* Frame 11 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -442,23 +449,23 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        3 * 100 / 64 /* Frames 11 & 51-52 */, 1);
+        base::ClampCeil(3 * 100.0 / 64) /* Frames 11 & 51-52 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        3 * 100 / 64 /* Frames 11 & 51-52 */, 1);
+        base::ClampCeil(3 * 100.0 / 64) /* Frames 11 & 51-52 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        1 * 100 / 64 /* Frame 11 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 11 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
-        1 * 100 / 64 /* Frame 11 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 11 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFling",
-        1 * 100 / 64 /* Frame 11 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 11 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
         4 + 2 /* Frames 11 & 51-52 */, 1);
@@ -497,7 +504,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        6 * 100 / 64 /* Frame 51-52 & 81-84 */, 1);
+        base::ClampCeil(6 * 100.0 / 64) /* Frame 51-52 & 81-84 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -535,7 +542,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        12 * 100 / 64 /* Frames 81-84 & 111-118 */, 1);
+        base::ClampCeil(12 * 100.0 / 64) /* Frames 81-84 & 111-118 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
@@ -543,11 +550,11 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        4 * 100 / 64 /* Frames 81-84 */, 1);
+        base::ClampCeil(4 * 100.0 / 64) /* Frames 81-84 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
-        8 * 100 / 64 /* Frames 111-118 */, 1);
+        base::ClampCeil(8 * 100.0 / 64) /* Frames 111-118 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFling",
@@ -569,7 +576,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        8 * 100 / 32 /* Frames 111-118 */, 1);
+        base::ClampCeil(8 * 100.0 / 32) /* Frames 111-118 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -607,7 +614,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresEmptyScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        1 * 100 / 64 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 64 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
@@ -615,7 +622,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresEmptyScrolls) {
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        1 * 100 / 64 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 64 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
@@ -639,7 +646,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresEmptyScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 64 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 64 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -680,7 +687,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsSingletonScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        1 * 100 / 64 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 64 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
@@ -688,7 +695,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsSingletonScrolls) {
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        1 * 100 / 64 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 64 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
@@ -712,7 +719,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsSingletonScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 54 /* Frame 64 */, 1);
+        base::ClampCeil(1 * 100.0 / 54) /* Frame 64 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -764,7 +771,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        2 * 100 / 27 /* Frames 14 & 15 */, 1);
+        base::ClampCeil(2 * 100.0 / 27) /* Frames 14 & 15 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -817,24 +824,27 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
               16}}),
         kDamaging);
 
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow"),
-        base::BucketsAre(base::Bucket(2 * 100 / 64, 1) /* Frames 14 & 15 */,
-                         base::Bucket(1 * 100 / 64, 1) /* Frame 89 */
-                         ));
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow"),
+                base::BucketsAre(
+                    // Frames 14 & 15.
+                    base::Bucket(base::ClampCeil(2 * 100.0 / 64), 1),
+                    // Frame 89.
+                    base::Bucket(base::ClampCeil(1 * 100.0 / 64), 1)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
+                    "MissedVsyncDueToDeceleratingInputFrameDelivery"),
+                base::BucketsAre(
+                    // Frames 14 & 15.
+                    base::Bucket(base::ClampCeil(2 * 100.0 / 64), 1),
+                    base::Bucket(0, 1)));
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
             "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-            "MissedVsyncDueToDeceleratingInputFrameDelivery"),
-        base::BucketsAre(base::Bucket(2 * 100 / 64, 1) /* Frames 14 & 15 */,
-                         base::Bucket(0, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-                    "MissedVsyncDuringFastScroll"),
-                base::BucketsAre(base::Bucket(0, 1),
-                                 base::Bucket(1 * 100 / 64, 1) /* Frame 89 */
-                                 ));
+            "MissedVsyncDuringFastScroll"),
+        base::BucketsAre(base::Bucket(0, 1),
+                         // Frame 89.
+                         base::Bucket(base::ClampCeil(1 * 100.0 / 64), 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(
                     "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
                     "MissedVsyncAtStartOfFling"),
@@ -888,15 +898,15 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        5 * 100 / 64 /* Frames 141, 148 & 171-173 */, 1);
+        base::ClampCeil(5 * 100.0 / 64) /* Frames 141, 148 & 171-173 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        1 * 100 / 64 /* Frame 148 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 148 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
-        4 * 100 / 64 /* Frames 141 & 171-173 */, 1);
+        base::ClampCeil(4 * 100.0 / 64) /* Frames 141 & 171-173 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
@@ -930,7 +940,8 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        6 * 100 / 200 /* Frames 89, 141, 148 & 171-173 */, 1);
+        base::ClampCeil(6 * 100.0 / 200) /* Frames 89, 141, 148 & 171-173 */,
+        1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -964,7 +975,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        2 * 100 / 64 /* Frames 241 & 242 */, 1);
+        base::ClampCeil(2 * 100.0 / 64) /* Frames 241 & 242 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
@@ -976,11 +987,11 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncAtStartOfFling",
-        1 * 100 / 64 /* Frame 241 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 241 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFling",
-        1 * 100 / 64 /* Frame 242 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 242 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
         256 + 512 /* Frames 241 & 242 */, 1);
@@ -998,7 +1009,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        2 * 100 / 29 /* Frames 241 & 242 */, 1);
+        base::ClampCeil(2 * 100.0 / 29) /* Frames 241 & 242 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -1031,7 +1042,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresCompletelyNonDamagingScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 32 /* Frame 16 */, 1);
+        base::ClampCeil(1 * 100.0 / 32) /* Frame 16 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 
@@ -1087,11 +1098,11 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresCompletelyNonDamagingScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        2 * 100 / 64 /* Frames 16 & 48 */, 1);
+        base::ClampCeil(2 * 100.0 / 64) /* Frames 16 & 48 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        1 * 100 / 64 /* Frame 16 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 16 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFastScroll",
@@ -1103,7 +1114,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresCompletelyNonDamagingScrolls) {
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
         "MissedVsyncDuringFling",
-        1 * 100 / 64 /* Frame 48 */, 1);
+        base::ClampCeil(1 * 100.0 / 64) /* Frame 48 */, 1);
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
         2 + 4 /* Frames 16 & 48 */, 1);
@@ -1120,7 +1131,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresCompletelyNonDamagingScrolls) {
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 32 /* Frame 48 */, 1);
+        base::ClampCeil(1 * 100.0 / 32) /* Frame 48 */, 1);
     ExpectNoFixedWindowHistograms(histogram_tester);
   }
 }
@@ -1190,5 +1201,235 @@ TEST_F(ScrollJankV4HistogramEmitterTest, DeletingOsReporterDoesNotCauseCrash) {
 
   histogram_emitter_->OnScrollEnded();
 }
+
+struct PerScrollPercentageRoundingTestCase {
+  std::string test_name;
+  bool round_up_feature_enabled;
+  int delayed_frames;
+  int presented_frames;
+  int expected_percentage;
+};
+
+class ScrollJankV4HistogramEmitterPerScrollPercentageRoundingTest
+    : public ScrollJankV4HistogramEmitterTest,
+      public testing::WithParamInterface<PerScrollPercentageRoundingTestCase> {
+};
+
+TEST_P(ScrollJankV4HistogramEmitterPerScrollPercentageRoundingTest,
+       EmitsExpectedPercentage) {
+  const PerScrollPercentageRoundingTestCase& params = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      features::kScrollJankV4MetricRoundPercentageUp,
+      params.round_up_feature_enabled);
+
+  base::HistogramTester histogram_tester;
+  histogram_emitter_->OnScrollStarted();
+  for (int i = 0; i < params.delayed_frames; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(
+        MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFastScroll, 1}}),
+        kDamaging);
+  }
+  for (int i = params.delayed_frames; i < params.presented_frames; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
+  }
+  histogram_emitter_->OnScrollEnded();
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
+      params.expected_percentage, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ScrollJankV4HistogramEmitterPerScrollPercentageRoundingTests,
+    ScrollJankV4HistogramEmitterPerScrollPercentageRoundingTest,
+    testing::Values(
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "ZeroDelayedOf101_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames = 0,
+            .presented_frames = 101,
+            .expected_percentage = 0,
+        },
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "ZeroDelayedOf101_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames = 0,
+            .presented_frames = 101,
+            .expected_percentage = 0,
+        },
+        // Regression test for b/590717751: 1 delayed frame out of 101 (~0.99%)
+        // must land in bucket 1 when rounding up, rather than bucket 0.
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "OneDelayedOf101_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames = 1,
+            .presented_frames = 101,
+            .expected_percentage = 1,
+        },
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "OneDelayedOf101_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames = 1,
+            .presented_frames = 101,
+            .expected_percentage = 0,
+        },
+        // Exact integer percentages must not be incremented by ceiling.
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "ExactOnePercent_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames = 1,
+            .presented_frames = 100,
+            .expected_percentage = 1,
+        },
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "ExactOnePercent_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames = 1,
+            .presented_frames = 100,
+            .expected_percentage = 1,
+        },
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "AllDelayedOf101_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames = 101,
+            .presented_frames = 101,
+            .expected_percentage = 100,
+        },
+        PerScrollPercentageRoundingTestCase{
+            .test_name = "AllDelayedOf101_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames = 101,
+            .presented_frames = 101,
+            .expected_percentage = 100,
+        }),
+    [](const auto& info) { return info.param.test_name; });
+
+struct FixedWindowPercentageRoundingTestCase {
+  std::string test_name;
+  bool round_up_feature_enabled;
+  int delayed_frames_decelerating_input;
+  int delayed_frames_fast_scroll;
+  int expected_decelerating_input_percentage;
+  int expected_fast_scroll_percentage;
+  int expected_total_percentage;
+};
+
+class ScrollJankV4HistogramEmitterFixedWindowPercentageRoundingTest
+    : public ScrollJankV4HistogramEmitterTest,
+      public testing::WithParamInterface<
+          FixedWindowPercentageRoundingTestCase> {};
+
+TEST_P(ScrollJankV4HistogramEmitterFixedWindowPercentageRoundingTest,
+       EmitsExpectedPercentages) {
+  const FixedWindowPercentageRoundingTestCase& params = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      features::kScrollJankV4MetricRoundPercentageUp,
+      params.round_up_feature_enabled);
+
+  base::HistogramTester histogram_tester;
+  histogram_emitter_->OnScrollStarted();
+  for (int i = 0; i < params.delayed_frames_decelerating_input; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(
+        MakeMissedVsyncCounts(
+            {{JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1}}),
+        kDamaging);
+  }
+  for (int i = 0; i < params.delayed_frames_fast_scroll; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(
+        MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFastScroll, 1}}),
+        kDamaging);
+  }
+  const int remaining_frames =
+      ScrollJankV4HistogramEmitter::kHistogramEmitFrequency -
+      params.delayed_frames_decelerating_input -
+      params.delayed_frames_fast_scroll;
+  ASSERT_GE(remaining_frames, 0);
+  for (int i = 0; i < remaining_frames; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
+      params.expected_total_percentage, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
+      "MissedVsyncDueToDeceleratingInputFrameDelivery",
+      params.expected_decelerating_input_percentage, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
+      "MissedVsyncDuringFastScroll",
+      params.expected_fast_scroll_percentage, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
+      "MissedVsyncAtStartOfFling",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
+      "MissedVsyncDuringFling",
+      0, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ScrollJankV4HistogramEmitterFixedWindowPercentageRoundingTests,
+    ScrollJankV4HistogramEmitterFixedWindowPercentageRoundingTest,
+    testing::Values(
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "ZeroDelayed_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames_decelerating_input = 0,
+            .delayed_frames_fast_scroll = 0,
+            .expected_decelerating_input_percentage = 0,
+            .expected_fast_scroll_percentage = 0,
+            .expected_total_percentage = 0,
+        },
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "ZeroDelayed_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames_decelerating_input = 0,
+            .delayed_frames_fast_scroll = 0,
+            .expected_decelerating_input_percentage = 0,
+            .expected_fast_scroll_percentage = 0,
+            .expected_total_percentage = 0,
+        },
+        // 16 / 64 = 25% exact; 1 / 64 = 1.5625%; 17 / 64 = 26.5625%.
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "MixedExactAndFractionalSubreasons_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames_decelerating_input = 16,
+            .delayed_frames_fast_scroll = 1,
+            .expected_decelerating_input_percentage = 25,
+            .expected_fast_scroll_percentage = 2,
+            .expected_total_percentage = 27,
+        },
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "MixedExactAndFractionalSubreasons_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames_decelerating_input = 16,
+            .delayed_frames_fast_scroll = 1,
+            .expected_decelerating_input_percentage = 25,
+            .expected_fast_scroll_percentage = 1,
+            .expected_total_percentage = 26,
+        },
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "All64Delayed_RoundUp",
+            .round_up_feature_enabled = true,
+            .delayed_frames_decelerating_input = 64,
+            .delayed_frames_fast_scroll = 0,
+            .expected_decelerating_input_percentage = 100,
+            .expected_fast_scroll_percentage = 0,
+            .expected_total_percentage = 100,
+        },
+        FixedWindowPercentageRoundingTestCase{
+            .test_name = "All64Delayed_RoundDown",
+            .round_up_feature_enabled = false,
+            .delayed_frames_decelerating_input = 64,
+            .delayed_frames_fast_scroll = 0,
+            .expected_decelerating_input_percentage = 100,
+            .expected_fast_scroll_percentage = 0,
+            .expected_total_percentage = 100,
+        }),
+    [](const auto& info) { return info.param.test_name; });
 
 }  // namespace cc

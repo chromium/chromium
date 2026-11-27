@@ -9,9 +9,11 @@
 #include <variant>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/metrics/histogram_macros.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
@@ -24,6 +26,19 @@ namespace {
 constexpr int kVsyncCountsMin = 1;
 constexpr int kVsyncCountsMax = 50;
 constexpr int kVsyncCountsBuckets = 25;
+
+int CalculateDelayedFramesPercentage(int delayed_frames, int presented_frames) {
+  DCHECK_GE(delayed_frames, 0);
+  DCHECK_GT(presented_frames, 0);
+  DCHECK_LE(delayed_frames, presented_frames);
+  if (base::FeatureList::IsEnabled(
+          features::kScrollJankV4MetricRoundPercentageUp)) {
+    // Round up (ceiling).
+    return (100 * delayed_frames + (presented_frames - 1)) / presented_frames;
+  }
+  // Round down (floor).
+  return 100 * delayed_frames / presented_frames;
+}
 
 constexpr const char* GetDelayedFramesPercentageFixedWindow4HistogramName(
     JankReason reason) {
@@ -211,7 +226,8 @@ void ScrollJankV4HistogramEmitter::
 
   UMA_HISTOGRAM_PERCENTAGE(
       kDelayedFramesWindowHistogram,
-      (100 * fixed_window_.delayed_frames) / kHistogramEmitFrequency);
+      CalculateDelayedFramesPercentage(fixed_window_.delayed_frames,
+                                       kHistogramEmitFrequency));
   UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsSumInWindowHistogram,
                               fixed_window_.missed_vsyncs, kVsyncCountsMin,
                               kVsyncCountsMax, kVsyncCountsBuckets);
@@ -228,7 +244,8 @@ void ScrollJankV4HistogramEmitter::
     STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
         GetDelayedFramesPercentageFixedWindow4HistogramName(reason), i,
         kMaxJankReasonIndex + 1,
-        (100 * delayed_frames_for_reason) / kHistogramEmitFrequency);
+        CalculateDelayedFramesPercentage(delayed_frames_for_reason,
+                                         kHistogramEmitFrequency));
   }
 
   // We don't need to reset these to -1 because after the first window we always
@@ -246,7 +263,8 @@ void ScrollJankV4HistogramEmitter::
 
   UMA_HISTOGRAM_PERCENTAGE(
       kDelayedFramesPerScrollHistogram,
-      (100 * per_scroll_.delayed_frames) / per_scroll_.presented_frames);
+      CalculateDelayedFramesPercentage(per_scroll_.delayed_frames,
+                                       per_scroll_.presented_frames));
 
   if (os_reporter_) {
     os_reporter_->ReportScrollJankStats(

@@ -602,8 +602,12 @@ chromium-metrics-reviews@google.com.
     scroll only has 12 frames, the next scroll has 40 frames and the scroll
     after has 12 frames, the metric only will be emitted after the 3rd scroll.
     This means the last incomplete window might not get reported as the browser
-    terminates. This metric emits zero in the case when no frames were delayed
-    in a window of 64 frames.
+    terminates.
+
+    This metric emits zero in the case when no frames were delayed in a window
+    of 64 frames. Starting in M160 (when ScrollJankV4MetricRoundPercentageUp is
+    enabled), the percentage is rounded up (instead of down) to the nearest
+    integer.
 
     For more details about this metric, please check
     https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
@@ -653,7 +657,11 @@ chromium-metrics-reviews@google.com.
     Browser and IO, unlike graphics' smoothness metrics which focus on the core
     graphics pipeline (Renderer/GPU).
 
-    This metric emits zero in the case when no frames were delayed in a scroll.
+    Starting in M160 (when ScrollJankV4MetricRoundPercentageUp is enabled), the
+    percentage is rounded up (instead of down) to the nearest integer, so this
+    metric emits zero if and only if no frames were delayed in a scroll. In M159
+    and below, scrolls with fewer than 1% delayed frames are rounded down to
+    zero.
 
     For more details about this metric, please check
     https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
