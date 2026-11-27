@@ -83,6 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "OAuth2 access token for the primary signed-in Google account and "
             "an empty JSON request."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "cryptauthfidoenrollment.pa.googleapis.com"
           internal {
             contacts {
               email: "chrome-webauthn@google.com"

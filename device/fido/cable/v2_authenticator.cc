@@ -66,6 +66,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           data: "Only encrypted data that the service does not have the keys "
                 "for."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://cable.ua5v.com"
         }
         policy {
           cookies_allowed: NO
