@@ -809,8 +809,10 @@ class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
 };
 
 // Verifies that pre-rendered pages don't change the capture handle config.
+// TODO(crbug.com/591054517): Flaky on M159 (fixed on main by
+// crrev.com/c/8842009).
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
-                       EmptyConfigForCrossDocumentNavigations) {
+                       DISABLED_EmptyConfigForCrossDocumentNavigations) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
   captured_web_contents_ = captured_tab.web_contents;
