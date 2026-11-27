@@ -5,6 +5,7 @@
 #include "components/viz/service/display/display_scheduler.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -330,20 +331,29 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
   params.begin_frame_args = begin_frame_args;
   params.expected_display_time = current_frame_display_time(begin_frame_args);
   params.max_pending_swaps = MaxPendingSwaps(begin_frame_args);
+  struct PendingDeadlineCommit {
+    FrameDeadlineDecider::QueryResult query;
+    base::TimeTicks targeted_latch_time;
+    int max_allowed_buffers = 0;
+    bool is_handling_interaction = false;
+  };
+  std::optional<PendingDeadlineCommit> pending_deadline_commit;
   if (!begin_frame_args.possible_deadlines.empty()) {
     const auto& deadlines = begin_frame_args.possible_deadlines;
     auto earliest_input_time =
         damage_tracker_
             ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
             : std::nullopt;
-    bool is_handling_interaction =
+    const bool is_handling_interaction =
         damage_tracker_ ? damage_tracker_->HasDamageDueToInteraction() : false;
-    int max_allowed_buffers = GetMaxAllowedBuffers(begin_frame_args.interval);
+    const int max_allowed_buffers =
+        GetMaxAllowedBuffers(begin_frame_args.interval);
+    const FrameDeadlineDecider::QueryResult query =
+        decider_.QueryDeadline(deadlines, begin_frame_args.interval,
+                               max_allowed_buffers, begin_frame_args.frame_time,
+                               earliest_input_time, is_handling_interaction);
     const auto* selected_deadline =
-        &deadlines.GetDeadlineByIndex(decider_.SelectDeadline(
-            deadlines, begin_frame_args.interval, max_allowed_buffers,
-            begin_frame_args.frame_time, earliest_input_time,
-            is_handling_interaction));
+        &deadlines.GetDeadlineByIndex(query.deadline_index);
     // TODO(crbug.com/500826814): Move this logic into FrameDeadlineDecider.
     if (base::FeatureList::IsEnabled(features::kSelectFutureFrameDeadline)) {
       base::TimeTicks now = NowTicks();
@@ -373,8 +383,13 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
         }
       }
     }
-    last_targeted_latch_time_ =
-        begin_frame_args.frame_time + selected_deadline->latch_delta;
+    pending_deadline_commit = PendingDeadlineCommit{
+        .query = query,
+        .targeted_latch_time =
+            begin_frame_args.frame_time + selected_deadline->latch_delta,
+        .max_allowed_buffers = max_allowed_buffers,
+        .is_handling_interaction = is_handling_interaction,
+    };
     params.choreographer_vsync_id = selected_deadline->vsync_id;
     params.selected_deadline = *selected_deadline;
     if (!use_platform_preferred_deadlines_) {
@@ -391,10 +406,26 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
     }
   }
 
+  const int pending_swaps_before = pending_swaps_;
   bool success = client_ && client_->DrawAndSwap(params);
-  if (!success)
+  if (!success) {
     return false;
+  }
 
+  // `Display::DrawAndSwap()` returns true on skipped swaps without leaving
+  // `pending_swaps_` incremented (`skips_draw` skips `DidSwapBuffers()`, and
+  // `!should_swap` pairs it with a synchronous `DidReceiveSwapBuffersAck()`),
+  // whereas real async swaps leave `pending_swaps_` incremented until ack.
+  if (pending_swaps_ > pending_swaps_before &&
+      pending_deadline_commit.has_value()) {
+    decider_.CommitDeadline(begin_frame_args.possible_deadlines,
+                            begin_frame_args.interval,
+                            pending_deadline_commit->max_allowed_buffers,
+                            begin_frame_args.frame_time,
+                            pending_deadline_commit->is_handling_interaction,
+                            pending_deadline_commit->query);
+    last_targeted_latch_time_ = pending_deadline_commit->targeted_latch_time;
+  }
   last_undrawn_begin_frame_args_ = std::nullopt;
   needs_draw_ = false;
   return true;

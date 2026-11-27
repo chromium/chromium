@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/trace_event/typed_macros.h"
@@ -158,24 +159,20 @@ FrameDeadlineDecider::QueryResult FrameDeadlineDecider::QueryDeadline(
   return {chrome_preferred_index, SelectionReason::kChromePreferredNewSequence};
 }
 
-size_t FrameDeadlineDecider::SelectDeadline(
+void FrameDeadlineDecider::CommitDeadline(
     const PossibleDeadlines& possible_deadlines,
     base::TimeDelta vsync_interval,
     int max_allowed_buffers,
     base::TimeTicks frame_time,
-    std::optional<base::TimeTicks> earliest_input_time,
-    bool is_handling_interaction) {
-  TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz",
-                    "FrameDeadlineDecider::SelectDeadline",
+    bool is_handling_interaction,
+    const QueryResult& result) {
+  CHECK_LT(result.deadline_index, possible_deadlines.size());
+  TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz", "SelectedDeadline",
                     perfetto::TerminatingFlow::ProcessScoped(
                         GetTraceFlowId(frame_time.since_origin())));
 
-  QueryResult result =
-      QueryDeadline(possible_deadlines, vsync_interval, max_allowed_buffers,
-                    frame_time, earliest_input_time, is_handling_interaction);
   const auto& selected_deadline =
       possible_deadlines.GetDeadlineByIndex(result.deadline_index);
-
   const auto& os_preferred_deadline =
       possible_deadlines.GetOSPreferredDeadline();
   frame_sequence_state_ = FrameSequenceState{
@@ -206,8 +203,6 @@ size_t FrameDeadlineDecider::SelectDeadline(
         auto* timeline = data->set_chrome_preferred_frame_timeline();
         selected_deadline.SetTraceTimelineData(*timeline);
       });
-
-  return result.deadline_index;
 }
 
 void FrameDeadlineDecider::OnDisplayInvisible() {

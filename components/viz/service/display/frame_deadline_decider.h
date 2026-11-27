@@ -77,17 +77,14 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
                             std::optional<base::TimeTicks> earliest_input_time,
                             bool is_handling_interaction) const;
 
-  // Selects the best deadline index and updates the internal state of the
-  // decider to lock to the selected deadline for the current sequence.
-  // This should only be called once per frame when we are actually going to
-  // draw. It differs from QueryDeadline in that it has side effects on the
-  // internal sequence tracking state.
-  size_t SelectDeadline(const PossibleDeadlines& possible_deadlines,
-                        base::TimeDelta vsync_interval,
-                        int max_allowed_buffers,
-                        base::TimeTicks frame_time,
-                        std::optional<base::TimeTicks> earliest_input_time,
-                        bool is_handling_interaction);
+  // Commits a deadline previously evaluated by QueryDeadline after the frame
+  // swaps, updating sequence state, UMA, and trace events.
+  void CommitDeadline(const PossibleDeadlines& possible_deadlines,
+                      base::TimeDelta vsync_interval,
+                      int max_allowed_buffers,
+                      base::TimeTicks frame_time,
+                      bool is_handling_interaction,
+                      const QueryResult& result);
 
   // Called when the display becomes invisible.
   void OnDisplayInvisible();

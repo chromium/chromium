@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,6 +17,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/display/display_scheduler_draw_result.h"
 #include "components/viz/common/features.h"
@@ -97,11 +99,22 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     draw_and_swap_count_++;
     last_params_ = params;
 
-    bool success = !next_draw_and_swap_fails_;
+    const bool success = !next_draw_and_swap_fails_;
+    const bool skips_swap = next_draw_skips_swap_;
     next_draw_and_swap_fails_ = false;
+    next_draw_skips_swap_ = false;
 
     if (success) {
       damage_tracker_->ClearUndrawnSurfaces();
+      if (swap_scheduler_) {
+        swap_scheduler_->DidSwapBuffers();
+        // Matches Display::DrawAndSwap(), which pairs DidSwapBuffers() with an
+        // immediate DidReceiveSwapBuffersAck() when !should_swap so
+        // pending_swaps_ remains unchanged.
+        if (skips_swap) {
+          swap_scheduler_->DidReceiveSwapBuffersAck();
+        }
+      }
     }
     return success;
   }
@@ -129,6 +142,12 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   int draw_and_swap_count() const { return draw_and_swap_count_; }
 
   void SetNextDrawAndSwapFails() { next_draw_and_swap_fails_ = true; }
+  void SetNextDrawSkipsSwap() { next_draw_skips_swap_ = true; }
+  base::AutoReset<raw_ptr<DisplayScheduler>> NotifySwapsTo(
+      DisplayScheduler* scheduler) {
+    return base::AutoReset<raw_ptr<DisplayScheduler>>(&swap_scheduler_,
+                                                      scheduler);
+  }
 
   const BeginFrameAck& last_begin_frame_ack() { return last_begin_frame_ack_; }
   const DrawAndSwapParams& last_params() const { return last_params_; }
@@ -146,6 +165,8 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
+  bool next_draw_skips_swap_ = false;
+  raw_ptr<DisplayScheduler> swap_scheduler_ = nullptr;
   BeginFrameAck last_begin_frame_ack_;
   DisplaySchedulerDrawResult last_result_;
   std::vector<DidFinishFrameCall> did_finish_frame_calls_;
@@ -284,6 +305,18 @@ class DisplaySchedulerTest : public testing::Test {
   BeginFrameAck AckForCurrentBeginFrame() {
     DCHECK(last_begin_frame_args_.IsValid());
     return BeginFrameAck(last_begin_frame_args_, true);
+  }
+  std::unique_ptr<TestDisplayScheduler> CreateCustomDeadlineScheduler() {
+    PendingSwapParams params(2);
+    params.max_pending_swaps_120hz = 4;
+    auto custom_scheduler = std::make_unique<TestDisplayScheduler>(
+        damage_tracker_.get(), &fake_begin_frame_source_, &surface_manager_,
+        task_runner_.get(), params, wait_for_all_surfaces_before_draw_);
+    custom_scheduler->SetClient(&client_);
+    custom_scheduler->SetTickClockForTesting(&now_src_);
+    custom_scheduler->SetVisible(true);
+    custom_scheduler->OnRootFrameMissing(false);
+    return custom_scheduler;
   }
 
   bool wait_for_all_surfaces_before_draw_;
@@ -587,6 +620,7 @@ TEST_F(DisplaySchedulerTest, SelectFutureFrameDeadline) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kSelectFutureFrameDeadline);
+  auto swap_notifier = client_.NotifySwapsTo(scheduler_.get());
 
   SurfaceId root_surface_id(
       kArbitraryFrameSinkId,
@@ -621,6 +655,7 @@ TEST_F(DisplaySchedulerTest, SelectFutureFrameDeadline) {
 
   // Should have picked vsync_id 101 because 100 was in the past.
   EXPECT_EQ(101, client().last_params().choreographer_vsync_id);
+  scheduler_->DidReceiveSwapBuffersAck();
   // last_targeted_latch_time_ = 20 + 50 = 70ms.
 
   // 2. Preferred deadline before last_targeted_latch_time_.
@@ -1931,6 +1966,73 @@ TEST_F(DisplaySchedulerTest, MaxPendingSwapsTransition) {
   trigger_frame(5, base::Milliseconds(16.666), 4);
   EXPECT_EQ(client_.last_params().max_pending_swaps, 4);
 }
+
+class DisplaySchedulerNonSwappingDrawTest
+    : public DisplaySchedulerTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(DisplaySchedulerNonSwappingDrawTest,
+       NonSwappingDrawDoesNotCommitCustomDeadline) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kUseAndroidCustomFrameDeadlines,
+      {{"presentation_offset", "-2"},
+       {"sequence_strategy", "presentation_delta_locking"}});
+  auto custom_scheduler = CreateCustomDeadlineScheduler();
+  auto swap_notifier = client_.NotifySwapsTo(custom_scheduler.get());
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  constexpr base::TimeDelta k120HzInterval = base::Microseconds(8333);
+  client_.SetCurrentAllocatedBuffers(5);
+  if (GetParam()) {
+    client_.SetNextDrawSkipsSwap();
+  } else {
+    client_.SetNextDrawAndSwapFails();
+  }
+  const base::TimeTicks t0 = now_src().NowTicks();
+  BeginFrameArgs bf1 =
+      fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+          t0, t0 + k120HzInterval, k120HzInterval);
+  bf1.possible_deadlines = PossibleDeadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(10, base::Milliseconds(28), base::Milliseconds(36))});
+  custom_scheduler->OnDisplayDamaged(root_surface_id, BeginFrameId());
+  custom_scheduler->OnBeginFrameForScheduling(bf1);
+  custom_scheduler->BeginFrameDeadlineForTest();
+  ASSERT_EQ(client_.draw_and_swap_count(), 1);
+  ASSERT_EQ(client_.last_params().choreographer_vsync_id, 10);
+  now_src().Advance(k120HzInterval);
+  BeginFrameArgs bf2 =
+      fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+          now_src().NowTicks(), now_src().NowTicks() + k120HzInterval,
+          k120HzInterval);
+  bf2.possible_deadlines = PossibleDeadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(20, base::Milliseconds(8), base::Milliseconds(16)),
+       PossibleDeadline(21, base::Milliseconds(16), base::Milliseconds(24)),
+       PossibleDeadline(22, base::Milliseconds(32), base::Milliseconds(40))});
+  custom_scheduler->OnDisplayDamaged(root_surface_id, BeginFrameId());
+  custom_scheduler->OnBeginFrameForScheduling(bf2);
+
+  custom_scheduler->BeginFrameDeadlineForTest();
+
+  EXPECT_EQ(client_.draw_and_swap_count(), 2);
+  // Because bf1 did not swap, its 36ms deadline was not committed; bf2 starts a
+  // new sequence and picks an earlier deadline (vsync_id 21, 24ms) instead of
+  // holding bf1's 36ms presentation delta (vsync_id 22, 40ms).
+  EXPECT_EQ(client_.last_params().choreographer_vsync_id, 21);
+  EXPECT_LT(client_.last_params().selected_deadline->present_delta,
+            bf1.possible_deadlines.GetDeadlineByIndex(0).present_delta);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisplaySchedulerNonSwappingDrawTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SkipsSwap" : "DrawFails";
+                         });
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
