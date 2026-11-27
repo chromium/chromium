@@ -1446,7 +1446,7 @@ BASE_FEATURE(kUseDirectXkbLayoutForThaiKedmaneeInputMethod,
 
 // Use direct XKB layout for Thai TIS 820-2531 input method.
 BASE_FEATURE(kUseDirectXkbLayoutForThaiTisInputMethod,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
 // (a.k.a. browser's Profile).
