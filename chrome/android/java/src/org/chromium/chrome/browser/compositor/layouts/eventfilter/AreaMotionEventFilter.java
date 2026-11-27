@@ -95,28 +95,17 @@ public class AreaMotionEventFilter extends MotionEventFilter {
 
     @Override
     public boolean onHoverEventInternal(MotionEvent e) {
-        MotionEvent eventToHandle;
-
         // |mHoverExitedArea| determines whether a hover event within the parent view in which
         // |mTriggerRect| is present causes a hover out of this rect; in this case, we will process
         // this action as an ACTION_HOVER_EXIT from the rect area.
-        if (mHoverExitedArea) {
+        if (mHoverExitedArea || e.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
             mHoverExitedArea = false;
-            eventToHandle = MotionEvent.obtain(e);
-            eventToHandle.setAction(MotionEvent.ACTION_HOVER_EXIT);
-            eventToHandle.recycle();
-        } else {
-            eventToHandle = e;
-        }
-
-        // If handling a hover exit, include whether or not the event occurred in the trigger area.
-        if (eventToHandle.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
-            mHandler.onHoverExit(isMotionEventInArea(eventToHandle));
+            mHandler.onHoverExit(isMotionEventInArea(e));
             return true;
         }
 
         // Otherwise, fallback to default implementation.
-        return super.onHoverEventInternal(eventToHandle);
+        return super.onHoverEventInternal(e);
     }
 
     @Override
