@@ -80,6 +80,12 @@ void UserTriggeredManualGenerationFromContextMenu(
 // Checks if password saving is possible at a storage level.
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client);
 
+// Returns true if saving `form_manager`'s pending credentials only updates an
+// existing credential in the local profile store and does not write to the
+// account store. Returns false if `form_manager` is null.
+bool IsLocalPasswordUpdate(
+    const password_manager::PasswordFormManagerForUI* form_manager);
+
 // Returns the recoverable password store error that currently blocks saving, or
 // `std::nullopt` if saving is not blocked by a recoverable error (including
 // when saving is blocked by an unrecoverable error). `client` must be non-null;

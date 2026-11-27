@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -44,6 +45,7 @@
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -57,6 +59,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -166,6 +169,27 @@ PasswordForm GetTestProxyCredential() {
   form.username_value = kTestUsername;
   form.password_value = PasswordString(kTestPassword);
   return form;
+}
+
+StoredCredential MakeStoredCredential(
+    std::u16string username,
+    std::u16string password,
+    PasswordForm::Store store,
+    affiliations::MatchType match_type = affiliations::MatchType::kExact) {
+  StoredCredential credential;
+  credential.username_value = std::move(username);
+  credential.password_value = PasswordString(std::move(password));
+  credential.in_store = store;
+  credential.match_type = match_type;
+  return credential;
+}
+
+template <typename... Args>
+std::vector<StoredCredential> MakeMatches(Args&&... args) {
+  std::vector<StoredCredential> matches;
+  matches.reserve(sizeof...(args));
+  (matches.push_back(std::forward<Args>(args)), ...);
+  return matches;
 }
 
 }  // namespace
@@ -1475,6 +1499,53 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
       GetRecoverableErrorBlockingPasswordSaving(&mock_client_, &form_manager),
       std::nullopt);
 }
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
+       IsSavingBlockedByTrustedVaultErrorForMatchingPasswordLocalEdit) {
+  EnableSyncForTestAccount();
+  auto account_store =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(account_store.get()));
+  EXPECT_CALL(*account_store, GetError)
+      .WillRepeatedly(Return(ActionableError::kTrustedVaultKeyNeeded));
+
+  PasswordForm pending;
+  pending.username_value = kTestUsername;
+  pending.password_value = PasswordString(kTestPassword);
+  pending.match_type = affiliations::MatchType::kExact;
+
+  std::vector<StoredCredential> matches = MakeMatches(MakeStoredCredential(
+      kTestUsername, kTestPassword, PasswordForm::Store::kProfileStore));
+
+  testing::NiceMock<password_manager::MockPasswordFormManagerForUI>
+      form_manager;
+  ON_CALL(form_manager, GetPendingCredentials())
+      .WillByDefault(testing::ReturnRef(pending));
+  ON_CALL(form_manager, GetBestMatches()).WillByDefault([&matches]() {
+    return base::span<const StoredCredential>(matches);
+  });
+
+  EXPECT_FALSE(
+      IsSavingBlockedByTrustedVaultError(&mock_client_, &form_manager));
+  EXPECT_EQ(
+      GetRecoverableErrorBlockingPasswordSaving(&mock_client_, &form_manager),
+      std::nullopt);
+
+  // Adding an account-store credential with the same password blocks saving
+  // even when the username is cleared.
+  pending.username_value.clear();
+  matches =
+      MakeMatches(MakeStoredCredential(u"", kTestPassword,
+                                       PasswordForm::Store::kProfileStore),
+                  MakeStoredCredential(kTestUsername, kTestPassword,
+                                       PasswordForm::Store::kAccountStore));
+
+  EXPECT_TRUE(IsSavingBlockedByTrustedVaultError(&mock_client_, &form_manager));
+  EXPECT_EQ(
+      GetRecoverableErrorBlockingPasswordSaving(&mock_client_, &form_manager),
+      ActionableError::kTrustedVaultKeyNeeded);
+}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
@@ -1568,5 +1639,127 @@ TEST(PasswordManagerUtilBiometricPromoTest,
   EXPECT_TRUE(ShouldShowBiometricAuthenticationBeforeFillingPromo(&client));
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+
+class IsLocalPasswordUpdateTest : public testing::Test {
+ protected:
+  IsLocalPasswordUpdateTest() {
+    pending_.username_value = kTestUsername;
+    pending_.password_value = PasswordString(kTestPassword);
+    ON_CALL(form_manager_, GetPendingCredentials())
+        .WillByDefault(testing::ReturnRef(pending_));
+    ON_CALL(form_manager_, GetBestMatches()).WillByDefault([this]() {
+      return base::span<const StoredCredential>(matches_);
+    });
+  }
+
+  PasswordForm pending_;
+  std::vector<StoredCredential> matches_;
+  testing::NiceMock<password_manager::MockPasswordFormManagerForUI>
+      form_manager_;
+};
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsFalseForNullFormManager) {
+  EXPECT_FALSE(IsLocalPasswordUpdate(nullptr));
+}
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsTrueForLocalPasswordUpdate) {
+  EXPECT_CALL(form_manager_, IsPasswordUpdate()).WillOnce(Return(true));
+  EXPECT_CALL(form_manager_,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillOnce(Return(false));
+
+  EXPECT_TRUE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsFalseForAccountPasswordUpdate) {
+  EXPECT_CALL(form_manager_, IsPasswordUpdate()).WillOnce(Return(true));
+  EXPECT_CALL(form_manager_,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillOnce(Return(true));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsFalseWhenNoBestMatches) {
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsTrueForExactLocalMatchWithSamePassword) {
+  matches_ = MakeMatches(MakeStoredCredential(
+      kTestUsername, kTestPassword, PasswordForm::Store::kProfileStore));
+
+  EXPECT_TRUE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsFalseForDualStoreMatchWithSamePassword) {
+  matches_ = MakeMatches(MakeStoredCredential(
+      kTestUsername, kTestPassword,
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsFalseWhenExactAccountMatchHasDifferentPassword) {
+  matches_ =
+      MakeMatches(MakeStoredCredential(kTestUsername, kTestPassword,
+                                       PasswordForm::Store::kProfileStore),
+                  MakeStoredCredential(kTestUsername, u"old_password",
+                                       PasswordForm::Store::kAccountStore));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsFalseForLocalPslMatchWithDifferentPassword) {
+  matches_ = MakeMatches(MakeStoredCredential(
+      kTestUsername, u"old_password", PasswordForm::Store::kProfileStore,
+      affiliations::MatchType::kPSL));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsFalseWhenEmptyUsernameMatchesAccountCredentialByPassword) {
+  pending_.username_value.clear();
+  matches_ =
+      MakeMatches(MakeStoredCredential(u"", kTestPassword,
+                                       PasswordForm::Store::kProfileStore),
+                  MakeStoredCredential(kTestUsername, kTestPassword,
+                                       PasswordForm::Store::kAccountStore));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest,
+       ReturnsFalseForChangeSubmissionWithPslAccountMatch) {
+  pending_.type = PasswordForm::Type::kChangeSubmission;
+  matches_ =
+      MakeMatches(MakeStoredCredential(kTestUsername, kTestPassword,
+                                       PasswordForm::Store::kProfileStore),
+                  MakeStoredCredential(kTestUsername, u"old_password",
+                                       PasswordForm::Store::kAccountStore,
+                                       affiliations::MatchType::kPSL));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsFalseForFederatedCredential) {
+  pending_.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
+  matches_ = MakeMatches(MakeStoredCredential(
+      kTestUsername, kTestPassword, PasswordForm::Store::kProfileStore));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
+
+TEST_F(IsLocalPasswordUpdateTest, ReturnsFalseForGeneratedPassword) {
+  pending_.type = PasswordForm::Type::kGenerated;
+  matches_ = MakeMatches(MakeStoredCredential(
+      kTestUsername, kTestPassword, PasswordForm::Store::kProfileStore));
+
+  EXPECT_FALSE(IsLocalPasswordUpdate(&form_manager_));
+}
 
 }  // namespace password_manager_util

@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/android/device_info.h"
 #include "base/android/jni_android.h"
@@ -172,6 +175,7 @@ class SaveUpdatePasswordMessageDelegateTest
                              std::u16string password,
                              bool is_account_store = false,
                              url::SchemeHostPort federation_origin = {});
+  void SetPendingUsername(std::u16string username);
   static PasswordForm CreatePasswordForm(std::u16string username,
                                          std::u16string password,
                                          bool is_account_store = false);
@@ -384,6 +388,11 @@ void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
       is_account_store ? password_manager::PasswordForm::Store::kAccountStore
                        : password_manager::PasswordForm::Store::kProfileStore;
   pending_credentials_.federation_origin = federation_origin;
+}
+
+void SaveUpdatePasswordMessageDelegateTest::SetPendingUsername(
+    std::u16string username) {
+  pending_credentials_.username_value = std::move(username);
 }
 
 // static
@@ -3317,4 +3326,197 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   ExpectConfirmationMessageDismissCall();
   delegate()->DismissAllActiveUI();
+}
+
+class SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest
+    : public SaveUpdatePasswordMessageDelegateTest {
+ protected:
+  void SetUp() override {
+    SaveUpdatePasswordMessageDelegateTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordSaveInContextErrorResolution);
+    account_store_->ReturnErrorOnRequest(
+        password_manager::PasswordStoreBackendError(
+            password_manager::PasswordStoreBackendErrorType::
+                kKeyRetrievalRequired));
+  }
+
+  // Enqueues a save prompt blocked by a trusted vault error and opens
+  // `PasswordEditDialog`, returning the raw form manager and mock dialog.
+  std::pair<MockPasswordFormManagerForUI*, MockPasswordEditDialog*>
+  OpenEditDialogFromTrustedVaultSavePrompt(
+      std::unique_ptr<MockPasswordFormManagerForUI> form_manager) {
+    MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+    ON_CALL(*raw_form_manager, OnUpdateUsernameFromPrompt(_))
+        .WillByDefault([this](const std::u16string& username) {
+          SetPendingUsername(username);
+        });
+    MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+    EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                   /*update_password=*/false);
+    EXPECT_CALL(
+        *mock_dialog,
+        ShowPasswordEditDialog(
+            _, _, _, _, /*is_saving_blocked_by_trusted_vault_error=*/true));
+    TriggerPasswordEditDialog(/*update_password=*/false);
+    return {raw_form_manager, mock_dialog};
+  }
+
+  std::pair<MockPasswordFormManagerForUI*, MockPasswordEditDialog*>
+  OpenEditDialogFromTrustedVaultSavePrompt(
+      const std::vector<PasswordForm>& best_matches) {
+    return OpenEditDialogFromTrustedVaultSavePrompt(
+        CreateFormManager(GURL(kDefaultUrl), best_matches));
+  }
+
+  void AcceptDialogAndExpectTrustedVaultRecovery(
+      const std::u16string& username,
+      const std::u16string& password,
+      MockPasswordFormManagerForUI* form_manager) {
+    EXPECT_CALL(*form_manager, OnUpdateUsernameFromPrompt(Eq(username)));
+    EXPECT_CALL(*helper_bridge(),
+                StartTrustedVaultKeyRetrievalFlow(
+                    _,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                        kPasswordSavePrompt,
+                    _));
+    EXPECT_CALL(*form_manager, Save()).Times(0);
+
+    TriggerDialogAcceptedCallback(username, password);
+    TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+    EXPECT_FALSE(is_password_saved());
+    delegate()->DismissAllActiveUI();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Editing the username in the dialog to an existing local-only credential with
+// a different password updates it locally without triggering trusted vault
+// recovery.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    DialogEditUsernameToExistingLocalCredentialWithDifferentPassword_SavesLocallyDirectly) {
+  base::HistogramTester histogram_tester;
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl),
+                        {CreatePasswordForm(kUsername2, u"old_password",
+                                            /*is_account_store=*/false)});
+  bool is_password_update = false;
+  ON_CALL(*form_manager, IsPasswordUpdate())
+      .WillByDefault([&is_password_update]() { return is_password_update; });
+  ON_CALL(*form_manager, IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillByDefault(Return(false));
+
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt(std::move(form_manager));
+
+  EXPECT_CALL(*raw_form_manager, OnUpdateUsernameFromPrompt(Eq(kUsername2)))
+      .WillOnce([&is_password_update, this](const std::u16string& username) {
+        SetPendingUsername(username);
+        is_password_update = true;
+      });
+  EXPECT_CALL(*mock_dialog, Dismiss()).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
+
+  TriggerDialogAcceptedCallback(/*username=*/kUsername2,
+                                /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Editing the username in the dialog to an existing local-only credential with
+// the same password saves locally without triggering trusted vault recovery.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    DialogEditUsernameToExistingLocalCredentialWithMatchingPassword_SavesLocallyDirectly) {
+  base::HistogramTester histogram_tester;
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt(
+          {CreatePasswordForm(kUsername2, kPassword,
+                              /*is_account_store=*/false)});
+
+  EXPECT_CALL(*raw_form_manager, OnUpdateUsernameFromPrompt(Eq(kUsername2)));
+  EXPECT_CALL(*mock_dialog, Dismiss()).Times(0);
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
+
+  TriggerDialogAcceptedCallback(/*username=*/kUsername2,
+                                /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  EXPECT_TRUE(is_password_saved());
+  EXPECT_TRUE(IsDelegateStateCleared());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Editing the username in the dialog to a credential stored in both stores
+// still requires trusted vault recovery.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    DialogEditUsernameToDualStoreCredentialWithMatchingPassword_StartsTrustedVaultRecovery) {
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  PasswordForm dual_store_match =
+      CreatePasswordForm(kUsername2, kPassword, /*is_account_store=*/false);
+  dual_store_match.in_store =
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt({dual_store_match});
+
+  AcceptDialogAndExpectTrustedVaultRecovery(kUsername2, kPassword,
+                                            raw_form_manager);
+}
+
+// A local PSL match with a different password creates a new credential rather
+// than updating the local one, so it still requires trusted vault recovery.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    DialogEditUsernameToLocalPslMatchWithDifferentPassword_StartsTrustedVaultRecovery) {
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  PasswordForm local_psl_match = CreatePasswordForm(kUsername2, u"old_password",
+                                                    /*is_account_store=*/false);
+  local_psl_match.match_type = affiliations::MatchType::kPSL;
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt({local_psl_match});
+
+  AcceptDialogAndExpectTrustedVaultRecovery(kUsername2, kPassword,
+                                            raw_form_manager);
+}
+
+// Clearing the username matches stored credentials by password value, so an
+// account-store credential with the same password still requires trusted vault
+// recovery.
+TEST_F(
+    SaveUpdatePasswordMessageDelegateTrustedVaultEditDialogTest,
+    DialogClearUsernameWithMatchingPasswordAccountCredential_StartsTrustedVaultRecovery) {
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  auto [raw_form_manager, mock_dialog] =
+      OpenEditDialogFromTrustedVaultSavePrompt(
+          {CreatePasswordForm(u"", kPassword, /*is_account_store=*/false),
+           CreatePasswordForm(kUsername2, kPassword,
+                              /*is_account_store=*/true)});
+
+  AcceptDialogAndExpectTrustedVaultRecovery(u"", kPassword, raw_form_manager);
 }

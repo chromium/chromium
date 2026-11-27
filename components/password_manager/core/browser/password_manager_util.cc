@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -37,11 +38,13 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -271,6 +274,36 @@ GetRecoverableErrorBlockingPasswordSavingOnDesktop(
 
 }  // namespace
 
+bool IsLocalPasswordUpdate(
+    const password_manager::PasswordFormManagerForUI* form_manager) {
+  if (!form_manager) {
+    return false;
+  }
+  if (form_manager->IsPasswordUpdate()) {
+    return !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount();
+  }
+  const base::span<const StoredCredential> best_matches =
+      form_manager->GetBestMatches();
+  if (best_matches.empty()) {
+    return false;
+  }
+  const PasswordForm& pending_credentials =
+      form_manager->GetPendingCredentials();
+  if (pending_credentials.type == PasswordForm::Type::kGenerated) {
+    return false;
+  }
+  if (GetMatchForUpdating(pending_credentials,
+                          password_manager::AccountStoreMatches(best_matches),
+                          /*username_updated_in_bubble=*/true)) {
+    return false;
+  }
+  const StoredCredential* profile_match = GetMatchForUpdating(
+      pending_credentials, password_manager::ProfileStoreMatches(best_matches),
+      /*username_updated_in_bubble=*/true);
+  return profile_match != nullptr &&
+         profile_match->password_value == pending_credentials.password_value;
+}
+
 std::optional<password_manager::ActionableError>
 GetRecoverableErrorBlockingPasswordSaving(
     const password_manager::PasswordManagerClient* client,
@@ -284,8 +317,7 @@ GetRecoverableErrorBlockingPasswordSaving(
 
   // The updates of the locally stored passwords should not be blocked by
   // password store errors.
-  if (form_manager && form_manager->IsPasswordUpdate() &&
-      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
+  if (IsLocalPasswordUpdate(form_manager)) {
     return std::nullopt;
   }
 
@@ -314,8 +346,7 @@ bool IsSavingBlockedByRecoverableError(
   }
   // The updates of the locally stored passwords should not be blocked by
   // recoverable errors.
-  if (form_manager && form_manager->IsPasswordUpdate() &&
-      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
+  if (IsLocalPasswordUpdate(form_manager)) {
     return false;
   }
   const password_manager::PasswordStoreInterface* account_store =

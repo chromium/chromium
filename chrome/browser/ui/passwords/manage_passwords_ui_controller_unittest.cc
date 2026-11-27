@@ -316,7 +316,6 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
   auto form_manager = std::make_unique<TestMockPasswordFormManagerForUI>();
   form_manager->stored_best = password_manager::FromPasswordForms(best_matches);
   EXPECT_CALL(*form_manager, GetBestMatches())
-      .Times(AtMost(3))
       .WillRepeatedly(Return(
           base::span<const StoredCredential>(form_manager->stored_best)));
   EXPECT_CALL(*form_manager, GetFederatedMatches())
