@@ -299,10 +299,6 @@ message SystemProfileProto {
     // The amount of RAM present on the system, in megabytes.
     int64 system_ram_mb = 2;
 
-    // The base memory address that chrome.dll was loaded at.
-    // (Logged only on Windows.)
-    int64 dll_base = 3;
-
     // The hardware_class describes the current machine model, e.g. "MacPro1,1"
     // on Mac, "iPhone9,3" on iOS or "Nexus 5" on Android. Implemented on OS X,
     // iOS, Android, Chrome OS.
