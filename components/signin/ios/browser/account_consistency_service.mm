@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
@@ -23,7 +22,6 @@
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
 #import "components/signin/core/browser/signin_header_helper.h"
 #import "components/signin/ios/browser/features.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "google_apis/gaia/gaia_constants.h"
@@ -278,15 +276,9 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
   DLOG_IF(ERROR, !params.continue_url.empty() && !continue_url.is_valid())
       << "Invalid continuation URL: \"" << continue_url << "\"";
   switch (params.service_type) {
-    case signin::GAIA_SERVICE_TYPE_INCOGNITO: {
-      if (base::FeatureList::IsEnabled(
-              switches::kVerifyRequestInitiatorForMirrorHeaders)) {
-        CheckInitiatorAndMaybeGoIncognito(continue_url);
-      } else if (delegate_) {
-        delegate_->OnGoIncognito(continue_url, web_state_);
-      }
+    case signin::GAIA_SERVICE_TYPE_INCOGNITO:
+      CheckInitiatorAndMaybeGoIncognito(continue_url);
       break;
-    }
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
     case signin::GAIA_SERVICE_TYPE_ADDSESSION:
       // This situation is only possible if the all cookies have been deleted by

@@ -1002,8 +1002,6 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsIgnoredInSubframe) {
 // domain is processed.
 TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsIncognitoFromGoogleInitiator) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kVerifyRequestInitiatorForMirrorHeaders);
   base::HistogramTester histogram_tester;
   web_state_.SetCurrentURL(GURL("https://google.com/"));
 
@@ -1031,8 +1029,6 @@ TEST_F(AccountConsistencyServiceTest,
 // domain is processed.
 TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsIncognitoFromYoutubeInitiator) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kVerifyRequestInitiatorForMirrorHeaders);
   base::HistogramTester histogram_tester;
   web_state_.SetCurrentURL(GURL("https://youtube.com/"));
 
@@ -1060,8 +1056,6 @@ TEST_F(AccountConsistencyServiceTest,
 // non-Google domain is ignored.
 TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsIncognitoFromNonGoogleInitiator) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kVerifyRequestInitiatorForMirrorHeaders);
   base::HistogramTester histogram_tester;
   web_state_.SetCurrentURL(GURL("https://example.com/"));
 
@@ -1089,8 +1083,6 @@ TEST_F(AccountConsistencyServiceTest,
 // initiator URL is ignored.
 TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsIncognitoFromEmptyInitiator) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kVerifyRequestInitiatorForMirrorHeaders);
   base::HistogramTester histogram_tester;
   web_state_.SetCurrentURL(GURL());
 
@@ -1118,8 +1110,6 @@ TEST_F(AccountConsistencyServiceTest,
 // Google-associated domain (not google or youtube) is ignored.
 TEST_F(AccountConsistencyServiceTest,
        ChromeManageAccountsIncognitoFromGoogleAssociatedInitiator) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kVerifyRequestInitiatorForMirrorHeaders);
   base::HistogramTester histogram_tester;
   web_state_.SetCurrentURL(GURL("https://storage.googleapis.com/"));
 
