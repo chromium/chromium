@@ -1814,7 +1814,13 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
 }
 
 // Test of Ctrl-K focus omnibox + activates default search shortcut.
-IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, FocusSearch) {
+// TODO(crbug.com/590998326): Flaky on Mac on M158.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FocusSearch DISABLED_FocusSearch
+#else
+#define MAYBE_FocusSearch FocusSearch
+#endif
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, MAYBE_FocusSearch) {
   FAILS_IN_MODE(Mode::kFull,
                 "SearchboxHandler::QueryAutocomplete overwrites "
                 "KEYBOARD_SHORTCUT KeywordModeEntryMethod, breaking clearing "
