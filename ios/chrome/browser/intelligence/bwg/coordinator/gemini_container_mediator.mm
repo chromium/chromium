@@ -442,6 +442,7 @@ class GeminiContainerMediatorTabHelperObserver
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
     [_sessionMetricsManager sessionDismissed];
   }
+  [_gatewayManager.sessionHandler recordSessionDismissed];
 
   feature_engagement::Tracker* tracker =
       _profile ? feature_engagement::TrackerFactory::GetForProfile(_profile)

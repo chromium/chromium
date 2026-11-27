@@ -51,6 +51,11 @@ class Tracker;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Records end-of-session metrics and resets session state if a session is
+// currently active. No-ops if no session appeared or if metrics were already
+// recorded for the session.
+- (void)recordSessionDismissed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SESSION_HANDLER_H_
