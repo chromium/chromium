@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -595,6 +596,78 @@ TEST_F(BackForwardCacheVisibilityPressureTest, VisibilityChangeUnderPressure) {
   contents()->WasHidden();
   run_loop.Run();
   EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+}
+
+TEST_F(BackForwardCacheVisibilityPressureTest,
+       InFlightRestoreEntryNotEvictedByCacheSizeLimit) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  base::WeakPtr<RenderFrameHostImpl> rfh0 =
+      contents()->GetPrimaryMainFrame()->GetWeakPtr();
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  base::WeakPtr<RenderFrameHostImpl> rfh1 =
+      contents()->GetPrimaryMainFrame()->GetWeakPtr();
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  base::WeakPtr<RenderFrameHostImpl> rfh2 =
+      contents()->GetPrimaryMainFrame()->GetWeakPtr();
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  ASSERT_EQ(bfcache_impl.GetEntries().size(), 3u);
+  ASSERT_EQ(bfcache_impl.GetEntries().front()->render_frame_host(), rfh2.get());
+  ASSERT_EQ(bfcache_impl.GetEntries().back()->render_frame_host(), rfh0.get());
+
+  contents()->WasShown();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  ASSERT_EQ(bfcache_impl.GetEntries().size(), 3u);
+
+  // Start a history navigation back to the oldest entry (`rfh0`, offset -3).
+  auto simulator = NavigationSimulator::CreateHistoryNavigation(
+      -3, contents(), /*is_renderer_initiated=*/false);
+  simulator->Start();
+
+  NavigationRequest* in_flight_request =
+      contents()->GetPrimaryFrameTree().root()->navigation_request();
+  ASSERT_TRUE(in_flight_request);
+  ASSERT_EQ(in_flight_request->GetRenderFrameHostRestoredFromBackForwardCache(),
+            rfh0.get());
+
+  // Clear `pending_entry_` while the restore NavigationRequest remains active
+  // on the primary main FrameTreeNode.
+  contents()->GetController().DiscardNonCommittedEntries();
+  ASSERT_FALSE(contents()->GetController().GetPendingEntry());
+  ASSERT_TRUE(contents()->GetPrimaryFrameTree().root()->HasNavigation());
+
+  // Hide the tab (background moderate limit = 1). Without a pending entry,
+  // `WasHidden()` synchronously runs `EnforceCacheSizeLimit()`, which must
+  // evict the excess non-restoring entry (`rfh1`) while keeping `rfh2` (within
+  // limit 1) and skipping the in-flight restoring entry (`rfh0`).
+  contents()->WasHidden();
+
+  ASSERT_TRUE(rfh2);
+  EXPECT_FALSE(rfh2->is_evicted_from_back_forward_cache());
+  ASSERT_TRUE(rfh1);
+  EXPECT_TRUE(rfh1->is_evicted_from_back_forward_cache());
+  ASSERT_TRUE(rfh0);
+  EXPECT_FALSE(rfh0->is_evicted_from_back_forward_cache());
+  EXPECT_EQ(contents()->GetPrimaryFrameTree().root()->navigation_request(),
+            in_flight_request);
+
+  // Under critical memory pressure (limit = 0), all non-restoring entries
+  // (`rfh2` and `rfh1`) are evicted and destroyed, while the in-flight
+  // restoring entry `rfh0` remains un-evicted and the restore request is not
+  // reset or restarted.
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_FALSE(rfh2);
+  EXPECT_FALSE(rfh1);
+  ASSERT_TRUE(rfh0);
+  EXPECT_FALSE(rfh0->is_evicted_from_back_forward_cache());
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+  EXPECT_EQ(contents()->GetPrimaryFrameTree().root()->navigation_request(),
+            in_flight_request);
+
+  simulator->Commit();
+  EXPECT_EQ(contents()->GetPrimaryMainFrame(), rfh0.get());
 }
 
 TEST_F(BackForwardCacheMemoryPressureStatefulTest,

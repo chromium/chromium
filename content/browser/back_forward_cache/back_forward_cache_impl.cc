@@ -1475,6 +1475,13 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
   using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
   using Level = BackForwardCachePrioritizedEntryExperimentLevel;
 
+  NavigationRequest* in_flight_request =
+      web_contents_->GetPrimaryFrameTree().root()->navigation_request();
+  RenderFrameHostImpl* restoring_rfh =
+      in_flight_request
+          ? in_flight_request->GetRenderFrameHostRestoredFromBackForwardCache()
+          : nullptr;
+
   size_t count = 0;
   bool did_evict_any_entry = false;
   auto prioritized_level = GetBackForwardCachePrioritizedEntryExperimentLevel();
@@ -1494,6 +1501,11 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     RenderFrameHostImpl* rfh = stored_entry->render_frame_host();
     // Skip the entry if it's already evicted.
     if (rfh->is_evicted_from_back_forward_cache()) {
+      continue;
+    }
+    // Skip the entry if an in-flight navigation is currently restoring it, so
+    // cache-size pruning never cancels or restarts an active BFCache restore.
+    if (rfh == restoring_rfh) {
       continue;
     }
     // Skip the entry if it doesn't have foregrounded progress and the eviction
@@ -1534,6 +1546,8 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
   if (
       // the prioritized entry is set
       prioritized_entry_ != entries_.end() &&
+      // it is not currently being restored by an in-flight navigation
+      prioritized_entry_->get()->render_frame_host() != restoring_rfh &&
       // the cache limit is 0 (e.g. due to critical memory pressure)
       limit == 0 &&
       // the level is `prioritize-unless-should-clear-all-and-no-eviction`
