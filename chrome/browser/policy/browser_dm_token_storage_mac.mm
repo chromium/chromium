@@ -28,6 +28,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "crypto/obsolete/sha1.h"
 
 namespace policy {
@@ -44,6 +45,11 @@ namespace {
 
 const char kDmTokenBaseDir[] =
     FILE_PATH_LITERAL("Google/Chrome Cloud Enrollment/");
+// With the fake DM server, the DM token is in the user data directory, as on
+// Linux. All browsers of the OS user share the default directory, so a test
+// browser must not use it.
+const char kFakeDmserverDmTokenBaseDir[] =
+    FILE_PATH_LITERAL("Policy/Enrollment/");
 const CFStringRef kEnrollmentTokenPolicyName =
     CFSTR("CloudManagementEnrollmentToken");
 const char kEnrollmentTokenFilePath[] =
@@ -73,13 +79,17 @@ enum EnrollmentTokenLocation {
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
                         bool create_dir) {
-  if (!base::PathService::Get(base::DIR_APP_DATA, token_file_path)) {
+  const bool use_user_data_dir = IsFakeDmserverEnabled();
+  const int base_dir_key =
+      use_user_data_dir ? int{chrome::DIR_USER_DATA} : int{base::DIR_APP_DATA};
+  if (!base::PathService::Get(base_dir_key, token_file_path)) {
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
-        << "Failed to get app data directory path.";
+        << "Failed to get the DM token base directory path.";
     return false;
   }
 
-  *token_file_path = token_file_path->Append(kDmTokenBaseDir);
+  *token_file_path = token_file_path->Append(
+      use_user_data_dir ? kFakeDmserverDmTokenBaseDir : kDmTokenBaseDir);
 
   if (create_dir && !base::CreateDirectory(*token_file_path)) {
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)

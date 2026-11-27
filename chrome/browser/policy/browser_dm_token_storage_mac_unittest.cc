@@ -15,8 +15,14 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_runner.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/policy/buildflags/buildflags.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/obsolete/sha1.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,13 +78,19 @@ class TestStoreDMTokenDelegate {
   base::RunLoop run_loop_;
 };
 
+// Tests that, without the fake DM server, the DM token is in the directory that
+// the browsers of the OS user share, and not in the user data directory.
 TEST_F(BrowserDMTokenStorageMacTest, SaveDMToken) {
   std::unique_ptr<base::ScopedPathOverride> path_override;
   base::ScopedTempDir fake_app_data_dir;
+  base::ScopedTempDir fake_user_data_dir;
 
   ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
   path_override = std::make_unique<base::ScopedPathOverride>(
       base::DIR_APP_DATA, fake_app_data_dir.GetPath());
+  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
+                                              fake_user_data_dir.GetPath());
 
   TestStoreDMTokenDelegate callback_delegate;
   BrowserDMTokenStorageMac storage_delegate;
@@ -105,6 +117,7 @@ TEST_F(BrowserDMTokenStorageMacTest, SaveDMToken) {
   std::string dm_token;
   ASSERT_TRUE(base::ReadFileToString(dm_token_file_path, &dm_token));
   EXPECT_EQ(kDMToken, dm_token);
+  EXPECT_TRUE(base::IsDirectoryEmpty(fake_user_data_dir.GetPath()));
 }
 
 TEST_F(BrowserDMTokenStorageMacTest, DeleteDMToken) {
@@ -200,5 +213,75 @@ TEST_F(BrowserDMTokenStorageMacTest, InitDMTokenWithoutDirectory) {
   EXPECT_EQ(std::string(), storage.InitDMToken());
   EXPECT_FALSE(base::PathExists(dm_token_dir_path));
 }
+
+#if BUILDFLAG(ALLOW_FAKE_DMSERVER)
+namespace {
+
+constexpr char kOtherDMToken[] = "other-fake-dm-token";
+
+base::FilePath AppDataDmTokenPath(const base::FilePath& app_data_dir,
+                                  const std::string& client_id) {
+  return app_data_dir.Append(kDmTokenBaseDir)
+      .Append(base::Base64UrlEncode(
+          crypto::obsolete::Sha1::HashForTesting(base::as_byte_span(client_id)),
+          base::Base64UrlEncodePolicy::OMIT_PADDING));
+}
+
+bool RunStoreTask(scoped_refptr<base::TaskRunner> task_runner,
+                  BrowserDMTokenStorage::StoreTask task) {
+  base::test::TestFuture<bool> success;
+  task_runner->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                          success.GetCallback());
+  return success.Get();
+}
+
+std::string ReadFile(const base::FilePath& path) {
+  std::string content;
+  EXPECT_TRUE(base::ReadFileToString(path, &content)) << path;
+  return content;
+}
+
+}  // namespace
+
+// Tests that the fake DM server cannot read, replace, or delete the DM token
+// that the browsers of the OS user share.
+TEST_F(BrowserDMTokenStorageMacTest, DMTokenInUserDataDirWithFakeDmserver) {
+  base::ScopedTempDir app_data_dir;
+  base::ScopedTempDir user_data_dir;
+  ASSERT_TRUE(app_data_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride app_data_override(base::DIR_APP_DATA,
+                                             app_data_dir.GetPath());
+  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
+                                              user_data_dir.GetPath());
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kUseFakeDmserver);
+
+  BrowserDMTokenStorageMac storage;
+  const std::string client_id = storage.InitClientId();
+  const base::FilePath shared_token_path =
+      AppDataDmTokenPath(app_data_dir.GetPath(), client_id);
+  ASSERT_TRUE(base::CreateDirectory(shared_token_path.DirName()));
+  ASSERT_TRUE(base::WriteFile(shared_token_path, kOtherDMToken));
+  const base::FilePath token_path = user_data_dir.GetPath()
+                                        .Append("Policy/Enrollment")
+                                        .Append(shared_token_path.BaseName());
+
+  EXPECT_EQ(std::string(), storage.InitDMToken());
+
+  ASSERT_TRUE(RunStoreTask(storage.SaveDMTokenTaskRunner(),
+                           storage.SaveDMTokenTask(kDMToken, client_id)));
+  EXPECT_EQ(kDMToken, ReadFile(token_path));
+  EXPECT_EQ(kDMToken, storage.InitDMToken());
+  EXPECT_EQ(kOtherDMToken, ReadFile(shared_token_path));
+
+  ASSERT_TRUE(RunStoreTask(storage.SaveDMTokenTaskRunner(),
+                           storage.DeleteDMTokenTask(client_id)));
+  EXPECT_FALSE(base::PathExists(token_path));
+  EXPECT_EQ(std::string(), storage.InitDMToken());
+  EXPECT_EQ(kOtherDMToken, ReadFile(shared_token_path));
+}
+#endif  // BUILDFLAG(ALLOW_FAKE_DMSERVER)
 
 }  // namespace policy
