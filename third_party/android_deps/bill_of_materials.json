@@ -1362,7 +1362,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.5.0"
+        "version": "1.6.0-alpha01"
     },
     {
         "name": "caffeine",
