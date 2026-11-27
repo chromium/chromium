@@ -116,11 +116,12 @@ class CORE_EXPORT [[nodiscard]] NthIndexCache final {
   struct Key : public GarbageCollected<Key> {
     Key(Node* parent_arg, const CSSSelectorList* filter_arg)
         : parent(parent_arg), filter(filter_arg) {}
-    Key(Node* parent_arg, String child_tag_name_arg)
+    Key(Node* parent_arg, const QualifiedName& child_tag_name_arg)
         : parent(parent_arg), child_tag_name(child_tag_name_arg) {}
 
     Member<Node> parent;
-    String child_tag_name;  // Empty if not :nth-of-type.
+    QualifiedName child_tag_name =
+        QualifiedName::Null();  // Null if not :nth-of-type.
     // Can be nullptr. Always nullptr if :nth-of-type, which filters on
     // child_tag_name instead.
     Member<const CSSSelectorList> filter;
@@ -132,7 +133,7 @@ class CORE_EXPORT [[nodiscard]] NthIndexCache final {
       // (theoretically) less effective caching between different selectors, but
       // is simpler.
       return parent == other.parent && filter == other.filter &&
-             child_tag_name == other.child_tag_name;
+             child_tag_name.Matches(other.child_tag_name);
     }
   };
 

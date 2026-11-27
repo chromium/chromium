@@ -75,4 +75,57 @@ TEST_F(QualifiedNameTest, TagToQualifiedName) {
             &html_names::kXmpTag);
 }
 
+TEST_F(QualifiedNameTest, HashIgnoringPrefixAgreesWithMatches) {
+  const AtomicString kNsA("urn:example:a");
+  const AtomicString kNsB("urn:example:b");
+  const AtomicString kPrefix1("p1");
+  const AtomicString kPrefix2("p2");
+
+  const QualifiedName kNames[] = {
+      QualifiedName::Null(),
+      QualifiedName(g_null_atom, g_null_atom, g_null_atom),
+      html_names::kDivTag,
+      QualifiedName(kPrefix1, AtomicString("div"), html_names::xhtmlNamespaceURI),
+      QualifiedName(kPrefix2, AtomicString("div"), html_names::xhtmlNamespaceURI),
+      QualifiedName(g_null_atom, AtomicString("DIV"), kNsA),
+      QualifiedName(kPrefix1, AtomicString("DIV"), kNsA),
+      QualifiedName(g_null_atom, AtomicString("div"), kNsA),
+      QualifiedName(g_null_atom, AtomicString("div"), kNsB),
+      QualifiedName(g_null_atom, AtomicString("div"), g_null_atom),
+      QualifiedName(kPrefix1, AtomicString("div"), g_empty_atom),
+      html_names::kATag,
+      svg_names::kATag,
+  };
+
+  for (const QualifiedName& a : kNames) {
+    for (const QualifiedName& b : kNames) {
+      if (a.Matches(b)) {
+        EXPECT_EQ(a.HashIgnoringPrefix(), b.HashIgnoringPrefix())
+            << a << " vs " << b;
+      }
+    }
+  }
+
+  // Spot-check key pairs directly.
+  EXPECT_TRUE(html_names::kDivTag.Matches(
+      QualifiedName(kPrefix1, AtomicString("div"), html_names::xhtmlNamespaceURI)));
+  EXPECT_EQ(html_names::kDivTag.HashIgnoringPrefix(),
+            QualifiedName(kPrefix1, AtomicString("div"), html_names::xhtmlNamespaceURI)
+                .HashIgnoringPrefix());
+
+  const QualifiedName foreign_div(g_null_atom, AtomicString("DIV"), kNsA);
+  EXPECT_FALSE(html_names::kDivTag.Matches(foreign_div));
+  EXPECT_NE(html_names::kDivTag.HashIgnoringPrefix(),
+            foreign_div.HashIgnoringPrefix());
+
+  EXPECT_FALSE(html_names::kATag.Matches(svg_names::kATag));
+  EXPECT_NE(html_names::kATag.HashIgnoringPrefix(),
+            svg_names::kATag.HashIgnoringPrefix());
+
+  const QualifiedName ns_a_div(g_null_atom, AtomicString("div"), kNsA);
+  const QualifiedName ns_b_div(g_null_atom, AtomicString("div"), kNsB);
+  EXPECT_FALSE(ns_a_div.Matches(ns_b_div));
+  EXPECT_NE(ns_a_div.HashIgnoringPrefix(), ns_b_div.HashIgnoringPrefix());
+}
+
 }  // namespace blink

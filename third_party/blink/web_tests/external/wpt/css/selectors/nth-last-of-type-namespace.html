@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Selectors: :nth-last-of-type() distinguishes element namespaces</title>
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#the-nth-last-of-type-pseudo">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #html-vs-foreign > :nth-of-type(1) { --first: yes; }
+  #html-vs-foreign > :nth-last-of-type(1) { --last: yes; }
+  #foreign-vs-foreign > :nth-of-type(1) { --first: yes; }
+  #foreign-vs-foreign > :nth-last-of-type(1) { --last: yes; }
+</style>
+<div id="html-vs-foreign"></div>
+<div id="foreign-vs-foreign"></div>
+<script>
+test(() => {
+  const container = document.getElementById('html-vs-foreign');
+  for (let i = 0; i < 40; i++) {
+    container.appendChild(document.createElementNS('urn:example:foreign', 'DIV'));
+  }
+  const htmlDiv = document.createElement('div');
+  container.appendChild(htmlDiv);
+
+  const style = getComputedStyle(htmlDiv);
+  assert_equals(style.getPropertyValue('--first').trim(), 'yes');
+  assert_equals(style.getPropertyValue('--last').trim(), 'yes');
+  assert_true(htmlDiv.matches(':nth-of-type(1)'));
+  assert_true(htmlDiv.matches(':nth-last-of-type(1)'));
+}, 'HTML element and foreign element with matching tagName do not share :nth-of-type cache');
+
+test(() => {
+  const container = document.getElementById('foreign-vs-foreign');
+  for (let i = 0; i < 40; i++) {
+    container.appendChild(document.createElementNS('urn:example:a', 'item'));
+  }
+  const itemB = document.createElementNS('urn:example:b', 'item');
+  container.appendChild(itemB);
+
+  const style = getComputedStyle(itemB);
+  assert_equals(style.getPropertyValue('--first').trim(), 'yes');
+  assert_equals(style.getPropertyValue('--last').trim(), 'yes');
+  assert_true(itemB.matches(':nth-of-type(1)'));
+  assert_true(itemB.matches(':nth-last-of-type(1)'));
+}, 'Foreign elements in different namespaces with same localName do not share :nth-of-type cache');
+</script>

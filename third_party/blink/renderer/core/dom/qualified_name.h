@@ -152,6 +152,9 @@ class CORE_EXPORT QualifiedName {
                                     NamespaceURI() == other.NamespaceURI());
   }
 
+  // Returns a hash consistent with Matches() (ignoring the prefix).
+  uint32_t HashIgnoringPrefix() const;
+
   bool HasPrefix() const { return impl_->prefix_ != g_null_atom; }
   void SetPrefix(const AtomicString& prefix) {
     *this = QualifiedName(prefix, LocalName(), NamespaceURI());
@@ -299,6 +302,15 @@ struct HashTraits<QualifiedName> : GenericHashTraits<QualifiedName> {
         slot.impl_);
   }
 };
+
+inline uint32_t QualifiedName::HashIgnoringPrefix() const {
+  if (!HasPrefix()) {
+    return blink::GetHash(impl_.get());
+  }
+  QualifiedNameComponents components = {nullptr, impl_->local_name_.Impl(),
+                                        impl_->namespace_.Impl()};
+  return HashComponents(components);
+}
 
 }  // namespace blink
 

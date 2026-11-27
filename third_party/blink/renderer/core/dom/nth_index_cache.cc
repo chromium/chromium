@@ -38,8 +38,8 @@ uint32_t NthIndexCache::Key::GetHash() const {
   if (filter != nullptr) {
     AddIntToHash(hash, blink::GetHash(filter));
   }
-  if (!child_tag_name.empty()) {
-    AddIntToHash(hash, blink::GetHash(child_tag_name));
+  if (!child_tag_name.IsNull()) {
+    AddIntToHash(hash, child_tag_name.HashIgnoringPrefix());
   }
   return hash;
 }
@@ -224,9 +224,12 @@ unsigned NthIndexCache::NthOfTypeIndex(Element& element) {
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode(), element.tagName()));
+        Key(element.parentNode(), element.TagQName()));
     if (it != nth_index_cache->cache_->end()) {
-      return it->value->NthOfTypeIndex(element);
+      unsigned result = it->value->NthOfTypeIndex(element);
+      [[maybe_unused]] unsigned sibling_count = 0;
+      DCHECK_EQ(result, UncachedNthOfTypeIndex(element, sibling_count));
+      return result;
     }
   }
   unsigned sibling_count = 0;
@@ -244,9 +247,12 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode(), element.tagName()));
+        Key(element.parentNode(), element.TagQName()));
     if (it != nth_index_cache->cache_->end()) {
-      return it->value->NthLastOfTypeIndex(element);
+      unsigned result = it->value->NthLastOfTypeIndex(element);
+      [[maybe_unused]] unsigned sibling_count = 0;
+      DCHECK_EQ(result, UncachedNthLastOfTypeIndex(element, sibling_count));
+      return result;
     }
   }
   unsigned sibling_count = 0;
@@ -282,7 +288,7 @@ void NthIndexCache::CacheNthOfTypeIndexDataForParent(Element& element) {
   DCHECK(element.parentNode());
   EnsureCache();
   auto add_result = cache_->insert(
-      MakeGarbageCollected<Key>(element.parentNode(), element.tagName()),
+      MakeGarbageCollected<Key>(element.parentNode(), element.TagQName()),
       MakeGarbageCollected<NthIndexData>(*element.parentNode(),
                                          element.TagQName()));
   DCHECK(add_result.is_new_entry);
