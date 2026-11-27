@@ -765,6 +765,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="ADDRESS_HOME_CITY"/>
   <variant name="ADDRESS_HOME_COUNTRY"/>
   <variant name="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
+  <variant name="ADDRESS_HOME_DEPENDENT_SUB_LOCALITY"/>
   <variant name="ADDRESS_HOME_FLOOR"/>
   <variant name="ADDRESS_HOME_HOUSE_NUMBER"/>
   <variant name="ADDRESS_HOME_LANDMARK"/>
