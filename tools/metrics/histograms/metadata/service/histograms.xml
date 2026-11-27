@@ -191,19 +191,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ServiceWorker.AddNonWindowClient.SharedWorkerScript.IsBlob"
-    enum="Boolean" expires_after="2025-09-12">
-  <owner>yyanagisawa@google.com</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    True if Clients.matchAll() captures SharedWorker with blob URL.
-
-    This is recorded when Clients.matchAll() is called and SharedWorker is found
-    as a client. The entry will we added per SharedWorker entries regardless of
-    its number.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.AutoPreload.Dispatched" enum="Boolean"
     expires_after="2027-06-01">
   <owner>sisidovski@chromium.org</owner>
