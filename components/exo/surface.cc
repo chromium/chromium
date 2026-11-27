@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <ranges>
 #include <string_view>
 #include <utility>
@@ -113,18 +114,17 @@ bool ListContainsEntry(T& list, U key) {
   return FindListEntry(list, key) != list.end();
 }
 
+std::optional<bool> g_is_blocked_device;
+
 // TODO(crbug.com/369003507): Remove this check once we found the root
 // cause of crash on specific hatch platform.
 bool ShouldDisableOverlay(viz::SharedImageFormat format) {
-  static bool is_blocked_device = false;
-  static bool is_initialized = false;
-  if (!is_initialized) {
-    is_initialized = true;
-    is_blocked_device = std::ranges::contains(
+  if (!g_is_blocked_device.has_value()) {
+    g_is_blocked_device = std::ranges::contains(
         kOverlayBlockedDevices, base::SysInfo::HardwareModelName());
   }
 
-  if (!is_blocked_device) {
+  if (!*g_is_blocked_device) {
     return false;
   }
 
@@ -2025,6 +2025,11 @@ std::string Surface::DumpDebugInfo() const {
                  state_.buffer->buffer()->GetFormat().ToString() +
                  (state_.buffer->buffer()->GetFormat().HasAlpha() ? "(a)" : ""))
               : "");
+}
+
+// static
+void Surface::ResetDisableOverlayCacheForTesting() {
+  g_is_blocked_device.reset();
 }
 
 }  // namespace exo

@@ -495,6 +495,9 @@ class Surface final : public ui::PropertyHandler {
   // Dump Debug Info.
   std::string DumpDebugInfo() const;
 
+  // Resets the cached device-blocklist check used by ShouldDisableOverlay().
+  static void ResetDisableOverlayCacheForTesting();
+
  private:
   struct State {
     State();

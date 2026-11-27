@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -1221,15 +1222,21 @@ TEST_P(SurfaceTest, SetAlpha) {
 // TODO(crbug.com/369003507): This unit test is checking
 // temporarily disable non YUV overlays on hatch devices
 TEST_P(SurfaceTest, DisableNonYUVOverlays) {
+  // Reset ShouldDisableOverlay()'s cached device check before and after the
+  // ScopedChromeOSVersionInfo override so test order in the batch does not
+  // affect this test or leak into subsequent tests.
+  base::ScopedClosureRunner reset_overlay_cache(
+      base::BindOnce(&Surface::ResetDisableOverlayCacheForTesting));
+  base::test::ScopedChromeOSVersionInfo version_info(
+      "CHROMEOS_RELEASE_BOARD=DRALLION\n", base::Time());
+  Surface::ResetDisableOverlayCacheForTesting();
+
   gfx::Size buffer_size(2, 2);
   auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
       buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-
-  base::test::ScopedChromeOSVersionInfo version_info(
-      "CHROMEOS_RELEASE_BOARD=DRALLION\n", base::Time());
 
   {
     surface->Attach(buffer_non_yuv.get());
