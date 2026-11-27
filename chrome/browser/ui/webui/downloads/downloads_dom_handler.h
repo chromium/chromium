@@ -14,9 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom-forward.h"
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
+#include "chrome/browser/ui/webui/downloads/downloads_ui_platform_handlers.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -124,7 +124,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   // ignored (if all preconditions are met).
   void MaybeTriggerDownloadWarningHatsSurvey(
       download::DownloadItem* item,
-      DownloadWarningHatsType survey_type);
+      downloads::WarningSurveyType survey_type);
 
   // Called when the downloads page is dismissed by closing the tab, or
   // navigating the tab to another page.

@@ -4,17 +4,24 @@
 
 #include "chrome/browser/ui/webui/downloads/downloads_dom_handler.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/mock_downloads_page.h"
@@ -26,6 +33,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_renderer_host.h"
@@ -35,6 +43,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -86,12 +95,18 @@ class DownloadsDOMHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return &web_ui_; }
 
  protected:
+  explicit DownloadsDOMHandlerTest(base::test::ScopedFeatureList feature_list)
+      : feature_list_(std::move(feature_list)) {}
+
+  // NOTE: The initialization order of these members matters. `feature_list_`
+  // must be initialized before `task_environment_` and `profile_` (and
+  // destroyed after them).
+  base::test::ScopedFeatureList feature_list_;
   testing::StrictMock<MockPage> page_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  // NOTE: The initialization order of these members matters.
   TestingProfile profile_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -206,8 +221,8 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
     : public DownloadsDOMHandlerTest {
  public:
   DownloadsDOMHandlerWithFakeSafeBrowsingTest()
-      : test_safe_browsing_factory_(
-            new safe_browsing::TestSafeBrowsingServiceFactory()) {}
+      : DownloadsDOMHandlerWithFakeSafeBrowsingTest(
+            base::test::ScopedFeatureList()) {}
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
@@ -231,6 +246,12 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
   }
 
  protected:
+  explicit DownloadsDOMHandlerWithFakeSafeBrowsingTest(
+      base::test::ScopedFeatureList feature_list)
+      : DownloadsDOMHandlerTest(std::move(feature_list)),
+        test_safe_browsing_factory_(
+            new safe_browsing::TestSafeBrowsingServiceFactory()) {}
+
   void SetUpDangerousDownload() {
     EXPECT_CALL(dangerous_download_, IsDangerous())
         .WillRepeatedly(Return(true));
@@ -499,4 +520,96 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
   handler.SaveDangerousFromDialogRequiringGesture("1");
+}
+
+class DownloadsDOMHandlerWithFakeSafeBrowsingTestHats
+    : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
+ public:
+  void SetUp() override {
+    DownloadsDOMHandlerWithFakeSafeBrowsingTest::SetUp();
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockHatsService)));
+  }
+
+  void TearDown() override {
+    mock_hats_service_ = nullptr;
+    DownloadsDOMHandlerWithFakeSafeBrowsingTest::TearDown();
+  }
+
+ protected:
+  explicit DownloadsDOMHandlerWithFakeSafeBrowsingTestHats(
+      DownloadWarningHatsType survey_type)
+      : DownloadsDOMHandlerWithFakeSafeBrowsingTest(
+            CreateFeatureList(survey_type)) {}
+
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+
+ private:
+  static base::test::ScopedFeatureList CreateFeatureList(
+      DownloadWarningHatsType survey_type) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        safe_browsing::kDownloadWarningSurvey,
+        {{safe_browsing::kDownloadWarningSurveyType.name,
+          base::NumberToString(static_cast<int>(survey_type))}});
+    return feature_list;
+  }
+};
+
+class DownloadsDOMHandlerWithFakeSafeBrowsingTestHeedHats
+    : public DownloadsDOMHandlerWithFakeSafeBrowsingTestHats {
+ public:
+  DownloadsDOMHandlerWithFakeSafeBrowsingTestHeedHats()
+      : DownloadsDOMHandlerWithFakeSafeBrowsingTestHats(
+            DownloadWarningHatsType::kDownloadsPageHeed) {}
+};
+
+class DownloadsDOMHandlerWithFakeSafeBrowsingTestIgnoreHats
+    : public DownloadsDOMHandlerWithFakeSafeBrowsingTestHats {
+ public:
+  DownloadsDOMHandlerWithFakeSafeBrowsingTestIgnoreHats()
+      : DownloadsDOMHandlerWithFakeSafeBrowsingTestHats(
+            DownloadWarningHatsType::kDownloadsPageIgnore) {}
+};
+
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestHeedHats,
+       DiscardDangerous_LaunchesHeedHatsSurvey) {
+  SetUpDangerousDownload();
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerDownloadWarningPageHeed, testing::_,
+                   testing::_, testing::_, testing::_, testing::_, testing::_));
+  EXPECT_CALL(dangerous_download_, Remove());
+  handler.DiscardDangerous("1");
+}
+
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestIgnoreHats,
+       DestroyHandler_LaunchesIgnoreHatsSurvey) {
+  SetUpDangerousDownload();
+  ON_CALL(dangerous_download_, GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  ON_CALL(dangerous_download_, GetFileNameToReportUser())
+      .WillByDefault(Return(base::FilePath(FILE_PATH_LITERAL("foo.pdf"))));
+  ON_CALL(dangerous_download_, GetRequestInitiator())
+      .WillByDefault(ReturnRefOfCopy(std::optional<url::Origin>()));
+  ON_CALL(*manager(), GetAllDownloads(testing::_))
+      .WillByDefault([this](content::DownloadManager::DownloadVector* vec) {
+        vec->push_back(&dangerous_download_);
+      });
+
+  EXPECT_CALL(page_, InsertItems(0, testing::_));
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerDownloadWarningPageIgnore, testing::_,
+                   testing::_, testing::_, testing::_, testing::_, testing::_));
+  {
+    TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                    web_ui());
+    handler.GetDownloads({});
+  }
 }

@@ -30,15 +30,12 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
-#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui_platform_handlers.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
@@ -51,9 +48,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -146,29 +141,6 @@ void MaybeReportBypassAction(download::DownloadItem* file,
           DANGEROUS_DOWNLOAD_RECOVERY,
       /*did_proceed=*/action == WarningAction::PROCEED, file);
 #endif
-}
-
-// Triggers a Trust and Safety sentiment survey (if enabled). Should be called
-// when the user takes an explicit action to save or discard a
-// suspicious/dangerous file. Not called when the prompt is merely shown.
-void MaybeTriggerTrustSafetySurvey(download::DownloadItem* file,
-                                   WarningSurface surface,
-                                   WarningAction action) {
-  CHECK(file);
-  CHECK(surface == WarningSurface::DOWNLOADS_PAGE ||
-        surface == WarningSurface::DOWNLOAD_PROMPT);
-  CHECK(action == WarningAction::PROCEED || action == WarningAction::DISCARD);
-  if (Profile* profile = Profile::FromBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(file));
-      profile &&
-      safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs())) {
-    TrustSafetySentimentService* trust_safety_sentiment_service =
-        TrustSafetySentimentServiceFactory::GetForProfile(profile);
-    if (trust_safety_sentiment_service) {
-      trust_safety_sentiment_service->InteractedWithDownloadWarningUI(surface,
-                                                                      action);
-    }
-  }
 }
 
 void RecordDownloadsPageValidatedHistogram(download::DownloadItem* item) {
@@ -286,9 +258,9 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
     MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
                             WarningAction::PROCEED);
     MaybeTriggerDownloadWarningHatsSurvey(
-        file, DownloadWarningHatsType::kDownloadsPageBypass);
-    MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOADS_PAGE,
-                                  WarningAction::PROCEED);
+        file, downloads::WarningSurveyType::kBypass);
+    downloads::MaybeTriggerTrustSafetySurvey(
+        file, WarningSurface::DOWNLOADS_PAGE, WarningAction::PROCEED);
 
     RecordDownloadsPageValidatedHistogram(file);
 
@@ -328,10 +300,10 @@ void DownloadsDOMHandler::SaveDangerousFromDialogRequiringGesture(
 
   MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
                           WarningAction::PROCEED);
-  MaybeTriggerDownloadWarningHatsSurvey(
-      file, DownloadWarningHatsType::kDownloadsPageBypass);
-  MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOAD_PROMPT,
-                                WarningAction::PROCEED);
+  MaybeTriggerDownloadWarningHatsSurvey(file,
+                                        downloads::WarningSurveyType::kBypass);
+  downloads::MaybeTriggerTrustSafetySurvey(
+      file, WarningSurface::DOWNLOAD_PROMPT, WarningAction::PROCEED);
 
   RecordDownloadsPageValidatedHistogram(file);
 
@@ -357,10 +329,10 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   if (download && !download->IsDone() && download->IsDangerous()) {
     MaybeReportBypassAction(download, WarningSurface::DOWNLOADS_PAGE,
                             WarningAction::DISCARD);
-    MaybeTriggerDownloadWarningHatsSurvey(
-        download, DownloadWarningHatsType::kDownloadsPageHeed);
-    MaybeTriggerTrustSafetySurvey(download, WarningSurface::DOWNLOADS_PAGE,
-                                  WarningAction::DISCARD);
+    MaybeTriggerDownloadWarningHatsSurvey(download,
+                                          downloads::WarningSurveyType::kHeed);
+    downloads::MaybeTriggerTrustSafetySurvey(
+        download, WarningSurface::DOWNLOADS_PAGE, WarningAction::DISCARD);
   }
   RemoveDownloadInArgs(id);
 }
@@ -614,10 +586,8 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN);
   download::DownloadItem* download = GetDownloadByStringId(id);
   if (download) {
-    if (CanShowDownloadWarningHatsSurvey(download)) {
-      MaybeTriggerDownloadWarningHatsSurvey(
-          download, DownloadWarningHatsType::kDownloadsPageBypass);
-    }
+    MaybeTriggerDownloadWarningHatsSurvey(
+        download, downloads::WarningSurveyType::kBypass);
     downloads::BypassDeepScan(download);
   }
 }
@@ -739,19 +709,18 @@ void DownloadsDOMHandler::FinalizeRemovals() {
 
 void DownloadsDOMHandler::MaybeTriggerDownloadWarningHatsSurvey(
     download::DownloadItem* item,
-    DownloadWarningHatsType survey_type) {
-  CHECK(CanShowDownloadWarningHatsSurvey(item));
-
+    downloads::WarningSurveyType survey_type) {
   content::DownloadManager* manager = GetMainNotifierManager();
+  if (!manager) {
+    return;
+  }
   Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
   if (!profile) {
     return;
   }
 
-  auto psd = DownloadWarningHatsProductSpecificData::Create(survey_type, item);
-  psd.AddNumPageWarnings(list_tracker_.NumDangerousItemsSent());
-
-  MaybeLaunchDownloadWarningHatsSurvey(profile, psd);
+  downloads::MaybeTriggerDownloadWarningHatsSurvey(
+      item, profile, survey_type, list_tracker_.NumDangerousItemsSent());
 }
 
 void DownloadsDOMHandler::OnDownloadsPageDismissed() {
@@ -766,11 +735,9 @@ void DownloadsDOMHandler::OnDownloadsPageDismissed() {
   // chrome://downloads or closing the tab, so let's just launch the survey on
   // the topmost download with a warning.
   if (download::DownloadItem* first_dangerous_item =
-          list_tracker_.GetFirstActiveWarningItem();
-      first_dangerous_item &&
-      CanShowDownloadWarningHatsSurvey(first_dangerous_item)) {
+          list_tracker_.GetFirstActiveWarningItem()) {
     MaybeTriggerDownloadWarningHatsSurvey(
-        first_dangerous_item, DownloadWarningHatsType::kDownloadsPageIgnore);
+        first_dangerous_item, downloads::WarningSurveyType::kIgnore);
   }
 }
 

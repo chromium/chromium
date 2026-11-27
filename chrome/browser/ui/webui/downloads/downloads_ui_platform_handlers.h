@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_UI_PLATFORM_HANDLERS_H_
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_UI_PLATFORM_HANDLERS_H_
 
-// Platform-specific hooks for the Downloads WebUI, letting the shared handler
-// build on platforms without the desktop browser UI. Desktop implementations
-// live in `downloads_ui_platform_handlers_desktop.cc`.
+#include "chrome/browser/download/download_item_warning_data.h"
+
+class Profile;
 
 namespace content {
 class WebContents;
@@ -17,7 +17,19 @@ namespace download {
 class DownloadItem;
 }  // namespace download
 
+// Platform-specific hooks for the Downloads WebUI, letting the shared handler
+// build on platforms without the desktop browser UI. Desktop implementations
+// live in `downloads_ui_platform_handlers_desktop.cc`.
 namespace downloads {
+
+// Outcome of a download warning interaction on the downloads page, used to
+// trigger platform-specific HaTS surveys. Platform-neutral subset of the
+// desktop-only `DownloadWarningHatsType` enum.
+enum class WarningSurveyType {
+  kBypass,
+  kHeed,
+  kIgnore,
+};
 
 // Notifies platform-specific listeners that a downloaded file is being opened
 // from the downloads page. `web_contents` may be null. Expected to do nothing
@@ -53,6 +65,24 @@ void StartDeepScan(download::DownloadItem* item);
 // non-null. Expected to do nothing on platforms where the downloads page never
 // offers a deep scan prompt.
 void BypassDeepScan(download::DownloadItem* item);
+
+// Triggers a download warning HaTS survey for `item` if eligible. `item` and
+// `profile` must be non-null. Does nothing if `item` is not eligible for a
+// warning survey. Expected to do nothing on platforms without desktop download
+// warning HaTS surveys.
+void MaybeTriggerDownloadWarningHatsSurvey(download::DownloadItem* item,
+                                           Profile* profile,
+                                           WarningSurveyType survey_type,
+                                           int num_page_warnings);
+
+// Triggers a Trust and Safety sentiment survey for `item` if enabled. `item`
+// must be non-null; `surface` must be `DOWNLOADS_PAGE` or `DOWNLOAD_PROMPT`;
+// `action` must be `PROCEED` or `DISCARD`. Expected to do nothing on platforms
+// where `TrustSafetySentimentService` is not used.
+void MaybeTriggerTrustSafetySurvey(
+    download::DownloadItem* item,
+    DownloadItemWarningData::WarningSurface surface,
+    DownloadItemWarningData::WarningAction action);
 
 }  // namespace downloads
 
