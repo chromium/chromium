@@ -197,6 +197,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             mPrefetchTabListToMergeTasks;
     // A set of filenames which are tracked to merge.
     private final Set<String> mMergedFileNames;
+    private final List<Runnable> mPendingSaveTabListRunnables = new ArrayList<>();
 
     private SequencedTaskRunner mSequencedTaskRunner;
     private TabModelObserver mTabModelObserver;
@@ -429,7 +430,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             // The list of tabs should be saved first in case our activity is terminated early.
             // Explicitly toss out any existing SaveListTask because they only save the TabModel as
             // it looked when the SaveListTask was first created.
-            if (mSaveListTask != null) mSaveListTask.cancel(true);
+            if (mSaveListTask != null) {
+                mSaveListTask.cancel(true);
+                mSaveListTask = null;
+            }
             try {
                 RecordHistogram.recordBooleanHistogram(
                         "Tabs.Metadata.SyncSave." + toClientTag(mOrchestratorType), true);
@@ -502,6 +506,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
+        // The cancelled SaveListTask will not report completion. Run after StrictMode is restored
+        // and queued tab state writes finish so callbacks do not race on tab state files.
+        runPendingSaveTabListRunnables();
     }
 
     /**
@@ -1191,7 +1198,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             mMigrateTabTask = null;
         }
         // Same reason as mTabBatchLoader: SaveListTask writes via FileChannel.
-        if (mSaveListTask != null) {
+        // If callbacks are waiting on the in-flight save, let it finish writing its already
+        // extracted metadata before SaveListTask#onPostExecute() runs them, so the source window's
+        // metadata drops moved tabs before callbacks attach them to another window.
+        if (mSaveListTask != null && mPendingSaveTabListRunnables.isEmpty()) {
             mSaveListTask.cancel(/* mayInterruptIfRunning= */ false);
             mSaveListTask = null;
         }
@@ -1430,6 +1440,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     private void saveTabListAsynchronously() {
+        if (mDestroyed) return;
         // For headless mode only save after initialization is complete to prevent tabs from
         // possibly ending up in a shuffled order. Keep regular mode behavior as is for now. We
         // should try to reduce saving during restoration, but that is a riskier change.
@@ -1456,20 +1467,32 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
     }
 
+    private void runPendingSaveTabListRunnables() {
+        if (mPendingSaveTabListRunnables.isEmpty()) return;
+        List<Runnable> pendingRunnables = new ArrayList<>(mPendingSaveTabListRunnables);
+        mPendingSaveTabListRunnables.clear();
+        for (Runnable runnable : pendingRunnables) {
+            runnable.run();
+        }
+    }
+
     @Override
     public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
+        if (mDestroyed) {
+            if (mSaveListTask != null) {
+                mPendingSaveTabListRunnables.add(onSaveTabListRunnable);
+            } else {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, onSaveTabListRunnable);
+            }
+            return;
+        }
         boolean shouldTriggerSave = mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_DIRTY;
         mMetadataSaveMode = MetadataSaveMode.SAVING_ALLOWED;
         if (shouldTriggerSave) {
-            addObserver(
-                    new TabPersistentStoreObserver() {
-                        @Override
-                        public void onMetadataSavedAsynchronously() {
-                            onSaveTabListRunnable.run();
-                            removeObserver(this);
-                        }
-                    });
             saveTabListAsynchronously();
+        }
+        if (mSaveListTask != null) {
+            mPendingSaveTabListRunnables.add(onSaveTabListRunnable);
         } else {
             onSaveTabListRunnable.run();
         }
@@ -1612,16 +1635,19 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         @Override
         protected void onPostExecute(Void v) {
-            if (mDestroyed || isCancelled()) {
+            if (isCancelled()) {
                 mMetadata = null;
                 return;
             }
 
             if (mSaveListTask == this) {
                 mSaveListTask = null;
-                for (TabPersistentStoreObserver observer : mObservers) {
-                    observer.onMetadataSavedAsynchronously();
+                if (!mDestroyed) {
+                    for (TabPersistentStoreObserver observer : mObservers) {
+                        observer.onMetadataSavedAsynchronously();
+                    }
                 }
+                runPendingSaveTabListRunnables();
                 mMetadata = null;
             }
         }

@@ -28,7 +28,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.os.Looper;
+import android.os.StrictMode;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 
 import org.junit.After;
 import org.junit.Before;
@@ -91,7 +93,10 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +107,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for the tab persistent store logic. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -2753,5 +2759,164 @@ public class TabPersistentStoreUnitTest {
                 TabStateAttributesRegistry.getAttributesFor(tab, TabPersistentStoreImpl.class);
         attributes.setStateForTesting(DirtinessState.DIRTY);
         return attributes;
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testResumeSaveTabList_runsPendingRunnableOnDestroy() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        TabPersistentStore.TabPersistentStoreObserver observer =
+                mock(TabPersistentStore.TabPersistentStoreObserver.class);
+        mPersistentStore.addObserver(observer);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        String metadataFileName =
+                TabMetadataFileManager.SAVED_METADATA_FILE_PREFIX + "state_files_yay";
+        File metadataFile = new File(mTemporaryFolder.getRoot(), metadataFileName);
+        TabMetadataFileManager.TabModelMetadata initialNormalMetadata =
+                new TabMetadataFileManager.TabModelMetadata(0);
+        initialNormalMetadata.ids.add(RESTORE_TAB_ID_1);
+        initialNormalMetadata.urls.add(RESTORE_TAB_STRING_1);
+        initialNormalMetadata.ids.add(RESTORE_TAB_ID_2);
+        initialNormalMetadata.urls.add(RESTORE_TAB_STRING_2);
+        TabMetadataFileManager.saveListToFile(
+                metadataFile,
+                new TabModelSelectorMetadata(
+                        initialNormalMetadata,
+                        new TabMetadataFileManager.TabModelMetadata(TabModel.INVALID_TAB_INDEX)));
+
+        // Simulate a non-empty source window where RESTORE_TAB_ID_2 is moved out while
+        // RESTORE_TAB_ID_1 remains.
+        Tab remainingTab = mock(Tab.class);
+        when(remainingTab.getId()).thenReturn(RESTORE_TAB_ID_1);
+        when(remainingTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
+        when(mNormalTabModel.getCount()).thenReturn(1);
+        when(mNormalTabModel.index()).thenReturn(0);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(remainingTab);
+        when(mNormalTabModel.iterator())
+                .thenAnswer(inv -> Collections.singletonList(remainingTab).iterator());
+        when(mIncognitoTabModel.index()).thenReturn(TabModel.INVALID_TAB_INDEX);
+
+        mPersistentStore.pauseSaveTabList();
+        mTabModelObserverCaptor.getValue().tabRemoved(mTab);
+
+        AtomicInteger runCount = new AtomicInteger(0);
+        SparseBooleanArray tabIdsWhenCallbackRan = new SparseBooleanArray();
+        mPersistentStore.resumeSaveTabList(
+                () -> {
+                    try (DataInputStream stream =
+                            new DataInputStream(new FileInputStream(metadataFile))) {
+                        TabMetadataFileManager.readSavedMetadataFile(
+                                stream, /* callback= */ null, tabIdsWhenCallbackRan);
+                    } catch (IOException e) {
+                        throw new AssertionError(e);
+                    }
+                    runCount.incrementAndGet();
+                });
+
+        // Simulate source window closing / store destruction before async SaveListTask completes.
+        mPersistentStore.destroy();
+        AtomicInteger postDestroyInFlightRunCount = new AtomicInteger(0);
+        mPersistentStore.resumeSaveTabList(postDestroyInFlightRunCount::incrementAndGet);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(0, runCount.get());
+        assertEquals(0, postDestroyInFlightRunCount.get());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(1, tabIdsWhenCallbackRan.size());
+        assertTrue(tabIdsWhenCallbackRan.get(RESTORE_TAB_ID_1));
+        assertFalse(tabIdsWhenCallbackRan.get(RESTORE_TAB_ID_2));
+        assertEquals(
+                "Pending resumeSaveTabList runnable should run once even if store is destroyed"
+                        + " before SaveListTask completes.",
+                1,
+                runCount.get());
+        assertEquals(1, postDestroyInFlightRunCount.get());
+        verify(observer, never()).onMetadataSavedAsynchronously();
+
+        // Calling resumeSaveTabList after destroy should also post the runnable to the UI thread.
+        mPersistentStore.resumeSaveTabList(runCount::incrementAndGet);
+        assertEquals(1, runCount.get());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(2, runCount.get());
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testResumeSaveTabList_runsPendingRunnableOnSaveState() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        TabState tabState = new TabState();
+        tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(4), 1);
+        TabStateExtractor.setTabStateForTesting(0, tabState);
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class)
+                .updateIsDirty(DirtinessState.UNTIDY);
+        when(mNormalTabModel.getCount()).thenReturn(1);
+        when(mNormalTabModel.index()).thenReturn(0);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab);
+
+        mPersistentStore.pauseSaveTabList();
+        mTabModelObserverCaptor.getValue().tabRemoved(mTab);
+
+        StrictMode.ThreadPolicy previousPolicy = StrictMode.getThreadPolicy();
+        StrictMode.ThreadPolicy strictPolicy =
+                new StrictMode.ThreadPolicy.Builder().detectDiskWrites().build();
+        AtomicInteger runCount = new AtomicInteger(0);
+        AtomicBoolean flushedAndPolicyRestored = new AtomicBoolean(false);
+        mPersistentStore.resumeSaveTabList(
+                () -> {
+                    boolean tabFlushed =
+                            TabStateAttributesRegistry.getAttributesFor(
+                                                    mTab, TabPersistentStoreImpl.class)
+                                            .getDirtinessState()
+                                    == DirtinessState.CLEAN;
+                    boolean policyRestored =
+                            StrictMode.getThreadPolicy().toString().equals(strictPolicy.toString());
+                    flushedAndPolicyRestored.set(tabFlushed && policyRestored);
+                    runCount.incrementAndGet();
+                });
+        assertEquals(0, runCount.get());
+
+        // The synchronous save cancels the in-flight SaveListTask.
+        StrictMode.setThreadPolicy(strictPolicy);
+        try {
+            mPersistentStore.saveState();
+        } finally {
+            StrictMode.setThreadPolicy(previousPolicy);
+        }
+        assertEquals(1, runCount.get());
+        assertTrue(
+                "Callback should run after mTabsToSave flushes and StrictMode is restored.",
+                flushedAndPolicyRestored.get());
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, runCount.get());
     }
 }
