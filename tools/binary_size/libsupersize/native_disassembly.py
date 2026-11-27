@@ -182,10 +182,26 @@ def Disassemble(
   # interleave source file lines in the disassembly.
   objdump_cwd = output_directory or '.'
 
+  expected_build_id = symbol.container.metadata.get(
+    models.METADATA_ELF_BUILD_ID
+  )
   try:
-    arch = readelf.ArchFromElf(elf_path)
+    build_id = readelf.BuildIdFromElf(elf_path) if expected_build_id else None
+    if not expected_build_id or build_id == expected_build_id:
+      arch = symbol.container.metadata.get(
+        models.METADATA_ELF_ARCHITECTURE
+      ) or readelf.ArchFromElf(elf_path)
   except Exception:
     logging.warning('llvm-readelf failed on: %s', elf_path)
+    yield []
+    return
+  if expected_build_id and build_id != expected_build_id:
+    logging.warning(
+      'Build ID mismatch for %s: expected %s, got %s',
+      elf_path,
+      expected_build_id,
+      build_id,
+    )
     yield []
     return
   objdump_path = path_util.GetDisassembleObjDumpPath(arch)
@@ -247,9 +263,13 @@ def _DisassembleSymbol(symbol, path_resolver, out_directory, normalize=True):
   """Disassembles |symbol| from its ELF binary and sets |symbol.disassembly|."""
   if not symbol:
     return
-  elf_path = str(path_resolver(symbol.container.metadata['elf_file_name']))
-  if not os.path.exists(elf_path):
-    logging.warning('%s does not exist.', elf_path)
+  elf_file_name = symbol.container.metadata.get(models.METADATA_ELF_FILENAME)
+  if not elf_file_name:
+    return
+  try:
+    elf_path = str(path_resolver(elf_file_name))
+  except FileNotFoundError as e:
+    logging.warning('Cannot find ELF for %r: %s', symbol, e)
     return
   with Disassemble(symbol, out_directory, elf_path) as lines:
     disasm_lines = list(lines)

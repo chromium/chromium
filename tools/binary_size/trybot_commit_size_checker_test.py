@@ -6,9 +6,12 @@
 # requires-python = ">=3.14"
 # ///
 
+import pathlib
+import tempfile
 import unittest
 from unittest import mock
 
+import generate_commit_size_analysis
 import trybot_commit_size_checker
 
 
@@ -287,6 +290,43 @@ pkg.Clz -> Ja1:
     self.assertEqual(10_000, diff.summary_stat.value)
     self.assertEqual(-20_000, diff.CombinedSizeChangeForSection('base'))
     self.assertEqual(12, diff.CombinedSizeChangeForSection('Dex'))
+
+  def testStageAndResolvePaths(self):
+    with (
+      tempfile.TemporaryDirectory() as out_dir,
+      tempfile.TemporaryDirectory() as staging_dir,
+    ):
+      out_path = pathlib.Path(out_dir)
+      arm32_rel = 'android_clang_arm/lib.unstripped/libchrome.so'
+      arm64_rel = 'lib.unstripped/libchrome.so'
+      config32 = out_path / 'config' / 'ChromeAndWebView_size_config.json'
+      config64 = out_path / 'config' / 'Chrome64_size_config.json'
+      for p, data in [
+        (out_path / arm32_rel, b'arm32-elf'),
+        (out_path / arm64_rel, b'arm64-elf'),
+        (config32, b'{}'),
+        (config64, b'{}'),
+      ]:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data)
+
+      generate_commit_size_analysis._copy_files_to_staging_dir(
+        [arm32_rel], str(config32), out_dir, staging_dir
+      )
+      generate_commit_size_analysis._copy_files_to_staging_dir(
+        [arm64_rel], str(config64), out_dir, staging_dir
+      )
+      flat_size = pathlib.Path(staging_dir) / 'ChromeAndWebView32.ssargs.size'
+      flat_size.write_bytes(b'size')
+
+      resolver = trybot_commit_size_checker.path_util.PathResolver(staging_dir)
+      self.assertEqual(b'arm32-elf', resolver(arm32_rel).read_bytes())
+      self.assertEqual(b'arm64-elf', resolver(arm64_rel).read_bytes())
+      self.assertEqual(
+        flat_size, resolver('apks/ChromeAndWebView32.ssargs.size')
+      )
+      self.assertTrue(resolver('ChromeAndWebView_size_config.json').is_file())
+      self.assertTrue(resolver('Chrome64_size_config.json').is_file())
 
 
 if __name__ == '__main__':

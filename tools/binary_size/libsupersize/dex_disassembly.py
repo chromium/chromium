@@ -178,7 +178,7 @@ def Disassemble(symbol, path_resolver, apk_disassembler_cache):
   if proguard_mapping_file_name is None:
     raise Exception('Mapping file does not exist in container metadata.')
 
-  proguard_mapping_file_path = path_resolver(proguard_mapping_file_name)
+  proguard_mapping_file_path = str(path_resolver(proguard_mapping_file_name))
   apk_file_name = container.metadata['apk_file_name']
   apk_file_path = str(path_resolver(apk_file_name))
   split_name = container.metadata.get('apk_split_name')  # Can be None.
@@ -198,7 +198,13 @@ def _DisassembleSymbol(symbol, path_resolver, cache, normalize=True):
   """Disassembles |symbol| using |cache| and sets |symbol.disassembly|."""
   if not symbol:
     return
-  lines = Disassemble(symbol, path_resolver, cache)
+  if not symbol.container.metadata.get('proguard_mapping_file_name'):
+    return
+  try:
+    lines = Disassemble(symbol, path_resolver, cache)
+  except FileNotFoundError as e:
+    logging.warning('Cannot find APK/mapping for %r: %s', symbol, e)
+    return
   if lines and normalize:
     lines = NormalizeLines(lines)
   if lines:

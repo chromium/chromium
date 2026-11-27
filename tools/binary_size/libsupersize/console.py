@@ -312,14 +312,13 @@ class _Session:
           paths_to_try.append(
             os.path.normpath(os.path.join(output_dir, filename))
           )
-        # Downloaded build: File is located beside .size file.
-        paths_to_try.append(
-          os.path.normpath(
-            os.path.join(
-              os.path.dirname(size_info.size_path), os.path.basename(filename)
-            )
-          )
-        )
+      # Downloaded build: File is located beside .size file (either under its
+      # output-relative subpath or directly by basename).
+      size_dir = os.path.dirname(size_info.size_path)
+      paths_to_try.append(os.path.normpath(os.path.join(size_dir, filename)))
+      paths_to_try.append(
+        os.path.normpath(os.path.join(size_dir, os.path.basename(filename)))
+      )
 
     paths_to_try = [p for p in paths_to_try if os.path.exists(p)]
 
@@ -329,7 +328,7 @@ class _Session:
 
       # Show an error only once all paths are tried.
       if i + 1 == len(paths_to_try):
-        assert False, 'Build ID does not match for %s' % elf_path
+        assert False, 'Build ID does not match for %s' % path
 
     assert False, (
       'Could not locate ELF file. If binary was built locally, ensure '
@@ -369,11 +368,9 @@ class _Session:
   def _DisassembleDex(
     self, symbol, output_directory, use_pager=None, to_file=None
   ):
-
-    def path_resolver(path):
-      return os.path.join(output_directory, path)
-
     size_info = self._SizeInfoForSymbol(symbol)
+    base_dir = output_directory or os.path.dirname(size_info.size_path) or '.'
+    path_resolver = path_util.PathResolver(base_dir)
     cache = self._dex_disassembly_cache_by_size_info[size_info]
     lines = dex_disassembly.Disassemble(symbol, path_resolver, cache)
     _WriteToStream(

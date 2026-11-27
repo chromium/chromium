@@ -724,10 +724,23 @@ class FileFormatTest(unittest.TestCase):
         section_sizes={'.text': 100},
         metrics_by_file={},
       )
-      models.BaseContainer.AssignShortNames([c_no_elf, c_with_elf])
+      c_missing_elf = models.Container(
+        name='MissingElf.apk',
+        metadata={'elf_file_name': 'sub/missing.so'},
+        section_sizes={'.text': 100},
+        metrics_by_file={},
+      )
+      models.BaseContainer.AssignShortNames(
+        [c_no_elf, c_with_elf, c_missing_elf]
+      )
       s_skip = _MakeSymbol(c_no_elf, '.text', 0x1000, 500, 'skip::Func()')
       s_keep = _MakeSymbol(c_with_elf, '.text', 0x2000, 100, 'keep::Func()')
-      size_info = models.SizeInfo({}, [c_no_elf, c_with_elf], [s_skip, s_keep])
+      s_missing = _MakeSymbol(
+        c_missing_elf, '.text', 0x3000, 200, 'missing::Func()'
+      )
+      size_info = models.SizeInfo(
+        {}, [c_no_elf, c_with_elf, c_missing_elf], [s_skip, s_keep, s_missing]
+      )
 
       seen_out_dirs = []
 
@@ -744,9 +757,20 @@ class FileFormatTest(unittest.TestCase):
         )
       self.assertEqual([str(sub_dir)], seen_out_dirs)
       self.assertEqual('', s_skip.disassembly)
+      self.assertEqual('', s_missing.disassembly)
       self.assertEqual(
         'disasm keep::Func() from libtest.so\n', s_keep.disassembly
       )
+
+      c_with_elf.metadata[models.METADATA_ELF_BUILD_ID] = 'expected_id'
+      with mock.patch.object(
+        native_disassembly.readelf, 'BuildIdFromElf', return_value='wrong_id'
+      ):
+        with native_disassembly.Disassemble(s_keep, None, str(elf_file)) as out:
+          self.assertEqual([], list(out))
+        with self.assertRaises(ValueError):
+          with native_disassembly.Disassemble(s_keep, None, str(elf_file)):
+            raise ValueError('caller error')
 
       # Verify build_config['out_directory'] resolves relative to tools src root
       # rather than CWD, and --no-output-directory (None) stays None.

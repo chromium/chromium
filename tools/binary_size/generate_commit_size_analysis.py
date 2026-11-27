@@ -25,10 +25,19 @@ _CLANG_UPDATE_PATH = os.path.join(
 )
 
 
-def _copy_files_to_staging_dir(files_to_copy, make_staging_path):
-  """Copies files from output directory to staging_dir"""
-  for filename in files_to_copy:
-    shutil.copy(filename, make_staging_path(filename))
+def _copy_files_to_staging_dir(
+  archive_files, size_config_json, output_dir, staging_dir
+):
+  """Copies archive_files (preserving subpaths) and size_config_json."""
+  # Preserve relative subpaths so files with the same basename (e.g. 32-bit vs
+  # 64-bit libchrome.so) do not overwrite each other in shared staging dirs.
+  for f in archive_files:
+    dst = os.path.join(staging_dir, f)
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy(os.path.join(output_dir, f), dst)
+  # trybot_commit_size_checker.py looks up size_config_json by basename.
+  os.makedirs(staging_dir, exist_ok=True)
+  shutil.copy(size_config_json, staging_dir)
 
 
 def _generate_resource_sizes(
@@ -136,12 +145,12 @@ def main():
       return args.staging_dir
     return os.path.join(args.staging_dir, os.path.basename(path_rel_to_output))
 
-  files_to_copy = [make_chromium_output_path(f) for f in archive_files]
-
-  # Copy size config JSON to staging dir to save settings used.
-  if args.size_config_json:
-    files_to_copy.append(args.size_config_json)
-  _copy_files_to_staging_dir(files_to_copy, make_staging_path)
+  _copy_files_to_staging_dir(
+    archive_files,
+    args.size_config_json,
+    args.chromium_output_directory,
+    args.staging_dir,
+  )
 
   config_32 = config.get('to_resource_sizes_py')
   if config_32:

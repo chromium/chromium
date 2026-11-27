@@ -47,6 +47,7 @@ import dex_disassembly
 import file_format
 import models
 import native_disassembly
+import path_util
 
 _RESOURCE_SIZES_LOG = 'resource_sizes_log'
 _RESOURCE_SIZES_64_LOG = 'resource_sizes_64_log'
@@ -443,17 +444,6 @@ def _FormatNumber(number):
   return '{:+,}'.format(number)
 
 
-# TODO(crbug.com/40256106): If missing and file is x32y, return xy; else
-# return original filename. Basically allows comparing x_32 targets with x
-# targets built under 32bit target_cpu without failing the script due to
-# different file names. Remove once migration is complete.
-def _UseAlternativeIfMissing(path):
-  if not os.path.isfile(path):
-    parent, name = os.path.split(path)
-    path = os.path.join(parent, name.replace('32', '', 1))
-  return path
-
-
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
@@ -504,11 +494,8 @@ def main():
     format='%(levelname).1s %(relativeCreated)6d %(message)s',
   )
 
-  before_path = pathlib.Path(args.before_dir)
-  after_path = pathlib.Path(args.after_dir)
-
-  before_path_resolver = lambda p: str(before_path / os.path.basename(p))
-  after_path_resolver = lambda p: str(after_path / os.path.basename(p))
+  before_path_resolver = path_util.PathResolver(args.before_dir)
+  after_path_resolver = path_util.PathResolver(args.after_dir)
 
   if args.local_test:
     config_path = args.size_config_json_name
@@ -524,12 +511,10 @@ def main():
     size_filename = config['supersize_input_file'] + '.size'
 
   before_mapping_paths = [
-    _UseAlternativeIfMissing(before_path_resolver(f))
-    for f in config['mapping_files']
+    before_path_resolver(f) for f in config['mapping_files']
   ]
   after_mapping_paths = [
-    _UseAlternativeIfMissing(after_path_resolver(f))
-    for f in config['mapping_files']
+    after_path_resolver(f) for f in config['mapping_files']
   ]
 
   max_size_increase = _MaxSizeIncrease(args.author, args.review_subject)
@@ -539,8 +524,8 @@ def main():
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-    _UseAlternativeIfMissing(before_path_resolver(size_filename)),
-    _UseAlternativeIfMissing(after_path_resolver(size_filename)),
+    str(before_path_resolver(size_filename)),
+    str(after_path_resolver(size_filename)),
     args.review_subject,
     args.review_url,
   )
@@ -577,19 +562,13 @@ def main():
   resources_diff_lines = []
   if unused_resources_paths and r_txt_paths:
     unused_resources_before_paths = [
-      _UseAlternativeIfMissing(before_path_resolver(p))
-      for p in unused_resources_paths
+      before_path_resolver(p) for p in unused_resources_paths
     ]
     unused_resources_after_paths = [
-      _UseAlternativeIfMissing(after_path_resolver(p))
-      for p in unused_resources_paths
+      after_path_resolver(p) for p in unused_resources_paths
     ]
-    r_txt_before_paths = [
-      _UseAlternativeIfMissing(before_path_resolver(p)) for p in r_txt_paths
-    ]
-    r_txt_after_paths = [
-      _UseAlternativeIfMissing(after_path_resolver(p)) for p in r_txt_paths
-    ]
+    r_txt_before_paths = [before_path_resolver(p) for p in r_txt_paths]
+    r_txt_after_paths = [after_path_resolver(p) for p in r_txt_paths]
     resources_diff_lines = _CreateResourceDiffLines(
       unused_resources_before_paths,
       r_txt_before_paths,
