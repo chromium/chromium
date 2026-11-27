@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -530,6 +531,62 @@ public class NtpThemeDailyRefreshManagerUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testMaybeSaveDailyRefreshAndReset_forThemeCollection_replacesHistoryEntry() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.THEME_COLLECTION);
+        CustomBackgroundInfo previousInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.BLUE_1,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(previousInfo);
+        String previousHash = NtpCustomizationUtils.getFileName(JUnitTestGURLs.BLUE_1.getPath());
+        File previousFile =
+                NtpCustomizationUtils.createThemeCollectionImageFileInDirForTesting(previousHash);
+        saveBitmapToFile(previousFile);
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference(
+                previousFile.getAbsolutePath());
+        mDataManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        previousInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED,
+                        previousHash));
+
+        NtpCustomizationUtils.setDailyRefreshCustomBackgroundInfoToSharedPreference(
+                new CustomBackgroundInfo(
+                        ROTATED_IMAGE_URL,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true));
+        NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(Color.BLUE);
+        saveBitmapToFile(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
+        mManager.setDailyUpdateStatusForThemeCollection(
+                APPLIED_DAILY_REFRESH_TIMESTAMP, /* shouldApply= */ true);
+
+        mManager.maybeSaveDailyRefreshAndReset(mContext, mOnDailyRefreshThemeCollectionApplied);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // History points to the rotated image and the unreferenced previous file is deleted.
+        NtpBackgroundDataGroup localHistory =
+                mDataManager.getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
+        assertEquals(1, localHistory.size());
+        NtpBackgroundDataThemeCollection entry =
+                (NtpBackgroundDataThemeCollection) localHistory.get(0);
+        assertEquals(ROTATED_IMAGE_URL, entry.getCustomBackgroundInfo().backgroundUrl);
+        assertEquals(
+                NtpCustomizationUtils.getFileName(ROTATED_IMAGE_URL.getPath()),
+                entry.getFileIdHash());
+        assertEquals(Integer.valueOf(Color.BLUE), entry.getPrimaryColor());
+        assertTrue(entry.isBitmapSaved());
+        assertFalse(previousFile.exists());
+    }
+
+    @Test
     public void testMaybeSaveDailyRefreshAndReset_forThemeCollection_noDailyRefreshInfo() {
         File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
         File mainFile = NtpCustomizationUtils.createBackgroundImageFile();
@@ -668,6 +725,15 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                         DAILY_REFRESH_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true));
+    }
+
+    /** Saves a bitmap to {@code file} and waits for it to exist. */
+    private static void saveBitmapToFile(File file) {
+        NtpCustomizationUtils.saveBitmapImageToFile(
+                Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888),
+                file);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(file.exists());
     }
 
     /** Creates a Chrome color with the given platform, color ID and daily refresh setting. */

@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 
 import java.util.concurrent.Executor;
@@ -283,7 +285,9 @@ public class NtpThemeDailyRefreshManager {
             // A skipped daily refresh has no prefetched image to commit. A stale daily refresh
             // image file may exist, which mustn't replace the current image.
             if (mIsDailyUpdateApplied) {
-                NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+                NtpCustomizationUtils.commitThemeCollectionDailyRefresh(
+                        NtpThemeDailyRefreshManager
+                                ::maybeReplaceDailyRefreshThemeCollectionInHistory);
             }
             onDailyRefreshThemeCollectionApplied.run();
         }
@@ -317,6 +321,20 @@ public class NtpThemeDailyRefreshManager {
                                 PlatformType.ANDROID,
                                 colorId,
                                 /* isChromeColorDailyRefreshEnabled= */ true));
+    }
+
+    /**
+     * Replaces the collection's local history entry with the rotated image and deletes the previous
+     * image file if nothing else uses it. Runs on a background thread.
+     *
+     * @param rotatedData The rotated background data after its image file has been moved.
+     */
+    private static void maybeReplaceDailyRefreshThemeCollectionInHistory(
+            NtpBackgroundDataThemeCollection rotatedData) {
+        // Use the application context instead of passing an Activity context to a background
+        // thread. Safe here: this only updates saved JSON and does not render UI.
+        new NtpBackgroundDataManager(ContextUtils.getApplicationContext())
+                .maybeReplaceUserSelectedBackgroundInPlace(rotatedData);
     }
 
     /**

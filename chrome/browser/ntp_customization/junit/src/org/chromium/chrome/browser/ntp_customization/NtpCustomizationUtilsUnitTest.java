@@ -71,6 +71,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -143,6 +144,9 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Captor private ArgumentCaptor<NtpBackgroundDataThemeCollection> mRotatedDataCaptor;
+
+    @Mock private Callback<NtpBackgroundDataThemeCollection> mOnDailyRefreshImageMoved;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private NtpCustomizationConfigManager mConfigManager;
@@ -1233,7 +1237,8 @@ public class NtpCustomizationUtilsUnitTest {
                 createCustomBackgroundInfoWithAttributions(JUnitTestGURLs.URL_1);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
 
-        assertRestoredCustomBackgroundInfo(info);
+        assertCustomBackgroundInfoEquals(
+                info, NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
     }
 
     @Test
@@ -1243,7 +1248,7 @@ public class NtpCustomizationUtilsUnitTest {
                         NTP_CUSTOMIZATION_BACKGROUND_INFO,
                         JUnitTestGURLs.URL_1.getSpec() + "|" + COLLECTION_ID + "|false|true");
 
-        assertRestoredCustomBackgroundInfo(
+        assertCustomBackgroundInfoEquals(
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
                         COLLECTION_ID,
@@ -1251,7 +1256,8 @@ public class NtpCustomizationUtilsUnitTest {
                         /* isDailyRefreshEnabled= */ true,
                         /* attributionLine1= */ null,
                         /* attributionLine2= */ null,
-                        GURL.emptyGURL()));
+                        GURL.emptyGURL()),
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
     }
 
     @Test
@@ -1518,7 +1524,7 @@ public class NtpCustomizationUtilsUnitTest {
         File mainFile = NtpCustomizationUtils.createBackgroundImageFile();
         assertFalse(mainFile.exists());
 
-        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh(mOnDailyRefreshImageMoved);
         RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         assertDailyRefreshCommitted();
@@ -1527,6 +1533,7 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
         assertTrue(mainFile.exists());
         assertFalse(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
+        verify(mOnDailyRefreshImageMoved, never()).onResult(any());
     }
 
     @Test
@@ -1534,7 +1541,7 @@ public class NtpCustomizationUtilsUnitTest {
         setUpDailyRefreshRotationToCommit();
         NtpCustomizationUtils.removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
 
-        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh(mOnDailyRefreshImageMoved);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
@@ -1545,7 +1552,7 @@ public class NtpCustomizationUtilsUnitTest {
         File previousFile = setUpDailyRefreshRotationToCommit();
         NtpCustomizationUtils.removeDailyRefreshCustomBackgroundInfoFromSharedPreference();
 
-        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh(mOnDailyRefreshImageMoved);
         RobolectricUtil.runAllBackgroundAndUi();
 
         // The current background and its image file are untouched.
@@ -1559,16 +1566,17 @@ public class NtpCustomizationUtilsUnitTest {
                 Integer.valueOf(Color.RED),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
         assertTrue(previousFile.exists());
+        verify(mOnDailyRefreshImageMoved, never()).onResult(any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
-    public void testCommitThemeCollectionDailyRefresh_syncEnabled_movesToThemeCollectionDir() {
+    public void testCommitThemeCollectionDailyRefresh_syncEnabled_movesImageAndNotifiesCallback() {
         setUpDailyRefreshRotationToCommit();
         File rotatedFile = getThemeCollectionImageFile(ROTATED_IMAGE_URL);
         assertFalse(rotatedFile.exists());
 
-        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh(mOnDailyRefreshImageMoved);
         RobolectricUtil.runAllBackgroundAndUi(); // Wait for async file operations.
 
         assertDailyRefreshCommitted();
@@ -1578,6 +1586,32 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(rotatedFile.exists());
         assertFalse(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
         assertFalse(NtpCustomizationUtils.createBackgroundImageFile().exists());
+
+        verify(mOnDailyRefreshImageMoved).onResult(mRotatedDataCaptor.capture());
+        NtpBackgroundDataThemeCollection rotatedData = mRotatedDataCaptor.getValue();
+        assertCustomBackgroundInfoEquals(
+                createRotatedDailyRefreshInfo(), rotatedData.getCustomBackgroundInfo());
+        assertEquals(
+                NtpCustomizationUtils.getFileName(ROTATED_IMAGE_URL.getPath()),
+                rotatedData.getFileIdHash());
+        assertEquals(Integer.valueOf(DAILY_REFRESH_PRIMARY_COLOR), rotatedData.getPrimaryColor());
+        assertEquals(createPrefetchedImageInfo(), rotatedData.getBackgroundImageInfo());
+        assertTrue(rotatedData.isBitmapSaved());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testCommitThemeCollectionDailyRefresh_noDailyRefreshFile_doesNotNotifyCallback() {
+        setUpDailyRefreshRotationToCommit();
+        NtpCustomizationUtils.maybeDeleteFile(
+                NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
+
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh(mOnDailyRefreshImageMoved);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertDailyRefreshCommitted();
+        assertFalse(getThemeCollectionImageFile(ROTATED_IMAGE_URL).exists());
+        verify(mOnDailyRefreshImageMoved, never()).onResult(any());
     }
 
     @Test
@@ -2413,17 +2447,17 @@ public class NtpCustomizationUtilsUnitTest {
                 JUnitTestGURLs.URL_3);
     }
 
-    private static void assertRestoredCustomBackgroundInfo(CustomBackgroundInfo expectedInfo) {
-        CustomBackgroundInfo restoredInfo =
-                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
-        assertNotNull(restoredInfo);
-        assertEquals(expectedInfo.backgroundUrl, restoredInfo.backgroundUrl);
-        assertEquals(expectedInfo.collectionId, restoredInfo.collectionId);
-        assertEquals(expectedInfo.isUploadedImage, restoredInfo.isUploadedImage);
-        assertEquals(expectedInfo.isDailyRefreshEnabled, restoredInfo.isDailyRefreshEnabled);
-        assertEquals(expectedInfo.attributionLine1, restoredInfo.attributionLine1);
-        assertEquals(expectedInfo.attributionLine2, restoredInfo.attributionLine2);
-        assertEquals(expectedInfo.attributionActionUrl, restoredInfo.attributionActionUrl);
+    /** Asserts that all fields of {@code expectedInfo} and {@code actualInfo} match. */
+    private static void assertCustomBackgroundInfoEquals(
+            CustomBackgroundInfo expectedInfo, @Nullable CustomBackgroundInfo actualInfo) {
+        assertNotNull(actualInfo);
+        assertEquals(expectedInfo.backgroundUrl, actualInfo.backgroundUrl);
+        assertEquals(expectedInfo.collectionId, actualInfo.collectionId);
+        assertEquals(expectedInfo.isUploadedImage, actualInfo.isUploadedImage);
+        assertEquals(expectedInfo.isDailyRefreshEnabled, actualInfo.isDailyRefreshEnabled);
+        assertEquals(expectedInfo.attributionLine1, actualInfo.attributionLine1);
+        assertEquals(expectedInfo.attributionLine2, actualInfo.attributionLine2);
+        assertEquals(expectedInfo.attributionActionUrl, actualInfo.attributionActionUrl);
     }
 
     /** Returns the info of {@link #ROTATED_IMAGE_URL} with daily refresh and attributions. */
@@ -2495,7 +2529,9 @@ public class NtpCustomizationUtilsUnitTest {
      * as the current background and the daily refresh keys are cleared.
      */
     private static void assertDailyRefreshCommitted() {
-        assertRestoredCustomBackgroundInfo(createRotatedDailyRefreshInfo());
+        assertCustomBackgroundInfoEquals(
+                createRotatedDailyRefreshInfo(),
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
         assertEquals(
                 Integer.valueOf(DAILY_REFRESH_PRIMARY_COLOR),
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());

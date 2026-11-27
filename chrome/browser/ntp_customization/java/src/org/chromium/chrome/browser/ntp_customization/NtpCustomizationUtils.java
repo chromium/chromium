@@ -1733,9 +1733,15 @@ public class NtpCustomizationUtils {
      * file on a background thread.
      *
      * <p>When NTP theme sync is enabled, the image is moved into {@code theme_collection_images/}
-     * under its URL file name. Otherwise, it is moved to the main background file.
+     * under its URL file name. Once the move succeeds, {@code onImageMoved} runs on the background
+     * thread. When sync is disabled, the image is moved to {@code ntp_background_image} and {@code
+     * onImageMoved} is not called.
+     *
+     * @param onImageMoved Called on a background thread with the rotated background data after the
+     *     image file is moved when NTP theme sync is enabled.
      */
-    public static void commitThemeCollectionDailyRefresh() {
+    public static void commitThemeCollectionDailyRefresh(
+            Callback<NtpBackgroundDataThemeCollection> onImageMoved) {
         @Nullable CustomBackgroundInfo dailyRefreshInfo =
                 getDailyRefreshCustomBackgroundInfoFromSharedPreference();
         if (dailyRefreshInfo == null) return;
@@ -1780,7 +1786,23 @@ public class NtpCustomizationUtils {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                moveDailyRefreshImageFile(targetFile);
+                if (!moveDailyRefreshImageFile(targetFile) || fileIdHash == null) {
+                    return null;
+                }
+
+                // Build this on the background thread because its constructor checks and creates
+                // the image directory on disk.
+                NtpBackgroundDataThemeCollection rotatedData =
+                        new NtpBackgroundDataThemeCollection(
+                                PlatformType.ANDROID,
+                                dailyRefreshInfo,
+                                dailyRefreshNtpBackgroundImageInfo,
+                                /* bitmap= */ null,
+                                dailyRefreshPrimaryColor,
+                                fileIdHash);
+                // The image file was moved into place above, so mark it as saved on disk.
+                rotatedData.setIsBitmapSaved(/* isBitmapSaved= */ true);
+                onImageMoved.onResult(rotatedData);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1791,24 +1813,26 @@ public class NtpCustomizationUtils {
      * move fails, the daily refresh file is deleted to clean up. Runs on a background thread.
      *
      * @param targetFile The destination file for the rotated background image.
+     * @return Whether the file was moved.
      */
-    private static void moveDailyRefreshImageFile(File targetFile) {
+    private static boolean moveDailyRefreshImageFile(File targetFile) {
         File dailyRefreshBackgroundImageFile = createDailyRefreshBackgroundImageFile();
-        if (!dailyRefreshBackgroundImageFile.exists()) return;
+        if (!dailyRefreshBackgroundImageFile.exists()) return false;
 
         File parentDir = targetFile.getParentFile();
         if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
             Log.i(TAG, "Failed to create directory for daily refresh background image file.");
-            return;
+            return false;
         }
 
         // On Android, renameTo replaces an existing file directly. Do not delete targetFile first,
         // so a shared image file is kept if the rename fails.
-        if (dailyRefreshBackgroundImageFile.renameTo(targetFile)) return;
+        if (dailyRefreshBackgroundImageFile.renameTo(targetFile)) return true;
 
         Log.i(TAG, "Failed to rename daily refresh background image file.");
         // As a fallback, try to delete the daily refresh file to clean up.
         dailyRefreshBackgroundImageFile.delete();
+        return false;
     }
 
     /**
