@@ -6811,7 +6811,9 @@ class AXPosition {
         break;
     }
 
-    CHECK(text_position->IsValid(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/590649109): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(text_position->IsValid());
     return text_position;
   }
 
