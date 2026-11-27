@@ -34,6 +34,14 @@ _PROMOTED_GLOBAL_NAME_DEMANGLED_PATTERN = re.compile(
 _PROMOTED_GLOBAL_NAME_RAW_PATTERN = re.compile(
   r'(\.\d+)?(?:\.llvm\.\d+|\.[0-9a-f]{16,32})$'
 )
+# Matches trailing LLVM switch table suffixes in demangled names, e.g.:
+#   "foo() (.67)"
+#   "foo() (.67.rel)"
+#   "foo() (.rel)"
+#   "foo() (.llvm.f2b0f8c5b3b03fdbc3652143948290e7.284)"
+_SWITCH_TABLE_SUFFIX_PATTERN = re.compile(
+  r'\s+\(\.(?:(?:\d+|llvm\.[0-9a-f]+|[0-9a-f]{16,32})[^)]*|rel)\)$'
+)
 
 
 def StripLlvmPromotedGlobalNames(name):
@@ -54,12 +62,15 @@ def StripLlvmPromotedGlobalNames(name):
   return _PROMOTED_GLOBAL_NAME_RAW_PATTERN.sub('', name)
 
 
+def StripSwitchTableSuffix(name):
+  """Strips trailing LLVM switch table suffixes from a demangled name."""
+  if ' (.' not in name:
+    return name
+  return _SWITCH_TABLE_SUFFIX_PATTERN.sub('', name)
+
+
 def _CanDemangle(name):
-  return (
-    name.startswith('_Z')
-    or name.startswith('.Lswitch.table._Z')
-    or name.startswith('_R')
-  )
+  return name.removeprefix('.Lswitch.table.').startswith(('_Z', '_R'))
 
 
 def _ExtractDemanglablePart(names):
@@ -69,10 +80,7 @@ def _ExtractDemanglablePart(names):
     return _LOWER_HEX_PATTERN.match(s) is not None
 
   for name in names:
-    # Strip prefixes before '_Z', e.g., '.Lswitch.table.'.
-    pos = name.find('_Z')
-    if pos > 0:
-      name = name[pos:]
+    name = name.removeprefix('.Lswitch.table.')
 
     # Some mangled symbols end with '$' followed by 32 lower-case hex digits,
     # and possibly '.cfi'. These interfere with demangling by cxxfilt, and
@@ -86,10 +94,11 @@ def _ExtractDemanglablePart(names):
 
 
 def _PostProcessDemangledSymbol(old_name, new_name):
-  new_name = StripLlvmPromotedGlobalNames(new_name)
   if old_name.startswith('.Lswitch.table.'):
-    new_name = 'Switch table for ' + new_name  # Becomes ... [Switch table].
-  return new_name
+    if new_name == old_name.removeprefix('.Lswitch.table.'):
+      return StripLlvmPromotedGlobalNames(old_name)
+    return 'Switch table for ' + StripSwitchTableSuffix(new_name)
+  return StripLlvmPromotedGlobalNames(new_name)
 
 
 def _DemangleNames(names):

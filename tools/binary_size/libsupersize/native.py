@@ -13,7 +13,6 @@ import itertools
 import logging
 import os
 import posixpath
-import re
 import subprocess
 import sys
 import tempfile
@@ -450,9 +449,6 @@ def _ResolveThinArchivePaths(raw_symbols, thin_archives):
 
 
 def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
-  # Example: foo (.67.rel)
-  # Example: bar (.67)
-  strip_num_suffix_regexp = re.compile(r'\s+\(\.\d+.*?\)$')
   num_switch_tables = 0
   num_unassigned = 0
   num_deduced = 0
@@ -462,8 +458,6 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
       num_switch_tables += 1
       # Strip 'Switch table for ' prefix.
       name = s.full_name[17:]
-      # Strip, e.g., ' (.123)' suffix.
-      name = re.sub(strip_num_suffix_regexp, '', name)
       object_paths = object_paths_by_name.get(name, None)
       if not s.object_path:
         if object_paths is None:

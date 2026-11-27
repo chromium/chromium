@@ -5,8 +5,11 @@
 
 import unittest
 
+import archive
+import demangle
 import diff
 import models
+import native
 
 
 def _MakeSym(section, size, path, name=None, container=None):
@@ -274,6 +277,111 @@ class DiffTest(unittest.TestCase):
     size_info2.raw_symbols[0].object_path = 'asdf'
     d = diff.Diff(size_info1, size_info2)
     self.assertEqual((0, 1, 1), d.raw_symbols.CountsByDiffStatus()[1:])
+    self.assertEqual(0, d.raw_symbols.size)
+
+  def testSwitchTableSuffixNormalization(self):
+    RODATA = models.SECTION_RODATA
+    size_info1 = _CreateSizeInfo()
+    size_info2 = _CreateSizeInfo()
+
+    def post_demangle(demangled):
+      return demangle._PostProcessDemangledSymbol(
+        '.Lswitch.table._Z', demangled
+      )
+
+    self.assertTrue(demangle._CanDemangle('.Lswitch.table._RNv3foo3bar'))
+    self.assertEqual(
+      ['_RNv3foo3bar', '_RNvNt3foo12_ZeroCopyBar'],
+      list(
+        demangle._ExtractDemanglablePart(
+          ['.Lswitch.table._RNv3foo3bar', '_RNvNt3foo12_ZeroCopyBar']
+        )
+      ),
+    )
+
+    cases = [
+      (
+        32,
+        '',
+        post_demangle('Foo::Bar(int*) (.9)'),
+        post_demangle('Foo::Bar(int*) (.11)'),
+        'Foo::Bar(int*) [Switch table]',
+      ),
+      (
+        148,
+        '',
+        post_demangle('Foo::Bar(int*) (.8.rel)'),
+        post_demangle('Foo::Bar(int*) (.10.rel)'),
+        'Foo::Bar(int*) [Switch table]',
+      ),
+      (
+        48,
+        '',
+        post_demangle('Foo::Baz(int) const (.rel)'),
+        post_demangle(
+          'Foo::Baz(int) const (.llvm.f2b0f8c5b3b03fdbc3652143948290e7.9)'
+        ),
+        'Foo::Baz(int) const [Switch table]',
+      ),
+      # Legacy .size symbol that already ran through older _NormalizeNames.
+      (
+        12,
+        'foo.o',
+        'Foo::Bar(int*) (.11) [Switch table]',
+        post_demangle('Foo::Bar(int*) (.13)'),
+        'Foo::Bar(int*) [Switch table]',
+      ),
+      (
+        16,
+        'c.o',
+        '.Lswitch.table.c_fn.llvm.2951257514488452818',
+        '.Lswitch.table.c_fn.llvm.3548613732993952955.7',
+        '.Lswitch.table.c_fn',
+      ),
+      (
+        24,
+        'c.o',
+        '.Lswitch.table.c_fn2.21',
+        '.Lswitch.table.c_fn2.23.rel',
+        '.Lswitch.table.c_fn2',
+      ),
+      (
+        16,
+        'c.o',
+        demangle._PostProcessDemangledSymbol(
+          '.Lswitch.table._ReadHeader.9', '_ReadHeader.9'
+        ),
+        demangle._PostProcessDemangledSymbol(
+          '.Lswitch.table._ReadHeader.11.rel', '_ReadHeader.11.rel'
+        ),
+        '.Lswitch.table._ReadHeader',
+      ),
+      (
+        20,
+        'c.o',
+        '.Lswitch.table.45',
+        '.Lswitch.table.45',
+        '.Lswitch.table.45',
+      ),
+    ]
+    before_syms = [_MakeSym(RODATA, sz, p, b) for sz, p, b, _, _ in cases]
+    after_syms = [_MakeSym(RODATA, sz, p, a) for sz, p, _, a, _ in cases]
+    obj_paths = {'Foo::Bar(int*)': ['foo.o'], 'Foo::Baz(int) const': ['foo.o']}
+    native._DeduceObjectPathForSwitchTables(before_syms, obj_paths)
+    native._DeduceObjectPathForSwitchTables(after_syms, obj_paths)
+    archive._NormalizeNames(before_syms)
+    archive._NormalizeNames(after_syms)
+
+    for i, (_, _, b_in, a_in, expected) in enumerate(cases):
+      with self.subTest(before=b_in, after=a_in):
+        self.assertEqual(expected, before_syms[i].full_name)
+        self.assertEqual(expected, after_syms[i].full_name)
+    self.assertEqual('Foo::Baz const [Switch table]', after_syms[2].name)
+
+    size_info1.raw_symbols += before_syms
+    size_info2.raw_symbols += after_syms
+    d = diff.Diff(size_info1, size_info2)
+    self.assertEqual((0, 0, 0), d.raw_symbols.CountsByDiffStatus()[1:])
     self.assertEqual(0, d.raw_symbols.size)
 
 

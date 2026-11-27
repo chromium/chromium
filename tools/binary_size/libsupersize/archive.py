@@ -19,6 +19,7 @@ import zipfile
 import apk
 import archive_util
 import data_quality
+import demangle
 import describe
 import dex
 import dex_disassembly
@@ -34,6 +35,13 @@ import parallel
 import path_util
 import readelf
 import zip_util
+
+# Matches trailing LLVM suffixes on unmangled switch tables while preserving
+# unnamed ".Lswitch.table.45" symbols.
+_UNMANGLED_SWITCH_TABLE_SUFFIX_PATTERN = re.compile(
+  r'^(\.Lswitch\.table\..+?)'
+  r'(?:\.(?:\d+|llvm\.[0-9a-f]+|[0-9a-f]{16,32}|rel))+$'
+)
 
 
 @dataclasses.dataclass
@@ -197,6 +205,8 @@ def _NormalizeNames(raw_symbols):
             idx = full_name.rfind('.', 0, idx)
             if idx != -1:
               full_name = full_name[:idx]
+      elif full_name.startswith('.Lswitch.table.'):
+        full_name = _UNMANGLED_SWITCH_TABLE_SUFFIX_PATTERN.sub(r'\1', full_name)
 
       # E.g.: vtable for FOO
       idx = full_name.find(' for ', 0, 30)
@@ -209,6 +219,11 @@ def _NormalizeNames(raw_symbols):
       if idx != -1:
         found_prefixes.add(full_name[: idx + 3])
         full_name = '{} [{}]'.format(full_name[idx + 4 :], full_name[:idx])
+
+      # Strip suffixes preserved in legacy .size files.
+      if full_name.endswith(' [Switch table]') and ' (.' in full_name:
+        stem = full_name.removesuffix(' [Switch table]')
+        full_name = demangle.StripSwitchTableSuffix(stem) + ' [Switch table]'
 
       # Strip out return type, and split out name, template_name.
       # Function parsing also applies to non-text symbols.
