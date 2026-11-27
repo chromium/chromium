@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -119,21 +120,26 @@ class OsUpdatesReporterTest
  protected:
   OsUpdatesReporterTest() = default;
 
-  void SetUp() override { test_helper_.Init(); }
+  void SetUp() override {
+    test_helper_.Init();
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
+  }
 
-  void TearDown() override { test_helper_.Shutdown(); }
+  void TearDown() override {
+    fake_update_engine_client_ = nullptr;
+    ash::UpdateEngineClient::Shutdown();
+    test_helper_.Shutdown();
+  }
 
   TestHelper test_helper_;
+  raw_ptr<ash::FakeUpdateEngineClient> fake_update_engine_client_ = nullptr;
 };
 
 TEST_F(OsUpdatesReporterTest, ReportSuccessfulUpdatePolicyEnabled) {
   // Set current OS Version.
   base::test::ScopedChromeOSVersionInfo scoped_version(
       kLsbRelease, /*lsb_release_time=*/base::Time());
-
-  // Set up fake update client.
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ =
-      ash::UpdateEngineClient::InitializeFakeForTest();
 
   // Set up reporter.
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -169,10 +175,6 @@ TEST_F(OsUpdatesReporterTest, ReportSuccessfulUpdatePolicyDisabled) {
   base::test::ScopedChromeOSVersionInfo scoped_version(
       kLsbRelease, /*lsb_release_time=*/base::Time());
 
-  // Set up fake update client.
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ =
-      ash::UpdateEngineClient::InitializeFakeForTest();
-
   // Set up reporter.
   auto reporter_helper = test_helper_.GetReporterHelper(
       /*reporting_enabled=*/false);
@@ -202,10 +204,6 @@ TEST_P(OsUpdatesReporterTest, ReportFailedUpdateRollbackPolicyEnabled) {
   // Set current OS Version.
   base::test::ScopedChromeOSVersionInfo scoped_version(
       kLsbRelease, /*lsb_release_time=*/base::Time());
-
-  // Set up fake update client.
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ =
-      ash::UpdateEngineClient::InitializeFakeForTest();
 
   // Set up reporter.
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -244,10 +242,6 @@ TEST_P(OsUpdatesReporterTest, ReportFailedUpdateRollbackPolicyDisabled) {
   // Set current OS Version.
   base::test::ScopedChromeOSVersionInfo scoped_version(
       kLsbRelease, /*lsb_release_time=*/base::Time());
-
-  // Set up fake update client.
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ =
-      ash::UpdateEngineClient::InitializeFakeForTest();
 
   // Set up reporter.
   auto reporter_helper = test_helper_.GetReporterHelper(
