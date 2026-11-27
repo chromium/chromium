@@ -133,7 +133,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
             child->current_frame_host()->GetFrameToken(),
             first_party_remote.BindNewPipeAndPassReceiver(),
             ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
-                child->current_frame_host()->GetProcess()->GetDeprecatedID()),
+                child->current_frame_host()->GetProcess()->GetID()),
             base::DoNothing());
     first_party_remote.FlushForTesting();
     return first_party_remote.is_connected();
@@ -162,7 +162,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
             child->current_frame_host()->GetFrameToken(),
             third_party_remote.BindNewPipeAndPassReceiver(),
             ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
-                child->current_frame_host()->GetProcess()->GetDeprecatedID()),
+                child->current_frame_host()->GetProcess()->GetID()),
             base::DoNothing());
     third_party_remote.FlushForTesting();
     EXPECT_TRUE(third_party_remote.is_connected());

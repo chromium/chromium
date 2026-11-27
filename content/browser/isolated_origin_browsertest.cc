@@ -38,6 +38,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -3635,7 +3636,7 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
 
   auto foo_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   SiteInstanceImpl* foo_site_instance = web_contents()->GetSiteInstance();
   EXPECT_EQ(expected_foo_lock,
             ProcessLock::FromSiteInfo(foo_site_instance->GetSiteInfo()));
@@ -3646,11 +3647,8 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
       embedded_test_server()->GetURL("sub.foo.com", "/title1.html");
   const auto expected_sub_foo_lock = GetStrictProcessLock(sub_foo_url);
   EXPECT_TRUE(NavigateToURL(shell(), sub_foo_url));
-  auto sub_foo_process_id = shell()
-                                ->web_contents()
-                                ->GetPrimaryMainFrame()
-                                ->GetProcess()
-                                ->GetDeprecatedID();
+  auto sub_foo_process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   SiteInstanceImpl* sub_foo_site_instance = web_contents()->GetSiteInstance();
   EXPECT_EQ(expected_sub_foo_lock,
             ProcessLock::FromSiteInfo(sub_foo_site_instance->GetSiteInfo()));
@@ -3667,11 +3665,8 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
       embedded_test_server()->GetURL("another.foo.com", "/title2.html"));
   const auto expected_another_foo_lock = GetStrictProcessLock(another_foo_url);
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), another_foo_url));
-  auto another_foo_process_id = shell()
-                                    ->web_contents()
-                                    ->GetPrimaryMainFrame()
-                                    ->GetProcess()
-                                    ->GetDeprecatedID();
+  auto another_foo_process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   SiteInstanceImpl* another_foo_site_instance =
       web_contents()->GetSiteInstance();
   EXPECT_NE(another_foo_process_id, sub_foo_process_id);
@@ -5915,8 +5910,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
           .root();
 
   // The new window's process should be locked to "foo.com".
-  int isolated_foo_com_process_id =
-      second_root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId isolated_foo_com_process_id =
+      second_root->current_frame_host()->GetProcess()->GetID();
   EXPECT_EQ(ProcessLockFromUrl("http://foo.com"),
             policy->GetProcessLock(isolated_foo_com_process_id));
 
@@ -5933,7 +5928,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
       embedded_test_server()->GetURL("sub.foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(second_shell, sub_foo_url));
   EXPECT_EQ(isolated_foo_com_process_id,
-            second_root->current_frame_host()->GetProcess()->GetDeprecatedID());
+            second_root->current_frame_host()->GetProcess()->GetID());
 
   // Now, start isolating sub.foo.com.
   policy->AddFutureIsolatedOrigins({url::Origin::Create(sub_foo_url)},
@@ -5955,7 +5950,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
       second_shell, embedded_test_server()->GetURL("bar.com", "/title2.html")));
   EXPECT_TRUE(NavigateToURL(second_shell, sub_foo_url));
   EXPECT_NE(isolated_foo_com_process_id,
-            second_root->current_frame_host()->GetProcess()->GetDeprecatedID());
+            second_root->current_frame_host()->GetProcess()->GetID());
   EXPECT_EQ(ProcessLockFromUrl("http://sub.foo.com"),
             second_root->current_frame_host()->GetProcess()->GetProcessLock());
 

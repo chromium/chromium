@@ -172,17 +172,16 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
       dropped_data, client_point, screen_point, blink::kDragOperationNone, 0,
       base::DoNothing());
 
-  int id = process()->GetDeprecatedID();
   ChildProcessId process_id = process()->GetID();
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Permissions are not granted at DragEnter.
-  EXPECT_FALSE(policy->CanRequestURL(id, highlighted_file_url));
+  EXPECT_FALSE(policy->CanRequestURL(process_id, highlighted_file_url));
   EXPECT_FALSE(policy->CanReadFile(process_id, highlighted_file_path));
-  EXPECT_FALSE(policy->CanRequestURL(id, dragged_file_url));
+  EXPECT_FALSE(policy->CanRequestURL(process_id, dragged_file_url));
   EXPECT_FALSE(policy->CanReadFile(process_id, dragged_file_path));
-  EXPECT_FALSE(policy->CanRequestURL(id, sensitive_file_url));
+  EXPECT_FALSE(policy->CanRequestURL(process_id, sensitive_file_url));
   EXPECT_FALSE(policy->CanReadFile(process_id, sensitive_file_path));
 }
 

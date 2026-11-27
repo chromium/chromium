@@ -37,6 +37,7 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -424,7 +425,7 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   auto handle = p->CreateHandle(process.GetID());
 
   // Safe to request, redirect or commit.
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
   EXPECT_TRUE(p->CanRequestURL(renderer_id, GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRequestURL(renderer_id, GURL("https://www.paypal.com/")));
   EXPECT_TRUE(p->CanRequestURL(renderer_id, GURL("data:text/html,<b>Hi</b>")));
@@ -480,7 +481,7 @@ TEST_P(ChildProcessSecurityPolicyTest, BlobSchemeTest) {
 
   GURL localhost_url("http://localhost/");
   MockRenderProcessHost process(browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
   LockProcessIfNeeded(process.GetID(), browser_context(), localhost_url);
 
   EXPECT_TRUE(
@@ -554,7 +555,7 @@ TEST_P(ChildProcessSecurityPolicyTest, OpaqueBlobAndFileSystemSchemeTest) {
       ChildProcessSecurityPolicyImpl::GetInstance();
   MockRenderProcessHost process(browser_context());
   LockProcessIfNeeded(process.GetID(), browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
 
   EXPECT_TRUE(p->CanRequestURL(renderer_id, opaque_blob_url));
   EXPECT_TRUE(p->CanCommitURL(renderer_id, opaque_blob_url));
@@ -643,7 +644,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RegisterWebSafeSchemeTest) {
 
   MockRenderProcessHost process(browser_context());
   LockProcessIfNeeded(process.GetID(), browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
 
   // Currently, "asdf" is destined for ShellExecute, so it is allowed to be
   // requested but not committed.
@@ -680,8 +681,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RegisterWebSafeSchemeTest) {
     MockRenderProcessHost locked_process(browser_context());
     LockProcessIfNeeded(locked_process.GetID(), browser_context(),
                         GURL("asdf:rockers"));
-    EXPECT_TRUE(p->CanCommitURL(locked_process.GetDeprecatedID(),
-                                GURL("asdf:rockers")));
+    EXPECT_TRUE(p->CanCommitURL(locked_process.GetID(), GURL("asdf:rockers")));
   } else {
     // Without site-per-process, the URL doesn't require a dedicated process,
     // so even a used process that isn't locked can commit it.
@@ -712,7 +712,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceCommandsTest) {
   // A new process shouldn't inherit grants given to another process.
   MockRenderProcessHost new_process(browser_context());
   LockProcessIfNeeded(new_process.GetID(), browser_context());
-  const int new_renderer_id = new_process.GetDeprecatedID();
+  const ChildProcessId new_renderer_id = new_process.GetID();
   EXPECT_FALSE(p->CanRequestURL(new_renderer_id, GURL("file:///etc/passwd")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("file:///etc/passwd")));
   EXPECT_FALSE(p->CanCommitURL(new_renderer_id, GURL("file:///etc/passwd")));
@@ -782,7 +782,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GoogleChromeScheme) {
 
   MockRenderProcessHost process(browser_context());
   LockProcessIfNeeded(process.GetID(), browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
 
   GURL test_url("googlechrome://whatever");
 
@@ -840,7 +840,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ExternalFile_Normalization) {
   ASSERT_TRUE(GetContentClientForTesting()->browser()->IsHandledURL(base_url));
 
   MockRenderProcessHost process(browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
   LockProcessIfNeeded(process.GetID(), browser_context(), base_url);
 
   // Grant request access to the base URL.
@@ -880,7 +880,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ExternalFile) {
       GetContentClientForTesting()->browser()->IsHandledURL(externalfile1));
 
   MockRenderProcessHost process(browser_context());
-  const int renderer_id = process.GetDeprecatedID();
+  const ChildProcessId renderer_id = process.GetID();
   LockProcessIfNeeded(process.GetID(), browser_context(), externalfile2);
 
   // Initially, neither can be requested or committed.
@@ -4229,7 +4229,6 @@ TEST_P(ChildProcessSecurityPolicyTest, MAYBE_Shards) {
   const ChildProcessId kLockedProcess = locked_process.GetID();
   const int kIsolatedId = isolated_process.GetDeprecatedID();
   const int kDefaultId = default_process.GetDeprecatedID();
-  const int kUnassignedId = unassigned_process.GetDeprecatedID();
 
   const GURL kIsolatedUrl("http://isolated.com/");
   const GURL kIsolatedSubdomainUrl("http://sub.isolated.com/");
@@ -4315,8 +4314,8 @@ TEST_P(ChildProcessSecurityPolicyTest, MAYBE_Shards) {
 
   // A process that was marked as used without specifying a shard is in the
   // default shard.
-  EXPECT_TRUE(p->CanCommitURL(kUnassignedId, kUnisolatedUrl));
-  EXPECT_FALSE(p->CanCommitURL(kUnassignedId, kIsolatedUrl));
+  EXPECT_TRUE(p->CanCommitURL(kUnassignedProcess, kUnisolatedUrl));
+  EXPECT_FALSE(p->CanCommitURL(kUnassignedProcess, kIsolatedUrl));
 
   // Data access is also restricted to the process's shard, including for
   // opaque origins (e.g. for data: URLs) whose precursor is in that shard.

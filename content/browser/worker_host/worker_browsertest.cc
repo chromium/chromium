@@ -756,11 +756,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       non_committable_url));
 
   EXPECT_EQ("error", EvalJs(shell(), R"(
