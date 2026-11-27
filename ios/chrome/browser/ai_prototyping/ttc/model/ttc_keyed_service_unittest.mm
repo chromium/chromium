@@ -25,6 +25,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 // Test fixture for `TTCKeyedService` and `TTCKeyedServiceFactory`.
 class TTCKeyedServiceTest : public PlatformTest {
@@ -260,6 +261,13 @@ TEST_F(TTCKeyedServiceTest,
 // Tests that `StartSession` wires a `TtcActuationHandler` into the active
 // `TtcSessionController`.
 TEST_F(TTCKeyedServiceTest, TestStartSessionWiresActuationHandler) {
+  const bool is_unsupported_form_factor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+      IsDuoDevice();
+  if (is_unsupported_form_factor) {
+    GTEST_SKIP() << "Requires a non-Duo iPhone simulator.";
+  }
+
   TTCKeyedService* service =
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(service, nullptr);

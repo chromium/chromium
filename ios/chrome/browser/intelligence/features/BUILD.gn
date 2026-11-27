@@ -21,6 +21,7 @@ source_set("features") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ui/base",
   ]
 }
 
@@ -37,5 +38,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

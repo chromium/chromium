@@ -376,6 +376,8 @@ bool IsGeminiAureusForegroundQuotaRefreshEnabled();
 
 // Feature flag for enabling Gemini actor.
 BASE_DECLARE_FEATURE(kGeminiActor);
+
+// Returns true if Gemini actor is enabled (non-Duo iPhone only).
 bool IsGeminiActorEnabled();
 
 // Parameter to enable or disable backgrounding in Gemini Actor.

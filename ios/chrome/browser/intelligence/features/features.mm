@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kEnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -804,9 +805,19 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(4));
 
 bool IsGeminiActorEnabled() {
-  if (!IsPageActionMenuEnabled() || !IsActorEnabled()) {
+  // TODO(crbug.com/590877582): Support tablet and iPhone Duo form factors.
+  const bool is_unsupported_form_factor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+      IsDuoDevice();
+  if (is_unsupported_form_factor) {
     return false;
   }
+
+  const bool has_prerequisites = IsPageActionMenuEnabled() && IsActorEnabled();
+  if (!has_prerequisites) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kGeminiActor);
 }
 

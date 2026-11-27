@@ -57,6 +57,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
 namespace {
@@ -500,9 +501,10 @@ TEST_F(GeminiContainerCoordinatorTest, TestStartWiresSessionSnackbarHandler) {
   [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
 }
 
-// Tests that, with the actor enabled, `start` registers a provider for the
-// start-task confirmation card before the container is shown, and that the
-// card is no longer claimed after `stop`.
+// Tests that, with the actor flags enabled, `start` registers a provider for
+// the start-task confirmation card on non-Duo iPhones before the container is
+// shown and unregisters it on `stop`, while leaving it unregistered on iPad and
+// iPhone Duo.
 TEST_F(GeminiContainerCoordinatorTest,
        TestStartRegistersConfirmationCardProviderWhenActorEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -534,8 +536,16 @@ TEST_F(GeminiContainerCoordinatorTest,
   [coordinator_ start];
   EXPECT_OCMOCK_VERIFY(mock_container_handler);
   ASSERT_TRUE(handler);
-  EXPECT_TRUE(card_claimed_when_shown);
-  EXPECT_TRUE([handler providesCustomContentViewForBlockNode:card_block]);
+  const bool is_unsupported_form_factor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+      IsDuoDevice();
+  if (is_unsupported_form_factor) {
+    EXPECT_FALSE(card_claimed_when_shown);
+    EXPECT_FALSE([handler providesCustomContentViewForBlockNode:card_block]);
+  } else {
+    EXPECT_TRUE(card_claimed_when_shown);
+    EXPECT_TRUE([handler providesCustomContentViewForBlockNode:card_block]);
+  }
 
   [coordinator_ stop];
   EXPECT_FALSE([handler providesCustomContentViewForBlockNode:card_block]);

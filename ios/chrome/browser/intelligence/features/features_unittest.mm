@@ -18,6 +18,18 @@
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
+
+namespace {
+
+// Returns true when running on a form factor where Gemini Actor is unsupported
+// (tablet or iPhone Duo).
+bool IsUnsupportedGeminiActorFormFactor() {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+         IsDuoDevice();
+}
+
+}  // namespace
 
 class ActorFeaturesTest : public PlatformTest {
  protected:
@@ -302,8 +314,22 @@ TEST_F(ActorFeaturesTest, IsGeminiExperimentalGuidedOnboardingEnabled) {
   }
 }
 
-// Tests Gemini Actor backgrounding when Gemini Actor and its prerequisites are
-// enabled with default parameter values (which defaults to true).
+// Tests that Gemini Actor is enabled on non-Duo iPhones and disabled on iPad
+// and iPhone Duo when all flags are on.
+TEST_F(ActorFeaturesTest, GeminiActorEnabledOnlyOnNonDuoPhone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kActorTools, kGeminiActor}, {});
+
+  if (IsUnsupportedGeminiActorFormFactor()) {
+    EXPECT_FALSE(IsGeminiActorEnabled());
+  } else {
+    EXPECT_TRUE(IsGeminiActorEnabled());
+  }
+}
+
+// Tests that Gemini Actor backgrounding follows the continued-processing flag
+// on non-Duo iPhones and is disabled on iPad and iPhone Duo.
 TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -311,8 +337,12 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingEnabled) {
        kEnableBackgroundContinuedProcessing},
       {});
 
-  EXPECT_EQ(IsBackgroundContinuedProcessingEnabled(),
-            IsGeminiActorBackgroundingEnabled());
+  if (IsUnsupportedGeminiActorFormFactor()) {
+    EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
+  } else {
+    EXPECT_EQ(IsBackgroundContinuedProcessingEnabled(),
+              IsGeminiActorBackgroundingEnabled());
+  }
 }
 
 // Tests that Gemini Actor backgrounding returns false when explicitly disabled
