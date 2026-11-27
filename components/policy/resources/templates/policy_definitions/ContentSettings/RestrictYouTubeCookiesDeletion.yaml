@@ -9,7 +9,7 @@ desc: |-
 
   Setting the policy to Disabled or not set allows <ph name="YOUTUBE_PRODUCT_NAME">YouTube</ph> cookies to be deleted normally.
 
-  Note: This policy only prevents manual deletion from the site settings UI. It does not prevent automated deletion by the <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME">ClearBrowsingDataOnExitList</ph> or <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME">BrowsingDataLifetime</ph> policies. Furthermore, if the <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME">AllowDeletingBrowserHistory</ph> policy is enabled, users can still clear all their cookies via the Clear Browsing Data dialog.
+  Note: This policy only prevents manual deletion from the site settings UI. It does not prevent automated deletion by the <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME">ClearBrowsingDataOnExitList</ph> or <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME">BrowsingDataLifetime</ph> policies. Users can still clear all their cookies via the Clear Browsing Data dialog, regardless of this policy.
 
 example_value: true
 features:
