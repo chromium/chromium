@@ -190,7 +190,9 @@ void ProfileCustomizationHandler::HandleDeleteProfile(
     const base::ListValue& args) {
   CHECK_EQ(0u, args.size());
 
-  CHECK(GetProfileEntry()->IsEphemeral(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/590694428): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(GetProfileEntry()->IsEphemeral());
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
   // Since the profile is ephemeral, closing all browser windows triggers the
