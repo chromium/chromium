@@ -1562,6 +1562,7 @@ if (is_android) {
       "//chrome/test/android:chrome_java_transit",
       "//components/saved_tab_groups/public:java",
       "//components/sensitive_content:sensitive_content_features_java",
+      "//components/visited_url_ranking/public:public_java",
     ]
   }
 

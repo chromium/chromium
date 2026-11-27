@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
+import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -116,6 +117,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
+import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -170,6 +172,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock private TabGroupSuggestionMessageService mTabGroupSuggestionMessageService;
+    @Mock private GroupSuggestionsService mGroupSuggestionsService;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private WindowAndroid mWindowAndroid;
@@ -216,6 +220,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        GroupSuggestionsServiceFactory.setGroupSuggestionsServiceForTesting(
+                mGroupSuggestionsService);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
 
@@ -255,6 +261,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         activity.setContentView(mRootView);
         when(mMessageManager.getPriceWelcomeMessageController())
                 .thenReturn(mPriceWelcomeMessageController);
+        when(mMessageManager.getTabGroupSuggestionMessageService())
+                .thenReturn(mTabGroupSuggestionMessageService);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -778,6 +786,96 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         assertNotNull(mCoordinator.getTabGridDialogAnimationSourceView(tabGroupId));
 
         mIsVisibleSupplier.set(false);
+    }
+
+    @Test
+    public void testDestroyClearsDetachedRecyclerViewChildren() {
+        setUpTabInGroup(new Token(1L, 2L));
+
+        TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 1000);
+        assertEquals(1, recyclerView.getChildCount());
+
+        mContainerView.removeAllViews();
+        mCoordinator.destroy();
+
+        assertEquals(0, recyclerView.getChildCount());
+        assertNull(recyclerView.getAdapter());
+
+        // Must recreate the coordinator to satisfy the #tearDown() assertions.
+        reset(mMessageManager);
+        onActivityCreated(mActivity);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID,
+        ChromeFeatureList.GROUP_SUGGESTION_SERVICE
+    })
+    public void testShowGroupSuggestionsObserverRemovedAfterDestroy() {
+        mIsVisibleSupplier.set(false);
+        mIsAnimatingSupplier.set(true);
+        mIsVisibleSupplier.set(true);
+
+        mCoordinator.destroy();
+        assertFalse(mIsAnimatingSupplier.hasObservers());
+
+        // Must recreate the coordinator to satisfy the #tearDown() assertions.
+        mIsAnimatingSupplier.set(false);
+        reset(mMessageManager);
+        onActivityCreated(mActivity);
+    }
+
+    @Test
+    public void testHardCleanupClearsDetachedRecyclerViewChildren() {
+        setUpTabInGroup(new Token(1L, 2L));
+
+        TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 1000);
+        assertEquals(1, recyclerView.getChildCount());
+
+        mContainerView.removeAllViews();
+        mCoordinator.hardCleanup();
+
+        assertEquals(0, recyclerView.getChildCount());
+        assertNotNull(recyclerView.getAdapter());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID,
+        ChromeFeatureList.GROUP_SUGGESTION_SERVICE
+    })
+    public void testShowGroupSuggestionsObserverRemovedOnHide() {
+        mIsVisibleSupplier.set(false);
+        clearInvocations(mGroupSuggestionsService);
+        mIsAnimatingSupplier.set(true);
+        mIsVisibleSupplier.set(true);
+
+        mIsVisibleSupplier.set(false);
+        mIsAnimatingSupplier.set(false);
+
+        verify(mGroupSuggestionsService, never()).getCachedSuggestions(anyInt());
+    }
+
+    @Test
+    public void testTabModelObserverReboundOnTabModelChange() {
+        MockTabModel secondTabModel = spy(new MockTabModel(mProfile, null));
+        when(secondTabModel.isTabStateInitialized()).thenReturn(true);
+
+        mTabModelSupplier.set(secondTabModel);
+        verify(mTabModel).removeObserver(mTabModelObserver);
+        verify(secondTabModel).addObserver(mTabModelObserver);
+
+        mCoordinator.destroy();
+        verify(secondTabModel).removeObserver(mTabModelObserver);
+
+        // Must recreate the coordinator to satisfy the #tearDown() assertions.
+        mTabModelSupplier.set(mTabModel);
+        reset(mMessageManager);
+        onActivityCreated(mActivity);
     }
 
     private void setUpTabInGroup(Token tabGroupId) {

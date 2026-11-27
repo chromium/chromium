@@ -278,6 +278,9 @@ specific_include_rules = {
   "TabSwitcherPaneCoordinatorFactoryUnitTest\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
   ],
+  "TabSwitcherPaneCoordinatorUnitTest\\.java": [
+    "+components/visited_url_ranking/public/url_grouping",
+  ],
   "TabSwitcherSearchRenderTest\\.java": [
     "+chrome/browser/ui/android/night_mode",
   ],

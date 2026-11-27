@@ -115,7 +115,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -254,6 +253,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final PinnedTabStripCoordinator mPinnedTabsCoordinator;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+    private @Nullable TabModel mObservedTabModel;
+    private final Callback<Boolean> mShowGroupSuggestionsObserver =
+            this::onIsAnimatingChangedForGroupSuggestions;
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -589,7 +591,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
             // TODO(agrieve): mTabModelSupplier can be changed to be NonNull assuming
             // that this assumeNonNull() is not a bug.
-            assumeNonNull(mTabModelSupplier.get()).addObserver(mTabModelObserver);
+            mObservedTabModel = assumeNonNull(mTabModelSupplier.get());
+            mObservedTabModel.addObserver(mTabModelObserver);
 
             LinearLayout supplementaryDataContainer =
                     parentView.findViewById(R.id.supplementary_data_container);
@@ -737,12 +740,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
         }
+        mIsAnimatingSupplier.removeObserver(mShowGroupSuggestionsObserver);
         if (mTabSwitcherGroupSuggestionService != null) {
             mTabSwitcherGroupSuggestionService.destroy();
         }
 
-        if (mTabModelSupplier.get() != null) {
-            mTabModelSupplier.get().removeObserver(mTabModelObserver);
+        if (mObservedTabModel != null) {
+            mObservedTabModel.removeObserver(mTabModelObserver);
+            mObservedTabModel = null;
         }
 
         mPinnedTabsCoordinator.destroy();
@@ -855,6 +860,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         // TODO(crbug.com/40946413): The pre-fork implementation resets the tab list, this seems
         // suboptimal. Consider not doing this.
         resetWithListOfTabs(null);
+        mTabListCoordinator.hardCleanup();
     }
 
     /**
@@ -1056,29 +1062,23 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()
                 && mTabSwitcherGroupSuggestionService != null) {
             recordGroupSuggestionHistogram(SuggestionUiEvent.TAB_SWITCHER_OPENED);
-            showGroupSuggestionsAfterAnimations();
+            mIsAnimatingSupplier.removeObserver(mShowGroupSuggestionsObserver);
+            mIsAnimatingSupplier.addSyncObserver(mShowGroupSuggestionsObserver);
         }
 
         mTabListCoordinator.attachEmptyView();
     }
 
-    private void showGroupSuggestionsAfterAnimations() {
-        mIsAnimatingSupplier.addSyncObserver(
-                new Callback<>() {
-                    @Override
-                    public void onResult(Boolean result) {
-                        if (!Objects.equals(result, false)) return;
+    private void onIsAnimatingChangedForGroupSuggestions(boolean isAnimating) {
+        if (isAnimating) return;
 
-                        assert mTabSwitcherGroupSuggestionService != null;
-                        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid
-                                .isEnabled()) {
-                            mTabSwitcherGroupSuggestionService.forceTabGroupSuggestion();
-                        } else {
-                            mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
-                        }
-                        mIsAnimatingSupplier.removeObserver(this);
-                    }
-                });
+        mIsAnimatingSupplier.removeObserver(mShowGroupSuggestionsObserver);
+        assert mTabSwitcherGroupSuggestionService != null;
+        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()) {
+            mTabSwitcherGroupSuggestionService.forceTabGroupSuggestion();
+        } else {
+            mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
+        }
     }
 
     @VisibleForTesting
@@ -1122,6 +1122,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             updateBottomPadding();
             mTabListCoordinator.postHiding();
 
+            mIsAnimatingSupplier.removeObserver(mShowGroupSuggestionsObserver);
             if (mTabSwitcherGroupSuggestionService != null) {
                 mTabSwitcherGroupSuggestionService.clearSuggestions();
             }
@@ -1202,6 +1203,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void onTabModelChange(TabModel tabModel) {
+        if (mObservedTabModel != tabModel) {
+            if (mObservedTabModel != null) {
+                mObservedTabModel.removeObserver(mTabModelObserver);
+            }
+            mObservedTabModel = tabModel;
+            mObservedTabModel.addObserver(mTabModelObserver);
+        }
+
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
         }

@@ -741,6 +741,15 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mMediator.softCleanup();
     }
 
+    void hardCleanup() {
+        // When mRecyclerView is detached from the window, adapter notifications do not trigger a
+        // layout pass, leaving child views and their thumbnail drawables pinned in mRecyclerView.
+        // Swapping the adapter and clearing the pool recycles all ViewHolders and releases
+        // TabThumbnailView drawables immediately.
+        mRecyclerView.swapAdapter(mAdapter, /* removeAndRecycleExistingViews= */ true);
+        mRecyclerView.getRecycledViewPool().clear();
+    }
+
     private void registerLayoutChangeListener() {
         if (mListLayoutListener != null) {
             // TODO(crbug.com/40288028): There might be a timing or race condition that
@@ -824,6 +833,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     public void onDestroy() {
         mMediator.destroy();
         mModelList.clear();
+        // Detach the adapter before clearing the recycler listener so attached and cached
+        // ViewHolders are recycled and release their thumbnail drawables even when mRecyclerView
+        // has already been removed from its parent.
+        mRecyclerView.setAdapter(null);
         destroyEmptyView();
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.removeListObserver();

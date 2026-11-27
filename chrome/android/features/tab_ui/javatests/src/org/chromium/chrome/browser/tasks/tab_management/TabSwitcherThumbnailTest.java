@@ -10,7 +10,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.View;
@@ -26,10 +29,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ThumbnailFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
@@ -39,6 +44,9 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
+
+import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for the thumbnail view in Grid Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -104,6 +112,77 @@ public class TabSwitcherThumbnailTest {
         // fetcher to null, which triggers TabGridViewBinder#releaseThumbnail. If the view still
         // under measuring, then its height can be zero after measurement.
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
+    }
+
+    @Test
+    @MediumTest
+    public void testHardCleanupWhileDetachedReleasesTabThumbnailView() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), 2, 0, "about:blank");
+        TabUiTestHelper.enterTabSwitcher(cta);
+
+        // Hold only a WeakReference to a TabThumbnailView from a separate stack frame so no local
+        // strong reference survives into the GC check below.
+        WeakReference<View> thumbnailRef = getFirstTabThumbnailWeakRef(cta);
+
+        TabUiTestHelper.leaveTabSwitcher(cta);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var tabSwitcherPane =
+                            (TabSwitcherPaneBase)
+                                    cta.getHubManagerSupplierForTesting()
+                                            .get()
+                                            .getPaneManager()
+                                            .getFocusedPaneSupplier()
+                                            .get();
+                    tabSwitcherPane.hardCleanupForTesting();
+                });
+
+        assertTrue(
+                "TabThumbnailView should be garbage collected after hard cleanup while detached",
+                canBeGarbageCollected(thumbnailRef));
+
+        int remainingChildren =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var tabSwitcherPane =
+                                    (TabSwitcherPaneBase)
+                                            cta.getHubManagerSupplierForTesting()
+                                                    .get()
+                                                    .getPaneManager()
+                                                    .getFocusedPaneSupplier()
+                                                    .get();
+                            RecyclerView recyclerView =
+                                    tabSwitcherPane
+                                            .getRootView()
+                                            .findViewById(R.id.tab_list_recycler_view);
+                            assertNotNull(recyclerView);
+                            return recyclerView.getChildCount();
+                        });
+        assertEquals(0, remainingChildren);
+    }
+
+    private WeakReference<View> getFirstTabThumbnailWeakRef(ChromeTabbedActivity cta) {
+        AtomicReference<WeakReference<View>> ref = new AtomicReference<>();
+        ViewPresence<View> recyclerView =
+                waitForView(
+                        isDescendantOfA(withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
+                        withId(R.id.tab_list_recycler_view));
+        recyclerView.check(
+                (view, noMatchException) -> {
+                    if (noMatchException != null) throw noMatchException;
+                    RecyclerView rv = (RecyclerView) view;
+                    RecyclerView.ViewHolder holder = rv.findViewHolderForAdapterPosition(0);
+                    assertNotNull(holder);
+                    ViewLookupCachingFrameLayout tabView =
+                            (ViewLookupCachingFrameLayout) holder.itemView;
+                    ImageView thumbnail = tabView.fastFindViewById(R.id.tab_thumbnail);
+                    assertNotNull(thumbnail);
+                    ref.set(new WeakReference<>(thumbnail));
+                });
+        assertNotNull(ref.get());
+        return ref.get();
     }
 
     private void verifyAllThumbnailHeightWithAspectRatio(int tabCounts, float ratio) {
