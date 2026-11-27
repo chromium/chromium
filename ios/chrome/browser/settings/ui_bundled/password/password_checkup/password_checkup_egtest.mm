@@ -200,37 +200,40 @@ void OpenPasswordCheckupHomepage(PasswordCheckUIState result_state,
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Verifies that a password issues page with the given navigation bar `title`
+// is correctly presented.
+void VerifyPasswordIssuesPageIsVisible(id<GREYMatcher> title) {
+  // The title is matched by presence in the navigation bar rather than with
+  // `grey_sufficientlyVisible()`, because EarlGrey's pixel-based visibility
+  // check intermittently reports the navigation bar title as not visible on
+  // iOS 26 even when it is rendered on screen. The ancestor constraint avoids
+  // matching the Password Checkup Homepage item that has the same label.
+  id<GREYMatcher> navigation_bar_title = grey_allOf(
+      title, grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:navigation_bar_title];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordIssuesTableView()];
+}
+
 // Verify that the compromised issues page is correctly presented.
 void VerifyCompromisedPasswordIssuesPageIsVisible(int issue_count) {
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      CompromisedPasswordIssuesPageTitle(issue_count)];
-  [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  VerifyPasswordIssuesPageIsVisible(
+      CompromisedPasswordIssuesPageTitle(issue_count));
 }
 
 // Verify that the dismissed warnings page is correctly presented.
 void VerifyDismissedWarningsPageIsVisible() {
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      DismissedWarningsPageTitle()];
-  [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  VerifyPasswordIssuesPageIsVisible(DismissedWarningsPageTitle());
 }
 
 // Verify that the reused issues page is correctly presented.
 void VerifyReusedPasswordIssuesPageIsVisible(int issue_count) {
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ReusedPasswordIssuesPageTitle(issue_count)];
-  [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  VerifyPasswordIssuesPageIsVisible(ReusedPasswordIssuesPageTitle(issue_count));
 }
 
 // Verify that the weak issues page is correctly presented.
 void VerifyWeakPasswordIssuesPageIsVisible(int issue_count) {
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:WeakPasswordIssuesPageTitle(
-                                                       issue_count)];
-  [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  VerifyPasswordIssuesPageIsVisible(WeakPasswordIssuesPageTitle(issue_count));
 }
 
 // Taps the "Back" button of the navigation bar.
