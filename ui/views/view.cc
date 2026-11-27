@@ -3312,7 +3312,9 @@ void View::PaintDebugRects(const PaintInfo& parent_paint_info) {
 
 void View::AddChildViewAtImpl(View* view, size_t index) {
   CHECK_NE(view, this) << "You cannot add a view as its own child";
-  CHECK_LE(index, children_.size(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/590733326): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(index, children_.size());
 
   // TODO(crbug.com/41447071): Should just DCHECK(!view->parent_);.
   View* parent = view->parent_;
