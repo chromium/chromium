@@ -2990,7 +2990,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
     public void test_math() {
         performHtmlTest("math.html");
     }

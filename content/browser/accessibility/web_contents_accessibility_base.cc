@@ -2202,7 +2202,9 @@ bool WebContentsAccessibilityBase::PopulateAccessibilityNodeInfo(
   PopulateAccessibilityNodeInfoRangeInfo(env, info, obj, node);
   PopulateAccessibilityNodeInfoPaneTitle(env, info, obj, node);
   PopulateAccessibilityNodeInfoSelection(env, info, obj, node);
-  PopulateAccessibilityNodeInfoMathAttributes(env, info, obj, node);
+  if (features::IsAccessibilityAndroidMathEnabled()) {
+    PopulateAccessibilityNodeInfoMathAttributes(env, info, obj, node);
+  }
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
 
   return true;
