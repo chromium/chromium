@@ -40,6 +40,8 @@ out/Debug-iphonesimulator/run_base_unittests \
 * Just write a unit test if the purpose of your test does not involve UI.
 * Learn about EarlGrey test framework principles and APIs in [EarlGrey].
 * Learn about [Defining Test Cases and Test Methods] from Apple.
+* Read [Writing robust EarlGrey tests](/ios/testing/docs/eg_test_best_practices.md)
+  to avoid common causes of flakiness.
 
 #### Creating test files and writing EG2 tests
 

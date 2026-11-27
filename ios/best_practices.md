@@ -844,7 +844,9 @@ ______________________________________________________________________
     example,
     [Unit Testing Mediators](architecture/mediators.md#unit-testing-mediators)).
   - **EarlGrey tests (`*_egtest.mm`):** Use for end-to-end integration and user
-    journeys across UI and model layers.
+    journeys across UI and model layers. Follow
+    [Writing robust EarlGrey tests](testing/docs/eg_test_best_practices.md) to
+    avoid flakiness.
 - **Start bug fixes with a regression test:** When fixing a bug in a mediator or
   model class, first write a unit test that reproduces the bug and fails, then
   write the fix that makes it pass. Land the test in the same CL as the fix so
