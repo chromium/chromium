@@ -99,6 +99,7 @@ static_library("cloud_upload") {
     "//extensions/common:common_constants",
     "//google_apis/common",
     "//net",
+    "//ui/aura",
     "//ui/base",
     "//ui/chromeos/strings",
     "//ui/message_center",
