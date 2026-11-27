@@ -39,6 +39,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -173,7 +174,11 @@ public class GlicAndroidUiIntegrationTest {
     @LargeTest
     public void testButtonStateTransitions() {
         // Capture the registered observer on the mock service.
-        verify(mActorService, Mockito.atLeastOnce()).addObserver(mActorObserverCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mActorService, Mockito.atLeastOnce())
+                            .addObserver(mActorObserverCaptor.capture());
+                });
         ActorKeyedService.Observer observerTemp = null;
         for (ActorKeyedService.Observer obs : mActorObserverCaptor.getAllValues()) {
             if (obs instanceof GlicButtonStateController) {
@@ -193,12 +198,12 @@ public class GlicAndroidUiIntegrationTest {
         waitForButtonContentDescription(defaultDesc);
 
         // 2. Transition to WORKING.
-        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
-        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    when(mActorService.getActiveTasks())
+                            .thenReturn(Collections.singletonList(mActorTask));
+                    when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
                     observer.onTaskStateChanged(TEST_TASK_ID, ActorTaskState.ACTING);
                 });
 
@@ -209,9 +214,9 @@ public class GlicAndroidUiIntegrationTest {
         waitForButtonContentDescription(workingDesc);
 
         // 3. Transition to WAITING_ON_USER (Needs Review).
-        when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
                     observer.onTaskStateChanged(TEST_TASK_ID, ActorTaskState.WAITING_ON_USER);
                 });
 
@@ -222,11 +227,11 @@ public class GlicAndroidUiIntegrationTest {
         waitForButtonContentDescription(reviewDesc);
 
         // 4. Transition to FINISHED (Done).
-        when(mActorService.getActiveTasks()).thenReturn(Collections.emptyList());
-        when(mActorService.getCurrentActiveTask()).thenReturn(null);
-        when(mActorTask.getState()).thenReturn(ActorTaskState.FINISHED);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    when(mActorService.getActiveTasks()).thenReturn(Collections.emptyList());
+                    when(mActorService.getCurrentActiveTask()).thenReturn(null);
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.FINISHED);
                     observer.onTaskStateChanged(TEST_TASK_ID, ActorTaskState.FINISHED);
                 });
 
@@ -247,27 +252,44 @@ public class GlicAndroidUiIntegrationTest {
         onView(withId(R.id.optional_toolbar_button)).perform(click());
 
         // Verify that toggleUI was called on GlicKeyedService.
-        verify(mGlicService, Mockito.timeout(5000))
-                .toggleUI(Mockito.any(), Mockito.eq(false), Mockito.any(), Mockito.anyInt());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        verify(mGlicService)
+                                .toggleUI(
+                                        Mockito.any(),
+                                        Mockito.eq(false),
+                                        Mockito.any(),
+                                        Mockito.anyInt());
+                    } catch (AssertionError e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                5000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
     @LargeTest
     public void testButtonClickShowsTaskMenuWhenTaskOnOtherTab() {
         // Set up active task on a different tab.
-        int otherTabId = mTab.getId() + 1;
         String expectedTaskTitle = "Background filling task";
-        when(mActorTask.getId()).thenReturn(TEST_TASK_ID);
-        when(mActorTask.getTitle()).thenReturn(expectedTaskTitle);
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int otherTabId = mTab.getId() + 1;
+                    when(mActorTask.getId()).thenReturn(TEST_TASK_ID);
+                    when(mActorTask.getTitle()).thenReturn(expectedTaskTitle);
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
 
-        Set<Integer> tabSet = Collections.singleton(otherTabId);
-        when(mActorTask.getTabs()).thenReturn(tabSet);
-        when(mActorTask.getLastActedTabs()).thenReturn(tabSet);
+                    Set<Integer> tabSet = Collections.singleton(otherTabId);
+                    when(mActorTask.getTabs()).thenReturn(tabSet);
+                    when(mActorTask.getLastActedTabs()).thenReturn(tabSet);
 
-        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
-        when(mActorService.getActiveTaskIdOnTab(mTab.getId())).thenReturn(null);
-        when(mActorService.getActiveTaskIdOnTab(mTab.getId(), false)).thenReturn(null);
+                    when(mActorService.getActiveTasks())
+                            .thenReturn(Collections.singletonList(mActorTask));
+                    when(mActorService.getActiveTaskIdOnTab(mTab.getId())).thenReturn(null);
+                    when(mActorService.getActiveTaskIdOnTab(mTab.getId(), false)).thenReturn(null);
+                });
 
         // Verify the optional toolbar button is displayed and enabled before clicking.
         CriteriaHelper.pollUiThread(
@@ -316,8 +338,11 @@ public class GlicAndroidUiIntegrationTest {
         onView(withId(R.id.optional_toolbar_button)).check(matches(isDisplayed()));
 
         // Capture GlicKeyedService AllowedChangedObserver registration.
-        verify(mGlicService, Mockito.atLeastOnce())
-                .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mGlicService, Mockito.atLeastOnce())
+                            .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
+                });
 
         // Change Glic setting to false.
         GlicEnabling.setEnabledForTesting(false, /* forwardToNative= */ false);
