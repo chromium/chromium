@@ -38,7 +38,7 @@ enum class AccountSwitchingPromoResult {
   // The user explicitly declined the promo ("Not now").
   kDeclined,
   // The user closed the promo without an explicit accept/decline choice (e.g.
-  // close button or Escape key).
+  // close button, Escape key, or clicking the avatar pill).
   kDismissed,
   // The promo was closed or destroyed without any user interaction (e.g.
   // browser window close, preemption by another bubble, or account

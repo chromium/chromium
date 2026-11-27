@@ -14,6 +14,7 @@
 #include "ui/views/widget/widget.h"
 
 class AccountInfo;
+class AvatarToolbarButtonInterface;
 
 namespace signin {
 enum class AccountSwitchingPromoResult;
@@ -29,14 +30,17 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kAccountSwitchingBubbleDeclineButtonElementId);
 
 // Creates the widget for the Smart Account Switching prompt bubble offering to
 // switch from `primary_account` to `target_account`, anchored to `anchor`
-// (which must be non-null). `keep_visible` is held until the bubble closes so
-// an overflowed avatar button stays visible.
+// (which must be non-null). Expands `avatar_button` to the "Switch account?"
+// explicit pill for the lifetime of the bubble (dismissing the bubble if the
+// pill is clicked), and holds `keep_visible` until the bubble closes so an
+// overflowed avatar button stays visible.
 // `result_callback` is invoked once when the user acts on or closes the bubble.
 // `on_close` is passed as the synchronous widget close callback.
 // Implemented in
 // chrome/browser/ui/views/profiles/account_switching_bubble_views.cc.
 std::unique_ptr<views::Widget> CreateAccountSwitchingBubble(
     signin::IdentityManager& identity_manager,
+    AvatarToolbarButtonInterface& avatar_button,
     views::BubbleAnchor anchor,
     base::ScopedClosureRunner keep_visible,
     const AccountInfo& primary_account,

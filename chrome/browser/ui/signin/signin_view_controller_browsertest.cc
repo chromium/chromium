@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
@@ -2827,9 +2828,16 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
         "AccountSwitchingBubbleViews"));
   }
 
-  // Showing the bubble pops out the overflowed WebUI avatar button, anchors to
-  // its screen bounds with TOP_RIGHT arrow, and keeps it visible until closed.
+  // Showing the bubble pops out the overflowed WebUI avatar button, expands it
+  // to the "Switch account?" pill, anchors to its screen bounds with TOP_RIGHT
+  // arrow, and keeps it visible until closed.
   {
+    AvatarToolbarButtonInterface* avatar_button =
+        ToolbarButtonProvider::From(browser())
+            ->GetAvatarToolbarButtonInterface();
+    ASSERT_TRUE(avatar_button);
+    EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, "AccountSwitchingBubbleViews");
     base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
@@ -2840,6 +2848,10 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
     views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
     ASSERT_TRUE(bubble_widget);
     ASSERT_TRUE(WaitForAvatarElementVisible(true));
+    EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+    AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+    EXPECT_TRUE(avatar_accessor.WaitForText(
+        l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SWITCH_ACCOUNT)));
     ui::TrackedElement* avatar_el =
         BrowserElements::From(browser())->GetElement(
             kToolbarAvatarButtonElementId);
@@ -2855,6 +2867,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
     destroyed_waiter.Wait();
     EXPECT_EQ(result_future.Get(),
               signin::AccountSwitchingPromoResult::kIgnored);
+    EXPECT_FALSE(avatar_button->HasExplicitButtonState());
     EXPECT_TRUE(WaitForAvatarElementVisible(false));
   }
 
@@ -2949,6 +2962,9 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_TRUE(result_future.IsReady());
         EXPECT_EQ(result_future.Get(),
                   signin::AccountSwitchingPromoResult::kNotDisplayed);
+        EXPECT_FALSE(ToolbarButtonProvider::From(browser())
+                         ->GetAvatarToolbarButtonInterface()
+                         ->HasExplicitButtonState());
 
         identity_test_env()->ClearPrimaryAccount();
         identity_test_env()->RemoveRefreshTokenForAccount(
@@ -3023,8 +3039,10 @@ IN_PROC_BROWSER_TEST_F(
       /*primary_account=*/primary_account,
       /*profile_highlight_color=*/SK_ColorBLUE);
 
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+
   // Opening the account switching bubble closes any active interception bubble
-  // and clears the interception bubble's avatar pill state immediately.
+  // and replaces the interception pill with the "Switch account?" pill.
   views::NamedWidgetShownWaiter intercept_waiter(
       views::test::AnyWidgetTestPasskey{},
       "DiceWebSigninInterceptionBubbleView");
@@ -3035,6 +3053,8 @@ IN_PROC_BROWSER_TEST_F(
   views::Widget* intercept_widget = intercept_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(intercept_widget);
   EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringUTF16(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT)));
 
   views::test::WidgetDestroyedWaiter intercept_destroyed(intercept_widget);
   views::NamedWidgetShownWaiter switch_waiter(
@@ -3043,7 +3063,6 @@ IN_PROC_BROWSER_TEST_F(
   base::ScopedClosureRunner switch_handle =
       SigninViewController::From(browser())->ShowAccountSwitchingBubble(
           primary_account, target_account, switch_future.GetCallback());
-  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
   intercept_destroyed.Wait();
   EXPECT_TRUE(intercept_future.IsReady());
   EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
@@ -3053,10 +3072,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(switch_widget);
   EXPECT_TRUE(switch_widget->IsVisible());
   EXPECT_FALSE(switch_future.IsReady());
-  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+  EXPECT_TRUE(avatar_accessor.WaitForText(
+      l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SWITCH_ACCOUNT)));
 
   // Opening an interception bubble synchronously closes the active account
-  // switching bubble with kIgnored and applies only the interception pill.
+  // switching bubble with kIgnored, clears the "Switch account?" pill before
+  // the interception WebUI finishes loading, and applies the interception pill
+  // once shown.
   views::test::WidgetDestroyedWaiter switch_destroyed(switch_widget);
   views::NamedWidgetShownWaiter intercept_waiter2(
       views::test::AnyWidgetTestPasskey{},
@@ -3065,6 +3088,7 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle2 =
       SigninViewController::From(browser())->ShowSigninInterceptionBubble(
           intercept_params, intercept_future2.GetCallback());
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
   EXPECT_TRUE(switch_future.IsReady());
   EXPECT_EQ(switch_future.Get(), signin::AccountSwitchingPromoResult::kIgnored);
   switch_destroyed.Wait();
@@ -3074,6 +3098,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(intercept_widget2);
   EXPECT_TRUE(intercept_widget2->IsVisible());
   EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+  EXPECT_TRUE(avatar_accessor.WaitForText(l10n_util::GetStringUTF16(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT)));
 
   views::test::WidgetDestroyedWaiter intercept_destroyed2(intercept_widget2);
   intercept_handle2.reset();

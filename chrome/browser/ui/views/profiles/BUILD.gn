@@ -710,6 +710,7 @@ if (enable_dice_support) {
       "//chrome/app:generated_resources",
       "//chrome/browser/signin",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/toolbar",
       "//components/signin/public/base",
       "//components/signin/public/base:signin_switches",
       "//components/signin/public/identity_manager",
@@ -1468,6 +1469,7 @@ source_set("browser_tests") {
     deps += [
       ":dice_web_signin_interception_bubble_view",
       ":profile_management_step_controller",
+      ":profile_menu_coordinator",
       ":profile_picker_glic_flow_controller",
       ":profile_picker_reauth_provider",
       "//ui/events:test_support",

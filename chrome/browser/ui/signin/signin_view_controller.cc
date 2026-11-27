@@ -884,10 +884,17 @@ void SigninViewController::OnAccountSwitchingBubbleAnchorResolved(
     }
   };
 
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view ? browser_view->toolbar_button_provider()
+                         ->GetAvatarToolbarButtonInterface()
+                   : nullptr;
+
   // Bail out if `RunWhenVisible()` fell back to a non-avatar container view
   // because the avatar button stayed hidden (e.g., single-profile macOS web
   // apps).
-  if (anchor.IsNull() ||
+  if (!avatar_button || anchor.IsNull() ||
       (anchor.GetIfView() &&
        !views::IsViewClass<AvatarToolbarButton>(anchor.GetIfView()))) {
     DVLOG(1) << "Not showing account switching bubble: anchor resolved without "
@@ -916,8 +923,9 @@ void SigninViewController::OnAccountSwitchingBubbleAnchorResolved(
   }
 
   bubble_widget_ = ::CreateAccountSwitchingBubble(
-      *identity_manager, anchor, std::move(keep_visible), primary_account,
-      target_account, std::move(pending_account_switching_bubble_callback_),
+      *identity_manager, *avatar_button, anchor, std::move(keep_visible),
+      primary_account, target_account,
+      std::move(pending_account_switching_bubble_callback_),
       base::BindOnce(&SigninViewController::OnAccountSwitchingBubbleClosed,
                      account_switching_bubble_weak_factory_.GetWeakPtr()));
   bubble_widget_->Show();

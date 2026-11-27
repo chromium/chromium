@@ -9,6 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -19,6 +23,11 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -35,9 +44,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -99,6 +110,39 @@ class AccountSwitchingBubbleBrowserTest : public SigninBrowserTestBase {
     pref.preferred_data_types.push_back(
         {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
     GetTestAccountPreviewDataService()->SetPreferredAccountForSwitching(pref);
+
+    AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+    if (avatar_accessor.GetState() != AvatarToolbarButtonState::kNormal) {
+      GetAvatarButton()->ClearActiveStateForTesting();
+    }
+    ASSERT_TRUE(
+        avatar_accessor.WaitForState(AvatarToolbarButtonState::kNormal));
+    ASSERT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+  }
+
+  AvatarToolbarButtonInterface* GetAvatarButton() {
+    ToolbarButtonProvider* provider = ToolbarButtonProvider::From(browser());
+    return provider ? provider->GetAvatarToolbarButtonInterface() : nullptr;
+  }
+
+  void ExpectAvatarPillExpanded(bool expanded,
+                                bool expect_empty_when_collapsed = true) {
+    AvatarToolbarButtonInterface* avatar_button = GetAvatarButton();
+    ASSERT_TRUE(avatar_button);
+    AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+    EXPECT_EQ(avatar_button->HasExplicitButtonState(), expanded);
+    const std::u16string switch_pill_text =
+        l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SWITCH_ACCOUNT);
+    if (expanded) {
+      EXPECT_TRUE(avatar_accessor.WaitForText(switch_pill_text));
+    } else if (expect_empty_when_collapsed) {
+      EXPECT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+    } else {
+      // Account mutations (such as signing in a replacement primary account or
+      // entering a persistent auth error) can legitimately activate another
+      // non-explicit state (e.g. `kOnSignin` or `kSigninPending`).
+      EXPECT_TRUE(avatar_accessor.WaitForTextNotEqual(switch_pill_text));
+    }
   }
 
   signin::TestAccountPreviewDataService* GetTestAccountPreviewDataService() {
@@ -123,6 +167,8 @@ class AccountSwitchingBubbleBrowserTest : public SigninBrowserTestBase {
   AccountInfo third_account_;
 
  private:
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -144,10 +190,13 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
                        ShowBubbleRendersBothEmailsAndButtons) {
   SetUpEligibleAccounts();
 
+  ExpectAvatarPillExpanded(false);
+
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
   EXPECT_TRUE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
+  ExpectAvatarPillExpanded(true);
 
   views::WidgetDelegate* widget_delegate = bubble_widget->widget_delegate();
   ASSERT_TRUE(widget_delegate);
@@ -195,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   SigninViewController::From(browser())->CloseBubbleSignin();
   destroyed_waiter.Wait();
+  ExpectAvatarPillExpanded(false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleNewProfileArmBrowserTest,
@@ -203,6 +253,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleNewProfileArmBrowserTest,
 
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
+  ExpectAvatarPillExpanded(true);
 
   views::WidgetDelegate* widget_delegate = bubble_widget->widget_delegate();
   ASSERT_TRUE(widget_delegate);
@@ -223,6 +274,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleNewProfileArmBrowserTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   SigninViewController::From(browser())->CloseBubbleSignin();
   destroyed_waiter.Wait();
+  ExpectAvatarPillExpanded(false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
@@ -232,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
   ASSERT_TRUE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
+  ExpectAvatarPillExpanded(true);
 
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(bubble_widget);
@@ -244,6 +297,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::test::ButtonTestApi(accept_button).NotifyClick(ui::test::TestEvent());
   destroyed_waiter.Wait();
 
+  ExpectAvatarPillExpanded(false);
   EXPECT_FALSE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
   EXPECT_TRUE(GetAccountSwitchingManager()->IsSwitchInProgressForTesting());
 }
@@ -255,6 +309,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
   ASSERT_TRUE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
+  ExpectAvatarPillExpanded(true);
 
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(bubble_widget);
@@ -267,6 +322,7 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::test::ButtonTestApi(decline_button).NotifyClick(ui::test::TestEvent());
   destroyed_waiter.Wait();
 
+  ExpectAvatarPillExpanded(false);
   EXPECT_FALSE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
   EXPECT_FALSE(GetAccountSwitchingManager()->IsSwitchInProgressForTesting());
   EXPECT_EQ(SigninPrefs(*GetProfile()->GetPrefs())
@@ -292,11 +348,13 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
 
     views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
     ASSERT_TRUE(bubble_widget);
+    ExpectAvatarPillExpanded(true);
 
     views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
     bubble_widget->CloseWithReason(close_reason);
     destroyed_waiter.Wait();
 
+    ExpectAvatarPillExpanded(false);
     EXPECT_EQ(result_future.Get(),
               signin::AccountSwitchingPromoResult::kDismissed);
   }
@@ -332,10 +390,12 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
             primary_account_, target_account_, result_future.GetCallback());
     views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
     ASSERT_TRUE(bubble_widget);
+    ExpectAvatarPillExpanded(true);
 
     views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
     trigger();
     destroyed_waiter.Wait();
+    ExpectAvatarPillExpanded(false, /*expect_empty_when_collapsed=*/false);
     EXPECT_EQ(result_future.Get(),
               signin::AccountSwitchingPromoResult::kIgnored);
   };
@@ -362,10 +422,12 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
         GoogleServiceAuthError::FromServiceUnavailable("transient"));
     EXPECT_TRUE(bubble_widget->IsVisible());
     EXPECT_FALSE(result_future.IsReady());
+    ExpectAvatarPillExpanded(true);
 
     views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
     close_handle.RunAndReset();
     destroyed_waiter.Wait();
+    ExpectAvatarPillExpanded(false);
     EXPECT_EQ(result_future.Get(),
               signin::AccountSwitchingPromoResult::kIgnored);
   }
@@ -423,9 +485,11 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   // bubble and clears the active promo state.
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
+  ExpectAvatarPillExpanded(true);
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   identity_test_env()->ClearPrimaryAccount();
   destroyed_waiter.Wait();
+  ExpectAvatarPillExpanded(false);
   EXPECT_FALSE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
 
   // Primary refresh token removed closes the bubble.
@@ -465,13 +529,108 @@ IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
   views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
   ASSERT_TRUE(bubble_widget);
   ASSERT_TRUE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
+  ExpectAvatarPillExpanded(true);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
   GetAccountSwitchingManager()->Shutdown();
   destroyed_waiter.Wait();
 
+  ExpectAvatarPillExpanded(false);
   EXPECT_FALSE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
   EXPECT_TRUE(GetAccountSwitchingManager()->CanShowPromo());
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSwitchingBubbleBrowserTest,
+                       AvatarPillAccessibilityAndClickDismissesBubble) {
+  SetUpEligibleAccounts();
+
+  AvatarToolbarButtonInterface* avatar_button = GetAvatarButton();
+  ASSERT_TRUE(avatar_button);
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+
+  const std::u16string normal_accessibility_label =
+      avatar_accessor.GetAccessibilityLabel();
+  ASSERT_FALSE(normal_accessibility_label.empty());
+  EXPECT_TRUE(
+      avatar_accessor.WaitForAccessibilityDescription(std::u16string()));
+  ExpectAvatarPillExpanded(false);
+
+  // Verify `SetExplicitButtonState()` does not fire a delayed screen-reader
+  // alert announcement (since the anchored prompt dialog itself takes focus),
+  // sets the accessible name to "Switch account?" with the profile/account
+  // tooltip as the accessible description, and dismisses the bubble without
+  // opening the Profile Menu when clicked.
+  base::MockCallback<base::OnceCallback<void(std::u16string)>>
+      announce_callback;
+  EXPECT_CALL(announce_callback, Run).Times(0);
+  avatar_button->SetAnnounceCallbackForTesting(announce_callback.Get());
+
+  {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         kBubbleWidgetName);
+    base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
+    base::ScopedClosureRunner close_handle =
+        SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+            primary_account_, target_account_, result_future.GetCallback());
+    views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(bubble_widget);
+
+    ExpectAvatarPillExpanded(true);
+    const std::u16string pill_text =
+        l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SWITCH_ACCOUNT);
+    EXPECT_TRUE(avatar_accessor.WaitForAccessibilityLabel(pill_text));
+    EXPECT_TRUE(avatar_accessor.WaitForAccessibilityDescription(
+        normal_accessibility_label));
+
+    // Wait past `AvatarToolbarButtonInterface::kAccessibilityAnnouncementDelay`
+    // (500ms) to verify no delayed alert announcement was posted.
+    base::RunLoop announce_wait_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, announce_wait_loop.QuitClosure(), base::Milliseconds(550));
+    announce_wait_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&announce_callback);
+
+    views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+    avatar_accessor.Click();
+    destroyed_waiter.Wait();
+
+    ExpectAvatarPillExpanded(false);
+    EXPECT_TRUE(
+        avatar_accessor.WaitForAccessibilityLabel(normal_accessibility_label));
+    EXPECT_TRUE(
+        avatar_accessor.WaitForAccessibilityDescription(std::u16string()));
+    EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
+    EXPECT_EQ(result_future.Get(),
+              signin::AccountSwitchingPromoResult::kDismissed);
+  }
+
+  // Pressing the expanded pill via accelerator while shown through
+  // `AccountSwitchingManager` also dismisses the bubble (recording an ignore,
+  // not an explicit decline) without opening the Profile Menu.
+  views::Widget* bubble_widget = ShowPromoViaManagerAndWaitForBubble();
+  ASSERT_TRUE(bubble_widget);
+  ExpectAvatarPillExpanded(true);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/true);
+  destroyed_waiter.Wait();
+
+  ExpectAvatarPillExpanded(false);
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
+  EXPECT_FALSE(GetAccountSwitchingManager()->IsPromoActiveForTesting());
+  EXPECT_FALSE(GetAccountSwitchingManager()->IsSwitchInProgressForTesting());
+  EXPECT_EQ(SigninPrefs(*GetProfile()->GetPrefs())
+                .GetAccountSwitchingPromoExplicitDismissalCount(
+                    primary_account_.GetGaiaId(), target_account_.GetGaiaId()),
+            0);
+  EXPECT_FALSE(GetAccountSwitchingManager()->CanShowPromo());
+
+  // Once the pill has collapsed, clicking the avatar button restores its
+  // default action of opening the Profile Menu (which resolves promo info
+  // asynchronously before showing).
+  avatar_accessor.Click();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return ProfileMenuCoordinator::From(browser())->IsShowing(); }));
 }
 
 }  // namespace

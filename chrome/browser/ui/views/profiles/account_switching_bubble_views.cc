@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/account_switching_manager.h"
 #include "chrome/browser/ui/signin/account_switching_bubble.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -66,6 +68,7 @@ class AccountSwitchingBubbleDelegate
       base::OnceCallback<void(signin::AccountSwitchingPromoResult)>;
 
   AccountSwitchingBubbleDelegate(signin::IdentityManager& identity_manager,
+                                 AvatarToolbarButtonInterface& avatar_button,
                                  CoreAccountId primary_account_id,
                                  CoreAccountId target_account_id,
                                  base::ScopedClosureRunner keep_visible,
@@ -74,6 +77,18 @@ class AccountSwitchingBubbleDelegate
         target_account_id_(std::move(target_account_id)),
         keep_visible_(std::move(keep_visible)),
         result_callback_(std::move(result_callback)) {
+    // Do not set `should_announce`: the anchored prompt dialog itself takes
+    // focus and is announced by screen readers on open. Passing `std::nullopt`
+    // for `accessibility_label` sets the accessible name to the pill text
+    // ("Switch account?") and preserves the profile/account tooltip as the
+    // accessible description.
+    clear_avatar_button_effects_ = avatar_button.SetExplicitButtonState(
+        l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SWITCH_ACCOUNT),
+        /*accessibility_label=*/std::nullopt,
+        base::IgnoreArgs<bool>(
+            base::BindRepeating(&AccountSwitchingBubbleDelegate::OnPillPressed,
+                                weak_ptr_factory_.GetWeakPtr())),
+        /*should_announce=*/false);
     identity_manager_observation_.Observe(&identity_manager);
   }
 
@@ -87,9 +102,21 @@ class AccountSwitchingBubbleDelegate
     NotifyResult(signin::AccountSwitchingPromoResult::kDeclined);
   }
 
+  void OnPillPressed() {
+    dismissed_by_pill_ = true;
+    identity_manager_observation_.Reset();
+    clear_avatar_button_effects_.RunAndReset();
+    if (dialog_model() && dialog_model()->host()) {
+      dialog_model()->host()->Close();
+      return;
+    }
+    NotifyResult(signin::AccountSwitchingPromoResult::kDismissed);
+  }
+
   void OnWidgetClosed(views::Widget::ClosedCallback on_close,
                       views::Widget::ClosedReason reason) {
     identity_manager_observation_.Reset();
+    clear_avatar_button_effects_.RunAndReset();
     keep_visible_.RunAndReset();
     ResultCallback callback = std::move(result_callback_);
     if (on_close) {
@@ -97,7 +124,8 @@ class AccountSwitchingBubbleDelegate
     }
     if (callback) {
       std::move(callback).Run(
-          (reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+          (dismissed_by_pill_ ||
+           reason == views::Widget::ClosedReason::kCloseButtonClicked ||
            reason == views::Widget::ClosedReason::kEscKeyPressed)
               ? signin::AccountSwitchingPromoResult::kDismissed
               : signin::AccountSwitchingPromoResult::kIgnored);
@@ -106,6 +134,7 @@ class AccountSwitchingBubbleDelegate
 
   void OnDialogDestroying() {
     identity_manager_observation_.Reset();
+    clear_avatar_button_effects_.RunAndReset();
     keep_visible_.RunAndReset();
     NotifyResult(signin::AccountSwitchingPromoResult::kIgnored);
   }
@@ -163,10 +192,13 @@ class AccountSwitchingBubbleDelegate
   }
 
   void NotifyResult(signin::AccountSwitchingPromoResult result) {
-    // Stop observing before invoking `result_callback_` so synchronous account
-    // mutations triggered by accepting the switch do not re-entrantly close the
-    // dialog while the button callback is still executing.
+    // Stop observing and collapse the avatar pill before invoking
+    // `result_callback_` so synchronous account mutations or replacement
+    // bubbles triggered by accepting the switch do not re-entrantly close the
+    // dialog or observe stale pill state while the button callback is still
+    // executing.
     identity_manager_observation_.Reset();
+    clear_avatar_button_effects_.RunAndReset();
     if (result_callback_) {
       std::move(result_callback_).Run(result);
     }
@@ -174,7 +206,9 @@ class AccountSwitchingBubbleDelegate
 
   const CoreAccountId primary_account_id_;
   const CoreAccountId target_account_id_;
+  bool dismissed_by_pill_ = false;
   base::ScopedClosureRunner keep_visible_;
+  base::ScopedClosureRunner clear_avatar_button_effects_;
   ResultCallback result_callback_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -186,6 +220,7 @@ class AccountSwitchingBubbleDelegate
 
 std::unique_ptr<views::Widget> CreateAccountSwitchingBubble(
     signin::IdentityManager& identity_manager,
+    AvatarToolbarButtonInterface& avatar_button,
     views::BubbleAnchor anchor,
     base::ScopedClosureRunner keep_visible,
     const AccountInfo& primary_account,
@@ -195,11 +230,8 @@ std::unique_ptr<views::Widget> CreateAccountSwitchingBubble(
     views::Widget::ClosedCallback on_close) {
   CHECK(!anchor.IsNull());
 
-  // TODO(crbug.com/590787536): Tie the "Switch account?" avatar pill expansion
-  // to this bubble's lifetime via
-  // `AvatarToolbarButtonInterface::SetExplicitButtonState()`.
   auto model_delegate = std::make_unique<AccountSwitchingBubbleDelegate>(
-      identity_manager, primary_account.GetAccountId(),
+      identity_manager, avatar_button, primary_account.GetAccountId(),
       target_account.GetAccountId(), std::move(keep_visible),
       std::move(result_callback));
   auto* model_delegate_ptr = model_delegate.get();
