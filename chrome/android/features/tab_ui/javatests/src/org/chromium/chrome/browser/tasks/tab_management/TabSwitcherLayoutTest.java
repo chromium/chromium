@@ -287,7 +287,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/40717044, crbug.com/40122331")
     public void testSwipeToDismiss_Gts() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create 3 tabs and merge the first two tabs into one group.
@@ -295,24 +294,24 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         List<Tab> tabGroup = getTabsAtIndices(0, 1);
         createTabGroup(cta, false, tabGroup);
-        verifyTabSwitcherCardCount(cta, 2);
+        waitForTabSwitcherCardCount(cta, 2);
         verifyTabModelTabCount(cta, 3, 0);
 
-        // Swipe to dismiss a single tab card.
+        // Swipe to dismiss a single tab card (from interior edge to avoid OS back gesture).
         onView(tabSwitcherViewMatcher())
                 .perform(
                         RecyclerViewActions.actionOnItemAtPosition(
-                                1, getSwipeToDismissAction(false)));
-        verifyTabSwitcherCardCount(cta, 1);
+                                1, getSwipeToDismissAction(true)));
         verifyTabModelTabCount(cta, 2, 0);
+        waitForTabSwitcherCardCount(cta, 1);
 
-        // Swipe to dismiss a tab group card.
+        // Swipe to dismiss a tab group card (from interior edge to avoid OS back gesture).
         onView(tabSwitcherViewMatcher())
                 .perform(
                         RecyclerViewActions.actionOnItemAtPosition(
-                                0, getSwipeToDismissAction(true)));
-        verifyTabSwitcherCardCount(cta, 0);
+                                0, getSwipeToDismissAction(false)));
         verifyTabModelTabCount(cta, 0, 0);
+        waitForTabSwitcherCardCount(cta, 0);
     }
 
     private static class ThumbnailAspectRatioAssertion implements ViewAssertion {
@@ -1277,6 +1276,22 @@ public class TabSwitcherLayoutTest {
                                 TabUiTestHelper.getTabSwitcherAncestorId(
                                         mActivityTestRule.getActivity()))),
                 withId(R.id.tab_list_recycler_view));
+    }
+
+    private void waitForTabSwitcherCardCount(ChromeTabbedActivity cta, int expectedCount) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View ancestor = cta.findViewById(TabUiTestHelper.getTabSwitcherAncestorId(cta));
+                    Criteria.checkThat(ancestor, Matchers.notNullValue());
+                    RecyclerView recyclerView = ancestor.findViewById(R.id.tab_list_recycler_view);
+                    Criteria.checkThat(recyclerView, Matchers.notNullValue());
+                    Criteria.checkThat(recyclerView.isComputingLayout(), Matchers.is(false));
+                    Criteria.checkThat(recyclerView.isAnimating(), Matchers.is(false));
+                    RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
+                    Criteria.checkThat(adapter, Matchers.notNullValue());
+                    Criteria.checkThat(adapter.getItemCount(), Matchers.is(expectedCount));
+                });
+        verifyTabSwitcherCardCount(cta, expectedCount);
     }
 
     private void mergeNormalTabsToGroupWithDialog(ChromeTabbedActivity cta, int tabCount) {
