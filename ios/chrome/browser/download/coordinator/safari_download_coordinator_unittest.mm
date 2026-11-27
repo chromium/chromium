@@ -4,71 +4,39 @@
 
 #import "ios/chrome/browser/download/coordinator/safari_download_coordinator.h"
 
-#import "base/base_paths.h"
-#import "base/files/file_path.h"
-#import "base/path_service.h"
+#import <string>
+
+#import "base/apple/foundation_util.h"
+#import "base/i18n/test/scoped_rtl_for_testing.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/download/model/download_test_util.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
-#import "net/test/embedded_test_server/embedded_test_server.h"
-#import "net/test/embedded_test_server/http_request.h"
-#import "net/test/embedded_test_server/http_response.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// The path to the .mobileconfig file on the test server.
-const char kMobileConfigPath[] = "/mobileconfig";
-const char kCalendarDownloadUrl[] = "https://test.test/calendar.ics";
-
-// Request handler for loading a .mobileconfig file.
-std::unique_ptr<net::test_server::HttpResponse> GetMobileConfigResponse(
-    const net::test_server::HttpRequest& request) {
-  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
-  result->set_code(net::HTTP_OK);
-
-  if (request.GetURL().GetPath() == kMobileConfigPath) {
-    result->AddCustomHeader("Content-Type", kMobileConfigurationType);
-    result->set_content(
-        testing::GetTestFileContents(testing::kMobileConfigFilePath));
-  }
-
-  return result;
-}
-
-// Returns the absolute path for the .ics file in the test data directory.
-base::FilePath GetCalendarFilePath() {
-  base::FilePath file_path;
-  base::PathService::Get(base::DIR_ASSETS, &file_path);
-  file_path = file_path.Append(FILE_PATH_LITERAL(testing::kCalendarFilePath));
-  return file_path;
-}
-
-// Returns the absolute path for the .order file in the test data directory.
-base::FilePath GetAppleWalletOrderFilePath() {
-  base::FilePath file_path;
-  base::PathService::Get(base::DIR_ASSETS, &file_path);
-  file_path =
-      file_path.Append(FILE_PATH_LITERAL(testing::kAppleWalletOrderFilePath));
-  return file_path;
-}
+constexpr char kCalendarDownloadUrl[] = "https://test.test/calendar.ics";
 
 class SafariDownloadCoordinatorTest : public PlatformTest {
  protected:
@@ -178,20 +146,24 @@ TEST_F(SafariDownloadCoordinatorTest, InstallDelegates) {
       SafariDownloadTabHelper::FromWebState(web_state_ptr3)->delegate());
 }
 
-// Tests presenting an UI alert before downloading a valid .mobileconfig file.
+// Tests presenting a UI alert before downloading a valid .mobileconfig file,
+// verifying the HTTP scheme and non-default port are preserved in the alert.
 TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
-  net::EmbeddedTestServer server;
-  server.RegisterRequestHandler(base::BindRepeating(&GetMobileConfigResponse));
-  ASSERT_TRUE(server.Start());
-  GURL config_url = server.GetURL(kMobileConfigPath);
-
+  const GURL config_url("http://example.com:8080/mobileconfig");
   [tab_helper()->delegate()
       presentMobileConfigAlertFromURL:net::NSURLWithGURL(config_url)];
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  ASSERT_TRUE(WaitForAlertPresented());
+
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE),
+      alert.title);
+  EXPECT_NSEQ(l10n_util::GetNSStringF(
+                  IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE,
+                  u"http://example.com:8080"),
+              alert.message);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
@@ -200,14 +172,19 @@ TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
       1);
 }
 
-// Tests attempting to download an invalid .mobileconfig file.
+// Tests attempting to download an invalid .mobileconfig file (nil, non-HTTP(S),
+// or hostless URL).
 TEST_F(SafariDownloadCoordinatorTest, InvalidMobileConfigFile) {
-  [tab_helper()->delegate() presentMobileConfigAlertFromURL:nil];
+  id<SafariDownloadTabHelperDelegate> delegate = tab_helper()->delegate();
+  [delegate presentMobileConfigAlertFromURL:nil];
+  [delegate presentMobileConfigAlertFromURL:
+                [NSURL fileURLWithPath:@"/tmp/test.mobileconfig"]];
+  [delegate presentMobileConfigAlertFromURL:[NSURL URLWithString:@"https://"]];
+  [delegate
+      presentMobileConfigAlertFromURL:
+          [NSURL URLWithString:@"data:application/x-apple-aspen-config,test"]];
 
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
@@ -216,18 +193,24 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidMobileConfigFile) {
       0);
 }
 
-// Tests presenting an UI alert before downloading a valid .ics file.
+// Tests presenting a UI alert before downloading a valid .ics file, verifying
+// the download URL's origin is attributed in the alert message.
 TEST_F(SafariDownloadCoordinatorTest, ValidCalendarFile) {
-  base::FilePath path = GetCalendarFilePath();
-  NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+  const GURL calendar_url("https://example.com/calendar.ics");
+  [tab_helper()->delegate()
+      presentCalendarAlertFromURL:net::NSURLWithGURL(calendar_url)];
 
-  [tab_helper()->delegate() presentCalendarAlertFromURL:fileURL];
+  ASSERT_TRUE(WaitForAlertPresented());
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE),
+      alert.title);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                              u"example.com"),
+      alert.message);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadCalendarFileUI,
@@ -236,14 +219,18 @@ TEST_F(SafariDownloadCoordinatorTest, ValidCalendarFile) {
       1);
 }
 
-// Tests attempting to download an invalid .ics file.
+// Tests attempting to download an invalid .ics file (nil, non-HTTP(S), or
+// hostless URL).
 TEST_F(SafariDownloadCoordinatorTest, InvalidCalendarFile) {
-  [tab_helper()->delegate() presentCalendarAlertFromURL:nil];
+  id<SafariDownloadTabHelperDelegate> delegate = tab_helper()->delegate();
+  [delegate presentCalendarAlertFromURL:nil];
+  [delegate
+      presentCalendarAlertFromURL:[NSURL fileURLWithPath:@"/tmp/calendar.ics"]];
+  [delegate presentCalendarAlertFromURL:[NSURL URLWithString:@"https://"]];
+  [delegate presentCalendarAlertFromURL:
+                [NSURL URLWithString:@"data:text/calendar,BEGIN:VCALENDAR"]];
 
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadCalendarFileUI,
@@ -252,18 +239,25 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidCalendarFile) {
       0);
 }
 
-// Tests presenting an UI alert before downloading a valid .order file.
+// Tests presenting a UI alert before downloading a valid .order file, verifying
+// the download URL's origin (including non-default port) is attributed in the
+// alert message.
 TEST_F(SafariDownloadCoordinatorTest, ValidAppleWalletOrderFile) {
-  base::FilePath path = GetAppleWalletOrderFilePath();
-  NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+  const GURL order_url("https://example.com:8443/sample.order");
+  [tab_helper()->delegate()
+      presentAppleWalletOrderAlertFromURL:net::NSURLWithGURL(order_url)];
 
-  [tab_helper()->delegate() presentAppleWalletOrderAlertFromURL:fileURL];
+  ASSERT_TRUE(WaitForAlertPresented());
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_TITLE),
+      alert.title);
+  EXPECT_NSEQ(l10n_util::GetNSStringF(
+                  IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE,
+                  u"example.com:8443"),
+              alert.message);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadAppleWalletOrderFileUI,
@@ -272,14 +266,20 @@ TEST_F(SafariDownloadCoordinatorTest, ValidAppleWalletOrderFile) {
       1);
 }
 
-// Tests attempting to download an invalid .order file.
+// Tests attempting to download an invalid .order file (nil, non-HTTP(S), or
+// hostless URL).
 TEST_F(SafariDownloadCoordinatorTest, InvalidAppleWalletOrderFile) {
-  [tab_helper()->delegate() presentAppleWalletOrderAlertFromURL:nil];
+  id<SafariDownloadTabHelperDelegate> delegate = tab_helper()->delegate();
+  [delegate presentAppleWalletOrderAlertFromURL:nil];
+  [delegate presentAppleWalletOrderAlertFromURL:
+                [NSURL fileURLWithPath:@"/tmp/sample.order"]];
+  [delegate
+      presentAppleWalletOrderAlertFromURL:[NSURL URLWithString:@"https://"]];
+  [delegate
+      presentAppleWalletOrderAlertFromURL:
+          [NSURL URLWithString:@"data:application/vnd.apple.finance.order,x"]];
 
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadAppleWalletOrderFileUI,
@@ -288,33 +288,79 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidAppleWalletOrderFile) {
       0);
 }
 
-// Tests that SafariDownloadTabHelper defers UI alert presentation when the
-// WebState is hidden.
+// Tests that spoofed IDN hosts are displayed in punycode in the alert message.
 TEST_F(SafariDownloadCoordinatorTest,
-       DeferSafariDownloadPresentationWhenHidden) {
-  web::FakeWebState* fake_web_state = static_cast<web::FakeWebState*>(
-      browser_->GetWebStateList()->GetWebStateAt(0));
+       CalendarAlertUsesPunycodeForSpoofedIdnHost) {
+  const GURL spoof_url("https://xn--pple-koa.com/calendar.ics");
+  [tab_helper()->delegate()
+      presentCalendarAlertFromURL:net::NSURLWithGURL(spoof_url)];
+
+  ASSERT_TRUE(WaitForAlertPresented());
+
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                              u"xn--pple-koa.com"),
+      alert.message);
+}
+
+// Tests that URL userinfo credentials are stripped from the displayed origin.
+TEST_F(SafariDownloadCoordinatorTest, CalendarAlertStripsUserInfoFromOrigin) {
+  const GURL userinfo_url("https://trusted.example@evil.example/calendar.ics");
+  [tab_helper()->delegate()
+      presentCalendarAlertFromURL:net::NSURLWithGURL(userinfo_url)];
+
+  ASSERT_TRUE(WaitForAlertPresented());
+
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                              u"evil.example"),
+      alert.message);
+}
+
+// Tests that RTL locales isolate the formatted origin as LTR and preserve RTL
+// paragraph directionality on the alert message.
+TEST_F(SafariDownloadCoordinatorTest,
+       CalendarAlertFormatsOriginAndParagraphForRTL) {
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
+  const GURL calendar_url("https://example.com/calendar.ics");
+  [tab_helper()->delegate()
+      presentCalendarAlertFromURL:net::NSURLWithGURL(calendar_url)];
+
+  ASSERT_TRUE(WaitForAlertPresented());
+
+  UIAlertController* alert = base::apple::ObjCCastStrict<UIAlertController>(
+      base_view_controller_.presentedViewController);
+  const std::u16string formatted_message =
+      l10n_util::GetStringFUTF16(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                                 u"\u202Aexample.com\u202C");
+  EXPECT_NSEQ(base::SysUTF16ToNSString(u"\u200F\u202A" + formatted_message +
+                                       u"\u202C\u200F"),
+              alert.message);
+}
+
+// Tests that SafariDownloadTabHelper drops downloads triggered while the
+// WebState is hidden and does not present an alert when later shown.
+TEST_F(SafariDownloadCoordinatorTest,
+       DropSafariDownloadPresentationWhenHidden) {
+  web::FakeWebState* fake_web_state = web_state_at(0);
   fake_web_state->WasHidden();
 
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/mobileconfig"), kMobileConfigurationType);
 
-  // Start the download in tab helper.
   tab_helper()->DownloadMobileConfig(std::move(task));
 
-  // The warning alert should not be presented while hidden.
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
 
-  // Now show the web state. The warning alert should be presented.
+  // Showing the WebState must not replay the dropped background download.
   fake_web_state->WasShown();
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [UIAlertController class];
-  }));
+  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
+  histogram_tester_.ExpectTotalCount(kUmaDownloadMobileConfigFileUI, 0);
 }
 
 // Tests alert dismissal when the active WebState closes and the previous tab

@@ -7,26 +7,20 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-#import <vector>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "base/scoped_observation.h"
-#import "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol SafariDownloadTabHelperDelegate;
 namespace web {
 class DownloadTask;
-class NavigationContext;
 class WebState;
 }  // namespace web
 
 // TabHelper that manages files downloaded with SFSafariViewController.
 class SafariDownloadTabHelper
-    : public web::WebStateObserver,
-      public web::WebStateUserData<SafariDownloadTabHelper> {
+    : public web::WebStateUserData<SafariDownloadTabHelper> {
  public:
   SafariDownloadTabHelper(const SafariDownloadTabHelper&) = delete;
   SafariDownloadTabHelper& operator=(const SafariDownloadTabHelper&) = delete;
@@ -41,8 +35,9 @@ class SafariDownloadTabHelper
   }
 
   // SafariDownloadTabHelper does not really proceed with the download. Instead
-  // it extract the download URL and forward it to SFSafariViewController. The
-  // task is dropped and destroyed at the end of the method.
+  // it extracts the download URL and forwards it to SFSafariViewController when
+  // the tab is visible; downloads triggered while the tab is hidden are
+  // dropped. The task is dropped and destroyed at the end of the method.
   void DownloadMobileConfig(std::unique_ptr<web::DownloadTask> task);
   void DownloadCalendar(std::unique_ptr<web::DownloadTask> task);
   void DownloadAppleWalletOrder(std::unique_ptr<web::DownloadTask> task);
@@ -52,37 +47,8 @@ class SafariDownloadTabHelper
 
   explicit SafariDownloadTabHelper(web::WebState* web_state);
 
-  // web::WebStateObserver overrides:
-  void WasShown(web::WebState* web_state) override;
-  void DidStartNavigation(web::WebState* web_state,
-                          web::NavigationContext* navigation_context) override;
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
-
-  // Enum representing the type of download triggered using
-  // SFSafariViewController.
-  enum class PendingType {
-    kMobileConfig,
-    kCalendar,
-    kAppleWalletOrder,
-  };
-
-  // Structure to hold the metadata of a Safari download that was
-  // completed/triggered while the web state was not active (hidden), allowing
-  // it to be deferred.
-  struct PendingSafariDownload {
-    PendingType type;
-    NSURL* url;
-  };
-
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<SafariDownloadTabHelperDelegate> delegate_ = nil;
-
-  // The download triggered while the tab was hidden.
-  std::optional<PendingSafariDownload> pending_download_;
-
-  base::ScopedObservation<web::WebState, web::WebStateObserver>
-      web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_SAFARI_DOWNLOAD_TAB_HELPER_H_

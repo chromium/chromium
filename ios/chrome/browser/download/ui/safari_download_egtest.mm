@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string>
+
 #import "base/functional/bind.h"
+#import "base/i18n/rtl.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
 #import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
@@ -17,7 +22,9 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForDownloadTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -53,6 +60,20 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   }
 
   return result;
+}
+
+// Returns the localized warning message for `message_id` formatted with
+// `url`'s origin as displayed in the Safari download alert.
+NSString* FormattedOriginWarningMessage(int message_id, const GURL& url) {
+  std::u16string formatted_origin = url_formatter::FormatUrlForSecurityDisplay(
+      url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  if (base::i18n::IsRTL()) {
+    base::i18n::WrapStringWithLTRFormatting(&formatted_origin);
+  }
+  std::u16string message =
+      l10n_util::GetStringFUTF16(message_id, formatted_origin);
+  base::i18n::AdjustStringForLocaleDirection(&message);
+  return base::SysUTF16ToNSString(message);
 }
 
 // Waits until the warning alert is shown.
@@ -95,8 +116,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Mobileconfig"];
   [ChromeEarlGrey tapWebStateElementWithID:@"mobileconfig"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   // Tap on 'Continue' to present the SFSafariViewController.
@@ -117,8 +139,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Mobileconfig"];
   [ChromeEarlGrey tapWebStateElementWithID:@"mobileconfig"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.
@@ -143,8 +166,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Mobileconfig"];
   [ChromeEarlGrey tapWebStateElementWithID:@"mobileconfig"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   // Navigate to another page in the same tab.
@@ -164,8 +188,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Calendar"];
   [ChromeEarlGrey tapWebStateElementWithID:@"calendar"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   [ChromeEarlGrey closeCurrentTab];
@@ -184,8 +209,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Calendar"];
   [ChromeEarlGrey tapWebStateElementWithID:@"calendar"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
   // Tap on 'Continue' to present the SFSafariViewController.
   [[EarlGrey
@@ -205,8 +231,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Calendar"];
   [ChromeEarlGrey tapWebStateElementWithID:@"calendar"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.
@@ -220,7 +247,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // Verify the warning alert is dismissed.
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE))]
+                     IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE))]
       assertWithMatcher:grey_nil()];
 }
 
@@ -231,8 +258,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Apple Wallet Order"];
   [ChromeEarlGrey tapWebStateElementWithID:@"apple-wallet-order"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
   // Tap on 'Open' to present the SFSafariViewController.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
@@ -251,8 +279,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Apple Wallet Order"];
   [ChromeEarlGrey tapWebStateElementWithID:@"apple-wallet-order"];
 
-  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
-                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE)),
+  GREYAssert(WaitForWarningAlert(FormattedOriginWarningMessage(
+                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE,
+                 self.testServer->base_url())),
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.

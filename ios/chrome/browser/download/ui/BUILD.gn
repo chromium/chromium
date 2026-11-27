@@ -73,10 +73,12 @@ source_set("eg2_tests") {
     ":constants",
     ":features",
     ":test_util",
+    "//base:i18n",
     "//components/enterprise/connectors/core:cloud_content_scanning_test_support",
     "//components/policy/core/common:common_constants",
     "//components/safe_browsing/core/common",
     "//components/strings",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/model:eg_test_support+eg2",
     "//ios/chrome/browser/download/model:mime_types",
@@ -97,6 +99,7 @@ source_set("eg2_tests") {
     "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",
+    "//url",
   ]
 
   frameworks = [ "UIKit.framework" ]

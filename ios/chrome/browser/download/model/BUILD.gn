@@ -195,6 +195,7 @@ source_set("unit_tests") {
     "//sql",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 

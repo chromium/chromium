@@ -6,12 +6,17 @@
 
 #import <SafariServices/SafariServices.h>
 
+#import <optional>
+#import <string>
+
 #import "base/check_op.h"
+#import "base/i18n/rtl.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/download/coordinator/safari_download_mediator.h"
 #import "ios/chrome/browser/download/coordinator/safari_download_mediator_delegate.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper_delegate.h"
@@ -21,7 +26,10 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 const char kUmaDownloadCalendarFileUI[] = "Download.IOSDownloadCalendarFileUI";
 const char kUmaDownloadMobileConfigFileUI[] =
@@ -71,6 +79,25 @@ void DidFinishPresentingAlert(UIAlertController* alert_controller,
     return;
   }
   [coordinator didFinishPresentingAlert:alert_controller];
+}
+
+// Formats `file_url`'s origin for security display in a download confirmation
+// alert, or returns `std::nullopt` if `file_url` is not a valid HTTP(S) URL
+// with a host.
+std::optional<std::u16string> FormatDownloadOriginForAlert(NSURL* file_url) {
+  const GURL gurl = net::GURLWithNSURL(file_url);
+  if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS() || !gurl.has_host()) {
+    return std::nullopt;
+  }
+  std::u16string formatted_origin = url_formatter::FormatUrlForSecurityDisplay(
+      gurl, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  if (formatted_origin.empty()) {
+    return std::nullopt;
+  }
+  if (base::i18n::IsRTL()) {
+    base::i18n::WrapStringWithLTRFormatting(&formatted_origin);
+  }
+  return formatted_origin;
 }
 
 }  // namespace
@@ -155,25 +182,36 @@ void DidFinishPresentingAlert(UIAlertController* alert_controller,
   return alertController;
 }
 
-// Presents a confirmation alert if no modal is currently presented.
+// Validates `fileURL`, formats the origin-attributed alert strings for the
+// current locale direction, and presents a confirmation alert if no modal is
+// currently presented.
 - (void)presentAlertForDownloadType:(SafariDownloadType)downloadType
                             fileURL:(NSURL*)fileURL
-                              title:(NSString*)title
-                            message:(NSString*)message
-                        acceptTitle:(NSString*)acceptTitle {
+                            titleID:(int)titleID
+                          messageID:(int)messageID
+                      acceptTitleID:(int)acceptTitleID {
   if (self.baseViewController.presentedViewController) {
+    return;
+  }
+
+  std::optional<std::u16string> formattedOrigin =
+      FormatDownloadOriginForAlert(fileURL);
+  if (!formattedOrigin) {
     return;
   }
 
   base::UmaHistogramEnumeration(GetHistogramForDownloadType(downloadType),
                                 SafariDownloadFileUI::kWarningAlertIsPresented);
 
-  UIAlertController* alertController =
-      [self alertControllerForDownloadType:downloadType
-                                   fileURL:fileURL
-                                     title:title
-                                   message:message
-                               acceptTitle:acceptTitle];
+  std::u16string message =
+      l10n_util::GetStringFUTF16(messageID, *formattedOrigin);
+  base::i18n::AdjustStringForLocaleDirection(&message);
+  UIAlertController* alertController = [self
+      alertControllerForDownloadType:downloadType
+                             fileURL:fileURL
+                               title:l10n_util::GetNSString(titleID)
+                             message:base::SysUTF16ToNSString(message)
+                         acceptTitle:l10n_util::GetNSString(acceptTitleID)];
   _alertController = alertController;
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
@@ -270,58 +308,32 @@ void DidFinishPresentingAlert(UIAlertController* alert_controller,
 #pragma mark - SafariDownloadTabHelperDelegate
 
 - (void)presentMobileConfigAlertFromURL:(NSURL*)fileURL {
-  if (!fileURL || !fileURL.host.length) {
-    return;
-  }
-
-  NSString* const title =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE);
-  NSString* const message = l10n_util::GetNSStringF(
-      IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE,
-      base::SysNSStringToUTF16(fileURL.host));
-  NSString* const acceptTitle =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE);
   [self presentAlertForDownloadType:SafariDownloadType::kMobileConfig
                             fileURL:fileURL
-                              title:title
-                            message:message
-                        acceptTitle:acceptTitle];
+                            titleID:
+                                IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE
+                          messageID:
+                              IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE
+                      acceptTitleID:IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE];
 }
 
 - (void)presentCalendarAlertFromURL:(NSURL*)fileURL {
-  if (!fileURL) {
-    return;
-  }
-
-  NSString* const title =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE);
-  NSString* const message =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE);
-  NSString* const acceptTitle =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE);
-  [self presentAlertForDownloadType:SafariDownloadType::kCalendar
-                            fileURL:fileURL
-                              title:title
-                            message:message
-                        acceptTitle:acceptTitle];
+  [self
+      presentAlertForDownloadType:SafariDownloadType::kCalendar
+                          fileURL:fileURL
+                          titleID:IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE
+                        messageID:IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE
+                    acceptTitleID:IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE];
 }
 
 - (void)presentAppleWalletOrderAlertFromURL:(NSURL*)fileURL {
-  if (!fileURL) {
-    return;
-  }
-
-  NSString* const title =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_TITLE);
-  NSString* const message = l10n_util::GetNSString(
-      IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE);
-  NSString* const acceptTitle =
-      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_WALLET_ORDER_OPEN);
   [self presentAlertForDownloadType:SafariDownloadType::kAppleWalletOrder
                             fileURL:fileURL
-                              title:title
-                            message:message
-                        acceptTitle:acceptTitle];
+                            titleID:
+                                IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_TITLE
+                          messageID:
+                              IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE
+                      acceptTitleID:IDS_IOS_DOWNLOAD_WALLET_ORDER_OPEN];
 }
 
 #pragma mark - SFSafariViewControllerDelegate

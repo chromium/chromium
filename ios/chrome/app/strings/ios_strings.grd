@@ -2869,8 +2869,8 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DOCKING_PROMO_SECOND_INSTRUCTION" desc="Title of the second step instruction shown in the Docking Promo, which tells users to drag the app icon to their iOS dock.">
         Drag it to the dock at the bottom of your Home Screen
       </message>
-      <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a calendar file.[iOS only]">
-          This website wants to download a file and add it to your calendar.
+      <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a calendar file. WEBSITE is the website origin (e.g., example.com) requesting the download. [iOS only]">
+          <ph name="WEBSITE">$1<ex>example.com</ex></ph> wants to download a file and add it to your calendar.
       </message>
       <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a calendar file.[iOS only]">
           Calendar file available
@@ -3076,8 +3076,8 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DOWNLOAD_STATE_PAUSED" desc="Label for the download state when a file is paused. [iOS only]">
         Download Paused
       </message>
-      <message name="IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .order file. The file represents an order that can be tracked in Apple Wallet. 'Wallet' should be translated according to the 'Wallet' app title on iOS. [iOS only]">
-          This website wants to download a file and open it in your Wallet.
+      <message name="IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .order file. The file represents an order that can be tracked in Apple Wallet. 'Wallet' should be translated according to the 'Wallet' app title on iOS. WEBSITE is the website origin (e.g., example.com) requesting the download. [iOS only]">
+          <ph name="WEBSITE">$1<ex>example.com</ex></ph> wants to download a file and open it in your Wallet.
       </message>
       <message name="IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .order file. The file represents an order that can be tracked in Apple Wallet. 'Wallet' should be translated according to the 'Wallet' app title on iOS. [iOS only]">
           Open in Wallet?
