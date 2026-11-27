@@ -127,6 +127,27 @@ https://github.com/chaijs/chai/issues/1554.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
+Name: d3
+Short Name: d3
+URL: https://github.com/d3/d3
+Version: 7.8.4
+CPEPrefix: cpe:/a:d3.js_project:d3.js:7.8.4::~~~node.js~~
+Update Mechanism: Manual
+License: ISC
+License File: node_modules/d3/LICENSE
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+A JavaScript library for manipulating documents based on data. Only
+dist/d3.min.js is kept, and it is shipped through //third_party/d3:build_grdp.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Type Definition for D3 library
 Short Name: @types/d3
 URL: https://www.npmjs.com/package/@types/d3

@@ -79,6 +79,9 @@
 /chai/index.js
 /chai/LICENSE
 /chai/package.json
+/d3/LICENSE
+/d3/dist/
+/d3/dist/d3.min.js
 /eslint-plugin-lit/lib/index.d.ts
 /eslint/lib/types/**.d.ts
 /messageformat/**/**.js

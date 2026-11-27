@@ -6,8 +6,8 @@
 
 # Script for downloading some WebUI's NPM deps without using `npm install`.
 # Unfortunately `npm install` downloads a lot of unnecessary dependencies in
-# many cases. This is especially true for cases like 'mocha'and 'chai', which
-# even though come already bundled, NPM still downloads about ~8MB of
+# many cases. This is especially true for cases like 'chai', 'd3' and 'mocha',
+# which even though come already bundled, NPM still downloads about ~8MB of
 # unnecessary dependencies.
 #
 # To address the problem above and avoid blowing up the size of the generated
@@ -21,6 +21,7 @@ tmp_dir="node_modules_manual"
 mkdir -p "${tmp_dir}"
 
 CHAI_VERSION="6.2.1"
+D3_VERSION="7.8.4"
 MOCHA_VERSION="11.7.5"
 
 download_package() {
@@ -42,6 +43,8 @@ download_package() {
 }
 
 download_package "chai" ${CHAI_VERSION}
+rm -rf ${tmp_dir}/package
+download_package "d3" ${D3_VERSION}
 rm -rf ${tmp_dir}/package
 download_package "mocha" ${MOCHA_VERSION}
 
