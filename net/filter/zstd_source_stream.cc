@@ -5,17 +5,16 @@
 #include "net/filter/zstd_source_stream.h"
 
 #include <algorithm>
+#include <bit>
 #include <unordered_map>
 #include <utility>
 
 #define ZSTD_STATIC_LINKING_ONLY
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/filter/source_stream_type.h"
 #include "third_party/zstd/src/lib/zstd.h"
@@ -50,13 +49,10 @@ class ZstdSourceStream : public FilterSourceStream {
       // See https://github.com/httpwg/http-extensions/issues/2754 for more
       // details. To avoid floating point calculations, using `* 5 / 4` for
       // `* 1.25` specified by the standard.
-      // Note: `base::checked_cast<uint32_t>` is safe because we have the size
-      // limit per shared dictionary and the total dictionary size limit.
-      window_log_max = std::clamp(
-          base::bits::Log2Ceiling(
-              base::checked_cast<uint32_t>(dictionary_size_ * 5 / 4)),
-          23,   // 8MB
-          27);  // 128MB
+      const size_t window_size =
+          std::clamp<size_t>(dictionary_size_ * 5 / 4, size_t{1} << 23,  // 8MB
+                             size_t{1} << 27);  // 128MB
+      window_log_max = std::bit_width(window_size - 1);
     }
     // Max window size, 10% allowance for overhead. Set before we allocate any
     // memory.

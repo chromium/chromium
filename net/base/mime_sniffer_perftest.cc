@@ -4,9 +4,9 @@
 
 #include "net/base/mime_sniffer.h"
 
+#include <bit>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/timer/elapsed_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,8 +86,8 @@ TEST(MimeSnifferTest, PlainTextPerfTest) {
   const size_t kWarmupIterations = 16;
   const size_t kMeasuredIterations = 1 << 15;
   std::string plaintext = kRepresentativePlainText;
-  size_t expected_size = plaintext.size() << base::bits::Log2Ceiling(
-                             kTargetSize / plaintext.size());
+  size_t expected_size =
+      plaintext.size() * std::bit_ceil(kTargetSize / plaintext.size());
   plaintext.reserve(expected_size);
   while (plaintext.size() < kTargetSize)
     plaintext += plaintext;
