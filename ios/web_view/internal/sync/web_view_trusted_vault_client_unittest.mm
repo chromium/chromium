@@ -176,6 +176,35 @@ TEST_F(WebViewTrustedVaultClientTest, FetchKeysUsesKeysWithVersionsSelector) {
                   trusted_vault::TrustedVaultKeyAndVersion({4, 5}, 11)));
 }
 
+TEST_F(WebViewTrustedVaultClientTest, FetchKeysSortsUnsortedKeysFromProvider) {
+  constexpr uint8_t kBytes1[] = {1, 2, 3};
+  constexpr uint8_t kBytes2[] = {4, 5};
+  FakeModernTrustedVaultProvider* provider =
+      [[FakeModernTrustedVaultProvider alloc] init];
+  provider.keys = @[
+    [[CWVTrustedVaultKey alloc]
+        initWithKeyMaterial:[NSData dataWithBytes:kBytes2
+                                           length:sizeof(kBytes2)]
+                    version:11],
+    [[CWVTrustedVaultKey alloc]
+        initWithKeyMaterial:[NSData dataWithBytes:kBytes1
+                                           length:sizeof(kBytes1)]
+                    version:10],
+  ];
+  CWVSyncController.trustedVaultProvider = provider;
+
+  WebViewTrustedVaultClient client;
+  base::test::TestFuture<
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
+      future;
+  client.FetchKeys(MakeTestAccount(), future.GetCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(trusted_vault::TrustedVaultKeyAndVersion({1, 2, 3}, 10),
+                  trusted_vault::TrustedVaultKeyAndVersion({4, 5}, 11)));
+}
+
 TEST_F(WebViewTrustedVaultClientTest, FetchKeysFallsBackToLegacySelector) {
   constexpr uint8_t kBytes[] = {9, 8, 7};
   FakeLegacyTrustedVaultProvider* provider =

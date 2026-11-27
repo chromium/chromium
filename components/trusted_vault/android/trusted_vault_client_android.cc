@@ -4,12 +4,14 @@
 
 #include "components/trusted_vault/android/trusted_vault_client_android.h"
 
+#include <algorithm>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -126,6 +128,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
     const std::string& gaia_id,
     const std::vector<TrustedVaultKeyAndVersion>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(std::ranges::is_sorted(keys, {}, &TrustedVaultKeyAndVersion::version));
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
   OngoingFetchKeys& ongoing_fetch_keys =

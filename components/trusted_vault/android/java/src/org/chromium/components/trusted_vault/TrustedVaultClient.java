@@ -26,8 +26,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.GaiaId;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -460,12 +462,27 @@ public class TrustedVaultClient {
                                     nativeTrustedVaultClientAndroid,
                                     requestId,
                                     accountInfo.getGaiaId().toString(),
-                                    keysAndVersions);
+                                    sortByVersion(keysAndVersions));
                 };
         get(securityDomainId)
                 .mBackend
                 .fetchKeysAndVersions(accountInfo)
                 .then(responseCb::accept, exception -> responseCb.accept(Collections.emptyList()));
+    }
+
+    // Key management on Android is delegated to an external library (Google Play Services), so
+    // sort defensively rather than failing native CHECKs if keys are returned out of order.
+    private static List<TrustedVaultKeyAndVersion> sortByVersion(
+            @Nullable List<TrustedVaultKeyAndVersion> keysAndVersions) {
+        if (keysAndVersions == null || keysAndVersions.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (keysAndVersions.size() == 1) {
+            return keysAndVersions;
+        }
+        List<TrustedVaultKeyAndVersion> sorted = new ArrayList<>(keysAndVersions);
+        sorted.sort(Comparator.comparingInt(keyAndVersion -> keyAndVersion.version));
+        return sorted;
     }
 
     /** Forwards calls to Backend.storeKeys(). */

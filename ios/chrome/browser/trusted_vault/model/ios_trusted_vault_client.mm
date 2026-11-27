@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_client.h"
 
+#import <algorithm>
 #import <utility>
+#import <vector>
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/notimplemented.h"
@@ -19,6 +22,28 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/trusted_vault/trusted_vault_client_backend.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+void SortByVersionAndRunCallback(
+    base::OnceCallback<void(
+        const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)> callback,
+    const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
+  // Key management on iOS is delegated to an external library, so sort
+  // defensively to uphold the `TrustedVaultClient::FetchKeys()` ordering
+  // contract.
+  if (std::ranges::is_sorted(
+          keys, {}, &trusted_vault::TrustedVaultKeyAndVersion::version)) {
+    std::move(callback).Run(keys);
+    return;
+  }
+  std::vector<trusted_vault::TrustedVaultKeyAndVersion> sorted_keys = keys;
+  std::ranges::stable_sort(sorted_keys, {},
+                           &trusted_vault::TrustedVaultKeyAndVersion::version);
+  std::move(callback).Run(sorted_keys);
+}
+
+}  // namespace
 
 IOSTrustedVaultClient::IOSTrustedVaultClient(
     ChromeAccountManagerService* account_manager_service,
@@ -59,7 +84,9 @@ void IOSTrustedVaultClient::FetchKeys(
             std::vector<trusted_vault::TrustedVaultKeyAndVersion>()));
     return;
   }
-  backend_->FetchKeys(identity, security_domain_id_, std::move(callback));
+  backend_->FetchKeys(
+      identity, security_domain_id_,
+      base::BindOnce(&SortByVersionAndRunCallback, std::move(callback)));
 }
 
 void IOSTrustedVaultClient::StoreKeys(

@@ -4,10 +4,13 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/standalone_trusted_vault_frontend.h"
@@ -15,6 +18,17 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
+
+namespace {
+
+void VerifyKeysSortedAndRun(
+    base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)> cb,
+    const std::vector<TrustedVaultKeyAndVersion>& keys) {
+  CHECK(std::ranges::is_sorted(keys, {}, &TrustedVaultKeyAndVersion::version));
+  std::move(cb).Run(keys);
+}
+
+}  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     SecurityDomainId security_domain,
@@ -40,7 +54,8 @@ void StandaloneTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
         cb) {
-  frontend_->FetchKeys(account_info, security_domain_, std::move(cb));
+  frontend_->FetchKeys(account_info, security_domain_,
+                       base::BindOnce(&VerifyKeysSortedAndRun, std::move(cb)));
 }
 
 void StandaloneTrustedVaultClient::StoreKeys(

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -176,6 +177,8 @@ void FakeTrustedVaultClient::FetchKeys(
 
   // If the locally cached keys are not marked as stale, return them directly.
   if (!cached_keys.marked_as_stale) {
+    CHECK(std::ranges::is_sorted(cached_keys.keys, {},
+                                 &TrustedVaultKeyAndVersion::version));
     pending_responses_.push_back(
         base::BindOnce(std::move(callback), cached_keys.keys));
     return;
@@ -320,6 +323,8 @@ void FakeTrustedVaultClient::CompleteStaleFetchKeys(
 
   CachedKeysPerUser& cached_keys = it->second;
   if (!cached_keys.marked_as_stale) {
+    CHECK(std::ranges::is_sorted(cached_keys.keys, {},
+                                 &TrustedVaultKeyAndVersion::version));
     const std::vector<TrustedVaultKeyAndVersion> keys = cached_keys.keys;
     std::move(callback).Run(keys);
     return;
@@ -340,6 +345,8 @@ void FakeTrustedVaultClient::CompleteStaleFetchKeys(
   const int last_key_version = static_cast<int>(rotated_keys.size());
   const std::vector<TrustedVaultKeyAndVersion> keys_with_versions =
       GetTrustedVaultKeysWithVersions(rotated_keys, last_key_version);
+  CHECK(std::ranges::is_sorted(keys_with_versions, {},
+                               &TrustedVaultKeyAndVersion::version));
   StoreKeys(gaia_id, rotated_keys, last_key_version,
             /*trigger=*/std::nullopt);
   std::move(callback).Run(keys_with_versions);

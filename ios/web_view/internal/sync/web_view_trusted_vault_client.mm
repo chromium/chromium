@@ -4,6 +4,7 @@
 
 #import "ios/web_view/internal/sync/web_view_trusted_vault_client.h"
 
+#import <algorithm>
 #import <utility>
 #import <vector>
 
@@ -55,6 +56,11 @@ std::vector<trusted_vault::TrustedVaultKeyAndVersion> ConvertKeysWithVersions(
         base::ToVector(base::apple::NSDataToSpan(key.keyMaterial)),
         base::checked_cast<int>(key.version));
   }
+  // Key management in iOS WebView is delegated to an external embedder
+  // library (`CWVTrustedVaultProvider`), so sort defensively to uphold the
+  // `TrustedVaultClient::FetchKeys()` ordering contract.
+  std::ranges::stable_sort(result, {},
+                           &trusted_vault::TrustedVaultKeyAndVersion::version);
   return result;
 }
 

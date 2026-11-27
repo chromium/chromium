@@ -97,8 +97,9 @@ class TrustedVaultClient {
   // Attempts to fetch decryption keys and their versions, required by
   // consumers (such as sync or passkeys) to resume. Implementations are
   // expected to NOT prompt the user for actions. `cb` is called on completion
-  // with known keys and their versions (ordered from oldest to newest, where
-  // the last one is the most recent), or an empty list if none are known.
+  // with known keys and their versions (ordered by ascending version from
+  // oldest to newest, where the last element is the most recent), or an empty
+  // list if none are known.
   virtual void FetchKeys(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>

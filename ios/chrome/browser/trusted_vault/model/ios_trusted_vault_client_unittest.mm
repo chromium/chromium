@@ -171,6 +171,27 @@ TEST_F(IOSTrustedVaultClientTest, FetchKeysForwardsKnownIdentity) {
   EXPECT_THAT(future.Get(), ElementsAre(kExpectedKey));
 }
 
+TEST_F(IOSTrustedVaultClientTest, FetchKeysSortsUnsortedKeysFromBackend) {
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  system_identity_manager_->AddIdentity(identity);
+
+  const trusted_vault::TrustedVaultKeyAndVersion kKeyV1({1, 2, 3},
+                                                        /*version=*/1);
+  const trusted_vault::TrustedVaultKeyAndVersion kKeyV2({4, 5, 6},
+                                                        /*version=*/2);
+  const trusted_vault::TrustedVaultKeyAndVersion kKeyV3({7, 8, 9},
+                                                        /*version=*/3);
+  EXPECT_CALL(backend_, FetchKeys(identity, kSecurityDomainId, _))
+      .WillOnce(RunOnceCallback<2>(
+          std::vector<trusted_vault::TrustedVaultKeyAndVersion>{kKeyV3, kKeyV1,
+                                                                kKeyV2}));
+
+  TestFuture<const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&>
+      future;
+  client_->FetchKeys(AccountInfoForIdentity(identity), future.GetCallback());
+  EXPECT_THAT(future.Get(), ElementsAre(kKeyV1, kKeyV2, kKeyV3));
+}
+
 TEST_F(IOSTrustedVaultClientTest, MarkLocalKeysAsStaleWithMissingIdentity) {
   FakeSystemIdentity* unknown_identity = [FakeSystemIdentity fakeIdentity1];
   EXPECT_CALL(backend_, MarkLocalKeysAsStale).Times(0);

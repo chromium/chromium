@@ -76,6 +76,41 @@ public class TrustedVaultClientTest {
     }
 
     @Test
+    public void testFetchKeys_SortsUnsortedKeysFromBackend() {
+        byte[] key1 = new byte[] {1, 2, 3};
+        byte[] key2 = new byte[] {4, 5, 6};
+        when(mBackendMock.fetchKeysAndVersions(TestAccounts.ACCOUNT1))
+                .thenReturn(
+                        Promise.fulfilled(
+                                List.of(
+                                        new TrustedVaultKeyAndVersion(key2, 5),
+                                        new TrustedVaultKeyAndVersion(key1, 2))));
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).setBackendForTesting(mBackendMock);
+        TrustedVaultClient.registerNative(
+                NATIVE_TRUSTED_VAULT_CLIENT_ANDROID, SecurityDomainId.CHROME_SYNC);
+        ResettersForTesting.register(
+                () ->
+                        TrustedVaultClient.unregisterNative(
+                                NATIVE_TRUSTED_VAULT_CLIENT_ANDROID, SecurityDomainId.CHROME_SYNC));
+
+        TrustedVaultClient.fetchKeys(
+                NATIVE_TRUSTED_VAULT_CLIENT_ANDROID,
+                SecurityDomainId.CHROME_SYNC,
+                REQUEST_ID,
+                TestAccounts.ACCOUNT1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativesMock)
+                .fetchKeysCompleted(
+                        NATIVE_TRUSTED_VAULT_CLIENT_ANDROID,
+                        REQUEST_ID,
+                        TestAccounts.ACCOUNT1.getGaiaId().toString(),
+                        List.of(
+                                new TrustedVaultKeyAndVersion(key1, 2),
+                                new TrustedVaultKeyAndVersion(key2, 5)));
+    }
+
+    @Test
     public void testFetchKeys_Rejected() {
         when(mBackendMock.fetchKeysAndVersions(TestAccounts.ACCOUNT1))
                 .thenReturn(Promise.rejected());
