@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
@@ -21,7 +25,9 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -486,6 +492,19 @@ void MaybeOpenPageInBrowser(BrowserWindowInterface* browser,
   } else {
     ShowSingletonTabOverwritingNTP(browser, target_page_url);
   }
+}
+
+// Returns true if `profile` has been marked for deletion or removed from
+// `ProfileAttributesStorage`. Guest profiles are excluded because they do not
+// have a `ProfileAttributesEntry`.
+bool IsProfileDeletedOrMissing(Profile* profile) {
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+  return IsProfileDirectoryMarkedForDeletion(profile->GetPath()) ||
+         !g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile->GetPath());
 }
 
 }  // namespace
@@ -958,7 +977,7 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
         pick_profile_complete_callback,
     Profile* profile) {
   CHECK(pick_profile_complete_callback);
-  if (!profile) {
+  if (!profile || IsProfileDeletedOrMissing(profile)) {
     std::move(pick_profile_complete_callback).Run(nullptr);
     return;
   }
@@ -974,15 +993,24 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
       return;
     }
 
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+        ScopedProfileKeepAlive::TryAcquire(
+            profile, ProfileKeepAliveOrigin::kProfileCreationFlow);
+    if (!profile_keep_alive) {
+      std::move(pick_profile_complete_callback).Run(nullptr);
+      return;
+    }
+
     // Cleanup the step controller if already initialized.
     if (IsStepInitialized(Step::kDeviceSignalsDisclaimer)) {
       UnregisterStep(Step::kDeviceSignalsDisclaimer);
     }
 
+    signals_disclaimer_result_recorded_ = false;
     RegisterStep(
         Step::kDeviceSignalsDisclaimer,
         ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
-            host(), profile,
+            host(), std::move(profile_keep_alive),
             base::BindOnce(
                 &ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult,
                 weak_ptr_factory_.GetWeakPtr(), profile, open_command_line_urls,
@@ -1006,6 +1034,16 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
   signals_disclaimer_result_recorded_ = true;
   switch (result) {
     case signin::DeviceSignalsDisclaimerResult::kAccepted:
+      if (IsProfileDeletedOrMissing(profile)) {
+        base::UmaHistogramEnumeration(
+            kEnterpriseSignalsDisclaimerProfilePickerResult,
+            EnterpriseSignalsDisclaimerProfilePickerResult::
+                kDismissedWithoutExplicitUserAction);
+        ExitDeviceSignalsDisclaimerStep(
+            std::move(pick_profile_complete_callback));
+        break;
+      }
+
       base::UmaHistogramEnumeration(
           kEnterpriseSignalsDisclaimerProfilePickerResult,
           EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted);
@@ -1022,11 +1060,8 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
           kEnterpriseSignalsDisclaimerProfilePickerResult,
           EnterpriseSignalsDisclaimerProfilePickerResult::kDeclined);
 
-      SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
-      UnregisterStep(Step::kDeviceSignalsDisclaimer);
-      if (pick_profile_complete_callback) {
-        std::move(pick_profile_complete_callback).Run(nullptr);
-      }
+      ExitDeviceSignalsDisclaimerStep(
+          std::move(pick_profile_complete_callback));
       break;
     case signin::DeviceSignalsDisclaimerResult::kDismissed:
       base::UmaHistogramEnumeration(
@@ -1034,13 +1069,29 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
           EnterpriseSignalsDisclaimerProfilePickerResult::
               kDismissedWithoutExplicitUserAction);
 
-      // kDismissed is caused by the destruction of WebUI.
-      // However it will not be trigger if `this` is destroyed because `this`
-      // owns the webcontents hosting the dialog, so by the time WebUI is
-      // destroyed the WeakPtr will already have been invalidated.
-      if (pick_profile_complete_callback) {
-        std::move(pick_profile_complete_callback).Run(nullptr);
-      }
+      // `kDismissed` is triggered when the profile is removed while the
+      // disclaimer is active, or when the WebUI is destroyed while `this` is
+      // still alive (destroying `this` invalidates the WeakPtr first). Post
+      // step teardown so `UnregisterStep()` never destroys `WebContents`
+      // re-entrantly from `~ManagedUserProfileNoticeHandler()`.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &ProfilePickerFlowController::ExitDeviceSignalsDisclaimerStep,
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(pick_profile_complete_callback)));
       break;
+  }
+}
+
+void ProfilePickerFlowController::ExitDeviceSignalsDisclaimerStep(
+    base::OnceCallback<void(BrowserWindowInterface*)>
+        pick_profile_complete_callback) {
+  if (current_step() == Step::kDeviceSignalsDisclaimer) {
+    SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
+    UnregisterStep(Step::kDeviceSignalsDisclaimer);
+  }
+  if (pick_profile_complete_callback) {
+    std::move(pick_profile_complete_callback).Run(nullptr);
   }
 }

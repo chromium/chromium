@@ -387,17 +387,17 @@ class DeviceSignalsDisclaimerStepController
  public:
   DeviceSignalsDisclaimerStepController(
       ProfilePickerWebContentsHost* host,
-      Profile* profile,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback)
       : ProfileManagementStepController(host),
-        web_contents_(content::WebContents::Create(
-            content::WebContents::CreateParams(profile))),
+        profile_keep_alive_(std::move(profile_keep_alive)),
+        web_contents_(
+            content::WebContents::Create(content::WebContents::CreateParams(
+                CHECK_DEREF(profile_keep_alive_).profile()))),
         callback_(std::move(callback)) {
-    CHECK(profile);
+    CHECK(profile_keep_alive_->profile());
     CHECK(web_contents_);
     CHECK(callback_);
-    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        profile, ProfileKeepAliveOrigin::kProfileCreationFlow);
   }
 
   ~DeviceSignalsDisclaimerStepController() override = default;
@@ -448,11 +448,12 @@ class DeviceSignalsDisclaimerStepController
   }
 
  private:
+  // Keep the profile alive while the step is active. Declared before
+  // `web_contents_` so `web_contents_` is destroyed first.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+
   // The web contents in which we want to display the disclaimer.
   std::unique_ptr<content::WebContents> web_contents_;
-
-  // Keep the profile alive while the step is active.
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // Callback called when the user makes a choice on the dialog.
   base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback_;
@@ -524,10 +525,10 @@ ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
     ProfilePickerWebContentsHost* host,
-    Profile* profile,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback) {
   return std::make_unique<DeviceSignalsDisclaimerStepController>(
-      host, profile, std::move(callback));
+      host, std::move(profile_keep_alive), std::move(callback));
 }
 
 ProfileManagementStepController::ProfileManagementStepController(

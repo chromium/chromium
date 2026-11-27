@@ -20,6 +20,7 @@
 
 class ProfilePickerPostSignInAdapter;
 class ProfilePickerWebContentsHost;
+class ScopedProfileKeepAlive;
 
 namespace signin {
 enum class DeviceSignalsDisclaimerResult;
@@ -80,7 +81,7 @@ class ProfileManagementStepController {
   static std::unique_ptr<ProfileManagementStepController>
   CreateForDeviceSignalsDisclaimer(
       ProfilePickerWebContentsHost* host,
-      Profile* profile,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback);
 
   explicit ProfileManagementStepController(ProfilePickerWebContentsHost* host);

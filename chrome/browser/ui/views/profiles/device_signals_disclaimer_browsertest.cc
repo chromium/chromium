@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -40,6 +43,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -52,6 +57,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -65,6 +72,7 @@ using ::managed_user_profile_notice_test::ManagedUserProfileNoticeSelectors;
 using ::managed_user_profile_notice_test::WaitForAndClickCancelButton;
 using ::managed_user_profile_notice_test::WaitForAndClickLearnMoreLink;
 using ::managed_user_profile_notice_test::WaitForAndClickProceedButton;
+using ::managed_user_profile_notice_test::WaitForScreenRendered;
 using ::managed_user_profile_notice_test::WaitForWebContentsLoaded;
 
 std::string RefreshedUiParamToTestSuffix(
@@ -245,8 +253,12 @@ class DeviceSignalsDisclaimerProfilePickerPixelTest
         base::BindRepeating(
             [](Profile* profile, ProfilePickerWebContentsHost* host) {
               return ProfileManagementStepController::
-                  CreateForDeviceSignalsDisclaimer(host, profile,
-                                                   base::DoNothing());
+                  CreateForDeviceSignalsDisclaimer(
+                      host,
+                      ScopedProfileKeepAlive::TryAcquire(
+                          profile,
+                          ProfileKeepAliveOrigin::kProfileCreationFlow),
+                      base::DoNothing());
             },
             browser()->GetProfile()));
     profile_picker_view_tracker_.SetView(view);
@@ -733,6 +745,50 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   EXPECT_EQ(browser_collection->GetSize(), 2u);
   histogram_tester_.ExpectBucketCount(
       kEnterpriseSignalsDisclaimerModalLearnMoreClicked, true, 2);
+}
+
+IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
+                       ProfileRemovedWhileModalShown) {
+  SimulateBrowserFocus(browser());
+  views::Widget* widget = widget_waiter_->WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
+  ASSERT_TRUE(dialog_contents);
+  ASSERT_TRUE(WaitForScreenRendered(dialog_contents, selectors().app,
+                                    selectors().disclaimer));
+
+  ManagedUserProfileNoticeHandler* handler =
+      dialog_contents->GetWebUI()
+          ->GetController()
+          ->GetAs<ManagedUserProfileNoticeUI>()
+          ->GetHandlerForTesting();
+  ASSERT_TRUE(handler);
+  base::test::TestFuture<void> js_allowed_future;
+  handler->SetJavaScriptAllowedCallbackForTesting(
+      js_allowed_future.GetCallback());
+  ASSERT_TRUE(js_allowed_future.Wait());
+  ASSERT_TRUE(handler->IsJavascriptAllowed());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Removing the profile from `ProfileAttributesStorage` should dismiss and
+  // close the modal dialog without opening the Profile Picker or closing the
+  // browser via the explicit-decline path.
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .RemoveProfile(browser()->GetProfile()->GetPath());
+
+  destroyed_waiter.Wait();
+  EXPECT_FALSE(ShowsModalDialog(browser()));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester_.ExpectBucketCount(kEnterpriseSignalsDisclaimerModalShown,
+                                      true, 1);
+  histogram_tester_.ExpectUniqueSample(kEnterpriseSignalsDisclaimerModalResult,
+                                       EnterpriseSignalsDisclaimerModalResult::
+                                           kDismissedWithoutExplicitUserAction,
+                                       1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

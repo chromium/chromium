@@ -56,6 +56,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
@@ -4525,6 +4526,22 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
     return histogram_tester_;
   }
 
+  void WaitForDisclaimerInitialized() {
+    ASSERT_TRUE(managed_user_profile_notice_test::WaitForScreenRendered(
+        web_contents(), selectors().app, selectors().disclaimer));
+    ManagedUserProfileNoticeHandler* handler =
+        web_contents()
+            ->GetWebUI()
+            ->GetController()
+            ->GetAs<ManagedUserProfileNoticeUI>()
+            ->GetHandlerForTesting();
+    ASSERT_TRUE(handler);
+    base::test::TestFuture<void> js_allowed_future;
+    handler->SetJavaScriptAllowedCallbackForTesting(
+        js_allowed_future.GetCallback());
+    ASSERT_TRUE(js_allowed_future.Wait());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath managed_profile_path_;
@@ -4891,6 +4908,114 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+}
+
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       OpenProfileFromPickerProfileDeletedWhileLoading) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  profiles::testing::WaitForPickerUrl(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  Profile* managed_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(
+          managed_profile_path());
+  ASSERT_TRUE(managed_profile);
+  ProfileDestructionWaiter destruction_waiter(managed_profile);
+
+  // Start loading the device signals disclaimer, then immediately delete the
+  // profile before the disclaimer WebUI finishes initializing.
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .MaybeScheduleProfileForDeletion(
+          managed_profile_path(), base::DoNothing(),
+          ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+
+  destruction_waiter.Wait();
+  profiles::testing::WaitForPickerUrl(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(g_browser_process->profile_manager()
+                   ->GetProfileAttributesStorage()
+                   .GetProfileAttributesWithPath(managed_profile_path()));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::
+          kDismissedWithoutExplicitUserAction,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       OpenProfileFromPickerProfileDeletedWhileShown) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  profiles::testing::WaitForPickerUrl(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  Profile* managed_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(
+          managed_profile_path());
+  ASSERT_TRUE(managed_profile);
+  ProfileDestructionWaiter destruction_waiter(managed_profile);
+
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+  profiles::testing::WaitForPickerUrl(GetDisclaimerUrl());
+  WaitForDisclaimerInitialized();
+
+  g_browser_process->profile_manager()
+      ->GetDeleteProfileHelper()
+      .MaybeScheduleProfileForDeletion(
+          managed_profile_path(), base::DoNothing(),
+          ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+
+  destruction_waiter.Wait();
+  profiles::testing::WaitForPickerUrl(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(g_browser_process->profile_manager()
+                   ->GetProfileAttributesStorage()
+                   .GetProfileAttributesWithPath(managed_profile_path()));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::
+          kDismissedWithoutExplicitUserAction,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       PickMissingProfileAborts) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  profiles::testing::WaitForPickerUrl(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .RemoveProfile(managed_profile_path());
+
+  base::test::TestFuture<bool> pick_future;
+  ProfilePicker::PickProfile(managed_profile_path(),
+                             ProfilePicker::ProfilePickingArgs(),
+                             pick_future.GetCallback());
+  EXPECT_FALSE(pick_future.Get());
+
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  histogram_tester().ExpectTotalCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, 0);
+  histogram_tester().ExpectTotalCount(
+      kEnterpriseSignalsDisclaimerProfilePickerResult, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

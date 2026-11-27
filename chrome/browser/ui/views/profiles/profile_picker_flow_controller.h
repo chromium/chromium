@@ -113,6 +113,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
           pick_profile_complete_callback,
       signin::DeviceSignalsDisclaimerResult result);
 
+  void ExitDeviceSignalsDisclaimerStep(
+      base::OnceCallback<void(BrowserWindowInterface*)>
+          pick_profile_complete_callback);
+
   const ProfilePicker::EntryPoint entry_point_;
   const GURL selected_profile_target_url_;
 

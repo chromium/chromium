@@ -74,6 +74,8 @@ class ManagedUserProfileNoticeHandler
   void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) override;
   void OnProfileIsManagedChanged(const base::FilePath& profile_path) override;
+  void OnProfileWasRemoved(const base::FilePath& profile_path,
+                           const std::u16string& profile_name) override;
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -86,13 +88,7 @@ class ManagedUserProfileNoticeHandler
   ManagedUserProfileNoticeUI::ScreenType GetTypeForTesting();
   void CallProceedCallbackForTesting(signin::SigninChoice choice);
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
-  void SetJavaScriptAllowedCallbackForTesting(base::OnceClosure callback) {
-    if (IsJavascriptAllowed()) {
-      std::move(callback).Run();
-      return;
-    }
-    javascript_allowed_callback_ = std::move(callback);
-  }
+  void SetJavaScriptAllowedCallbackForTesting(base::OnceClosure callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -126,6 +122,19 @@ class ManagedUserProfileNoticeHandler
   // nothing if the profile path does not match the current profile.
   void UpdateProfileInfo(const base::FilePath& profile_path);
 
+  // Handles `ProfileAttributesStorage::Observer` attribute updates. Ignores
+  // `kEnterpriseAccountCreation`, which observes storage only for
+  // `OnProfileWasRemoved()` and tracks updates via `IdentityManager` instead.
+  void OnProfileAttributesChanged(const base::FilePath& profile_path);
+
+  // Dismisses or cancels the notice when the profile has been removed from
+  // `ProfileAttributesStorage`.
+  void CancelOnProfileRemoved();
+
+  // Cancels the notice and invokes the disclaimer callback with
+  // `disclaimer_result`.
+  void CancelDialog(signin::DeviceSignalsDisclaimerResult disclaimer_result);
+
   // Returns a string stating the management status.
   static std::string GetManagedAccountTitleWithEmail(
       Profile* profile,
@@ -136,8 +145,13 @@ class ManagedUserProfileNoticeHandler
   // Computes the profile info (avatar and strings) to be sent to the WebUI.
   base::DictValue GetProfileInfoValue();
 
-  // Returns the ProfilesAttributesEntry associated with the current profile.
-  ProfileAttributesEntry* GetProfileEntry() const;
+  // Returns the `ProfileAttributesEntry` associated with the current profile,
+  // or `nullptr` if it has been removed from storage.
+  ProfileAttributesEntry* FindProfileEntry();
+
+  // Returns the `ProfileAttributesEntry` associated with the current profile.
+  // Must only be called when the profile entry is present in storage.
+  ProfileAttributesEntry* GetProfileEntry();
 
   std::string GetPictureUrl();
   void OnUserChoiceHandled(signin::SigninChoiceOperationResult result,

@@ -5,21 +5,28 @@
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -32,6 +39,8 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -41,6 +50,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
@@ -62,8 +72,11 @@ ProfileAttributesEntry* GetProfileEntry(Profile* profile) {
 
 class ManagedUserProfileNoticeHandlerTestBase : public testing::Test {
  public:
-  ManagedUserProfileNoticeHandlerTestBase()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  explicit ManagedUserProfileNoticeHandlerTestBase(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_(time_source),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   ManagedUserProfileNoticeHandlerTestBase(
       const ManagedUserProfileNoticeHandlerTestBase&) = delete;
   ManagedUserProfileNoticeHandlerTestBase& operator=(
@@ -90,10 +103,22 @@ class ManagedUserProfileNoticeHandlerTestBase : public testing::Test {
       ManagedUserProfileNoticeUI::ScreenType screen_type,
       std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
           dialog_params) {
+    InitializeHandler(&mock_browser_window_interface_, screen_type,
+                      std::move(dialog_params));
+  }
+
+  void InitializeHandler(
+      BrowserWindowInterface* browser,
+      ManagedUserProfileNoticeUI::ScreenType screen_type,
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          dialog_params) {
     message_handler_.reset();
+    content::WebContents* web_contents = web_ui_->GetWebContents();
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->set_web_contents(web_contents);
 
     message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
-        &mock_browser_window_interface_, screen_type, std::move(dialog_params));
+        browser, screen_type, std::move(dialog_params));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -106,6 +131,19 @@ class ManagedUserProfileNoticeHandlerTestBase : public testing::Test {
     testing::Test::TearDown();
   }
 
+  void RemoveProfileFromStorage(const base::FilePath& profile_path) {
+    testing_profile_manager()->profile_attributes_storage()->RemoveProfile(
+        profile_path);
+  }
+
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+  TestingProfile* profile() { return profile_.get(); }
+  TestingProfileManager* testing_profile_manager() { return &profile_manager_; }
+  MockBrowserWindowInterface& mock_browser_window_interface() {
+    return mock_browser_window_interface_;
+  }
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   AccountInfo& account_info() { return account_info_; }
   ManagedUserProfileNoticeHandler* handler() { return message_handler_.get(); }
@@ -774,4 +812,294 @@ TEST_F(ManagedUserProfileNoticeHandlerTestBase,
 
   EXPECT_EQ(signin::SIGNIN_CHOICE_CANCEL, choice_future.Get());
   EXPECT_TRUE(done_future.Wait());
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase,
+       MissingProfileEntryCancelsOrDismisses) {
+  RemoveProfileFromStorage(profile()->GetPath());
+
+  // Standard managed user notice cancels when the profile entry is missing.
+  {
+    base::test::TestFuture<signin::SigninChoice> choice_future;
+    base::test::TestFuture<void> done_future;
+    InitializeHandler(
+        ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+            account_info(), /*is_oidc_account=*/false,
+            /*user_already_signed_in=*/false,
+            /*profile_creation_required_by_policy=*/false,
+            /*show_link_data_option=*/false, choice_future.GetCallback(),
+            done_future.GetCallback()));
+
+    base::ListValue args;
+    args.Append("callback-id");
+    web_ui()->HandleReceivedMessage("initialized", args);
+
+    EXPECT_EQ(signin::SIGNIN_CHOICE_CANCEL, choice_future.Get());
+    EXPECT_TRUE(done_future.Wait());
+    EXPECT_FALSE(handler()->IsJavascriptAllowed());
+    EXPECT_TRUE(web_ui()->call_data().empty());
+  }
+
+  // Device signals disclaimer dismisses across all WebUI entry points when the
+  // profile entry is missing.
+  struct MessageCase {
+    const char* message;
+    base::ListValue args;
+  };
+  std::vector<MessageCase> cases;
+  cases.push_back({"initialized", base::ListValue().Append("callback-id")});
+  cases.push_back({"initializedWithSize", base::ListValue().Append(100)});
+  cases.push_back(
+      {"proceed",
+       base::ListValue()
+           .Append(ManagedUserProfileNoticeHandler::State::kDisclosure)
+           .Append(false)});
+  cases.push_back({"learnMoreClicked", base::ListValue()});
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.message);
+    base::HistogramTester histogram_tester;
+    base::test::TestFuture<signin::DeviceSignalsDisclaimerResult> result_future;
+    InitializeHandler(
+        /*browser=*/nullptr,
+        ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
+        signin::EnterpriseProfileCreationDialogParams::
+            CreateForDeviceSignalsDisclaimer(account_info(),
+                                             result_future.GetCallback(),
+                                             /*is_modal_dialog=*/false));
+
+    web_ui()->HandleReceivedMessage(test_case.message, test_case.args);
+
+    EXPECT_EQ(signin::DeviceSignalsDisclaimerResult::kDismissed,
+              result_future.Get());
+    EXPECT_FALSE(handler()->IsJavascriptAllowed());
+    EXPECT_TRUE(web_ui()->call_data().empty());
+    histogram_tester.ExpectTotalCount(
+        kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, 0);
+  }
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase, OnProfileWasRemoved) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(), /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+
+  handler()->AllowJavascriptForTesting();
+
+  TestingProfile* other_profile =
+      testing_profile_manager()->CreateTestingProfile("Other Profile");
+  EXPECT_CALL(mock_process_user_choice_callback, Run(_)).Times(0);
+  EXPECT_CALL(mock_done_callback, Run()).Times(0);
+  RemoveProfileFromStorage(other_profile->GetPath());
+  testing::Mock::VerifyAndClearExpectations(&mock_process_user_choice_callback);
+  testing::Mock::VerifyAndClearExpectations(&mock_done_callback);
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+  RemoveProfileFromStorage(profile()->GetPath());
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+  DeleteHandler();
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase,
+       OnProfileWasRemovedDeviceSignalsDisclaimerNoUseAfterFree) {
+  base::MockCallback<signin::DeviceSignalsDisclaimerCallback>
+      mock_disclaimer_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(account_info(),
+                                           mock_disclaimer_callback.Get(),
+                                           /*is_modal_dialog=*/true));
+
+  base::ListValue args;
+  args.Append("callback-id");
+  web_ui()->HandleReceivedMessage("initialized", args);
+  ASSERT_FALSE(web_ui()->call_data().empty());
+
+  EXPECT_CALL(mock_disclaimer_callback,
+              Run(signin::DeviceSignalsDisclaimerResult::kDismissed))
+      .WillOnce([&]() { DeleteHandler(); });
+  EXPECT_CALL(mock_browser_window_interface(), GetUnownedUserDataHost())
+      .Times(0);
+  RemoveProfileFromStorage(profile()->GetPath());
+  EXPECT_EQ(handler(), nullptr);
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase, OnProfileAttributesChanged) {
+  // For screen types other than `kEnterpriseAccountCreation`, storage updates
+  // refresh the WebUI while the profile entry exists, and no-op once removed.
+  {
+    base::MockCallback<signin::SigninChoiceCallback> mock_choice_callback;
+    base::MockCallback<base::OnceClosure> mock_done_callback;
+    InitializeHandler(
+        ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+            account_info(), /*is_oidc_account=*/false,
+            /*user_already_signed_in=*/false,
+            /*profile_creation_required_by_policy=*/false,
+            /*show_link_data_option=*/false, mock_choice_callback.Get(),
+            mock_done_callback.Get()));
+
+    handler()->AllowJavascriptForTesting();
+    handler()->OnProfileAvatarChanged(profile()->GetPath());
+    ASSERT_EQ(1u, web_ui()->call_data().size());
+    EXPECT_EQ("on-profile-info-changed",
+              web_ui()->call_data().back()->arg1()->GetString());
+
+    EXPECT_CALL(mock_choice_callback, Run(signin::SIGNIN_CHOICE_CANCEL));
+    EXPECT_CALL(mock_done_callback, Run());
+    DeleteHandler();
+  }
+
+  // For `kEnterpriseAccountCreation`, storage attribute updates are ignored and
+  // updates arrive via `IdentityManager` instead.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo seeded_account =
+      signin::MakeAccountAvailable(identity_manager, "managed@example.com");
+  seeded_account = AccountInfo::Builder(seeded_account)
+                       .SetHostedDomain("example.com")
+                       .SetAvatarUrl("https://example.com/avatar.png")
+                       .Build();
+  signin::UpdateAccountInfoForAccount(identity_manager, seeded_account);
+  signin::SimulateAccountImageFetch(
+      identity_manager, seeded_account.GetAccountId(),
+      "https://example.com/avatar.png", gfx::test::CreateImage(20, 20));
+  seeded_account = identity_manager->FindExtendedAccountInfoByAccountId(
+      seeded_account.GetAccountId());
+
+  base::MockCallback<signin::SigninChoiceCallback> mock_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          seeded_account, /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false, mock_choice_callback.Get(),
+          mock_done_callback.Get()));
+  handler()->AllowJavascriptForTesting();
+
+  handler()->OnProfileAvatarChanged(profile()->GetPath());
+  handler()->OnProfileHostedDomainChanged(profile()->GetPath());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  handler()->OnExtendedAccountInfoUpdated(seeded_account);
+  ASSERT_EQ(1u, web_ui()->call_data().size());
+  EXPECT_EQ("on-profile-info-changed",
+            web_ui()->call_data().back()->arg1()->GetString());
+
+  EXPECT_CALL(mock_choice_callback, Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+  DeleteHandler();
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase, MessagesIgnoredAfterCancel) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<signin::SigninChoiceCallback> mock_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  base::MockCallback<base::RepeatingClosure> mock_retry_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(), /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/true, mock_choice_callback.Get(),
+          mock_done_callback.Get(), mock_retry_callback.Get()));
+
+  EXPECT_CALL(mock_choice_callback, Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+  web_ui()->HandleReceivedMessage("cancel", base::ListValue());
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+
+  // Keep the profile entry intact so these calls exercise `canceling_`.
+  EXPECT_CALL(mock_retry_callback, Run()).Times(0);
+  web_ui()->HandleReceivedMessage("initialized",
+                                  base::ListValue().Append("callback-id"));
+  web_ui()->HandleReceivedMessage("initializedWithSize",
+                                  base::ListValue().Append(100));
+  web_ui()->HandleReceivedMessage(
+      "proceed", base::ListValue()
+                     .Append(ManagedUserProfileNoticeHandler::State::kTimeout)
+                     .Append(false));
+  web_ui()->HandleReceivedMessage("learnMoreClicked", base::ListValue());
+
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+  histogram_tester.ExpectTotalCount(
+      kEnterpriseSignalsDisclaimerModalLearnMoreClicked, 0);
+  DeleteHandler();
+}
+
+class ManagedUserProfileNoticeHandlerMockTimeTest
+    : public ManagedUserProfileNoticeHandlerTestBase {
+ public:
+  ManagedUserProfileNoticeHandlerMockTimeTest()
+      : ManagedUserProfileNoticeHandlerTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(ManagedUserProfileNoticeHandlerMockTimeTest,
+       ProcessingTimerAndCallbacksAfterProfileRemoved) {
+  signin::SigninChoiceOperationDoneCallback captured_done_callback;
+  signin::SigninChoiceOperationRetryCallback captured_retry_callback;
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(), /*is_oidc_account=*/true,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+
+  EXPECT_CALL(mock_process_user_choice_callback, Run(_, _, _))
+      .WillOnce([&](signin::SigninChoice,
+                    signin::SigninChoiceOperationDoneCallback done_cb,
+                    signin::SigninChoiceOperationRetryCallback retry_cb) {
+        captured_done_callback = std::move(done_cb);
+        captured_retry_callback = std::move(retry_cb);
+      });
+
+  web_ui()->HandleReceivedMessage(
+      "proceed",
+      base::ListValue()
+          .Append(ManagedUserProfileNoticeHandler::State::kDisclosure)
+          .Append(false));
+  ASSERT_TRUE(captured_done_callback);
+  const size_t call_count_before_removal = web_ui()->call_data().size();
+
+  EXPECT_CALL(mock_done_callback, Run());
+  RemoveProfileFromStorage(profile()->GetPath());
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+
+  // Advancing past the OIDC long-processing threshold and invoking in-flight
+  // callbacks after JS is disallowed must be safe no-ops.
+  task_environment().FastForwardBy(base::Seconds(10));
+  captured_retry_callback.Run(
+      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT,
+      signin::SigninChoiceErrorType::kNoError);
+  std::move(captured_done_callback)
+      .Run(signin::SigninChoiceOperationResult::SIGNIN_ERROR,
+           signin::SigninChoiceErrorType::kUnknown);
+  EXPECT_EQ(call_count_before_removal, web_ui()->call_data().size());
+  DeleteHandler();
 }
