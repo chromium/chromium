@@ -182,7 +182,14 @@ class PersistentCachePerftest
   bool under_measurment_ = false;
 };
 
-TEST_P(PersistentCachePerftest, Create) {
+// TODO(crbug.com/590560758): Times out (45s launcher timeout) on the
+// win-10-perf bots.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Create DISABLED_Create
+#else
+#define MAYBE_Create Create
+#endif
+TEST_P(PersistentCachePerftest, MAYBE_Create) {
   int iteration_count = 1024;
 
   if (HasExpensiveCommits()) {
