@@ -72,6 +72,7 @@
 <translation id="1792680680989393197">Може да ги отстраните во секое време. Chromium може да ги преземе повторно автоматски кога ќе му бидат потребни на некој сајт или функција.</translation>
 <translation id="1793486931176048546">Кликнете <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> во известувањето на Windows за да го закачите Chromium на лентата со задачи за брз пристап.</translation>
 <translation id="1808667845054772817">Преинсталирај го Chromium</translation>
+<translation id="1814482312667514397">Добијте ги најдобрите безбедносни функции на Chromium во движење со апликацијата Chromium на телефонот</translation>
 <translation id="1820835682567584003">Chromium се обидува да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chromium во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите екстензии, а и друго од <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Следниот пат кога ќе го отворите Chromium на вашиот <ph name="DEVICE_TYPE" />, ќе видите барање да ја користите Google Password Manager.</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Една или повеќе екстензии за Chromium пристапуваа до 1 HID-уред}=1{Една или повеќе екстензии за Chromium пристапуваат до 1 HID-уред}one{Една или повеќе екстензии за Chromium пристапуваат до # HID-уред}other{Една или повеќе екстензии за Chromium пристапуваат до # HID-уреди}}</translation>
 <translation id="2401032172288869980">На Chromium му треба дозволи за камерата и микрофонот за сајтов</translation>
 <translation id="2403703063067034158">Грешка при стартување: во тек е друго поставување во моментов, обидете се повторно подоцна.</translation>
+<translation id="241044568699443215">Заштитете се со Chromium во движење со апликацијата Chromium на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Отворајте линкови во Chromium од која било апликација и пристапувајте до прелистувачот преку лентата со задачи</translation>
 <translation id="2425157128016763890">Кликнете го копчето „Резимирај“ за да го споделите документов со Gemini во Chromium со цел да добиете брз преглед и да поставувате дополнителни прашања</translation>
 <translation id="2440750600860946460">Со <ph name="BEGIN_LINK" />алатките од Chromium<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
@@ -519,6 +521,7 @@
 <translation id="6598877126913850652">Одете во поставките за известувања на Chromium</translation>
 <translation id="6600016381025017075">Пребарајте што било на страницава</translation>
 <translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>
+<translation id="6637855549677695722">Следниот пат кога ќе го отворите Chromium на вашиот <ph name="DEVICE_TYPE" />, ќе видите барање да ги добиете најдобрите безбедносни функции на Chromium.</translation>
 <translation id="6637908313088374648">Отсега Chromium ќе се стартува заедно со Windows за да може веднаш да започнете со прелистување. Ова може да го исклучите во „Поставки“.</translation>
 <translation id="6644846457769259194">Уредот се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">На Chromium му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
@@ -751,6 +754,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8907580949721785412">Chromium се обидува да прикаже лозинки. Внесете ја својата лозинка за Windows за да го овозможите тоа.</translation>
 <translation id="8910309838319708610">Успешно! Отсега може лесно да поставувате прашања додека прелистувате со „AI-режимот“ на „Пребарување“</translation>
 <translation id="8932992523185907506">Chromium веќе не е вашиот стандарден прелистувач. Да се постави Chromium како стандарден прелистувач?</translation>
+<translation id="8940844567350264767">Добијте ги најдобрите безбедносни функции на Chromium во движење со Chromium</translation>
 <translation id="8941642502866065432">Не може да се ажурира Chromium</translation>
 <translation id="8944232836376404813">Дејствово:
           <ph name="LINE_BREAKS" />

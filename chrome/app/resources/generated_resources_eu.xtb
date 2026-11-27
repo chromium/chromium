@@ -1289,6 +1289,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="244071666433939959">Aplikazioak leiho batean irekitzen dira</translation>
 <translation id="2442916515643169563">Testuaren itzala</translation>
 <translation id="2443487764245141020">Gainera, litekeena da webguneek identifikatzaile baten bidez gailua ezagutu behar izatea</translation>
+<translation id="2444282212665587861">eguneratu, eguneratzeak, bertsio-berritu, bertsioa, konpilazioa, informazioa, eguneratzeak bilatu</translation>
 <translation id="244475495405467108">Itxi ezkerreko fitxak</translation>
 <translation id="2444874983932528148">Jarraitu utzi zenuen tokitik erraz asko</translation>
 <translation id="2445081178310039857">Luzapenaren erroaren direktorioa behar da.</translation>
@@ -2120,6 +2121,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="3321512411079201586">&amp;Modu isolatuta</translation>
 <translation id="3323288183237359315">Instalatu Edge-rako</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Zure pribatutasuna babesteko, baimenak kendu zaizkio webgune bati}other{Zure pribatutasuna babesteko, baimenak kendu zaizkie webgune batzuei}}</translation>
+<translation id="3325561120400598624">Elkarrizketak berrikusiko dira, eta AA generatiboko ereduak trebatzeko erabiliko. Gemini AA da, eta baliteke akatsak egitea. Baliteke eduki batzuk guztientzat egokiak ez izatea. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Zure historia kudea<ph name="END_LINK_MANAGE_HISTORY" /> dezakezu, <ph name="BEGIN_LINK_LOCATION_INFO" />kokapenari buruzko informazioa<ph name="END_LINK_LOCATION_INFO" /> barne. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu zure aukerei buruzko informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Estiloa</translation>
 <translation id="3331974543021145906">Aplikazioari buruzko informazioa</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: bideoa pantaila txiki gainjarriko moduan erreproduzitzen ari da</translation>
@@ -2245,6 +2247,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Kargatu PDF fitxategi bat galderarekin erabiltzeko}other{Kargatu # PDF fitxategi gehienez galderarekin erabiltzeko}}</translation>
 <translation id="3456750372063895499">Ireki esteka leiho isolatu batean</translation>
 <translation id="345693547134384690">Ireki irudia fitxa &amp;berri batean</translation>
+<translation id="3456949031754827166">Berrantolatu</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Mantendu taldea}other{Mantendu taldeak}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 laster-marka ezabatu da}other{# laster-marka ezabatu dira}}</translation>
 <translation id="3471687177769494956">Editatu nabigazio-lasterbidea</translation>
@@ -3292,6 +3295,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="4602776638371779614">Une honetan, fitxa hau Bluetooth bidezko gailuak bilatzen ari da</translation>
 <translation id="4605026046465576953">Ezin da ireki aplikazioa, ez daukazulako sareko aplikazio isolatuak exekutatzeko baimenik</translation>
 <translation id="4606551464649945562">Ez utzi inongo webguneri inguruaren 3D-ko mapa bat sortzen edo kameraren posizioaren jarraipena egiten</translation>
+<translation id="4606965546067937011">abiadura, RAMa, atzerapena, blokeatu, hutsegitea, baliabidea, erabilera, bateria, optimizatzailea, motela, memoria, memoria-aurreztailea</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Fitxa taldea ezabatu nahi duzu?}other{Fitxa taldeak ezabatu nahi dituzu?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Kargatu fitxategi bat galderarekin erabiltzeko}other{Kargatu # fitxategi gehienez galderarekin erabiltzeko}}</translation>
 <translation id="4608500690299898628">&amp;Bilatu…</translation>
@@ -4115,6 +4119,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="5535769176698670170">Aldatu goiko ikuspegiarekin</translation>
 <translation id="5536642445914063887">Aldatu profila</translation>
 <translation id="5537725057119320332">Igorri</translation>
+<translation id="553876896781261711">ezabatu, kendu, segurtasuna, pribatutasuna, garbiketa, biltegiratzea, berrezarri, cachea, cookieak, motel, abiadura, historia</translation>
 <translation id="5541091577812545428">Pasahitza ez da aldatu</translation>
 <translation id="5542132724887566711">Profila</translation>
 <translation id="5543983818738093899">Egoera egiaztatzen…</translation>
@@ -4701,6 +4706,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="6214157047210274853">Editatu Google Wallet-en</translation>
 <translation id="621470880408090483">Ez eman Bluetooth bidezko gailuetara konektatzeko baimena webguneei</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da minutu batez jarduerarik ez badago}other{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da # minutuz jarduerarik ez badago}}</translation>
+<translation id="6215427500141060726">Elkarrizketak berrikusiko dira, eta AA generatiboko ereduak trebatzeko erabiliko. Gemini AA da, eta baliteke akatsak egitea. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Zure historia kudea<ph name="END_LINK_MANAGE_HISTORY" /> dezakezu, <ph name="BEGIN_LINK_LOCATION_INFO" />kokapenari buruzko informazioa<ph name="END_LINK_LOCATION_INFO" /> barne. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu zure aukerei buruzko informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Baztertutako webguneak eta aplikazioak</translation>
 <translation id="6216696360484424239">Hasi saioa automatikoki</translation>
 <translation id="6218961554829577610">Ez zait gustatu ahotsa</translation>
@@ -4850,6 +4856,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="639880411171387127">Google Lens-eko hautapena. Sakatu Sartu edo Atzera tekla Google Lens-eko hautapena ezabatzeko.</translation>
 <translation id="6400360390396538896">Beti <ph name="ORIGIN" /> webgunean</translation>
 <translation id="6400714103322134861">Kendu fokua fitxa taldeari</translation>
+<translation id="6401522392962817913">Aurrera eginez gero, onartu egingo dituzu Google Payments-en Zerbitzu-baldintzak. Pribatutasun-oharrak azaltzen du zure datuak nola kudeatzen diren. Txartela Google-ko kontuan gordeta daukazu (<ph name="ACCOUNT" />).</translation>
 <translation id="6402042774506839496">Arrazoia jakiteko, jarri aplikazioaren garatzailearekin harremanetan</translation>
 <translation id="6402921224457714577">Zure MIDI gailuak kontrolatzeko eta berriro programatzeko eska dezake webguneek</translation>
 <translation id="6404511346730675251">Editatu laster-marka</translation>
@@ -4937,6 +4944,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="6499143127267478107">Ostalaria proxyaren scriptean ebazten…</translation>
 <translation id="6503077044568424649">Bisitatuenak</translation>
 <translation id="6504601948739128893">Ezin dituzte erabili gailuan instalatutako letrak</translation>
+<translation id="6505525633061207363">kredentzialak, saio-hasiera, sarbide-gakoa, blokeatu, kutxa gotorra, gakoak, hasi saioa, pasahitzak</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> aplikazioak beste aplikazio hau instalatu nahi du gailuan:}other{<ph name="APP_NAME" /> aplikazioak beste aplikazio hauek instalatu nahi ditu gailuan:}}</translation>
 <translation id="6508248480704296122">Honekin erlazionatua: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikazioa: <ph name="APP_NAME" /></translation>

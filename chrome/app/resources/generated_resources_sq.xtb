@@ -1295,6 +1295,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="244071666433939959">Aplikacionet hapen në një dritare</translation>
 <translation id="2442916515643169563">Hija e tekstit</translation>
 <translation id="2443487764245141020">Sajtet mund të kenë nevojë po ashtu ta njohin pajisjen tënde duke përdorur një identifikues</translation>
+<translation id="2444282212665587861">përditëso, përditësimet, përmirëso, versioni, ndërtimi, informacione, kontrollo për përditësime</translation>
 <translation id="244475495405467108">Mbyll skedat në të majtë</translation>
 <translation id="2444874983932528148">Vazhdo me lehtësi aty ku e ke lënë</translation>
 <translation id="2445081178310039857">Kërkohet direktoria rrënjë e shtesës.</translation>
@@ -2132,6 +2133,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3321512411079201586">&amp;Izoluar</translation>
 <translation id="3323288183237359315">Instalo për Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Për të mbrojtur privatësinë tënde, lejet u hoqën nga një sajt}other{Për të mbrojtur privatësinë tënde, lejet u hoqën nga disa sajte}}</translation>
+<translation id="3325561120400598624">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë <ph name="BEGIN_LINK_LOCATION_INFO" />informacionet rreth vendndodhjes sate<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Stili</translation>
 <translation id="3331974543021145906">Informacion mbi aplikacionin</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Videoja po luhet në modalitetin "figurë brenda figurës"</translation>
@@ -2257,6 +2259,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Ngarko 1 skedar .pdf për ta përdorur me pyetjen tënde}other{Ngarko deri në # skedarë .pdf për t'i përdorur me pyetjen tënde}}</translation>
 <translation id="3456750372063895499">Hape lidhjen në një dritare të i&amp;zoluar</translation>
 <translation id="345693547134384690">Hape &amp;imazhin në një skedë të re</translation>
+<translation id="3456949031754827166">Riorganizo</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Mbaje grupin}other{Mbaji grupet}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 faqeshënues u fshi}other{# faqeshënues u fshinë}}</translation>
 <translation id="3471687177769494956">Modifiko shkurtoren e navigimit</translation>
@@ -3310,6 +3313,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4602776638371779614">Kjo skedë po skanon në mënyrë aktive për pajisje me Bluetooth</translation>
 <translation id="4605026046465576953">Ky aplikacion nuk mund të hapet sepse ti nuk ke leje për të ekzekutuar aplikacionet e izoluara të uebit</translation>
 <translation id="4606551464649945562">Mos lejo që sajtet të krijojnë një hartë 3D të ambientit tënd rrethues ose të gjurmojnë pozicionin e kamerës</translation>
+<translation id="4606965546067937011">shpejtësia, RAM, vonesa, ngrirja, ndërprerja aksidentale, burimi, përdorimi, bateria, optimizuesi, i ngadaltë, memoria, kursyesi i memories</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Të fshihet grupi i skedave?}other{Të fshihen grupet e skedave?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Ngarko 1 skedar për ta përdorur me pyetjen tënde}other{Ngarko deri në # skedarë për t'i përdorur me pyetjen tënde}}</translation>
 <translation id="4608500690299898628">&amp;Gjej...</translation>
@@ -4140,6 +4144,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5535769176698670170">Ndërro me pamjen lart</translation>
 <translation id="5536642445914063887">Ndërro profilin</translation>
 <translation id="5537725057119320332">Transmeto</translation>
+<translation id="553876896781261711">fshi, hiq, siguria, privatësia, pastrimi, hapësira ruajtëse, rivendos, memoria specifike, kukit, i ngadaltë, shpejtësia, historiku</translation>
 <translation id="5541091577812545428">Fjalëkalimi nuk u ndryshua</translation>
 <translation id="5542132724887566711">Profili</translation>
 <translation id="5543983818738093899">Po kontrollon për statusin...</translation>
@@ -4731,6 +4736,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6214157047210274853">Modifiko te "Portofoli i Google"</translation>
 <translation id="621470880408090483">Mos lejo që sajtet të lidhen me pajisjet me Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Për t'i mbajtur fjalëkalimet e tua të sigurta, "<ph name="BRAND" />" kyçet pas 1 minute pa aktivitet}other{Për t'i mbajtur fjalëkalimet e tua të sigurta, "<ph name="BRAND" />" kyçet pas # minutash pa aktivitet}}</translation>
+<translation id="6215427500141060726">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë <ph name="BEGIN_LINK_LOCATION_INFO" />informacionet rreth vendndodhjes sate<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Sajtet dhe aplikacionet e refuzuara</translation>
 <translation id="6216696360484424239">Identifikohu automatikisht</translation>
 <translation id="6218961554829577610">Nuk më pëlqeu zëri</translation>
@@ -4882,6 +4888,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="639880411171387127">Përzgjedhja jote e "Lentes së Google". Shtyp tastin "Enter" ose "Backspace" për të fshirë përzgjedhjen e "Lentes së Google"</translation>
 <translation id="6400360390396538896">Gjithmonë në <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Anulo fokusimin e grupit të skedave</translation>
+<translation id="6401522392962817913">Duke vazhduar, ti pranon "Kushtet e shërbimit" të Google Payments. "Njoftimi i privatësisë" përshkruan se si administrohen të dhënat e tua. Karta jote është ruajtur në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Për të mësuar se pse, kontakto me zhvilluesin e aplikacionit</translation>
 <translation id="6402921224457714577">Sajtet mund të kërkojnë të kontrollojnë dhe riprogramojnë pajisjet e tua MIDI</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
@@ -4970,6 +4977,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6499143127267478107">Po zgjidh pritësin në skriptin e përfaqësuesit...</translation>
 <translation id="6503077044568424649">Më të vizituara</translation>
 <translation id="6504601948739128893">Nuk lejohen që të përdorin fontet e instaluara në pajisjen tënde</translation>
+<translation id="6505525633061207363">kredencialet, identifikimi, çelësi i kalimit, kyçja, kasaforta, çelësat, identifikohu</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" dëshiron të instalojë aplikacionin e mëposhtëm në këtë pajisje:}other{"<ph name="APP_NAME" />" dëshiron të instalojë aplikacionet e mëposhtme në këtë pajisje:}}</translation>
 <translation id="6508248480704296122">Të lidhura me <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacioni: <ph name="APP_NAME" /></translation>

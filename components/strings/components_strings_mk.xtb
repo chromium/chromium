@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Кешот на политиката е во ред</translation>
 <translation id="1131264053432022307">Сликата што ја копиравте</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – за да излезете од цел екран, повлечете одозгора и допрете го копчето за назад</translation>
+<translation id="1132789342529761192">Не се препорачува прикачување</translation>
 <translation id="11370190534773372">Податоците за картичката се пополнети</translation>
 <translation id="1138458427267715730">Добивајте известувања кога ќе се намали цената на кој било сајт на интернет</translation>
 <translation id="1142713751288681188">Тип хартија</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">Небезбедни содржини</translation>
 <translation id="2027465737841872819">Пластика</translation>
 <translation id="2027707238798802149">Картичката не е достапна</translation>
+<translation id="2028329426302356196">Не се препорачува преземање</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Да ги проверите проксито и заштитниот ѕид<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Овој примерок на Chrome се извршува со рачно поставени ознаки во редот за наредби. Имајте предвид дека ознаките во редот за наредби може да се променат кога било и не се поддржани.</translation>
 <translation id="2033900728810589426">Кратенката не може да биде иста со клучниот збор на стандардниот оператор за пребарување дефиниран од <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">Оптички диск (сатен)</translation>
 <translation id="3447661539832366887">Сопственикот на уредов ја исклучил играта со диносауруси.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаден од <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Не се препорачува печатење</translation>
 <translation id="3450323514459570273">Сајтот може да побара да ги контролира и репрограмира вашите MIDI-уреди</translation>
 <translation id="3452404311384756672">Интервал на освежување:</translation>
 <translation id="345268527248907593">Не можеше да се пристапи до сајтов</translation>
@@ -2915,6 +2918,7 @@
 <translation id="5851548754964597211">Список со картички</translation>
 <translation id="5851868085455377790">Издавач</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Не се препорачува копирање</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>
 <translation id="5863515189965725638">Изменете го IBAN</translation>

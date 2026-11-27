@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Memoria specifike e politikës është në rregull</translation>
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - Për të dalë nga ekrani i plotë, zvarrite nga kreu dhe prek butonin "prapa"</translation>
+<translation id="1132789342529761192">Ngarkimi nuk rekomandohet</translation>
 <translation id="11370190534773372">Detajet e kartës u plotësuan</translation>
 <translation id="1138458427267715730">Merr sinjalizime kur çmimi ulet në çdo sajt në ueb</translation>
 <translation id="1142713751288681188">Lloji i letrës</translation>
@@ -583,6 +584,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Provo të lejosh kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve ka më shumë gjasa të funksionojnë siç pritet.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">Përmbajtjet po skanohen...</translation>
 <translation id="1996557034791506430">Të hiqet leja?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="1997774360448418989">Letër (e lehtë)</translation>
@@ -602,6 +604,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2025891858974379949">Përmbajtje e pasigurt</translation>
 <translation id="2027465737841872819">Plastikë</translation>
 <translation id="2027707238798802149">Karta nuk ofrohet</translation>
+<translation id="2028329426302356196">Shkarkimi nuk rekomandohet</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin dhe murin mbrojtës<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Ky shembull i Chrome po ekzekutohet me flamujt e rreshtit të komandës të caktuar manualisht. Ki parasysh se flamujt e rreshtit së komandës mund të ndryshojnë në çdo kohë dhe nuk mbështeten.</translation>
 <translation id="2033900728810589426">Shkurtorja nuk mund të jetë e njëjtë me fjalën kyçe të ofruesit të parazgjedhur të kërkimit të përcaktuar nga <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1455,6 +1458,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3443504041532578451">Disk optik (saten)</translation>
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Printimi nuk rekomandohet</translation>
 <translation id="3450323514459570273">Mund të kërkojë të kontrollojë dhe riprogramojë pajisjet e tua MIDI</translation>
 <translation id="3452404311384756672">Intervali i marrjes:</translation>
 <translation id="345268527248907593">Ky sajt nuk mund të arrihej</translation>
@@ -2914,6 +2918,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5851868085455377790">Publikuesi</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopjimi nuk rekomandohet</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5862579898803147654">Stivuesi 8</translation>
 <translation id="5863515189965725638">Modifiko numrin IBAN</translation>
