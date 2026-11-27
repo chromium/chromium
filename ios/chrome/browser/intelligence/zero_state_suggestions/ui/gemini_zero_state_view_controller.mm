@@ -20,14 +20,34 @@ namespace {
 constexpr CGFloat kPlaceholderChipWidths[] = {200.0, 260.0, 140.0};
 NSString* const kPlaceholderChipTitle = @" ";
 constexpr NSTimeInterval kSuggestionChipsAnimationDuration = 0.3;
-constexpr CGFloat kChipInterItemSpacing = 8.0;
+constexpr CGFloat kChipInterItemSpacing = 12.0;
+constexpr CGFloat kChipsToInputSpacing = 16.0;
 constexpr CGFloat kChipContentPaddingVertical = 12.0;
 constexpr CGFloat kChipContentPaddingHorizontal = 16.0;
-constexpr CGFloat kContainerTopPadding = 36.0;
+// Chip title font size at the default Dynamic Type size, and the maximum scale
+// applied to it at larger Dynamic Type sizes.
+constexpr CGFloat kChipFontSize = 15.0;
+constexpr CGFloat kChipFontMaxScale = 1.6;
+constexpr CGFloat kShadowRadius = 15.5;
+constexpr float kShadowOpacity = 0.15;
+// Distance the content mask extends beyond the leading, trailing and bottom
+// edges so the chip shadows are not clipped. A `CALayer` shadow visibly extends
+// up to about twice its `shadowRadius`.
+constexpr CGFloat kShadowClipOutset = 2 * kShadowRadius;
+constexpr CGFloat kContainerTopPadding = 48.0;
+constexpr CGFloat kHeaderToSuggestionsSpacing = 24.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kCloseButtonSize = 44.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
 constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
+
+// Applies the zero-state drop shadow to `view`.
+void ApplyDropShadow(UIView* view) {
+  view.layer.shadowColor = UIColor.blackColor.CGColor;
+  view.layer.shadowOpacity = kShadowOpacity;
+  view.layer.shadowRadius = kShadowRadius;
+  view.layer.shadowOffset = CGSizeZero;
+}
 
 }  // namespace
 
@@ -45,6 +65,12 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
   // Fixed width constraints corresponding to each button in
   // `_suggestionButtons` when in the placeholder state.
   NSArray<NSLayoutConstraint*>* _placeholderWidthConstraints;
+  // Container for the header and suggestion chips, clipped by
+  // `_contentMaskView`. The close button lives outside of it so that its shadow
+  // is not clipped at the top edge.
+  UIView* _contentView;
+  // Mask clipping `_contentView` at its top edge only.
+  UIView* _contentMaskView;
 }
 
 #pragma mark - UIViewController
@@ -52,14 +78,27 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.clipsToBounds = YES;
+  // Rather than `clipsToBounds`, a mask (see `viewDidLayoutSubviews`) clips the
+  // content at the top edge only, so content overflowing when the sheet is
+  // shrunk still disappears under the top of the view, while the suggestion
+  // chip shadows can extend into the parent container's padding. A mask view
+  // (rather than a mask layer) is used so that its frame changes animate along
+  // with the content during sheet resize animations.
+  _contentView = [[UIView alloc] init];
+  _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_contentView];
+  AddSameConstraints(_contentView, self.view);
+
+  _contentMaskView = [[UIView alloc] init];
+  _contentMaskView.backgroundColor = UIColor.blackColor;
+  _contentView.maskView = _contentMaskView;
 
   UIStackView* headerStack = [[UIStackView alloc] init];
   headerStack.translatesAutoresizingMaskIntoConstraints = NO;
   headerStack.axis = UILayoutConstraintAxisVertical;
   headerStack.spacing = kLogoToGreetingSpacing;
-  [self.view addSubview:headerStack];
   _headerStack = headerStack;
+  [_contentView addSubview:headerStack];
 
   _logoImageView = [[UIImageView alloc] init];
   _logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -78,6 +117,7 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
   _greetingLabel.textAlignment = NSTextAlignmentCenter;
   _greetingLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
+  _greetingLabel.adjustsFontForContentSizeCategory = YES;
   _greetingLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [_greetingLabel setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisVertical];
@@ -94,13 +134,13 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
   _suggestionsStack.alignment = UIStackViewAlignmentLeading;
   _suggestionsStack.layoutMarginsRelativeArrangement = YES;
   _suggestionsStack.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(0, 0, kChipInterItemSpacing, 0);
+      NSDirectionalEdgeInsetsMake(0, 0, kChipsToInputSpacing, 0);
   [_suggestionsStack setContentHuggingPriority:UILayoutPriorityRequired
                                        forAxis:UILayoutConstraintAxisVertical];
   [_suggestionsStack
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
-  [self.view addSubview:_suggestionsStack];
+  [_contentView addSubview:_suggestionsStack];
 
   [self setupSuggestionButtons];
 
@@ -110,7 +150,7 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
   closeButtonConfig.image =
       SymbolWithPointSize(SymbolXMark, kCloseButtonSymbolPointSize);
   closeButtonConfig.baseBackgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   closeButtonConfig.baseForegroundColor =
       [UIColor colorNamed:kTextPrimaryColor];
 
@@ -122,6 +162,7 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
                                               primaryAction:closeAction];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
+  ApplyDropShadow(closeButton);
   [self.view addSubview:closeButton];
   AddSquareConstraints(closeButton, kCloseButtonSize);
 
@@ -150,18 +191,30 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
     guideTopConstraint,
     [headerLayoutGuide.bottomAnchor
         constraintEqualToAnchor:_suggestionsStack.topAnchor
-                       constant:-kContainerTopPadding],
+                       constant:-kHeaderToSuggestionsSpacing],
     [headerStack.topAnchor
         constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.topAnchor],
     [headerStack.bottomAnchor
         constraintLessThanOrEqualToAnchor:headerLayoutGuide.bottomAnchor],
     centerHeaderConstraint,
   ]];
+
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(contentSizeCategoryDidChange)];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  // At this point only the direct subviews of `self.view` have their updated
+  // frames. `updateHeaderVisibility` reads the frames of `_contentView`'s
+  // subviews, so they need to be laid out first.
+  [_contentView layoutIfNeeded];
   [self updateHeaderVisibility];
+  CGRect bounds = _contentView.bounds;
+  _contentMaskView.frame = CGRectMake(
+      CGRectGetMinX(bounds) - kShadowClipOutset, CGRectGetMinY(bounds),
+      CGRectGetWidth(bounds) + 2 * kShadowClipOutset,
+      CGRectGetHeight(bounds) + kShadowClipOutset);
 }
 
 #pragma mark - GeminiZeroStateConsumer
@@ -221,7 +274,7 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
 - (void)updateHeaderVisibility {
   CGFloat requiredHeight =
       kContainerTopPadding + _headerStack.frame.size.height +
-      kContainerTopPadding + _suggestionsStack.frame.size.height;
+      kHeaderToSuggestionsSpacing + _suggestionsStack.frame.size.height;
   BOOL headerFits = self.view.bounds.size.height >= requiredHeight;
   CGFloat targetAlpha = headerFits ? 1.0 : 0.0;
   if (_headerStack.alpha == targetAlpha) {
@@ -238,6 +291,22 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
                    animations:^{
                      headerStack.alpha = targetAlpha;
                    }];
+}
+
+// Re-resolves the chip title fonts for the new Dynamic Type size, since the
+// font is computed in the configuration's `titleTextAttributesTransformer`, and
+// notifies the mutator that the content size changed.
+- (void)contentSizeCategoryDidChange {
+  for (UIButton* chipButton in _suggestionButtons) {
+    [chipButton setNeedsUpdateConfiguration];
+  }
+  // The notification is deferred so that the trait change has propagated to
+  // all subviews (e.g. the greeting label and the Gemini input plate) before
+  // the content height is measured.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.mutator zeroStateContentSizeDidChange];
+  });
 }
 
 // Updates the greeting label text based on the first name provided by the
@@ -262,13 +331,20 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
 
   for (CGFloat width : kPlaceholderChipWidths) {
     UIButton* chipButton = [self createPlaceholderChipButton];
+    [_suggestionsStack addArrangedSubview:chipButton];
+
+    // Chips never exceed the available width, so long titles (e.g. with large
+    // Dynamic Type sizes) wrap onto multiple lines instead of being cropped.
+    [chipButton.widthAnchor
+        constraintLessThanOrEqualToAnchor:_suggestionsStack.widthAnchor]
+        .active = YES;
     NSLayoutConstraint* widthConstraint =
         [chipButton.widthAnchor constraintEqualToConstant:width];
+    widthConstraint.priority = UILayoutPriorityRequired - 1;
     widthConstraint.active = YES;
 
     [buttons addObject:chipButton];
     [widthConstraints addObject:widthConstraint];
-    [_suggestionsStack addArrangedSubview:chipButton];
   }
 
   _suggestionButtons = [buttons copy];
@@ -311,7 +387,22 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
       kChipContentPaddingVertical, kChipContentPaddingHorizontal,
       kChipContentPaddingVertical, kChipContentPaddingHorizontal);
   config.titleAlignment = UIButtonConfigurationTitleAlignmentCenter;
-  config.baseBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  config.titleLineBreakMode = NSLineBreakByWordWrapping;
+  // Scales the title with Dynamic Type like `UIFontTextStyleSubheadline`, but
+  // caps it at `kChipFontMaxScale` of its default size.
+  config.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* incoming) {
+    NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
+        [incoming mutableCopy];
+    outgoing[NSFontAttributeName] =
+        [[UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline]
+            scaledFontForFont:[UIFont systemFontOfSize:kChipFontSize]
+             maximumPointSize:kChipFontSize * kChipFontMaxScale];
+    return outgoing;
+  };
+  config.baseBackgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
 
   UIButton* chipButton = [UIButton buttonWithConfiguration:config
@@ -319,6 +410,7 @@ constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
   chipButton.translatesAutoresizingMaskIntoConstraints = NO;
   chipButton.userInteractionEnabled = NO;
   chipButton.titleLabel.alpha = 0.0;
+  ApplyDropShadow(chipButton);
   [chipButton setContentHuggingPriority:UILayoutPriorityRequired
                                 forAxis:UILayoutConstraintAxisVertical];
   [chipButton
