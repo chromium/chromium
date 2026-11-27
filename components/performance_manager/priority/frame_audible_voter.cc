@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager {
@@ -16,9 +17,12 @@ namespace {
 // Returns a vote with the appropriate priority depending on if the frame is
 // audible.
 Vote GetVote(bool is_audible) {
-  base::Process::Priority priority =
-      is_audible ? base::Process::Priority::kUserBlocking
-                 : base::Process::Priority::kMinValue;
+  base::Process::Priority priority = base::Process::Priority::kMinValue;
+  if (is_audible) {
+    priority = features::kAudibleFrameUserVisiblePriority.Get()
+                   ? base::Process::Priority::kUserVisible
+                   : base::Process::Priority::kUserBlocking;
+  }
   return Vote(priority, FrameAudibleVoter::kFrameAudibleReason);
 }
 

@@ -5,6 +5,8 @@
 #include "components/performance_manager/priority/frame_audible_voter.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -69,6 +71,35 @@ TEST_F(FrameAudibleVoterTest, AudibleChanged) {
   // Deleting the frame should invalidate the vote.
   frame_node.reset();
   EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that audible frames vote for kUserVisible when the
+// kAudibleFrameUserVisiblePriority param is true.
+TEST_F(FrameAudibleVoterTest, AudibleChangedUserVisiblePriority) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPMProcessPriorityPolicy,
+      {{features::kAudibleFrameUserVisiblePriority.name, "true"}});
+
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto& frame_node = mock_graph.frame;
+  EXPECT_FALSE(frame_node->IsAudible());
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kMinValue,
+                                 FrameAudibleVoter::kFrameAudibleReason));
+
+  mock_graph.frame->SetIsAudible(true);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kUserVisible,
+                                 FrameAudibleVoter::kFrameAudibleReason));
+
+  mock_graph.frame->SetIsAudible(false);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
+                                 base::Process::Priority::kMinValue,
+                                 FrameAudibleVoter::kFrameAudibleReason));
 }
 
 }  // namespace priority

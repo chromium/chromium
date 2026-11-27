@@ -198,6 +198,9 @@ const base::FeatureParam<bool> kRendererHighInitialPriority{
 #endif
 };
 
+const base::FeatureParam<bool> kAudibleFrameUserVisiblePriority{
+    &kPMProcessPriorityPolicy, "audible_frame_user_visible_priority", false};
+
 BASE_FEATURE(kSubframeNotVisibleIfParentNotVisible,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

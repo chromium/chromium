@@ -91,7 +91,8 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
           policy_settings.ignore_main_frame_visibility);
     }
 
-    // Casts a USER_BLOCKING vote when a frame is audible.
+    // Casts a USER_BLOCKING vote (USER_VISIBLE if
+    // features::kAudibleFrameUserVisiblePriority) when a frame is audible.
     priority_voting_system->AddPriorityVoter<priority::FrameAudibleVoter>();
 
     // Casts a USER_BLOCKING vote when a frame is capturing a media stream.

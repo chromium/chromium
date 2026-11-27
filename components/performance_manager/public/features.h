@@ -134,6 +134,12 @@ extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
 
 extern const base::FeatureParam<bool> kRendererHighInitialPriority;
 
+// When true, audible frames vote for kUserVisible process priority instead
+// of kUserBlocking. Unless UserVisibleProcessPriority is enabled, kUserVisible
+// is mapped to kUserBlocking at the OS level, so this only affects
+// renderer-side consumers of the process priority (e.g. isolate priority).
+extern const base::FeatureParam<bool> kAudibleFrameUserVisiblePriority;
+
 // When enabled, a subframe is not visible if its parent frame is not visible.
 // This covers frames whose viewport intersection is never reported, e.g. frames
 // inside a `display:none` frame.
