@@ -169,6 +169,8 @@ class MemoryManagedPaintCanvas;
 
 namespace {
 
+BASE_FEATURE(kSkipSyncTokenVerificationForSoftwareCanvas2D,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsContextProviderValid() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
@@ -363,7 +365,9 @@ BaseRenderingContext2D::NewOrRecycledResource() {
   }
 
   if (image_pool_->GetImageInfo().is_software &&
-      !resource->GetSyncToken().verified_flush()) {
+      !resource->GetSyncToken().verified_flush() &&
+      !base::FeatureList::IsEnabled(
+          kSkipSyncTokenVerificationForSoftwareCanvas2D)) {
     // Ensure the creation sync token for software SharedImages is verified
     // before the resource is exported.
     DCHECK(shared_image_interface_provider_);

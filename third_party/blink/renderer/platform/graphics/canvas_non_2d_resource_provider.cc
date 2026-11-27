@@ -48,6 +48,10 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
+namespace {
+BASE_FEATURE(kSkipSyncTokenVerificationForSoftwareCanvasNon2D,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 // Private fork of `CanvasResource` for `CanvasNon2DResourceProvider` so that
 // `CanvasResource` can be eliminated incrementally for 2D canvas without
@@ -73,13 +77,16 @@ class CanvasNon2DResourceProvider::Resource final : public gpu::ClientImage {
     // This class doesn't currently have a way of verifying the sync token for
     // software SharedImages at the time of vending it in VerifySyncToken(),
     // so we instead ensure that it is verified now.
-    auto* shared_image_interface =
-        shared_image_interface_provider->SharedImageInterface();
-    DCHECK(shared_image_interface);
-    gpu::SyncToken sync_token = GetSharedImage()->creation_sync_token();
-    shared_image_interface->VerifySyncToken(sync_token);
-    SetReleaseSyncToken(sync_token);
-    GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+    if (!base::FeatureList::IsEnabled(
+            kSkipSyncTokenVerificationForSoftwareCanvasNon2D)) {
+      auto* shared_image_interface =
+          shared_image_interface_provider->SharedImageInterface();
+      DCHECK(shared_image_interface);
+      gpu::SyncToken sync_token = GetSharedImage()->creation_sync_token();
+      shared_image_interface->VerifySyncToken(sync_token);
+      SetReleaseSyncToken(sync_token);
+      GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+    }
 
     is_initialized_ = true;
   }
