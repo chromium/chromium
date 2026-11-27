@@ -35,6 +35,8 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_result.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -276,6 +278,35 @@ StepCallback StepFakeCompositeToolRequest(
                                            actor_surface_handle));
 }
 
+// Returns a gmock action for a UiEventDispatcher method that completes with
+// `code`.
+template <typename T>
+auto UiEventResult(mojom::ActionResultCode code) {
+  return UiEventDispatcherCallback<T>(base::BindRepeating(
+      [](mojom::ActionResultCode code) {
+        return IsOk(code)
+                   ? MakeOkResult(/*requires_page_stabilization=*/false)
+                   : MakeResult(code, /*requires_page_stabilization=*/false);
+      },
+      code));
+}
+
+// Returns a mock UiEventDispatcher where every event succeeds by default.
+// Tests can use EXPECT_CALL to make individual events fail.
+std::unique_ptr<testing::NiceMock<ui::MockUiEventDispatcher>>
+MakeSucceedingMockUiEventDispatcher() {
+  auto dispatcher =
+      std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+  ON_CALL(*dispatcher, OnPreTool)
+      .WillByDefault(UiEventResult<ToolRequest>(mojom::ActionResultCode::kOk));
+  ON_CALL(*dispatcher, OnPostTool)
+      .WillByDefault(UiEventResult<ToolRequest>(mojom::ActionResultCode::kOk));
+  ON_CALL(*dispatcher, OnActorTaskAsyncChange)
+      .WillByDefault(UiEventResult<ui::UiEventDispatcher::ActorTaskAsyncChange>(
+          mojom::ActionResultCode::kOk));
+  return dispatcher;
+}
+
 class ExecutionEngineDispatcherBrowserTest : public InProcessBrowserTest {
  public:
   ExecutionEngineDispatcherBrowserTest() {
@@ -315,6 +346,16 @@ class ExecutionEngineDispatcherBrowserTest : public InProcessBrowserTest {
   }
 
   ActorTask& actor_task() { return *actor_keyed_service()->GetTask(task_id_); }
+
+  // Creates a new task which uses `ui_event_dispatcher` rather than the real
+  // UI.
+  ActorTask& CreateTaskWithUiEventDispatcher(
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
+    return *actor_keyed_service()->GetTask(
+        actor_keyed_service()->CreateTaskForTesting(
+            std::move(ui_event_dispatcher), TestTaskSourceInfo(),
+            NoEnterprisePolicyChecker()));
+  }
 
  private:
   TaskId task_id_;
@@ -582,6 +623,69 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,
   actor_task().Act(ToRequestList(composite), result.GetCallback());
   ExpectOkResult(result);
 
+  EXPECT_THAT(execution_log,
+              testing::ElementsAre("failing_tool", "fallback_tool"));
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].tool_name, "FakeCompositeTool");
+}
+
+// Verifies that a nested dispatcher can recover from a sub-tool that fails in
+// the UI pre-invoke stage (i.e. after the tool was created and validated but
+// before it was invoked) by issuing a fallback sub-tool that succeeds.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,
+                       NestedDispatcherHandlesUiPreInvokeFailureWithFallback) {
+  std::vector<std::string> execution_log;
+
+  auto ui_event_dispatcher = MakeSucceedingMockUiEventDispatcher();
+  EXPECT_CALL(*ui_event_dispatcher, OnPreTool)
+      .WillOnce(
+          UiEventResult<ToolRequest>(mojom::ActionResultCode::kActorUiError))
+      .WillRepeatedly(UiEventResult<ToolRequest>(mojom::ActionResultCode::kOk));
+  ActorTask& task =
+      CreateTaskWithUiEventDispatcher(std::move(ui_event_dispatcher));
+
+  ToolRequestPtr composite = MakeFakeCompositeToolRequest({
+      StepLoggingToolRequest(execution_log, "failing_tool"),
+      StepLoggingToolRequest(execution_log, "fallback_tool"),
+      ReturnResult(ToolResult::Success()),
+  });
+
+  ActResultFuture result;
+  task.Act(ToRequestList(composite), result.GetCallback());
+  ExpectOkResult(result);
+
+  // The first tool fails before being invoked so it never logs.
+  EXPECT_THAT(execution_log, testing::ElementsAre("fallback_tool"));
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].tool_name, "FakeCompositeTool");
+}
+
+// Verifies that a nested dispatcher can recover from a sub-tool that fails in
+// the UI post-invoke stage (i.e. after the tool was invoked successfully) by
+// issuing a fallback sub-tool that succeeds.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineDispatcherBrowserTest,
+                       NestedDispatcherHandlesUiPostInvokeFailureWithFallback) {
+  std::vector<std::string> execution_log;
+
+  auto ui_event_dispatcher = MakeSucceedingMockUiEventDispatcher();
+  EXPECT_CALL(*ui_event_dispatcher, OnPostTool)
+      .WillOnce(
+          UiEventResult<ToolRequest>(mojom::ActionResultCode::kActorUiError))
+      .WillRepeatedly(UiEventResult<ToolRequest>(mojom::ActionResultCode::kOk));
+  ActorTask& task =
+      CreateTaskWithUiEventDispatcher(std::move(ui_event_dispatcher));
+
+  ToolRequestPtr composite = MakeFakeCompositeToolRequest({
+      StepLoggingToolRequest(execution_log, "failing_tool"),
+      StepLoggingToolRequest(execution_log, "fallback_tool"),
+      ReturnResult(ToolResult::Success()),
+  });
+
+  ActResultFuture result;
+  task.Act(ToRequestList(composite), result.GetCallback());
+  ExpectOkResult(result);
+
+  // The first tool is invoked before the UI post-invoke stage fails.
   EXPECT_THAT(execution_log,
               testing::ElementsAre("failing_tool", "fallback_tool"));
   ASSERT_EQ(result.Get().size(), 1u);

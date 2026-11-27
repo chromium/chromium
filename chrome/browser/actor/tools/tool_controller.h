@@ -68,6 +68,11 @@ class ToolController {
   void Pause();
   void Cancel();
 
+  // Cancels and clears the active tool, if any, returning to the ready state.
+  // Unlike `Cancel()`, this preserves any pending deferred observation from a
+  // previously invoked tool.
+  void ResetActiveTool();
+
   // Returns true if a previous deferred `Invoke()` left an unsettled
   // observation delayer.
   bool HasPendingObservation() const;
@@ -88,7 +93,6 @@ class ToolController {
 
  private:
   void SetState(State state);
-  void ResetActiveTool();
 
   // Called when the tool itself finishes its invocation.
   void DidFinishToolInvoke(ToolResult tool_result);

@@ -1756,7 +1756,8 @@ void ExecutionEngine::ReportResultAndStartNext(
 
   MaybeRecordActionResultCodeAfterSkippedWait(tool_result);
 
-  // TODO(b/555808355): Should this call tool_controller_->Cancel()?
+  // Clear the tool controller so the next request starts with a fresh state.
+  tool_controller_->ResetActiveTool();
 
   const base::TimeTicks end_time = base::TimeTicks::Now();
   const base::TimeTicks start_time =
