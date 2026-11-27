@@ -1469,6 +1469,7 @@ void ExecutionEngine::CancelOngoingAct(mojom::ActionResultCode reason) {
   // observation. ToolController::Cancel above will have reset that observation,
   // so re-call CompleteActCall with the cancel result added.
   if (completed_results_.has_value()) {
+    CHECK(!executing_request_);
     std::vector<ToolResultWithLatencyInfo> results =
         std::move(*completed_results_);
     completed_results_.reset();
@@ -1594,6 +1595,9 @@ bool ExecutionEngine::IsExecutingNestedDispatcher() const {
 }
 
 void ExecutionEngine::ProcessNextFromDispatcher() {
+  executing_request_.reset();
+  external_tool_failure_reason_.reset();
+
   ExecutionEngineDispatcher::NextAction next =
       CurrentDispatcher().GetNext(*this);
   if (auto* result = std::get_if<ToolResultWithLatencyInfo>(&next)) {
@@ -2064,6 +2068,7 @@ void ExecutionEngine::CompleteActCall(
     std::vector<ToolResultWithLatencyInfo> results) {
   TRACE_EVENT0("actor", "ExecutionEngine::CompleteActCall");
   CHECK(dispatchers_.empty());
+  CHECK(!executing_request_);
   CHECK(act_callback_);
 
   completed_results_ = std::move(results);
@@ -2089,9 +2094,7 @@ void ExecutionEngine::CompleteActCall(
     const std::string error_debug_string =
         ToDebugString(*(*completed_results_)[*failed_index]
                            .tool_result.deprecated_action_result());
-    GURL url =
-        executing_request_ ? executing_request_->GetURLForJournal() : GURL();
-    journal_->Log(url, task_->id(), "Act Failed",
+    journal_->Log(GURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder().AddError(error_debug_string).Build());
   }
 
@@ -2102,9 +2105,6 @@ void ExecutionEngine::CompleteActCall(
                          std::move(observation_strategy_));
 
   completed_results_.reset();
-  // TODO(b/555808355): Move these to the top of the method.
-  executing_request_.reset();
-  external_tool_failure_reason_.reset();
   act_sequence_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
