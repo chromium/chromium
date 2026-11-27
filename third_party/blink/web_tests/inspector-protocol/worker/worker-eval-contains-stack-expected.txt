@@ -1,0 +1,61 @@
+Tests exception message from eval on worker context contains stack trace.
+{
+    targetScript : worker-eval.js
+    targetType : worker
+    workerReady : Done.
+}
+            function foo()
+            {
+                throw {a:239};
+            }
+            function boo()
+            {
+                foo();
+            }
+            boo();
+{
+    callFrames : [
+        [0] : {
+            column : 17
+            functionName : foo
+            line : 3
+        }
+        [1] : {
+            column : 17
+            functionName : boo
+            line : 7
+        }
+        [2] : {
+            column : 13
+            functionName : (anonymous)
+            line : 9
+        }
+    ]
+    exception : {
+        className : Object
+        description : Object
+        ownProperties : [
+            [0] : {
+                name : a
+                type : number
+                value : 239
+            }
+        ]
+        preview : {
+            description : Object
+            overflow : false
+            properties : [
+                [0] : {
+                    name : a
+                    type : number
+                    value : 239
+                }
+            ]
+            type : object
+        }
+        type : object
+    }
+    line : 3
+    text : Uncaught
+}
+
