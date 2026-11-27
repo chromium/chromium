@@ -237,7 +237,6 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
        IsOtpFieldPresent_EmbeddedFrameTreeIgnored) {
   // An embedded frame tree exists alongside the primary main frame.
   CreateAndActivateAutofillDriver({.is_embedded = true});
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       embedded_manager_observation{&otp_field_detector()};
   embedded_manager_observation.Observe(&autofill_manager(1));

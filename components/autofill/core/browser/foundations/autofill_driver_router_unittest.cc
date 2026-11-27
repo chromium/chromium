@@ -40,7 +40,6 @@ class FakeAutofillDriver : public TestAutofillDriver {
       AutofillPermissionPolicy autofill_policy) {
     FakeAutofillDriver& driver = factory.CreateAndActivate<FakeAutofillDriver>(
         {.parent = parent}, origin);
-    driver.set_frame_token(test::MakeLocalFrameToken());
     if (parent && driver.origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),
                                   driver.GetFrameToken());

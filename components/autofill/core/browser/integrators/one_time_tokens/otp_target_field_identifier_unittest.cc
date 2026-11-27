@@ -43,8 +43,6 @@ class OtpTargetFieldIdentifierTest
     InitAutofillClient();
     CreateAndActivateAutofillDriver();
     CreateAndActivateAutofillDriver({.parent = &autofill_driver(0)});
-    autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
-    autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
   }
 
   FormData AddForm(
@@ -204,7 +202,6 @@ TEST_F(OtpTargetFieldIdentifierTest, InactiveFrameIsIgnored) {
 TEST_F(OtpTargetFieldIdentifierTest, EmbeddedFrameIsIgnored) {
   // An embedded frame tree exists alongside the primary main frame.
   CreateAndActivateAutofillDriver({.is_embedded = true});
-  autofill_driver(2).set_frame_token(test::MakeLocalFrameToken());
 
   OtpTargetFieldIdentifier identifier;
   identifier.RegisterManager(autofill_manager(0));

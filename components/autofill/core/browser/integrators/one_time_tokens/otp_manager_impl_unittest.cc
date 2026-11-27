@@ -1009,7 +1009,6 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsCrossOriginFormReturnsEmpty) {
 TEST_F(OtpManagerImplTest, EmbeddedFrameTreeNoQueryIssued) {
   // An embedded frame tree exists alongside the primary main frame.
   CreateAndActivateAutofillDriver({.is_embedded = true});
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   OtpManagerImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 
@@ -1025,7 +1024,6 @@ TEST_F(OtpManagerImplTest, EmbeddedFrameTreeNoQueryIssued) {
 TEST_F(OtpManagerImplTest, EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
   // An embedded frame tree exists alongside the primary main frame.
   CreateAndActivateAutofillDriver({.is_embedded = true});
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   OtpManagerImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 
@@ -2436,7 +2434,6 @@ TEST_F(
   ASSERT_TRUE(form);
 
   CreateAndActivateAutofillDriver({.parent = &autofill_driver(0)});
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
   LocalFrameToken frame_a = form->field(0)->host_frame();
   LocalFrameToken frame_b = autofill_driver(1).GetFrameToken();
   test_api(autofill_manager())

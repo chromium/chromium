@@ -28,7 +28,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -235,7 +234,6 @@ TEST_F(OmniboxAutofillDelegateTest,
   // alongside the primary main frame, is not the right one to run
   // OmniboxAutofillDelegate logic.
   CreateAndActivateAutofillDriver({.is_embedded = true});
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   EXPECT_CALL(autofill_driver(0), ObserveFieldVisibility).Times(0);
   EXPECT_CALL(autofill_driver(1), ObserveFieldVisibility).Times(0);
@@ -1375,13 +1373,10 @@ class OmniboxAutofillDelegateFillingTest
 // Tests that selecting and accepting a credit card suggestion for a subframe
 // credit card form routes the preview and fill actions to the subframe driver.
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
-  // Create drivers and set unique frame tokens.
+  // Create drivers.
   CreateAndActivateAutofillDriver();  // Main frame (index 0)
   CreateAndActivateAutofillDriver(
       {.parent = &autofill_driver(0)});  // Subframe (index 1)
-
-  autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
       .WillByDefault(Return(&autofill_manager(0)));
@@ -1480,7 +1475,6 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
   // Create only the main frame driver.
   CreateAndActivateAutofillDriver();  // Main frame (index 0)
-  autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
 
   ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
       .WillByDefault(Return(&autofill_manager(0)));
