@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<title>View transitions: skipTransition() after awaiting updateCallbackDone</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/#call-dom-update-callback-algorithm">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #target {
+    width: 100px;
+    height: 100px;
+    background: blue;
+    view-transition-name: target;
+  }
+</style>
+<div id="target"></div>
+<script>
+promise_test(async t => {
+  assert_implements(document.startViewTransition,
+                    "Missing document.startViewTransition");
+  const order = [];
+  const transition = document.startViewTransition(() => {});
+  transition.updateCallbackDone.then(() => order.push("updateCallbackDone"));
+  transition.ready
+    .then(() => order.push("ready"))
+    .catch(() => order.push("readyCatch"));
+  transition.finished.then(() => order.push("finished"));
+
+  await transition.updateCallbackDone;
+  transition.skipTransition();
+
+  await transition.finished;
+  assert_array_equals(order, ["updateCallbackDone", "ready", "finished"]);
+}, "skipTransition() after awaiting updateCallbackDone does not reject ready");
+
+promise_test(async t => {
+  assert_implements(document.startViewTransition,
+                    "Missing document.startViewTransition");
+  const order = [];
+  const transition = document.startViewTransition(() => {});
+  transition.updateCallbackDone.then(() => {
+    order.push("updateCallbackDone");
+    transition.skipTransition();
+  });
+  transition.ready
+    .then(() => order.push("ready"))
+    .catch(() => order.push("readyCatch"));
+  transition.finished.then(() => order.push("finished"));
+
+  await transition.finished;
+  assert_array_equals(order, ["updateCallbackDone", "ready", "finished"]);
+}, "skipTransition() inside updateCallbackDone.then() does not reject ready");
+
+promise_test(async t => {
+  assert_implements(document.startViewTransition,
+                    "Missing document.startViewTransition");
+  const order = [];
+  const transition = document.startViewTransition(() => {});
+  transition.updateCallbackDone.then(() => {
+    order.push("updateCallbackDone");
+    Promise.resolve().then(() => order.push("microtask"));
+  });
+  transition.ready.then(() => order.push("ready"));
+  transition.finished.then(() => order.push("finished"));
+
+  await transition.finished;
+  assert_array_equals(
+      order, ["updateCallbackDone", "ready", "microtask", "finished"]);
+}, "updateCallbackDone and ready resolve in the same turn before chained microtasks");
+</script>
+</html>

@@ -70,7 +70,7 @@ DOMViewTransition::DOMViewTransition(ExecutionContext* execution_context,
     // In a cross-document view transition, the DOM is "updated" by the
     // navigation so by the time we create this object (in the pagereveal
     // event), the update is complete.
-    dom_updated_promise_property_->ResolveWithUndefined();
+    ResolveUpdateCallbackDone(ResolutionTiming::kImmediate);
     dom_callback_result_ = DOMCallbackResult::kSucceeded;
   }
 }
@@ -199,6 +199,10 @@ void DOMViewTransition::DidSkipTransition(
     CHECK_EQ(finished_promise_property_->GetState(),
              PromiseProperty::State::kRejected);
   } else if (dom_callback_result_ == DOMCallbackResult::kSucceeded) {
+    // If updateCallbackDone has not yet been resolved or queued (e.g., if the
+    // transition was skipped while waiting for capture rects after an early
+    // DOM callback succeeded), resolve it before resolving finished.
+    ResolveUpdateCallbackDone();
     // But if the callback was successful, we need to resolve the finished
     // promise while skipping the transition.
     AtMicrotask(ViewTransition::PromiseResponse::kResolve,
@@ -207,18 +211,44 @@ void DOMViewTransition::DidSkipTransition(
   }
 }
 
+void DOMViewTransition::ResolveUpdateCallbackDone(ResolutionTiming timing) {
+  if (!execution_context_ || dom_updated_promise_resolution_queued_ ||
+      dom_updated_promise_property_->GetState() !=
+          PromiseProperty::State::kPending) {
+    return;
+  }
+  dom_updated_promise_resolution_queued_ = true;
+  switch (timing) {
+    case ResolutionTiming::kAtMicrotask:
+      AtMicrotask(ViewTransition::PromiseResponse::kResolve,
+                  ViewTransitionSkipReason::kExpected,
+                  dom_updated_promise_property_);
+      break;
+    case ResolutionTiming::kImmediate:
+      dom_updated_promise_property_->ResolveWithUndefined();
+      break;
+  }
+}
+
 void DOMViewTransition::NotifyDOMCallbackFinished() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
-  // Handle all promises which depend on this callback.
-  dom_updated_promise_property_->ResolveWithUndefined();
+  dom_callback_result_ = DOMCallbackResult::kSucceeded;
 
   // If we're already at the terminal state, the transition was skipped before
-  // the callback finished. Also handle the finish promise.
+  // the callback finished. Resolve updateCallbackDone and finished now.
   if (view_transition_->IsDone()) {
-    finished_promise_property_->ResolveWithUndefined();
+    ResolveUpdateCallbackDone(ResolutionTiming::kImmediate);
+    if (finished_promise_property_->GetState() ==
+        PromiseProperty::State::kPending) {
+      finished_promise_property_->ResolveWithUndefined();
+    }
+    return;
   }
 
-  dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  // Defer resolving updateCallbackDone until ViewTransition has received
+  // capture rects and is ready to activate (or is skipped), so that
+  // updateCallbackDone resolution and transition activation happen together
+  // per spec.
   view_transition_->NotifyDOMCallbackFinished(true);
 }
 

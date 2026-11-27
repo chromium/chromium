@@ -773,6 +773,10 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
+        if (script_delegate_) {
+          script_delegate_->ResolveUpdateCallbackDone();
+        }
+
         // For testing check: if the flag is enabled, re-create the style
         // tracker with the serialized state that the current style tracker
         // produces. This allows us to use SPA tests for MPA serialization.

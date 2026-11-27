@@ -3203,4 +3203,196 @@ TEST_P(ViewTransitionTest,
   EXPECT_FALSE(weak_detached_sr);
 }
 
+TEST_P(ViewTransitionTest,
+       EarlyCallbackSkipAfterUpdateCallbackDonePreservesPromiseOrder) {
+  SetHtmlInnerHTML(R"HTML(
+    <div id="result"></div>
+    <div id="log"></div>
+  )HTML");
+
+  web_view_helper_->LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    (() => {
+      const order = [];
+      const record = (entry) => {
+        order.push(entry);
+        document.getElementById('log').textContent = order.join(',');
+      };
+      const transition = document.startViewTransition(() => {});
+      transition.updateCallbackDone.then(() => record('updateCallbackDone'));
+      transition.ready
+        .then(() => record('ready'))
+        .catch(() => record('readyCatch'));
+      transition.finished.then(() => record('finished'));
+
+      (async () => {
+        await transition.updateCallbackDone;
+        transition.skipTransition();
+        await transition.finished;
+        document.getElementById('result').textContent = order.join(',');
+      })();
+    })();
+  )JS"));
+
+  auto* vt = ViewTransitionUtils::GetTransition(GetDocument());
+  ASSERT_TRUE(vt);
+  auto* transition = vt->GetScriptDelegate();
+  ASSERT_TRUE(transition);
+
+  // Run capture frame and commit it without delivering capture rects yet.
+  // The early DOM callback runs and finishes, leaving the transition in
+  // kWaitingForCaptureRects.
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kCapturing);
+  vt->WillSnapshotCommitState();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  // updateCallbackDone must not resolve before capture rects arrive and the
+  // transition is ready to activate.
+  ScriptState* script_state = GetScriptState();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("log"))->textContent(),
+            "");
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("result"))->textContent(),
+            "");
+  EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  // Delivering capture rects activates the transition, resolving both
+  // updateCallbackDone and ready so that skipTransition() after awaiting
+  // updateCallbackDone does not reject ready.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  test::RunPendingTasks();
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("result"))->textContent(),
+            "updateCallbackDone,ready,finished");
+}
+
+TEST_P(ViewTransitionTest,
+       EarlyCallbackSkipWhileWaitingForCaptureRectsSettlesAllPromises) {
+  SetHtmlInnerHTML(R"HTML(
+    <div id="log"></div>
+  )HTML");
+
+  web_view_helper_->LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    (() => {
+      const order = [];
+      const record = (entry) => {
+        order.push(entry);
+        document.getElementById('log').textContent = order.join(',');
+      };
+      const transition = document.startViewTransition(() => {});
+      transition.updateCallbackDone.then(() => record('updateCallbackDone'));
+      transition.ready.then(
+          () => record('ready'),
+          (e) => record('readyRejected:' + e.name));
+      transition.finished.then(() => record('finished'));
+    })();
+  )JS"));
+
+  auto* vt = ViewTransitionUtils::GetTransition(GetDocument());
+  ASSERT_TRUE(vt);
+  auto* transition = vt->GetScriptDelegate();
+  ASSERT_TRUE(transition);
+
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kCapturing);
+  vt->WillSnapshotCommitState();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  ScriptState* script_state = GetScriptState();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("log"))->textContent(),
+            "");
+
+  // Skipping while waiting for capture rects must reject ready and still
+  // resolve updateCallbackDone and finished.
+  transition->skipTransition();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAborted);
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("log"))->textContent(),
+            "readyRejected:AbortError,updateCallbackDone,finished");
+}
+
+TEST_P(ViewTransitionTest, EarlyCallbackActivationFailurePromiseOrder) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .box { width: 50px; height: 50px; }
+    </style>
+    <div id="a" class="box"></div>
+    <div id="b" class="box"></div>
+    <div id="log"></div>
+  )HTML");
+
+  web_view_helper_->LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    (() => {
+      const order = [];
+      const record = (entry) => {
+        order.push(entry);
+        document.getElementById('log').textContent = order.join(',');
+      };
+      const transition = document.startViewTransition(() => {
+        document.getElementById('a').style.viewTransitionName = 'dup';
+        document.getElementById('b').style.viewTransitionName = 'dup';
+      });
+      transition.updateCallbackDone.then(() => record('updateCallbackDone'));
+      transition.ready.then(
+          () => record('ready'),
+          (e) => record('readyRejected:' + e.name));
+      transition.finished.then(() => record('finished'));
+    })();
+  )JS"));
+
+  auto* vt = ViewTransitionUtils::GetTransition(GetDocument());
+  ASSERT_TRUE(vt);
+  auto* transition = vt->GetScriptDelegate();
+  ASSERT_TRUE(transition);
+
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kCapturing);
+  vt->WillSnapshotCommitState();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+
+  ScriptState* script_state = GetScriptState();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("log"))->textContent(),
+            "");
+
+  // Delivering capture rects attempts activation, which fails due to duplicate
+  // names in the new DOM. updateCallbackDone must resolve before ready rejects
+  // and finished resolves.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  {
+    ScriptState::Scope scope(script_state);
+    script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        script_state->GetIsolate());
+  }
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAborted);
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("log"))->textContent(),
+            "updateCallbackDone,readyRejected:InvalidStateError,finished");
+}
+
 }  // namespace blink

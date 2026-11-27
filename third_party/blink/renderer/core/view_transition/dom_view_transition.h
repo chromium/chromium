@@ -63,6 +63,12 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   void DidSkipTransition(ViewTransition::PromiseResponse,
                          ViewTransitionSkipReason reason);
 
+  // Called when both the DOM update callback has succeeded and the old state
+  // capture has completed, immediately before activating the transition.
+  enum class ResolutionTiming { kAtMicrotask, kImmediate };
+  void ResolveUpdateCallbackDone(
+      ResolutionTiming timing = ResolutionTiming::kAtMicrotask);
+
   // Called just after the associated ViewTransition advances into the
   // kAnimating state but before any animation frames have been produced.
   void DidStartAnimating();
@@ -101,6 +107,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   Member<PromiseProperty> ready_promise_property_;
   Member<PromiseProperty> dom_updated_promise_property_;
   bool mark_promises_as_handled_ = false;
+  bool dom_updated_promise_resolution_queued_ = false;
 
   // The task attribution task state to be restored for `update_dom_callback_`,
   // captured on startViewTransition() path.
