@@ -5895,8 +5895,7 @@ IN_PROC_BROWSER_TEST_F(
   // frame.
   RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
-  EXPECT_EQ(main_frame->GetProcess()->GetDeprecatedID(),
-            subframe->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(main_frame->GetProcess()->GetID(), subframe->GetProcess()->GetID());
 
   // Ask the parent to script the same-origin subframe and trigger some HTTP
   // subresource loads within the subframe.
@@ -5934,8 +5933,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
-            popup_frame->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
+            popup_frame->GetProcess()->GetID());
 
   // Ask the opener to script the (same-origin) popup window and trigger some
   // HTTP subresource loads within the popup.
@@ -5987,8 +5986,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
-            popup_frame->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
+            popup_frame->GetProcess()->GetID());
 
   // Double-check that the popup didn't commit any navigation and that it has
   // an the same origin as the initial opener.
@@ -6057,8 +6056,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_NE(opener_frame->GetProcess()->GetDeprecatedID(),
-            popup_frame->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(opener_frame->GetProcess()->GetID(),
+            popup_frame->GetProcess()->GetID());
 
   // Inject Javascript that triggers some subresource loads over HTTP.
   //

@@ -109,6 +109,7 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -4192,7 +4193,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh = root->current_frame_host();
   RenderViewHostImpl* rvh = rfh->render_view_host();
   int rvh_routing_id = rvh->GetRoutingID();
-  int rvh_process_id = rvh->GetProcess()->GetDeprecatedID();
+  ChildProcessId rvh_process_id = rvh->GetProcess()->GetID();
   SiteInstanceImpl* site_instance = rfh->GetSiteInstance();
   RenderFrameDeletedObserver deleted_observer(rfh);
 
@@ -4253,7 +4254,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     EXPECT_EQ(site_instance, pending_rfh->GetSiteInstance());
 
   EXPECT_FALSE(rvh_routing_id == pending_rvh->GetRoutingID() &&
-               rvh_process_id == pending_rvh->GetProcess()->GetDeprecatedID());
+               rvh_process_id == pending_rvh->GetProcess()->GetID());
 
   // Make sure the last navigation finishes without crashing.
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
@@ -9453,13 +9454,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if child navigates to new domain.
-  int old_child_process_id =
-      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId old_child_process_id =
+      child->current_frame_host()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0),
       embedded_test_server()->GetURL("foo.com", "/title2.html")));
-  int new_child_process_id =
-      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId new_child_process_id =
+      child->current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(old_child_process_id, new_child_process_id);
   EXPECT_EQ(
       ChildProcessImportance::MODERATE,
@@ -9468,21 +9469,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if root navigates to new domain.
-  int old_root_process_id =
-      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId old_root_process_id =
+      root->current_frame_host()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root, embedded_test_server()->GetURL(
                 "b.com", "/cross_site_iframe_factory.html?b(a)")));
-  int new_root_process_id =
-      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId new_root_process_id =
+      root->current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(old_root_process_id, new_root_process_id);
   EXPECT_EQ(ChildProcessImportance::IMPORTANT,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   ASSERT_EQ(1u, root->child_count());
   child = root->child_at(0);
-  int new_child_process_id_2 =
-      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId new_child_process_id_2 =
+      child->current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(new_child_process_id, new_child_process_id_2);
   EXPECT_EQ(
       ChildProcessImportance::MODERATE,
@@ -9528,12 +9529,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if child navigates to new domain.
-  int old_child_process_id =
-      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId old_child_process_id =
+      child->current_frame_host()->GetProcess()->GetID();
   GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
-  int new_child_process_id =
-      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId new_child_process_id =
+      child->current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(old_child_process_id, new_child_process_id);
   EXPECT_EQ(
       ChildProcessImportance::NORMAL,
@@ -9542,13 +9543,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if root navigates to new domain.
-  int old_root_process_id =
-      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId old_root_process_id =
+      root->current_frame_host()->GetProcess()->GetID();
   child = nullptr;  // Going to navigate root to page without any child.
   EXPECT_TRUE(NavigateToURLFromRenderer(root, url));
   EXPECT_EQ(0u, root->child_count());
-  int new_root_process_id =
-      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId new_root_process_id =
+      root->current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(old_root_process_id, new_root_process_id);
   EXPECT_EQ(ChildProcessImportance::IMPORTANT,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());

@@ -394,9 +394,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   // and |form_contents|.
   EXPECT_EQ(initial_target_url, target_contents->GetLastCommittedURL());
   EXPECT_EQ(form_url, form_contents->GetLastCommittedURL());
-  EXPECT_NE(
-      target_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            form_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Prepare a file to upload.
   base::ScopedAllowBlockingForTesting allow_blocking;

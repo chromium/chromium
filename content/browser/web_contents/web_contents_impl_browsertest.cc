@@ -89,6 +89,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -2340,7 +2341,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(web_contents->GetController().IsInitialBlankNavigation());
   RenderProcessHost* process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
-  int renderer_id = process->GetDeprecatedID();
+  ChildProcessId renderer_id = process->GetID();
   ASSERT_TRUE(process);
   EXPECT_TRUE(process->IsInitializedAndNotDead());
 
@@ -2356,9 +2357,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Check that pre-warmed process is used.
   EXPECT_EQ(process, web_contents->GetPrimaryMainFrame()->GetProcess());
-  EXPECT_EQ(
-      renderer_id,
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(renderer_id,
+            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
   NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
@@ -2395,7 +2395,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     EXPECT_TRUE(web_contents->GetController().IsInitialBlankNavigation());
     RenderProcessHost* process =
         web_contents->GetPrimaryMainFrame()->GetProcess();
-    int renderer_id = process->GetDeprecatedID();
+    ChildProcessId renderer_id = process->GetID();
     ASSERT_TRUE(process);
     EXPECT_FALSE(process->IsInitializedAndNotDead());
     EXPECT_EQ(base::kNullProcessHandle, process->GetProcess().Handle());
@@ -2416,9 +2416,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
     // Check that the RenderProcessHost and its ID didn't change.
     EXPECT_EQ(process, web_contents->GetPrimaryMainFrame()->GetProcess());
-    EXPECT_EQ(
-        renderer_id,
-        web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+    EXPECT_EQ(renderer_id,
+              web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
     // Verify that the navigation succeeded.
     EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
@@ -2450,8 +2449,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   ASSERT_TRUE(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(web_contents->GetController().IsInitialBlankNavigation());
-  int renderer_id =
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  ChildProcessId renderer_id =
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   TestNavigationObserver same_tab_observer(web_contents.get(), 1);
   NavigationController::LoadURLParams params(web_ui_url);
@@ -2464,9 +2463,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // initial RenderFrameHost is allowed to be reused for WebUI, even if it has a
   // live RenderFrame, as long as its SiteInstance is unassigned and its process
   // is unused.
-  EXPECT_EQ(
-      renderer_id,
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(renderer_id,
+            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
   NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
