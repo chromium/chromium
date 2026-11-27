@@ -3435,6 +3435,11 @@
       // a Chromium level feature (kFontDataServiceForCSSLocalFonts).
     },
     {
+      // Kill switch for https://crbug.com/589815780.
+      name: "FontFaceCapabilitiesRangeValidation",
+      status: "stable",
+    },
+    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {
