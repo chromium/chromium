@@ -32,11 +32,6 @@ specific_include_rules = {
     "+chrome/browser/policy/networking",
     "+chrome/browser/prefs/browser_prefs.h",
   ],
-  # PrefServiceSyncableFromProfile() narrows the profile PrefService to the
-  # syncable one; everything after that is //components API.
-  "user_image_sync_observer\\.cc": [
-    "+chrome/browser/prefs/pref_service_syncable_util.h",
-  ],
   "user_image_manager_browsertest\\.cc": [
     "+chrome/browser/signin",
   ],

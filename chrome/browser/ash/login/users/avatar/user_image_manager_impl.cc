@@ -1003,7 +1003,7 @@ void UserImageManagerImpl::OnJobDone() {
 }
 
 void UserImageManagerImpl::TryToCreateImageSyncObserver() {
-  const user_manager::User* user = GetUser();
+  user_manager::User* user = GetUserAndModify();
   // If the currently logged-in user's user image is managed, the sync observer
   // must not be started so that the policy-set image does not get synced out.
   // User image can be synced iff it has gaia account.

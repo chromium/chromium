@@ -8,13 +8,12 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -32,17 +31,24 @@ bool IsIndexSupported(int index) {
          (index == user_manager::UserImage::Type::kProfile);
 }
 
+// A profile's PrefService is always the syncable one, which is what
+// PrefServiceSyncableFromProfile() relied on before the User held the prefs.
+sync_preferences::PrefServiceSyncable& SyncablePrefs(user_manager::User& user) {
+  return CHECK_DEREF(static_cast<sync_preferences::PrefServiceSyncable*>(
+      user.GetProfilePrefs()));
+}
+
 }  // anonymous namespace
 
-UserImageSyncObserver::UserImageSyncObserver(const user_manager::User* user)
-    : user_(user),
+UserImageSyncObserver::UserImageSyncObserver(user_manager::User* user)
+    : user_(CHECK_DEREF(user)),
       prefs_(nullptr),
       is_synced_(false),
       local_image_changed_(false) {
   user_manager::UserManager::Get()->AddObserver(this);
 
-  if (Profile* profile = ProfileHelper::Get()->GetProfileByUser(user)) {
-    OnProfileGained(profile);
+  if (user_->GetProfilePrefs()) {
+    OnProfilePrefsGained();
   } else {
     auto* session_manager = session_manager::SessionManager::Get();
     // SessionManager might not exist in unit tests.
@@ -71,8 +77,8 @@ void UserImageSyncObserver::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 }
 
-void UserImageSyncObserver::OnProfileGained(Profile* profile) {
-  prefs_ = PrefServiceSyncableFromProfile(profile);
+void UserImageSyncObserver::OnProfilePrefsGained() {
+  prefs_ = &SyncablePrefs(*user_);
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
@@ -112,10 +118,9 @@ void UserImageSyncObserver::OnUserProfileLoaded(const AccountId& account_id) {
     return;
   }
 
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  CHECK(profile, base::NotFatalUntil::M161);
+  CHECK(user_->GetProfilePrefs(), base::NotFatalUntil::M161);
   session_observation_.Reset();
-  OnProfileGained(profile);
+  OnProfilePrefsGained();
 }
 
 void UserImageSyncObserver::OnUserImageChanged(const user_manager::User& user) {

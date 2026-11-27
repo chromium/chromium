@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -16,7 +17,6 @@
 #include "components/user_manager/user_manager.h"
 
 class PrefChangeRegistrar;
-class Profile;
 class AccountId;
 
 namespace sync_preferences {
@@ -40,7 +40,8 @@ class UserImageSyncObserver
       public session_manager::SessionManagerObserver,
       public user_manager::UserManager::Observer {
  public:
-  explicit UserImageSyncObserver(const user_manager::User* user);
+  // `user` must outlive this object.
+  explicit UserImageSyncObserver(user_manager::User* user);
   ~UserImageSyncObserver() override;
 
   // Register syncable preference for profile.
@@ -56,8 +57,8 @@ class UserImageSyncObserver
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
 
-  // Called after user profile was loaded.
-  void OnProfileGained(Profile* profile);
+  // Called once the user's profile prefs are available.
+  void OnProfilePrefsGained();
 
   // Called when sync servise started it's work and we are able to sync needed
   // preferences.
@@ -75,7 +76,7 @@ class UserImageSyncObserver
   // Gets synced image index. Returns false if user has no needed preferences.
   bool GetSyncedImageIndex(int* result);
 
-  raw_ptr<const user_manager::User> user_;
+  const raw_ref<user_manager::User> user_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
