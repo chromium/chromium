@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="V8WasmSeparateAsmAndWasm">
-  <variant name=".asm" summary="This histogram contains results for asm.js."/>
-  <variant name=".wasm"
-      summary="This histogram contains results for wasm modules."/>
-</variants>
-
 <histogram name="V8.ArrayBufferLargeAllocations" units="MB"
     expires_after="M120">
   <owner>gdeepti@chromium.org</owner>
@@ -1663,8 +1657,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCompileFunctionMicroSeconds{V8WasmSeparateAsmAndWasm}"
-    units="microseconds" expires_after="2027-04-04">
+<histogram name="V8.WasmCompileFunctionMicroSeconds.wasm" units="microseconds"
+    expires_after="2027-04-04">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1676,11 +1670,8 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {V8WasmSeparateAsmAndWasm}
+    solution.
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="V8.WasmCompileHugeFunctionMilliSeconds" units="ms"
@@ -1719,8 +1710,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCompileModuleMicroSeconds{V8WasmSeparateAsmAndWasm}"
-    units="microseconds" expires_after="2027-04-04">
+<histogram name="V8.WasmCompileModuleMicroSeconds.wasm" units="microseconds"
+    expires_after="2027-04-04">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1732,11 +1723,8 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {V8WasmSeparateAsmAndWasm}
+    solution.
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="V8.WasmCompileModuleStreamingMicroSeconds"
@@ -1809,23 +1797,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmFunctionsPerModule{V8WasmSeparateAsmAndWasm}"
-    units="functions" expires_after="2027-04-04">
+<histogram name="V8.WasmFunctionsPerModule.wasm" units="functions"
+    expires_after="2027-04-04">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
   <summary>
     Function count per WebAssembly module. Recorded for each WebAssembly module
     which is decoded for validation, compilation, or deserialization.
-    {V8WasmSeparateAsmAndWasm}
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="V8.WasmHugeFunctionSizeBytes{V8WasmSeparateAsmAndWasm}"
-    units="bytes" expires_after="2027-05-09">
+<histogram name="V8.WasmHugeFunctionSizeBytes.wasm" units="bytes"
+    expires_after="2027-05-09">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1833,15 +1817,10 @@ chromium-metrics-reviews@google.com.
     Size of a huge WebAssembly function in bytes. A function is considered huge
     if it is larger than 100kB. Recorded on each compilation of a single
     function, either synchronous, asynchronous, or lazily.
-    {V8WasmSeparateAsmAndWasm}
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram
-    name="V8.WasmInstantiateModuleMicroSeconds{V8WasmSeparateAsmAndWasm}"
+<histogram name="V8.WasmInstantiateModuleMicroSeconds.wasm"
     units="microseconds" expires_after="2027-04-04">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1854,11 +1833,8 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {V8WasmSeparateAsmAndWasm}
+    solution.
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="V8.WasmLazyCompileTimeMicroSeconds" units="microseconds"
@@ -1967,18 +1943,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmModuleSizeBytes{V8WasmSeparateAsmAndWasm}"
-    units="bytes" expires_after="2027-05-16">
+<histogram name="V8.WasmModuleSizeBytes.wasm" units="bytes"
+    expires_after="2027-05-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
   <summary>
     Size of the wire bytes of a WebAssembly module. Recorded for each
     WebAssembly module which is decoded for validation, compilation, or
-    deserialization. {V8WasmSeparateAsmAndWasm}
+    deserialization.
   </summary>
-  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="V8.WasmModulesPerEngine" units="count"
@@ -2024,19 +1997,6 @@ chromium-metrics-reviews@google.com.
     Classification of the argument to the streaming WebAssembly APIs
     (WebAssembly.compileStreaming and WebAssembly.instantiateStreaming).
     Recorded on each invocation of this API.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmTierUpModuleMicroSeconds" units="microseconds"
-    expires_after="2023-06-04">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>wasm-runtime@google.com</owner>
-  <summary>
-    Time to tier-up a WebAssembly module, i.e. the time between baseline
-    compilation finishes and top-tier compilation finishes. Recorded whenever an
-    asynchronously compiled module finishes top-tier compilation, but only if a
-    high-resolution clock is available.
   </summary>
 </histogram>
 
