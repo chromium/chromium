@@ -818,23 +818,30 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ConnectToImeService(engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
-  } else if (use_ime_service_ && IsRuleBasedEngine(engine_id)) {
+    return;
+  }
+
+  if (use_ime_service_ && IsRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
     ConnectToImeService(new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
-  } else if (ShouldHandleWithoutExtension(use_ime_service_, engine_id)) {
-    ConnectToImeService(engine_id);
-  } else {
-    DisconnectFromImeService();
-
-    // It is possible that the extension has missed changes to the input
-    // method options because the options were changed while it was sleeping.
-    // Trigger an input method option changed event to ensure the extension
-    // has the latest options.
-    ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
-    ime_base_observer_->OnActivate(engine_id);
+    return;
   }
+
+  if (ShouldHandleWithoutExtension(use_ime_service_, engine_id)) {
+    ConnectToImeService(engine_id);
+    return;
+  }
+
+  DisconnectFromImeService();
+
+  // It is possible that the extension has missed changes to the input
+  // method options because the options were changed while it was sleeping.
+  // Trigger an input method option changed event to ensure the extension
+  // has the latest options.
+  ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
+  ime_base_observer_->OnActivate(engine_id);
 }
 
 void NativeInputMethodEngineObserver::OnFocus(
