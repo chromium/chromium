@@ -13,7 +13,10 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -33,6 +36,16 @@ class StyleImageCacheTest : public PageTestBase {
   const HeapHashMap<String, WeakMember<ImageResourceContent>>&
   FetchedImageMap() {
     return GetDocument().GetStyleEngine().style_image_cache_.fetched_image_map_;
+  }
+  ImageResourceContent* CacheImageContent(FetchParameters& params) {
+    return GetDocument().GetStyleEngine().style_image_cache_.CacheImageContent(
+        GetDocument().Fetcher(), params);
+  }
+  bool CanReuseImageContent(const ImageResourceContent& content,
+                            const FetchParameters& params) {
+    return GetDocument()
+        .GetStyleEngine()
+        .style_image_cache_.CanReuseImageContent(content, params);
   }
 };
 
@@ -364,6 +377,171 @@ TEST_F(StyleImageCacheWithLoadingTest, IntegrityMetadataBypassesCache) {
   ImageResourceContent* other = load_with_class("other");
   EXPECT_NE(good1, other);
   EXPECT_TRUE(other->ErrorOccurred());
+}
+
+TEST_F(StyleImageCacheWithLoadingTest,
+       DifferingModeAndCredentialsNotReusedAndDoesNotClobber) {
+  const auto image_url =
+      url_test_helpers::ToKURL("http://test.com/cors_mode_image.png");
+  WebURLResponse response(image_url);
+  response.SetMimeType(kTestResourceMimeType);
+  response.SetHttpHeaderField(http_names::kContentType, kTestResourceMimeType);
+  response.SetHttpHeaderField(http_names::kCacheControl, "no-store");
+  response.SetHttpStatusCode(200);
+  response.SetType(network::mojom::FetchResponseType::kBasic);
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      image_url, test::CoreTestDataPath(kTestResourceFilename), response);
+
+  const SecurityOrigin* origin =
+      GetDocument().GetExecutionContext()->GetSecurityOrigin();
+
+  FetchParameters no_cors_params(ResourceRequest(image_url),
+                                 ResourceLoaderOptions(nullptr));
+  ImageResourceContent* no_cors_image = CacheImageContent(no_cors_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(no_cors_image);
+  EXPECT_FALSE(no_cors_image->ErrorOccurred());
+  EXPECT_EQ(no_cors_image, FetchedImageMap().at(image_url.GetString()));
+
+  // A CORS anonymous fetch must not reuse the no-cors entry and must not
+  // clobber the cached no-cors entry.
+  FetchParameters anon_params(ResourceRequest(image_url),
+                              ResourceLoaderOptions(nullptr));
+  anon_params.SetCrossOriginAccessControl(origin,
+                                          kCrossOriginAttributeAnonymous);
+  ImageResourceContent* anon_image = CacheImageContent(anon_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(anon_image);
+  EXPECT_NE(no_cors_image, anon_image);
+  EXPECT_EQ(no_cors_image, FetchedImageMap().at(image_url.GetString()));
+
+  // A fresh URL cached with anonymous must not be reused for use-credentials
+  // and must not be clobbered.
+  const auto creds_url =
+      url_test_helpers::ToKURL("http://test.com/cors_creds_image.png");
+  WebURLResponse creds_response(creds_url);
+  creds_response.SetMimeType(kTestResourceMimeType);
+  creds_response.SetHttpHeaderField(http_names::kContentType,
+                                    kTestResourceMimeType);
+  creds_response.SetHttpHeaderField(http_names::kCacheControl, "no-store");
+  creds_response.SetHttpStatusCode(200);
+  creds_response.SetType(network::mojom::FetchResponseType::kBasic);
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      creds_url, test::CoreTestDataPath(kTestResourceFilename), creds_response);
+
+  FetchParameters anon_params2(ResourceRequest(creds_url),
+                               ResourceLoaderOptions(nullptr));
+  anon_params2.SetCrossOriginAccessControl(origin,
+                                           kCrossOriginAttributeAnonymous);
+  ImageResourceContent* cached_anon = CacheImageContent(anon_params2);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(cached_anon);
+  EXPECT_EQ(cached_anon, FetchedImageMap().at(creds_url.GetString()));
+
+  FetchParameters creds_params(ResourceRequest(creds_url),
+                               ResourceLoaderOptions(nullptr));
+  creds_params.SetCrossOriginAccessControl(
+      origin, kCrossOriginAttributeUseCredentials);
+  ImageResourceContent* creds_image = CacheImageContent(creds_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(creds_image);
+  EXPECT_NE(cached_anon, creds_image);
+  EXPECT_EQ(cached_anon, FetchedImageMap().at(creds_url.GetString()));
+}
+
+TEST_F(StyleImageCacheWithLoadingTest,
+       DifferingReferrerPolicyNotReusedAndDoesNotClobber) {
+  const auto image_url =
+      url_test_helpers::ToKURL("http://test.com/referrer_policy_image.png");
+  WebURLResponse response(image_url);
+  response.SetMimeType(kTestResourceMimeType);
+  response.SetHttpHeaderField(http_names::kContentType, kTestResourceMimeType);
+  response.SetHttpHeaderField(http_names::kCacheControl, "no-store");
+  response.SetHttpStatusCode(200);
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      image_url, test::CoreTestDataPath(kTestResourceFilename), response);
+
+  ResourceRequest req1(image_url);
+  req1.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+  FetchParameters params1(std::move(req1), ResourceLoaderOptions(nullptr));
+  ImageResourceContent* image1 = CacheImageContent(params1);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(image1);
+  EXPECT_EQ(image1, FetchedImageMap().at(image_url.GetString()));
+
+  ResourceRequest req1_same(image_url);
+  req1_same.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+  FetchParameters params1_same(std::move(req1_same),
+                               ResourceLoaderOptions(nullptr));
+  EXPECT_TRUE(CanReuseImageContent(*image1, params1_same));
+
+  ResourceRequest req2(image_url);
+  req2.SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
+  FetchParameters params2(std::move(req2), ResourceLoaderOptions(nullptr));
+  EXPECT_FALSE(CanReuseImageContent(*image1, params2));
+  ImageResourceContent* image2 = CacheImageContent(params2);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(image2);
+  EXPECT_EQ(image1, FetchedImageMap().at(image_url.GetString()));
+}
+
+TEST_F(StyleImageCacheWithLoadingTest,
+       IsolatedWorldAndOriginDirtyStyleSheetBypassCache) {
+  const auto isolated_url =
+      url_test_helpers::ToKURL("http://test.com/isolated_world_image.png");
+  const auto dirty_url =
+      url_test_helpers::ToKURL("http://test.com/origin_dirty_image.png");
+  for (const KURL& url : {isolated_url, dirty_url}) {
+    WebURLResponse response(url);
+    response.SetMimeType(kTestResourceMimeType);
+    response.SetHttpHeaderField(http_names::kContentType, kTestResourceMimeType);
+    response.SetHttpHeaderField(http_names::kCacheControl, "no-store");
+    response.SetHttpStatusCode(200);
+    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+        url, test::CoreTestDataPath(kTestResourceFilename), response);
+  }
+
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      GetDocument().GetExecutionContext()->GetIsolate(), /*world_id=*/1);
+  ASSERT_TRUE(isolated_world);
+
+  // Isolated-world fetch must not populate or reuse StyleImageCache.
+  FetchParameters isolated_params{ResourceRequest(isolated_url),
+                                  ResourceLoaderOptions(isolated_world)};
+  ImageResourceContent* isolated_image = CacheImageContent(isolated_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(isolated_image);
+  EXPECT_FALSE(FetchedImageMap().Contains(isolated_url.GetString()));
+
+  // Origin-dirty stylesheet fetch must not populate StyleImageCache, nor reuse
+  // or clobber an existing main-world entry.
+  FetchParameters dirty_params(ResourceRequest(dirty_url),
+                               ResourceLoaderOptions(nullptr));
+  dirty_params.SetFromOriginDirtyStyleSheet(true);
+  ImageResourceContent* dirty_image = CacheImageContent(dirty_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(dirty_image);
+  EXPECT_FALSE(FetchedImageMap().Contains(dirty_url.GetString()));
+
+  FetchParameters clean_params(ResourceRequest(dirty_url),
+                               ResourceLoaderOptions(nullptr));
+  ImageResourceContent* clean_image = CacheImageContent(clean_params);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(clean_image);
+  EXPECT_EQ(clean_image, FetchedImageMap().at(dirty_url.GetString()));
+
+  FetchParameters isolated_params2{ResourceRequest(dirty_url),
+                                   ResourceLoaderOptions(isolated_world)};
+  EXPECT_FALSE(CanReuseImageContent(*clean_image, isolated_params2));
+
+  FetchParameters dirty_params2(ResourceRequest(dirty_url),
+                                ResourceLoaderOptions(nullptr));
+  dirty_params2.SetFromOriginDirtyStyleSheet(true);
+  EXPECT_FALSE(CanReuseImageContent(*clean_image, dirty_params2));
+  ImageResourceContent* dirty_image2 = CacheImageContent(dirty_params2);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(dirty_image2);
+  EXPECT_EQ(clean_image, FetchedImageMap().at(dirty_url.GetString()));
 }
 
 }  // namespace blink

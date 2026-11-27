@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CORS image from variable doesn't cause re-downloads
-  assert_equals: should be loaded (twice, once with anon cors mode once without) expected 2 but got 1
-Harness: the test ran to completion.
-
