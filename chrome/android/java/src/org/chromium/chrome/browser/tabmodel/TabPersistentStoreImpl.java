@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseIntArray;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -456,15 +457,16 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 addTabToSaveQueueIfApplicable(currentIncognitoTab);
             }
 
-            // Wait for the current tab to save.
+            // Wait for the current tab to save if it has already started writing, or cancel it
+            // before it starts and re-queue for synchronous save below.
             if (mSaveTabTask != null) {
-                // Cancel calls get() to wait for this to finish internally if it has to.
-                // The issue is it may assume it cancelled the task, but the task still actually
-                // wrote the state to disk. That's why we have to check mStateSaved here.
-                if (mSaveTabTask.cancel(false) && !mSaveTabTask.mStateSaved) {
-                    // The task was successfully cancelled. We should try to save this state again.
-                    Tab cancelledTab = mSaveTabTask.mTab;
-                    addTabToSaveQueueIfApplicable(cancelledTab);
+                if (!mSaveTabTask.cancelOrWait()) {
+                    // Re-queue directly: onPreExecute() already cleared dirtiness to CLEAN, so
+                    // addTabToSaveQueueIfApplicable() would drop the tab.
+                    Tab unsavedTab = mSaveTabTask.mTab;
+                    if (!unsavedTab.isDestroyed() && !mTabsToSave.contains(unsavedTab)) {
+                        mTabsToSave.addLast(unsavedTab);
+                    }
                 }
 
                 mSaveTabTask = null;
@@ -1178,10 +1180,21 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         mTabsToSave.clear();
         mTabsToRestore.clear();
+        mTabsToMigrate.clear();
         mSeenTabUrlMap = null;
-        if (mSaveTabTask != null) mSaveTabTask.cancel(false);
+        if (mSaveTabTask != null) {
+            mSaveTabTask.cancel(/* mayInterruptIfRunning= */ false);
+            mSaveTabTask = null;
+        }
+        if (mMigrateTabTask != null) {
+            mMigrateTabTask.cancel(/* mayInterruptIfRunning= */ false);
+            mMigrateTabTask = null;
+        }
         // Same reason as mTabBatchLoader: SaveListTask writes via FileChannel.
-        if (mSaveListTask != null) mSaveListTask.cancel(false);
+        if (mSaveListTask != null) {
+            mSaveListTask.cancel(/* mayInterruptIfRunning= */ false);
+            mSaveListTask = null;
+        }
     }
 
     private void cleanupPersistentData(int id, boolean incognito) {
@@ -1466,9 +1479,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         final Tab mTab;
         final int mId;
         final boolean mEncrypted;
+        private final Object mSaveLock = new Object();
 
         @Nullable TabState mState;
-        boolean mStateSaved;
+
+        @GuardedBy("mSaveLock")
+        private boolean mStateSaved;
 
         SaveTabTask(Tab tab) {
             mTab = tab;
@@ -1492,13 +1508,27 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         @Override
         protected Void doInBackground() {
-            mStateSaved = saveTabState(mId, mEncrypted, mState);
+            synchronized (mSaveLock) {
+                if (isCancelled()) return null;
+                mStateSaved = saveTabState(mId, mEncrypted, mState);
+            }
             return null;
+        }
+
+        /**
+         * Cancels the task if it has not started saving, or blocks until an in-progress save
+         * completes. Returns whether the tab's state was saved to disk.
+         */
+        boolean cancelOrWait() {
+            synchronized (mSaveLock) {
+                cancel(/* mayInterruptIfRunning= */ false);
+                return mStateSaved;
+            }
         }
 
         @Override
         protected void onPostExecute(Void v) {
-            if (mDestroyed || isCancelled()) return;
+            if (mDestroyed || isCancelled() || mSaveTabTask != this) return;
             mSaveTabTask = null;
             saveNextTab();
         }

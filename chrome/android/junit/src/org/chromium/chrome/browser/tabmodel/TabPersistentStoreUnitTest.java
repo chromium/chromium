@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
+import android.os.Looper;
 import android.text.TextUtils;
 
 import org.junit.After;
@@ -41,6 +42,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Token;
 import org.chromium.base.TriState;
@@ -71,6 +73,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -91,10 +94,13 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for the tab persistent store logic. */
@@ -2604,5 +2610,148 @@ public class TabPersistentStoreUnitTest {
         assertEquals(0, mPersistentStore.getRestoredTabCount());
         assertThat(modelTabs).containsExactly(openerTab, childTab).inOrder();
         verify(mNormalTabModel).setIndex(eq(0), anyInt());
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testSaveState_cancelsQueuedSaveTabTask_savesSynchronously() {
+        mPersistentStore = createArchivedPersistentStore();
+        TabStateAttributes attributes = setupFrozenDirtyTab(mTab, 10);
+
+        // Queue mTab; onPreExecute() clears dirtiness to CLEAN while doInBackground() is queued.
+        mPersistentStore.addTabToSaveQueue(mTab);
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+        assertTrue(mPersistentStore.isTabPendingSave(mTab));
+
+        File tabStateFile = mPersistentStore.getTabStateFileForTesting(10, /* encrypted= */ false);
+        assertFalse(tabStateFile.exists());
+
+        // saveState() must cancel the queued task and still save mTab synchronously despite CLEAN.
+        mPersistentStore.saveState();
+        assertTrue(tabStateFile.exists());
+        assertFalse(mPersistentStore.isTabPendingSave(mTab));
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(tabStateFile.exists());
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testSaveState_awaitsRunningSaveTabTask_andSubsequentTaskNotClobbered()
+            throws Exception {
+        mPersistentStore = createArchivedPersistentStore();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Tab tab2 = mock(Tab.class);
+        setupFrozenDirtyTab(mTab, 11);
+        setupFrozenDirtyTab(tab2, 12);
+
+        File stateDir = mTemporaryFolder.getRoot();
+        File tab1File = mPersistentStore.getTabStateFileForTesting(11, /* encrypted= */ false);
+        CountDownLatch enteredSave = new CountDownLatch(1);
+        CountDownLatch allowSaveFinish = new CountDownLatch(1);
+        AtomicBoolean pausedOnce = new AtomicBoolean();
+        when(mPersistencePolicy.getOrCreateStateDirectory())
+                .thenAnswer(
+                        _ -> {
+                            if (pausedOnce.compareAndSet(false, true)) {
+                                enteredSave.countDown();
+                                assertTrue(allowSaveFinish.await(5, TimeUnit.SECONDS));
+                            }
+                            return stateDir;
+                        });
+
+        // Start task1.doInBackground() on a background thread and pause it mid-flight inside
+        // saveTabState().
+        mPersistentStore.addTabToSaveQueue(mTab);
+        Thread bgThread = new Thread(RobolectricUtil::runOneBackgroundTask);
+        bgThread.start();
+        AtomicBoolean sawMainBlockedBeforeWrite = new AtomicBoolean();
+        try {
+            assertTrue(enteredSave.await(5, TimeUnit.SECONDS));
+            assertFalse(tab1File.exists());
+
+            // Release task1 once the main thread blocks inside saveState() -> cancelOrWait().
+            Thread mainThread = Thread.currentThread();
+            Thread releaser =
+                    new Thread(
+                            () -> {
+                                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                                while (System.nanoTime() < deadline) {
+                                    if (mainThread.getState() == Thread.State.BLOCKED
+                                            && Arrays.stream(mainThread.getStackTrace())
+                                                    .anyMatch(
+                                                            e ->
+                                                                    "cancelOrWait"
+                                                                            .equals(
+                                                                                    e
+                                                                                            .getMethodName()))) {
+                                        sawMainBlockedBeforeWrite.set(!tab1File.exists());
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(5);
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                        break;
+                                    }
+                                }
+                                allowSaveFinish.countDown();
+                            });
+            releaser.start();
+
+            mPersistentStore.saveState();
+            releaser.join(5000);
+            assertFalse(releaser.isAlive());
+        } finally {
+            allowSaveFinish.countDown();
+            bgThread.join(5000);
+            assertFalse(bgThread.isAlive());
+        }
+        assertTrue(sawMainBlockedBeforeWrite.get());
+        assertTrue(tab1File.exists());
+        assertFalse(mPersistentStore.isTabPendingSave(mTab));
+
+        // Queue tab2 so mSaveTabTask becomes task2, then idle only the UI looper so task1's
+        // cancelled completion callback runs before task2's background work executes.
+        mPersistentStore.addTabToSaveQueue(tab2);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertTrue(mPersistentStore.isTabPendingSave(tab2));
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        File tab2File = mPersistentStore.getTabStateFileForTesting(12, /* encrypted= */ false);
+        assertTrue(tab2File.exists());
+        assertFalse(mPersistentStore.isTabPendingSave(tab2));
+    }
+
+    private TabPersistentStoreImpl createArchivedPersistentStore() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+        return new TabPersistentStoreImpl(
+                TabOrchestratorType.ARCHIVED,
+                mPersistencePolicy,
+                mTabModelSelector,
+                mTabCreatorManager,
+                mTabWindowManager,
+                mCipherFactory,
+                /* isAuthoritative= */ true,
+                /* recordLegacyTabCountMetrics= */ false);
+    }
+
+    private TabStateAttributes setupFrozenDirtyTab(Tab tab, @TabId int tabId) {
+        when(tab.getId()).thenReturn(tabId);
+        when(tab.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        when(tab.isInitialized()).thenReturn(true);
+        UserDataHost userDataHost = new UserDataHost();
+        when(tab.getUserDataHost()).thenReturn(userDataHost);
+        TabState tabState = new TabState();
+        tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(4), 1);
+        TabStateExtractor.setTabStateForTesting(tabId, tabState);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabPersistentStoreImpl.class, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabPersistentStoreImpl.class);
+        attributes.setStateForTesting(DirtinessState.DIRTY);
+        return attributes;
     }
 }
