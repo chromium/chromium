@@ -582,21 +582,6 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [self.omniboxCoordinator focusOmnibox];
 }
 
-- (void)focusOmnibox {
-  CHECK(!IsComposeboxIOSEnabled());
-  // When the NTP and fakebox are visible, make the fakebox animates into place
-  // before focusing the omnibox.
-  if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
-    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                           BrowserCoordinatorCommands);
-    [browserCoordinatorHandler focusFakebox];
-  } else {
-    [self setFakeboxButtonsSnapshotProvider:nil];
-    [self.omniboxCoordinator focusOmnibox];
-  }
-}
-
 - (void)insertTextToOmnibox:(NSString*)string {
   CHECK(!IsComposeboxIOSEnabled());
   [self.omniboxCoordinator insertTextToOmnibox:string];

@@ -85,10 +85,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the AddCreditCard UI.
 - (void)showAddCreditCard;
 
-// Animates the NTP fakebox to the focused position and focuses the real
-// omnibox.
-- (void)focusFakebox;
-
 // Closes the current tab.
 // TODO(crbug.com/40806293): Refactor this command away; call sites should close
 // via the WebStateList.

@@ -13,9 +13,6 @@ enum class CustomLeadingViewType;
 
 // Commands for focusing the omnibox in various ways.
 @protocol OmniboxCommands
-// Give focus to the omnibox, if it is visible. No-op if it is not visible.
-// If current page is an NTP, first focus the NTP fakebox.
-- (void)focusOmnibox;
 // Inserts text to the omnibox without triggering autocomplete.
 // Use this method to insert target URL or search terms for alternative input
 // methods, such as QR code scanner or voice search.

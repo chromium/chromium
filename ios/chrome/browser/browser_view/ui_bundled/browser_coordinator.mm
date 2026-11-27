@@ -1687,12 +1687,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self.addCreditCardCoordinator start];
 }
 
-- (void)focusFakebox {
-  if ([self isNTPActiveForCurrentWebState]) {
-    [_NTPCoordinator focusFakebox];
-  }
-}
-
 // TODO(crbug.com/40806293): Refactor this command away, and add a mediator to
 // observe the active web state closing and push updates into the BVC for UI
 // work.

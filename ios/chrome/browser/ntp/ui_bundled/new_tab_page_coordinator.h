@@ -52,10 +52,6 @@ class WebState;
 // focused after the new tab animation completes.
 @property(nonatomic, assign) BOOL willFocusOmniboxAfterNewTabAnimation;
 
-// Animates the NTP fakebox to the focused position and focuses the real
-// omnibox.
-- (void)focusFakebox;
-
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 

@@ -647,19 +647,6 @@
   }
 }
 
-- (void)focusFakebox {
-  [self dismissCustomizationMenu];
-  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPFakebox)) {
-    return;
-  }
-  _fakeboxTapped = NO;
-  if (!IsNTPRedesignEnabled()) {
-    [self.NTPViewController focusOmnibox];
-  } else if (self.NTPRedesignViewController) {
-    [self focusOmnibox];
-  }
-}
-
 - (void)reload {
   if (self.isOffTheRecord) {
     return;
