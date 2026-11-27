@@ -51,13 +51,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
-import org.chromium.components.messages.DismissReason;
-import org.chromium.components.messages.MessageBannerProperties;
-import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
@@ -2936,64 +2929,27 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        MessageDispatcher messageDispatcher =
-                MessageDispatcherProvider.from(mDelegate.getWindowAndroid());
-        WebContents webContents = mDelegate.getWebContents();
-        if (messageDispatcher == null || webContents == null) {
-            if (debug()) Log.i(TAG, "No WebContents to show Message for.");
+        String packageName = intentResolveInfo.activityInfo.packageName;
+        boolean isAskingUser =
+                mDelegate.askToLaunchApp(
+                        packageName,
+                        (shouldLaunch) -> {
+                            var callback = params.getRequiredAsyncActionTakenCallback();
+                            if (shouldLaunch) {
+                                startActivity(targetIntent, params);
+                                if (callback != null) {
+                                    callback.onResult(
+                                            AsyncActionTakenParams.forExternalIntentLaunched(
+                                                    true, params));
+                                }
+                            } else if (callback != null) {
+                                callback.onResult(AsyncActionTakenParams.forNoAction());
+                            }
+                        });
+        if (!isAskingUser) {
+            if (debug()) Log.i(TAG, "Can't ask the user to launch the app.");
             return OverrideUrlLoadingResult.forNoOverride();
         }
-
-        String packageName = intentResolveInfo.activityInfo.packageName;
-        PackageManager pm = assumeNonNull(mDelegate.getContext()).getPackageManager();
-
-        var iconAndLabel = getApplicationIconAndLabel(pm, packageName);
-        if (iconAndLabel == null) return OverrideUrlLoadingResult.forNoOverride();
-
-        Drawable icon = iconAndLabel.first;
-        CharSequence label = iconAndLabel.second;
-
-        Resources res = mDelegate.getContext().getResources();
-        String title = res.getString(R.string.external_navigation_continue_to_title, label);
-        String description =
-                res.getString(R.string.external_navigation_continue_to_description, label);
-        String action = res.getString(R.string.external_navigation_continue_to_action);
-
-        PropertyModel message =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(
-                                MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.EXTERNAL_NAVIGATION)
-                        .with(MessageBannerProperties.TITLE, title)
-                        .with(MessageBannerProperties.DESCRIPTION, description)
-                        .with(MessageBannerProperties.ICON, icon)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, action)
-                        .with(
-                                MessageBannerProperties.ICON_TINT_COLOR,
-                                MessageBannerProperties.TINT_NONE)
-                        .with(
-                                MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> {
-                                    startActivity(targetIntent, params);
-                                    var callback = params.getRequiredAsyncActionTakenCallback();
-                                    if (callback != null) {
-                                        callback.onResult(
-                                                AsyncActionTakenParams.forExternalIntentLaunched(
-                                                        true, params));
-                                    }
-                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                                })
-                        .with(
-                                MessageBannerProperties.ON_DISMISSED,
-                                (dismissReason) -> {
-                                    if (dismissReason == DismissReason.PRIMARY_ACTION) return;
-                                    if (params.getRequiredAsyncActionTakenCallback() != null) {
-                                        params.getRequiredAsyncActionTakenCallback()
-                                                .onResult(AsyncActionTakenParams.forNoAction());
-                                    }
-                                })
-                        .build();
-        messageDispatcher.enqueueMessage(message, webContents, MessageScopeType.NAVIGATION, false);
         return OverrideUrlLoadingResult.forAsyncAction();
     }
 

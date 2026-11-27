@@ -120,6 +120,18 @@ public interface ExternalNavigationDelegate {
     void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision);
 
     /**
+     * Asks the user whether to launch the app with the given package for the navigation.
+     *
+     * @param packageName The package of the app to launch.
+     * @param onUserDecision Called later with whether the user chose to launch the app. Only called
+     *     if this returns true.
+     * @return Whether the user is being asked. If false, the app isn't launched.
+     */
+    default boolean askToLaunchApp(String packageName, Callback<Boolean> onUserDecision) {
+        return false;
+    }
+
+    /**
      * @param resolveInfoSupplier The resolveInfos to check.
      * @return Whether the Intent points to an app that we trust and that launched this app.
      */
