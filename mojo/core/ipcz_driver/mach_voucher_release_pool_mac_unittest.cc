@@ -7,6 +7,7 @@
 #include <mach/mach.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -16,10 +17,12 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -47,8 +50,10 @@ mach_port_urefs_t GetPortRefCount(mach_port_t port) {
   return refs;
 }
 
-// Test the release pool with and without a ThreadPool.
-class MachVoucherReleasePoolTest : public ::testing::TestWithParam<bool> {
+// Test the release pool with and without a ThreadPool, and with configurable
+// max refcounts.
+class MachVoucherReleasePoolTest
+    : public ::testing::TestWithParam<std::tuple<bool, mach_port_delta_t>> {
  protected:
   MachVoucherReleasePoolTest()
       : task_env_(TaskEnvironment::TimeSource::MOCK_TIME,
@@ -58,6 +63,8 @@ class MachVoucherReleasePoolTest : public ::testing::TestWithParam<bool> {
                       : TaskEnvironment::ThreadingMode::MAIN_THREAD_ONLY) {}
 
   bool has_thread_pool() const { return has_thread_pool_; }
+
+  mach_port_delta_t max_ref_count() const { return max_ref_count_; }
 
   TaskEnvironment& task_env() { return task_env_; }
 
@@ -84,18 +91,34 @@ class MachVoucherReleasePoolTest : public ::testing::TestWithParam<bool> {
   }
 
  private:
-  const bool has_thread_pool_ = GetParam();
+  const bool has_thread_pool_ = std::get<0>(GetParam());
+  const mach_port_delta_t max_ref_count_ = std::get<1>(GetParam());
   TaskEnvironment task_env_;
   std::vector<base::apple::ScopedMachReceiveRight> owned_receive_rights_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WithThreadPool,
-                         MachVoucherReleasePoolTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MachVoucherReleasePoolTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(MachVoucherReleasePool::kDefaultMaxRefCount)));
+
+using MachVoucherReleasePoolRefCountTest = MachVoucherReleasePoolTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MachVoucherReleasePoolRefCountTest,
+    ::testing::Combine(
+        ::testing::Values(true),
+        ::testing::Values(1,
+                          MachVoucherReleasePool::kDefaultMaxRefCount,
+                          MachVoucherReleasePool::kDefaultMaxRefCount * 2)));
 
 TEST_P(MachVoucherReleasePoolTest, DestroyEmptyPool) {
   {
-    MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+    MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                                max_ref_count());
   }
   // Pool should NOT have posted a task to clear vouchers.
   EXPECT_EQ(task_env().GetPendingMainThreadTaskCount(), 0u);
@@ -113,7 +136,8 @@ TEST_P(MachVoucherReleasePoolTest, IgnoresInvalidVouchers) {
       .Times(0);
   mock_log.StartCapturingLogs();
 
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
   auto callback = pool.GetAcceptVoucherCallback();
 
   // Direct calls on the IO sequence.
@@ -174,7 +198,8 @@ TEST_P(MachVoucherReleasePoolTest, IgnoresInvalidVouchers) {
 }
 
 TEST_P(MachVoucherReleasePoolTest, DefersReleaseAfterQueuedTasks) {
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
 
   // The test will observe these ports' reference counts to track vouchers
   // cloned from them.
@@ -254,7 +279,8 @@ TEST_P(MachVoucherReleasePoolTest, DestructorDrainsNonEmptyPool) {
   EXPECT_EQ(GetPortRefCount(observer.get()), 2u);
 
   {
-    MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+    MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                                max_ref_count());
     pool.AcceptVoucher(std::move(voucher));
 
     EXPECT_EQ(pool.voucher_count_for_testing(), 1u);
@@ -272,7 +298,8 @@ TEST_P(MachVoucherReleasePoolTest, DestructorDrainsNonEmptyPool) {
 }
 
 TEST_P(MachVoucherReleasePoolTest, CoalescesDuplicates) {
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
 
   // The test will observe these ports' reference counts to track vouchers
   // cloned from them.
@@ -311,7 +338,8 @@ TEST_P(MachVoucherReleasePoolTest, CoalescesDuplicates) {
 }
 
 TEST_P(MachVoucherReleasePoolTest, ReleasesFinalSendRights) {
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
 
   // No observer to retain a ref in this test.
   base::apple::ScopedMachSendRight voucher = CreateUniqueVoucher();
@@ -336,7 +364,8 @@ TEST_P(MachVoucherReleasePoolTest, ReleasesFinalSendRights) {
 }
 
 TEST_P(MachVoucherReleasePoolTest, GetAcceptVoucherCallback) {
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
 
   // The test will observe these ports' reference counts to track vouchers
   // cloned from them.
@@ -434,7 +463,7 @@ TEST_P(MachVoucherReleasePoolTest,
   // Same-sequence invocation after pool destruction drops `voucher` inline.
   {
     auto pool = std::make_unique<MachVoucherReleasePool>(
-        task_env().GetMainThreadTaskRunner());
+        task_env().GetMainThreadTaskRunner(), max_ref_count());
     auto callback = pool->GetAcceptVoucherCallback();
     pool.reset();
 
@@ -456,7 +485,7 @@ TEST_P(MachVoucherReleasePoolTest,
   // the callback is discarded.
   {
     auto pool = std::make_unique<MachVoucherReleasePool>(
-        task_env().GetMainThreadTaskRunner());
+        task_env().GetMainThreadTaskRunner(), max_ref_count());
     auto callback = pool->GetAcceptVoucherCallback();
     pool.reset();
 
@@ -479,7 +508,7 @@ TEST_P(MachVoucherReleasePoolTest,
   // before the posted task runs.
   {
     auto pool = std::make_unique<MachVoucherReleasePool>(
-        task_env().GetMainThreadTaskRunner());
+        task_env().GetMainThreadTaskRunner(), max_ref_count());
     auto callback = pool->GetAcceptVoucherCallback();
 
     base::apple::ScopedMachSendRight voucher =
@@ -506,10 +535,11 @@ TEST_P(MachVoucherReleasePoolTest,
   }
 }
 
-TEST_P(MachVoucherReleasePoolTest, MaxRefCount) {
-  const size_t kMaxRefCount = MachVoucherReleasePool::kMaxRefCount;
+TEST_P(MachVoucherReleasePoolRefCountTest, MaxRefCount) {
+  const size_t kMaxRefCount = base::checked_cast<size_t>(max_ref_count());
 
-  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner());
+  MachVoucherReleasePool pool(task_env().GetMainThreadTaskRunner(),
+                              max_ref_count());
 
   // The test will observe these ports' reference counts to track vouchers
   // cloned from them.
@@ -561,6 +591,18 @@ TEST_P(MachVoucherReleasePoolTest, MaxRefCount) {
   EXPECT_EQ(GetPortRefCount(observer_a.get()), 1u);
   EXPECT_EQ(GetPortRefCount(observer_b.get()), 1u);
   EXPECT_EQ(pool.voucher_count_for_testing(), 0u);
+}
+
+TEST(MachVoucherReleasePoolDeathTest, InvalidMaxRefCount) {
+  TaskEnvironment task_env(TaskEnvironment::ThreadingMode::MAIN_THREAD_ONLY);
+  auto create_pool = [&](mach_port_delta_t max_ref_count) {
+    MachVoucherReleasePool pool(task_env.GetMainThreadTaskRunner(),
+                                max_ref_count);
+  };
+  EXPECT_CHECK_DEATH(create_pool(0));
+  EXPECT_CHECK_DEATH(create_pool(-1));
+  EXPECT_CHECK_DEATH(
+      create_pool(MachVoucherReleasePool::kMaxAllowedRefCount + 1));
 }
 
 }  // namespace

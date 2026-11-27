@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
@@ -59,6 +60,13 @@ namespace {
 BASE_FEATURE_PARAM(bool, kSkipInvalidMachVouchers, &kUseMachVouchers, false);
 
 BASE_FEATURE_PARAM(bool, kUseMachVoucherReleasePool, &kUseMachVouchers, false);
+
+// Maximum known refcount per voucher before dropping accumulated refs. Only
+// used when `kUseMachVoucherReleasePool` is true.
+BASE_FEATURE_PARAM(int,
+                   kMaxMachVoucherRefCount,
+                   &kUseMachVouchers,
+                   ipcz_driver::MachVoucherReleasePool::kDefaultMaxRefCount);
 
 bool ShouldUseVouchers() {
   return GetConfiguration().enable_mach_vouchers &&
@@ -316,7 +324,10 @@ class ChannelMac : public Channel,
           << "mach_port_set_attributes MACH_PORT_IMPORTANCE_RECEIVER";
 
       if (kUseMachVoucherReleasePool.Get()) {
-        voucher_release_pool_.emplace(io_task_runner_);
+        const mach_port_delta_t max_ref_count = std::clamp(
+            kMaxMachVoucherRefCount.Get(), 1,
+            ipcz_driver::MachVoucherReleasePool::kMaxAllowedRefCount);
+        voucher_release_pool_.emplace(io_task_runner_, max_ref_count);
         voucher_release_callback_ =
             voucher_release_pool_->GetAcceptVoucherCallback();
       }

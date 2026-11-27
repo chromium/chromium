@@ -7,6 +7,9 @@
 
 #include <mach/mach.h>
 
+#include <cstdint>
+#include <limits>
+
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -41,13 +44,24 @@ namespace mojo::core::ipcz_driver {
 // importance boosted.
 class MOJO_SYSTEM_IMPL_EXPORT MachVoucherReleasePool {
  public:
-  // Mach port refcounts are held in a 16-bit field. Don't put vouchers with a
-  // high known refcount in the pool, to prevent overflows. (This is well below
-  // the maximum because the port will have references we don't know about.)
-  static constexpr mach_port_delta_t kMaxRefCount = 4096;
+  // Mach port refcounts are held in a 16-bit field. By default, don't put
+  // vouchers with a known refcount above this in the pool, to prevent
+  // overflows. (This is well below the maximum because the port will have
+  // references we don't know about.)
+  static constexpr mach_port_delta_t kDefaultMaxRefCount = 4096;
 
-  explicit MachVoucherReleasePool(
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  // Hard upper bound for `max_ref_count`: Mach port refcounts are 16-bit
+  // unsigned integers, and `AcceptVoucher()` holds up to `max_ref_count` pooled
+  // refs plus one incoming ref before releasing.
+  static constexpr mach_port_delta_t kMaxAllowedRefCount =
+      std::numeric_limits<uint16_t>::max() - 1;
+
+  // Creates a release pool living on `io_task_runner`. `max_ref_count` sets the
+  // maximum known refcount per voucher before dropping accumulated refs, and
+  // must be in [1, kMaxAllowedRefCount].
+  MachVoucherReleasePool(
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      mach_port_delta_t max_ref_count);
   ~MachVoucherReleasePool();
 
   MachVoucherReleasePool(const MachVoucherReleasePool&) = delete;
@@ -85,6 +99,9 @@ class MOJO_SYSTEM_IMPL_EXPORT MachVoucherReleasePool {
 
   // A worker that releases the vouchers.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
+
+  // Maximum known refcount per voucher before dropping accumulated refs.
+  const mach_port_delta_t max_ref_count_;
 
   // Voucher ports mapped to the count of that voucher the pool has seen.
   absl::flat_hash_map<mach_port_t, mach_port_delta_t> vouchers_

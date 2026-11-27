@@ -11,10 +11,12 @@
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -90,9 +92,13 @@ void ReleaseVouchers(
 }  // namespace
 
 MachVoucherReleasePool::MachVoucherReleasePool(
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : io_task_runner_(std::move(io_task_runner)) {
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    mach_port_delta_t max_ref_count)
+    : io_task_runner_(std::move(io_task_runner)),
+      max_ref_count_(max_ref_count) {
   CHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  CHECK_GE(max_ref_count_, 1);
+  CHECK_LE(max_ref_count_, kMaxAllowedRefCount);
   if (base::ThreadPoolInstance::Get()) {
     // Delete the vouchers on a worker thread, so that they don't contend for
     // global OS locks on the IO thread. This must be done at foreground
@@ -142,13 +148,13 @@ void MachVoucherReleasePool::AcceptVoucher(
   // one copy of the port along with the refcount we're aware of, so it can be
   // decremented in a single kernel call.
   auto& ref_count = vouchers_[voucher.get()];
-  if (ref_count == kMaxRefCount) {
+  if (ref_count == max_ref_count_) {
     // Drop refs that have been building up to avoid overflow. This is
     // guaranteed not to take the real refcount to 0, which could trigger heavy
     // work, because `voucher` contains another ref.
-    ReleaseVoucherRefs(voucher.get(), kMaxRefCount);
+    ReleaseVoucherRefs(voucher.get(), max_ref_count_);
     ref_count = 0;
-    voucher_count_ -= kMaxRefCount;
+    voucher_count_ -= base::checked_cast<size_t>(max_ref_count_);
   }
   // Transfer ownership of `voucher` to the pool.
   ref_count += 1;
