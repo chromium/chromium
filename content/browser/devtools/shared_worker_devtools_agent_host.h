@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/common/content_export.h"
@@ -22,6 +23,7 @@ class StorageKey;
 namespace content {
 
 class SharedWorkerHost;
+class StoragePartitionImpl;
 
 class CONTENT_EXPORT SharedWorkerDevToolsAgentHost
     : public DevToolsAgentHostImpl {
@@ -51,6 +53,7 @@ class CONTENT_EXPORT SharedWorkerDevToolsAgentHost
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
+  StoragePartition* GetStoragePartition() override;
   protocol::TargetAutoAttacher* auto_attacher() override;
 
   blink::StorageKey GetStorageKey() const;
@@ -90,6 +93,7 @@ class CONTENT_EXPORT SharedWorkerDevToolsAgentHost
   mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
       pending_agent_host_receiver_;
   const base::UnguessableToken browser_context_token_;
+  base::WeakPtr<StoragePartitionImpl> storage_partition_;
 };
 
 }  // namespace content

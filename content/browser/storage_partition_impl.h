@@ -241,6 +241,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   void Flush() override;
   void ResetURLLoaderFactories() override;
   void ClearBluetoothAllowedDevicesMap() override;
+  bool IsGuest() const override;
   void AddObserver(DataRemovalObserver* observer) override;
   void RemoveObserver(DataRemovalObserver* observer) override;
   void FlushNetworkInterfaceForTesting() override;
@@ -441,7 +442,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // guest-specific helpers that ensure that the worker stays in the same
   // StoragePartition.
   void set_is_guest() { is_guest_ = true; }
-  bool is_guest() const { return is_guest_; }
 
   // We have to plumb `is_service_worker`, `process_id` and `routing_id` because
   // they are plumbed to WebView via WillCreateRestrictedCookieManager, which
@@ -903,7 +903,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Lazily initialized in InitNetworkContext().
   std::optional<bool> supports_renderer_accessible_http_cache_;
 
-  // See comments for is_guest().
+  // See comments for `set_is_guest()`.
   bool is_guest_ = false;
 
   // Track number of running deletion. For test use only.

@@ -284,8 +284,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
 
   // Now change ServiceWorkerProcessManager to use a guest StoragePartition.
   // We must call |set_is_guest()| manually since the production codepath in
-  // CreateRenderProcessHost() isn't hit here since we are using
-  // RenderProcessHostFactory.
+  // BrowserContext::GetStoragePartition(SiteInstance*, bool) isn't hit here
+  // (this test calls the StoragePartitionConfig overload directly).
   const StoragePartitionConfig kGuestPartitionConfig =
       StoragePartitionConfig::Create(browser_context_.get(), "someapp",
                                      "somepartition", /*in_memory=*/false);

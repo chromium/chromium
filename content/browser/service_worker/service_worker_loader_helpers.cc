@@ -482,7 +482,7 @@ bool IsEligibleForSyntheticResponseInternal(
     const base::flat_set<std::string>& denied_url_params) {
   // If this StoragePartition is for guests (e.g., for a <webview>
   // tag). We don't enable it because the embedder may intercept the request.
-  if (storage_partition && storage_partition->is_guest()) {
+  if (storage_partition && storage_partition->IsGuest()) {
     return false;
   }
   // If `client_url` should be either 1) allowed by the browser content

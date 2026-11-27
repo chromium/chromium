@@ -116,7 +116,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   //
   // TODO(alexmos): Support CrossOriginIsolated for guests.
   CHECK(storage_partition_, base::NotFatalUntil::M159);
-  const bool is_guest = storage_partition_->is_guest();
+  const bool is_guest = storage_partition_->IsGuest();
   const bool is_fenced =
       ancestor_frame_type == blink::mojom::AncestorFrameType::kFencedFrame &&
       SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled();

@@ -67,6 +67,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* wc) override;
   RenderProcessHost* GetProcessHost() override;
+  StoragePartition* GetStoragePartition() override;
 
   struct NetworkLoaderFactoryParamsAndInfo {
     NetworkLoaderFactoryParamsAndInfo();

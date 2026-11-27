@@ -344,6 +344,10 @@ class CONTENT_EXPORT StoragePartition {
   // Clears the bluetooth allowed devices map.
   virtual void ClearBluetoothAllowedDevicesMap() = 0;
 
+  // Returns whether this `StoragePartition` is used for guests (e.g.
+  // `<webview>`).
+  virtual bool IsGuest() const = 0;
+
   virtual void AddObserver(DataRemovalObserver* observer) = 0;
 
   virtual void RemoveObserver(DataRemovalObserver* observer) = 0;

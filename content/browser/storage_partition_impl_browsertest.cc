@@ -11,14 +11,20 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -26,6 +32,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/client_cert_identity.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -325,6 +332,111 @@ IN_PROC_BROWSER_TEST_F(ClientCertBrowserTest,
 
   // Wait for DeleteDelegateOnCancel() to be invoked.
   delete_delegate_run_loop_->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
+                       IsGuestAndDevToolsGetStoragePartition) {
+  net::test_server::ControllableHttpResponse slow_sw_response(
+      embedded_test_server(), "/slow_sw.js");
+  net::test_server::ControllableHttpResponse shared_worker_response(
+      embedded_test_server(), "/shared_worker.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  StoragePartition* default_partition =
+      browser_context->GetDefaultStoragePartition();
+  ASSERT_TRUE(default_partition);
+  EXPECT_FALSE(default_partition->IsGuest());
+
+  StoragePartitionConfig isolated_config = StoragePartitionConfig::Create(
+      browser_context, "isolated_domain", "isolated_partition",
+      /*in_memory=*/true);
+  StoragePartition* isolated_partition =
+      browser_context->GetStoragePartition(isolated_config);
+  ASSERT_TRUE(isolated_partition);
+  EXPECT_FALSE(isolated_partition->IsGuest());
+
+  StoragePartitionConfig guest_config = StoragePartitionConfig::Create(
+      browser_context, "guest_domain", "guest_partition",
+      /*in_memory=*/true);
+  scoped_refptr<SiteInstance> guest_site_instance =
+      SiteInstance::CreateForGuest(browser_context, guest_config);
+  StoragePartition* guest_partition =
+      browser_context->GetStoragePartition(guest_site_instance.get());
+  ASSERT_TRUE(guest_partition);
+  EXPECT_TRUE(guest_partition->IsGuest());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(default_partition,
+            DevToolsAgentHost::GetOrCreateFor(shell()->web_contents())
+                ->GetStoragePartition());
+  EXPECT_EQ(default_partition,
+            DevToolsAgentHost::GetOrCreateForTab(shell()->web_contents())
+                ->GetStoragePartition());
+
+  // `ServiceWorkerDevToolsAgentHost` resolves its `StoragePartition` before a
+  // worker process is allocated during main-script fetch.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     "window.swDone = navigator.serviceWorker"
+                     ".register('/slow_sw.js').then(() => 'ok');",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  slow_sw_response.WaitForRequest();
+
+  scoped_refptr<DevToolsAgentHost> sw_host;
+  for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL().spec().contains("slow_sw.js")) {
+      sw_host = host;
+      break;
+    }
+  }
+  ASSERT_TRUE(sw_host);
+  EXPECT_EQ(nullptr, sw_host->GetProcessHost());
+  EXPECT_EQ(default_partition, sw_host->GetStoragePartition());
+
+  slow_sw_response.Send(
+      "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n\r\n// sw\n");
+  slow_sw_response.Done();
+  EXPECT_EQ("ok", EvalJs(shell()->web_contents(), "window.swDone"));
+
+  // `SharedWorkerDevToolsAgentHost` preserves its `StoragePartition` and
+  // supports attaching sessions even after transitioning to
+  // `WORKER_TERMINATED`.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     "window.sharedDone = new Promise(resolve => {"
+                     "  const w = new SharedWorker('/shared_worker.js');"
+                     "  w.port.onmessage = () => resolve('ok');"
+                     "});",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  shared_worker_response.WaitForRequest();
+  shared_worker_response.Send(
+      "HTTP/1.1 200 OK\r\nContent-Type: text/javascript\r\n\r\n"
+      "onconnect = (e) => e.ports[0].postMessage('ready');\n");
+  shared_worker_response.Done();
+  EXPECT_EQ("ok", EvalJs(shell()->web_contents(), "window.sharedDone"));
+
+  scoped_refptr<DevToolsAgentHost> shared_worker_host;
+  for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker &&
+        host->GetURL().spec().contains("shared_worker.js")) {
+      shared_worker_host = host;
+      break;
+    }
+  }
+  ASSERT_TRUE(shared_worker_host);
+  EXPECT_NE(nullptr, shared_worker_host->GetProcessHost());
+  EXPECT_EQ(default_partition, shared_worker_host->GetStoragePartition());
+
+  EXPECT_TRUE(shared_worker_host->Close());
+  EXPECT_EQ(nullptr, shared_worker_host->GetProcessHost());
+  EXPECT_EQ(default_partition, shared_worker_host->GetStoragePartition());
+
+  TestDevToolsProtocolClient client;
+  EXPECT_TRUE(shared_worker_host->AttachClient(&client));
+  EXPECT_TRUE(shared_worker_host->IsAttached());
+  shared_worker_host->DetachClient(&client);
 }
 
 }  // namespace content

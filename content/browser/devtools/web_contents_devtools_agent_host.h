@@ -56,6 +56,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* web_contents) override;
   BrowserContext* GetBrowserContext() override;
+  StoragePartition* GetStoragePartition() override;
   WebContents* GetWebContents() override;
   std::string GetParentId() override;
   std::string GetOpenerId() override;

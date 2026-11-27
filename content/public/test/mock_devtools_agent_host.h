@@ -44,6 +44,7 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   bool Close() override;
   base::TimeTicks GetLastActivityTime() override;
   content::RenderProcessHost* GetProcessHost() override;
+  content::StoragePartition* GetStoragePartition() override;
   void ForceDetachAllSessions() override {}
 
  protected:

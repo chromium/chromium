@@ -77,6 +77,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
+  StoragePartition* GetStoragePartition() override;
   std::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
 

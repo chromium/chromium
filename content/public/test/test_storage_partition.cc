@@ -236,6 +236,10 @@ void TestStoragePartition::ResetURLLoaderFactories() {}
 
 void TestStoragePartition::ClearBluetoothAllowedDevicesMap() {}
 
+bool TestStoragePartition::IsGuest() const {
+  return is_guest_;
+}
+
 void TestStoragePartition::AddObserver(DataRemovalObserver* observer) {
   data_removal_observer_count_++;
 }

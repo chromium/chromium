@@ -540,7 +540,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   // <webview> initiated requests have a dedicated storage partition.
   if (base::FeatureList::IsEnabled(
           features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload) &&
-      context->storage_partition()->is_guest()) {
+      context->storage_partition()->IsGuest()) {
     RecordAutoPreloadDispatchResult(
         ServiceWorkerAutoPreloadDispatchResult::kGuestStoragePartition,
         /*is_outermost_main_frame=*/true);

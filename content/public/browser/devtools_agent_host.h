@@ -38,6 +38,7 @@ class RenderFrameHost;
 class WebContents;
 class RenderProcessHost;
 class ServiceWorkerContext;
+class StoragePartition;
 
 // Describes interface for managing devtools agents from browser process.
 class CONTENT_EXPORT DevToolsAgentHost
@@ -257,6 +258,9 @@ class CONTENT_EXPORT DevToolsAgentHost
   static void DetachAllClients();
 
   virtual RenderProcessHost* GetProcessHost() = 0;
+
+  // Returns the `StoragePartition` associated with this host, if any.
+  virtual StoragePartition* GetStoragePartition() = 0;
 
  protected:
   friend class base::RefCounted<DevToolsAgentHost>;

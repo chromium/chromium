@@ -19,6 +19,7 @@
 #include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/features.h"
@@ -29,6 +30,17 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
+
+namespace {
+
+base::WeakPtr<StoragePartitionImpl> GetStoragePartitionWeakPtr(
+    SharedWorkerHost* worker_host) {
+  auto* partition = static_cast<StoragePartitionImpl*>(
+      worker_host->GetProcessHost()->GetStoragePartition());
+  return partition ? partition->GetWeakPtr() : nullptr;
+}
+
+}  // namespace
 
 // static
 SharedWorkerDevToolsAgentHost* SharedWorkerDevToolsAgentHost::GetFor(
@@ -48,7 +60,8 @@ SharedWorkerDevToolsAgentHost::SharedWorkerDevToolsAgentHost(
       devtools_worker_token_(devtools_worker_token),
       instance_(worker_host->instance()),
       browser_context_token_(
-          worker_host->GetProcessHost()->GetBrowserContext()->UniqueToken()) {
+          worker_host->GetProcessHost()->GetBrowserContext()->UniqueToken()),
+      storage_partition_(GetStoragePartitionWeakPtr(worker_host)) {
   // Let the renderer channel know the process before the renderer is bound, so
   // that handlers of sessions attached before WorkerReadyForInspection() can
   // resolve the storage partition and browser context.
@@ -153,8 +166,9 @@ void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
   UpdateRendererChannel(IsAttached() ||
                         !base::FeatureList::IsEnabled(
                             ::features::kSharedWorkerDevToolsWorkerReadyCheck));
-  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
+  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this)) {
     inspector->TargetReloadedAfterCrash();
+  }
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerRestarted(
@@ -163,6 +177,7 @@ void SharedWorkerDevToolsAgentHost::WorkerRestarted(
   CHECK(!worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_NOT_READY;
   worker_host_ = worker_host;
+  storage_partition_ = GetStoragePartitionWeakPtr(worker_host);
   // The restarted worker may live in another process (and storage partition).
   GetRendererChannel()->SetRenderer(
       mojo::NullRemote(), mojo::NullReceiver(),
@@ -173,8 +188,9 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
   CHECK_NE(WORKER_TERMINATED, state_, base::NotFatalUntil::M159);
   CHECK(worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_TERMINATED;
-  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
+  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this)) {
     inspector->TargetCrashed();
+  }
   worker_host_ = nullptr;
   pending_agent_remote_.reset();
   pending_agent_host_receiver_.reset();
@@ -216,10 +232,12 @@ SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
 }
 
 RenderProcessHost* SharedWorkerDevToolsAgentHost::GetProcessHost() {
-  // TODO(crbug.com/571021243): CHECK-exclusion: Convert to a CHECK once we
-  // are confident it won't be triggered.
-  DCHECK(worker_host_);
-  return worker_host_->GetProcessHost();
+  // `worker_host_` is nullptr while in `WORKER_TERMINATED` state.
+  return worker_host_ ? worker_host_->GetProcessHost() : nullptr;
+}
+
+StoragePartition* SharedWorkerDevToolsAgentHost::GetStoragePartition() {
+  return storage_partition_.get();
 }
 
 protocol::TargetAutoAttacher* SharedWorkerDevToolsAgentHost::auto_attacher() {

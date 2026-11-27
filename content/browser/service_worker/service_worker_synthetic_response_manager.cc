@@ -386,7 +386,7 @@ void ServiceWorkerSyntheticResponseManager::InitiateRequest(
   is_initiated_by_prefetch_ = service_worker_client->is_initiated_by_prefetch();
   factory_interceptor_count_ =
       service_worker_client->factory_interceptor_count();
-  is_guest_ = storage_partition->is_guest();
+  is_guest_ = storage_partition->IsGuest();
   bypass_redirect_checks_ = service_worker_client->bypass_redirect_checks();
   base::UmaHistogramBoolean(kHistogramSyntheticResponseBypassRedirectChecks,
                             bypass_redirect_checks_);

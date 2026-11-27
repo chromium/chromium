@@ -518,7 +518,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
                         ? WebExposedIsolationInfo::CreateIsolatedApplication(
                               url::Origin::Create(instance.url()))
                         : WebExposedIsolationInfo::CreateNonIsolated())),
-        partition->is_guest(), site_instance->GetIsolationContext().is_fenced(),
+        partition->IsGuest(), site_instance->GetIsolationContext().is_fenced(),
         site_instance->IsFixedStoragePartition());
   }
 

@@ -1658,15 +1658,6 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 
   if (site_instance && site_instance->GetSecurityPrincipal().IsGuest()) {
     flags |= RenderProcessFlags::kForGuestsOnly;
-
-    // If we've made a StoragePartition for guests (e.g., for the <webview>
-    // tag), make the StoragePartition aware of that.  This will be consulted
-    // when we start a service worker inside this StoragePartition, so that we
-    // can create the appropriate SiteInstance (e.g., we will try to start a
-    // worker from "https://example.com/sw.js" but need to use the guest's
-    // StoragePartitionConfig to get a process in the guest's
-    // StoragePartition.)
-    storage_partition_impl->set_is_guest();
   }
 
   if (site_instance) {

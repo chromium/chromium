@@ -131,6 +131,7 @@ class FakeDevToolsAgentHost : public content::DevToolsAgentHost {
   base::TimeTicks GetLastActivityTime() override { return base::TimeTicks(); }
   void ForceDetachAllSessions() override {}
   content::RenderProcessHost* GetProcessHost() override { return nullptr; }
+  content::StoragePartition* GetStoragePartition() override { return nullptr; }
 
  private:
   ~FakeDevToolsAgentHost() override = default;

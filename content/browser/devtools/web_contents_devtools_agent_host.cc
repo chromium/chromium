@@ -21,6 +21,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
@@ -297,6 +298,12 @@ void WebContentsDevToolsAgentHost::ConnectWebContents(
 
 BrowserContext* WebContentsDevToolsAgentHost::GetBrowserContext() {
   return web_contents() ? web_contents()->GetBrowserContext() : nullptr;
+}
+
+StoragePartition* WebContentsDevToolsAgentHost::GetStoragePartition() {
+  RenderFrameHost* rfh =
+      web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
+  return rfh ? rfh->GetStoragePartition() : nullptr;
 }
 
 WebContents* WebContentsDevToolsAgentHost::GetWebContents() {

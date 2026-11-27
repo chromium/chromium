@@ -227,6 +227,7 @@ class TestStoragePartition : public StoragePartition {
 
   void ResetURLLoaderFactories() override;
   void ClearBluetoothAllowedDevicesMap() override;
+  bool IsGuest() const override;
 
   void AddObserver(DataRemovalObserver* observer) override;
   void RemoveObserver(DataRemovalObserver* observer) override;
@@ -240,6 +241,8 @@ class TestStoragePartition : public StoragePartition {
           network_context_remote) override;
   void OverrideDeleteStaleSessionCleanupDelayForTesting(
       const base::TimeDelta& delay) override {}
+
+  void set_is_guest(bool is_guest) { is_guest_ = is_guest; }
 
   base::WeakPtr<StoragePartition> GetWeakPtr();
   void InvalidateWeakPtrs();
@@ -274,6 +277,7 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<HostZoomLevelContext> host_zoom_level_context_ = nullptr;
   raw_ptr<ZoomLevelDelegate> zoom_level_delegate_ = nullptr;
   int data_removal_observer_count_ = 0;
+  bool is_guest_ = false;
 
   // This member must be the last member.
   base::WeakPtrFactory<TestStoragePartition> weak_factory_{this};

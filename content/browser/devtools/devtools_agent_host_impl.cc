@@ -35,6 +35,7 @@
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -635,6 +636,11 @@ DevToolsAgentHostImpl::CreateNetworkFactoryParamsForDevTools() {
 
 RenderProcessHost* DevToolsAgentHostImpl::GetProcessHost() {
   return nullptr;
+}
+
+StoragePartition* DevToolsAgentHostImpl::GetStoragePartition() {
+  RenderProcessHost* rph = GetProcessHost();
+  return rph ? rph->GetStoragePartition() : nullptr;
 }
 
 std::optional<network::CrossOriginEmbedderPolicy>

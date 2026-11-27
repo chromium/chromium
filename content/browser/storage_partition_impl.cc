@@ -4033,4 +4033,8 @@ bool StoragePartitionImpl::URLLoaderNetworkContext::
   return navigation_or_document()->IsInPrimaryMainFrame();
 }
 
+bool StoragePartitionImpl::IsGuest() const {
+  return is_guest_;
+}
+
 }  // namespace content

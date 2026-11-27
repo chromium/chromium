@@ -111,4 +111,8 @@ content::RenderProcessHost* MockDevToolsAgentHost::GetProcessHost() {
   return nullptr;
 }
 
+content::StoragePartition* MockDevToolsAgentHost::GetStoragePartition() {
+  return nullptr;
+}
+
 }  // namespace content

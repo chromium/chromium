@@ -507,6 +507,10 @@ RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
   return RenderProcessHost::FromID(worker_process_id_);
 }
 
+StoragePartition* ServiceWorkerDevToolsAgentHost::GetStoragePartition() {
+  return context_wrapper_ ? context_wrapper_->storage_partition() : nullptr;
+}
+
 std::optional<network::CrossOriginEmbedderPolicy>
 ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string&) {

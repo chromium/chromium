@@ -41,6 +41,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/push_messaging/push_messaging_router.h"
 #include "content/browser/site_info.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/browser/webid/in_memory_federated_permission_context.h"
 #include "content/public/browser/blob_handle.h"
@@ -132,15 +133,29 @@ PermissionController* BrowserContext::GetPermissionController() {
 StoragePartition* BrowserContext::GetStoragePartition(
     SiteInstance* site_instance,
     bool can_create) {
-  if (site_instance)
+  if (site_instance) {
     CHECK_EQ(this, site_instance->GetBrowserContext(),
              base::NotFatalUntil::M159);
+  }
 
   auto partition_config =
       site_instance
           ? site_instance->GetSecurityPrincipal().GetStoragePartitionConfig()
           : StoragePartitionConfig::CreateDefault(this);
-  return GetStoragePartition(partition_config, can_create);
+  StoragePartition* partition =
+      GetStoragePartition(partition_config, can_create);
+  if (partition && site_instance &&
+      site_instance->GetSecurityPrincipal().IsGuest()) {
+    // If we've made a `StoragePartition` for guests (e.g., for the `<webview>`
+    // tag), make the `StoragePartition` aware of that. This will be consulted
+    // when we start a service worker inside this `StoragePartition`, so that we
+    // can create the appropriate `SiteInstance` (e.g., we will try to start a
+    // worker from "https://example.com/sw.js" but need to use the guest's
+    // `StoragePartitionConfig` to get a process in the guest's
+    // `StoragePartition`.)
+    static_cast<StoragePartitionImpl*>(partition)->set_is_guest();
+  }
+  return partition;
 }
 
 StoragePartition* BrowserContext::GetStoragePartition(
