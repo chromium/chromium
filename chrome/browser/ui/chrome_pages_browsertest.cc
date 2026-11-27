@@ -24,8 +24,12 @@ class ShowManageProfileBrowserTest : public InProcessBrowserTest,
  public:
   ShowManageProfileBrowserTest() {
     feature_list_.InitWithFeatureState(
-        switches::kReplaceManageProfileWithDialog, GetParam());
+        switches::kReplaceManageProfileWithDialog,
+        ReplaceManageProfileWithDialog());
   }
+
+ protected:
+  bool ReplaceManageProfileWithDialog() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -39,7 +43,7 @@ IN_PROC_BROWSER_TEST_P(ShowManageProfileBrowserTest,
   ShowManageProfile(browser());
 
   SigninViewController* controller = SigninViewController::From(browser());
-  if (GetParam()) {
+  if (ReplaceManageProfileWithDialog()) {
     ASSERT_TRUE(controller->ShowsModalDialog());
     EXPECT_EQ(
         GetProfileCustomizationStyle(
@@ -54,6 +58,35 @@ IN_PROC_BROWSER_TEST_P(ShowManageProfileBrowserTest,
     EXPECT_EQ(web_contents->GetVisibleURL(),
               GURL("chrome://settings/manageProfile"));
     EXPECT_FALSE(controller->ShowsModalDialog());
+  }
+}
+
+// Nothing is shown for an Incognito browser: neither the edit profile dialog if
+// `kReplaceManageProfileWithDialog` is enabled, nor
+// chrome://settings/manageProfile otherwise.
+IN_PROC_BROWSER_TEST_P(ShowManageProfileBrowserTest, IncognitoBrowser) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  const int incognito_tab_count =
+      incognito_browser->GetTabStripModel()->count();
+  const int regular_tab_count = browser()->GetTabStripModel()->count();
+  const GURL regular_url =
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL();
+
+  ShowManageProfile(incognito_browser);
+
+  if (ReplaceManageProfileWithDialog()) {
+    EXPECT_FALSE(
+        SigninViewController::From(incognito_browser)->ShowsModalDialog());
+  } else {
+    // chrome://settings/manageProfile is not opened, neither in the Incognito
+    // browser nor in the regular browser (where Settings opened from
+    // Incognito are redirected).
+    EXPECT_EQ(incognito_browser->GetTabStripModel()->count(),
+              incognito_tab_count);
+    EXPECT_EQ(browser()->GetTabStripModel()->count(), regular_tab_count);
+    EXPECT_EQ(
+        browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
+        regular_url);
   }
 }
 

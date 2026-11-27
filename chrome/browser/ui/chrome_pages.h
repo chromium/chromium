@@ -154,7 +154,8 @@ void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Shows the UI to edit the profile name, avatar and theme color: the profile
 // customization dialog if `switches::IsManageProfileDialogEnabled()`, or
-// chrome://settings/manageProfile otherwise.
+// chrome://settings/manageProfile otherwise. Does nothing if the profile of
+// `browser` is not a regular profile.
 // TODO(crbug.com/585482119): Move next to the dialog once the settings page is
 // removed.
 void ShowManageProfile(BrowserWindowInterface* browser);

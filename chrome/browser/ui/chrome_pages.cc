@@ -683,6 +683,10 @@ void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ShowManageProfile(BrowserWindowInterface* browser) {
+  // Editing the profile is not supported for non-regular profiles.
+  if (!browser->GetProfile()->IsRegularProfile()) {
+    return;
+  }
   if (switches::IsManageProfileDialogEnabled()) {
     SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
         ProfileCustomizationStyle::kEditProfile);
