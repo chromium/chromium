@@ -1129,8 +1129,9 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
     ASSERT_EQ(reinterpret_cast<uintptr_t>(new_ptr) % kAlignment, 0);
     given_alignment_on_alloc_ = allocs_intercepted_by_alignment[kAlignment];
 
+    const auto hash = Hash<T>(new_ptr);
     delete new_ptr;
-    ASSERT_GE(frees_intercepted_by_addr[Hash<T>(new_ptr)], 1u);
+    ASSERT_GE(frees_intercepted_by_addr[hash], 1u);
     given_size_on_delete_ = frees_intercepted_by_size[kSize];
     given_alignment_on_delete_ = frees_intercepted_by_alignment[kAlignment];
 
@@ -1151,8 +1152,8 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
     ASSERT_EQ(reinterpret_cast<uintptr_t>(new_ptr) % kAlignment, 0);
     given_alignment_on_alloc_ = allocs_intercepted_by_alignment[kAlignment];
 
-    delete[] new_ptr;
     const auto hash = Hash<T[]>(new_ptr);
+    delete[] new_ptr;
     ASSERT_GE(frees_intercepted_by_addr[hash], 1u);
     given_size_on_delete_ = frees_intercepted_by_size[kSize];
     given_alignment_on_delete_ = frees_intercepted_by_alignment[kAlignment];
@@ -2078,10 +2079,11 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   // On `IS_APPLE` platforms, `free()` may be deferred and not reliably
   // testable.
   int* alloc_ptr = new int;
+  size_t hash = Hash(alloc_ptr);
   delete alloc_ptr;
 
   // `free()` -> `g_mock_dispatch` -> default allocator.
-  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_GE(frees_intercepted_by_addr[hash], 1u);
   EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
 
   {
@@ -2089,20 +2091,22 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
         &g_mock_dispatch_for_advanced_checks);
 
     alloc_ptr = new int;
+    hash = Hash(alloc_ptr);
     delete alloc_ptr;
 
     // `free()` -> `g_mock_dispatch` -> `dispatch` -> default allocator.
-    EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+    EXPECT_GE(frees_intercepted_by_addr[hash], 1u);
     EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
   }
 
   g_mock_free_with_advanced_checks_count = 0u;
 
   alloc_ptr = new int;
+  hash = Hash(alloc_ptr);
   delete alloc_ptr;
 
   // `free()` -> `g_mock_dispatch` -> default allocator.
-  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_GE(frees_intercepted_by_addr[hash], 1u);
   EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
