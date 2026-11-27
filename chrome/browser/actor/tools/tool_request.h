@@ -51,9 +51,6 @@ class ToolRequest {
 
   bool IsTabScoped() const;
 
-  // Returns true if this action will add a tab to the set of observed tasks.
-  virtual bool AddsTabToObservationSet() const;
-
   // Returns the URL to record in the journal when recording entries for this
   // request. This may be empty for requests that aren't tied to a frame/tab or
   // if the scoped object no longer exists.

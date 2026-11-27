@@ -48,10 +48,6 @@ bool ToolRequest::IsTabScoped() const {
   return !GetActorSurfaceHandle().is_null();
 }
 
-bool ToolRequest::AddsTabToObservationSet() const {
-  return IsTabScoped();
-}
-
 GURL ToolRequest::GetURLForJournal() const {
   return GURL::EmptyGURL();
 }

@@ -29,8 +29,6 @@ class CreateTabToolRequest : public ToolRequest {
   // Returns the `ToolId::kCreateTab` tool schema definition.
   static std::optional<ToolDefinition> GetToolDefinition();
 
-  bool AddsTabToObservationSet() const override;
-
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
 

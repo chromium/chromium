@@ -54,10 +54,6 @@ std::optional<ToolDefinition> CreateTabToolRequest::GetToolDefinition() {
       .Build();
 }
 
-bool CreateTabToolRequest::AddsTabToObservationSet() const {
-  return true;
-}
-
 ToolRequest::CreateToolResult CreateTabToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
