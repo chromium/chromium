@@ -102,6 +102,7 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
                                const SVGLengthContext&);
 
   // Helper functions
+  bool IsAbsoluteNumeric() const;
   bool IsRelative() const;
   bool IsFontRelative() const {
     // TODO(crbug.com/979895): This is the result of a refactoring, which might

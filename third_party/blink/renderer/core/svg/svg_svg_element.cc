@@ -653,30 +653,50 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
 
 std::optional<float> SVGSVGElement::IntrinsicWidth() const {
   const SVGLength& width_attr = *width()->CurrentValue();
-  // TODO(crbug.com/979895): This is the result of a refactoring, which might
-  // have revealed an existing bug that we are not handling math functions
-  // involving percentages correctly. Fix it if necessary.
-  if (width_attr.IsPercentage())
-    return std::nullopt;
-  SVGLengthContext length_context(this);
-
-  return NoopWillBeInvScaleScalar(
-      std::max(0.0f, width_attr.Value(length_context)),
-      length_context.GetZoom());
+  if (RuntimeEnabledFeatures::SvgNaturalSizeOnlyAbsoluteNumericEnabled()) {
+    if (!width_attr.IsAbsoluteNumeric()) {
+      return std::nullopt;
+    }
+    SVGLengthContext length_context(this);
+    const float width_pixels = width_attr.Value(length_context);
+    // This can happen if a negative value is set using the SVG DOM.
+    if (width_pixels < 0) {
+      return std::nullopt;
+    }
+    return NoopWillBeInvScaleScalar(width_pixels, length_context.GetZoom());
+  } else {
+    if (width_attr.IsPercentage()) {
+      return std::nullopt;
+    }
+    SVGLengthContext length_context(this);
+    return NoopWillBeInvScaleScalar(
+        std::max(0.0f, width_attr.Value(length_context)),
+        length_context.GetZoom());
+  }
 }
 
 std::optional<float> SVGSVGElement::IntrinsicHeight() const {
   const SVGLength& height_attr = *height()->CurrentValue();
-  // TODO(crbug.com/979895): This is the result of a refactoring, which might
-  // have revealed an existing bug that we are not handling math functions
-  // involving percentages correctly. Fix it if necessary.
-  if (height_attr.IsPercentage())
-    return std::nullopt;
-  SVGLengthContext length_context(this);
-
-  return NoopWillBeInvScaleScalar(
-      std::max(0.0f, height_attr.Value(length_context)),
-      length_context.GetZoom());
+  if (RuntimeEnabledFeatures::SvgNaturalSizeOnlyAbsoluteNumericEnabled()) {
+    if (!height_attr.IsAbsoluteNumeric()) {
+      return std::nullopt;
+    }
+    SVGLengthContext length_context(this);
+    const float height_pixels = height_attr.Value(length_context);
+    // This can happen if a negative value is set using the SVG DOM.
+    if (height_pixels < 0) {
+      return std::nullopt;
+    }
+    return NoopWillBeInvScaleScalar(height_pixels, length_context.GetZoom());
+  } else {
+    if (height_attr.IsPercentage()) {
+      return std::nullopt;
+    }
+    SVGLengthContext length_context(this);
+    return NoopWillBeInvScaleScalar(
+        std::max(0.0f, height_attr.Value(length_context)),
+        length_context.GetZoom());
+  }
 }
 
 AffineTransform SVGSVGElement::ViewBoxToViewTransform(

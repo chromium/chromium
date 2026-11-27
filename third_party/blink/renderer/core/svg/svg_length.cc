@@ -186,6 +186,15 @@ void SVGLength::SetValueInSpecifiedUnits(float value) {
   value_ = CSSNumericLiteralValue::Create(value, NumericLiteralType());
 }
 
+bool SVGLength::IsAbsoluteNumeric() const {
+  if (!IsNumericValue()) {
+    return false;
+  }
+  const CSSPrimitiveValue::UnitType unit_type = NumericLiteralType();
+  return unit_type == CSSPrimitiveValue::UnitType::kUserUnits ||
+         CSSPrimitiveValue::IsAbsoluteLengthUnit(unit_type);
+}
+
 bool SVGLength::IsRelative() const {
   if (IsPercentage())
     return true;

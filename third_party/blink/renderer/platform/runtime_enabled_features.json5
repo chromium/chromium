@@ -6995,6 +6995,10 @@
       status: "stable",
     },
     {
+      name: "SvgNaturalSizeOnlyAbsoluteNumeric",
+      status: "stable",
+    },
+    {
       name: "SvgNewZoom",
     },
     {
