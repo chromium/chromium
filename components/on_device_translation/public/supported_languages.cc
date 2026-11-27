@@ -4,6 +4,8 @@
 
 #include "components/on_device_translation/public/supported_languages.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 
 namespace on_device_translation {
@@ -38,32 +40,11 @@ static_assert(std::size(kSupportedLanguageCodeMap) ==
               "All languages must be in kSupportedLanguageCodeMap.");
 
 // The inverse of kSupportedLanguageCodeMap.
-inline constexpr auto kSupportedLanguageCodeInverseMap = base::MakeFixedFlatMap<
-    std::string_view,
-    SupportedLanguage>(
-    {{"en", SupportedLanguage::kEn},          {"es", SupportedLanguage::kEs},
-     {"ja", SupportedLanguage::kJa},          {"ar", SupportedLanguage::kAr},
-     {"bn", SupportedLanguage::kBn},          {"de", SupportedLanguage::kDe},
-     {"fr", SupportedLanguage::kFr},          {"hi", SupportedLanguage::kHi},
-     {"it", SupportedLanguage::kIt},          {"ko", SupportedLanguage::kKo},
-     {"nl", SupportedLanguage::kNl},          {"pl", SupportedLanguage::kPl},
-     {"pt", SupportedLanguage::kPt},          {"ru", SupportedLanguage::kRu},
-     {"th", SupportedLanguage::kTh},          {"tr", SupportedLanguage::kTr},
-     {"vi", SupportedLanguage::kVi},          {"zh", SupportedLanguage::kZh},
-     {"zh-Hant", SupportedLanguage::kZhHant}, {"bg", SupportedLanguage::kBg},
-     {"cs", SupportedLanguage::kCs},          {"da", SupportedLanguage::kDa},
-     {"el", SupportedLanguage::kEl},          {"fi", SupportedLanguage::kFi},
-     {"hr", SupportedLanguage::kHr},          {"hu", SupportedLanguage::kHu},
-     {"id", SupportedLanguage::kId},          {"iw", SupportedLanguage::kIw},
-     {"lt", SupportedLanguage::kLt},          {"no", SupportedLanguage::kNo},
-     {"ro", SupportedLanguage::kRo},          {"sk", SupportedLanguage::kSk},
-     {"sl", SupportedLanguage::kSl},          {"sv", SupportedLanguage::kSv},
-     {"uk", SupportedLanguage::kUk},          {"kn", SupportedLanguage::kKn},
-     {"ta", SupportedLanguage::kTa},          {"te", SupportedLanguage::kTe},
-     {"mr", SupportedLanguage::kMr}});
-static_assert(std::size(kSupportedLanguageCodeInverseMap) ==
-                  static_cast<unsigned>(SupportedLanguage::kMaxValue) + 1,
-              "All languages must be in kSupportedLanguageCodeInverseMap.");
+inline constexpr auto kSupportedLanguageCodeInverseMap =
+    base::MakeFixedFlatMap<std::string_view, SupportedLanguage>(
+        kSupportedLanguageCodeMap,
+        /*comp=*/{},
+        [](const auto& entry) { return std::pair(entry.second, entry.first); });
 }  // namespace
 
 std::pair<SupportedLanguage, SupportedLanguage>
