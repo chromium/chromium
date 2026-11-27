@@ -108,12 +108,16 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
     return insets_;
   }
 
+  bool CanMaximize() const override { return can_maximize_; }
+
   void set_window(X11Window* window) { window_ = window; }
   void set_insets(const gfx::Insets& insets) { insets_ = insets; }
+  void set_can_maximize(bool can_maximize) { can_maximize_ = can_maximize; }
 
  private:
   raw_ptr<X11Window> window_ = nullptr;
   gfx::Insets insets_;
+  bool can_maximize_ = false;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
   PlatformWindowDelegate::BoundsChange changed_{false};
@@ -428,6 +432,42 @@ TEST_F(X11WindowTest, FrameTypeChangeUpdatesDecorationInsets) {
   EXPECT_EQ(kBounds, window->GetBoundsInPixels());
 
   delegate.set_window(nullptr);
+}
+
+// Windows that can't be maximized must not advertise the maximize function in
+// _MOTIF_WM_HINTS, or window managers like Muffin edge-tile them, e.g. a
+// Picture-in-Picture window dragged to a screen edge.
+// https://crbug.com/41399355
+TEST_F(X11WindowTest, MotifHintsOmitMaximizeWhenCannotMaximize) {
+  constexpr uint32_t kMwmHintsFunctions = 1u << 0;
+  constexpr uint32_t kMwmFuncMaximize = 1u << 4;
+  auto get_motif_hints = [](x11::Window window) {
+    std::vector<uint32_t> hints;
+    auto* connection = x11::Connection::Get();
+    connection->GetArrayProperty(window, connection->GetAtom("_MOTIF_WM_HINTS"),
+                                 &hints);
+    return hints;
+  };
+
+  TestPlatformWindowDelegate delegate;
+  delegate.set_can_maximize(false);
+  auto window =
+      CreateX11Window(&delegate, gfx::Rect(10, 10, 100, 100), nullptr);
+  const x11::Window x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  std::vector<uint32_t> hints = get_motif_hints(x11_window);
+  ASSERT_EQ(5u, hints.size());
+  EXPECT_TRUE(hints[0] & kMwmHintsFunctions);
+  EXPECT_FALSE(hints[1] & kMwmFuncMaximize);
+  EXPECT_NE(0u, hints[1]);
+
+  // Once the window can be maximized, no function restrictions are set.
+  delegate.set_can_maximize(true);
+  window->SizeConstraintsChanged();
+  hints = get_motif_hints(x11_window);
+  ASSERT_EQ(5u, hints.size());
+  EXPECT_FALSE(hints[0] & kMwmHintsFunctions);
 }
 
 // https://crbug.com/898742: Test is flaky.

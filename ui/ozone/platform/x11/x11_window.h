@@ -295,6 +295,9 @@ class X11Window : public PlatformWindow,
 
   void SetFlashFrameHint(bool flash_frame);
   void UpdateMinAndMaxSize();
+  // Sets _MOTIF_WM_HINTS from |use_native_frame_| and the delegate's
+  // CanMaximize().
+  void UpdateMotifWmHints();
   void DispatchResize(bool origin_changed);
   void CancelResize();
 
@@ -559,6 +562,10 @@ class X11Window : public PlatformWindow,
 
   // True if the window has title-bar / borders provided by the window manager.
   bool use_native_frame_ = false;
+
+  // The CanMaximize() value last sent to the window manager in
+  // _MOTIF_WM_HINTS.
+  bool can_maximize_ = false;
 
   // The size of the window manager provided borders (if any).
   gfx::Insets native_window_frame_borders_in_pixels_;

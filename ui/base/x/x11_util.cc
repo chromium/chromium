@@ -239,7 +239,9 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
   return num_coalesced;
 }
 
-void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
+void SetMotifWmHints(x11::Window window,
+                     bool use_os_window_frame,
+                     bool can_maximize) {
   // This data structure represents additional hints that we send to the window
   // manager and has a direct lineage back to Motif, which defined this de facto
   // standard. We define this struct to match the wire-format (32-bit fields)
@@ -257,6 +259,18 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
   // attention to the value of |decorations|.
   motif_hints.flags = (1u << 1);
   motif_hints.decorations = use_os_window_frame ? 1 : 0;
+  if (!can_maximize) {
+    // List the allowed functions explicitly, omitting maximize, so that window
+    // managers don't offer maximizing or edge tiling for the window.
+    constexpr uint32_t kMwmHintsFunctions = 1u << 0;
+    constexpr uint32_t kMwmFuncResize = 1u << 1;
+    constexpr uint32_t kMwmFuncMove = 1u << 2;
+    constexpr uint32_t kMwmFuncMinimize = 1u << 3;
+    constexpr uint32_t kMwmFuncClose = 1u << 5;
+    motif_hints.flags |= kMwmHintsFunctions;
+    motif_hints.functions =
+        kMwmFuncResize | kMwmFuncMove | kMwmFuncMinimize | kMwmFuncClose;
+  }
 
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
   base::as_writable_byte_span(hints).copy_from(

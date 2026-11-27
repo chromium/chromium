@@ -979,7 +979,7 @@ void X11Window::Deactivate() {
 
 void X11Window::SetUseNativeFrame(bool use_native_frame) {
   use_native_frame_ = use_native_frame;
-  SetUseOSWindowFrame(xwindow_, use_native_frame);
+  UpdateMotifWmHints();
   SetHideTitlebarWhenMaximizedProperty(
       xwindow_, use_native_frame ? SHOW_TITLEBAR_WHEN_MAXIMIZED
                                  : HIDE_TITLEBAR_WHEN_MAXIMIZED);
@@ -1208,6 +1208,9 @@ void X11Window::SetWindowIcons(const gfx::ImageSkia& window_icon,
 
 void X11Window::SizeConstraintsChanged() {
   X11Window::UpdateMinAndMaxSize();
+  if (can_maximize_ != platform_window_delegate_->CanMaximize()) {
+    UpdateMotifWmHints();
+  }
 }
 
 void X11Window::SetOpacity(float opacity) {
@@ -2415,6 +2418,11 @@ void X11Window::UpdateMinAndMaxSize() {
   }
 
   connection_->SetWmNormalHints(xwindow_, hints);
+}
+
+void X11Window::UpdateMotifWmHints() {
+  can_maximize_ = platform_window_delegate_->CanMaximize();
+  SetMotifWmHints(xwindow_, use_native_frame_, can_maximize_);
 }
 
 void X11Window::BeforeActivationStateChanged() {

@@ -71,9 +71,12 @@ COMPONENT_EXPORT(UI_BASE_X) bool QueryShmSupport();
 COMPONENT_EXPORT(UI_BASE_X)
 int CoalescePendingMotionEvents(const x11::Event& xev, x11::Event* last_event);
 
-// Sets whether |window| should use the OS window frame.
+// Sets the _MOTIF_WM_HINTS of |window|: whether it should use the OS window
+// frame, and whether the window manager may maximize it.
 COMPONENT_EXPORT(UI_BASE_X)
-void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame);
+void SetMotifWmHints(x11::Window window,
+                     bool use_os_window_frame,
+                     bool can_maximize);
 
 // These functions do not cache their results --------------------------
 
