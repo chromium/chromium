@@ -80,8 +80,16 @@ class StandaloneTrustedVaultFrontendTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
+// TODO(crbug.com/590925836): Flaky on ASan, Mac.
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ShouldQueueTasksUntilBackendInitialized \
+  DISABLED_ShouldQueueTasksUntilBackendInitialized
+#else
+#define MAYBE_ShouldQueueTasksUntilBackendInitialized \
+  ShouldQueueTasksUntilBackendInitialized
+#endif
 TEST_F(StandaloneTrustedVaultFrontendTest,
-       ShouldQueueTasksUntilBackendInitialized) {
+       MAYBE_ShouldQueueTasksUntilBackendInitialized) {
   const std::vector<uint8_t> kKey = {1, 2, 3, 4};
   const CoreAccountInfo account_info =
       identity_test_env_
