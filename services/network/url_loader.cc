@@ -1615,8 +1615,18 @@ void URLLoader::ReadMore() {
     DCHECK_GT(static_cast<uint32_t>(std::numeric_limits<int>::max()),
               pending_write_buffer_size_);
     if (consumer_handle_.is_valid()) {
+      // Pipes created by URLLoader always have capacity >= kMaxBytesToSniff
+      // and have not been written to before `consumer_handle_` is sent.
       DCHECK_GE(pending_write_buffer_size_,
                 static_cast<uint32_t>(net::kMaxBytesToSniff));
+    } else if (is_more_orb_sniffing_needed_ &&
+               pending_write_buffer_size_ <
+                   static_cast<uint32_t>(net::kMaxBytesToSniff)) {
+      // Fail closed rather than truncating ORB sniffing early if a
+      // caller-provided pipe has fewer than `kMaxBytesToSniff` writable bytes.
+      CompletePendingWrite(false);
+      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+      return;
     }
 
     // We may be able to fill up the buffer from the slop bucket.

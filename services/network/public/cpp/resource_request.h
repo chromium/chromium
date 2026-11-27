@@ -133,6 +133,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     // PendingRemotes above, to make ownership and copying semantics more
     // explicit. But scoped_refptr was initially used for simplicity to share
     // ownership of the underlying Mojo handle.
+    // When ORB sniffing is active, the provided pipe must have at least
+    // `net::kMaxBytesToSniff` bytes of writable capacity; otherwise `URLLoader`
+    // fails the request with `net::ERR_INSUFFICIENT_RESOURCES`.
     scoped_refptr<SharedDataPipeProducerHandle> response_body_stream;
     scoped_refptr<net::HttpResponseHeaders>
         expected_response_headers_for_synthetic_response;
