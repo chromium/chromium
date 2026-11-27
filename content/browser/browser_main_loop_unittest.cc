@@ -7,14 +7,20 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/system/sys_info.h"
 #include "base/task/execution_fence.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "content/browser/browser_thread_impl.h"
@@ -26,22 +32,62 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/test/test_content_client.h"
 #include "content/public/test/test_utils.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include <sys/resource.h>
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/test/mock_chrome_application_mac.h"
+#endif
+
 namespace content {
 
-#if !BUILDFLAG(IS_ANDROID)
-
 namespace {
+
+class ScopedBrowserMainLoopTestEnv {
+ public:
+  ScopedBrowserMainLoopTestEnv() {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kSingleProcess);
+    base::ThreadPoolInstance::Create("Browser");
+    StartBrowserThreadPool();
+    BrowserTaskExecutor::Create();
+  }
+
+  ~ScopedBrowserMainLoopTestEnv() {
+    BrowserTaskExecutor::ResetForTesting();
+    for (int id = BrowserThread::UI; id < BrowserThread::ID_COUNT; ++id) {
+      BrowserThreadImpl::ResetGlobalsForTesting(
+          static_cast<BrowserThread::ID>(id));
+    }
+    base::ThreadPoolInstance::Get()->JoinForTesting();
+    base::ThreadPoolInstance::Set(nullptr);
+  }
+
+  const base::CommandLine* GetProcessCommandLine() {
+    return scoped_command_line_.GetProcessCommandLine();
+  }
+
+ private:
+  // Reset cached runners after the ThreadPool has been destroyed.
+  base::internal::ScopedLazyTaskRunnerListForTesting
+      scoped_lazy_task_runner_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // A BrowserMainParts that aborts startup from PostCreateThreads(), mimicking
 // ChromeBrowserMainPartsWin when upgrade_util::DoUpgradeTasks() has swapped in
@@ -86,59 +132,48 @@ class AbortingContentBrowserClient : public ContentBrowserClient {
   raw_ptr<bool> pre_main_message_loop_run_called_;
 };
 
-}  // namespace
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+}  // namespace
 
 using StrickMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
 
 class BrowserMainLoopTest : public testing::Test {
  protected:
-  BrowserMainLoopTest() {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-        switches::kSingleProcess);
-    base::ThreadPoolInstance::Create("Browser");
-    StartBrowserThreadPool();
-    BrowserTaskExecutor::Create();
-  }
-
-  ~BrowserMainLoopTest() override {
-    BrowserTaskExecutor::ResetForTesting();
-    for (int id = BrowserThread::UI; id < BrowserThread::ID_COUNT; ++id) {
-      BrowserThreadImpl::ResetGlobalsForTesting(
-          static_cast<BrowserThread::ID>(id));
-    }
-    base::ThreadPoolInstance::Get()->JoinForTesting();
-    base::ThreadPoolInstance::Set(nullptr);
-  }
-
   const base::CommandLine* GetProcessCommandLine() {
-    return scoped_command_line_.GetProcessCommandLine();
+    return test_env_.GetProcessCommandLine();
   }
 
  private:
-  // Reset cached runners after the ThreadPool has been destroyed.
-  base::internal::ScopedLazyTaskRunnerListForTesting
-      scoped_lazy_task_runner_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};  // namespace content
+  ScopedBrowserMainLoopTestEnv test_env_;
+};
 
-// Android runs startup tasks asynchronously and reports completion over JNI, so
-// this synchronous test does not apply there.
-#if !BUILDFLAG(IS_ANDROID)
+// Android runs startup tasks asynchronously and reports completion over JNI.
+// iOS stubs out `base::LaunchProcess()` (so multiprocess tests cannot run
+// there) and does not use `PostCreateThreads()` to abort startup.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Verify that a non-normal result from BrowserMainParts::PostCreateThreads()
-// aborts startup, so that the remaining startup tasks - including the ones that
-// launch child processes - never run.
-TEST_F(BrowserMainLoopTest, PostCreateThreadsResultAbortsStartup) {
+MULTIPROCESS_TEST_MAIN(PostCreateThreadsResultAbortsStartupChild) {
+#if BUILDFLAG(IS_MAC)
+  // `ContentTestSuite::Initialize()` skips registering `MockCrApp` in child
+  // processes (for sandbox tests), but `BrowserTaskExecutor::Create()` needs an
+  // `NSApplication` implementing `CrAppProtocol` for the UI message pump.
+  mock_cr_app::RegisterMockCrApp();
+#endif
+
+  ScopedBrowserMainLoopTestEnv test_env;
+
+  TestContentClient content_client;
+  SetContentClient(&content_client);
+  absl::Cleanup reset_content_client = [] { SetContentClient(nullptr); };
+
   bool post_create_threads_called = false;
   bool pre_main_message_loop_run_called = false;
   AbortingContentBrowserClient browser_client(
       &post_create_threads_called, &pre_main_message_loop_run_called);
   ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
-  MainFunctionParams main_function_params(GetProcessCommandLine());
+  MainFunctionParams main_function_params(test_env.GetProcessCommandLine());
   auto startup_data = std::make_unique<StartupDataImpl>();
   startup_data->background_tracing_manager =
       std::make_unique<BackgroundTracingManagerImpl>(
@@ -155,24 +190,52 @@ TEST_F(BrowserMainLoopTest, PostCreateThreadsResultAbortsStartup) {
   // it after `browser_main_loop` so it is destroyed first: its destructor pumps
   // the main thread, which production never does once startup has aborted.
   base::Thread tracing_thread("TracingTest");
-  ASSERT_TRUE(tracing_thread.Start());
+  CHECK(tracing_thread.Start());
   tracing::TracedProcessForTesting traced_process(tracing_thread.task_runner());
 
   browser_main_loop.Init();
   browser_main_loop.CreateMainMessageLoop();
   browser_main_loop.CreateStartupTasks();
 
-  EXPECT_TRUE(post_create_threads_called);
+  CHECK(post_create_threads_called);
 
   // BrowserMainRunnerImpl returns this result from Initialize() and never runs
   // the main message loop.
-  EXPECT_EQ(RESULT_CODE_KILLED, browser_main_loop.GetResultCode());
-  EXPECT_FALSE(pre_main_message_loop_run_called);
+  CHECK_EQ(RESULT_CODE_KILLED, browser_main_loop.GetResultCode());
+  CHECK(!pre_main_message_loop_run_called);
 
   browser_main_loop.ShutdownThreadsAndCleanUp();
+  return 0;
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+// Verify that a non-normal result from BrowserMainParts::PostCreateThreads()
+// aborts startup, so that the remaining startup tasks - including the ones that
+// launch child processes - never run.
+//
+// Runs in a fresh child process because, unlike the other
+// `BrowserMainLoopTest` cases (which call `CreateThreads()` directly), this
+// test runs `CreateStartupTasks()` / `PreCreateThreads()`.
+// `PreCreateThreads()` asserts and initializes process-wide one-shot
+// singletons (such as `GpuDataManagerImpl`, `TracingControllerImpl`, and the
+// pseudonymization salt), which would otherwise collide with other tests
+// batched in the same `content_unittests` process.
+TEST(BrowserMainLoopStartupTest, PostCreateThreadsResultAbortsStartup) {
+  base::LaunchOptions options;
+#if BUILDFLAG(IS_WIN)
+  options.start_hidden = true;
+#endif
+  base::Process child_process = base::SpawnMultiProcessTestChild(
+      "PostCreateThreadsResultAbortsStartupChild",
+      base::GetMultiProcessTestChildBaseCommandLine(), options);
+  ASSERT_TRUE(child_process.IsValid());
+
+  int exit_code = -1;
+  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
+      child_process, TestTimeouts::action_timeout(), &exit_code));
+  EXPECT_EQ(0, exit_code);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Verify that a single-process browser process has at least as many threads as
 // the number of cores in its foreground pool.
