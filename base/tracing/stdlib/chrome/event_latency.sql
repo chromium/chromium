@@ -2,84 +2,6 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- Finds the start timestamp for a given slice's descendant with a given name.
--- If there are multiple descendants with a given name, the function will return
--- the first one, so it's most useful when working with a timeline broken down
--- into phases, where each subphase can happen only once.
-CREATE PERFETTO FUNCTION _descendant_slice_begin(
-    -- Id of the parent slice.
-    parent_id LONG,
-    -- Name of the child with the desired start TS.
-    child_name STRING
-)
--- Start timestamp of the child or NULL if it doesn't exist.
-RETURNS LONG AS
-SELECT
-  s.ts
-FROM descendant_slice($parent_id) AS s
-WHERE
-  s.name GLOB $child_name
-LIMIT 1;
-
--- Finds the end timestamp for a given slice's descendant with a given name.
--- If there are multiple descendants with a given name, the function will return
--- the first one, so it's most useful when working with a timeline broken down
--- into phases, where each subphase can happen only once.
-CREATE PERFETTO FUNCTION _descendant_slice_end(
-    -- Id of the parent slice.
-    parent_id LONG,
-    -- Name of the child with the desired end TS.
-    child_name STRING
-)
--- End timestamp of the child or NULL if it doesn't exist.
-RETURNS LONG AS
-SELECT
-  CASE WHEN NOT s.dur IS -1 THEN s.ts + s.dur ELSE NULL END
-FROM descendant_slice($parent_id) AS s
-WHERE
-  s.name GLOB $child_name
-LIMIT 1;
-
--- Checks if slice has a descendant with provided name.
-CREATE PERFETTO FUNCTION _has_descendant_slice_with_name(
-    -- Id of the slice to check descendants of.
-    id LONG,
-    -- Name of potential descendant slice.
-    descendant_name STRING
-)
--- Whether `descendant_name` is a name of an descendant slice.
-RETURNS BOOL AS
-SELECT
-  EXISTS(
-    SELECT
-      1
-    FROM descendant_slice($id)
-    WHERE
-      name GLOB $descendant_name
-    LIMIT 1
-  );
-
--- Returns the presentation timestamp for a given EventLatency slice.
--- This is either the end of
--- SwapEndToPresentationCompositorFrame (if it exists),
--- the end of LatchToPresentation (if it exists),
--- the end of SwapStartToPresentation (if it exists),
--- or the end of LatchToSwapEnd (workaround in older Chrome versions).
-CREATE PERFETTO FUNCTION _get_presentation_timestamp(
-    -- The slice id which we need the presentation timestamp for.
-    id LONG
-)
-RETURNS LONG AS
-SELECT
-  coalesce(
-    _descendant_slice_end(id, 'SwapEndToPresentationCompositorFrame'),
-    _descendant_slice_end(id, '*ToPresentation'),
-    _descendant_slice_end(id, 'LatchToSwapEnd')
-  )
-FROM slice
-WHERE
-  $id = id;
-
 -- All EventLatency slices.
 CREATE PERFETTO TABLE chrome_event_latencies (
   -- Slice Id for the EventLatency scroll event.
@@ -138,6 +60,70 @@ CREATE PERFETTO TABLE chrome_event_latencies (
   -- SwapEndToPresentationCompositorFrame is missing due to b/247542163.
   presentation_timestamp LONG
 ) AS
+WITH
+  -- Scan `descendant_slice` once per `EventLatency` slice and keep the first
+  -- matching descendant for each substage.
+  first_descendants_per_stage AS (
+    SELECT
+      el.id AS event_latency_id,
+      CASE
+        WHEN d.name GLOB 'Submit*ToPresentationCompositorFrame'
+        THEN 'Submit*ToPresentationCompositorFrame'
+        WHEN d.name != 'LatchToPresentation' AND d.name GLOB '*ToPresentation'
+        THEN 'OtherToPresentation'
+        ELSE d.name
+      END AS stage,
+      min(d.id) AS first_descendant_id,
+      -- Note: SQLite documentation guarantees to choose `ts` and `end_ts` from
+      -- a row that has `MIN(d.id)`. See
+      -- https://sqlite.org/lang_select.html#bare_columns_in_an_aggregate_query.
+      d.ts,
+      iif(d.dur != -1, d.ts + d.dur, NULL) AS end_ts
+    FROM slice AS el
+    JOIN descendant_slice(el.id) AS d
+    WHERE
+      el.name = 'EventLatency'
+      AND (
+        d.name IN (
+          'BufferAvailableToBufferReady',
+          'BufferReadyToLatch',
+          'LatchToSwapEnd',
+          'LatchToPresentation',
+          'SwapEndToPresentationCompositorFrame'
+        )
+        OR d.name GLOB 'Submit*ToPresentationCompositorFrame'
+        OR d.name GLOB '*ToPresentation'
+      )
+    GROUP BY
+      el.id,
+      stage
+  ),
+  pivoted_stages AS (
+    SELECT
+      event_latency_id AS id,
+      max(stage = 'Submit*ToPresentationCompositorFrame') AS is_presented,
+      max(iif(stage = 'BufferAvailableToBufferReady', ts, NULL)) AS buffer_available_timestamp,
+      max(iif(stage = 'BufferReadyToLatch', ts, NULL)) AS buffer_ready_timestamp,
+      coalesce(
+        max(iif(stage = 'LatchToSwapEnd', ts, NULL)),
+        max(iif(stage = 'LatchToPresentation', ts, NULL))
+      ) AS latch_timestamp,
+      max(iif(stage = 'SwapEndToPresentationCompositorFrame', ts, NULL)) AS swap_end_timestamp,
+      -- Presentation timestamp is the end of
+      -- SwapEndToPresentationCompositorFrame (if it exists), the end of
+      -- LatchToPresentation or another *ToPresentation substage such as
+      -- SwapStartToPresentation (if either exists), or the end of
+      -- LatchToSwapEnd (workaround in older Chrome versions).
+      coalesce(
+        max(iif(stage = 'SwapEndToPresentationCompositorFrame', end_ts, NULL)),
+        max(iif(stage = 'LatchToPresentation', end_ts, NULL)),
+        max(iif(stage = 'OtherToPresentation', end_ts, NULL)),
+        max(iif(stage = 'LatchToSwapEnd', end_ts, NULL))
+      ) AS presentation_timestamp
+    FROM first_descendants_per_stage
+    GROUP BY
+      event_latency_id
+  )
 SELECT
   slice.id,
   slice.name,
@@ -146,22 +132,21 @@ SELECT
   extract_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
   extract_arg(arg_set_id, 'event_latency.surface_frame_trace_id') AS surface_frame_trace_id,
   extract_arg(arg_set_id, 'event_latency.display_trace_id') AS display_trace_id,
-  _has_descendant_slice_with_name(slice.id, 'Submit*ToPresentationCompositorFrame') AS is_presented,
+  coalesce(pivoted_stages.is_presented, 0) AS is_presented,
   extract_arg(arg_set_id, 'event_latency.event_type') AS event_type,
   slice.track_id,
   extract_arg(arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms,
   coalesce(extract_arg(arg_set_id, 'event_latency.is_janky_scrolled_frame'), 0) AS is_janky_scrolled_frame,
-  _descendant_slice_begin(slice.id, 'BufferAvailableToBufferReady') AS buffer_available_timestamp,
-  _descendant_slice_begin(slice.id, 'BufferReadyToLatch') AS buffer_ready_timestamp,
-  coalesce(
-    _descendant_slice_begin(slice.id, 'LatchToSwapEnd'),
-    _descendant_slice_begin(slice.id, 'LatchToPresentation')
-  ) AS latch_timestamp,
-  _descendant_slice_begin(slice.id, 'SwapEndToPresentationCompositorFrame') AS swap_end_timestamp,
-  _get_presentation_timestamp(slice.id) AS presentation_timestamp
+  pivoted_stages.buffer_available_timestamp,
+  pivoted_stages.buffer_ready_timestamp,
+  pivoted_stages.latch_timestamp,
+  pivoted_stages.swap_end_timestamp,
+  pivoted_stages.presentation_timestamp
 FROM slice
+LEFT JOIN pivoted_stages
+  USING (id)
 WHERE
-  name = 'EventLatency';
+  slice.name = 'EventLatency';
 
 -- All scroll-related events (frames) including gesture scroll updates, begins
 -- and ends with respective scroll ids and start/end timestamps, regardless of
