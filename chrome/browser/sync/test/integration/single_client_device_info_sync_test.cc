@@ -73,6 +73,7 @@ using syncer::DataTypeSet;
 using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
+using testing::ExplainMatchResult;
 using testing::IsEmpty;
 using testing::IsSupersetOf;
 using testing::Not;
@@ -104,9 +105,21 @@ MATCHER_P(HasInterestedDataType, expected_data_type, "") {
 }
 
 MATCHER_P(HasPersonalContextFields, matcher, "") {
-  return testing::ExplainMatchResult(
+  return ExplainMatchResult(
       matcher, arg.specifics().device_info().personal_context_fields(),
       result_listener);
+}
+
+MATCHER_P(HasSendTabToSelfReceivingEnabled, expected_enabled, "") {
+  const sync_pb::FeatureSpecificFields& feature_fields =
+      arg.specifics().device_info().feature_fields();
+  if (!feature_fields.has_send_tab_to_self_receiving_enabled()) {
+    *result_listener << "which does not set send_tab_to_self_receiving_enabled";
+    return false;
+  }
+  return ExplainMatchResult(expected_enabled,
+                            feature_fields.send_tab_to_self_receiving_enabled(),
+                            result_listener);
 }
 
 std::string CacheGuidForSuffix(int suffix) {
@@ -331,12 +344,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Verifies that the local Chrome browser commits its `DeviceInfo` entity to the
+// server with `send_tab_to_self_receiving_enabled` set to `true`.
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  ElementsAre(AllOf(HasCacheGuid(GetLocalCacheGuid()),
+                                    HasSendTabToSelfReceivingEnabled(true))))
                   .Wait());
 }
 

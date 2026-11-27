@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -62,9 +63,12 @@ using base::test::EqualsProto;
 using sync_pb::DataTypeState;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
+using sync_pb::FeatureSpecificFields;
 using testing::_;
 using testing::AllOf;
 using testing::Contains;
+using testing::ElementsAre;
+using testing::ExplainMatchResult;
 using testing::Field;
 using testing::IsEmpty;
 using testing::IsNull;
@@ -259,6 +263,18 @@ MATCHER(HasAnyInterestedDataTypes, "") {
     return false;
   }
   return true;
+}
+
+MATCHER_P(HasSendTabToSelfReceivingEnabled, expected_enabled, "") {
+  const FeatureSpecificFields& feature_fields =
+      arg.device_info().feature_fields();
+  if (!feature_fields.has_send_tab_to_self_receiving_enabled()) {
+    *result_listener << "which does not set send_tab_to_self_receiving_enabled";
+    return false;
+  }
+  return ExplainMatchResult(expected_enabled,
+                            feature_fields.send_tab_to_self_receiving_enabled(),
+                            result_listener);
 }
 
 std::string CacheGuidForSuffix(int suffix) {
@@ -485,7 +501,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
             SharingEnabledFeaturesForSuffix(kLocalSuffix))};
     local_device_info_ = std::make_unique<DeviceInfo>(
         cache_guid, session_name, ChromeVersionForSuffix(kLocalSuffix),
-        SyncUserAgentForSuffix(kLocalSuffix), kLocalDeviceType, kLocalDeviceOS,
+        sync_user_agent_, kLocalDeviceType, kLocalDeviceOS,
         kLocalDeviceFormFactor, SigninScopedDeviceIdForSuffix(kLocalSuffix),
         manufacturer_name, model_name, server_determined_model_name,
         full_hardware_class, base::Time(), DeviceInfoUtil::GetPulseInterval(),
@@ -589,8 +605,14 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     browser_actuator_info_ = std::move(browser_actuator_info);
   }
 
+  void set_sync_user_agent(std::string sync_user_agent) {
+    CHECK(!local_device_info_);
+    sync_user_agent_ = std::move(sync_user_agent);
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
+  std::string sync_user_agent_ = SyncUserAgentForSuffix(kLocalSuffix);
   std::optional<std::string> fcm_registration_token_;
   std::optional<DataTypeSet> interested_data_types_;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
@@ -2154,6 +2176,194 @@ TEST_F(DeviceInfoSyncBridgeTest, GetDataForCommitWithBrowserActuatorFields) {
   EXPECT_THAT(GetDataForCommit({specifics.cache_guid()}),
               UnorderedElementsAre(
                   Pair(specifics.cache_guid(), HasDeviceInfo(specifics))));
+}
+
+// Verifies that `iGSA` (`//ios/web_view`) entities are excluded from
+// `GetAllChromeDeviceInfo()`, `GetChromeDeviceInfo()`, and
+// `CountActiveDevicesByType()` regardless of which `chrome_version` fields are
+// populated, while remaining in `GetAllDeviceInfo()` and keeping non-prefix or
+// lowercase user agents as Chrome clients.
+TEST_F(DeviceInfoSyncBridgeTest, ExcludesIgsaClientsFromChromeDeviceTracker) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  // Use overlapping entity timestamps so active Chrome devices are not
+  // deduplicated as the same physical device in `CountActiveDevicesByType()`.
+  ON_CALL(*processor(), GetEntityCreationTime)
+      .WillByDefault(Return(base::Time::Now() - base::Minutes(1)));
+  ON_CALL(*processor(), GetEntityModificationTime)
+      .WillByDefault(Return(base::Time::Now()));
+
+  // Case 1: `iGSA` iPhone with legacy `chrome_version` only.
+  DeviceInfoSpecifics igsa_legacy_phone = CreateSpecifics(1);
+  igsa_legacy_phone.clear_chrome_version_info();
+  igsa_legacy_phone.set_chrome_version("158.0.8127.86");
+  igsa_legacy_phone.set_os_type(sync_pb::SyncEnums::OS_TYPE_IOS);
+  igsa_legacy_phone.set_device_form_factor(
+      sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  igsa_legacy_phone.set_sync_user_agent(
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)");
+
+  // Case 2: `iGSA` iPad with `chrome_version_info` only.
+  DeviceInfoSpecifics igsa_modern_tablet = CreateSpecifics(2);
+  igsa_modern_tablet.clear_chrome_version();
+  igsa_modern_tablet.mutable_chrome_version_info()->set_version_number(
+      "158.0.8127.86");
+  igsa_modern_tablet.set_os_type(sync_pb::SyncEnums::OS_TYPE_IOS);
+  igsa_modern_tablet.set_device_form_factor(
+      sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET);
+  igsa_modern_tablet.set_sync_user_agent(
+      "iGSA IOS-TABLET 158.0.8127.86 (0000000000000000-stable)");
+
+  // Case 3: `iGSA` iPhone with both `chrome_version` and `chrome_version_info`
+  // populated, matching `MakeLocalDeviceSpecifics()`.
+  DeviceInfoSpecifics igsa_both_versions = CreateSpecifics(3);
+  igsa_both_versions.set_chrome_version("158.0.8127.86");
+  igsa_both_versions.mutable_chrome_version_info()->set_version_number(
+      "158.0.8127.86");
+  igsa_both_versions.set_os_type(sync_pb::SyncEnums::OS_TYPE_IOS);
+  igsa_both_versions.set_device_form_factor(
+      sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  igsa_both_versions.set_sync_user_agent(
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)");
+
+  // Case 4: Real Chrome on iOS, plus user agents where `"iGSA"` is not a
+  // case-sensitive prefix, remain classified as Chrome clients.
+  DeviceInfoSpecifics ios_chrome_phone = CreateSpecifics(4);
+  ios_chrome_phone.set_os_type(sync_pb::SyncEnums::OS_TYPE_IOS);
+  ios_chrome_phone.set_device_form_factor(
+      sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  ios_chrome_phone.set_sync_user_agent(
+      "Chrome IOS-PHONE 158.0.8127.86 (0000000000000000-stable)");
+
+  DeviceInfoSpecifics non_prefix_igsa = CreateSpecifics(5);
+  non_prefix_igsa.set_sync_user_agent("Mozilla/5.0 iGSA");
+
+  DeviceInfoSpecifics lowercase_igsa = CreateSpecifics(6);
+  lowercase_igsa.set_sync_user_agent("igsa IOS-PHONE 158.0.8127.86");
+
+  bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({igsa_legacy_phone, igsa_modern_tablet, igsa_both_versions,
+                     ios_chrome_phone, non_prefix_igsa, lowercase_igsa}));
+
+  // All 7 entities (local + 6 remote) remain in `GetAllDeviceInfo()`.
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(7));
+
+  // Only the local device and the 3 non-`iGSA`-prefixed remote clients are
+  // exposed as Chrome devices.
+  EXPECT_THAT(
+      bridge()->GetAllChromeDeviceInfo(),
+      UnorderedElementsAre(Pointee(HasCacheGuid(CacheGuidForSuffix(0))),
+                           Pointee(HasCacheGuid(CacheGuidForSuffix(4))),
+                           Pointee(HasCacheGuid(CacheGuidForSuffix(5))),
+                           Pointee(HasCacheGuid(CacheGuidForSuffix(6)))));
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(1)), IsNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(2)), IsNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(3)), IsNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(4)), NotNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(5)), NotNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(6)), NotNull());
+
+  // `CountActiveDevicesByType()` excludes the `iGSA` phone and tablet entries.
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3},
+                            {DeviceInfo::FormFactor::kPhone, 1}}),
+            bridge()->CountActiveDevicesByType());
+}
+
+// Verifies that a local Chrome client commits
+// `send_tab_to_self_receiving_enabled` as `true` in `DeviceInfoSpecifics`.
+TEST_F(DeviceInfoSyncBridgeTest,
+       LocalChromeDeviceCommitsSendTabToSelfReceivingEnabledTrue) {
+  const std::string kLocalGuid = CacheGuidForSuffix(kLocalSuffix);
+
+  InitializeAndPump();
+  EXPECT_CALL(
+      *processor(),
+      Put(kLocalGuid, HasSpecifics(HasSendTabToSelfReceivingEnabled(true)), _));
+
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
+
+  EXPECT_TRUE(ReadAllFromStore()[kLocalGuid]
+                  .feature_fields()
+                  .send_tab_to_self_receiving_enabled());
+}
+
+// Verifies that a local `iGSA` (`//ios/web_view`) client commits
+// `send_tab_to_self_receiving_enabled` as `false` so pre-M158 Chrome clients do
+// not list `iGSA` as a Send Tab to Self target, while keeping the local device
+// in `GetAllDeviceInfo()`.
+TEST_F(DeviceInfoSyncBridgeTest,
+       LocalIgsaDeviceCommitsSendTabToSelfReceivingEnabledFalse) {
+  const std::string kLocalGuid = CacheGuidForSuffix(kLocalSuffix);
+
+  InitializeAndPump();
+  local_device()->set_sync_user_agent(
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)");
+
+  EXPECT_CALL(*processor(),
+              Put(kLocalGuid,
+                  HasSpecifics(HasSendTabToSelfReceivingEnabled(false)), _));
+
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
+
+  EXPECT_FALSE(ReadAllFromStore()[kLocalGuid]
+                   .feature_fields()
+                   .send_tab_to_self_receiving_enabled());
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(),
+              ElementsAre(Pointee(HasCacheGuid(kLocalGuid))));
+  EXPECT_THAT(bridge()->GetAllChromeDeviceInfo(), IsEmpty());
+}
+
+// Verifies that if `DataTypeStore` holds a recent local `iGSA` entity whose
+// `send_tab_to_self_receiving_enabled` was previously persisted as `true`,
+// startup reconciliation immediately re-uploads it with `false`.
+TEST_F(DeviceInfoSyncBridgeTest,
+       ReuploadsLocalIgsaDeviceWhenStoredSendTabToSelfReceivingEnabledIsTrue) {
+  constexpr char kIgsaUserAgent[] =
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)";
+  DeviceInfoSpecifics stored_local_specifics = CreateLocalDeviceSpecifics();
+  stored_local_specifics.set_sync_user_agent(kIgsaUserAgent);
+  stored_local_specifics.mutable_feature_fields()
+      ->set_send_tab_to_self_receiving_enabled(true);
+  WriteToStoreWithMetadata({stored_local_specifics},
+                           StateWithEncryption("ekn"));
+
+  InitializeBridge();
+  local_device()->set_sync_user_agent(kIgsaUserAgent);
+
+  // Even though `last_updated_timestamp` is recent and `chrome_version` has not
+  // changed, the mismatch on `send_tab_to_self_receiving_enabled` triggers an
+  // immediate re-upload with `false`.
+  EXPECT_CALL(*processor(),
+              Put(stored_local_specifics.cache_guid(),
+                  HasSpecifics(HasSendTabToSelfReceivingEnabled(false)), _));
+
+  WaitForReadyToSync();
+  EXPECT_FALSE(ReadAllFromStore()[stored_local_specifics.cache_guid()]
+                   .feature_fields()
+                   .send_tab_to_self_receiving_enabled());
+}
+
+// Verifies that a recent local `iGSA` entity already persisted with
+// `send_tab_to_self_receiving_enabled` set to `false` does not trigger a
+// redundant commit upon startup.
+TEST_F(DeviceInfoSyncBridgeTest,
+       DoesNotUploadRecentLocalIgsaDeviceWhenStoredReceivingFlagAlreadyFalse) {
+  constexpr char kIgsaUserAgent[] =
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)";
+  DeviceInfoSpecifics stored_local_specifics = CreateLocalDeviceSpecifics();
+  stored_local_specifics.set_sync_user_agent(kIgsaUserAgent);
+  stored_local_specifics.mutable_feature_fields()
+      ->set_send_tab_to_self_receiving_enabled(false);
+  WriteToStoreWithMetadata({stored_local_specifics},
+                           StateWithEncryption("ekn"));
+
+  InitializeBridge();
+  local_device()->set_sync_user_agent(kIgsaUserAgent);
+
+  EXPECT_CALL(*processor(), Put).Times(0);
+
+  WaitForReadyToSync();
 }
 
 }  // namespace

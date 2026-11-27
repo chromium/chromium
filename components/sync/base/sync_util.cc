@@ -134,4 +134,8 @@ std::string MakeUserAgentForSync(version_info::Channel channel) {
   return internal::FormatUserAgentForSync(GetSystemString(), channel);
 }
 
+bool IsIgsaSyncUserAgent(std::string_view sync_user_agent) {
+  return sync_user_agent.starts_with("iGSA");
+}
+
 }  // namespace syncer

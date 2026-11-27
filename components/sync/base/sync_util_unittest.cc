@@ -53,6 +53,24 @@ TEST(SyncUtilTest, FormatUserAgentForSync) {
                                base::CompareCase::SENSITIVE));
 }
 
+// Verifies that `IsIgsaSyncUserAgent()` matches the `"iGSA"` user agent prefix
+// used by `//ios/web_view` while rejecting Chrome, lowercase, non-prefix, and
+// empty user agents.
+TEST(SyncUtilTest, IsIgsaSyncUserAgent) {
+  EXPECT_TRUE(IsIgsaSyncUserAgent(
+      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)"));
+  EXPECT_TRUE(IsIgsaSyncUserAgent(
+      "iGSA IOS-TABLET 158.0.8127.86 (0000000000000000-stable)"));
+  EXPECT_TRUE(IsIgsaSyncUserAgent("iGSA/1.0"));
+  EXPECT_FALSE(IsIgsaSyncUserAgent(
+      "Chrome IOS-PHONE 158.0.8127.86 (0000000000000000-stable)"));
+  EXPECT_FALSE(
+      IsIgsaSyncUserAgent(MakeUserAgentForSync(version_info::Channel::STABLE)));
+  EXPECT_FALSE(IsIgsaSyncUserAgent("igsa IOS-PHONE 158.0.8127.86"));
+  EXPECT_FALSE(IsIgsaSyncUserAgent("Mozilla/5.0 iGSA"));
+  EXPECT_FALSE(IsIgsaSyncUserAgent(""));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST(SyncUtilTest, MakeUserAgentForSyncAndroidDesktop) {
   if (base::android::device_info::is_automotive()) {

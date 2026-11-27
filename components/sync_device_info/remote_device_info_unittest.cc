@@ -422,6 +422,68 @@ TEST_F(RemoteDeviceInfoTest,
                                 "Google Phone (Canary)")));
 }
 
+// Verifies that `GetRemoteDeviceInfoSortedList()` excludes `iGSA`
+// (`//ios/web_view`) iPhone and iPad entries even when they have a non-empty
+// `chrome_version` and session timestamps, while retaining Chrome on iOS
+// devices.
+TEST_F(RemoteDeviceInfoTest,
+       GetRemoteDeviceInfoSortedList_ExcludesIgsaDevicesAndKeepsIosChrome) {
+  constexpr char kIgsaPhoneGuid[] = "igsa_phone_guid";
+  constexpr char kIgsaTabletGuid[] = "igsa_tablet_guid";
+  constexpr char kIosChromeGuid[] = "ios_chrome_guid";
+  const base::Time now = base::Time::Now();
+  FakeDeviceInfoTracker tracker;
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kLinux)
+                  .WithGuid(kLocalGuid)
+                  .WithClientName("Local Desktop")
+                  .WithFormFactor(FormFactor::kDesktop)
+                  .WithLastUpdatedTimestamp(now)
+                  .Build());
+  tracker.SetLocalCacheGuid(kLocalGuid);
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kIOS)
+                  .WithGuid(kIgsaPhoneGuid)
+                  .WithClientName("iPhone")
+                  .WithChromeVersion("158.0.8127.86")
+                  .WithSyncUserAgent(
+                      "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)")
+                  .WithFormFactor(FormFactor::kPhone)
+                  .WithLastUpdatedTimestamp(now)
+                  .Build());
+
+  tracker.Add(TestDeviceInfoBuilder(OsType::kIOS)
+                  .WithGuid(kIgsaTabletGuid)
+                  .WithClientName("iPad")
+                  .WithChromeVersion("158.0.8127.86")
+                  .WithSyncUserAgent(
+                      "iGSA IOS-TABLET 158.0.8127.86 (0000000000000000-stable)")
+                  .WithFormFactor(FormFactor::kTablet)
+                  .WithLastUpdatedTimestamp(now)
+                  .Build());
+
+  tracker.Add(
+      TestDeviceInfoBuilder(OsType::kIOS)
+          .WithGuid(kIosChromeGuid)
+          .WithClientName("Chrome iPhone")
+          .WithChromeVersion("158.0.8127.86")
+          .WithSyncUserAgent(
+              "Chrome IOS-PHONE 158.0.8127.86 (0000000000000000-stable)")
+          .WithFormFactor(FormFactor::kPhone)
+          .WithLastUpdatedTimestamp(now - base::Minutes(5))
+          .Build());
+
+  // Even if `session_last_modified_times` contains an entry for the `iGSA`
+  // GUID, `GetRemoteDeviceInfoSortedList()` excludes both `iGSA` devices.
+  const base::flat_map<std::string, base::Time> session_times = {
+      {kIgsaPhoneGuid, now},
+  };
+  EXPECT_THAT(
+      GetRemoteDeviceInfoSortedList(tracker, session_times,
+                                    now - kDefaultMaxAge),
+      ElementsAre(Field(&RemoteDeviceInfo::cache_guid, kIosChromeGuid)));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Verifies that `jni_zero::ToJniType` constructs a non-null Java
 // `RemoteDeviceInfo` object.

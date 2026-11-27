@@ -34,12 +34,18 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_entity_builder.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync/test/fake_server.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_util.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -57,6 +63,7 @@ using send_tab_to_self_helper::GetFormFieldValueById;
 using send_tab_to_self_helper::PopulateFormField;
 using testing::AllOf;
 using testing::AnyOf;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 using testing::HasSubstr;
@@ -77,6 +84,48 @@ constexpr char kEmptyPagePath[] = "/empty.html";
 
 constexpr char kName[] = "John";
 constexpr char kEmail[] = "john@example.com";
+
+sync_pb::DeviceInfoSpecifics CreateRemoteIosDeviceSpecifics(
+    std::string_view cache_guid,
+    sync_pb::SyncEnums::DeviceFormFactor form_factor,
+    std::string_view sync_user_agent) {
+  sync_pb::DeviceInfoSpecifics specifics;
+  specifics.set_cache_guid(std::string(cache_guid));
+  specifics.set_client_name(std::string(cache_guid));
+  specifics.set_os_type(sync_pb::SyncEnums_OsType_OS_TYPE_IOS);
+  specifics.set_device_form_factor(form_factor);
+  specifics.set_chrome_version("158.0.8127.86");
+  specifics.mutable_chrome_version_info()->set_version_number("158.0.8127.86");
+  specifics.set_sync_user_agent(std::string(sync_user_agent));
+  specifics.set_last_updated_timestamp(
+      syncer::TimeToProtoTime(base::Time::Now()));
+  specifics.mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
+      true);
+  return specifics;
+}
+
+sync_pb::DeviceInfoSpecifics CreateIGSADeviceSpecifics(
+    std::string_view cache_guid,
+    sync_pb::SyncEnums::DeviceFormFactor form_factor) {
+  const std::string_view sync_user_agent =
+      form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET
+          ? "iGSA IOS-TABLET 158.0.8127.86 (0000000000000000-stable)"
+          : "iGSA IOS-PHONE 158.0.8127.86 (0000000000000000-stable)";
+  return CreateRemoteIosDeviceSpecifics(cache_guid, form_factor,
+                                        sync_user_agent);
+}
+
+void InjectDeviceInfoSpecifics(
+    fake_server::FakeServer* fake_server,
+    const sync_pb::DeviceInfoSpecifics& device_info_specifics) {
+  sync_pb::EntitySpecifics specifics;
+  *specifics.mutable_device_info() = device_info_specifics;
+  fake_server->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/"",
+          syncer::DeviceInfoUtil::SpecificsToTag(device_info_specifics),
+          specifics, /*creation_time=*/0, /*last_modified_time=*/0));
+}
 
 class SingleClientSendTabToSelfSyncTest
     : public SyncTest,
@@ -268,6 +317,41 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   EXPECT_FALSE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
                    ->GetSendTabToSelfModel()
                    ->HasValidTargetDevice());
+}
+
+// Tests that remote `iGSA` (`//ios/web_view`) iPhone and iPad `DeviceInfo`
+// entities are excluded from Send Tab to Self target devices even when both
+// `chrome_version` and `chrome_version_info` are populated, while a remote
+// Chrome on iOS device is returned.
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
+                       TargetDeviceListExcludesIgsaDevices) {
+  InjectDeviceInfoSpecifics(
+      fake_server_.get(),
+      CreateIGSADeviceSpecifics("igsa_phone_guid",
+                                sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE));
+  InjectDeviceInfoSpecifics(
+      fake_server_.get(),
+      CreateIGSADeviceSpecifics("igsa_tablet_guid",
+                                sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET));
+  InjectDeviceInfoSpecifics(
+      fake_server_.get(),
+      CreateRemoteIosDeviceSpecifics(
+          "ios_chrome_guid", sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE,
+          "Chrome IOS-PHONE 158.0.8127.86 (0000000000000000-stable)"));
+
+  ASSERT_TRUE(SetupSync());
+
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
+  ASSERT_TRUE(
+      send_tab_to_self_helper::SendTabToSelfActiveChecker(service).Wait());
+
+  send_tab_to_self::SendTabToSelfModel* model =
+      service->GetSendTabToSelfModel();
+  EXPECT_TRUE(model->HasValidTargetDevice());
+  EXPECT_THAT(model->GetTargetDeviceInfoSortedList(),
+              ElementsAre(Field(&syncer::RemoteDeviceInfo::cache_guid,
+                                "ios_chrome_guid")));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,

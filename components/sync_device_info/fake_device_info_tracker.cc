@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -44,7 +45,8 @@ std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllChromeDeviceInfo()
     const {
   std::vector<const DeviceInfo*> chrome_devices;
   for (const DeviceInfo* device : devices_) {
-    if (!device->chrome_version().empty()) {
+    if (!device->chrome_version().empty() &&
+        !IsIgsaSyncUserAgent(device->sync_user_agent())) {
       chrome_devices.push_back(device);
     }
   }

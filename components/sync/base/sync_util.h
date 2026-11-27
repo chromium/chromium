@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_BASE_SYNC_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "components/version_info/channel.h"
 
@@ -40,6 +41,10 @@ GURL GetSyncServiceURL(const base::CommandLine& command_line,
 // the syncapi for any HTTP communication. This string is used by the sync
 // backend for classifying client types when calculating statistics.
 std::string MakeUserAgentForSync(version_info::Channel channel);
+
+// Returns true if `sync_user_agent` identifies the Google App on iOS (`iGSA`),
+// which embeds `//ios/web_view` and is not a Chrome browser client.
+bool IsIgsaSyncUserAgent(std::string_view sync_user_agent);
 
 }  // namespace syncer
 

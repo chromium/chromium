@@ -29,6 +29,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/sync_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -169,9 +170,12 @@ std::string GetVersionNumberFromSpecifics(
   return specifics.chrome_version();
 }
 
-// Returns true if |speifics| represents a client that is
-// chromium-based and hence exposed in DeviceInfoTracker.
+// Returns true if `specifics` represents a Chrome browser client that should be
+// exposed in `DeviceInfoTracker`.
 bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
+  if (IsIgsaSyncUserAgent(specifics.sync_user_agent())) {
+    return false;
+  }
   return specifics.has_chrome_version_info() || specifics.has_chrome_version();
 }
 
@@ -339,10 +343,14 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_pulse_interval_in_minutes(info.pulse_interval().InMinutes());
 
   FeatureSpecificFields* feature_fields = specifics->mutable_feature_fields();
+  // Set `send_tab_to_self_receiving_enabled` to `false` for `iGSA` (which
+  // embeds `//ios/web_view` without `SEND_TAB_TO_SELF` support) and `true` for
+  // Chrome browser clients.
   // TODO(crbug.com/573435919): Stop populating
   // `send_tab_to_self_receiving_enabled` once M157 (which still reads it with a
   // default of `false`) passes the Sync client support horizon.
-  feature_fields->set_send_tab_to_self_receiving_enabled(true);
+  feature_fields->set_send_tab_to_self_receiving_enabled(
+      !IsIgsaSyncUserAgent(info.sync_user_agent()));
   feature_fields->set_send_tab_to_self_receiving_type(
       ToSendTabReceivingTypeProto(info.send_tab_to_self_receiving_type()));
 
@@ -1108,10 +1116,18 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   auto iter = all_data_.find(current_info->guid());
   CHECK(iter != all_data_.end());
 
-  // Convert |iter->second| to a DeviceInfo for comparison.
+  // Convert `iter->second` to a `DeviceInfo` for comparison, and verify that
+  // the persisted `send_tab_to_self_receiving_enabled` proto field matches the
+  // local client type.
   const DeviceInfo& previous_device_info = iter->second.device_info();
+  const bool expected_send_tab_receiving_enabled =
+      !IsIgsaSyncUserAgent(current_info->sync_user_agent());
   if (IsStoredLocalDeviceInfoStillAccurate(&previous_device_info,
                                            current_info) &&
+      iter->second.specifics()
+              .feature_fields()
+              .send_tab_to_self_receiving_enabled() ==
+          expected_send_tab_receiving_enabled &&
       !force_reupload_for_test_) {
     if (pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
