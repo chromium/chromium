@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -16,10 +17,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
@@ -29,6 +30,13 @@ namespace {
 constexpr base::TimeDelta kMinCameraOpenDurationForSurvey = base::Seconds(15);
 constexpr base::TimeDelta kCameraSurveyTriggerDelay = base::Seconds(5);
 constexpr char kEnabledModelsParam[] = "enabled_models";
+
+// The user `account_id` names. The callers only run for a signed-in user, so
+// the UserManager always knows them.
+user_manager::User& FindUser(const AccountId& account_id) {
+  return CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUserAndModify(account_id));
+}
 
 }  // namespace
 
@@ -65,24 +73,17 @@ class CameraGeneralSurveyHandlerDelegate
       LOG(ERROR) << "Unable to show camera HaTS because HW info is empty!";
       return false;
     }
-    Profile* profile = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            account_id));
-    CHECK(profile);
-    return HatsNotificationController::ShouldShowSurveyToProfile(
-        profile, *GetHatsConfig());
+    user_manager::User& user = FindUser(account_id);
+    return HatsNotificationController::ShouldShowSurveyToUser(user,
+                                                              *GetHatsConfig());
   }
 
   void ShowSurvey(const AccountId& account_id) override {
-    Profile* profile = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            account_id));
-    CHECK(profile);
     base::flat_map<std::string, std::string> survey_data = {
         {"board", hw_info_->board}, {"model", hw_info_->model}};
     hats_notification_controller_ =
         base::MakeRefCounted<HatsNotificationController>(
-            profile, *GetHatsConfig(), survey_data);
+            &FindUser(account_id), *GetHatsConfig(), survey_data);
   }
 
  private:

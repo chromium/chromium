@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -26,7 +26,6 @@ namespace user_manager {
 class User;
 }  // namespace user_manager
 
-class Profile;
 class NetworkState;
 
 namespace ash {
@@ -39,7 +38,7 @@ struct HatsConfig;
 // This class lives on the UI thread.
 class HatsNotificationController : public message_center::NotificationDelegate,
                                    public NetworkStateHandlerObserver,
-                                   public ProfileObserver {
+                                   public user_manager::UserManager::Observer {
  public:
   static const char kNotificationId[];
 
@@ -65,23 +64,27 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   static_assert(kPrioritizedHatsThreshold > kMinimumHatsThreshold);
   static_assert(kHatsGooglerThreshold > kMinimumHatsThreshold);
 
+  // `user` is the user the survey is for. It must not be null, and must
+  // outlive this object, which holds it until their profile is destroyed.
+  //
   // |product_specific_data| is meant to allow attaching extra runtime data that
   // is specific to the survey, e.g. a survey about the log-in experience might
   // include the last used authentication method.
   HatsNotificationController(
-      Profile* profile,
+      user_manager::User* user,
       const HatsConfig& config,
       const base::flat_map<std::string, std::string>& product_specific_data);
 
-  HatsNotificationController(Profile* profile, const HatsConfig& config);
+  HatsNotificationController(user_manager::User* user,
+                             const HatsConfig& config);
 
   HatsNotificationController(const HatsNotificationController&) = delete;
   HatsNotificationController& operator=(const HatsNotificationController&) =
       delete;
 
-  // Returns true if the survey needs to be displayed for the given |profile|.
-  static bool ShouldShowSurveyToProfile(Profile* profile,
-                                        const HatsConfig& config);
+  // Returns true if the survey needs to be displayed for the given `user`.
+  static bool ShouldShowSurveyToUser(user_manager::User& user,
+                                     const HatsConfig& config);
 
   // Returns the MessageCenter backend notification ID for `user` in tests.
   // Production callers must not depend on this generated ID format.
@@ -134,8 +137,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
                           NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
+  // user_manager::UserManager::Observer:
+  void OnUserProfileWillBeDestroyed(const user_manager::User& user) override;
 
   // Must be run on a blocking thread pool.
   // Gathers the browser version info, firmware info and platform info and
@@ -150,7 +153,11 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastInteractionTime();
   void ShowDialog(const std::string& site_context);
 
-  raw_ptr<Profile> profile_;
+  // Cleared when the user's profile goes away, which takes their prefs with
+  // it.
+  // TODO(crbug.com/569954060): have the observer stop the controller outright
+  // instead, so this can be a raw_ref.
+  raw_ptr<user_manager::User> user_;
   const raw_ref<const HatsConfig> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::string notification_id_;
@@ -158,7 +165,9 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   HatsState state_ = HatsState::kDeviceSelected;
 
   NetworkStateHandlerScopedObservation network_state_observation_{this};
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
 };

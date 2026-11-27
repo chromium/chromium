@@ -112,7 +112,7 @@ struct HatsScenario {
   bool this_hats_recent = false;
 
   // Expected return value of
-  // HatsNotificationController::ShouldShowSurveyToProfile.
+  // HatsNotificationController::ShouldShowSurveyToUser.
   bool should_be_selected;
 };
 
@@ -177,8 +177,8 @@ class HatsNotificationControllerTest
     // The initialization will fail since the function IsNewDevice() will return
     // true.
     auto hats_notification_controller =
-        base::MakeRefCounted<HatsNotificationController>(target_profile,
-                                                         kHatsGeneralSurvey);
+        base::MakeRefCounted<HatsNotificationController>(
+            &GetUser(target_profile), kHatsGeneralSurvey);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
@@ -191,7 +191,8 @@ class HatsNotificationControllerTest
     // The initialization will fail since the function IsNewDevice() will return
     // true.
     auto hats_notification_controller =
-        base::MakeRefCounted<HatsNotificationController>(profile(), *config);
+        base::MakeRefCounted<HatsNotificationController>(&GetUser(profile()),
+                                                         *config);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
@@ -206,7 +207,7 @@ class HatsNotificationControllerTest
     base::RunLoop().RunUntilIdle();
   }
 
-  const user_manager::User& GetUser(Profile* target_profile) const {
+  user_manager::User& GetUser(Profile* target_profile) const {
     return CHECK_DEREF(
         BrowserContextHelper::Get()->GetUserByBrowserContext(target_profile));
   }
@@ -443,7 +444,7 @@ TEST_F(HatsNotificationControllerTest,
   EXPECT_TRUE(FindHatsNotification(second_notification_id));
 }
 
-TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
+TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToUser) {
   // Insert the time values into prefs
   PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetTime(ash::prefs::kHatsPrioritizedLastInteractionTimestamp,
@@ -464,8 +465,8 @@ TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
             (GetParam().this_hats_recent ? base::Days(1) : -base::Days(1)));
   }
 
-  EXPECT_EQ(HatsNotificationController::ShouldShowSurveyToProfile(
-                profile(), *GetHatsConfig()),
+  EXPECT_EQ(HatsNotificationController::ShouldShowSurveyToUser(
+                GetUser(profile()), *GetHatsConfig()),
             GetParam().should_be_selected);
 }
 

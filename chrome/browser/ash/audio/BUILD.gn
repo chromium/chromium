@@ -20,7 +20,6 @@ static_library("audio") {
   deps = [
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/hats",
-    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//components/session_manager/core",
     "//components/user_manager",

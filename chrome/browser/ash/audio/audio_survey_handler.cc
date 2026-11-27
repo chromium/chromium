@@ -4,24 +4,25 @@
 
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
 namespace {
 
-// The profile of `account_id`, or null until it has been created.
-Profile* FindProfile(const AccountId& account_id) {
-  return Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
+// The user `account_id` names, who is signed in whenever this is reached.
+user_manager::User& FindUser(const AccountId& account_id) {
+  return CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUserAndModify(account_id));
 }
 
 }  // namespace
@@ -53,10 +54,9 @@ class AudioSurveyHandlerDelegate : public AudioSurveyHandler::Delegate {
 
   bool ShouldShowSurvey(CrasAudioHandler::SurveyType type,
                         const AccountId& account_id) const override {
-    Profile* const profile = FindProfile(account_id);
-    return profile && !hats_notification_controllers_.contains(type) &&
-           HatsNotificationController::ShouldShowSurveyToProfile(
-               profile, GetHatsConfig(type));
+    return !hats_notification_controllers_.contains(type) &&
+           HatsNotificationController::ShouldShowSurveyToUser(
+               FindUser(account_id), GetHatsConfig(type));
   }
 
   void ShowSurvey(CrasAudioHandler::SurveyType type,
@@ -119,11 +119,6 @@ void AudioSurveyHandlerDelegate::OnHardwareInfoFetched(
     const CrasAudioHandler::AudioSurveyData& audio_specific_data,
     const AccountId& account_id,
     base::SysInfo::HardwareInfo hardware_info) {
-  Profile* const profile = FindProfile(account_id);
-  if (!profile) {
-    return;
-  }
-
   base::flat_map<std::string, std::string> survey_data = {
       {"Board", base::SysInfo::GetLsbReleaseBoard()},
       {"Model", hardware_info.model}};
@@ -131,7 +126,7 @@ void AudioSurveyHandlerDelegate::OnHardwareInfoFetched(
 
   hats_notification_controllers_[type] =
       base::MakeRefCounted<HatsNotificationController>(
-          profile, GetHatsConfig(type), survey_data);
+          &FindUser(account_id), GetHatsConfig(type), survey_data);
 }
 
 }  // namespace ash

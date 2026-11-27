@@ -2467,30 +2467,35 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
             /*window_ids=*/{}, /*restore_automatically=*/false);
   }
 
-  if (HatsNotificationController::ShouldShowSurveyToProfile(
-          profile, kHatsGeneralSurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsGeneralSurvey);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsSlowAndLaggyDeepDive)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsSlowAndLaggyDeepDive);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsStabilitySurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsStabilitySurvey);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsPerformanceSurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsPerformanceSurvey);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsBatteryLifeSurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsBatteryLifeSurvey);
-  } else if (HatsNotificationController::ShouldShowSurveyToProfile(
-                 profile, kHatsPeripheralsSurvey)) {
-    hats_notification_controller_ =
-        new HatsNotificationController(profile, kHatsPeripheralsSurvey);
+  // There is no user for ash-internal browser contexts, which never reach a
+  // survey.
+  if (user_manager::User* const hats_user =
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile)) {
+    if (HatsNotificationController::ShouldShowSurveyToUser(
+            *hats_user, kHatsGeneralSurvey)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsGeneralSurvey);
+    } else if (HatsNotificationController::ShouldShowSurveyToUser(
+                   *hats_user, kHatsSlowAndLaggyDeepDive)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsSlowAndLaggyDeepDive);
+    } else if (HatsNotificationController::ShouldShowSurveyToUser(
+                   *hats_user, kHatsStabilitySurvey)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsStabilitySurvey);
+    } else if (HatsNotificationController::ShouldShowSurveyToUser(
+                   *hats_user, kHatsPerformanceSurvey)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsPerformanceSurvey);
+    } else if (HatsNotificationController::ShouldShowSurveyToUser(
+                   *hats_user, kHatsBatteryLifeSurvey)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsBatteryLifeSurvey);
+    } else if (HatsNotificationController::ShouldShowSurveyToUser(
+                   *hats_user, kHatsPeripheralsSurvey)) {
+      hats_notification_controller_ =
+          new HatsNotificationController(hats_user, kHatsPeripheralsSurvey);
+    }
   }
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
