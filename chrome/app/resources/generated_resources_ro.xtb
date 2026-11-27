@@ -4374,7 +4374,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4298660926525614540">Nume de dispozitive de stocare amovibile</translation>
 <translation id="4299022904780065004">Fereastră nouă &amp;incognito</translation>
 <translation id="4300272766492248925">Deschide aplicația</translation>
-<translation id="4301231341924904092">Schimb-o pentru mine</translation>
+<translation id="4301231341924904092">Schimb-o automat</translation>
 <translation id="4301671483919369635">Această pagină are permisiunea de a edita fișiere</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# persoană de contact nu este disponibilă. Pentru a folosi <ph name="FEATURE_NAME" /> cu această persoană, adaugă în agendă adresa de e-mail asociată Contului Google respectiv.}few{# persoane de contact nu sunt disponibile. Pentru a folosi <ph name="FEATURE_NAME" /> cu aceste persoane, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.}other{# de persoane de contact nu sunt disponibile. Pentru a folosi <ph name="FEATURE_NAME" /> cu aceste persoane, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.}}</translation>
 <translation id="4303079906735388947">Configurează un nou cod PIN pentru cheia de securitate</translation>
@@ -8521,7 +8521,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7502804472671406749">Se poate derula și face zoom în filele la care s-a permis accesul</translation>
 <translation id="750314150962284310">Focalizare pe rând</translation>
 <translation id="7503191893372251637">Tip de certificat Netscape</translation>
-<translation id="7503259455663961898">Schimb-o pentru mine</translation>
+<translation id="7503259455663961898">Schimb-o automat</translation>
 <translation id="7503985202154027481">O înregistrare a vizitei site-ului va fi păstrată pe cheia ta de securitate.</translation>
 <translation id="7504145862399276792">Sunetul acestei file este dezactivat</translation>
 <translation id="750509436279396091">Deschideți dosarul de descărcări</translation>
