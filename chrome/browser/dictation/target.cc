@@ -22,6 +22,10 @@ std::optional<content::GlobalDOMNodeId> Target::GetGlobalDOMNodeId() const {
   return std::nullopt;
 }
 
+void Target::SetDelegate(Delegate* delegate) {}
+
+void Target::SetStreamActive(bool active) {}
+
 DomTarget* Target::AsDomTarget() {
   return nullptr;
 }

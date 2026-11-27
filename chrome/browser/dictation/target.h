@@ -20,12 +20,33 @@ class TabInterface;
 namespace dictation {
 
 class DictationContextFetcher;
+enum class DictationStreamEndTrigger;
 class DomTarget;
 
 // Represents a dictation target into which transcriptions will be written,
-// along with metadata and context-fetching hooks for the target's host surface.
+// along with metadata and lifecycle/input hooks for the target's host surface.
 class Target {
  public:
+  // Handles lifecycle and user-input requests from the target surface.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called when user interaction on the target surface should end the active
+    // stream (e.g. pressing Escape, Enter, typing text, or changing focus).
+    virtual void OnTargetRequestEndStream(
+        DictationStreamEndTrigger trigger) = 0;
+
+    // Called when user interaction on the target surface should end the whole
+    // session (e.g. pressing Escape when no stream is active).
+    virtual void OnTargetRequestEndSession(
+        DictationStreamEndTrigger trigger) = 0;
+
+    // Called when the underlying target surface is invalidated (e.g. navigated
+    // away, crashed, or destroyed).
+    virtual void OnTargetInvalidated() = 0;
+  };
+
   virtual ~Target() = default;
 
   // Sets the composition text in the target.
@@ -55,6 +76,15 @@ class Target {
   // Returns the DOM node ID backing this target, or nullopt for non-DOM
   // targets.
   virtual std::optional<content::GlobalDOMNodeId> GetGlobalDOMNodeId() const;
+
+  // Sets (or clears, if nullptr) the delegate notified of target lifecycle and
+  // user-input events.
+  virtual void SetDelegate(Delegate* delegate);
+
+  // Notifies the target whether a dictation stream is currently active on it
+  // (e.g. controlling whether stream-scoped key interception such as Enter is
+  // enabled).
+  virtual void SetStreamActive(bool active);
 
   // Returns `this` if backed by a DOM element, otherwise nullptr.
   virtual DomTarget* AsDomTarget();

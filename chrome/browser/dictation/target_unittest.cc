@@ -178,7 +178,7 @@ TEST_F(DictationTargetTest, FocusChangeDuringComposition) {
             gfx::Range::InvalidRange());
   EXPECT_EQ(target.last_sent_commit(), u"");
 
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   // Focus was lost, so we don't update the composition.
   target.SetComposition(u"AB", true);
@@ -203,7 +203,7 @@ TEST_F(DictationTargetTest, FocusChangeDuringCompositionWithRewrite) {
             gfx::Range::InvalidRange());
   EXPECT_EQ(target.last_sent_commit(), u"");
 
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   // Focus was lost, so we don't update the composition.
   target.SetComposition(u"AB", true);
@@ -225,7 +225,7 @@ TEST_F(DictationTargetTest, FocusChangeBeforeComposition) {
 
   // If we haven't started composing yet, focus changes don't disrupt our
   // ability to compose later.
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   target.SetComposition(u"A", true);
   EXPECT_EQ(target.last_sent_composition(), u"A");
@@ -294,7 +294,7 @@ TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallbackWithFocusLoss) {
   EXPECT_EQ(target.last_sent_commit(), u"");
   EXPECT_EQ(target.last_sent_paste(), u"");
 
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   // As the composition was cleared before the focus change committed anything,
   // the entire text should be pasted.
@@ -313,7 +313,7 @@ TEST_F(DictationTargetTest, RichlyEditableFocusLossBeforeNewline) {
   EXPECT_EQ(target.last_sent_commit(), u"");
   EXPECT_EQ(target.last_sent_paste(), u"");
 
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   // As the composition was committed by the focus change, only the remaining
   // text should be pasted.
@@ -400,7 +400,7 @@ TEST_F(DictationTargetTest, FocusChangeDuringInFlightComposition) {
   EXPECT_EQ(target.last_sent_commit(), u"");
 
   // Focus changes while "hello" is in progress.
-  target.OnFocusChanged(MakeFocusChange(2));
+  target.OnFocusChangedInPage(MakeFocusChange(2));
 
   // "hello" completes. Target proceeds to commit the text, replacing the
   // range of "hello".
