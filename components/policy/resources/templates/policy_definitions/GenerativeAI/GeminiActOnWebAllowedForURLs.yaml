@@ -4,7 +4,7 @@ desc: |-
 
   URLs matching neither the allowlist or the blocklist use <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME">GeminiActOnWebSettings</ph>.
 
-  URLs matching both the allowlist and the blocklist are allowed.
+  If a URL matches both the allowlist and the blocklist, the most specific filter determines whether it is allowed or blocked. If equally specific filters from both lists match, the allowlist takes precedence.
 
   For detailed information on valid url patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
