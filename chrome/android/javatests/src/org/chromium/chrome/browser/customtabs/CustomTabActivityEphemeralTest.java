@@ -46,7 +46,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,11 +78,14 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.transit.CctTransitTestRule;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.concurrent.TimeoutException;
@@ -98,13 +100,16 @@ public class CustomTabActivityEphemeralTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private String mTestPage;
 
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
 
     @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
     public OverrideContextWrapperTestRule mAutomotiveRule = new OverrideContextWrapperTestRule();
+
+    private static class PopupOnClickPageFacility extends WebPageFacility {
+        public final HtmlElement linkWithBounds = declareHtmlElement("#link_with_bounds");
+    }
 
     @Before
     public void setUp() throws TimeoutException {
@@ -165,7 +170,9 @@ public class CustomTabActivityEphemeralTest {
     }
 
     private CustomTabActivity launchCustomTabActivity(Intent intent) {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntentNotWaitingForFirstFrame(intent);
+        mCustomTabActivityTestRule
+                .getActivityTestRule()
+                .startCustomTabActivityWithIntentNotWaitingForFirstFrame(intent);
         return mCustomTabActivityTestRule.getActivity();
     }
 
@@ -386,7 +393,7 @@ public class CustomTabActivityEphemeralTest {
 
     @Test
     @MediumTest
-    public void testPopupCreationBlockedAndDoesNotCrashOnClose() throws Exception {
+    public void testPopupCreationBlockedAndDoesNotCrashOnClose() {
         PopupCreatorImpl.setSetMovableTaskRequiredForPopupsForTesting(false);
         String popupPageUrl =
                 mEmbeddedTestServerRule
@@ -396,10 +403,14 @@ public class CustomTabActivityEphemeralTest {
                 createMinimalCustomTabIntent(
                                 ApplicationProvider.getApplicationContext(), popupPageUrl)
                         .putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
+        PopupOnClickPageFacility popupPage = new PopupOnClickPageFacility();
+        CctPageStation cctPage =
+                mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                        intent,
+                        CctPageStation.newBuilder().withIncognito(true).withFacility(popupPage));
+        CustomTabActivity activity = cctPage.getActivity();
         Profile ephemeralProfile =
-                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab().getProfile());
+                ThreadUtils.runOnUiThreadBlocking(() -> cctPage.getTab().getProfile());
         assertTrue(ephemeralProfile.isOffTheRecord());
         assertFalse(ephemeralProfile.isPrimaryOtrProfile());
 
@@ -407,18 +418,19 @@ public class CustomTabActivityEphemeralTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.MultiWindowMode.PopupOpensInNewWindow", false);
 
-        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), "link_with_bounds");
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            activity.getTabModelSelector().getCurrentModel().getCount(),
-                            Matchers.is(2));
-                });
+        CctPageStation newCctPage =
+                popupPage
+                        .linkWithBounds
+                        .clickTo()
+                        .arriveAt(
+                                CctPageStation.newBuilder()
+                                        .initFrom(cctPage)
+                                        .initOpeningNewTab()
+                                        .build());
         popupHistogram.assertExpected();
 
         Profile newTabProfile =
-                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab().getProfile());
+                ThreadUtils.runOnUiThreadBlocking(() -> newCctPage.getTab().getProfile());
         assertEquals(ephemeralProfile, newTabProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -435,7 +447,7 @@ public class CustomTabActivityEphemeralTest {
                     assertTrue(webContents.isDestroyed());
                 });
 
-        ApplicationTestUtils.finishActivity(activity);
+        newCctPage.finishActivity();
     }
 
     @Test

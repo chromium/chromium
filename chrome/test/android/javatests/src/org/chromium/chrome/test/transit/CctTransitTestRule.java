@@ -43,8 +43,7 @@ public class CctTransitTestRule implements TestRule {
      * @return the active entry {@link CctPageStation}
      */
     public CctPageStation startCustomTabActivityWithIntent(Intent intent) {
-        return startCustomTabActivityWithIntent(
-                intent, CctPageStation.newBuilder().withEntryPoint());
+        return startCustomTabActivityWithIntent(intent, CctPageStation.newBuilder());
     }
 
     /**
@@ -57,13 +56,20 @@ public class CctTransitTestRule implements TestRule {
                 intent, CctPageStation.newBuilder().initForEntryPointUrl(expectedUrl));
     }
 
-    private CctPageStation startCustomTabActivityWithIntent(
+    /**
+     * Start the test in a CCT page configured by {@code builder}, e.g. to enter Facilities or set
+     * incognito. The builder is always treated as an entry point: {@code withEntryPoint()} is
+     * applied, replacing any tab opening/selecting expectations set on it.
+     *
+     * @return the active entry {@link CctPageStation}
+     */
+    public CctPageStation startCustomTabActivityWithIntent(
             Intent intent, BasePageStation.Builder<CctPageStation> builder) {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
         return sentinel.runTo(() -> mActivityTestRule.startCustomTabActivityWithIntent(intent))
-                .arriveAt(builder.build());
+                .arriveAt(builder.withEntryPoint().build());
     }
 
     public CustomTabActivity getActivity() {
