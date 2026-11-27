@@ -34384,8 +34384,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.SafetyCheck.ChromeCleanerCaretNavigation">
-  <owner>rainhard@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the safety check Chrome cleaner row to navigate to the Chrome
     cleaner UI.
@@ -34393,25 +34395,30 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.SafetyCheck.ChromeCleanerReboot">
-  <owner>rainhard@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the safety check Chrome cleaner reboot button.
   </description>
 </action>
 
 <action name="Settings.SafetyCheck.ChromeCleanerReviewInfectedState">
-  <owner>rainhard@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the review button in an CCT infected state.
   </description>
 </action>
 
 <action name="Settings.SafetyCheck.ManagePasswords">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the manage passwords button in safety check when compromised
     passwords have been found.
@@ -34419,31 +34426,36 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>User clicks the passwords row in safety check.</description>
 </action>
 
 <action name="Settings.SafetyCheck.ManageSafeBrowsing">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the manage safe browsing button in safety check.
   </description>
 </action>
 
 <action name="Settings.SafetyCheck.ManageSafeBrowsingThroughCaretNavigation">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>User clicks the safe browsing row in safety check.</description>
 </action>
 
 <action name="Settings.SafetyCheck.ManageWeakPasswords">
-  <owner>rainhard@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the manage passwords button in safety check when weak passwords
     have been found.
@@ -34451,27 +34463,30 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.SafetyCheck.RelaunchAfterUpdates">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the relaunch browser button in safety check after an update.
   </description>
 </action>
 
 <action name="Settings.SafetyCheck.ReviewExtensions">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     User clicks the review extensions button in safety check.
   </description>
 </action>
 
 <action name="Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>User clicks the extensions row in safety check.</description>
 </action>
 
@@ -34502,9 +34517,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.SafetyCheck.Start">
-  <owner>rainhard@chromium.org</owner>
-  <owner>andzaytsev@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <description>User started a browser safety check in settings.</description>
 </action>
 
