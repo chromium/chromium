@@ -151,12 +151,12 @@ void AssertNavigationBarButtonVisibleWithID(NSString* button_id) {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:buttonMatcher];
 }
 
-// Assert the `button_id` toolbar button is visible.
+// Asserts the `button_id` toolbar button is visible. Waits rather than
+// asserting immediately, as toolbar buttons animate in after a selection change
+// and can briefly be below the sufficiently visible threshold.
 void AssertToolbarButtonVisibleWithID(NSString* button_id) {
-  id<GREYMatcher> toolbarButtonMatcher =
-      chrome_test_util::ToolbarButtonWithID(button_id);
-  [[EarlGrey selectElementWithMatcher:toolbarButtonMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ToolbarButtonWithID(button_id)];
 }
 
 // Taps the `button_id` toolbar button once it is sufficiently visible, as it
