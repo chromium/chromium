@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabPersistentStoreImplCleaner;
+import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.Collections;
@@ -91,6 +92,7 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private TabModel mCustomTabModel;
     @Mock private Tab mCustomTab;
     @Mock private TabStateStorageService mTabStateStorageService;
+    @Mock private TabbedModeTabPersistencePolicy mPersistencePolicy;
 
     @Captor private ArgumentCaptor<TabWindowManager.Observer> mObserverCaptor;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
@@ -110,7 +112,9 @@ public class PersistentStoreCleanerUnitTest {
         when(mArchivedTabModelOrchestrator.acquireLease(anyInt())).thenReturn(mLease);
         when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
 
-        mCleaner = new PersistentStoreCleaner(mProfile, mTabStateStoreCleaner, mLegacyStoreCleaner);
+        mCleaner =
+                PersistentStoreCleaner.createForTesting(
+                        mProfile, mTabStateStoreCleaner, mLegacyStoreCleaner, mPersistencePolicy);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
@@ -800,6 +804,11 @@ public class PersistentStoreCleanerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_7"},
+                mWindowTagsCaptor.getValue().toArray());
+
+        verify(mPersistencePolicy).clearAllWindowsExceptFor(mWindowTagsCaptor.capture());
         assertArrayEquals(
                 new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "Custom_7"},
                 mWindowTagsCaptor.getValue().toArray());

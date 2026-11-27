@@ -34,7 +34,7 @@ public class PersistentStoreCleanerFactory {
         return sProfileMap.getForProfile(
                 profile.getOriginalProfile(),
                 localProfile ->
-                        new PersistentStoreCleaner(
+                        PersistentStoreCleaner.create(
                                 localProfile,
                                 new TabStateStoreCleaner(),
                                 new TabPersistentStoreImplCleaner()));

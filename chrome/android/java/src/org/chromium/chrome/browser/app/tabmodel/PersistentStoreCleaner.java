@@ -106,15 +106,11 @@ public class PersistentStoreCleaner implements Destroyable {
     private @Nullable UnusedDataDeps mUnusedDataDeps;
     private boolean mIsDestroyed;
 
-    /**
-     * @param profile The original profile used for dependencies.
-     * @param tabStateStoreCleaner The cleaner for {@link TabStateStore}.
-     * @param legacyCleaner The cleaner for {@link TabPersistentStoreImpl}.
-     */
-    public PersistentStoreCleaner(
+    private PersistentStoreCleaner(
             Profile profile,
             TabStateStoreCleaner tabStateStoreCleaner,
-            TabPersistentStoreImplCleaner legacyCleaner) {
+            TabPersistentStoreImplCleaner legacyCleaner,
+            TabbedModeTabPersistencePolicy persistencePolicy) {
         assert !profile.isOffTheRecord();
 
         mProfile = profile;
@@ -125,14 +121,42 @@ public class PersistentStoreCleaner implements Destroyable {
         @TaskTraits int taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
         mSequencedTaskRunner = PostTask.createSequencedTaskRunner(taskTraits);
 
+        mPersistencePolicy = persistencePolicy;
+    }
+
+    /**
+     * Creates a {@link PersistentStoreCleaner} for {@code profile} and initializes its persistence
+     * policy.
+     *
+     * @param profile The original profile used for dependencies.
+     * @param tabStateStoreCleaner The cleaner for {@link TabStateStore}.
+     * @param legacyCleaner The cleaner for {@link TabPersistentStoreImpl}.
+     */
+    public static PersistentStoreCleaner create(
+            Profile profile,
+            TabStateStoreCleaner tabStateStoreCleaner,
+            TabPersistentStoreImplCleaner legacyCleaner) {
         // Do not need to provide a valid window ID, since it is not used for any operation.
-        mPersistencePolicy =
+        TabbedModeTabPersistencePolicy persistencePolicy =
                 new TabbedModeTabPersistencePolicy(
                         /* selectorIndex= */ TabWindowManager.INVALID_WINDOW_ID,
                         /* mergeTabsOnStartup= */ false,
                         /* tabMergingEnabled= */ false,
                         ObservableSuppliers.createNonNull(false));
-        mPersistencePolicy.performInitialization(mSequencedTaskRunner);
+        PersistentStoreCleaner cleaner =
+                new PersistentStoreCleaner(
+                        profile, tabStateStoreCleaner, legacyCleaner, persistencePolicy);
+        cleaner.mPersistencePolicy.performInitialization(cleaner.mSequencedTaskRunner);
+        return cleaner;
+    }
+
+    static PersistentStoreCleaner createForTesting(
+            Profile profile,
+            TabStateStoreCleaner tabStateStoreCleaner,
+            TabPersistentStoreImplCleaner legacyCleaner,
+            TabbedModeTabPersistencePolicy persistencePolicy) {
+        return new PersistentStoreCleaner(
+                profile, tabStateStoreCleaner, legacyCleaner, persistencePolicy);
     }
 
     /**
@@ -346,32 +370,7 @@ public class PersistentStoreCleaner implements Destroyable {
         for (TabModelSelector selector : selectors) {
             assert selector != null;
             if (!selector.isTabStateInitialized()) {
-                // Wait for the selector to initialize tab state. If the selector is destroyed
-                // before initializing (e.g. window closed during startup), re-evaluate cleanup:
-                // if other selectors remain, continue waiting or proceed; if all selectors are
-                // gone, maybeCleanUnusedWindows() will safely abort.
-                deps.clearSelectorObserver();
-                deps.mObservedSelector = selector;
-                deps.mTabModelSelectorObserver =
-                        new TabModelSelectorObserver() {
-                            @Override
-                            public void onTabStateInitialized() {
-                                onFinished();
-                            }
-
-                            @Override
-                            public void onDestroyed() {
-                                onFinished();
-                            }
-
-                            private void onFinished() {
-                                deps.clearSelectorObserver();
-                                deps.mCleanupRunnable = null;
-                                if (deps != mUnusedDataDeps) return;
-                                maybeCleanUnusedWindows();
-                            }
-                        };
-                selector.addObserver(deps.mTabModelSelectorObserver);
+                waitForSelectorInitialization(deps, selector);
                 return;
             }
         }
@@ -402,6 +401,35 @@ public class PersistentStoreCleaner implements Destroyable {
         deleteAllWindowsExceptFor(windowTags);
 
         cleanUnusedDeps();
+    }
+
+    private void waitForSelectorInitialization(UnusedDataDeps deps, TabModelSelector selector) {
+        // Wait for the selector to initialize tab state. If the selector is destroyed before
+        // initializing (e.g. window closed during startup), re-evaluate cleanup: if other selectors
+        // remain, continue waiting or proceed; if all selectors are gone, maybeCleanUnusedWindows()
+        // will safely abort.
+        deps.clearSelectorObserver();
+        deps.mObservedSelector = selector;
+        deps.mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabStateInitialized() {
+                        onFinished();
+                    }
+
+                    @Override
+                    public void onDestroyed() {
+                        onFinished();
+                    }
+
+                    private void onFinished() {
+                        deps.clearSelectorObserver();
+                        deps.mCleanupRunnable = null;
+                        if (deps != mUnusedDataDeps) return;
+                        maybeCleanUnusedWindows();
+                    }
+                };
+        selector.addObserver(deps.mTabModelSelectorObserver);
     }
 
     private void cleanUnusedDeps() {
