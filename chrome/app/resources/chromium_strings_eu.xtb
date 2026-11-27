@@ -69,6 +69,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1793486931176048546">Chromium zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BEGIN_BOLD" />Bai<ph name="END_BOLD" /> Windows-en jakinarazpenean.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
+<translation id="1814482312667514397">Lortu Chromium-en segurtasun-eginbide onenak edonoiz eta edonon, telefonoan Chromium aplikazioa erabiliz</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). <ph name="DEVICE" /> gailuko luzapenak eta bestelako datuak ere eskuratuko dituzu.</translation>
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Google-ren Pasahitz-kudeatzailea erabiltzeko eskatuko zaizu.</translation>
@@ -132,6 +133,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari ziren}=1{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari dira}other{Chromium-erako luzapen bat edo gehiago giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa erabiltzeko baimenak behar ditu webgune honetan</translation>
 <translation id="2403703063067034158">Abiarazte-errorea: konfigurazioaren beste instantzia bat exekutatzen ari da. Saiatu berriro geroago.</translation>
+<translation id="241044568699443215">Eraman Chromium-en segurtasuna edonora <ph name="DEVICE_TYPE" /> gailurako Chromium aplikazioarekin</translation>
 <translation id="2418322681019544463">Ireki edozein aplikaziotako estekak Chromium-en eta mantendu arakatzailea eskura zereginen barran</translation>
 <translation id="2425157128016763890">Sakatu Laburbildu botoia dokumentu hau Chromium-eko Gemini-rekin partekatzeko. Horrela, laburpen bizkor bat lortu ahalko duzu, eta galdera gehigarriak egin.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium-en tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
@@ -745,6 +747,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8910309838319708610">Eginda! Orain, arakatu bitartean galderak egin ditzakezu erraz, Bilaketa zerbitzuaren AA moduarekin.</translation>
 <translation id="8932992523185907506">Chromium jada ez da arakatzaile lehenetsia. Chromium arakatzaile lehenetsi gisa ezarri nahi duzu?</translation>
+<translation id="8940844567350264767">Lortu Chromium-en segurtasun-eginbide onenak edonoiz eta edonon Chromium-ekin</translation>
 <translation id="8941642502866065432">Ezin da eguneratu Chromium</translation>
 <translation id="8944232836376404813">Ekintza honen bidez:
           <ph name="LINE_BREAKS" />
