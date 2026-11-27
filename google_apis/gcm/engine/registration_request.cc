@@ -188,6 +188,7 @@ void RegistrationRequest::Start() {
             "identifiers for the feature, website or extension that is "
             "creating the registration."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://android.clients.google.com/c2dm/register3"
         }
         policy {
           cookies_allowed: NO

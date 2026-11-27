@@ -343,6 +343,7 @@ void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
           data:
             "Arbitrary application-specific data."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://mtalk.google.com"
         }
         policy {
           cookies_allowed: NO

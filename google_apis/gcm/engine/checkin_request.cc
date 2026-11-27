@@ -162,6 +162,7 @@ void CheckinRequest::Start() {
             "tokens. A structure containing the Chromium version, channel, and "
             "platform of the host operating system."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://android.clients.google.com/checkin"
         }
         policy {
           cookies_allowed: NO

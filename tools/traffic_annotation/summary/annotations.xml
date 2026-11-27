@@ -85,10 +85,10 @@ Refer to README.md for content description and update process.
  <item id="gaia_oauth_client_get_tokens" added_in_milestone="62" content_hash_code="01f5f28a" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
  <item id="gaia_oauth_client_get_user_info" added_in_milestone="62" content_hash_code="009b1305" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
  <item id="gaia_oauth_client_refresh_token" added_in_milestone="62" content_hash_code="026184b5" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_oauth_client.cc" />
- <item id="gcm_checkin" added_in_milestone="62" content_hash_code="05db527b" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/checkin_request.cc" />
- <item id="gcm_connection_factory" added_in_milestone="66" content_hash_code="047caddb" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/connection_factory_impl.cc" />
- <item id="gcm_registration" added_in_milestone="62" content_hash_code="06c679e8" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/registration_request.cc" />
- <item id="gcm_unregistration" added_in_milestone="62" content_hash_code="01cbf67f" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/unregistration_request.cc" />
+ <item id="gcm_checkin" added_in_milestone="62" content_hash_code="01d8a5d7" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/checkin_request.cc" />
+ <item id="gcm_connection_factory" added_in_milestone="66" content_hash_code="078e9d97" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/connection_factory_impl.cc" />
+ <item id="gcm_registration" added_in_milestone="62" content_hash_code="01f18a2c" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/registration_request.cc" />
+ <item id="gcm_unregistration" added_in_milestone="62" content_hash_code="08289a4b" os_list="linux,windows,chromeos,android" file_path="google_apis/gcm/engine/unregistration_request.cc" />
  <item id="geo_language_provider" added_in_milestone="65" type="partial" second_id="network_location_request" content_hash_code="03e4d160" os_list="linux,windows,chromeos,android" semantics_fields="1" policy_fields="3,4" file_path="components/language/content/browser/geo_language_provider.cc" />
  <item id="hintsfetcher_gethintsrequest" added_in_milestone="75" content_hash_code="0198a465" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/hints/hints_fetcher.cc" />
  <item id="history_notice_utils_notice" added_in_milestone="62" type="partial" second_id="web_history_service" content_hash_code="07cc4c62" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4" policy_fields="4" file_path="components/browsing_data/core/history_notice_utils.cc" />
