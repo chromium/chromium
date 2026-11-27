@@ -3236,6 +3236,15 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
+  // Animating color-scheme can change computed values of registered colors
+  // (e.g. light-dark()) and styles depending on them.
+  if (element_animations->GetEffectStack().AffectsProperties(
+          [](const PropertyHandle& property) {
+            return property == PropertyHandle(GetCSSPropertyColorScheme());
+          })) {
+    return false;
+  }
+
   // Normally, we apply all active animation effects on top of the style created
   // by regular CSS declarations. However, !important declarations have a
   // higher priority than animation effects [1]. If we're currently animating

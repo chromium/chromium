@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Color Adjust: animating color-scheme updates light-dark() registered custom properties</title>
+<link rel="help" href="https://drafts.csswg.org/css-color-adjust-1/#color-scheme-prop">
+<link rel="help" href="https://drafts.csswg.org/css-color-5/#light-dark">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @property --scheme-color {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgb(0, 0, 0);
+  }
+
+  @keyframes flip-scheme {
+    0% { color-scheme: light; }
+    50% { color-scheme: dark; }
+    100% { color-scheme: light; }
+  }
+
+  #target {
+    color-scheme: light;
+    --scheme-color: light-dark(rgb(255, 0, 0), rgb(0, 128, 0));
+    display: if(style(--scheme-color: rgb(255, 0, 0)): block; else: inline);
+  }
+
+  .animated {
+    animation: flip-scheme 10s linear paused;
+  }
+</style>
+<div id="target"></div>
+<script>
+  const red = "rgb(255, 0, 0)";
+  const green = "rgb(0, 128, 0)";
+  const target = document.getElementById("target");
+
+  test(() => {
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), red);
+    assert_equals(getComputedStyle(target).display, "block");
+
+    target.classList.add("animated");
+    const anim = target.getAnimations()[0];
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), red);
+    assert_equals(getComputedStyle(target).display, "block");
+
+    // Advance the animation to trigger an animation-only style update to dark.
+    anim.currentTime = 5000;
+    assert_equals(getComputedStyle(target).colorScheme, "dark");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), green);
+    assert_equals(getComputedStyle(target).display, "inline");
+
+    // Advance back to light.
+    anim.currentTime = 9000;
+    assert_equals(getComputedStyle(target).colorScheme, "light");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), red);
+    assert_equals(getComputedStyle(target).display, "block");
+
+    target.classList.remove("animated");
+  }, "CSS animation of color-scheme updates registered light-dark() color and if()");
+
+  test(() => {
+    const anim = target.animate(
+      { colorScheme: ["light", "dark"] },
+      { duration: 1000, fill: "forwards" }
+    );
+    anim.pause();
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), red);
+    assert_equals(getComputedStyle(target).display, "block");
+
+    anim.currentTime = 750;
+    assert_equals(getComputedStyle(target).colorScheme, "dark");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scheme-color"), green);
+    assert_equals(getComputedStyle(target).display, "inline");
+
+    anim.cancel();
+  }, "Web animation of color-scheme updates registered light-dark() color and if()");
+</script>
