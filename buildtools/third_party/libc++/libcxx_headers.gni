@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "1d12812aca7d55c276bcf35c1d94707493a17588",
+    libcxx_revision == "3630ae896fdab3325484a41118f46672c564d6e9",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -715,6 +715,8 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__pstl/backends/statpart.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/any_of.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/basis.h",
+  "//third_party/libc++/src/include/__pstl/backends/statpart/bitset.h",
+  "//third_party/libc++/src/include/__pstl/backends/statpart/copy_if.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/decoupled_lookback.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/fill.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/find_end.h",
@@ -731,8 +733,8 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__pstl/backends/statpart/stable_sort.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/swap_ranges.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/transform.h",
-  "//third_party/libc++/src/include/__pstl/backends/statpart/transform_inclusive_scan.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/transform_reduce.h",
+  "//third_party/libc++/src/include/__pstl/backends/statpart/transform_scan.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/uninitialized_copy.h",
   "//third_party/libc++/src/include/__pstl/backends/statpart/uninitialized_move.h",
   "//third_party/libc++/src/include/__pstl/dispatch.h",
@@ -927,7 +929,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_member_pointer.h",
   "//third_party/libc++/src/include/__type_traits/is_nothrow_assignable.h",
   "//third_party/libc++/src/include/__type_traits/is_nothrow_constructible.h",
-  "//third_party/libc++/src/include/__type_traits/is_nothrow_destructible.h",
   "//third_party/libc++/src/include/__type_traits/is_null_pointer.h",
   "//third_party/libc++/src/include/__type_traits/is_object.h",
   "//third_party/libc++/src/include/__type_traits/is_pod.h",
@@ -946,7 +947,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_trivially_assignable.h",
   "//third_party/libc++/src/include/__type_traits/is_trivially_constructible.h",
   "//third_party/libc++/src/include/__type_traits/is_trivially_copyable.h",
-  "//third_party/libc++/src/include/__type_traits/is_trivially_destructible.h",
   "//third_party/libc++/src/include/__type_traits/is_trivially_lexicographically_comparable.h",
   "//third_party/libc++/src/include/__type_traits/is_union.h",
   "//third_party/libc++/src/include/__type_traits/is_unqualified.h",
@@ -992,6 +992,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__utility/cmp.h",
   "//third_party/libc++/src/include/__utility/constant_wrapper.h",
   "//third_party/libc++/src/include/__utility/convert_to_integral.h",
+  "//third_party/libc++/src/include/__utility/cpo.h",
   "//third_party/libc++/src/include/__utility/declval.h",
   "//third_party/libc++/src/include/__utility/default_three_way_comparator.h",
   "//third_party/libc++/src/include/__utility/element_count.h",
@@ -1000,6 +1001,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__utility/exchange.h",
   "//third_party/libc++/src/include/__utility/forward.h",
   "//third_party/libc++/src/include/__utility/forward_like.h",
+  "//third_party/libc++/src/include/__utility/ignore_argument.h",
   "//third_party/libc++/src/include/__utility/in_place.h",
   "//third_party/libc++/src/include/__utility/integer_sequence.h",
   "//third_party/libc++/src/include/__utility/is_pointer_in_range.h",
