@@ -40,8 +40,12 @@ namespace input_method {
 
 class EditorMediator;
 
-bool ShouldRouteToNativeMojoEngine(bool use_ime_service,
-                                   std::string_view engine_id);
+// Returns whether `engine_id` should be handled without activating the CrOS 1P
+// VK+IME extension, i.e. handling should be via the CrOS 1P IME Service (which
+// may or may not fall back to system XKB) or directly by system XKB (skipping
+// both the VK+IME extension and the IME Service).
+bool ShouldHandleWithoutExtension(bool use_ime_service,
+                                  std::string_view engine_id);
 
 class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                                         public ime::mojom::InputMethodHost {
