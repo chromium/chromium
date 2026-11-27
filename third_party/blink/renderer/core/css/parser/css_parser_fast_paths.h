@@ -43,7 +43,7 @@ class CORE_EXPORT CSSParserFastPaths {
   // CSSPropertyParser, so if this returns true, the fast path is the only path.
   static bool IsHandledByKeywordFastPath(CSSPropertyID property_id) {
     return kKeywordFastPathProperties.Has(property_id) ||
-           handled_by_keyword_fast_paths_properties_.Has(property_id);
+           kHandledByKeywordFastPathsProperties.Has(property_id);
   }
 
   static bool IsBorderStyleValue(CSSValueID);
@@ -61,7 +61,7 @@ class CORE_EXPORT CSSParserFastPaths {
                                      Color& color);
 
  private:
-  static CSSBitset handled_by_keyword_fast_paths_properties_;
+  static const CSSBitset kHandledByKeywordFastPathsProperties;
 };
 
 }  // namespace blink

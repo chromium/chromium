@@ -12816,11 +12816,11 @@ void WillChange::ApplyValue(StyleResolverState& state,
     return;
   }
 
-  static CSSBitset transform_properties({CSSPropertyID::kTransform,
-                                         CSSPropertyID::kPerspective,
-                                         CSSPropertyID::kTransformStyle});
+  static constexpr CSSBitset kTransformProperties(
+      {CSSPropertyID::kTransform, CSSPropertyID::kPerspective,
+       CSSPropertyID::kTransformStyle});
 
-  static CSSBitset any_transform_properties(
+  static constexpr CSSBitset kAnyTransformProperties(
       {CSSPropertyID::kTransform, CSSPropertyID::kPerspective,
        CSSPropertyID::kTransformStyle, CSSPropertyID::kTranslate,
        CSSPropertyID::kScale, CSSPropertyID::kRotate,
@@ -12839,10 +12839,10 @@ void WillChange::ApplyValue(StyleResolverState& state,
 
   auto process_longhand = [&](CSSPropertyID id) {
     resolved_longhand_ids.Set(id);
-    if (transform_properties.Has(id)) {
+    if (kTransformProperties.Has(id)) {
       has_transform_property = true;
     }
-    if (any_transform_properties.Has(id)) {
+    if (kAnyTransformProperties.Has(id)) {
       has_any_transform_property = true;
     }
   };

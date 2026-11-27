@@ -54,7 +54,7 @@ static bool ParseDoubleWithPrefix(base::span<const LChar> chars, double& value);
 
 static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
                                             bool& accepts_negative_numbers) {
-  static CSSBitset properties{{
+  static constexpr CSSBitset kProperties{{
       CSSPropertyID::kBlockSize,
       CSSPropertyID::kInlineSize,
       CSSPropertyID::kMinBlockSize,
@@ -103,7 +103,7 @@ static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
       CSSPropertyID::kY,
   }};
   // A subset of the above.
-  static CSSBitset accept_negative{
+  static constexpr CSSBitset kAcceptNegative{
       {CSSPropertyID::kBottom, CSSPropertyID::kCx, CSSPropertyID::kCy,
        CSSPropertyID::kLeft, CSSPropertyID::kMarginBottom,
        CSSPropertyID::kMarginLeft, CSSPropertyID::kMarginRight,
@@ -113,11 +113,11 @@ static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
        CSSPropertyID::kMarginInlineEnd, CSSPropertyID::kMarginInlineStart,
        CSSPropertyID::kX, CSSPropertyID::kY}};
 
-  accepts_negative_numbers = accept_negative.Has(property_id);
+  accepts_negative_numbers = kAcceptNegative.Has(property_id);
   if (accepts_negative_numbers) {
-    DCHECK(properties.Has(property_id));
+    DCHECK(kProperties.Has(property_id));
   }
-  return properties.Has(property_id);
+  return kProperties.Has(property_id);
 }
 
 ALWAYS_INLINE static bool ParseSimpleLength(base::span<const LChar> characters,
@@ -230,7 +230,7 @@ ALWAYS_INLINE static unsigned ParseSimpleAngle(
 }
 
 static inline bool IsColorPropertyID(CSSPropertyID property_id) {
-  static CSSBitset properties{{
+  static constexpr CSSBitset kProperties{{
       CSSPropertyID::kCaretColor,
       CSSPropertyID::kColor,
       CSSPropertyID::kBackgroundColor,
@@ -277,12 +277,12 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
       CSSPropertyID::kInternalVisitedTextEmphasisColor,
       CSSPropertyID::kInternalVisitedTextDecorationColor,
   }};
-  return properties.Has(property_id);
+  return kProperties.Has(property_id);
 }
 
 // https://quirks.spec.whatwg.org/#the-hashless-hex-color-quirk
 static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
-  static CSSBitset properties{{
+  static constexpr CSSBitset kProperties{{
       CSSPropertyID::kColor,
       CSSPropertyID::kBackgroundColor,
       CSSPropertyID::kBorderBottomColor,
@@ -290,7 +290,7 @@ static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
       CSSPropertyID::kBorderRightColor,
       CSSPropertyID::kBorderTopColor,
   }};
-  return properties.Has(property_id);
+  return kProperties.Has(property_id);
 }
 
 // Returns the number of initial characters which form a valid double.
@@ -1250,7 +1250,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
 
 // Additional fast-path properties that do not use field_template: "keyword" in
 // css_properties.json5.
-CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
+const CSSBitset CSSParserFastPaths::kHandledByKeywordFastPathsProperties{{
     CSSPropertyID::kAll,
     CSSPropertyID::kAnimationNavigationBehavior,
     CSSPropertyID::kAppearance,
