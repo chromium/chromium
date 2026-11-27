@@ -128,6 +128,7 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
     return UpdateResult::kError;
   }
   CHECK(!document_host_);
+  url_ = request_url;
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_, std::move(data),

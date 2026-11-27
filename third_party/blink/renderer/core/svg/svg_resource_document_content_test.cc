@@ -67,6 +67,7 @@ TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   // Finish the response, the Document should now be accessible.
   svg_resource.Complete("g xmlns='http://www.w3.org/2000/svg'></svg>");
   EXPECT_NE(nullptr, entry->GetDocument());
+  EXPECT_EQ(KURL(kSVGUrl), entry->Url());
 }
 
 TEST_F(SVGResourceDocumentContentSimTest, LoadCompleteAfterDispose) {
