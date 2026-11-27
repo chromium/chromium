@@ -2524,11 +2524,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-
 // Canceling tab dragging while the detached tab is reattached should
 // not cause dangling ptr. (crbug.com/459242414)
+// TODO(crbug.com/590914311): Flaking/crashing in ui_controls_internal_win.cc
+// on M156 Win Arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_DetachAndAttachThenCancel DISABLED_DetachAndAttachThenCancel
+#else
+#define MAYBE_DetachAndAttachThenCancel DetachAndAttachThenCancel
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DetachAndAttachThenCancel) {
+                       MAYBE_DetachAndAttachThenCancel) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Wayland-chrome doesn't cancel tab dragging on esc.";
