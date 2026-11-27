@@ -13,6 +13,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,8 +28,12 @@
 #include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
+#include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #include "net/http/http_request_headers.h"
@@ -112,15 +119,46 @@ class ExtensibleEnterpriseSSOProviderMacTest : public testing::Test {
           id provider = mock_provider_class_;
           [invocation setReturnValue:&provider];
         });
+
+    cf_prefs_override_.emplace(base::BindRepeating(
+        &ExtensibleEnterpriseSSOProviderMacTest::CreateCFPrefsObserver,
+        base::Unretained(this)));
+    prefs_handler_ = std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+    SetConfiguredMdmUrls({kExampleUrl});
   }
 
   void TearDown() override {
     allow_check_.Signal();
     base::ThreadPoolInstance::Get()->FlushForTesting();
+    prefs_handler_.reset();
+    cf_prefs_override_.reset();
     EXPECT_GT(class_mocks_.count, 0u);
     for (id mock in class_mocks_) {
       [mock stopMocking];
     }
+  }
+
+  std::unique_ptr<CFPreferencesObserver> CreateCFPrefsObserver() {
+    return std::make_unique<FakeCFPreferencesObserver>(
+        config_update_callback_,
+        base::BindRepeating(&ExtensibleEnterpriseSSOProviderMacTest::GetConfig,
+                            base::Unretained(this)));
+  }
+
+  CFPreferencesObserver::RawConfig GetConfig() {
+    return CFPreferencesObserver::RawConfig{
+        .extension_id = base::SysUTF8ToCFStringRef(kPingSsoExtensionId),
+        .team_id = base::SysUTF8ToCFStringRef(kPingSsoTeamId),
+        .hosts = base::apple::ScopedCFTypeRef<CFPropertyListRef>(),
+        .urls = StringsToPropList(config_urls_),
+    };
+  }
+
+  void SetConfiguredMdmUrls(std::vector<std::string> urls) {
+    config_urls_ = std::move(urls);
+    prefs_handler_->UpdatePrefs();
+    task_environment_.RunUntilIdle();
   }
 
   id ClassMock(Class cls) {
@@ -168,6 +206,10 @@ class ExtensibleEnterpriseSSOProviderMacTest : public testing::Test {
   std::atomic<int> max_active_checks_{0};
   id mock_provider_class_ = nil;
   content::BrowserTaskEnvironment task_environment_;
+  std::vector<std::string> config_urls_;
+  base::RepeatingClosure config_update_callback_;
+  std::optional<ScopedCFPreferenceObserverOverride> cf_prefs_override_;
+  std::unique_ptr<ExtensibleEnterpriseSSOPrefsHandler> prefs_handler_;
   base::HistogramTester histogram_tester_;
   NSMutableArray* class_mocks_ = [NSMutableArray array];
 };
@@ -421,6 +463,8 @@ TEST_F(ExtensibleEnterpriseSSOProviderMacSyncCheckTest,
 }
 
 TEST_F(ExtensibleEnterpriseSSOProviderMacTest, ChecksRunOneAtATime) {
+  SetConfiguredMdmUrls(
+      {"https://first.example.com/", "https://second.example.com/"});
   StubCanPerformAuthorization(/*result=*/NO,
                               /*fail_on_main_thread=*/true,
                               /*wait_for_allow_check=*/true);
@@ -457,6 +501,7 @@ TEST_F(ExtensibleEnterpriseSSOProviderMacTest,
   ASSERT_TRUE(invalid_nsurl.is_valid());
   ASSERT_TRUE(invalid_nsurl.SchemeIsHTTPOrHTTPS());
   ASSERT_FALSE(net::NSURLWithGURL(invalid_nsurl));
+  SetConfiguredMdmUrls({invalid_nsurl.spec()});
 
   ExtensibleEnterpriseSSOProvider provider;
   base::test::TestFuture<net::HttpRequestHeaders> headers_future;

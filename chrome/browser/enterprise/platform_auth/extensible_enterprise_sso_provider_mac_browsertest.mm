@@ -7,13 +7,25 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
+#import "base/apple/scoped_cftyperef.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
+#import "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
+#import "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #import "chrome/test/base/in_process_browser_test.h"
+#import "components/policy/core/common/management/management_service.h"
+#import "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #import "content/public/test/browser_test.h"
+#import "content/public/test/test_utils.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -58,8 +70,43 @@ constexpr char kDeviceCredentialValue[] = "devicecredentials";
 
 class ExtensibleEnterpriseSSOTest : public InProcessBrowserTest {
  public:
+  ExtensibleEnterpriseSSOTest()
+      : cf_prefs_override_(base::BindRepeating(
+            &ExtensibleEnterpriseSSOTest::CreateCFPrefsObserver,
+            base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Wait for the startup MDM config read to complete so `kUrl` is accepted
+    // when origin filtering is enabled.
+    content::RunAllTasksUntilIdle();
+  }
+
   GURL url() { return GURL(kUrl); }
   NSURL* nativeUrl() { return net::NSURLWithGURL(url()); }
+
+ private:
+  std::unique_ptr<CFPreferencesObserver> CreateCFPrefsObserver() {
+    return std::make_unique<FakeCFPreferencesObserver>(
+        config_update_callback_,
+        base::BindRepeating(&ExtensibleEnterpriseSSOTest::GetConfig,
+                            base::Unretained(this)));
+  }
+
+  CFPreferencesObserver::RawConfig GetConfig() {
+    return CFPreferencesObserver::RawConfig{
+        .extension_id = base::SysUTF8ToCFStringRef(kPingSsoExtensionId),
+        .team_id = base::SysUTF8ToCFStringRef(kPingSsoTeamId),
+        .hosts = base::apple::ScopedCFTypeRef<CFPropertyListRef>(),
+        .urls = StringsToPropList({kUrl}),
+    };
+  }
+
+  base::RepeatingClosure config_update_callback_;
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+  const ScopedCFPreferenceObserverOverride cf_prefs_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, DISABLED_SupportedFail) {

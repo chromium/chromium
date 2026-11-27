@@ -40,17 +40,17 @@ class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
   enum class FailureReason {
     kOsCannotPerformAuthorization = 0,
     kCapabilityCheckTimedOut = 1,
-    kMaxValue = kCapabilityCheckTimedOut,
+    kUrlNotInMdmConfig = 2,
+    kMaxValue = kUrlNotInMdmConfig,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:ExtensibleEnterpriseSSOFailureReason)
 
   struct Metrics {
-    explicit Metrics(const std::string& host);
+    Metrics();
     ~Metrics();
     Metrics(const Metrics&) = delete;
     Metrics& operator=(const Metrics&) = delete;
 
-    std::string host;
     base::Time start_time;
     base::Time end_time;
     bool url_is_supported = false;

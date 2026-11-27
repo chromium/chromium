@@ -93,9 +93,9 @@ bool ShouldBeEnabled(PrefService* local_state) {
 
   if (base::FeatureList::IsEnabled(kPingSso)) {
     // If there is no valid config there is no need to enable the manager.
-    const std::optional<MdmConfig> current_mdm_config =
+    const MdmConfig* current_mdm_config =
         ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
-    if (!current_mdm_config.has_value()) {
+    if (!current_mdm_config) {
       return false;
     }
 

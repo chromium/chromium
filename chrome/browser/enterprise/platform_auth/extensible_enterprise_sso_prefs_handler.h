@@ -77,10 +77,21 @@ class ExtensibleEnterpriseSSOPrefsHandler {
 
     // `URLs` entry of the payload. `std::nullopt` if the entry is missing or
     // malformed, can be empty.
-    // Host and schema are normalized to lowercase.
+    // Host and schema are normalized to lowercase, and trailing slashes are
+    // stripped from paths other than the root path "/".
     // Entries that are not HTTP or HTTPS, have query parameters or refs are
     // dropped.
     std::optional<std::vector<GURL>> urls;
+
+    // Returns whether `url` matches any entry in `urls`, using Apple's
+    // Extensible SSO semantics where each entry is a URL prefix: scheme, host
+    // and port must match exactly (after normalization) and the path of `url`
+    // must start with the entry's path. This is a plain string prefix rather
+    // than a path segment match, so an entry for `/sso` also matches `/ssox`.
+    // Query and ref of `url` are ignored.
+    // Returns false if `url` is invalid, is not HTTP or HTTPS, or if `urls` is
+    // missing or empty.
+    bool MatchesUrl(const GURL& url) const;
 
     friend bool operator==(const Config&, const Config&) = default;
   };
@@ -101,8 +112,10 @@ class ExtensibleEnterpriseSSOPrefsHandler {
   void UpdatePrefs();
 
   // Returns the most up-to-date config. If the config was never read or the
-  // last config read was invalid returns std::nullopt.
-  static std::optional<Config> GetCurrentConfig();
+  // last config read was invalid returns nullptr. The returned pointer is only
+  // valid until the next config update or until the handler is destroyed, so
+  // callers must not retain it.
+  static const Config* GetCurrentConfig();
 
  private:
   void OnConfigRead(std::optional<Config> config);

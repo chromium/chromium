@@ -61,10 +61,20 @@ constexpr char kNormalizedMixedCaseUrl[] = "https://example.com/Path";
 // GURL strips an empty userinfo, so these are equivalent to `kHttpsUrl`.
 constexpr char kUrlWithEmptyUserinfo[] = "https://@example.com/sso";
 constexpr char kUrlWithEmptyUsernameAndPassword[] = "https://:@example.com/sso";
+// Trailing slashes are stripped from non-root paths, so these are equivalent to
+// `kHttpsUrl`.
+constexpr char kUrlWithTrailingSlash[] = "https://example.com/sso/";
+constexpr char kUrlWithTrailingSlashes[] = "https://example.com/sso//";
+// Root paths with multiple slashes are collapsed to "/", so these are
+// equivalent to `kHttpUrl`.
+constexpr char kRootUrlWithDoubleSlash[] = "http://example.com//";
+constexpr char kRootUrlWithTripleSlash[] = "http://example.com///";
 
 // `URLs` entries that are expected to be dropped.
 constexpr char kFtpUrl[] = "ftp://example.com/";
 constexpr char kFileUrl[] = "file:///tmp/sso";
+constexpr char kFilesystemUrl[] =
+    "filesystem:https://example.com/temporary/sso";
 constexpr char kUrlWithQuery[] = "https://example.com/sso?a=b";
 constexpr char kUrlWithEmptyQuery[] = "https://example.com/sso?";
 constexpr char kUrlWithFragment[] = "https://example.com/sso#frag";
@@ -408,8 +418,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, StopAndStartAgain) {
 
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
        GetCurrentConfigEmptyBeforeRead) {
-  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
-            std::nullopt);
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(), nullptr);
 }
 
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
@@ -419,7 +428,10 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(hosts.size());
 
-  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+  const ExtensibleEnterpriseSSOPrefsHandler::Config* config =
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  ASSERT_TRUE(config);
+  EXPECT_EQ(*config,
             ExtensibleEnterpriseSSOPrefsHandler::Config({
                 .extension_id = kOktaSsoExtensionId,
                 .team_id = kOktaSsoTeamId,
@@ -434,17 +446,14 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
   SetHostsPropertyOverride(hosts);
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(hosts.size());
-  ASSERT_TRUE(
-      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
+  ASSERT_TRUE(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig());
 
   prefs_handler_.reset();
-  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
-            std::nullopt);
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(), nullptr);
 
   prefs_handler_ =
       std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(&pref_service_);
-  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
-            std::nullopt);
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(), nullptr);
 }
 
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
@@ -458,9 +467,9 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(0);
 
-  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> config =
+  const ExtensibleEnterpriseSSOPrefsHandler::Config* config =
       ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
-  ASSERT_TRUE(config.has_value());
+  ASSERT_TRUE(config);
   EXPECT_EQ(config->extension_id, kPingSsoExtensionId);
   EXPECT_EQ(config->team_id, kPingSsoTeamId);
 }
@@ -473,8 +482,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
                     /* urls= */ ScopedPropList());
   ReadConfigAndWait();
 
-  ASSERT_TRUE(
-      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
+  ASSERT_TRUE(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig());
   EXPECT_TRUE(
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
           .empty());
@@ -494,9 +502,9 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(0);
 
-  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> config =
+  const ExtensibleEnterpriseSSOPrefsHandler::Config* config =
       ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
-  ASSERT_TRUE(config.has_value());
+  ASSERT_TRUE(config);
   EXPECT_EQ(config->extension_id, kMicrosoftSsoExtensionId);
   EXPECT_EQ(config->team_id, kMicrosoftSsoTeamId);
 }
@@ -870,8 +878,21 @@ INSTANTIATE_TEST_SUITE_P(
                        UrlsToScopedPropList({kUrlWithEmptyUserinfo,
                                              kUrlWithEmptyUsernameAndPassword}),
                        std::vector<GURL>{GURL(kHttpsUrl), GURL(kHttpsUrl)}),
+        UrlsTestParams("StripsTrailingSlashes",
+                       UrlsToScopedPropList({kUrlWithTrailingSlash,
+                                             kUrlWithTrailingSlashes}),
+                       std::vector<GURL>{GURL(kHttpsUrl), GURL(kHttpsUrl)}),
+        // The root path can't be stripped, and already matches every path.
+        UrlsTestParams("KeepsRootPath",
+                       UrlsToScopedPropList({kHttpUrl}),
+                       std::vector<GURL>{GURL(kHttpUrl)}),
+        UrlsTestParams("NormalizesRootWithMultipleSlashes",
+                       UrlsToScopedPropList({kRootUrlWithDoubleSlash,
+                                             kRootUrlWithTripleSlash}),
+                       std::vector<GURL>{GURL(kHttpUrl), GURL(kHttpUrl)}),
         UrlsTestParams("DropsNonHttpUrls",
-                       UrlsToScopedPropList({kFtpUrl, kFileUrl, kHttpsUrl}),
+                       UrlsToScopedPropList({kFtpUrl, kFileUrl, kFilesystemUrl,
+                                             kHttpsUrl}),
                        std::vector<GURL>{GURL(kHttpsUrl)}),
         UrlsTestParams("DropsUrlsWithQuery",
                        UrlsToScopedPropList({kUrlWithQuery, kUrlWithEmptyQuery,
@@ -899,6 +920,137 @@ INSTANTIATE_TEST_SUITE_P(
         // `URLs` is optional.
         UrlsTestParams("MissingUrls", ScopedPropList(), std::nullopt)),
     [](const testing::TestParamInfo<ParseConfigTestParams>& info) {
+      return std::string(info.param.name);
+    });
+
+struct MatchesUrlTestParams {
+  const char* name;
+  std::optional<std::vector<std::string_view>> config_urls;
+  const char* url;
+  bool expected;
+};
+
+class ExtensibleEnterpriseSSOConfigMatchesUrlTest
+    : public ExtensibleEnterpriseSSOPrefsHandlerTest,
+      public testing::WithParamInterface<MatchesUrlTestParams> {};
+
+TEST_P(ExtensibleEnterpriseSSOConfigMatchesUrlTest, MatchesUrl) {
+  const MatchesUrlTestParams& params = GetParam();
+  CFPreferencesObserver::RawConfig raw_config{
+      .extension_id = StringToScopedPropList(kPingSsoExtensionId),
+      .team_id = StringToScopedPropList(kPingSsoTeamId),
+      .hosts = ScopedPropList(),
+      .urls = params.config_urls.has_value()
+                  ? UrlsToScopedPropList(*params.config_urls)
+                  : ScopedPropList(),
+  };
+  const std::optional<Config> config = ParseConfig(std::move(raw_config));
+  ASSERT_TRUE(config.has_value());
+  EXPECT_EQ(config->MatchesUrl(GURL(params.url)), params.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExtensibleEnterpriseSSOConfigMatchesUrlTest,
+    testing::Values(
+        MatchesUrlTestParams("MissingUrls",
+                             std::nullopt,
+                             "https://idp.example.com/",
+                             false),
+        MatchesUrlTestParams("EmptyUrls",
+                             std::vector<std::string_view>(),
+                             "https://idp.example.com/",
+                             false),
+        MatchesUrlTestParams("InvalidUrl",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com"},
+                             "not a url",
+                             false),
+        MatchesUrlTestParams("OriginOnlyEntryMatchesAnyPath",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com"},
+                             "https://idp.example.com/oauth/authorize?code=1",
+                             true),
+        MatchesUrlTestParams("RootWithMultipleSlashesMatchesAnyPath",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com//"},
+                             "https://idp.example.com/sso",
+                             true),
+        MatchesUrlTestParams("PathPrefixMatches",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/sso/login#ref",
+                             true),
+        MatchesUrlTestParams("ExactPathMatches",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/sso",
+                             true),
+        MatchesUrlTestParams("TrailingSlashInConfigMatchesWithoutTrailingSlash",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso/"},
+                             "https://idp.example.com/sso",
+                             true),
+        // Matching is a plain string prefix, not a path segment match.
+        MatchesUrlTestParams("PathPrefixWithoutSegmentBoundaryMatches",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/ssox",
+                             true),
+        MatchesUrlTestParams("DifferentPathDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/other",
+                             false),
+        MatchesUrlTestParams("PathIsCaseSensitive",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/SSO",
+                             false),
+        MatchesUrlTestParams("SchemeAndHostAreCaseInsensitive",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/sso"},
+                             "HTTPS://IDP.Example.COM/sso",
+                             true),
+        MatchesUrlTestParams("DefaultPortMatches",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com"},
+                             "https://idp.example.com:443/",
+                             true),
+        MatchesUrlTestParams("DifferentPortDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com"},
+                             "https://idp.example.com:8443/",
+                             false),
+        MatchesUrlTestParams("DifferentSchemeDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com"},
+                             "http://idp.example.com/",
+                             false),
+        MatchesUrlTestParams("FilesystemUrlDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "https://idp.example.com/temporary/sso"},
+                             "filesystem:https://idp.example.com/temporary/sso/"
+                             "page.html",
+                             false),
+        MatchesUrlTestParams("FilesystemConfigUrlDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "filesystem:https://idp.example.com/temporary/"
+                                 "sso"},
+                             "https://idp.example.com/temporary/sso/page.html",
+                             false),
+        MatchesUrlTestParams("SubdomainDoesNotMatch",
+                             std::vector<std::string_view>{
+                                 "https://example.com"},
+                             "https://idp.example.com/",
+                             false),
+        MatchesUrlTestParams("MatchesAnyEntry",
+                             std::vector<std::string_view>{
+                                 "https://other.example.com",
+                                 "https://idp.example.com/sso"},
+                             "https://idp.example.com/sso/x",
+                             true)),
+    [](const testing::TestParamInfo<MatchesUrlTestParams>& info) {
       return std::string(info.param.name);
     });
 

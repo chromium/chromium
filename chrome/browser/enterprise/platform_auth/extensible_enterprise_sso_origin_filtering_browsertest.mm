@@ -44,6 +44,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,12 +69,26 @@ constexpr char kIdpHost[] = "idp.example";
 constexpr char kSecondIdpHost[] = "second-idp.example";
 constexpr char kUnrelatedHost[] = "unrelated.example";
 
-// A different path on the configured origin. Served by the default `/echo`
-// handler so the navigation commits successfully.
-constexpr char kOtherPath[] = "/echo";
+// Path of the configured URLs. Served by the default `/echo` handler, which
+// also serves its subpaths, so navigations under it commit successfully.
+constexpr char kConfiguredPath[] = "/echo";
+
+// A path on the configured origins that is not covered by `kConfiguredPath`.
+// Served by the default `/defaultresponse` handler.
+constexpr char kUnconfiguredPath[] = "/defaultresponse";
+
+// Another path that is not covered by `kConfiguredPath` nor
+// `kUnconfiguredPath`. Served by the default `/cachetime` handler.
+constexpr char kSecondUnconfiguredPath[] = "/cachetime";
 
 constexpr char kNotSupportedHistogram[] =
     "Enterprise.ExtensibleEnterpriseSSO.NotSupported.Duration";
+constexpr char kNotInMdmConfigHistogram[] =
+    "Enterprise.ExtensibleEnterpriseSSO.NotInMdmConfig.Duration";
+constexpr char kSupportedResultHistogram[] =
+    "Enterprise.ExtensibleEnterpriseSSO.Supported.Result";
+constexpr char kFailureReasonHistogram[] =
+    "Enterprise.ExtensibleEnterpriseSSO.Failure.Reason";
 
 }  // namespace
 
@@ -142,7 +157,8 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
         .extension_id = base::SysUTF8ToCFStringRef(kPingSsoExtensionId),
         .team_id = base::SysUTF8ToCFStringRef(kPingSsoTeamId),
         .hosts = ScopedPropList(),
-        .urls = StringsToPropList(config_urls_.value()),
+        .urls = omit_urls_key_ ? ScopedPropList()
+                               : StringsToPropList(config_urls_.value()),
     };
   }
 
@@ -173,7 +189,20 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
   // handler and the manager have applied it. `std::nullopt` removes the whole
   // payload.
   void SetConfigUrlsAndWait(std::optional<std::vector<std::string>> urls) {
+    omit_urls_key_ = false;
     config_urls_ = std::move(urls);
+    NotifyConfigUpdatedAndWait();
+  }
+
+  // Installs a payload without the `URLs` entry and waits until the prefs
+  // handler and the manager have applied it.
+  void SetConfigWithoutUrlsAndWait() {
+    omit_urls_key_ = true;
+    config_urls_.emplace();
+    NotifyConfigUpdatedAndWait();
+  }
+
+  void NotifyConfigUpdatedAndWait() {
     ASSERT_TRUE(config_update_callback_);
     config_update_callback_.Run();
     content::RunAllTasksUntilIdle();
@@ -194,7 +223,7 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
   }
 
   std::string IdpUrl(const char* host) {
-    return https_server_.GetURL(host, "/sso").spec();
+    return https_server_.GetURL(host, kConfiguredPath).spec();
   }
 
   // Navigates the active tab to `url` and expects `expected_commit_url` to
@@ -215,6 +244,9 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
   }
 
   std::optional<std::vector<std::string>> config_urls_;
+  // Whether the installed payload omits the `URLs` entry. Only applies when
+  // `config_urls_` is set.
+  bool omit_urls_key_ = false;
   base::RepeatingClosure config_update_callback_;
   std::vector<GURL> requested_urls_;
   id mock_sso_provider_ = nil;
@@ -228,17 +260,21 @@ class ExtensibleEnterpriseSsoOriginFilteringBrowserTest
   const ScopedCFPreferenceObserverOverride cf_prefs_override_;
 };
 
-// Tests that a navigation to a configured origin reaches the provider, even if
-// the path differs from the configured URL.
+// Tests that a navigation to a configured URL reaches the provider.
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        ProviderCalledForConfiguredOrigin) {
   base::HistogramTester histogram_tester;
-  const GURL url = https_server_.GetURL(kIdpHost, kOtherPath);
+  const GURL url = https_server_.GetURL(kIdpHost, kConfiguredPath);
 
   NavigateAndExpectCommit(url);
 
   EXPECT_THAT(requested_urls_, ElementsAre(url));
   histogram_tester.ExpectTotalCount(kNotSupportedHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
+      kFailureReasonHistogram,
+      ExtensibleEnterpriseSSOProvider::FailureReason::
+          kOsCannotPerformAuthorization,
+      1);
 }
 
 // Tests that a navigation to an origin missing from the config never reaches
@@ -247,17 +283,87 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        ProviderNotCalledForUnconfiguredOrigin) {
   base::HistogramTester histogram_tester;
 
-  NavigateAndExpectCommit(https_server_.GetURL(kUnrelatedHost, kOtherPath));
+  NavigateAndExpectCommit(
+      https_server_.GetURL(kUnrelatedHost, kConfiguredPath));
 
   EXPECT_THAT(requested_urls_, IsEmpty());
   histogram_tester.ExpectTotalCount(kNotSupportedHistogram, 0);
+  histogram_tester.ExpectTotalCount(kNotInMdmConfigHistogram, 0);
+  histogram_tester.ExpectTotalCount(kFailureReasonHistogram, 0);
+}
+
+// Tests that a navigation to a URL whose path starts with the configured path
+// reaches the provider, regardless of its query.
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
+                       ProviderCalledForUrlUnderConfiguredPath) {
+  const GURL url = https_server_.GetURL(
+      kIdpHost, base::StrCat({kConfiguredPath, "/authorize?code=1"}));
+
+  NavigateAndExpectCommit(url);
+
+  EXPECT_THAT(requested_urls_, ElementsAre(url));
+}
+
+// Tests that a navigation to a configured origin, but outside the configured
+// path, never reaches the provider.
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
+                       ProviderNotCalledForUnconfiguredPathOnConfiguredOrigin) {
+  base::HistogramTester histogram_tester;
+
+  NavigateAndExpectCommit(https_server_.GetURL(kIdpHost, kUnconfiguredPath));
+
+  EXPECT_THAT(requested_urls_, IsEmpty());
+  histogram_tester.ExpectTotalCount(kNotSupportedHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSupportedResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(kNotInMdmConfigHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
+      kFailureReasonHistogram,
+      ExtensibleEnterpriseSSOProvider::FailureReason::kUrlNotInMdmConfig, 1);
+}
+
+// Tests that several configured paths on the same origin each reach the
+// provider, while other paths on that origin don't.
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
+                       MultipleConfiguredPathsOnSameOrigin) {
+  const GURL first_url = https_server_.GetURL(kIdpHost, kConfiguredPath);
+  const GURL second_url = https_server_.GetURL(kIdpHost, kUnconfiguredPath);
+
+  SetConfigUrlsAndWait(
+      std::vector<std::string>{first_url.spec(), second_url.spec()});
+
+  NavigateAndExpectCommit(first_url);
+  NavigateAndExpectCommit(
+      https_server_.GetURL(kIdpHost, kSecondUnconfiguredPath));
+  NavigateAndExpectCommit(second_url);
+
+  EXPECT_THAT(requested_urls_, ElementsAre(first_url, second_url));
+}
+
+// Tests that a request reaching the provider after the payload dropped its
+// `URLs` entry is rejected instead of crashing. This happens when the manager
+// still holds the origins of the previous config while it refetches them.
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
+                       GetDataAfterUrlsRemovedFromConfig) {
+  base::HistogramTester histogram_tester;
+  SetConfigWithoutUrlsAndWait();
+
+  ExtensibleEnterpriseSSOProvider provider;
+  base::test::TestFuture<net::HttpRequestHeaders> future;
+  provider.GetData(https_server_.GetURL(kIdpHost, kConfiguredPath),
+                   future.GetCallback());
+
+  EXPECT_TRUE(future.Take().IsEmpty());
+  EXPECT_THAT(requested_urls_, IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      kFailureReasonHistogram,
+      ExtensibleEnterpriseSSOProvider::FailureReason::kUrlNotInMdmConfig, 1);
 }
 
 // Tests that a redirect from an unconfigured origin to a configured one only
 // reaches the provider for the configured hop.
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        RedirectToConfiguredOrigin) {
-  const GURL idp_url = https_server_.GetURL(kIdpHost, kOtherPath);
+  const GURL idp_url = https_server_.GetURL(kIdpHost, kConfiguredPath);
   const GURL redirect_url = https_server_.GetURL(
       kUnrelatedHost, base::StrCat({"/server-redirect", "?", idp_url.spec()}));
 
@@ -269,8 +375,9 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
 // Tests that the filtered origins follow runtime changes of the config's URLs.
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        OriginsFollowConfigUpdates) {
-  const GURL first_idp_url = https_server_.GetURL(kIdpHost, kOtherPath);
-  const GURL second_idp_url = https_server_.GetURL(kSecondIdpHost, kOtherPath);
+  const GURL first_idp_url = https_server_.GetURL(kIdpHost, kConfiguredPath);
+  const GURL second_idp_url =
+      https_server_.GetURL(kSecondIdpHost, kConfiguredPath);
 
   SetConfigUrlsAndWait(std::vector<std::string>{IdpUrl(kSecondIdpHost)});
   ASSERT_TRUE(IsManagerEnabled());
@@ -284,9 +391,11 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
 // Tests that several configured origins are all forwarded to the provider.
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        MultipleConfiguredOrigins) {
-  const GURL first_idp_url = https_server_.GetURL(kIdpHost, kOtherPath);
-  const GURL second_idp_url = https_server_.GetURL(kSecondIdpHost, kOtherPath);
-  const GURL unrelated_url = https_server_.GetURL(kUnrelatedHost, kOtherPath);
+  const GURL first_idp_url = https_server_.GetURL(kIdpHost, kConfiguredPath);
+  const GURL second_idp_url =
+      https_server_.GetURL(kSecondIdpHost, kConfiguredPath);
+  const GURL unrelated_url =
+      https_server_.GetURL(kUnrelatedHost, kConfiguredPath);
 
   SetConfigUrlsAndWait(
       std::vector<std::string>{IdpUrl(kIdpHost), IdpUrl(kSecondIdpHost)});
@@ -303,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        FetchOriginsDeduplicatesOrigins) {
   SetConfigUrlsAndWait(std::vector<std::string>{
-      IdpUrl(kIdpHost), https_server_.GetURL(kIdpHost, kOtherPath).spec(),
+      IdpUrl(kIdpHost),
+      https_server_.GetURL(kIdpHost, kUnconfiguredPath).spec(),
       IdpUrl(kSecondIdpHost), IdpUrl(kIdpHost)});
 
   ExtensibleEnterpriseSSOProvider provider;
@@ -323,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
   SetConfigUrlsAndWait(std::nullopt);
   ASSERT_FALSE(IsManagerEnabled());
 
-  NavigateAndExpectCommit(https_server_.GetURL(kIdpHost, kOtherPath));
+  NavigateAndExpectCommit(https_server_.GetURL(kIdpHost, kConfiguredPath));
 
   EXPECT_THAT(requested_urls_, IsEmpty());
 }
@@ -334,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
 // asynchronously after the manager has been re-evaluated.
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOriginFilteringBrowserTest,
                        BlocklistPolicyAll) {
-  const GURL url = https_server_.GetURL(kIdpHost, kOtherPath);
+  const GURL url = https_server_.GetURL(kIdpHost, kConfiguredPath);
 
   SetBlocklistPolicyAndWait({kAllIdentityProviders});
   ASSERT_FALSE(IsManagerEnabled());
@@ -363,8 +473,9 @@ class ExtensibleEnterpriseSsoOriginFilteringDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ExtensibleEnterpriseSsoOriginFilteringDisabledBrowserTest,
     ProviderCalledForAllOrigins) {
-  const GURL idp_url = https_server_.GetURL(kIdpHost, kOtherPath);
-  const GURL unrelated_url = https_server_.GetURL(kUnrelatedHost, kOtherPath);
+  const GURL idp_url = https_server_.GetURL(kIdpHost, kConfiguredPath);
+  const GURL unrelated_url =
+      https_server_.GetURL(kUnrelatedHost, kConfiguredPath);
   ASSERT_TRUE(IsManagerEnabled());
 
   NavigateAndExpectCommit(idp_url);

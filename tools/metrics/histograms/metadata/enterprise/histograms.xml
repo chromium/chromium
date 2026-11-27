@@ -3463,8 +3463,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records why Extensible Enterprise SSO on macOS failed before IdP
     authentication. Emitted once per checked HTTP(S) navigation or redirect when
-    the OS capability check times out or cannot authorize the URL, including
-    URLs that cannot be converted to NSURL.
+    the URL does not match the URLs of the installed com.apple.extensiblesso MDM
+    payload (only while origin filtering is enabled), or when the OS capability
+    check times out or cannot authorize the URL (including URLs that cannot be
+    converted to NSURL).
 
     Without origin filtering, all HTTP(S) navigations and redirects in
     non-off-the-record profiles are checked when Extensible Enterprise SSO is
@@ -3536,6 +3538,10 @@ chromium-metrics-reviews@google.com.
     {Status}.
   </summary>
   <token key="Status">
+    <variant name="NotInMdmConfig"
+        summary="does not match any URL in the com.apple.extensiblesso MDM
+                 payload, so it was rejected before reaching the OS. Only
+                 recorded while origin filtering is enabled"/>
     <variant name="NotSupported" summary="is not supported by the OS"/>
     <variant name="Supported.Failure" summary="was unsuccessful"/>
     <variant name="Supported.Success" summary="was successful"/>

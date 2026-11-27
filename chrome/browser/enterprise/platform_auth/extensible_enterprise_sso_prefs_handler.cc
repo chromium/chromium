@@ -31,6 +31,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
@@ -41,6 +42,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace enterprise_auth {
 
@@ -211,6 +213,27 @@ std::optional<std::vector<std::string>> ParseHostnames(
   return hostnames;
 }
 
+// Strips trailing slashes from the path of a `URLs` prefix, so that an entry
+// like `https://idp.example/sso/` also matches `https://idp.example/sso`. The
+// root path is kept as "/" because HTTP(S) `GURL`s always have a path, and it
+// matches every path anyway.
+GURL StripTrailingSlashes(const GURL& url) {
+  const std::string_view path = url.path();
+  std::string_view trimmed_path =
+      base::TrimString(path, "/", base::TRIM_TRAILING);
+  if (trimmed_path.empty()) {
+    // Collapse paths consisting only of slashes (e.g. "//") to the root "/".
+    trimmed_path = "/";
+  }
+  if (trimmed_path.size() == path.size()) {
+    return url;
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(trimmed_path);
+  return url.ReplaceComponents(replacements);
+}
+
 std::optional<std::vector<GURL>> ParseUrls(CFPropertyListRef urls_prop) {
   if (!urls_prop) {
     return std::nullopt;
@@ -240,7 +263,7 @@ std::optional<std::vector<GURL>> ParseUrls(CFPropertyListRef urls_prop) {
     // credentials.
     if (url.is_valid() && url.SchemeIsHTTPOrHTTPS() && !url.has_query() &&
         !url.has_ref() && !url.has_username() && !url.has_password()) {
-      urls.push_back(std::move(url));
+      urls.push_back(StripTrailingSlashes(url));
     }
   }
 
@@ -279,6 +302,24 @@ bool IsOktaConfig(const Config& config) {
 
 }  // namespace
 
+bool ExtensibleEnterpriseSSOPrefsHandler::Config::MatchesUrl(
+    const GURL& url) const {
+  if (!urls.has_value() || !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Both sides are normalized `GURL`s, so scheme and host are already
+  // lowercase and default ports are elided, which gives Apple's
+  // case-insensitive scheme/host matching for free.
+  for (const GURL& allowed_url : *urls) {
+    if (url::IsSameOriginWith(allowed_url, url) &&
+        url.path().starts_with(allowed_url.path())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)
     : cf_preferences_observer_(CreateCfPreferencesObserver()),
@@ -307,14 +348,14 @@ ExtensibleEnterpriseSSOPrefsHandler::~ExtensibleEnterpriseSSOPrefsHandler() {
 }
 
 // static
-std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
+const ExtensibleEnterpriseSSOPrefsHandler::Config*
 ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig() {
   if (!g_instance) {
-    return std::nullopt;
+    return nullptr;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
-  return g_instance->current_config_;
+  return base::OptionalToPtr(g_instance->current_config_);
 }
 
 void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {

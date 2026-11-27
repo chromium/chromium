@@ -55,6 +55,10 @@ namespace enterprise_auth {
 namespace {
 
 using FailureReason = ExtensibleEnterpriseSSOProvider::FailureReason;
+using MdmConfig = ExtensibleEnterpriseSSOPrefsHandler::Config;
+
+constexpr char kFailureReasonHistogram[] =
+    "Enterprise.ExtensibleEnterpriseSSO.Failure.Reason";
 
 // Empty function used to ensure SSOServiceEntraAuthControllerDelegate does not
 // get destroyed until the data is fetched.
@@ -66,13 +70,22 @@ void OnDataFetched(SSOServiceEntraAuthControllerDelegate*) {
 void RecordMetrics(
     std::unique_ptr<ExtensibleEnterpriseSSOProvider::Metrics> metrics) {
   if (metrics->failure_reason.has_value()) {
-    base::UmaHistogramEnumeration(
-        "Enterprise.ExtensibleEnterpriseSSO.Failure.Reason",
-        *metrics->failure_reason);
+    base::UmaHistogramEnumeration(kFailureReasonHistogram,
+                                  *metrics->failure_reason);
   }
   if (metrics->failure_reason == FailureReason::kCapabilityCheckTimedOut) {
-    // Only timeouts skip the OS interaction metrics below, because the OS
-    // didn't say whether the URL is supported.
+    // Timeouts skip the OS interaction metrics below, because the OS didn't
+    // say whether the URL is supported.
+    return;
+  }
+
+  const base::TimeDelta duration = metrics->end_time - metrics->start_time;
+
+  // Requests filtered out by the MDM config never reach the OS, so they get a
+  // separate bucket to keep the other durations about the OS interaction.
+  if (metrics->failure_reason == FailureReason::kUrlNotInMdmConfig) {
+    base::UmaHistogramTimes(
+        "Enterprise.ExtensibleEnterpriseSSO.NotInMdmConfig.Duration", duration);
     return;
   }
 
@@ -85,11 +98,10 @@ void RecordMetrics(
         metrics->success
             ? "Enterprise.ExtensibleEnterpriseSSO.Supported.Success.Duration"
             : "Enterprise.ExtensibleEnterpriseSSO.Supported.Failure.Duration",
-        metrics->end_time - metrics->start_time);
+        duration);
   } else {
     base::UmaHistogramTimes(
-        "Enterprise.ExtensibleEnterpriseSSO.NotSupported.Duration",
-        metrics->end_time - metrics->start_time);
+        "Enterprise.ExtensibleEnterpriseSSO.NotSupported.Duration", duration);
   }
 }
 
@@ -110,6 +122,12 @@ void OnAuthorizationDone(
   std::move(callback).Run(std::move(headers));
 }
 
+bool DoesCurrentMdmConfigMatchUrl(const GURL& url) {
+  const MdmConfig* current_mdm_config =
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  return current_mdm_config && current_mdm_config->MatchesUrl(url);
+}
+
 }  // namespace
 
 // The provider is created by the capability check, possibly on a worker, and
@@ -121,8 +139,8 @@ struct ExtensibleEnterpriseSSOProvider::AuthProvider {
   ASAuthorizationSingleSignOnProvider* provider;
 };
 
-ExtensibleEnterpriseSSOProvider::Metrics::Metrics(const std::string& host)
-    : host(host), start_time(base::Time::Now()) {}
+ExtensibleEnterpriseSSOProvider::Metrics::Metrics()
+    : start_time(base::Time::Now()) {}
 
 ExtensibleEnterpriseSSOProvider::Metrics::~Metrics() = default;
 
@@ -169,10 +187,9 @@ void ExtensibleEnterpriseSSOProvider::FetchOrigins(
   CHECK(SupportsOriginFiltering());
 
   std::vector<url::Origin> origins;
-  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
-      current_mdm_config =
-          ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
-  if (current_mdm_config.has_value() && current_mdm_config->urls.has_value()) {
+  const MdmConfig* current_mdm_config =
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  if (current_mdm_config && current_mdm_config->urls.has_value()) {
     const std::vector<GURL>& urls = *current_mdm_config->urls;
     origins.reserve(urls.size());
     for (const GURL& url : urls) {
@@ -193,13 +210,24 @@ void ExtensibleEnterpriseSSOProvider::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto metrics = std::make_unique<Metrics>(url.GetHost());
-
-  // TODO(b/564412659): Fail if the `url` does not match any entries from
-  // `GetCurrentSsoExtensionConfig()->urls`.
+  auto metrics = std::make_unique<Metrics>();
 
   // The authentication headers only apply to HTTP(S) requests.
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    OnAuthorizationDone(std::move(callback), std::move(metrics), nullptr);
+    return;
+  }
+
+  // With origin filtering, the manager only forwards requests whose origin is
+  // in the MDM config's `URLs`; this additionally enforces the path prefixes of
+  // those entries. The config may have changed since the manager last fetched
+  // origins, so a missing config or `URLs` entry is treated as a mismatch.
+  if (SupportsOriginFiltering() && !DoesCurrentMdmConfigMatchUrl(url)) {
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Skipping request because its URL does "
+           "not match any URL in the MDM config. Origin: "
+        << url::Origin::Create(url).Serialize();
+    metrics->failure_reason = FailureReason::kUrlNotInMdmConfig;
     OnAuthorizationDone(std::move(callback), std::move(metrics), nullptr);
     return;
   }

@@ -3030,6 +3030,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ExtensibleEnterpriseSSOFailureReason">
   <int value="0" label="OS cannot perform authorization for the URL"/>
   <int value="1" label="Capability check timed out"/>
+  <int value="2" label="URL does not match any URL in the MDM config"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h:FailureReason) -->
