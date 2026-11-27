@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/request_destination.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 
@@ -83,43 +84,14 @@ constexpr auto kRequestDestinationToStringMap =
          {network::mojom::RequestDestination::kSpeculationRules,
           kSpeculationRules},
          {network::mojom::RequestDestination::kJson, kJson}});
+// LINT.ThenChange(/third_party/blink/renderer/core/fetch/request.idl)
 
 constexpr auto kRequestDestinationFromStringMap =
     base::MakeFixedFlatMap<std::string_view,
                            network::mojom::RequestDestination>(
-        {{kEmpty, network::mojom::RequestDestination::kEmpty},
-         {kAudio, network::mojom::RequestDestination::kAudio},
-         {kAudioWorklet, network::mojom::RequestDestination::kAudioWorklet},
-         {kDocument, network::mojom::RequestDestination::kDocument},
-         {kEmbed, network::mojom::RequestDestination::kEmbed},
-         {kFont, network::mojom::RequestDestination::kFont},
-         {kFrame, network::mojom::RequestDestination::kFrame},
-         {kIframe, network::mojom::RequestDestination::kIframe},
-         {kImage, network::mojom::RequestDestination::kImage},
-         {kManifest, network::mojom::RequestDestination::kManifest},
-         {kObject, network::mojom::RequestDestination::kObject},
-         {kPaintWorklet, network::mojom::RequestDestination::kPaintWorklet},
-         {kReport, network::mojom::RequestDestination::kReport},
-         {kScript, network::mojom::RequestDestination::kScript},
-         {kServiceWorker, network::mojom::RequestDestination::kServiceWorker},
-         {kSharedWorker, network::mojom::RequestDestination::kSharedWorker},
-         {kStyle, network::mojom::RequestDestination::kStyle},
-         {kText, network::mojom::RequestDestination::kText},
-         {kTrack, network::mojom::RequestDestination::kTrack},
-         {kVideo, network::mojom::RequestDestination::kVideo},
-         {kWebBundle, network::mojom::RequestDestination::kWebBundle},
-         {kWorker, network::mojom::RequestDestination::kWorker},
-         {kXslt, network::mojom::RequestDestination::kXslt},
-         {kFencedframe, network::mojom::RequestDestination::kFencedframe},
-         {kWebIdentity, network::mojom::RequestDestination::kWebIdentity},
-         {kEmailVerification,
-          network::mojom::RequestDestination::kEmailVerification},
-         {kCompressionDictionary,
-          network::mojom::RequestDestination::kCompressionDictionary},
-         {kSpeculationRules,
-          network::mojom::RequestDestination::kSpeculationRules},
-         {kJson, network::mojom::RequestDestination::kJson}});
-// LINT.ThenChange(/third_party/blink/renderer/core/fetch/request.idl)
+        kRequestDestinationToStringMap,
+        /*comp=*/{},
+        [](const auto& entry) { return std::pair(entry.second, entry.first); });
 
 // Gaps in the network::mojom::RequestDestination enum due to deprecated types.
 // When a type is deprecated and removed from the mojom definition, its numeric
@@ -146,12 +118,6 @@ static_assert(
                 network::mojom::RequestDestination::kMaxValue)) ==
         static_cast<size_t>(network::mojom::RequestDestination::kMaxValue) + 1,
     "All non-deprecated types must be in kRequestDestinationToStringMap.");
-static_assert(
-    std::size(kRequestDestinationFromStringMap) +
-            CountDeprecatedRequestDestinationValues(static_cast<int>(
-                network::mojom::RequestDestination::kMaxValue)) ==
-        static_cast<size_t>(network::mojom::RequestDestination::kMaxValue) + 1,
-    "All non-deprecated types must be in kRequestDestinationFromStringMap.");
 
 constexpr char kFiveCharEmptyString[] = "empty";
 
