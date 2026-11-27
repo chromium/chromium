@@ -101,6 +101,7 @@ class SyncEngineImpl : public SyncEngine,
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
+  bool IsInitialInvalidationConnectionReady() const override;
   void ClearNigoriDataForMigration() override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
   void RecordNigoriMemoryUsageAndCountsHistograms() override;
@@ -117,6 +118,25 @@ class SyncEngineImpl : public SyncEngine,
 
  private:
   friend class SyncEngineBackend;
+
+  // Tracks the one-time startup progression of the initial push invalidation
+  // connection for `IsInitialInvalidationConnectionReady()`.
+  enum class InitialInvalidationConnectionState {
+    // Invalidations have not yet become enabled (either no FCM registration
+    // token is available yet or `StartHandlingInvalidations()` has not been
+    // called), so `WaitForInitialConnectionReady()` has not been requested.
+    kWaitingForInvalidationsEnabled,
+    // `WaitForInitialConnectionReady()` has been requested and we are waiting
+    // for the underlying push connection to finish its initial startup login.
+    kWaitingForConnectionReady,
+    // The push connection reported readiness and we are bouncing a task through
+    // `sync_task_runner_` so any invalidations delivered ahead of readiness are
+    // reflected in `cached_status_.invalidated_data_types` first.
+    kDrainingInvalidations,
+    // Initial push connection is ready and any startup invalidations have been
+    // drained into `cached_status_.invalidated_data_types`.
+    kReady,
+  };
 
   // Called when the syncer has finished performing a configuration.
   void FinishConfigureDataTypesOnFrontendLoop(const DataTypeSet enabled_types,
@@ -179,6 +199,12 @@ class SyncEngineImpl : public SyncEngine,
   // Updates invalidator's state.
   void OnInvalidatorStateChange(bool enabled);
 
+  // Marks the initial invalidation connection as ready after bouncing through
+  // `sync_task_runner_` so any previously delivered invalidations are reflected
+  // in `cached_status_.invalidated_data_types` first.
+  void OnInitialConnectionReady();
+  void OnInitialInvalidationConnectionDrained();
+
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
@@ -233,6 +259,8 @@ class SyncEngineImpl : public SyncEngine,
   // otherwise the metrics would be skewed by invalidations disabling and
   // re-enabling.
   bool invalidations_enabled_reported_ = false;
+  InitialInvalidationConnectionState initial_invalidation_connection_state_ =
+      InitialInvalidationConnectionState::kWaitingForInvalidationsEnabled;
 
   // Checks that we're on the same sequence this was constructed on (UI
   // sequence).

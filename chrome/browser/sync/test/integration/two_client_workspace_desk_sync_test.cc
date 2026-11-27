@@ -99,12 +99,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
       base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
 
   ASSERT_TRUE(SetupClients());
-  // `GetDownloadStatusFor()` can return `kUpToDate` on warm restart before an
-  // asynchronous push invalidation arrives (crbug.com/587268498). Wait until
-  // the `PRE_`-queued invalidation reaches Sync first.
-  ASSERT_TRUE(workspace_desk_helper::InitialDeskInvalidationDeliveredChecker(
-                  GetSyncService(0))
-                  .Wait());
   // Checks that client 1 was able to get the entry via the `OnStateChanged()`
   // notification from `SyncService`.
   ASSERT_TRUE(

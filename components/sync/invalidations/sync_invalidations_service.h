@@ -61,6 +61,13 @@ class SyncInvalidationsService : public KeyedService {
   // the device is not listening to invalidations.
   virtual std::optional<std::string> GetFCMRegistrationToken() const = 0;
 
+  // Invokes `callback` once the underlying push channel has completed its
+  // initial startup connection and drained any queued messages. Must only be
+  // called while listening for invalidations. `callback` is not invoked if
+  // listening stops before readiness is reached, or if the connection never
+  // succeeds.
+  virtual void WaitForInitialConnectionReady(base::OnceClosure callback) = 0;
+
   // Set the interested data types change handler. `handler` can be nullptr to
   // unregister any existing handler. There can be at most one handler.
   virtual void SetInterestedDataTypesHandler(

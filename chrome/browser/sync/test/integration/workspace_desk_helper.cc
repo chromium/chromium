@@ -14,7 +14,6 @@
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/engine/sync_status.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 
@@ -142,25 +141,6 @@ bool DownloadStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for download status kUpToDate for WORKSPACE_DESK.";
   return service()->GetDownloadStatusFor(syncer::WORKSPACE_DESK) ==
          syncer::SyncService::DataTypeDownloadStatus::kUpToDate;
-}
-
-InitialDeskInvalidationDeliveredChecker::
-    InitialDeskInvalidationDeliveredChecker(
-        syncer::SyncServiceImpl* sync_service)
-    : SingleClientStatusChangeChecker(sync_service) {}
-
-InitialDeskInvalidationDeliveredChecker::
-    ~InitialDeskInvalidationDeliveredChecker() = default;
-
-bool InitialDeskInvalidationDeliveredChecker::IsExitConditionSatisfied(
-    std::ostream* os) {
-  *os << "Waiting for initial WORKSPACE_DESK invalidation to be delivered.";
-  syncer::SyncStatus status;
-  if (!service()->QueryDetailedSyncStatusForDebugging(&status)) {
-    return false;
-  }
-  return status.invalidated_data_types.Has(syncer::WORKSPACE_DESK) ||
-         status.notifications_received > 0;
 }
 
 }  // namespace workspace_desk_helper

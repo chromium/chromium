@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -630,6 +631,47 @@ TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsOnTokenUpdate) {
       .WillRepeatedly(Return("fcm_token"));
   backend_->OnFCMRegistrationTokenChanged();
   fake_manager_->WaitForSyncThread();
+  EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
+}
+
+TEST_F(SyncEngineImplTest, ShouldWaitForInitialInvalidationConnection) {
+  base::OnceClosure ready_callback;
+  ON_CALL(mock_sync_invalidations_service_, HasListener)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
+      .WillByDefault(Return(std::nullopt));
+  EXPECT_CALL(mock_sync_invalidations_service_, WaitForInitialConnectionReady)
+      .WillOnce([&](base::OnceClosure callback) {
+        ready_callback = std::move(callback);
+      });
+
+  InitializeBackend(/*expect_success=*/true);
+  // Before an FCM token is available (which guarantees `FCMHandler` is
+  // listening), `WaitForInitialConnectionReady()` must not be called.
+  backend_->StartHandlingInvalidations();
+  EXPECT_FALSE(ready_callback);
+  EXPECT_FALSE(backend_->IsInitialInvalidationConnectionReady());
+
+  ON_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
+      .WillByDefault(Return("fcm_token"));
+  backend_->OnFCMRegistrationTokenChanged();
+  // Repeated calls must not register duplicate readiness callbacks.
+  backend_->StartHandlingInvalidations();
+  fake_manager_->WaitForSyncThread();
+  EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
+  EXPECT_FALSE(backend_->IsInitialInvalidationConnectionReady());
+  ASSERT_TRUE(ready_callback);
+
+  EXPECT_CALL(mock_host_, OnInvalidationStatusChanged()).WillOnce([&]() {
+    EXPECT_TRUE(backend_->IsInitialInvalidationConnectionReady());
+  });
+  std::move(ready_callback).Run();
+  // Readiness must wait for the `sync_task_runner_` round-trip before flipping
+  // on the UI sequence.
+  EXPECT_FALSE(backend_->IsInitialInvalidationConnectionReady());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return backend_->IsInitialInvalidationConnectionReady(); }));
   EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
 

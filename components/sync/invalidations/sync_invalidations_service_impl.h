@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/data_type.h"
@@ -45,6 +46,7 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) override;
   std::optional<std::string> GetFCMRegistrationToken() const override;
+  void WaitForInitialConnectionReady(base::OnceClosure callback) override;
   void SetInterestedDataTypesHandler(
       InterestedDataTypesHandler* handler) override;
   std::optional<DataTypeSet> GetInterestedDataTypes() const override;

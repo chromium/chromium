@@ -146,12 +146,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        DownloadDeskTemplateWhenUpToDate) {
   ASSERT_TRUE(SetupClients());
-  // `GetDownloadStatusFor()` can return `kUpToDate` on warm restart before an
-  // asynchronous push invalidation arrives (crbug.com/587268498). Wait until
-  // the `PRE_`-queued invalidation reaches Sync first.
-  ASSERT_TRUE(workspace_desk_helper::InitialDeskInvalidationDeliveredChecker(
-                  GetSyncService(0))
-                  .Wait());
   ASSERT_TRUE(
       workspace_desk_helper::DownloadStatusChecker(GetSyncService(0)).Wait());
 

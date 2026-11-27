@@ -2313,6 +2313,27 @@ TEST_F(SyncServiceImplTest, ShouldWaitForInitializedInvalidations) {
             SyncService::DataTypeDownloadStatus::kUpToDate);
 }
 
+TEST_F(SyncServiceImplTest, ShouldWaitForInitialInvalidationConnection) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return service()->GetActiveDataTypes().Has(syncer::BOOKMARKS);
+  }));
+
+  engine()->SetInitialInvalidationConnectionReady(false);
+  SetInvalidationsEnabled();
+
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
+
+  engine()->SetInitialInvalidationConnectionReady(true);
+  service()->OnInvalidationStatusChanged();
+
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::DataTypeDownloadStatus::kUpToDate);
+}
+
 TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();

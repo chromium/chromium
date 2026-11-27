@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -305,6 +306,17 @@ TEST_F(FCMHandlerTest, ShouldClearLastIncomingMessagesOnStopListening) {
   EXPECT_CALL(mock_listener, OnInvalidationReceived).Times(0);
   fcm_handler_.AddListener(&mock_listener);
   fcm_handler_.RemoveListener(&mock_listener);
+}
+
+TEST_F(FCMHandlerTest,
+       ShouldForwardWaitForInitialConnectionReadyWhenListening) {
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  fcm_handler_.StartListening();
+
+  base::MockOnceClosure listening_callback;
+  EXPECT_CALL(listening_callback, Run()).Times(1);
+  fcm_handler_.WaitForInitialConnectionReady(listening_callback.Get());
 }
 
 }  // namespace

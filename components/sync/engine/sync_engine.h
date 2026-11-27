@@ -186,6 +186,11 @@ class SyncEngine : public DataTypeConfigurer {
   // diverge from a real scheduled poll time because this method uses base::Time
   // while scheduler uses base::TimeTicks (which may be paused in sleep mode).
   virtual bool IsNextPollTimeInThePast() const = 0;
+
+  // Returns whether the initial invalidations connection has been established
+  // and any queued startup invalidations delivered ahead of readiness have
+  // been processed into `GetDetailedStatus().invalidated_data_types`.
+  virtual bool IsInitialInvalidationConnectionReady() const = 0;
 };
 
 }  // namespace syncer

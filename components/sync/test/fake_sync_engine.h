@@ -65,6 +65,7 @@ class FakeSyncEngine final : public SyncEngine {
   }
 
   void SetPollIntervalElapsed(bool elapsed);
+  void SetInitialInvalidationConnectionReady(bool ready);
 
   // Manual completion of Initialize(), required if auto-completion was disabled
   // in the constructor.
@@ -136,6 +137,7 @@ class FakeSyncEngine final : public SyncEngine {
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
+  bool IsInitialInvalidationConnectionReady() const override;
   void ClearNigoriDataForMigration() override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
   void RecordNigoriMemoryUsageAndCountsHistograms() override;
@@ -157,6 +159,7 @@ class FakeSyncEngine final : public SyncEngine {
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
   bool is_next_poll_time_in_the_past_ = false;
+  bool is_initial_invalidation_connection_ready_ = true;
   ConfigureReason last_configure_reason_ = ConfigureReason::kUnknown;
   std::optional<SyncCredentials> last_credentials_;
   std::vector<uint8_t> last_trusted_vault_passphrase_key_;

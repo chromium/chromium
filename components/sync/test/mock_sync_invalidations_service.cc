@@ -4,9 +4,14 @@
 
 #include "components/sync/test/mock_sync_invalidations_service.h"
 
+#include "base/test/gmock_callback_support.h"
+
 namespace syncer {
 
-MockSyncInvalidationsService::MockSyncInvalidationsService() = default;
+MockSyncInvalidationsService::MockSyncInvalidationsService() {
+  ON_CALL(*this, WaitForInitialConnectionReady)
+      .WillByDefault(base::test::RunOnceClosure<0>());
+}
 
 MockSyncInvalidationsService::~MockSyncInvalidationsService() = default;
 

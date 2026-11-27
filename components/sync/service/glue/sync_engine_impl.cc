@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -598,6 +599,12 @@ bool SyncEngineImpl::IsNextPollTimeInThePast() const {
   return now >= last_poll_time + poll_interval;
 }
 
+bool SyncEngineImpl::IsInitialInvalidationConnectionReady() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return initial_invalidation_connection_state_ ==
+         InitialInvalidationConnectionState::kReady;
+}
+
 void SyncEngineImpl::ClearNigoriDataForMigration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
@@ -717,6 +724,51 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   // TODO(crbug.com/40266819): wait for FCM token to be committed before change
   // the state to enabled.
   OnInvalidatorStateChange(/*enabled=*/true);
+
+  if (initial_invalidation_connection_state_ ==
+      InitialInvalidationConnectionState::kWaitingForInvalidationsEnabled) {
+    initial_invalidation_connection_state_ =
+        InitialInvalidationConnectionState::kWaitingForConnectionReady;
+    // Having a non-empty FCM registration token guarantees that
+    // `sync_invalidations_service_` is currently listening for invalidations.
+    sync_invalidations_service_->WaitForInitialConnectionReady(
+        base::BindOnce(&SyncEngineImpl::OnInitialConnectionReady,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void SyncEngineImpl::OnInitialConnectionReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(initial_invalidation_connection_state_,
+           InitialInvalidationConnectionState::kWaitingForConnectionReady);
+  initial_invalidation_connection_state_ =
+      InitialInvalidationConnectionState::kDrainingInvalidations;
+
+  // Issue a round-trip through `sync_task_runner_` before marking the initial
+  // invalidation connection as ready on the UI sequence.
+  // `OnInvalidationReceived()` does not parse payloads on the UI sequence; it
+  // posts `DoOnStandaloneInvalidationReceived()` to `sync_task_runner_`, which
+  // parses `SyncInvalidationsPayload` and posts `HandleSyncStatusChanged()`
+  // back to the UI sequence to populate
+  // `cached_status_.invalidated_data_types`. Posting behind any queued
+  // `DoOnStandaloneInvalidationReceived()` tasks on `sync_task_runner_`
+  // guarantees that all invalidations delivered ahead of
+  // `OnInitialConnectionReady()` (or replayed in `AddListener()`) are reflected
+  // in `cached_status_.invalidated_data_types` before
+  // `IsInitialInvalidationConnectionReady()` becomes true.
+  sync_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(),
+      base::BindOnce(&SyncEngineImpl::OnInitialInvalidationConnectionDrained,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SyncEngineImpl::OnInitialInvalidationConnectionDrained() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(initial_invalidation_connection_state_,
+           InitialInvalidationConnectionState::kDrainingInvalidations);
+  initial_invalidation_connection_state_ =
+      InitialInvalidationConnectionState::kReady;
+  host_->OnInvalidationStatusChanged();
 }
 
 }  // namespace syncer

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 
@@ -84,6 +85,12 @@ std::optional<std::string>
 SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_handler_->GetFCMRegistrationToken();
+}
+
+void SyncInvalidationsServiceImpl::WaitForInitialConnectionReady(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  fcm_handler_->WaitForInitialConnectionReady(std::move(callback));
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(

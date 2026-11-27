@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,6 +31,10 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
               RemoveTokenObserver,
               (FCMRegistrationTokenObserver * observer));
   MOCK_METHOD(std::optional<std::string>, GetFCMRegistrationToken, (), (const));
+  MOCK_METHOD(void,
+              WaitForInitialConnectionReady,
+              (base::OnceClosure callback),
+              (override));
   MOCK_METHOD(void,
               SetInterestedDataTypesHandler,
               (InterestedDataTypesHandler * handler));

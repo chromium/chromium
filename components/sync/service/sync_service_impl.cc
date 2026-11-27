@@ -2172,7 +2172,8 @@ SyncService::DataTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     return DataTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  if (!engine_->GetDetailedStatus().notifications_enabled) {
+  if (!engine_->GetDetailedStatus().notifications_enabled ||
+      !engine_->IsInitialInvalidationConnectionReady()) {
     DVLOG(1) << "Waiting for invalidations to be initialized";
     return DataTypeDownloadStatus::kWaitingForUpdates;
   }

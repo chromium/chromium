@@ -46,6 +46,10 @@ void FakeSyncEngine::SetPollIntervalElapsed(bool elapsed) {
   is_next_poll_time_in_the_past_ = elapsed;
 }
 
+void FakeSyncEngine::SetInitialInvalidationConnectionReady(bool ready) {
+  is_initial_invalidation_connection_ready_ = ready;
+}
+
 void FakeSyncEngine::SetDetailedStatus(const SyncStatus& status) {
   sync_status_ = status;
 }
@@ -172,6 +176,10 @@ void FakeSyncEngine::OnCookieJarChanged(bool account_mismatch,
 
 bool FakeSyncEngine::IsNextPollTimeInThePast() const {
   return is_next_poll_time_in_the_past_;
+}
+
+bool FakeSyncEngine::IsInitialInvalidationConnectionReady() const {
+  return is_initial_invalidation_connection_ready_;
 }
 
 void FakeSyncEngine::ClearNigoriDataForMigration() {}

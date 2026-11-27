@@ -7,6 +7,8 @@
 #include <map>
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -90,6 +92,13 @@ void FCMHandler::StopListeningPermanently() {
 const std::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_registration_token_;
+}
+
+void FCMHandler::WaitForInitialConnectionReady(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(callback);
+  CHECK(IsListening());
+  gcm_driver_->WaitForInitialConnectionReady(std::move(callback));
 }
 
 void FCMHandler::ShutdownHandler() {

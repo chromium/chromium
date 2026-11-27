@@ -529,8 +529,10 @@ class SyncService : public KeyedService {
       std::vector<LocalDataItemModel::DataId> items) = 0;
 
   // Returns current download status for the given `type`. The caller can use
-  // SyncServiceObserver::OnStateChanged() to track status changes. Must be
-  // called for real data types only.
+  // `SyncServiceObserver::OnStateChanged()` to track status changes. Note that
+  // this may remain in `DataTypeDownloadStatus::kWaitingForUpdates`
+  // indefinitely in some cases (e.g. due to no internet connection or other
+  // network issues). Must be called for real data types only.
   virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
 
   // Returns the cache GUIDs for the current device across all Gaia IDs.

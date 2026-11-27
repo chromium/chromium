@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -80,6 +81,13 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   // Used to get an obtained FCM token. Returns null if it doesn't have a token.
   const std::optional<std::string>& GetFCMRegistrationToken() const;
+
+  // Invokes `callback` once the underlying push channel has completed its
+  // initial startup connection and drained any queued messages. Must only be
+  // called while `IsListening()` is true. `callback` is not invoked if
+  // listening stops before readiness is reached, or if the connection never
+  // succeeds.
+  void WaitForInitialConnectionReady(base::OnceClosure callback);
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;

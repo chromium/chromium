@@ -117,27 +117,6 @@ class DownloadStatusChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
-// Waits until a `WORKSPACE_DESK` invalidation queued before browser restart has
-// been delivered to `sync_service` (either recorded in
-// `invalidated_data_types`, or with `notifications_received > 0` if its sync
-// cycle already completed). Intended specifically for post-`PRE_` startup
-// before other invalidations arrive, since `SyncStatus::notifications_received`
-// counts invalidations across all data types since startup.
-class InitialDeskInvalidationDeliveredChecker
-    : public SingleClientStatusChangeChecker {
- public:
-  explicit InitialDeskInvalidationDeliveredChecker(
-      syncer::SyncServiceImpl* sync_service);
-  InitialDeskInvalidationDeliveredChecker(
-      const InitialDeskInvalidationDeliveredChecker&) = delete;
-  InitialDeskInvalidationDeliveredChecker& operator=(
-      const InitialDeskInvalidationDeliveredChecker&) = delete;
-  ~InitialDeskInvalidationDeliveredChecker() override;
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-};
-
 }  // namespace workspace_desk_helper
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_WORKSPACE_DESK_HELPER_H_
