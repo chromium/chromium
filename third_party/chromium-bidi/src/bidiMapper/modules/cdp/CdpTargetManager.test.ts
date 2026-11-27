@@ -226,7 +226,7 @@ describe('CdpTargetManager', () => {
     eventManager = new EventManager(
       browsingContextStorage,
       userContextStorage,
-      new AclManager(browsingContextStorage),
+      new AclManager(browsingContextStorage, sinon.stub()),
     );
     networkStorage = new NetworkStorage(
       eventManager,

@@ -62,9 +62,11 @@ export const GoogResultSchema: z.ZodLazy<
     GoogSession.SetAclResultSchema,
   ]),
 );
-export const GoogEventSchema: z.ZodLazy<typeof GoogCdp.EventSchema> = z.lazy(
-  () => GoogCdp.EventSchema,
-);
+export const GoogEventSchema: z.ZodLazy<
+  z.ZodUnion<
+    readonly [typeof GoogCdp.EventSchema, typeof GoogSession.ChangedSchema]
+  >
+> = z.lazy(() => z.union([GoogCdp.EventSchema, GoogSession.ChangedSchema]));
 export namespace GoogBrowsingContext {
   export const AccessibilityNodeSchema: z.ZodType = z.lazy(() =>
     z.object({
@@ -338,6 +340,32 @@ export namespace GoogSession {
           reason: z.string().optional(),
         })
         .optional(),
+    }),
+  );
+}
+export namespace GoogSession {
+  export const ChangedSchema: z.ZodLazy<
+    z.ZodObject<{
+      method: z.ZodLiteral<'goog:session.changed'>;
+      params: typeof GoogSession.ChangedParametersSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      method: z.literal('goog:session.changed'),
+      params: GoogSession.ChangedParametersSchema,
+    }),
+  );
+}
+export namespace GoogSession {
+  export const ChangedParametersSchema: z.ZodLazy<
+    z.ZodObject<{
+      acl: typeof GoogSession.AclSchema;
+      reason: z.ZodOptional<z.ZodString>;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      acl: GoogSession.AclSchema,
+      reason: z.string().optional(),
     }),
   );
 }

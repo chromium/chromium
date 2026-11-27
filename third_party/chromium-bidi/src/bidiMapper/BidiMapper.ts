@@ -31,5 +31,6 @@ export type {BidiCommandParameterParser} from './BidiParser.js';
 export type {
   AclConfig,
   AclHandler,
+  OnAclChangedListener,
   UpdateAclHandler,
 } from './modules/session/AclManager.js';

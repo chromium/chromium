@@ -48,7 +48,8 @@ GoogResult = (
 )
 
 GoogEvent = (
-  goog_cdp.Event
+  goog_cdp.Event //
+  goog_session.Changed
 )
 
 ; `goog:browsingContext` module: extensions of the `browsingContext` module.
@@ -196,4 +197,18 @@ goog_session.SetAclResult = {
     acl: goog_session.Acl,
     ? reason: text,
   },
+}
+
+; Emitted whenever the browser updates a restricted session's ACL (e.g. when
+; the user revokes permissions).
+; * Always delivered to restricted sessions without `session.subscribe` and
+;   not controlled by the ACL.
+goog_session.Changed = (
+  method: "goog:session.changed",
+  params: goog_session.ChangedParameters
+)
+
+goog_session.ChangedParameters = {
+  acl: goog_session.Acl,
+  ? reason: text,
 }

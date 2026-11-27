@@ -35,7 +35,7 @@ export type GoogResult =
   | GoogCdp.ResolveRealmResult
   | GoogCdp.SendCommandResult
   | GoogSession.SetAclResult;
-export type GoogEvent = GoogCdp.Event;
+export type GoogEvent = GoogCdp.Event | GoogSession.Changed;
 export namespace GoogBrowsingContext {
   export type AccessibilityNode = {
     accessibilityId: string;
@@ -166,5 +166,17 @@ export namespace GoogSession {
       acl: GoogSession.Acl;
       reason?: string;
     };
+  };
+}
+export namespace GoogSession {
+  export type Changed = {
+    method: 'goog:session.changed';
+    params: GoogSession.ChangedParameters;
+  };
+}
+export namespace GoogSession {
+  export type ChangedParameters = {
+    acl: GoogSession.Acl;
+    reason?: string;
   };
 }

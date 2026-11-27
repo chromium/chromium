@@ -29,6 +29,7 @@ import {BidiServer} from './BidiServer.js';
 import type {BidiTransport} from './BidiTransport.js';
 import type {
   AclHandler,
+  OnAclChangedListener,
   UpdateAclHandler,
 } from './modules/session/AclManager.js';
 
@@ -36,6 +37,7 @@ describe('BidiServer', () => {
   async function createTestServer(
     restrictedMode?: boolean,
     aclHandler?: AclHandler,
+    transportOverrides?: Partial<BidiTransport>,
   ) {
     let onMessage: ((message: ChromiumBidi.Command) => void) | undefined;
     const sentMessages: ChromiumBidi.Message[] = [];
@@ -48,6 +50,7 @@ describe('BidiServer', () => {
         return Promise.resolve();
       },
       close: sinon.stub(),
+      ...transportOverrides,
     };
 
     const browserCdpClient = {
@@ -822,6 +825,558 @@ describe('BidiServer', () => {
         assert.isEmpty(unhandledRejections);
       } finally {
         process.off('unhandledRejection', onUnhandledRejection);
+      }
+    });
+
+    it('emits goog:session.changed and updates ACL when embedder invokes setOnAclChanged listener', async () => {
+      const aclHandler: AclHandler & {
+        listener: OnAclChangedListener | null;
+      } = {
+        listener: null,
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged(listener) {
+          this.listener = listener;
+        },
+      };
+
+      const {server, sentMessages, sendCommand} = await createTestServer(
+        true,
+        aclHandler,
+      );
+      try {
+        assert.isFunction(aclHandler.listener);
+
+        // In restricted mode, embedder updates are delivered even before
+        // `session.new`.
+        aclHandler.listener!(
+          {default: {commands: ['browsingContext.getTree']}},
+          'Initial ACL.',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        assert.deepEqual(sentMessages, [
+          {
+            type: 'event',
+            method: 'goog:session.changed',
+            params: {
+              acl: {
+                default: {commands: ['browsingContext.getTree'], events: []},
+                perNavigable: {},
+              },
+              reason: 'Initial ACL.',
+            },
+          },
+        ]);
+
+        const sessionResponse = await sendCommand({
+          id: 1,
+          method: 'session.new',
+          params: RESTRICTED_SESSION_PARAMS,
+        });
+        assert.include(sessionResponse, {type: 'success', id: 1});
+
+        // Pre-session update granted `browsingContext.getTree`.
+        const treeAfterPreSessionUpdate = await sendCommand({
+          id: 2,
+          method: 'browsingContext.getTree',
+          params: {},
+        });
+        assert.include(treeAfterPreSessionUpdate, {type: 'success', id: 2});
+
+        // Subscribing to `goog:session.changed` is rejected; it is always sent.
+        const subscribeResponse = await sendCommand({
+          id: 3,
+          method: 'session.subscribe',
+          params: {events: ['goog:session.changed']},
+        });
+        assert.include(subscribeResponse, {
+          type: 'error',
+          id: 3,
+          error: 'invalid argument',
+        });
+
+        const messagesBeforeChange = sentMessages.length;
+        // Unsupported commands/events (including `goog:session.changed`) and
+        // unknown navigables are dropped by normalization.
+        aclHandler.listener!(
+          {
+            default: {
+              commands: ['browsingContext.navigate', 'network.addIntercept'],
+              events: [
+                'browsingContext.navigationCommitted',
+                'goog:session.changed',
+              ],
+            },
+            perNavigable: {
+              'unknown-context': {commands: ['browsingContext.reload']},
+            },
+          },
+          'The user updated permissions.',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        const updatedEvent = sentMessages[messagesBeforeChange];
+        assert.deepEqual(updatedEvent, {
+          type: 'event',
+          method: 'goog:session.changed',
+          params: {
+            acl: {
+              default: {
+                commands: ['browsingContext.navigate'],
+                events: ['browsingContext.navigationCommitted'],
+              },
+              perNavigable: {},
+            },
+            reason: 'The user updated permissions.',
+          },
+        });
+        assert.notProperty(updatedEvent, 'goog:channel');
+
+        // Commands immediately reflect the embedder-pushed ACL: previously
+        // granted `getTree` is revoked, while newly granted `navigate` passes
+        // the ACL check (failing on the unknown browsing context).
+        const treeAfterUpdate = await sendCommand({
+          id: 4,
+          method: 'browsingContext.getTree',
+          params: {},
+        });
+        assert.include(treeAfterUpdate, {
+          type: 'error',
+          id: 4,
+          error: 'unsupported operation',
+        });
+
+        const navigateAfterUpdate = await sendCommand({
+          id: 5,
+          method: 'browsingContext.navigate',
+          params: {context: 'unknown-context', url: 'about:blank'},
+        });
+        assert.include(navigateAfterUpdate, {
+          type: 'error',
+          id: 5,
+          error: 'no such frame',
+        });
+
+        // Omitting `reason` leaves it `undefined` (omitted when JSON-serialized).
+        const messagesBeforeRevoke = sentMessages.length;
+        aclHandler.listener!({});
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        const revokedEvent = sentMessages[messagesBeforeRevoke];
+        assert.deepEqual(revokedEvent, {
+          type: 'event',
+          method: 'goog:session.changed',
+          params: {
+            acl: {
+              default: {commands: [], events: []},
+              perNavigable: {},
+            },
+            reason: undefined,
+          },
+        });
+
+        const navigateAfterRevoke = await sendCommand({
+          id: 6,
+          method: 'browsingContext.navigate',
+          params: {context: 'unknown-context', url: 'about:blank'},
+        });
+        assert.include(navigateAfterRevoke, {
+          type: 'error',
+          id: 6,
+          error: 'unsupported operation',
+        });
+      } finally {
+        server.close();
+      }
+    });
+
+    it('registers setOnAclChanged only for restricted sessions when restrictedMode is false', async () => {
+      const standardSetOnAclChanged = sinon.stub<
+        [OnAclChangedListener],
+        void
+      >();
+      const standard = await createTestServer(false, {
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged: standardSetOnAclChanged,
+      });
+      try {
+        await standard.sendCommand({
+          id: 1,
+          method: 'session.new',
+          params: {capabilities: {}},
+        });
+        sinon.assert.notCalled(standardSetOnAclChanged);
+        const tree = await standard.sendCommand({
+          id: 2,
+          method: 'browsingContext.getTree',
+          params: {},
+        });
+        assert.include(tree, {type: 'success', id: 2});
+      } finally {
+        standard.server.close();
+      }
+
+      let restrictedListener: OnAclChangedListener | null = null;
+      const restrictedSetOnAclChanged = sinon
+        .stub<[OnAclChangedListener], void>()
+        .callsFake((listener) => {
+          restrictedListener = listener;
+        });
+      const restricted = await createTestServer(false, {
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged: restrictedSetOnAclChanged,
+      });
+      try {
+        sinon.assert.notCalled(restrictedSetOnAclChanged);
+        await restricted.sendCommand({
+          id: 1,
+          method: 'session.new',
+          params: RESTRICTED_SESSION_PARAMS,
+        });
+        sinon.assert.calledOnce(restrictedSetOnAclChanged);
+        const messagesBefore = restricted.sentMessages.length;
+        restrictedListener!({default: {commands: ['browsingContext.getTree']}});
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        assert.deepEqual(restricted.sentMessages[messagesBefore], {
+          type: 'event',
+          method: 'goog:session.changed',
+          params: {
+            acl: {
+              default: {commands: ['browsingContext.getTree'], events: []},
+              perNavigable: {},
+            },
+            reason: undefined,
+          },
+        });
+        const tree = await restricted.sendCommand({
+          id: 2,
+          method: 'browsingContext.getTree',
+          params: {},
+        });
+        assert.include(tree, {type: 'success', id: 2});
+      } finally {
+        restricted.server.close();
+      }
+    });
+
+    it('delivers goog:session.changed immediately while goog:session.setAcl is pending', async () => {
+      const pendingSetAcl = new Deferred<GoogSession.SetAclResult>();
+      let onAclChanged: OnAclChangedListener | null = null;
+      const setAcl = sinon
+        .stub<Parameters<UpdateAclHandler>, ReturnType<UpdateAclHandler>>()
+        .callsFake((acl) => Promise.resolve({acl}));
+      const {
+        server,
+        sentMessages,
+        dispatchCommand,
+        waitForResponse,
+        sendCommand,
+      } = await createTestServer(true, {
+        setAcl,
+        setOnAclChanged: (listener) => {
+          onAclChanged = listener;
+        },
+      });
+      try {
+        await sendCommand({
+          id: 1,
+          method: 'session.new',
+          params: RESTRICTED_SESSION_PARAMS,
+        });
+        await sendCommand({
+          id: 2,
+          method: 'goog:session.setAcl',
+          params: {acl: {default: {commands: ['browsingContext.getTree']}}},
+        });
+
+        setAcl.resetHistory();
+        setAcl.onFirstCall().returns(pendingSetAcl);
+        dispatchCommand({
+          id: 3,
+          method: 'goog:session.setAcl',
+          params: {acl: {default: {commands: ['browsingContext.create']}}},
+        });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        sinon.assert.calledOnce(setAcl);
+
+        const messagesBeforeRevoke = sentMessages.length;
+        onAclChanged!({}, 'User revoked access.');
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        // `goog:session.changed` is emitted immediately without waiting for the
+        // in-flight `goog:session.setAcl`.
+        assert.deepEqual(sentMessages[messagesBeforeRevoke], {
+          type: 'event',
+          method: 'goog:session.changed',
+          params: {
+            acl: {default: {commands: [], events: []}, perNavigable: {}},
+            reason: 'User revoked access.',
+          },
+        });
+
+        // The revoked command fails immediately while `setAcl` is still pending.
+        const treeWhilePending = await sendCommand({
+          id: 4,
+          method: 'browsingContext.getTree',
+          params: {},
+        });
+        assert.include(treeWhilePending, {
+          type: 'error',
+          id: 4,
+          error: 'unsupported operation',
+        });
+
+        pendingSetAcl.resolve({acl: {}});
+        assert.include(await waitForResponse(3), {type: 'success', id: 3});
+      } finally {
+        server.close();
+      }
+    });
+
+    it('isolates setOnAclChanged across concurrent BidiServer instances', async () => {
+      let firstListener: OnAclChangedListener | null = null;
+      let secondListener: OnAclChangedListener | null = null;
+      const first = await createTestServer(true, {
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged: (listener) => {
+          firstListener = listener;
+        },
+      });
+      try {
+        const second = await createTestServer(true, {
+          setAcl: (acl) => Promise.resolve({acl}),
+          setOnAclChanged: (listener) => {
+            secondListener = listener;
+          },
+        });
+        try {
+          await first.sendCommand({
+            id: 1,
+            method: 'session.new',
+            params: RESTRICTED_SESSION_PARAMS,
+          });
+          await second.sendCommand({
+            id: 1,
+            method: 'session.new',
+            params: RESTRICTED_SESSION_PARAMS,
+          });
+
+          const firstBefore = first.sentMessages.length;
+          const secondBefore = second.sentMessages.length;
+          assert.isFunction(secondListener);
+          firstListener!({default: {commands: ['browsingContext.getTree']}});
+          await new Promise((resolve) => setTimeout(resolve, 0));
+
+          assert.lengthOf(first.sentMessages, firstBefore + 1);
+          assert.lengthOf(second.sentMessages, secondBefore);
+          assert.include(
+            await first.sendCommand({
+              id: 2,
+              method: 'browsingContext.getTree',
+              params: {},
+            }),
+            {type: 'success', id: 2},
+          );
+          assert.include(
+            await second.sendCommand({
+              id: 2,
+              method: 'browsingContext.getTree',
+              params: {},
+            }),
+            {type: 'error', id: 2, error: 'unsupported operation'},
+          );
+        } finally {
+          second.server.close();
+        }
+      } finally {
+        first.server.close();
+      }
+    });
+
+    it('ignores late setOnAclChanged updates after close', async () => {
+      let registeredListener: OnAclChangedListener | null = null;
+      const setOnAclChanged = sinon
+        .stub<[OnAclChangedListener], void>()
+        .callsFake((listener) => {
+          registeredListener = listener;
+        });
+      const {server, sentMessages, sendCommand} = await createTestServer(true, {
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged,
+      });
+
+      await sendCommand({
+        id: 1,
+        method: 'session.new',
+        params: RESTRICTED_SESSION_PARAMS,
+      });
+      sinon.assert.calledOnce(setOnAclChanged);
+      assert.isFunction(registeredListener);
+
+      const messagesBeforeClose = sentMessages.length;
+      server.close();
+
+      // Late callbacks after `close()` must not send any message.
+      registeredListener!({}, 'After close');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert.lengthOf(sentMessages, messagesBeforeClose);
+    });
+
+    it('delivers goog:session.changed pushed synchronously during setOnAclChanged registration', async () => {
+      const {server, sentMessages, sendCommand} = await createTestServer(true, {
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged: (listener) => {
+          listener(
+            {default: {commands: ['browsingContext.getTree']}},
+            'Pushed on subscribe.',
+          );
+        },
+      });
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        assert.deepEqual(sentMessages, [
+          {
+            type: 'event',
+            method: 'goog:session.changed',
+            params: {
+              acl: {
+                default: {commands: ['browsingContext.getTree'], events: []},
+                perNavigable: {},
+              },
+              reason: 'Pushed on subscribe.',
+            },
+          },
+        ]);
+
+        await sendCommand({
+          id: 1,
+          method: 'session.new',
+          params: RESTRICTED_SESSION_PARAMS,
+        });
+        assert.include(
+          await sendCommand({
+            id: 2,
+            method: 'browsingContext.getTree',
+            params: {},
+          }),
+          {type: 'success', id: 2},
+        );
+      } finally {
+        server.close();
+      }
+    });
+
+    it('skips setOnMessage if setOnAclChanged throws during construction', async () => {
+      const setOnMessage = sinon.stub();
+
+      let error: unknown;
+      try {
+        await createTestServer(
+          true,
+          {
+            setAcl: (acl) => Promise.resolve({acl}),
+            setOnAclChanged: () => {
+              throw new Error('register failed');
+            },
+          },
+          {setOnMessage},
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      assert.instanceOf(error, Error);
+      assert.strictEqual((error as Error).message, 'register failed');
+      sinon.assert.notCalled(setOnMessage);
+    });
+
+    it('fails restricted session.new and keeps session uncreated if setOnAclChanged throws when restrictedMode is false', async () => {
+      for (const [thrown, expectedMessage] of [
+        [new Error('register failed'), 'register failed'],
+        ['register failed', 'register failed'],
+        [undefined, 'undefined'],
+      ] as const) {
+        const {server, sendCommand} = await createTestServer(false, {
+          setAcl: (acl) => Promise.resolve({acl}),
+          setOnAclChanged: () => {
+            // eslint-disable-next-line @typescript-eslint/only-throw-error
+            throw thrown;
+          },
+        });
+        try {
+          const sessionResponse = await sendCommand({
+            id: 1,
+            method: 'session.new',
+            params: RESTRICTED_SESSION_PARAMS,
+          });
+          assert.include(sessionResponse, {
+            type: 'error',
+            id: 1,
+            error: 'unknown error',
+            message: expectedMessage,
+          });
+
+          const treeResponse = await sendCommand({
+            id: 2,
+            method: 'browsingContext.getTree',
+            params: {},
+          });
+          assert.include(treeResponse, {
+            type: 'error',
+            id: 2,
+            error: 'invalid session id',
+          });
+        } finally {
+          server.close();
+        }
+      }
+    });
+
+    it('rejects aclHandler with non-callable setOnAclChanged before sending CDP commands', async () => {
+      for (const invalidSetOnAclChanged of [null, 'not-a-function', {}]) {
+        const setOnMessage = sinon.stub();
+        const bidiTransport: BidiTransport = {
+          setOnMessage,
+          sendMessage: sinon.stub().resolves(),
+          close: sinon.stub(),
+        };
+        const sendCommand = sinon.stub().resolves({});
+        const browserCdpClient = {
+          sendCommand,
+          on: sinon.stub(),
+          off: sinon.stub(),
+          isCloseError: sinon.stub().returns(false),
+        } as unknown as CdpClient;
+        const cdpConnection = {
+          getCdpClient: sinon.stub().returns(browserCdpClient),
+        } as unknown as CdpConnection;
+
+        let error: unknown;
+        try {
+          await BidiServer.createAndStart(
+            bidiTransport,
+            cdpConnection,
+            browserCdpClient,
+            'self-target-id',
+            undefined,
+            undefined,
+            true,
+            {
+              setAcl: (acl) => Promise.resolve({acl}),
+              setOnAclChanged:
+                invalidSetOnAclChanged as unknown as AclHandler['setOnAclChanged'],
+            },
+          );
+        } catch (err) {
+          error = err;
+        }
+        assert.instanceOf(error, TypeError);
+        assert.strictEqual(
+          (error as TypeError).message,
+          'aclHandler.setOnAclChanged must be a function',
+        );
+        sinon.assert.notCalled(setOnMessage);
+        sinon.assert.notCalled(sendCommand);
       }
     });
   });

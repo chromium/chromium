@@ -54,7 +54,7 @@ describe('SessionProcessor', () => {
     } as unknown as sinon.SinonStubbedInstance<CdpClient>;
     browsingContextStorage = new BrowsingContextStorage();
     initConnection = sinon.stub<[MapperOptions], Promise<void>>().resolves();
-    aclManager = new AclManager(browsingContextStorage);
+    aclManager = new AclManager(browsingContextStorage, sinon.stub());
     sessionProcessor = new SessionProcessor(
       eventManager,
       browserCdpClient,

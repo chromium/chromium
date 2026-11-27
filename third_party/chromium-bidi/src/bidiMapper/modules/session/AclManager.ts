@@ -34,8 +34,8 @@ export type AclConfig = GoogSession.Acl;
  * Lets the embedder (e.g. the browser) decide on the requested ACL, e.g. by
  * asking the user. `reason` is untrusted client text. Resolves with the ACL the
  * embedder allows, which becomes the session ACL, and with what it refused, if
- * anything. Called on every ACL change, so the embedder always knows the session
- * ACL.
+ * anything. Called on every client-requested ACL change (`goog:session.setAcl`),
+ * so the embedder always knows the session ACL.
  */
 export type UpdateAclHandler = (
   requestedAcl: AclConfig,
@@ -43,14 +43,35 @@ export type UpdateAclHandler = (
 ) => Promise<GoogSession.SetAclResult>;
 
 /**
+ * Listener invoked by the embedder when the user or browser updates the
+ * session ACL (e.g. when the user revokes permissions).
+ */
+export type OnAclChangedListener = (acl: AclConfig, reason?: string) => void;
+
+/**
  * Embedder interface for controlling the session ACL in restricted sessions.
  */
 export interface AclHandler {
   /**
    * Called by `goog:session.setAcl` with the normalized desired ACL and
-   * optional untrusted client `reason`.
+   * optional untrusted client `reason`. If the embedder invokes the
+   * `setOnAclChanged` listener while a `setAcl` call is in flight, the pending
+   * `setAcl` call must resolve with the latest effective ACL (accounting for
+   * those updates) or reject, because its resolved `acl` overwrites the stored
+   * ACL. Do not invoke the listener in the same turn (synchronously or in a
+   * microtask) after resolving `setAcl`.
    */
   setAcl: UpdateAclHandler;
+  /**
+   * Optional callback registration for browser-initiated ACL updates. Called
+   * when ACL enforcement is enabled (during startup in `restrictedMode`, or
+   * during `session.new` for a restricted session). Because browsing contexts
+   * are populated during `session.new`, any `perNavigable` entries pushed
+   * during `setOnAclChanged` or before `session.new` completes are dropped by
+   * normalization. Invoking the listener updates the session ACL immediately
+   * without waiting on pending `setAcl` calls and emits `goog:session.changed`.
+   */
+  setOnAclChanged?: (listener: OnAclChangedListener) => void;
 }
 
 /**
@@ -189,10 +210,16 @@ export const SUPPORTED_ACL_EVENTS: ReadonlySet<string> = new Set<string>([
  * Manages session ACL configuration (global default and per top-level navigable),
  * and checks whether commands are allowed and events can be delivered. ACL
  * changes requested by the client go through the embedder's handler, one at a
- * time.
+ * time; embedder-initiated updates delivered via `setOnAclChanged` are applied
+ * immediately and emitted via `emitEvent` as `goog:session.changed`.
  */
 export class AclManager {
   readonly #browsingContextStorage: BrowsingContextStorage;
+  // Emits protocol events (such as `goog:session.changed`) directly through
+  // `BidiServer`'s outgoing queue instead of `EventManager`, because
+  // `EventManager` depends on `AclManager` and these events bypass
+  // subscriptions, buffering, `goog:channel`, and ACL filtering.
+  readonly #emitEvent: (event: ChromiumBidi.Event) => void;
   readonly #aclHandler: AclHandler;
   readonly #updateAclMutex = new Mutex();
   #enabled = false;
@@ -203,11 +230,27 @@ export class AclManager {
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
+    emitEvent: (event: ChromiumBidi.Event) => void,
     aclHandler: AclHandler = DEFAULT_ACL_HANDLER,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
+    this.#emitEvent = emitEvent;
     this.#aclHandler = aclHandler;
   }
+
+  #handleAclChanged = (acl: AclConfig, reason?: string): void => {
+    // Apply immediately without acquiring `#updateAclMutex` so browser
+    // revocation notifications are never blocked behind a pending `setAcl`
+    // prompt.
+    this.#emitEvent({
+      type: 'event',
+      method: ChromiumBidi.GoogSession.EventNames.Changed,
+      params: {
+        acl: this.#setAcl(acl),
+        reason,
+      },
+    });
+  };
 
   /**
    * Asks the embedder for `requestedAcl`, the full desired ACL, and stores the
@@ -256,18 +299,29 @@ export class AclManager {
   }
 
   /**
-   * Enables ACL enforcement for the session. Once enabled, it cannot be
-   * disabled.
+   * Enables ACL enforcement for the session and registers for
+   * embedder-initiated ACL updates. Once enabled, it cannot be disabled.
    */
   enable(): void {
+    if (this.#enabled) {
+      return;
+    }
     this.#enabled = true;
+    try {
+      this.#aclHandler.setOnAclChanged?.(this.#handleAclChanged);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error), {cause: error});
+    }
   }
 
   /**
    * Stores the session ACL. Unsupported commands and events, invalid entries,
    * and unknown or non-top-level navigables are ignored (granting no access).
-   * Private, so that every ACL change goes through `updateAcl` and the
-   * embedder's handler.
+   * Private, so that every ACL change comes from the embedder's `aclHandler`
+   * (either via `updateAcl` or via `setOnAclChanged`).
    *
    * @returns The actually saved ACL configuration.
    */

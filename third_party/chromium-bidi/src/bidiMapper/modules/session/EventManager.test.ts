@@ -89,7 +89,7 @@ describe('EventManager', () => {
     const userContextStorage = sinon.createStubInstance(UserContextStorage);
     userContextStorage.verifyUserContextIdList.resolves();
 
-    aclManager = new AclManager(browsingContextStorage);
+    aclManager = new AclManager(browsingContextStorage, sinon.stub());
     eventManager = new EventManager(
       browsingContextStorage,
       userContextStorage,

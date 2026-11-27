@@ -42,7 +42,7 @@ import {
 } from './modules/session/EventManager.js';
 import {SpeculationProcessor} from './modules/speculation/SpeculationProcessor.js';
 import {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalCredentialsProcessor.js';
-import type {OutgoingMessage} from './OutgoingMessage.js';
+import {OutgoingMessage} from './OutgoingMessage.js';
 
 interface BidiServerEvent extends Record<string | symbol, unknown> {
   close: void;
@@ -106,7 +106,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#logger,
     );
     this.#transport = bidiTransport;
-    this.#transport.setOnMessage(this.#handleIncomingMessage);
     const userContextStorage = new UserContextStorage(browserCdpClient);
     const contextConfigStorage = new ContextConfigStorage(
       this.#browsingContextStorage,
@@ -115,11 +114,18 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     // Shared by `EventManager` (filters events) and `CommandProcessor`
     // (checks commands and configures the ACL), so both see the same session
     // ACL.
-    const aclManager = new AclManager(this.#browsingContextStorage, aclHandler);
-    if (restrictedMode) {
-      // Restricted mode requires enabling ACL.
-      aclManager.enable();
-    }
+    const aclManager = new AclManager(
+      this.#browsingContextStorage,
+      (event) => {
+        // `goog:session.changed` is always delivered to restricted sessions
+        // without `session.subscribe` and with no `goog:channel`.
+        this.emitOutgoingMessage(
+          OutgoingMessage.createResolved(event),
+          event.method,
+        );
+      },
+      aclHandler,
+    );
     this.#eventManager = new EventManager(
       this.#browsingContextStorage,
       userContextStorage,
@@ -232,6 +238,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
         this.emitOutgoingMessage(message, event);
       },
     );
+    if (restrictedMode) {
+      // Restricted mode requires enabling ACL.
+      aclManager.enable();
+    }
+    this.#transport.setOnMessage(this.#handleIncomingMessage);
   }
 
   /**
@@ -249,8 +260,16 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   ): Promise<BidiServer> {
     // We rely on the embedder to pass a valid `aclHandler` and only check
     // the basic contract here.
-    if (aclHandler !== undefined && typeof aclHandler?.setAcl !== 'function') {
-      throw new TypeError('aclHandler.setAcl must be a function');
+    if (aclHandler !== undefined) {
+      if (typeof aclHandler?.setAcl !== 'function') {
+        throw new TypeError('aclHandler.setAcl must be a function');
+      }
+      if (
+        aclHandler.setOnAclChanged !== undefined &&
+        typeof aclHandler.setOnAclChanged !== 'function'
+      ) {
+        throw new TypeError('aclHandler.setOnAclChanged must be a function');
+      }
     }
     const [defaultUserContextId, version] = await Promise.all([
       this.#getDefaultUserContextId(browserCdpClient),

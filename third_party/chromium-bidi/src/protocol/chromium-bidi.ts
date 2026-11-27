@@ -16,7 +16,11 @@
  */
 
 import type * as Cdp from './cdp.js';
-import type {GoogCommand, GoogResult} from './generated/goog.js';
+import type {
+  GoogCommand,
+  GoogResult,
+  GoogSession as WebDriverBidiGoogSession,
+} from './generated/goog.js';
 import type * as WebDriverBidiAutofill from './generated/webdriver-bidi-autofill.js';
 import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
@@ -31,6 +35,7 @@ export type EventNames =
   | `${BiDiModule}`
   | `${Bluetooth.EventNames}`
   | `${BrowsingContext.EventNames}`
+  | `${GoogSession.EventNames}`
   | `${Input.EventNames}`
   | `${Log.EventNames}`
   | `${Network.EventNames}`
@@ -125,6 +130,12 @@ export namespace Speculation {
   }
 }
 
+export namespace GoogSession {
+  export enum EventNames {
+    Changed = 'goog:session.changed',
+  }
+}
+
 type ExternalSpecCommand<T> = {
   // id is defined by the main WebDriver BiDi spec and extension specs do
   // not re-define it. Therefore, it's not part of generated types.
@@ -158,12 +169,22 @@ export type BluetoothEvent =
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.CharacteristicEventGenerated>
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.DescriptorEventGenerated>;
 
+export type GoogSessionEvent =
+  ExternalSpecEvent<WebDriverBidiGoogSession.Changed>;
+
 export type SpeculationEvent =
   ExternalSpecEvent<WebDriverBidiSpeculation.Speculation.PrefetchStatusUpdated>;
 
 export type Event =
-  WebDriverBidi.Event | CdpEvent | BluetoothEvent | SpeculationEvent;
+  | WebDriverBidi.Event
+  | CdpEvent
+  | BluetoothEvent
+  | GoogSessionEvent
+  | SpeculationEvent;
 
+// Subscribable event and module names. `goog:session.changed` is intentionally
+// omitted because it is always delivered to restricted sessions without
+// `session.subscribe`.
 export const EVENT_NAMES: Set<string> = new Set([
   // keep-sorted start
   ...Object.values(BiDiModule),
@@ -186,7 +207,11 @@ export type WithGoogParams<T> = T & {
 };
 
 export type Message = (
-  WebDriverBidi.Message | CdpEvent | BluetoothEvent | SpeculationEvent
+  | WebDriverBidi.Message
+  | CdpEvent
+  | BluetoothEvent
+  | GoogSessionEvent
+  | SpeculationEvent
 ) & {
   'goog:channel'?: GoogChannel;
 };

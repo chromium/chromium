@@ -75,8 +75,9 @@ The event `goog:cdp.<CDP Event Name>` contains a CDP event.
 per the proposal
 [WICG/agentic-webdriver-bidi](https://github.com/WICG/agentic-webdriver-bidi).
 
-- A restricted session starts with an empty ACL. Only `goog:session.setAcl`
-  changes the ACL.
+- A restricted session starts with an empty ACL (unless updated by the embedder
+  via `aclHandler.setOnAclChanged`). Only `goog:session.setAcl` and
+  browser-initiated updates via `aclHandler.setOnAclChanged` change the ACL.
 - A restricted session cannot use `acceptInsecureCerts: true`,
   `unhandledPromptBehavior`, `'goog:prerenderingDisabled': true`, or
   `'goog:disableNetworkDurableMessages': true`. Requesting them in
@@ -115,10 +116,35 @@ command fails with `unsupported operation`. The command implements the proposal
   is sent. Events are not buffered in restricted sessions (buffer size is 0).
 - If the browser refuses part of the request, the result lists the refused
   entries in `denied`, with an optional `reason`. The embedder can provide an
-  `aclHandler` (`{setAcl}`) to `runMapperInstance` to decide on requests; if
-  omitted, every request is allowed as is.
+  `aclHandler` (`{setAcl, setOnAclChanged?}`) to `runMapperInstance` to decide
+  on requests and push browser-initiated updates; if omitted, every request is
+  allowed as is.
 - `goog:session.setAcl` commands are processed one at a time, in order. Other
   commands don't wait for them and are checked against the ACL in effect.
+- If the embedder invokes the `aclHandler.setOnAclChanged` listener while a
+  `goog:session.setAcl` call is pending, the pending `aclHandler.setAcl` call
+  must resolve with the latest effective ACL (accounting for those updates) or
+  reject; do not invoke the listener in the same turn (synchronously or in a
+  microtask) after resolving `aclHandler.setAcl`.
+
+### Event `goog:session.changed`
+
+Emitted to a restricted session whenever the embedder invokes the listener
+registered via `aclHandler.setOnAclChanged` (for example when the user revokes
+permissions). The event implements the proposal
+[WICG/agentic-webdriver-bidi](https://github.com/WICG/agentic-webdriver-bidi).
+
+- `aclHandler.setOnAclChanged` is called when ACL enforcement is enabled (at
+  startup in `restrictedMode`, or during `session.new` for a restricted
+  session). Because browsing contexts are populated during `session.new`, any
+  `perNavigable` entries pushed during `setOnAclChanged` or before
+  `session.new` completes are dropped by normalization.
+- Parameters contain the normalized effective `acl` and an optional `reason`
+  string from the browser (omitted when not provided).
+- Always delivered to restricted sessions without `session.subscribe` and
+  regardless of the ACL. Subscribing to `goog:session.changed` via
+  `session.subscribe` fails with `invalid argument`.
+- Applied immediately without waiting on pending `goog:session.setAcl` calls.
 
 ### Field `goog:channel`
 

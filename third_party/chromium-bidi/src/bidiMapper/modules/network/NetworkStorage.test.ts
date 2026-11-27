@@ -96,7 +96,7 @@ describe('NetworkStorage', () => {
     eventManager = new EventManager(
       browsingContextStorage,
       userContextStorage,
-      new AclManager(browsingContextStorage),
+      new AclManager(browsingContextStorage, sinon.stub()),
     );
     processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {

@@ -33,6 +33,7 @@ import {
   ACL_EXEMPT_COMMANDS,
   type AclHandler,
   AclManager,
+  type OnAclChangedListener,
   SUPPORTED_ACL_COMMANDS,
   SUPPORTED_ACL_EVENTS,
   type UpdateAclHandler,
@@ -79,7 +80,7 @@ describe('AclManager', () => {
       isTopLevelContext: () => false,
     } as unknown as BrowsingContextImpl);
 
-    aclManager = new AclManager(browsingContextStorage);
+    aclManager = new AclManager(browsingContextStorage, sinon.stub());
   });
 
   it('always allows commands when disabled', () => {
@@ -999,7 +1000,7 @@ describe('AclManager', () => {
       updateAclHandler = sinon
         .stub<Parameters<UpdateAclHandler>, ReturnType<UpdateAclHandler>>()
         .callsFake((acl) => Promise.resolve({acl}));
-      aclManager = new AclManager(browsingContextStorage, {
+      aclManager = new AclManager(browsingContextStorage, sinon.stub(), {
         setAcl: updateAclHandler,
       });
       // ACL changes happen in restricted sessions, where the ACL is enabled.
@@ -1007,7 +1008,7 @@ describe('AclManager', () => {
     });
 
     it('stores the requested ACL as is without a custom handler', async () => {
-      aclManager = new AclManager(browsingContextStorage);
+      aclManager = new AclManager(browsingContextStorage, sinon.stub());
 
       const result = await aclManager.updateAcl(NAVIGATE_ACL);
 
@@ -1022,7 +1023,11 @@ describe('AclManager', () => {
           return Promise.resolve({acl: this.grantedAcl});
         },
       };
-      aclManager = new AclManager(browsingContextStorage, handler);
+      aclManager = new AclManager(
+        browsingContextStorage,
+        sinon.stub(),
+        handler,
+      );
       aclManager.enable();
 
       const result = await aclManager.updateAcl(NAVIGATE_ACL);
@@ -1066,7 +1071,7 @@ describe('AclManager', () => {
     });
 
     it('does not enable the ACL', async () => {
-      aclManager = new AclManager(browsingContextStorage, {
+      aclManager = new AclManager(browsingContextStorage, sinon.stub(), {
         setAcl: updateAclHandler,
       });
 
@@ -1294,6 +1299,278 @@ describe('AclManager', () => {
         assert.strictEqual((error as Error).message, String(rejection));
         assert.deepEqual(aclManager.getAcl(), NAVIGATE_ACL);
       }
+    });
+  });
+
+  describe('setOnAclChanged', () => {
+    const GET_TREE_ACL = {
+      default: {commands: ['browsingContext.getTree'], events: []},
+    };
+    const NAVIGATE_ACL = {
+      default: {commands: ['browsingContext.getTree'], events: []},
+      perNavigable: {
+        [TOP_LEVEL_CONTEXT_1]: {
+          commands: ['browsingContext.navigate'],
+          events: [],
+        },
+      },
+    };
+    let updateAclHandler: sinon.SinonStub<
+      Parameters<UpdateAclHandler>,
+      ReturnType<UpdateAclHandler>
+    >;
+    let onAclChanged: OnAclChangedListener | null;
+    let setOnAclChanged: sinon.SinonStub<[OnAclChangedListener], void>;
+    let emittedEvents: ChromiumBidi.Event[];
+
+    beforeEach(() => {
+      onAclChanged = null;
+      emittedEvents = [];
+      updateAclHandler = sinon
+        .stub<Parameters<UpdateAclHandler>, ReturnType<UpdateAclHandler>>()
+        .callsFake((acl) => Promise.resolve({acl}));
+      setOnAclChanged = sinon
+        .stub<[OnAclChangedListener], void>()
+        .callsFake((listener) => {
+          onAclChanged = listener;
+        });
+      aclManager = new AclManager(
+        browsingContextStorage,
+        (event) => {
+          emittedEvents.push(event);
+        },
+        {
+          setAcl: updateAclHandler,
+          setOnAclChanged,
+        },
+      );
+      aclManager.enable();
+    });
+
+    it('preserves `this` binding when calling `aclHandler.setOnAclChanged`', () => {
+      const handler: AclHandler & {listener: OnAclChangedListener | null} = {
+        listener: null,
+        setAcl: (acl) => Promise.resolve({acl}),
+        setOnAclChanged(listener) {
+          this.listener = listener;
+        },
+      };
+      const manager = new AclManager(
+        browsingContextStorage,
+        sinon.stub(),
+        handler,
+      );
+      assert.isNull(handler.listener);
+      manager.enable();
+      assert.isFunction(handler.listener);
+    });
+
+    it('delivers updates pushed synchronously during enable and registers only once', () => {
+      const events: ChromiumBidi.Event[] = [];
+      const register = sinon
+        .stub<[OnAclChangedListener], void>()
+        .callsFake((listener) => {
+          listener(GET_TREE_ACL, 'Initial ACL');
+        });
+      const manager = new AclManager(
+        browsingContextStorage,
+        (event) => {
+          events.push(event);
+        },
+        {
+          setAcl: updateAclHandler,
+          setOnAclChanged: register,
+        },
+      );
+
+      manager.enable();
+      manager.enable();
+
+      sinon.assert.calledOnce(register);
+      assert.deepEqual(events, [
+        {
+          type: 'event',
+          method: ChromiumBidi.GoogSession.EventNames.Changed,
+          params: {
+            acl: {...GET_TREE_ACL, perNavigable: {}},
+            reason: 'Initial ACL',
+          },
+        },
+      ]);
+      assert.isTrue(manager.isCommandAllowed('browsingContext.getTree'));
+    });
+
+    it('normalizes the ACL, stores it, and emits goog:session.changed', () => {
+      onAclChanged!(
+        {
+          default: {
+            commands: [
+              'browsingContext.getTree',
+              'browsingContext.getTree',
+              // Unsupported commands are dropped.
+              'network.addIntercept',
+            ],
+            events: [
+              ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+              // Always-delivered event is not controlled by the ACL.
+              ChromiumBidi.GoogSession.EventNames.Changed,
+            ],
+          },
+          perNavigable: {
+            [TOP_LEVEL_CONTEXT_1]: {commands: ['browsingContext.navigate']},
+            [CHILD_CONTEXT]: {commands: ['browsingContext.reload']},
+            [UNKNOWN_CONTEXT]: {commands: ['input.performActions']},
+          },
+        },
+        'The user revoked access to the tab.',
+      );
+
+      const expectedAcl = {
+        default: {
+          commands: ['browsingContext.getTree'],
+          events: [ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted],
+        },
+        perNavigable: {
+          [TOP_LEVEL_CONTEXT_1]: {
+            commands: ['browsingContext.navigate'],
+            events: [],
+          },
+        },
+      };
+      assert.deepEqual(emittedEvents, [
+        {
+          type: 'event',
+          method: ChromiumBidi.GoogSession.EventNames.Changed,
+          params: {
+            acl: expectedAcl,
+            reason: 'The user revoked access to the tab.',
+          },
+        },
+      ]);
+      assert.deepEqual(aclManager.getAcl(), expectedAcl);
+      assert.isTrue(aclManager.isCommandAllowed('browsingContext.getTree'));
+      assert.isTrue(
+        aclManager.isCommandAllowed(
+          'browsingContext.navigate',
+          TOP_LEVEL_CONTEXT_1,
+        ),
+      );
+      assert.isFalse(
+        aclManager.isCommandAllowed(
+          'browsingContext.navigate',
+          TOP_LEVEL_CONTEXT_2,
+        ),
+      );
+      assert.isTrue(
+        aclManager.isEventAllowed(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          TOP_LEVEL_CONTEXT_1,
+        ),
+      );
+    });
+
+    it('does not call setOnAclChanged while ACL enforcement is disabled', () => {
+      const register = sinon.stub<[OnAclChangedListener], void>();
+      new AclManager(browsingContextStorage, sinon.stub(), {
+        setAcl: updateAclHandler,
+        setOnAclChanged: register,
+      });
+
+      sinon.assert.notCalled(register);
+    });
+
+    it('passes through undefined and empty string reason', () => {
+      emittedEvents = [];
+      onAclChanged!({}, undefined);
+      assert.deepEqual(emittedEvents, [
+        {
+          type: 'event',
+          method: ChromiumBidi.GoogSession.EventNames.Changed,
+          params: {
+            acl: {default: {commands: [], events: []}, perNavigable: {}},
+            reason: undefined,
+          },
+        },
+      ]);
+
+      emittedEvents = [];
+      onAclChanged!({}, '');
+      assert.deepEqual(emittedEvents, [
+        {
+          type: 'event',
+          method: ChromiumBidi.GoogSession.EventNames.Changed,
+          params: {
+            acl: {default: {commands: [], events: []}, perNavigable: {}},
+            reason: '',
+          },
+        },
+      ]);
+    });
+
+    it('normalizes null/undefined ACL to an empty ACL', async () => {
+      const emptyEvent: ChromiumBidi.GoogSessionEvent = {
+        type: 'event',
+        method: ChromiumBidi.GoogSession.EventNames.Changed,
+        params: {
+          acl: {default: {commands: [], events: []}, perNavigable: {}},
+          reason: undefined,
+        },
+      };
+      for (const nullishAcl of [null, undefined]) {
+        await aclManager.updateAcl(GET_TREE_ACL);
+        assert.isTrue(aclManager.isCommandAllowed('browsingContext.getTree'));
+        emittedEvents = [];
+
+        onAclChanged!(nullishAcl as unknown as GoogSession.Acl);
+
+        assert.deepEqual(emittedEvents, [emptyEvent]);
+        assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
+      }
+    });
+
+    it('wraps non-Error throws from aclHandler.setOnAclChanged', () => {
+      for (const thrown of ['register failed', undefined]) {
+        const manager = new AclManager(browsingContextStorage, sinon.stub(), {
+          setAcl: updateAclHandler,
+          setOnAclChanged: () => {
+            // eslint-disable-next-line @typescript-eslint/only-throw-error
+            throw thrown;
+          },
+        });
+        let error: unknown;
+        try {
+          manager.enable();
+        } catch (err) {
+          error = err;
+        }
+        assert.instanceOf(error, Error);
+        assert.strictEqual((error as Error).message, String(thrown));
+      }
+    });
+
+    it('applies immediately without waiting on a pending updateAcl call', async () => {
+      await aclManager.updateAcl(GET_TREE_ACL);
+      const pending = new Deferred<GoogSession.SetAclResult>();
+      updateAclHandler.returns(pending);
+
+      const updatePromise = aclManager.updateAcl(NAVIGATE_ACL);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      onAclChanged!({}, 'User revoked access');
+      assert.deepEqual(emittedEvents, [
+        {
+          type: 'event',
+          method: ChromiumBidi.GoogSession.EventNames.Changed,
+          params: {
+            acl: {default: {commands: [], events: []}, perNavigable: {}},
+            reason: 'User revoked access',
+          },
+        },
+      ]);
+      assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
+
+      pending.resolve({acl: {}});
+      await updatePromise;
     });
   });
 });

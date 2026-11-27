@@ -52,6 +52,15 @@ describe('event', () => {
       }, 'Unknown event: unknown');
     });
 
+    it('should reject goog:session.changed as non-subscribable', () => {
+      assert.throws(() => {
+        assertSupportedEvent(ChromiumBidi.GoogSession.EventNames.Changed);
+      }, 'Unknown event: goog:session.changed');
+      assert.throws(() => {
+        assertSupportedEvent('goog:session');
+      }, 'Unknown event: goog:session');
+    });
+
     it('should not throw for known CDP events', () => {
       assert.doesNotThrow(() => {
         assertSupportedEvent('goog:cdp.Debugger.breakpointResolved');

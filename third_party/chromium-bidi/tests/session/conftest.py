@@ -33,6 +33,7 @@ Setup:
         |    BiDi out:  Runtime.bindingCalled("sendBidiResponse_<id>")
         |    ACL out:   Runtime.bindingCalled("setAclRequest_<id>")
         |    ACL in:    Runtime.evaluate("resolveAclRequest_<id>(id, resp)")
+        |               Runtime.evaluate("notifyAclChanged_<id>(acl, reason)")
         v
       Mapper tab: BidiServer instance <id>
         |
@@ -154,7 +155,9 @@ class InTabMapperConnection:
     * ACL (only with `acl_handler`): the Mapper calls `aclHandler.setAcl`,
       which invokes the `setAclRequest_<id>` binding. `_handle_set_acl` calls
       the Python callback and delivers the result back via
-      `resolveAclRequest_<id>`.
+      `resolveAclRequest_<id>`. Browser-initiated updates are pushed via
+      `notify_acl_changed()`, which evaluates `notifyAclChanged_<id>` to invoke
+      the listener registered with `aclHandler.setOnAclChanged`.
     * CDP (only with `mapper_cdp_ws`): the Mapper calls the
       `sendCdpMessage_<id>` binding, and `_forward_cdp_to_browser` sends the
       message over `mapper_cdp_ws`. Messages from the browser are delivered
@@ -220,6 +223,7 @@ class InTabMapperConnection:
         self._on_bidi_fn = f"onBidiMessage_{instance_id}"
         self._on_cdp_fn = f"onCdpMessage_{instance_id}"
         self._resolve_acl_fn = f"resolveAclRequest_{instance_id}"
+        self._notify_acl_changed_fn = f"notifyAclChanged_{instance_id}"
         self._close_fn = f"closeMapper_{instance_id}"
 
         self._control_cdp.on_event(self._on_control_cdp_event)
@@ -406,6 +410,7 @@ class InTabMapperConnection:
             acl_setup_js = f"""
                 const pendingAclRequests = new Map();
                 let nextAclRequestId = 1;
+                let onAclChanged = null;
                 const aclHandler = {{
                     setAcl(acl, reason) {{
                         const requestId = nextAclRequestId++;
@@ -415,6 +420,9 @@ class InTabMapperConnection:
                                 JSON.stringify({{requestId, acl, reason}}),
                             );
                         }});
+                    }},
+                    setOnAclChanged(listener) {{
+                        onAclChanged = listener;
                     }},
                 }};
                 window[{json.dumps(self._resolve_acl_fn)}] = (
@@ -428,9 +436,16 @@ class InTabMapperConnection:
                     pendingAclRequests.delete(requestId);
                     resolve(JSON.parse(resultJson));
                 }};
+                window[{json.dumps(self._notify_acl_changed_fn)}] = (
+                    aclJson,
+                    reason,
+                ) => {{
+                    onAclChanged?.(JSON.parse(aclJson), reason);
+                }};
             """
             acl_cleanup_js = f"""
                 delete window[{json.dumps(self._resolve_acl_fn)}];
+                delete window[{json.dumps(self._notify_acl_changed_fn)}];
                 pendingAclRequests.clear();
             """
         else:
@@ -596,6 +611,24 @@ class InTabMapperConnection:
         """Sends a BiDi message to the in-tab Mapper. Used by `test_helpers`."""
         # `?.` makes this a no-op after the Mapper was closed.
         expression = f"window[{json.dumps(self._on_bidi_fn)}]?.({json.dumps(message)})"
+        res = await self._control_cdp.send_command(
+            "Runtime.evaluate",
+            {"expression": expression},
+            session_id=self._mapper_session_id,
+        )
+        assert "exceptionDetails" not in res, res
+
+    async def notify_acl_changed(self, acl: dict, reason: str | None = None) -> None:
+        """Invokes the in-tab `aclHandler.setOnAclChanged` listener."""
+        assert self._acl_handler is not None, (
+            "notify_acl_changed requires an acl_handler"
+        )
+        # Pass `undefined` when omitted so JS sees no `reason` argument.
+        reason_arg = "undefined" if reason is None else json.dumps(reason)
+        expression = (
+            f"window[{json.dumps(self._notify_acl_changed_fn)}]?.("
+            f"{json.dumps(json.dumps(acl))}, {reason_arg})"
+        )
         res = await self._control_cdp.send_command(
             "Runtime.evaluate",
             {"expression": expression},
