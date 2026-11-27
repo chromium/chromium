@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 #define COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -132,6 +134,16 @@ BASE_DECLARE_FEATURE(kPaymentHandlerPageInfoThemeColor);
 // Used to control whether checkout and order confirmation telemetry is
 // collected on allowlisted merchant navigations.
 BASE_DECLARE_FEATURE(kCheckoutTelemetry);
+
+// Regexes used to match merchant URLs and page titles when collecting
+// checkout telemetry.
+extern const base::FeatureParam<std::string> kCheckoutTelemetryCheckoutUrlRegex;
+extern const base::FeatureParam<std::string>
+    kCheckoutTelemetryOrderConfirmationUrlRegex;
+extern const base::FeatureParam<std::string>
+    kCheckoutTelemetryCheckoutTitleRegex;
+extern const base::FeatureParam<std::string>
+    kCheckoutTelemetryOrderConfirmationTitleRegex;
 
 }  // namespace features
 }  // namespace payments

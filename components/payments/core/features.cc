@@ -4,7 +4,10 @@
 
 #include "components/payments/core/features.h"
 
+#include <string>
+
 #include "base/feature.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace payments {
@@ -109,6 +112,42 @@ BASE_FEATURE(kPaymentHandlerPageInfoThemeColor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCheckoutTelemetry, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kCheckoutTelemetryCheckoutUrlRegex{
+    &kCheckoutTelemetry, "checkout_url_regex",
+    "/checkout(?:[/?#]|$)"
+    "|/checkouts(?:[/?#]|$)"
+    "|/payment(?:[/?#]|$)"
+    "|/shipping(?:[/?#]|$)"
+    "|/place-order(?:[/?#]|$)"};
+
+const base::FeatureParam<std::string>
+    kCheckoutTelemetryOrderConfirmationUrlRegex{&kCheckoutTelemetry,
+                                                "order_confirmation_url_regex",
+                                                "/order-confirmation(?:[/?#]|$)"
+                                                "|/order/success(?:[/?#]|$)"
+                                                "|/thank-you(?:[/?#]|$)"
+                                                "|/thankyou(?:[/?#]|$)"
+                                                "|/order-placed(?:[/?#]|$)"
+                                                "|/receipt(?:[/?#]|$)"};
+
+const base::FeatureParam<std::string> kCheckoutTelemetryCheckoutTitleRegex{
+    &kCheckoutTelemetry, "checkout_title_regex",
+    R"(\bcheckout\b)"
+    R"(|\bcheckouts\b)"
+    R"(|\bpayment\b)"
+    R"(|\bshipping\b)"
+    R"(|\bplace[- ]order\b)"};
+
+const base::FeatureParam<std::string>
+    kCheckoutTelemetryOrderConfirmationTitleRegex{
+        &kCheckoutTelemetry, "order_confirmation_title_regex",
+        R"(\border[- ]confirmation\b)"
+        R"(|\border[/ ]success\b)"
+        R"(|\bthank[- ]you\b)"
+        R"(|\bthankyou\b)"
+        R"(|\border[- ]placed\b)"
+        R"(|\breceipt\b)"};
 
 }  // namespace features
 }  // namespace payments
