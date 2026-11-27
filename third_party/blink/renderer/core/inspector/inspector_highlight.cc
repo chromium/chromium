@@ -2696,6 +2696,22 @@ std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
   return BuildFlexContainerInfo(To<Element>(node), config, scale);
 }
 
+namespace {
+
+String SnapStopValue(cc::SnapStop stop) {
+  switch (stop) {
+    case cc::SnapStop::kNormal:
+      return "normal";
+    case cc::SnapStop::kAlways:
+      return "always";
+    case cc::SnapStop::kBefore:
+      return "before";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
   if (!node)
     return nullptr;
@@ -2776,6 +2792,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
 
     BuildSnapAlignment(snap_type, data.scroll_snap_align.alignment_block,
                        data.scroll_snap_align.alignment_inline, result_area);
+    // scroll-snap-stop. Omit "normal". "always" and "before" are required
+    // stops. A length value is not represented in cc::SnapStop yet.
+    if (data.snap_stop != cc::SnapStop::kNormal) {
+      result_area->setString("snapStop", SnapStopValue(data.snap_stop));
+    }
 
     result_areas->pushValue(std::move(result_area));
   }
