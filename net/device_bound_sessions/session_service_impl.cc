@@ -551,11 +551,15 @@ void SessionServiceImpl::RegisterBoundSession(
 
   if (base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionsForSingleSignOn)) {
+    // Look the key up by the RP's origin: the origin of the response that
+    // carried Secure-Session-Registration, not the request initiator, which is
+    // null for browser-initiated navigations and the IdP for form_post
+    // (https://github.com/WICG/dbsc-sso#key-access-control-and-lifecycle).
     ASSIGN_OR_RETURN(
         unexportable_keys::UnexportableSigningKeyId pre_provisioned_key,
         sso_key_manager_.FindPreProvisionedKey(
             provider_params->provider_key,
-            registration_params.original_request_initiator),
+            registration_params.fetcher_param.referring_origin()),
         [&](SessionError::ErrorType error) {
           OnRegistrationComplete(
               registration_params.access_callback,

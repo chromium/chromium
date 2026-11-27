@@ -357,23 +357,18 @@ bool SingleSignOnKeyManager::AddPreProvisionedKey(
 SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
 SingleSignOnKeyManager::FindPreProvisionedKey(
     std::string_view provider_key,
-    base::optional_ref<const url::Origin> initiator) const {
-  if (!initiator) {
-    return base::unexpected(
-        SessionError::kInvalidPreProvisionedKeyInitiatorMissing);
-  }
-
-  // Keys are looked up by (initiator, digest), as in WICG/dbsc-sso#18. The IdP
-  // that generated the key is only used for the cookie access check below,
-  // which goes beyond the explainer.
+    const url::Origin& rp_origin) const {
+  // Keys are looked up by (RP origin, digest). The IdP that generated the key
+  // is only used for the cookie access check below, which goes beyond the
+  // explainer.
   const KeyMetadata* metadata = base::FindOrNull(
-      pre_provisioned_keys_, RpAndProviderKeyView(*initiator, provider_key));
+      pre_provisioned_keys_, RpAndProviderKeyView(rp_origin, provider_key));
   if (!metadata) {
     return base::unexpected(SessionError::kPreProvisionedKeyNotFound);
   }
 
   if (!CanAccessPreProvisionedKey(has_cookie_access_cb_,
-                                  metadata->provider_origin, *initiator)) {
+                                  metadata->provider_origin, rp_origin)) {
     return base::unexpected(SessionError::kPreProvisionedKeyAccessNotGranted);
   }
 

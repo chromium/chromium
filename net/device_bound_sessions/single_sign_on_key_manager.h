@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/generate_key_param.h"
@@ -104,10 +103,10 @@ class NET_EXPORT SingleSignOnKeyManager {
                             unexportable_keys::UnexportableSigningKeyId key_id);
 
   // Finds the pre-provisioned key named `provider_key` that was generated for
-  // `initiator`. The cookie access check uses the IdP that generated the key.
+  // `rp_origin`. The cookie access check uses the IdP that generated the key.
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
   FindPreProvisionedKey(std::string_view provider_key,
-                        base::optional_ref<const url::Origin> initiator) const;
+                        const url::Origin& rp_origin) const;
 
   // Removes the pre-provisioned key with `key_id`. Called when an SSO
   // registration completes, before the new session is added. Returns false if

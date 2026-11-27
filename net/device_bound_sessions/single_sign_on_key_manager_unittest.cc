@@ -415,22 +415,6 @@ TEST_F(SingleSignOnKeyManagerTest,
               ErrorIs(SessionError::kPreProvisionedKeyAccessNotGranted));
 }
 
-TEST_F(SingleSignOnKeyManagerTest, MissingInitiator) {
-  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
-  std::string provider_key = "123";
-  auto provider_origin = ProviderOrigin();
-
-  EXPECT_TRUE(manager().AddPreProvisionedKey(
-      rp_origin, provider_key, provider_origin,
-      unexportable_keys::UnexportableSigningKeyId()));
-
-  SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
-      manager().FindPreProvisionedKey(provider_key, /*initiator=*/std::nullopt);
-
-  EXPECT_THAT(found_key,
-              ErrorIs(SessionError::kInvalidPreProvisionedKeyInitiatorMissing));
-}
-
 TEST_F(SingleSignOnKeyManagerTest, AddPreProvisionedKeyRecordsCount) {
   auto rp_origin = url::Origin::Create(GURL("https://example.test"));
   auto other_rp_origin = url::Origin::Create(GURL("https://other-rp.test"));
