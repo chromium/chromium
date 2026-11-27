@@ -114,6 +114,11 @@ inline constexpr base::FeatureParam<bool> kTtcGetPointerShowMark{
 // output volume so far; other platforms never warn.
 BASE_DECLARE_FEATURE(kTtcSpeakerVolumeWarning);
 
+// Output volume percent [0, 100] below which the volume counts as low. The low
+// volume toast shows at most once per session, when the model speaks.
+inline constexpr base::FeatureParam<int> kTtcSpeakerVolumeMinPercent{
+    &kTtcSpeakerVolumeWarning, "min_volume_percent", 20};
+
 // Enables a hold-to-speak shortcut during TTC sessions (see
 // prefs::kTtcHoldToSpeakShortcut): holding it turns the microphone on, and
 // releasing it turns the microphone off.

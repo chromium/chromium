@@ -21,6 +21,8 @@ class SessionJournal;
 // invokes `warning_callback` when the user might not hear model replies:
 // - `kMuted`: emitted immediately if already muted when created, and on each
 //   subsequent transition to muted.
+// - `kLow`: emitted at most once per session on `OnModelAudioEnvelopeReady()`
+//   while the unmuted output volume is below `kTtcSpeakerVolumeMinPercent`.
 class SpeakerVolumeWarningDetector {
  public:
   using WarningCallback = base::RepeatingCallback<void(SpeakerVolumeWarning)>;
@@ -35,12 +37,16 @@ class SpeakerVolumeWarningDetector {
       delete;
   ~SpeakerVolumeWarningDetector();
 
+  // Called when real model playback audio arrives during the live session.
+  void OnModelAudioEnvelopeReady();
+
  private:
   SpeakerVolumeWarningDetector(SessionJournal& journal,
                                WarningCallback warning_callback);
 
   bool Start();
   void OnOutputVolumeChanged(const OutputVolumeState& state);
+  bool IsOutputVolumeLow() const;
 
   // Owned by `SessionControllerImpl`, which destroys this detector before
   // tearing down its journal.
@@ -51,6 +57,10 @@ class SpeakerVolumeWarningDetector {
   // no active output device is reported. Detects false->true mute edges so
   // muted slider moves do not emit duplicate kMuted warnings.
   std::optional<OutputVolumeState> output_volume_;
+
+  // Latches true once kLow has been emitted in this session so users who keep
+  // volume low on purpose are warned at most once. Reset on the next session.
+  bool low_volume_warned_ = false;
 
   std::unique_ptr<OutputVolumeMonitor> monitor_;
 };

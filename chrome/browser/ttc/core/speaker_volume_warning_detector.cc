@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/ttc/app/public/session_journal.h"
 
@@ -49,6 +50,15 @@ bool SpeakerVolumeWarningDetector::Start() {
   return true;
 }
 
+void SpeakerVolumeWarningDetector::OnModelAudioEnvelopeReady() {
+  if (low_volume_warned_ || !IsOutputVolumeLow()) {
+    return;
+  }
+  // Users may keep the volume low on purpose, so warn only once.
+  low_volume_warned_ = true;
+  warning_callback_.Run(SpeakerVolumeWarning::kLow);
+}
+
 void SpeakerVolumeWarningDetector::OnOutputVolumeChanged(
     const OutputVolumeState& state) {
   actor::JournalDetailsBuilder details;
@@ -63,6 +73,12 @@ void SpeakerVolumeWarningDetector::OnOutputVolumeChanged(
   if (state.muted && !was_muted) {
     warning_callback_.Run(SpeakerVolumeWarning::kMuted);
   }
+}
+
+bool SpeakerVolumeWarningDetector::IsOutputVolumeLow() const {
+  // Muting has its own warning. A device without volume control is never low.
+  return output_volume_ && !output_volume_->muted && output_volume_->level &&
+         *output_volume_->level < kTtcSpeakerVolumeMinPercent.Get() / 100.0f;
 }
 
 }  // namespace ttc

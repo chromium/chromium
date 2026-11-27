@@ -30,6 +30,8 @@ class SessionJournal;
 enum class SpeakerVolumeWarning {
   // The system muted the output.
   kMuted,
+  // The output volume is below `kTtcSpeakerVolumeMinPercent`.
+  kLow,
 };
 
 // High-level lifecycle coordinator for a TTC session. Manages the lifetime
@@ -67,7 +69,8 @@ class SessionController {
     // The user might not hear the model because of the system's output
     // volume. Only reported while the session is live. Muting is reported when
     // the session goes live muted and each time the system mutes the output
-    // after that.
+    // after that. Low volume is reported at most once per session, when the
+    // model speaks.
     virtual void OnSpeakerVolumeWarning(SpeakerVolumeWarning warning) {}
     // The get_pointer tool told the model that the user is pointing at
     // `points`, in DIPs relative to the top left of the voice-focused

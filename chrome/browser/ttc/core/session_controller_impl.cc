@@ -105,6 +105,8 @@ std::string_view SpeakerVolumeWarningToString(SpeakerVolumeWarning warning) {
   switch (warning) {
     case SpeakerVolumeWarning::kMuted:
       return "muted";
+    case SpeakerVolumeWarning::kLow:
+      return "low";
   }
 }
 
@@ -374,6 +376,9 @@ void SessionControllerImpl::OnModelAudioEnvelopeReady(
     const AudioEnvelope& envelope) {
   for (SessionController::Observer& observer : observers_) {
     observer.OnModelAudioEnvelopeReady(envelope);
+  }
+  if (speaker_volume_warning_detector_) {
+    speaker_volume_warning_detector_->OnModelAudioEnvelopeReady();
   }
 }
 

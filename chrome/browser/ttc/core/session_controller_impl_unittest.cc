@@ -1054,11 +1054,17 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
   EXPECT_CALL(observer, OnSpeakerVolumeWarning(SpeakerVolumeWarning::kMuted));
   controller.SetSessionLifecycle(SessionLifecycle::kLive);
 
+  EXPECT_CALL(observer, OnSpeakerVolumeWarning(SpeakerVolumeWarning::kLow));
+  SetVolume({.muted = false, .level = 0.05f});
+  controller.OnModelAudioEnvelopeReady({});
+
   const std::vector<actor::ActorJournalRecorder::Entry> entries =
       recorder.GetEntries("TtcSpeakerVolumeWarning");
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_THAT(entries[0].details,
               testing::Contains(testing::Pair("warning", "muted")));
+  EXPECT_THAT(entries[1].details,
+              testing::Contains(testing::Pair("warning", "low")));
 
   controller.RemoveObserver(&observer);
 }

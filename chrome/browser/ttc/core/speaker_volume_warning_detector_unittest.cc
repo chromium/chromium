@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/output_volume_monitor.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/ttc/app/public/session_journal.h"
@@ -33,6 +35,7 @@ using ::testing::Pair;
 
 constexpr OutputVolumeState kAudible{.muted = false, .level = 0.5f};
 constexpr OutputVolumeState kMuted{.muted = true, .level = 0.5f};
+constexpr OutputVolumeState kQuiet{.muted = false, .level = 0.05f};
 
 class FakeSessionJournal : public SessionJournal {
  public:
@@ -195,6 +198,87 @@ TEST_F(SpeakerVolumeWarningDetectorTest, EachMuteWarns) {
 
   EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted,
                                      SpeakerVolumeWarning::kMuted));
+}
+
+// Users may keep the volume low on purpose: warn at most once per session,
+// when real model playback audio arrives.
+TEST_F(SpeakerVolumeWarningDetectorTest,
+       LowVolumeWarnsOnceWhenModelPlaysAudio) {
+  initial_state_ = kQuiet;
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+
+  // Silent periods and volume changes while no audio plays never warn.
+  SetVolume({.muted = false, .level = 0.02f});
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  // The first playback audio chunk warns once; later chunks and lower volumes
+  // do not warn again.
+  detector->OnModelAudioEnvelopeReady();
+  detector->OnModelAudioEnvelopeReady();
+  SetVolume({.muted = false, .level = 0.01f});
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kLow));
+}
+
+TEST_F(SpeakerVolumeWarningDetectorTest, VolumeDroppingBeforeModelAudioWarns) {
+  initial_state_ = OutputVolumeState{.muted = false, .level = 0.2f};
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+
+  // At the threshold (20%) it is not low.
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  SetVolume(kQuiet);
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kLow));
+}
+
+// Muting has its own warning, and a device without volume control is never
+// low.
+TEST_F(SpeakerVolumeWarningDetectorTest,
+       NoLowVolumeWarningWhenMutedOrUncontrolled) {
+  initial_state_ = OutputVolumeState{.muted = false, .level = std::nullopt};
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  // Muting warns as muted, never as low, even at level 0.
+  SetVolume({.muted = true, .level = 0.0f});
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted));
+
+  // Muting at 0 did not consume the low-volume warning.
+  SetVolume({.muted = false, .level = 0.0f});
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kMuted,
+                                     SpeakerVolumeWarning::kLow));
+}
+
+// A volume at the configured percent is not low, while a volume below it is.
+TEST_F(SpeakerVolumeWarningDetectorTest, MinVolumePercentFollowsParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kTtcSpeakerVolumeWarning, {{"min_volume_percent", "70"}});
+  initial_state_ = OutputVolumeState{.muted = false, .level = 0.7f};
+  std::unique_ptr<SpeakerVolumeWarningDetector> detector =
+      SpeakerVolumeWarningDetector::MaybeCreate(journal_, RecordWarnings());
+  ASSERT_TRUE(detector);
+
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, IsEmpty());
+
+  SetVolume({.muted = false, .level = 0.69f});
+  detector->OnModelAudioEnvelopeReady();
+  EXPECT_THAT(warnings_, ElementsAre(SpeakerVolumeWarning::kLow));
 }
 
 }  // namespace
