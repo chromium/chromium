@@ -527,10 +527,6 @@ static_library("browser") {
   configs = []
   configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
   sources = [
-    "at_memory/at_memory_enablement_util.cc",
-    "at_memory/at_memory_enablement_util.h",
-    "at_memory/autofill_data_provider.cc",
-    "at_memory/autofill_data_provider.h",
     "autofill_ai_form_rationalization.cc",
     "autofill_ai_form_rationalization.h",
     "autofill_feedback_data.cc",
@@ -2059,8 +2055,6 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "at_memory/at_memory_enablement_util_unittest.cc",
-    "at_memory/autofill_data_provider_unittest.cc",
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
     "autofill_field_unittest.cc",
