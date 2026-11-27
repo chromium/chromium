@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -47,6 +50,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -63,8 +67,11 @@
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
@@ -134,76 +141,220 @@ TEST_F(FileManagerPathUtilTest, GetDefaultDownloadDirectoryForLinuxChromeOS) {
             GetDefaultDownloadDirectoryForLinuxChromeOS());
 }
 
-TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
-  FilePath profile_path = FilePath("/home/chronos/u-0123456789abcdef");
+// Profiles not associated with any user, which is the case only in tests, use
+// the folders under the Profile directory, regardless of whether running on
+// ChromeOS or not.
+TEST_F(FileManagerPathUtilTest, GetFoldersForProfileWithoutUser) {
+  const FilePath profile_path("/home/chronos/u-0123456789abcdef");
+  ASSERT_EQ(profile_path, profile_->GetPath());
+  ASSERT_FALSE(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      profile_.get()));
 
-  // When running outside ChromeOS, it should return $HOME/Downloads for both
-  // MyFiles and Downloads.
-  EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
+  EXPECT_EQ(profile_path.Append("MyFiles"),
             GetMyFilesFolderForProfile(profile_.get()));
-  EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
+  EXPECT_EQ(profile_path.Append("MyFiles").Append("Downloads"),
             GetDownloadsFolderForProfile(profile_.get()));
 
-  // When running inside ChromeOS, it should return /home/u-{hash}/MyFiles.
-  base::test::ScopedRunningOnChromeOS running_on_chromeos;
-  EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles",
-            GetMyFilesFolderForProfile(profile_.get()).value());
-  EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles/Downloads",
-            GetDownloadsFolderForProfile(profile_.get()).value());
+  {
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
+    EXPECT_EQ(profile_path.Append("MyFiles"),
+              GetMyFilesFolderForProfile(profile_.get()));
+    EXPECT_EQ(profile_path.Append("MyFiles").Append("Downloads"),
+              GetDownloadsFolderForProfile(profile_.get()));
+  }
 
   // Mount the volume to test the return from mount_points.
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       GetDownloadsMountPointName(profile_.get()), storage::kFileSystemTypeLocal,
-      storage::FileSystemMountOption(), profile_path.Append("MyFiles"));
-
-  // When returning from the mount_point Downloads should still point to
-  // MyFiles/Downloads.
-  EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles/Downloads",
-            GetDownloadsFolderForProfile(profile_.get()).value());
-
-  // Still the same: /home/u-{hash}/MyFiles.
-  EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles",
-            GetMyFilesFolderForProfile(profile_.get()).value());
+      storage::FileSystemMountOption(), FilePath("/media/test/MyFiles"));
+  EXPECT_EQ(FilePath("/media/test/MyFiles"),
+            GetMyFilesFolderForProfile(profile_.get()));
+  EXPECT_EQ(FilePath("/media/test/MyFiles/Downloads"),
+            GetDownloadsFolderForProfile(profile_.get()));
 }
 
-TEST_F(FileManagerPathUtilTest, GetFoldersForUser) {
-  base::ScopedPathOverride user_data_dir_override(
-      ash::DIR_USER_DATA, FilePath("/home/chronos"), /*is_absolute=*/true,
-      /*create=*/false);
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("12345"));
-  user_manager_->AddUser(account_id);
-  user_manager_->UserLoggedIn(account_id, "0123456789abcdef");
-  const user_manager::User* user = user_manager_->FindUser(account_id);
-  ASSERT_TRUE(user);
+// Test fixture with a user session, so that Profiles are associated with users.
+class FileManagerPathUtilUserSessionTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    TestingBrowserProcess* const browser_process =
+        TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+  }
+
+  void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    user_session_test_environment_.reset();
+  }
+
+  // Logs in the user specified by `account_id`. Returns the user's Profile.
+  Profile* LogIn(const AccountId& account_id) {
+    user_session_test_environment_->LogIn(account_id);
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+};
+
+TEST_F(FileManagerPathUtilUserSessionTest, GetFoldersForUser) {
+  const AccountId primary_account_id =
+      AccountId::FromUserEmailGaiaId("primary@example.com", GaiaId("12345"));
+  const AccountId secondary_account_id =
+      AccountId::FromUserEmailGaiaId("secondary@example.com", GaiaId("67890"));
+  const user_manager::User* const primary_user =
+      user_session_test_environment_->AddRegularUser(primary_account_id);
+  ASSERT_TRUE(primary_user);
+  const user_manager::User* const secondary_user =
+      user_session_test_environment_->AddRegularUser(secondary_account_id);
+  ASSERT_TRUE(secondary_user);
+  Profile* const primary_profile = LogIn(primary_account_id);
+  ASSERT_TRUE(primary_profile);
+  Profile* const secondary_profile = LogIn(secondary_account_id);
+  ASSERT_TRUE(secondary_profile);
+
+  const FilePath user_data_dir =
+      base::PathService::CheckedGet(ash::DIR_USER_DATA);
+  const FilePath primary_user_dir =
+      user_data_dir.Append("u-" + primary_user->username_hash());
+  const FilePath secondary_user_dir =
+      user_data_dir.Append("u-" + secondary_user->username_hash());
 
   // When running outside ChromeOS, it should return $HOME/Downloads for both
   // MyFiles and Downloads for the primary user.
   EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
-            GetMyFilesFolder(*user));
+            GetMyFilesFolder(*primary_user));
   EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
-            GetDownloadsFolder(*user));
-
-  // When running inside ChromeOS, it should return /home/u-{hash}/MyFiles.
-  base::test::ScopedRunningOnChromeOS running_on_chromeos;
-  EXPECT_EQ(FilePath("/home/chronos/u-0123456789abcdef/MyFiles"),
-            GetMyFilesFolder(*user));
-  EXPECT_EQ(FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"),
-            GetDownloadsFolder(*user));
+            GetDownloadsFolder(*primary_user));
+  // For other users, it should return the folders in the user's home
+  // directory.
+  EXPECT_EQ(secondary_user_dir.Append("MyFiles"),
+            GetMyFilesFolder(*secondary_user));
+  EXPECT_EQ(secondary_user_dir.Append("MyFiles").Append("Downloads"),
+            GetDownloadsFolder(*secondary_user));
 
   // The deprecated variants should return the same paths.
-  EXPECT_EQ(GetMyFilesFolder(*user),
-            GetMyFilesFolderForProfile(profile_.get()));
-  EXPECT_EQ(GetDownloadsFolder(*user),
-            GetDownloadsFolderForProfile(profile_.get()));
+  EXPECT_EQ(GetMyFilesFolder(*primary_user),
+            GetMyFilesFolderForProfile(primary_profile));
+  EXPECT_EQ(GetDownloadsFolder(*primary_user),
+            GetDownloadsFolderForProfile(primary_profile));
+  EXPECT_EQ(GetMyFilesFolder(*secondary_user),
+            GetMyFilesFolderForProfile(secondary_profile));
+  EXPECT_EQ(GetDownloadsFolder(*secondary_user),
+            GetDownloadsFolderForProfile(secondary_profile));
+
+  {
+    // When running inside ChromeOS, it should return the folders in the
+    // user's home directory, i.e. <user data dir>/u-{hash}/MyFiles.
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
+    EXPECT_EQ(primary_user_dir.Append("MyFiles"),
+              GetMyFilesFolder(*primary_user));
+    EXPECT_EQ(primary_user_dir.Append("MyFiles").Append("Downloads"),
+              GetDownloadsFolder(*primary_user));
+    EXPECT_EQ(GetMyFilesFolder(*primary_user),
+              GetMyFilesFolderForProfile(primary_profile));
+    EXPECT_EQ(GetDownloadsFolder(*primary_user),
+              GetDownloadsFolderForProfile(primary_profile));
+  }
+
+  // Mount the volume to test the return from mount_points.
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      GetDownloadsMountPointName(*primary_user), storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), FilePath("/media/test/MyFiles"));
+  EXPECT_EQ(FilePath("/media/test/MyFiles"), GetMyFilesFolder(*primary_user));
+  EXPECT_EQ(FilePath("/media/test/MyFiles/Downloads"),
+            GetDownloadsFolder(*primary_user));
+  EXPECT_EQ(GetMyFilesFolder(*primary_user),
+            GetMyFilesFolderForProfile(primary_profile));
+  EXPECT_EQ(GetDownloadsFolder(*primary_user),
+            GetDownloadsFolderForProfile(primary_profile));
+}
+
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@example.com",
+                                            GaiaId::Literal("12345"));
+
+class FileManagerUserPathUtilTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  }
+
+  void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    user_session_test_environment_.reset();
+  }
+
+  // Adds a regular user and logs in. Returns the logged in user.
+  const user_manager::User* LogIn() {
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(kTestAccountId);
+    if (!user) {
+      return nullptr;
+    }
+    user_session_test_environment_->LogIn(kTestAccountId);
+    return user;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedPathOverride user_data_dir_override_{
+      ash::DIR_USER_DATA, base::FilePath("/home/chronos"),
+      /*is_absolute=*/true, /*create=*/false};
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+};
+
+TEST_F(FileManagerUserPathUtilTest, GetFolders) {
+  const user_manager::User* user = LogIn();
+  ASSERT_TRUE(user);
+  ASSERT_FALSE(user->username_hash().empty());
+  const base::FilePath user_dir =
+      base::FilePath("/home/chronos").Append("u-" + user->username_hash());
+
+  // When running outside ChromeOS, it should return the default downloads
+  // directory for both MyFiles and Downloads for the primary user.
+  EXPECT_EQ(GetDefaultDownloadDirectoryForLinuxChromeOS(),
+            GetMyFilesFolder(*user));
+  EXPECT_EQ(GetDefaultDownloadDirectoryForLinuxChromeOS(),
+            GetDownloadsFolder(*user));
+
+  // When running inside ChromeOS, it should return /home/chronos/u-{hash}/
+  // MyFiles.
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+  EXPECT_EQ(user_dir.Append("MyFiles"), GetMyFilesFolder(*user));
+  EXPECT_EQ(user_dir.Append("MyFiles").Append("Downloads"),
+            GetDownloadsFolder(*user));
 
   // Mount the volume to test the return from mount_points.
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       GetDownloadsMountPointName(*user), storage::kFileSystemTypeLocal,
-      storage::FileSystemMountOption(), FilePath("/media/test/MyFiles"));
-  EXPECT_EQ(FilePath("/media/test/MyFiles"), GetMyFilesFolder(*user));
-  EXPECT_EQ(FilePath("/media/test/MyFiles/Downloads"),
+      storage::FileSystemMountOption(), base::FilePath("/media/test/MyFiles"));
+  EXPECT_EQ(base::FilePath("/media/test/MyFiles"), GetMyFilesFolder(*user));
+  EXPECT_EQ(base::FilePath("/media/test/MyFiles/Downloads"),
             GetDownloadsFolder(*user));
+}
+
+TEST_F(FileManagerUserPathUtilTest, GetMountPointNames) {
+  const user_manager::User* user = LogIn();
+  ASSERT_TRUE(user);
+  // The fake username hash contains '@', which should be escaped.
+  ASSERT_EQ("user@example.com-hash", user->username_hash());
+
+  EXPECT_EQ("Downloads-user%40example.com-hash",
+            GetDownloadsMountPointName(*user));
+  EXPECT_EQ("ShareCache-user%40example.com-hash",
+            GetShareCacheMountPointName(*user));
 }
 
 TEST_F(FileManagerPathUtilTest, GetMountPointNamesForUser) {

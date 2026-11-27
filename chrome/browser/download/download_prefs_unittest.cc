@@ -54,6 +54,19 @@ using safe_browsing::FileTypePolicies;
 
 namespace {
 
+// Returns the directory that invalid download paths, e.g. relative paths, fall
+// back to for `profile`.
+base::FilePath GetFallbackDownloadDirectory(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, it is the MyFiles folder. For Profiles not associated with
+  // any user, such as TestingProfile in the tests below, it is under the
+  // Profile directory.
+  return file_manager::util::GetMyFilesFolderForProfile(profile);
+#else
+  return DownloadPrefs::GetDefaultDownloadDirectory();
+#endif
+}
+
 TEST(DownloadPrefsTest, Prerequisites) {
   // Most of the tests below are based on the assumption that .swf files are not
   // allowed to open automatically, and that .txt files are allowed. If this
@@ -435,7 +448,7 @@ TEST(DownloadPrefsTest, RelativeDefaultPathCorrected) {
       base::ValueToFilePath(*(profile.GetTestingPrefService()->GetUserPref(
                                 prefs::kDownloadDefaultDirectory)))
           .value(),
-      download_prefs.GetDefaultDownloadDirectory());
+      download_prefs.GetDefaultDownloadDirectoryForProfile());
 }
 
 TEST(DownloadPrefsTest, ManagedRelativePathDoesNotChangeUserPref) {
@@ -466,7 +479,7 @@ TEST(DownloadPrefsTest, RecommendedRelativePathDoesNotChangeUserPref) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
-  base::FilePath save_dir = DownloadPrefs::GetDefaultDownloadDirectory().Append(
+  base::FilePath save_dir = GetFallbackDownloadDirectory(&profile).Append(
       base::FilePath::FromUTF8Unsafe("tmp"));
   profile.GetTestingPrefService()->SetRecommendedPref(
       prefs::kDownloadDefaultDirectory,
@@ -491,7 +504,7 @@ TEST(DownloadPrefsTest, RecommendedRelativePathDoesNotChangeUserPref) {
             save_dir);
 
   EXPECT_EQ(download_prefs.DownloadPath(),
-            DownloadPrefs::GetDefaultDownloadDirectory());
+            GetFallbackDownloadDirectory(&profile));
   EXPECT_EQ(download_prefs.SaveFilePath(), save_dir);
 }
 
@@ -509,7 +522,7 @@ TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
 
   download_prefs.SetDownloadPath(base::FilePath::FromUTF8Unsafe(".."));
   EXPECT_EQ(download_prefs.DownloadPath(),
-            download_prefs.GetDefaultDownloadDirectory());
+            GetFallbackDownloadDirectory(&profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -560,11 +573,13 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                 "/home/chronos");
   EXPECT_EQ(prefs.DownloadPath(), default_dir);
 
-  // Test with an invalid path containing parent references.
+  // Test with an invalid path containing parent references. It falls back to
+  // the MyFiles folder.
   base::FilePath parent_reference = default_dir.AppendASCII("..");
   profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
                                 parent_reference.value());
-  EXPECT_EQ(prefs.DownloadPath(), default_dir);
+  EXPECT_EQ(prefs.DownloadPath(),
+            file_manager::util::GetMyFilesFolderForProfile(&profile));
 
   // Test a valid path for Android files.
   ExpectValidDownloadDir(&profile, &prefs,

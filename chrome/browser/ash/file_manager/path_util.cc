@@ -59,7 +59,10 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "components/account_id/account_id.h"
 #include "components/drive/file_system_core_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -150,24 +153,28 @@ void OnAllContentUrlsResolved(
 
 // By default, in ChromeOS it uses the $profile_dir/MyFiles however,
 // for manual tests/development in linux-chromeos it uses $HOME/Downloads for
-// chrome binary and a temp dir for browser tests. The flag
-// `--use-myfiles-in-user-data-dir-for-testing` forces the ChromeOS pattern,
-// even for non-ChromeOS environments.
-// `user` may be nullptr, if the Profile is not associated with any user.
-bool ShouldMountPrimaryUserDownloads(const user_manager::User* user) {
+// the primary user.
+// The flag `--use-myfiles-in-user-data-dir-for-testing` forces the ChromeOS
+// pattern, even for non-ChromeOS environments. It is used in browser tests.
+bool ShouldMountPrimaryUserDownloads(const user_manager::User& user) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kUseMyFilesInUserDataDirForTesting)) {
     return false;
   }
 
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      user_manager::UserManager::IsInitialized()) {
-    const user_manager::User* const primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    return user == primary_user;
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    return false;
   }
 
-  return false;
+  const session_manager::SessionManager* const session_manager =
+      session_manager::SessionManager::Get();
+  if (!session_manager) {
+    return false;
+  }
+  const session_manager::Session* const primary_session =
+      session_manager->GetPrimarySession();
+  return primary_session &&
+         user.GetAccountId() == primary_session->account_id();
 }
 
 // Returns the User associated with the `profile`. Returns nullptr if not
@@ -305,26 +312,23 @@ std::optional<int> MyFilesFolderToMessageId(std::string folder) {
   return std::nullopt;
 }
 
-// `user` may be nullptr, if the Profile is not associated with any user.
-std::string GetMountPointName(const user_manager::User* user,
+// Returns the mount point name for `folder_name` of the `user`.
+std::string GetMountPointName(const user_manager::User& user,
                               std::string_view folder_name) {
   // To distinguish profiles in multi-profile session, we append user name hash
-  // to folder_name. Note that some profiles (like login or test profiles)
-  // are not associated with an user account. In that case, no suffix is added
-  // because such a profile never belongs to a multi-profile session.
-  const std::string id = user ? "-" + user->username_hash() : "";
-  return base::EscapeQueryParamValue(base::StrCat({folder_name, id}), false);
+  // to folder_name.
+  return base::EscapeQueryParamValue(
+      base::StrCat({folder_name, "-", user.username_hash()}), false);
 }
 
-// Returns the overridden path for the "MyFiles" folder, if any. Otherwise
-// returns std::nullopt.
-// `user` may be nullptr, if the Profile is not associated with any user.
+// Returns the overridden path for the "MyFiles" folder of the `user`, if any.
+// Otherwise returns std::nullopt.
 std::optional<FilePath> GetOverriddenMyFilesFolder(
-    const user_manager::User* user) {
+    const user_manager::User& user) {
   // Check if FilesApp has a registered path already. This happens for tests.
   FilePath path;
   if (storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          GetMountPointName(user, kFolderNameDownloads), &path)) {
+          GetDownloadsMountPointName(user), &path)) {
     return path;
   }
 
@@ -336,15 +340,14 @@ std::optional<FilePath> GetOverriddenMyFilesFolder(
   return std::nullopt;
 }
 
-// Returns the overridden path for the "Downloads" folder, if any. Otherwise
-// returns std::nullopt.
-// `user` may be nullptr, if the Profile is not associated with any user.
+// Returns the overridden path for the "Downloads" folder of the `user`, if
+// any. Otherwise returns std::nullopt.
 std::optional<FilePath> GetOverriddenDownloadsFolder(
-    const user_manager::User* user) {
+    const user_manager::User& user) {
   // Check if FilesApp has a registered path already.  This happens for tests.
   FilePath path;
   if (storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          GetMountPointName(user, kFolderNameDownloads), &path)) {
+          GetDownloadsMountPointName(user), &path)) {
     return path.AppendASCII(kFolderNameDownloads);
   }
 
@@ -451,7 +454,7 @@ const FilePath& GetDefaultDownloadDirectoryForLinuxChromeOS() {
 }
 
 FilePath GetDownloadsFolder(const user_manager::User& user) {
-  if (std::optional<FilePath> path = GetOverriddenDownloadsFolder(&user)) {
+  if (std::optional<FilePath> path = GetOverriddenDownloadsFolder(user)) {
     return *std::move(path);
   }
 
@@ -462,7 +465,7 @@ FilePath GetDownloadsFolder(const user_manager::User& user) {
 }
 
 FilePath GetMyFilesFolder(const user_manager::User& user) {
-  if (std::optional<FilePath> path = GetOverriddenMyFilesFolder(&user)) {
+  if (std::optional<FilePath> path = GetOverriddenMyFilesFolder(user)) {
     return *std::move(path);
   }
 
@@ -479,25 +482,23 @@ FilePath GetDownloadsFolderForProfile(Profile* profile) {
     // In production, the user's home directory is always mounted before the
     // user's Profile is created.
     CHECK_IS_TEST();
+    if (std::optional<FilePath> path = GetOverriddenDownloadsFolder(*user)) {
+      return *std::move(path);
+    }
+  } else {
+    // In production, Profiles not associated with any user are Ash internal
+    // Profiles, such as the sign-in Profile, and the callers filter them out.
+    // TODO(crbug.com/579585875): Fix the tests using such Profiles, and remove
+    // this fallback.
+    CHECK_IS_TEST(base::NotFatalUntil::M163);
+    // Check if FilesApp has a registered path already. This happens for tests.
+    FilePath path;
+    if (storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
+            kFolderNameDownloads, &path)) {
+      return path.AppendASCII(kFolderNameDownloads);
+    }
   }
 
-  // Fallback for the case where `profile` is not associated with a user.
-  // TODO(crbug.com/579585875): This is still reachable in production with
-  // non-user Profiles, such as the sign-in Profile and the lock screen
-  // Profile, from:
-  // - DownloadPrefs::DownloadPrefs() via
-  //   DownloadPrefs::GetDefaultDownloadDirectoryForProfile(). DownloadPrefs is
-  //   created for such Profiles too (DownloadCoreServiceFactory supports Ash
-  //   internal Profiles), e.g. when a download is attempted in the GAIA/SAML
-  //   webview or the captive portal sign-in dialog on the login screen.
-  // - BelongsToOtherProfile() in
-  //   chrome/browser/ash/extensions/file_manager/private_api_file_system.cc,
-  //   which iterates over all the loaded Profiles, including the sign-in
-  //   Profile.
-  // Fix the callers, then replace this with CHECK_IS_TEST().
-  if (std::optional<FilePath> path = GetOverriddenDownloadsFolder(user)) {
-    return *std::move(path);
-  }
   return profile->GetPath()
       .AppendASCII(kFolderNameMyFiles)
       .AppendASCII(kFolderNameDownloads);
@@ -512,27 +513,23 @@ FilePath GetMyFilesFolderForProfile(Profile* profile) {
     // In production, the user's home directory is always mounted before the
     // user's Profile is created.
     CHECK_IS_TEST();
+    if (std::optional<FilePath> path = GetOverriddenMyFilesFolder(*user)) {
+      return *std::move(path);
+    }
+  } else {
+    // In production, Profiles not associated with any user are Ash internal
+    // Profiles, such as the sign-in Profile, and the callers filter them out.
+    // TODO(crbug.com/579585875): Fix the tests using such Profiles, and remove
+    // this fallback.
+    CHECK_IS_TEST(base::NotFatalUntil::M163);
+    // Check if FilesApp has a registered path already. This happens for tests.
+    FilePath path;
+    if (storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
+            kFolderNameDownloads, &path)) {
+      return path;
+    }
   }
 
-  // Fallback for the case where `profile` is not associated with a user.
-  // TODO(crbug.com/579585875): This is still reachable in production with
-  // non-user Profiles, such as the sign-in Profile and the lock screen
-  // Profile, from:
-  // - BelongsToOtherProfile() in
-  //   chrome/browser/ash/extensions/file_manager/private_api_file_system.cc,
-  //   which iterates over all the loaded Profiles, including the sign-in
-  //   Profile.
-  // - SharesheetClient::Share() in
-  //   chrome/browser/webshare/chromeos/sharesheet_client.cc, which uses the
-  //   Profile of the web page calling navigator.share() with files, e.g. the
-  //   SAML IdP page in the GAIA webview on the login screen.
-  // Also, DownloadPrefs::SanitizeDownloadTargetPath() and
-  // MigratePathFromOldFormat() (called by DownloadPrefs) do not guard against
-  // non-user Profiles, though no concrete production path was found.
-  // Fix the callers, then replace this with CHECK_IS_TEST().
-  if (std::optional<FilePath> path = GetOverriddenMyFilesFolder(user)) {
-    return *std::move(path);
-  }
   return profile->GetPath().AppendASCII(kFolderNameMyFiles);
 }
 
@@ -598,7 +595,7 @@ bool MigrateToDriveFs(Profile* profile,
 }
 
 std::string GetDownloadsMountPointName(const user_manager::User& user) {
-  return GetMountPointName(&user, kFolderNameDownloads);
+  return GetMountPointName(user, kFolderNameDownloads);
 }
 
 std::string GetDownloadsMountPointName(Profile* profile) {
@@ -606,18 +603,16 @@ std::string GetDownloadsMountPointName(Profile* profile) {
     return GetDownloadsMountPointName(*user);
   }
 
-  // Fallback for the case where `profile` is not associated with a user.
-  // TODO(crbug.com/579585875): This is still reachable in production with
-  // non-user Profiles, such as the sign-in Profile and the lock screen
-  // Profile, from BelongsToOtherProfile() in
-  // chrome/browser/ash/extensions/file_manager/private_api_file_system.cc,
-  // which iterates over all the loaded Profiles, including the sign-in
-  // Profile. Fix the caller, then replace this with CHECK_IS_TEST().
-  return GetMountPointName(nullptr, kFolderNameDownloads);
+  // In production, Profiles not associated with any user are Ash internal
+  // Profiles, such as the sign-in Profile, and the callers filter them out.
+  // TODO(crbug.com/579585875): Fix the tests using such Profiles, and remove
+  // this fallback.
+  CHECK_IS_TEST(base::NotFatalUntil::M163);
+  return kFolderNameDownloads;
 }
 
 std::string GetShareCacheMountPointName(const user_manager::User& user) {
-  return GetMountPointName(&user, kFolderNameShareCache);
+  return GetMountPointName(user, kFolderNameShareCache);
 }
 
 std::string GetShareCacheMountPointName(Profile* profile) {
@@ -625,14 +620,12 @@ std::string GetShareCacheMountPointName(Profile* profile) {
     return GetShareCacheMountPointName(*user);
   }
 
-  // Fallback for the case where `profile` is not associated with a user.
-  // TODO(crbug.com/579585875): This is still reachable in production with
-  // non-user Profiles, such as the sign-in Profile and the lock screen
-  // Profile, from BelongsToOtherProfile() in
-  // chrome/browser/ash/extensions/file_manager/private_api_file_system.cc,
-  // which iterates over all the loaded Profiles, including the sign-in
-  // Profile. Fix the caller, then replace this with CHECK_IS_TEST().
-  return GetMountPointName(nullptr, kFolderNameShareCache);
+  // In production, Profiles not associated with any user are Ash internal
+  // Profiles, such as the sign-in Profile, and the callers filter them out.
+  // TODO(crbug.com/579585875): Fix the tests using such Profiles, and remove
+  // this fallback.
+  CHECK_IS_TEST(base::NotFatalUntil::M163);
+  return kFolderNameShareCache;
 }
 
 std::string GetAndroidFilesMountPointName() {
@@ -678,13 +671,11 @@ std::string GetCrostiniMountPointName(Profile* profile) {
     return GetCrostiniMountPointName(*user);
   }
 
-  // Fallback for the case where `profile` is not associated with a user.
-  // TODO(crbug.com/579585875): This is still reachable in production with
-  // non-user Profiles, such as the sign-in Profile and the lock screen
-  // Profile, from BelongsToOtherProfile() in
-  // chrome/browser/ash/extensions/file_manager/private_api_file_system.cc,
-  // which iterates over all the loaded Profiles, including the sign-in
-  // Profile. Fix the caller, then replace this with CHECK_IS_TEST().
+  // In production, Profiles not associated with any user are Ash internal
+  // Profiles, such as the sign-in Profile, and the callers filter them out.
+  // TODO(crbug.com/579585875): Fix the tests using such Profiles, and remove
+  // this fallback.
+  CHECK_IS_TEST(base::NotFatalUntil::M163);
   // crostini_<hash>_termina_penguin
   return base::JoinString(
       {"crostini", crostini::CryptohomeIdForProfile(profile),
