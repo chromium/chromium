@@ -27,7 +27,24 @@ using l10n_util::GetNSString;
 
 namespace {
 constexpr CGFloat kHelpSymbolSize = 20;
+
+// Returns the UMA bucket for `type`. The two enums order `StaySafe` and
+// `MadeForIOS` differently, so the value can't be cast.
+DefaultPromoTypeForUMA PromoTypeForUMA(DefaultPromoType type) {
+  switch (type) {
+    case DefaultPromoTypeGeneral:
+      return DefaultPromoTypeForUMA::kGeneral;
+    case DefaultPromoTypeStaySafe:
+      return DefaultPromoTypeForUMA::kStaySafe;
+    case DefaultPromoTypeMadeForIOS:
+      return DefaultPromoTypeForUMA::kMadeForIOS;
+    case DefaultPromoTypeAllTabs:
+      return DefaultPromoTypeForUMA::kAllTabs;
+  }
+  NOTREACHED();
 }
+
+}  // namespace
 
 @implementation BaseDefaultBrowserPromoViewProvider {
   // Promo view controller.
@@ -178,9 +195,8 @@ constexpr CGFloat kHelpSymbolSize = 20;
 - (void)recordDefaultBrowserPromoShown {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
-  base::UmaHistogramEnumeration(
-      "IOS.DefaultBrowserPromo.Shown",
-      DefaultPromoTypeForUMA(self.defaultBrowserPromoType));
+  base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
+                                PromoTypeForUMA(self.defaultBrowserPromoType));
 }
 
 @end

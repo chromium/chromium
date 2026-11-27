@@ -1961,7 +1961,11 @@ chromium-metrics-reviews@google.com.
   <owner>gujen@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
-  <summary>The default browser promo type shown to the user.</summary>
+  <summary>
+    The default browser promo type shown to the user. Before M160, the Stay Safe
+    and Made for iOS buckets were swapped: Stay Safe impressions were recorded
+    as Made for iOS and vice versa.
+  </summary>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserSettingsPageUsage{Source}"

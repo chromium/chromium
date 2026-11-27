@@ -22,9 +22,20 @@
 
 @interface TestDefaultBrowserPromoViewProvider
     : BaseDefaultBrowserPromoViewProvider
+
+// The promo type returned by `-defaultBrowserPromoType`.
+@property(nonatomic, assign) DefaultPromoType promoType;
+
 @end
 
 @implementation TestDefaultBrowserPromoViewProvider
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _promoType = DefaultPromoTypeAllTabs;
+  }
+  return self;
+}
 
 - (UIImage*)promoImage {
   return [UIImage imageNamed:@"all_your_tabs"];
@@ -47,7 +58,7 @@
 }
 
 - (DefaultPromoType)defaultBrowserPromoType {
-  return DefaultPromoTypeAllTabs;
+  return self.promoType;
 }
 
 @end
@@ -91,6 +102,30 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDisplay) {
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
+}
+
+// Tests that the Stay Safe promo is recorded in its own `Shown` bucket.
+TEST_F(BaseDefaultBrowserPromoViewProviderTest,
+       TestRecordShownMetricForStaySafe) {
+  base::HistogramTester histogram_tester;
+  test_provider_.promoType = DefaultPromoTypeStaySafe;
+
+  [test_provider_ promoWasDisplayed];
+
+  histogram_tester.ExpectUniqueSample("IOS.DefaultBrowserPromo.Shown",
+                                      DefaultPromoTypeForUMA::kStaySafe, 1);
+}
+
+// Tests that the Made for iOS promo is recorded in its own `Shown` bucket.
+TEST_F(BaseDefaultBrowserPromoViewProviderTest,
+       TestRecordShownMetricForMadeForIOS) {
+  base::HistogramTester histogram_tester;
+  test_provider_.promoType = DefaultPromoTypeMadeForIOS;
+
+  [test_provider_ promoWasDisplayed];
+
+  histogram_tester.ExpectUniqueSample("IOS.DefaultBrowserPromo.Shown",
+                                      DefaultPromoTypeForUMA::kMadeForIOS, 1);
 }
 
 // Tests that all expected metrics and logs are recorded on primary action.
