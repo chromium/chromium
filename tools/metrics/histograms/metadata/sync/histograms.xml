@@ -3152,9 +3152,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TriggerRefreshSource" enum="TriggerRefreshSource"
-    expires_after="2026-12-20">
+    expires_after="2027-11-27">
   <owner>mtatarski@google.com</owner>
-  <owner>chrome-sync-dev@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Recorded whenever SyncService::TriggerRefresh() is called, records the call
     site/reason why it's called. This method forces a download of latest updates
