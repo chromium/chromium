@@ -275,14 +275,16 @@ class ProfilePicker {
   // displayed through `on_error_callback`.
   // `switch_finished_callback` will be called once the step was switched (or
   // failed to switch to), the bool parameter indicating the success of the
-  // switch.
+  // switch. Ignored without invoking `switch_finished_callback` or
+  // `on_error_callback` if the picker is not currently on the main picker step.
   static void SwitchToReauth(
       Profile* profile,
       base::OnceCallback<void(bool)> switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 
   // Switch to the flow that comes when the user decides to create a profile
-  // without signing in.
+  // without signing in. Ignored if the picker is not currently on the main
+  // picker step.
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
   static void SwitchToSignedOutPostIdentityFlow(
@@ -308,9 +310,9 @@ class ProfilePicker {
       base::OnceCallback<void(bool)> pick_profile_complete_callback);
 
   // Cancel the sign-in flow and returns back to the main picker screen (if
-  // the original EntryPoint was to open the picker). Must only be called from
-  // within the sign-in flow. This will delete the profile previously created
-  // for the signed-in flow.
+  // the original EntryPoint was to open the picker). Ignored if not currently
+  // in the sign-in flow. This will delete the profile previously created for
+  // the signed-in flow.
   static void CancelSignInFlow();
 
   // Resets the sign-in flow from the profile-switch screen back to the main

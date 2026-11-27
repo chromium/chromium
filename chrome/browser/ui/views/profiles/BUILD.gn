@@ -1227,6 +1227,7 @@ if (enable_dice_support) {
       "//chrome/browser/enterprise",
       "//chrome/browser/metrics",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/signin",
       "//chrome/browser/themes",

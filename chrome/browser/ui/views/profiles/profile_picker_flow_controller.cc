@@ -19,6 +19,8 @@
 #include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -554,7 +556,9 @@ void ProfilePickerFlowController::SwitchToReauth(
     Profile* profile,
     StepSwitchFinishedCallback switch_finished_callback,
     base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
-  DCHECK_EQ(Step::kProfilePicker, current_step());
+  if (current_step() != Step::kProfilePicker || HasFlowExited()) {
+    return;
+  }
 
   // if the step was already initialized, unregister to make sure the new
   // reauth is properly initialised and the current reauth step is cleaned.
@@ -618,9 +622,12 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
 }
 
 void ProfilePickerFlowController::CancelSigninFlow() {
-  // Triggered from either entreprise welcome or profile switch screens.
-  DCHECK(current_step() == Step::kPostSignInFlow ||
-         current_step() == Step::kAccountSelection);
+  // Triggered from either enterprise welcome or profile switch screens.
+  if ((current_step() != Step::kPostSignInFlow &&
+       current_step() != Step::kAccountSelection) ||
+      HasFlowExited()) {
+    return;
+  }
 
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
@@ -656,7 +663,7 @@ void ProfilePickerFlowController::CancelSigninFlow() {
 
 void ProfilePickerFlowController::ConfirmProfileSwitchToLockedProfile(
     const base::FilePath& profile_path) {
-  if (current_step() != Step::kAccountSelection) {
+  if (current_step() != Step::kAccountSelection || HasFlowExited()) {
     return;
   }
   // Re-register `Step::kProfilePicker` at the root main-view URL before
@@ -732,6 +739,17 @@ ProfilePickerFlowController::CreatePostSignInAdapter(
 void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
     Profile* profile) {
   CHECK(profile);
+  if (current_step() != Step::kProfilePicker || HasFlowExited()) {
+    // Delete the unused ephemeral profile created for this aborted flow.
+    if (auto keep_alive = ScopedProfileKeepAlive::TryAcquire(
+            profile, ProfileKeepAliveOrigin::kProfileDeletionProcess)) {
+      g_browser_process->profile_manager()
+          ->GetDeleteProfileHelper()
+          .ScheduleEphemeralProfileForDeletion(profile->GetPath(),
+                                               std::move(keep_alive));
+    }
+    return;
+  }
   created_profile_ = profile->GetWeakPtr();
   CreateSignedOutFlowWebContents(created_profile_.get());
 
@@ -949,6 +967,13 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
       ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
   if (disclaimer_service &&
       disclaimer_service->IsDeviceSignalsDisclaimerRequired(nullptr)) {
+    if ((current_step() != Step::kProfilePicker &&
+         current_step() != Step::kAccountSelection) ||
+        HasFlowExited()) {
+      std::move(pick_profile_complete_callback).Run(nullptr);
+      return;
+    }
+
     // Cleanup the step controller if already initialized.
     if (IsStepInitialized(Step::kDeviceSignalsDisclaimer)) {
       UnregisterStep(Step::kDeviceSignalsDisclaimer);

@@ -2096,6 +2096,105 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
             expected_errors.second);
 }
 
+// Regression test for crbug.com/577950735.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       DuplicateSwitchToReauthIgnored) {
+  // Ensure `ForceSigninVerifier` sees an online connection even in network-
+  // isolated test environments so it immediately evaluates the invalid token.
+  content::NetworkConnectionChangeSimulator().SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  constexpr char kEmail[] = "joe.consumer@gmail.com";
+
+  base::FilePath locked_path = CreateNewProfileWithoutBrowser();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* locked_profile = profile_manager->GetProfileByPath(locked_path);
+  ASSERT_NE(locked_profile, nullptr);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(locked_profile);
+  signin::MakePrimaryAccountAvailable(identity_manager, kEmail,
+                                      signin::ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(locked_path);
+  ASSERT_NE(entry, nullptr);
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  entry->LockForceSigninProfile(true);
+  ASSERT_TRUE(entry->IsSigninRequired());
+
+  ShowPickerAndWait(/*start_on_management_page=*/true);
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  // Cancelling sign-in while on the main picker step is ignored.
+  ProfilePicker::CancelSignInFlow();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(GURL(chrome::kChromeUIProfilePickerUrl),
+            web_contents()->GetLastCommittedURL());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> first_callback;
+  base::MockCallback<base::OnceCallback<void(const ForceSigninUIError&)>>
+      first_error_callback;
+  EXPECT_CALL(first_callback, Run(true));
+  EXPECT_CALL(first_error_callback, Run).Times(0);
+
+  base::MockCallback<base::OnceCallback<void(bool)>>
+      duplicate_during_load_callback;
+  base::MockCallback<base::OnceCallback<void(const ForceSigninUIError&)>>
+      duplicate_during_load_error_callback;
+  EXPECT_CALL(duplicate_during_load_callback, Run).Times(0);
+  EXPECT_CALL(duplicate_during_load_error_callback, Run).Times(0);
+
+  ProfilePicker::SwitchToReauth(locked_profile, first_callback.Get(),
+                                first_error_callback.Get());
+  // A duplicate call while the first reauth switch is in progress is ignored.
+  ProfilePicker::SwitchToReauth(locked_profile,
+                                duplicate_during_load_callback.Get(),
+                                duplicate_during_load_error_callback.Get());
+
+  WaitForLoadStop(GetChromeReauthURL(kEmail));
+
+  // A duplicate call after the reauth screen is shown is also ignored.
+  base::MockCallback<base::OnceCallback<void(bool)>>
+      duplicate_after_load_callback;
+  base::MockCallback<base::OnceCallback<void(const ForceSigninUIError&)>>
+      duplicate_after_load_error_callback;
+  EXPECT_CALL(duplicate_after_load_callback, Run).Times(0);
+  EXPECT_CALL(duplicate_after_load_error_callback, Run).Times(0);
+  ProfilePicker::SwitchToReauth(locked_profile,
+                                duplicate_after_load_callback.Get(),
+                                duplicate_after_load_error_callback.Get());
+
+  // Cancelling sign-in while on the reauth step is also ignored.
+  ProfilePicker::CancelSignInFlow();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(GetChromeReauthURL(kEmail), web_contents()->GetLastCommittedURL());
+}
+
+// Regression test for crbug.com/577950735.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       SwitchToSignedOutIgnoredDuringSignIn) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  StartDiceSignIn();
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  const size_t profile_count_during_signin = storage.GetNumberOfProfiles();
+
+  // Triggering signed-out creation while on the account selection step should
+  // be ignored and clean up the temporary ephemeral profile it created.
+  ProfileDeletionObserver deletion_observer;
+  ProfilePicker::SwitchToSignedOutPostIdentityFlow(std::nullopt);
+  deletion_observer.Wait();
+
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(GetSigninChromeSyncDiceUrl(),
+            web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(profile_count_during_signin, storage.GetNumberOfProfiles());
+}
+
 // Regression test for crbug.com/40802113.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncEncryptionKeys) {
@@ -4761,6 +4860,37 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   histogram_tester().ExpectBucketCount(
       kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 1);
+}
+
+// Regression test for crbug.com/577950735.
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                       DuplicatePickProfileIgnoredDuringDisclaimer) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
+  WaitForLoadStop(GetDisclaimerUrl());
+
+  // Picking the managed profile again while the device signals disclaimer is
+  // already shown should fail cleanly without replacing the active step.
+  base::test::TestFuture<bool> duplicate_pick_future;
+  ProfilePicker::PickProfile(managed_profile_path(),
+                             ProfilePicker::ProfilePickingArgs(),
+                             duplicate_pick_future.GetCallback());
+  EXPECT_FALSE(duplicate_pick_future.Get());
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(GetDisclaimerUrl(), web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // The active disclaimer flow should still complete normally.
+  ClickDisclaimerCancelButton();
+  WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
