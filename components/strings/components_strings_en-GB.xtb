@@ -1224,7 +1224,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3053013834507634016">Certificate Key Usage</translation>
 <translation id="3057844102210575426">Manage travel info</translation>
 <translation id="3061707000357573562">Patch Service</translation>
-<translation id="3062655045399308513">Delete browsing data…</translation>
+<translation id="3062655045399308513">Delete Browsing Data...</translation>
 <translation id="3063453392496098461">VPN background services installation failed.</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
@@ -1561,7 +1561,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">This IBAN couldn't be saved in Google Wallet. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
 <translation id="3621401353678567613">To get price drop alerts for products that you track, turn on notifications in settings.</translation>
-<translation id="362276910939193118">Show full history</translation>
+<translation id="362276910939193118">Show Full History</translation>
 <translation id="3623041590998910684">To use your camera, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Labels (matte)</translation>
 <translation id="3626483107624019072">Manage data in your account</translation>
@@ -3057,7 +3057,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>
 <translation id="6062405040252994646">Tool</translation>
-<translation id="6062937464449575061">Untrack price</translation>
+<translation id="6062937464449575061">Untrack Price</translation>
 <translation id="6069343053547121389">Ask questions about this tab with AI Mode</translation>
 <translation id="6070432475334343308">One or more files were not uploaded to <ph name="FOLDER_NAME" /> on <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6071503852498277813">Content bookmark parser service</translation>
@@ -4324,7 +4324,7 @@ Additional details:
 <translation id="8189557652711717875">The search engine that you choose will be used for features such as searching from the address bar and from images on web pages.</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8194412401381329820">You cannot use this page from a managed account on this unmanaged device. All managed accounts will be locked if you use this page, except accounts managed by the same entity as this device (affiliated accounts).</translation>
-<translation id="8194579937546982778">Always show <ph name="AI_ENGINE_NAME" /></translation>
+<translation id="8194579937546982778">Always Show <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">&amp;Undo Move</translation>
 <translation id="8199437620497683918">Optical disc (glossy)</translation>
 <translation id="8202097416529803614">Order summary</translation>
