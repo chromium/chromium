@@ -6608,6 +6608,42 @@ public class WebContentsAccessibilityTest {
                 new String[] {"before_button", "math_root", "after_button"});
     }
 
+    /**
+     * Test that ANDROID_NEXT_HTML_ELEMENT visits children of a node with role="math" when the
+     * ACCESSIBILITY_ANDROID_MATH feature is enabled.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_roleMath() throws Throwable {
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<div role='math' id='aria_math'><span id='span_x'>x</span><sup id='sup_2'>2</sup></div>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {"before_button", "span_x", "sup_2", "after_button"});
+    }
+
+    /**
+     * Test that ANDROID_NEXT_HTML_ELEMENT visits a node with role="math" when the
+     * ACCESSIBILITY_ANDROID_MATH feature is enabled and node is a leaf.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_roleMathLeaf() throws Throwable {
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<div role='math' id='aria_math'>x+2</div>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {"before_button", "aria_math", "after_button"});
+    }
+
     /** Test that a screen reader can request Chromium to programmatically focus a MathML node. */
     @Test
     @MediumTest

@@ -598,7 +598,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
       return true;
     }
 
-    if (ui::IsMath(GetRole())) {
+    if (ui::IsMath(GetRole()) && GetRole() != ax::mojom::Role::kMath) {
       return false;
     }
   }
