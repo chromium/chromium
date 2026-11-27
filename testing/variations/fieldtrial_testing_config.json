@@ -9745,6 +9745,25 @@
             ]
         }
     ],
+    "GeicPaymentOtpRedaction": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledLaunch",
+                    "enable_features": [
+                        "AnnotatedPageContentAutofillCreditCardRedactions",
+                        "GlicScreenshotSensitivePaymentRedaction"
+                    ]
+                }
+            ]
+        }
+    ],
     "GeminiWebChromeCohesion": [
         {
             "platforms": [
