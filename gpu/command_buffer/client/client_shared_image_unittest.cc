@@ -58,6 +58,18 @@ SharedImageInfo CreateSharedImageInfo(
                          "ClientSharedImageTest"};
 }
 
+SyncToken MakeSyncToken(uint64_t command_buffer_id,
+                        uint64_t release_count = 1,
+                        bool verified = true) {
+  SyncToken token(CommandBufferNamespace::GPU_IO,
+                  CommandBufferId::FromUnsafeValue(command_buffer_id),
+                  release_count);
+  if (verified) {
+    token.SetVerifyFlush();
+  }
+  return token;
+}
+
 class MockGLES2Interface : public gles2::GLES2InterfaceStub {
  public:
   MOCK_METHOD(void,
@@ -286,6 +298,25 @@ TEST(ClientSharedImageTest,
   EXPECT_EQ(deserialized_si.read_sync_tokens_.size(), 2u);
   EXPECT_EQ(deserialized_si.read_sync_tokens_[0], token1);
   EXPECT_EQ(deserialized_si.read_sync_tokens_[1], token2);
+}
+
+TEST(ClientSharedImageTest, SharedImageExportResultMojoDeserialization) {
+  SharedImageExportResult result = SharedImageExportResult::CreateForTesting(
+      MakeSyncToken(41, 50), {MakeSyncToken(42, 100), MakeSyncToken(43, 200)});
+  SharedImageExportResult deserialized;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<gpu::mojom::SharedImageExportResult>(
+          result, deserialized));
+  EXPECT_TRUE(deserialized.IsEqualForTesting(result));
+
+  SharedImageExportResult empty_result =
+      SharedImageExportResult::CreateEmptyResult();
+  SharedImageExportResult deserialized_empty;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<gpu::mojom::SharedImageExportResult>(
+          empty_result, deserialized_empty));
+  EXPECT_TRUE(deserialized_empty.IsEqualForTesting(empty_result));
+  EXPECT_FALSE(deserialized_empty.HasData());
 }
 
 TEST(ClientSharedImageTest, CreateMappableBufferFromHandle_EmptyBuffer) {
@@ -617,8 +648,8 @@ TEST(ClientSharedImageTest,
   SyncToken expected_compositor_token = compositor_token;
   expected_compositor_token.SetVerifyFlush();
   EXPECT_TRUE(exported_result.IsEqualForTesting(
-      SharedImageExportResult::CreateForTesting(
-          {expected_creation_token, expected_compositor_token})));
+      SharedImageExportResult::CreateForTesting(expected_creation_token,
+                                                {expected_compositor_token})));
 }
 
 // Checks whether ClientSharedImage correctly stores only the latest SyncToken
@@ -658,7 +689,7 @@ TEST(ClientSharedImageTest, AutomaticSyncTokenManagement_SyncTokenUpdate) {
   expected_token.SetVerifyFlush();
   EXPECT_TRUE(
       export_result.IsEqualForTesting(SharedImageExportResult::CreateForTesting(
-          {expected_creation_token, expected_token})));
+          expected_creation_token, {expected_token})));
 }
 
 TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
@@ -1120,6 +1151,146 @@ TEST(ClientSharedImageTest,
   client_si.reset();
   EXPECT_THAT(sii->MostRecentDestroyTokens(),
               testing::ElementsAre(update_token2));
+}
+
+// Checks that automatic SyncToken management preserves the owner's write and
+// concurrent read SyncTokens across a read-only import/export, and replaces
+// them with the importer's new write and post-write read SyncTokens after a
+// writing import/export.
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_ImportExportReadAndWrite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto owner_si = sii->CreateSharedImage(
+      CreateSharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888,
+                            SHARED_IMAGE_USAGE_RASTER_READ |
+                                SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                SHARED_IMAGE_USAGE_DISPLAY_READ),
+      kNullSurfaceHandle);
+  SyncToken creation_token = owner_si->creation_sync_token();
+  creation_token.SetVerifyFlush();
+
+  auto do_access = [](ClientSharedImage* si, viz::TestRasterInterface* ri,
+                      bool readonly) {
+    auto access = si->BeginRasterAccess(ri, SyncToken(), readonly);
+    RasterScopedAccess::EndAccess(std::move(access));
+  };
+
+  constexpr uint64_t kConcurrentReadId = 10;
+  constexpr uint64_t kImporterReadId = 20;
+  constexpr uint64_t kOwnerReadId = 30;
+  constexpr uint64_t kImporterWriteId = 40;
+  constexpr uint64_t kPostWriteReadId = 50;
+
+  // 1. Read-only importer waits on the exported write SyncToken, returns an
+  // empty write SyncToken, and on EndExport() merges its read SyncToken without
+  // overwriting the owner's write SyncToken or clearing concurrent reads.
+  auto read_importer = ClientSharedImage::ImportUnowned(owner_si->Export());
+  const SyncToken concurrent_read_token = MakeSyncToken(kConcurrentReadId);
+  owner_si->EndDisplayCompositorAccess(concurrent_read_token);
+
+  viz::TestRasterInterface read_ri;
+  read_ri.set_command_buffer_id(kImporterReadId);
+  do_access(read_importer.get(), &read_ri, /*readonly=*/true);
+  EXPECT_THAT(read_ri.waited_sync_tokens(),
+              testing::ElementsAre(creation_token));
+
+  const SyncToken importer_read_token = MakeSyncToken(kImporterReadId);
+  SharedImageExportResult read_result = read_importer->EndImport(SyncToken());
+  EXPECT_TRUE(
+      read_result.IsEqualForTesting(SharedImageExportResult::CreateForTesting(
+          /*write_sync_token=*/SyncToken(), {importer_read_token})));
+  owner_si->EndExport(std::move(read_result));
+
+  viz::TestRasterInterface owner_ri;
+  owner_ri.set_command_buffer_id(kOwnerReadId);
+  do_access(owner_si.get(), &owner_ri, /*readonly=*/true);
+  EXPECT_THAT(owner_ri.waited_sync_tokens(),
+              testing::ElementsAre(creation_token));
+
+  // 2. Writing importer returns its new write SyncToken; EndExport() updates
+  // the owner's write SyncToken and replaces prior read SyncTokens with the
+  // importer's post-write read SyncTokens.
+  auto write_importer = ClientSharedImage::ImportUnowned(owner_si->Export());
+  viz::TestRasterInterface write_ri;
+  write_ri.set_command_buffer_id(kImporterWriteId);
+  do_access(write_importer.get(), &write_ri, /*readonly=*/false);
+  const SyncToken owner_read_token1 = MakeSyncToken(kOwnerReadId);
+  EXPECT_THAT(
+      write_ri.waited_sync_tokens(),
+      testing::UnorderedElementsAre(creation_token, concurrent_read_token,
+                                    importer_read_token, owner_read_token1));
+
+  viz::TestRasterInterface post_write_read_ri;
+  post_write_read_ri.set_command_buffer_id(kPostWriteReadId);
+  do_access(write_importer.get(), &post_write_read_ri, /*readonly=*/true);
+
+  const SyncToken write_token = MakeSyncToken(kImporterWriteId);
+  const SyncToken post_write_read_token = MakeSyncToken(kPostWriteReadId);
+  SharedImageExportResult write_result = write_importer->EndImport(SyncToken());
+  EXPECT_TRUE(
+      write_result.IsEqualForTesting(SharedImageExportResult::CreateForTesting(
+          write_token, {post_write_read_token})));
+  owner_si->EndExport(std::move(write_result));
+
+  owner_ri.ClearWaitedSyncTokens();
+  do_access(owner_si.get(), &owner_ri, /*readonly=*/true);
+  EXPECT_THAT(owner_ri.waited_sync_tokens(), testing::ElementsAre(write_token));
+
+  // Destruction waits only on the new write token and post-write read tokens
+  // (`owner_read_token2` stays unverified because `owner_si` is not exported
+  // again).
+  const SyncToken owner_read_token2 =
+      MakeSyncToken(kOwnerReadId, /*release_count=*/2, /*verified=*/false);
+  owner_si.reset();
+  EXPECT_THAT(sii->MostRecentDestroyTokens(),
+              testing::UnorderedElementsAre(write_token, post_write_read_token,
+                                            owner_read_token2));
+}
+
+// Checks manual-mode EndImport()/EndExport()/EndExportAsVector() round-trips
+// and defensive handling of unexpected payloads.
+TEST(ClientSharedImageTest, ManualSyncTokenManagement_EndImportAndEndExport) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  const SyncToken token1 = MakeSyncToken(10, 100);
+  const SyncToken token2 = MakeSyncToken(20, 200);
+
+  // EndImport(vector) strips empty tokens; EndExportAsVector() returns the
+  // remaining non-empty tokens.
+  SharedImageExportResult vec_result =
+      client_si->EndImport(std::vector<SyncToken>{SyncToken(), token1, token2});
+  EXPECT_THAT(client_si->EndExportAsVector(std::move(vec_result)),
+              testing::ElementsAre(token1, token2));
+
+  // EndImport(SyncToken) followed by EndExport() preserves valid and empty
+  // tokens.
+  EXPECT_EQ(client_si->EndExport(client_si->EndImport(token1)), token1);
+  EXPECT_FALSE(
+      client_si->EndExport(client_si->EndImport(SyncToken())).HasData());
+
+  // Unexpected manual-mode payloads (non-empty write token, or >1 read tokens
+  // for EndExport) return empty results.
+  EXPECT_FALSE(client_si
+                   ->EndExport(SharedImageExportResult::CreateForTesting(
+                       /*write_sync_token=*/token1, {token2}))
+                   .HasData());
+  EXPECT_FALSE(client_si
+                   ->EndExport(SharedImageExportResult::CreateForTesting(
+                       /*write_sync_token=*/SyncToken(), {token1, token2}))
+                   .HasData());
+  EXPECT_TRUE(client_si
+                  ->EndExportAsVector(SharedImageExportResult::CreateForTesting(
+                      /*write_sync_token=*/token1, {token2}))
+                  .empty());
 }
 
 }  // namespace gpu

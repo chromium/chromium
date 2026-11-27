@@ -11,7 +11,15 @@ import "ui/gfx/mojom/buffer_types.mojom";
 
 // gpu::SharedImageExportResult
 struct SharedImageExportResult {
-  array<gpu.mojom.SyncToken> sync_tokens;
+  // SyncToken for the latest write access performed by the importer after
+  // import, or empty if the importer did not write to the SharedImage (and
+  // always empty when automatic SyncToken management is disabled).
+  gpu.mojom.SyncToken write_sync_token;
+
+  // SyncTokens for read accesses performed after the latest write. When
+  // automatic SyncToken management is disabled, holds the caller-supplied
+  // release SyncToken(s).
+  array<gpu.mojom.SyncToken> read_sync_tokens;
 };
 
 // gpu::ExportedSharedImage
@@ -19,7 +27,13 @@ struct ExportedSharedImage {
   gpu.mojom.Mailbox mailbox;
   gpu.mojom.SharedImageMetadata metadata;
   gpu.mojom.SyncToken creation_sync_token;
+
+  // SyncToken for the latest write access to the SharedImage prior to export.
+  // Empty when automatic SyncToken management is disabled.
   gpu.mojom.SyncToken write_sync_token;
+
+  // SyncTokens for read accesses performed since the latest write prior to
+  // export. Empty when automatic SyncToken management is disabled.
   array<gpu.mojom.SyncToken> read_sync_tokens;
   string debug_label;
 

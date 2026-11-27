@@ -7,8 +7,10 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/containers/to_vector.h"
@@ -133,31 +135,29 @@ SharedImageExportResult::SharedImageExportResult(SharedImageExportResult&&) =
 SharedImageExportResult& SharedImageExportResult::operator=(
     SharedImageExportResult&&) = default;
 
-SharedImageExportResult::SharedImageExportResult(const SyncToken& sync_token)
-    : sync_tokens_{sync_token} {}
 SharedImageExportResult::SharedImageExportResult(
-    std::vector<SyncToken> sync_tokens)
-    : sync_tokens_(std::move(sync_tokens)) {
-  CHECK(!sync_tokens_.empty());
-}
+    const SyncToken& write_sync_token,
+    std::vector<SyncToken> read_sync_tokens)
+    : write_sync_token_(write_sync_token),
+      read_sync_tokens_(std::move(read_sync_tokens)) {}
 
 bool SharedImageExportResult::HasData() const {
-  for (const auto& sync_token : sync_tokens_) {
-    if (sync_token.HasData()) {
-      return true;
-    }
-  }
-  return false;
+  return write_sync_token_.HasData() ||
+         std::ranges::any_of(read_sync_tokens_, &SyncToken::HasData);
 }
 
 std::string SharedImageExportResult::ToDebugString() const {
-  if (sync_tokens_.empty()) {
-    return "empty";
+  std::vector<std::string> parts;
+  if (write_sync_token_.HasData()) {
+    parts.push_back("write:" + write_sync_token_.ToDebugString());
   }
-
-  std::vector<std::string> token_strings = base::ToVector(
-      sync_tokens_, [](const auto& token) { return token.ToDebugString(); });
-  return base::JoinString(token_strings, ",");
+  if (!read_sync_tokens_.empty()) {
+    std::vector<std::string> read_strings =
+        base::ToVector(read_sync_tokens_,
+                       [](const auto& token) { return token.ToDebugString(); });
+    parts.push_back("read:[" + base::JoinString(read_strings, ",") + "]");
+  }
+  return parts.empty() ? "empty" : base::JoinString(parts, ",");
 }
 
 ClientSharedImage::ScopedMapping::ScopedMapping(
@@ -461,8 +461,17 @@ ClientSharedImage::ClientSharedImage(
   CHECK(texture_target_);
 #endif
 
-  StoreSyncTokenInternal(exported_si.write_sync_token_, /*readonly=*/false);
-  StoreSyncTokenVectorInternal(exported_si.read_sync_tokens_);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    base::AutoLock auto_lock(lock_);
+    // Initialize `write_sync_token_` directly so
+    // `was_write_sync_token_updated_` remains false until this imported
+    // instance performs a write of its own.
+    write_sync_token_ = exported_si.write_sync_token_;
+    for (const auto& sync_token : exported_si.read_sync_tokens_) {
+      StoreSyncTokenLocked(sync_token, /*readonly=*/true);
+    }
+  }
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -1235,6 +1244,7 @@ void ClientSharedImage::StoreSyncTokenLocked(const SyncToken& sync_token,
   if (!readonly) {
     read_sync_token_map_.clear();
     write_sync_token_ = sync_token;
+    was_write_sync_token_updated_ = true;
     return;
   }
 
@@ -1268,20 +1278,26 @@ SyncToken ClientSharedImage::StoreSyncTokenInternal(const SyncToken& sync_token,
   }
 }
 
-std::vector<SyncToken> ClientSharedImage::StoreSyncTokenVectorInternal(
-    const std::vector<SyncToken>& sync_tokens) {
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    base::AutoLock auto_lock(lock_);
-    // TODO(crbug.com/40286368): Split write and read SyncTokens in
-    // SharedImageExportResult so EndExport() can update `write_sync_token_`
-    // when an importer writes to the SharedImage (e.g. WebXR).
-    for (const auto& sync_token : sync_tokens) {
-      StoreSyncTokenLocked(sync_token, /*readonly=*/true);
-    }
-    return std::vector<SyncToken>();
-  } else {
-    return sync_tokens;
+SharedImageExportResult ClientSharedImage::PackExportResultInternal() {
+  base::AutoLock auto_lock(lock_);
+  VerifySyncTokensLocked();
+  return SharedImageExportResult(
+      was_write_sync_token_updated_ ? write_sync_token_ : SyncToken(),
+      base::ToVector(read_sync_token_map_,
+                     [](const auto& entry) { return entry.second; }));
+}
+
+void ClientSharedImage::EndExportInternal(SharedImageExportResult&& result) {
+  base::AutoLock auto_lock(lock_);
+  if (result.write_sync_token_.HasData()) {
+    // The importer performed a write (having waited on prior read and write
+    // SyncTokens). Storing a write SyncToken clears `read_sync_token_map_`, so
+    // the loop below replaces it with the importer's post-write read SyncTokens
+    // rather than merging with prior read SyncTokens.
+    StoreSyncTokenLocked(result.write_sync_token_, /*readonly=*/false);
+  }
+  for (const auto& sync_token : result.read_sync_tokens_) {
+    StoreSyncTokenLocked(sync_token, /*readonly=*/true);
   }
 }
 
@@ -1377,13 +1393,12 @@ SharedImageExportResult ClientSharedImage::EndImport(
           features::kUseAutomaticSyncTokenManagement)) {
     // Ignore the input `sync_token` since it must have been already generated
     // and stored in this ClientSharedImage.
-    std::vector<SyncToken> verified_sync_tokens = VerifyAndCollectSyncTokens();
-    if (verified_sync_tokens.empty()) {
-      return SharedImageExportResult{SyncToken()};
-    }
-    return SharedImageExportResult{std::move(verified_sync_tokens)};
+    return PackExportResultInternal();
   } else {
-    return SharedImageExportResult{sync_token};
+    return SharedImageExportResult(
+        /*write_sync_token=*/SyncToken(),
+        sync_token.HasData() ? std::vector<SyncToken>{sync_token}
+                             : std::vector<SyncToken>{});
   }
 }
 
@@ -1391,41 +1406,52 @@ SharedImageExportResult ClientSharedImage::EndImport(
     const std::vector<SyncToken>& sync_tokens) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    // Ignore the input `sync_tokens` since it must have been already generated
-    // and stored in this ClientSharedImage.
-    std::vector<SyncToken> verified_sync_tokens = VerifyAndCollectSyncTokens();
-    if (verified_sync_tokens.empty()) {
-      return SharedImageExportResult{SyncToken()};
-    }
-    return SharedImageExportResult{std::move(verified_sync_tokens)};
+    // Ignore the input `sync_tokens` since they must have been already
+    // generated and stored in this ClientSharedImage.
+    return PackExportResultInternal();
   } else {
-    if (sync_tokens.empty()) {
-      return SharedImageExportResult{SyncToken()};
-    } else {
-      return SharedImageExportResult{sync_tokens};
-    }
+    std::vector<SyncToken> read_sync_tokens = sync_tokens;
+    std::erase_if(read_sync_tokens,
+                  [](const SyncToken& token) { return !token.HasData(); });
+    return SharedImageExportResult(/*write_sync_token=*/SyncToken(),
+                                   std::move(read_sync_tokens));
   }
 }
 
 // Unpack the SharedImageExportResult.
-// This version expects an empty or a single-SyncToken export result.
+// This version expects an empty or a single-SyncToken export result in manual
+// mode.
 SyncToken ClientSharedImage::EndExport(SharedImageExportResult&& result) {
-  if (result.sync_tokens_.empty()) {
-    return SyncToken();
-  }
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    auto tokens = StoreSyncTokenVectorInternal(std::move(result.sync_tokens_));
-    return tokens.empty() ? SyncToken() : tokens.back();
+    EndExportInternal(std::move(result));
+    return SyncToken();
   } else {
-    CHECK(result.sync_tokens_.size() == 1);
-    return StoreSyncTokenInternal(result.sync_tokens_[0], /*readonly=*/true);
+    if (result.write_sync_token_.HasData() ||
+        result.read_sync_tokens_.size() > 1) {
+      DLOG(ERROR) << "Unexpected SharedImageExportResult in manual mode: "
+                  << result.ToDebugString();
+      return SyncToken();
+    }
+    return result.read_sync_tokens_.empty() ? SyncToken()
+                                            : result.read_sync_tokens_[0];
   }
 }
 
 std::vector<SyncToken> ClientSharedImage::EndExportAsVector(
     SharedImageExportResult&& result) {
-  return StoreSyncTokenVectorInternal(std::move(result.sync_tokens_));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EndExportInternal(std::move(result));
+    return {};
+  } else {
+    if (result.write_sync_token_.HasData()) {
+      DLOG(ERROR) << "Unexpected write SyncToken in manual mode: "
+                  << result.ToDebugString();
+      return {};
+    }
+    return std::move(result.read_sync_tokens_);
+  }
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;

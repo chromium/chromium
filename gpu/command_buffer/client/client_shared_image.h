@@ -104,25 +104,36 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
   // Used in FrameSinkResourceManager to facilitate creating a dummy
   // ReturnedResource for callback clearing.
   static SharedImageExportResult CreateEmptyResult() {
-    return SharedImageExportResult(SyncToken());
-  }
-
-  static SharedImageExportResult CreateForTesting(const SyncToken& sync_token) {
-    return SharedImageExportResult(sync_token);
+    return SharedImageExportResult();
   }
 
   static SharedImageExportResult CreateForTesting(
-      std::vector<SyncToken> sync_tokens) {
-    return SharedImageExportResult(std::move(sync_tokens));
+      const SyncToken& read_sync_token) {
+    return SharedImageExportResult(
+        /*write_sync_token=*/SyncToken(),
+        read_sync_token.HasData() ? std::vector<SyncToken>{read_sync_token}
+                                  : std::vector<SyncToken>{});
+  }
+
+  static SharedImageExportResult CreateForTesting(
+      const SyncToken& write_sync_token,
+      std::vector<SyncToken> read_sync_tokens) {
+    return SharedImageExportResult(write_sync_token,
+                                   std::move(read_sync_tokens));
   }
 
   // The two IsEqualForTesting methods allow easy SyncToken comparison without
   // unpacking SharedImageExportResult.
   bool IsEqualForTesting(const SyncToken& sync_token) const {
-    return sync_tokens_.size() == 1 && sync_tokens_[0] == sync_token;
+    if (!sync_token.HasData()) {
+      return !HasData();
+    }
+    return !write_sync_token_.HasData() && read_sync_tokens_.size() == 1 &&
+           read_sync_tokens_[0] == sync_token;
   }
   bool IsEqualForTesting(const SharedImageExportResult& other_result) const {
-    return sync_tokens_ == other_result.sync_tokens_;
+    return write_sync_token_ == other_result.write_sync_token_ &&
+           read_sync_tokens_ == other_result.read_sync_tokens_;
   }
 
   bool HasData() const;
@@ -136,10 +147,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
   friend struct mojo::StructTraits<gpu::mojom::SharedImageExportResultDataView,
                                    SharedImageExportResult>;
 
-  explicit SharedImageExportResult(const SyncToken& sync_token);
-  explicit SharedImageExportResult(std::vector<SyncToken> sync_tokens);
+  SharedImageExportResult(const SyncToken& write_sync_token,
+                          std::vector<SyncToken> read_sync_tokens);
 
-  std::vector<SyncToken> sync_tokens_;
+  SyncToken write_sync_token_;
+  std::vector<SyncToken> read_sync_tokens_;
 };
 
 // Wrapper around Mailbox and metadata for efficient sharing between threads
@@ -493,7 +505,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SharedImageExportResult EndImport(const std::vector<SyncToken>& sync_tokens);
 
   // Unpack the SharedImageExportResult.
-  // This version expects an empty or a single-SyncToken export result.
+  // This version expects an empty or a single-SyncToken export result in manual
+  // mode.
   SyncToken EndExport(SharedImageExportResult&& result);
   std::vector<SyncToken> EndExportAsVector(SharedImageExportResult&& result);
 
@@ -594,13 +607,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       std::vector<SyncToken> sync_tokens,
       InterfaceBase* ib);
 
-  // Helper function for `StoreSyncTokenInternal` and
-  // `StoreSyncTokenVectorInternal`; Must be called while holding `lock_`.
+  // Helper function for storing SyncTokens; must be called while holding
+  // `lock_`.
   void StoreSyncTokenLocked(const SyncToken& sync_token, bool readonly)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   SyncToken StoreSyncTokenInternal(const SyncToken& sync_token, bool readonly);
-  std::vector<SyncToken> StoreSyncTokenVectorInternal(
-      const std::vector<SyncToken>& sync_tokens);
+  SharedImageExportResult PackExportResultInternal();
+  void EndExportInternal(SharedImageExportResult&& result);
 
   SyncToken GenSyncTokenInternal(InterfaceBase* ib, bool readonly);
 
@@ -638,6 +651,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   base::flat_map<SyncPointClientId, SyncToken> read_sync_token_map_
       GUARDED_BY(lock_);
   SyncToken write_sync_token_ GUARDED_BY(lock_);
+  // True if a write SyncToken has been stored on this ClientSharedImage
+  // instance. Used by PackExportResultInternal() so read-only importers return
+  // an empty `write_sync_token_`.
+  bool was_write_sync_token_updated_ GUARDED_BY(lock_) = false;
 
   std::unique_ptr<MappableBuffer> mappable_buffer_;
   std::optional<gfx::BufferUsage> buffer_usage_;
