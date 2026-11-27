@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
 
 // Branded symbols
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  SymbolCheckmarkLoop,
   SymbolGeminiBrandedLogo,
   SymbolGeminiFull,
   SymbolGeminiLiveLogo,

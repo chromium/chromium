@@ -15,6 +15,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
 
       // Branded symbols.
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    case SymbolCheckmarkLoop:
+      return {@"checkmark_loop", SymbolType::kCustom};
     case SymbolGeminiBrandedLogo:
       return {@"gemini_logo", SymbolType::kCustom};
     case SymbolGeminiFull:

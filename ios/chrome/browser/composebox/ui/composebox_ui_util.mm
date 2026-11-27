@@ -48,7 +48,7 @@ UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
       return SymbolWithPointSize(SymbolPhoto, point_size);
     case omnibox::IconResourceIds::PTM_TOOL:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-      return SymbolWithPointSize(SymbolSparkleTrail, point_size);
+      return SymbolWithPointSize(SymbolCheckmarkLoop, point_size);
 #else
       return SymbolWithPointSize(SymbolSparkle, point_size);
 #endif
