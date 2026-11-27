@@ -105,13 +105,15 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto channel_sender = std::make_unique<SharingChannelSender>(
       message_bridge, gcm_driver, device_info_tracker,
       local_device_info_provider, sync_service,
-      ios::sync_start_util::GetFlareForSyncableService(&profile));
+      // TODO(crbug.com/585389233): Remove `start_sync_flare` from
+      // `SharingChannelSender` once its Sync queue is removed.
+      /*start_sync_flare=*/base::DoNothing());
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       web::GetUIThreadTaskRunner({});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
       std::move(channel_sender), local_device_info_provider, sync_service,
-      task_runner);
+      ios::sync_start_util::GetFlareForSyncableService(&profile), task_runner);
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);

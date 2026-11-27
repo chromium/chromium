@@ -22,6 +22,7 @@
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_target_device_info.h"
+#include "components/sync/model/syncable_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace sharing_message {
@@ -57,6 +58,7 @@ class SharingMessageSender : public syncer::SyncServiceObserver {
       std::unique_ptr<SharingChannelSender> channel_sender,
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
       syncer::SyncService* sync_service,
+      syncer::SyncableService::StartSyncFlare start_sync_flare,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   SharingMessageSender(const SharingMessageSender&) = delete;
   SharingMessageSender& operator=(const SharingMessageSender&) = delete;
@@ -150,7 +152,8 @@ class SharingMessageSender : public syncer::SyncServiceObserver {
       SendTarget target,
       ResponseCallback callback);
 
-  // Builds an ack `PendingOutgoingMessage` and sends it to `target`.
+  // Builds an ack `PendingOutgoingMessage` and sends or queues it depending on
+  // `sync_service_` state.
   void SendAckMessageToTarget(
       SendTarget target,
       std::string original_message_id,
@@ -161,9 +164,15 @@ class SharingMessageSender : public syncer::SyncServiceObserver {
   // `pending_message` to `channel_sender_`.
   void DoSendMessage(std::unique_ptr<PendingOutgoingMessage> pending_message);
 
-  // Invoked when `local_device_info_provider_` finishes initializing; sends all
-  // queued `pending_outgoing_messages_`.
+  // Invoked when `local_device_info_provider_` finishes initializing.
   void OnLocalDeviceInfoInitialized();
+
+  // Sends or fails queued messages whose readiness conditions are now met.
+  void MaybeSendPendingMessages();
+
+  // Triggers `start_sync_flare_` once if present to kick off deferred Sync
+  // startup.
+  void MaybeRunStartSyncFlare();
 
   static SentMessageMetadata CreateSentMessageMetadata(
       ResponseCallback callback,
@@ -175,6 +184,7 @@ class SharingMessageSender : public syncer::SyncServiceObserver {
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
   raw_ptr<syncer::SyncService> sync_service_;
+  syncer::SyncableService::StartSyncFlare start_sync_flare_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -183,8 +193,8 @@ class SharingMessageSender : public syncer::SyncServiceObserver {
   // Subscription for `local_device_info_provider_` initialization when
   // outgoing messages are waiting to be sent.
   base::CallbackListSubscription local_device_info_ready_subscription_;
-  // Outgoing messages queued while waiting for `local_device_info_provider_`
-  // to initialize.
+  // Outgoing regular and ack messages queued while waiting for
+  // `local_device_info_provider_` and/or `SHARING_MESSAGE` sync to initialize.
   std::vector<std::unique_ptr<PendingOutgoingMessage>>
       pending_outgoing_messages_;
 

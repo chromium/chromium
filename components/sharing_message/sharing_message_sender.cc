@@ -21,6 +21,7 @@
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_name_util.h"
@@ -67,10 +68,12 @@ SharingMessageSender::SharingMessageSender(
     std::unique_ptr<SharingChannelSender> channel_sender,
     syncer::LocalDeviceInfoProvider* local_device_info_provider,
     syncer::SyncService* sync_service,
+    syncer::SyncableService::StartSyncFlare start_sync_flare,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : channel_sender_(std::move(channel_sender)),
       local_device_info_provider_(local_device_info_provider),
       sync_service_(sync_service),
+      start_sync_flare_(std::move(start_sync_flare)),
       task_runner_(std::move(task_runner)) {
   // `sync_service_` can be null in tests (e.g. `MockSharingMessageSender`).
   if (sync_service_) {
@@ -245,15 +248,13 @@ void SharingMessageSender::FailPendingMessages() {
 }
 
 void SharingMessageSender::OnStateChanged(syncer::SyncService* sync_service) {
-  if (IsSyncDisabledForSharing(sync_service_)) {
-    FailPendingMessages();
-  }
+  MaybeSendPendingMessages();
 }
 
 void SharingMessageSender::OnSyncShutdown(syncer::SyncService* sync_service) {
-  FailPendingMessages();
   sync_service_observation_.Reset();
   sync_service_ = nullptr;
+  FailPendingMessages();
 }
 
 SharingChannelSender* SharingMessageSender::GetChannelSenderForTesting() const {
@@ -314,7 +315,9 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
     return base::NullCallback();
   }
 
-  if (!local_device_info_provider_->GetLocalDeviceInfo() &&
+  const bool is_local_device_info_ready =
+      local_device_info_provider_->GetLocalDeviceInfo() != nullptr;
+  if (!is_local_device_info_ready &&
       !base::FeatureList::IsEnabled(
           kSharingPostponeSendingUntilLocalDeviceInfoReady)) {
     InvokeSendMessageCallback(message_guid,
@@ -325,7 +328,7 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
 
   // Start the timeout timer immediately so `response_timeout` bounds the
   // caller's total wait time, including any time spent waiting for
-  // `local_device_info_provider_` to initialize.
+  // `local_device_info_provider_` or `sync_service_` to initialize.
   //
   // TODO(crbug.com/585389233): Consider reporting a different error (e.g.
   // `kCommitTimeout`) if the timeout expires before the message is sent.
@@ -341,14 +344,21 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
       PendingOutgoingMessage::CreatePendingMessage(
           message_guid, response_timeout, std::move(message),
           std::move(target));
-  if (!local_device_info_provider_->GetLocalDeviceInfo()) {
+  const bool is_sharing_message_sync_active =
+      sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE);
+  // `is_local_device_info_ready` can still be false here when the
+  // `kSharingPostponeSendingUntilLocalDeviceInfoReady` kill switch is enabled.
+  if (!is_local_device_info_ready || !is_sharing_message_sync_active) {
     pending_outgoing_messages_.push_back(std::move(pending_message));
-    if (!local_device_info_ready_subscription_) {
+    if (!is_local_device_info_ready && !local_device_info_ready_subscription_) {
       local_device_info_ready_subscription_ =
           local_device_info_provider_->RegisterOnInitializedCallback(
               base::BindRepeating(
                   &SharingMessageSender::OnLocalDeviceInfoInitialized,
                   weak_ptr_factory_.GetWeakPtr()));
+    }
+    if (!is_sharing_message_sync_active) {
+      MaybeRunStartSyncFlare();
     }
   } else {
     DoSendMessage(std::move(pending_message));
@@ -371,10 +381,18 @@ void SharingMessageSender::SendAckMessageToTarget(
     return;
   }
 
-  DoSendMessage(PendingOutgoingMessage::CreatePendingAckMessage(
-      CreateAckSharingMessage(std::move(original_message_id),
-                              std::move(response)),
-      std::move(target), std::move(callback)));
+  std::unique_ptr<PendingOutgoingMessage> pending_message =
+      PendingOutgoingMessage::CreatePendingAckMessage(
+          CreateAckSharingMessage(std::move(original_message_id),
+                                  std::move(response)),
+          std::move(target), std::move(callback));
+  if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+    pending_outgoing_messages_.push_back(std::move(pending_message));
+    MaybeRunStartSyncFlare();
+    return;
+  }
+
+  DoSendMessage(std::move(pending_message));
 }
 
 void SharingMessageSender::DoSendMessage(
@@ -436,12 +454,48 @@ void SharingMessageSender::DoSendMessage(
 void SharingMessageSender::OnLocalDeviceInfoInitialized() {
   CHECK(local_device_info_provider_->GetLocalDeviceInfo());
   local_device_info_ready_subscription_ = {};
+  MaybeSendPendingMessages();
+}
+
+void SharingMessageSender::MaybeSendPendingMessages() {
+  if (pending_outgoing_messages_.empty()) {
+    return;
+  }
+
+  if (!sync_service_ || IsSyncDisabledForSharing(sync_service_)) {
+    FailPendingMessages();
+    return;
+  }
+
+  if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+    return;
+  }
+
+  const bool is_local_device_info_ready =
+      local_device_info_provider_->GetLocalDeviceInfo() != nullptr;
+  if (is_local_device_info_ready) {
+    local_device_info_ready_subscription_ = {};
+  }
 
   std::vector<std::unique_ptr<PendingOutgoingMessage>> pending_messages =
       std::exchange(pending_outgoing_messages_, {});
   for (std::unique_ptr<PendingOutgoingMessage>& pending_message :
        pending_messages) {
+    // Non-ack messages need local `DeviceInfo` to populate sender metadata; ack
+    // messages reply directly to the sender's channel and can be sent once Sync
+    // is active.
+    if (!pending_message->IsAckMessage() && !is_local_device_info_ready) {
+      pending_outgoing_messages_.push_back(std::move(pending_message));
+      continue;
+    }
     DoSendMessage(std::move(pending_message));
+  }
+}
+
+void SharingMessageSender::MaybeRunStartSyncFlare() {
+  if (start_sync_flare_) {
+    start_sync_flare_.Run(syncer::SHARING_MESSAGE);
+    start_sync_flare_.Reset();
   }
 }
 
