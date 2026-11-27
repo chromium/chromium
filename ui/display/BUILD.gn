@@ -350,6 +350,14 @@ test("display_unittests") {
     frameworks = [ "CoreGraphics.framework" ]
   }
 
+  if (is_ios) {
+    sources += [ "ios/screen_ios_unittest.mm" ]
+    frameworks = [
+      "Foundation.framework",
+      "UIKit.framework",
+    ]
+  }
+
   deps = [
     ":display",
     ":test_support",
@@ -374,6 +382,10 @@ test("display_unittests") {
     # Do not run display_change_notifier_unittest.cc on Android because it
     # does not compile display_observer.cc
     sources += [ "display_change_notifier_unittest.cc" ]
+  }
+
+  if (is_ios) {
+    deps += [ "//build:ios_buildflags" ]
   }
 
   if (is_win) {

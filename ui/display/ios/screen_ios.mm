@@ -6,6 +6,9 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/ios_buildflags.h"
@@ -14,55 +17,6 @@
 #include "ui/display/screen_base.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/native_ui_types.h"
-
-namespace display {
-namespace {
-class ScreenNotification {
- public:
-  virtual void ScreenChanged() = 0;
-};
-}  // namespace
-}  // namespace display
-
-@interface ScreenObserver : NSObject {
-  raw_ptr<display::ScreenNotification, DanglingUntriaged> _notifier;
-}
-- (void)mainScreenChanged;
-@end
-
-@implementation ScreenObserver
-
-- (instancetype)initWithNotifier:(display::ScreenNotification*)notifier {
-  if ((self = [super init])) {
-    _notifier = notifier;
-    NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-#if !BUILDFLAG(IS_IOS_TVOS)
-    [defaultCenter addObserver:self
-                      selector:@selector(mainScreenChanged)
-                          name:UIDeviceOrientationDidChangeNotification
-                        object:nil];
-#endif
-    [defaultCenter addObserver:self
-                      selector:@selector(mainScreenChanged)
-                          name:UIWindowDidBecomeKeyNotification
-                        object:nil];
-  }
-
-  return self;
-}
-
-- (void)mainScreenChanged {
-  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    return;
-  }
-  // This notification comes before UIScreen can change its bounds so post a
-  // task so the update occurs after the UIScreen has been updated.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&display::ScreenNotification::ScreenChanged,
-                                base::Unretained(_notifier)));
-}
-
-@end
 
 namespace display {
 namespace {
@@ -85,17 +39,68 @@ NSArray<UIScreen*>* GetAllActiveScreens() {
 #endif
 }
 
-class ScreenIos : public ScreenBase, public ScreenNotification {
+class ScreenIos : public ScreenBase {
  public:
   ScreenIos() {
-    observer_ = [[ScreenObserver alloc] initWithNotifier:this];
+    base::WeakPtr<ScreenIos> weak_this = weak_factory_.GetWeakPtr();
+    auto update_block = ^(NSNotification* notification) {
+      if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
+        return;
+      }
+      // This notification comes before UIScreen can change its bounds so post a
+      // task so the update occurs after the UIScreen has been updated.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ScreenIos::ScreenChanged, weak_this));
+    };
+
+    NSNotificationCenter* default_center = NSNotificationCenter.defaultCenter;
+#if !BUILDFLAG(IS_IOS_TVOS)
+    orientation_observer_ = [default_center
+        addObserverForName:UIDeviceOrientationDidChangeNotification
+                    object:nil
+                     queue:nil
+                usingBlock:update_block];
+#endif
+    window_key_observer_ =
+        [default_center addObserverForName:UIWindowDidBecomeKeyNotification
+                                    object:nil
+                                     queue:nil
+                                usingBlock:update_block];
     ScreenChanged();
   }
 
   ScreenIos(const ScreenIos&) = delete;
   ScreenIos& operator=(const ScreenIos&) = delete;
 
-  void ScreenChanged() override {
+  ~ScreenIos() override {
+    NSNotificationCenter* default_center = NSNotificationCenter.defaultCenter;
+#if !BUILDFLAG(IS_IOS_TVOS)
+    [default_center removeObserver:orientation_observer_];
+#endif
+    [default_center removeObserver:window_key_observer_];
+  }
+
+  gfx::Point GetCursorScreenPoint() override {
+    NOTIMPLEMENTED();
+    return gfx::Point(0, 0);
+  }
+
+  bool IsWindowUnderCursor(gfx::NativeWindow window) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
+  gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
+    NOTIMPLEMENTED();
+    return gfx::NativeWindow();
+  }
+
+  int GetNumDisplays() const override {
+    return std::max(static_cast<int>([GetAllActiveScreens() count]), 1);
+  }
+
+ private:
+  void ScreenChanged() {
     UIScreen* screen = GetAllActiveScreens().firstObject;
     if (!screen) {
       return;
@@ -138,27 +143,11 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 
-  gfx::Point GetCursorScreenPoint() override {
-    NOTIMPLEMENTED();
-    return gfx::Point(0, 0);
-  }
-
-  bool IsWindowUnderCursor(gfx::NativeWindow window) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
-  gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
-    NOTIMPLEMENTED();
-    return gfx::NativeWindow();
-  }
-
-  int GetNumDisplays() const override {
-    return std::max(static_cast<int>([GetAllActiveScreens() count]), 1);
-  }
-
- private:
-  ScreenObserver* __strong observer_;
+#if !BUILDFLAG(IS_IOS_TVOS)
+  id __strong orientation_observer_;
+#endif
+  id __strong window_key_observer_;
+  base::WeakPtrFactory<ScreenIos> weak_factory_{this};
 };
 
 }  // namespace
