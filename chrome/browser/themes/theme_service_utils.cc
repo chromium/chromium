@@ -4,13 +4,15 @@
 
 #include "chrome/browser/themes/theme_service_utils.h"
 
+#include <memory>
 #include <optional>
 
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/protocol/proto_value_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/dynamic_color/palette.h"
+#include "ui/color/dynamic_color/palette_factory.h"
 
 bool CurrentThemeIsGrayscale(const PrefService* pref_service) {
   return pref_service->GetBoolean(prefs::kGrayscaleThemeEnabled);
@@ -57,6 +59,23 @@ ui::mojom::BrowserColorVariant ProtoEnumToBrowserColorVariant(
   }
 }
 
+std::optional<ui::ColorProviderKey::SchemeVariant>
+BrowserColorVariantToSchemeVariant(
+    ui::mojom::BrowserColorVariant color_variant) {
+  switch (color_variant) {
+    case ui::mojom::BrowserColorVariant::kSystem:
+      return std::nullopt;
+    case ui::mojom::BrowserColorVariant::kTonalSpot:
+      return ui::ColorProviderKey::SchemeVariant::kTonalSpot;
+    case ui::mojom::BrowserColorVariant::kNeutral:
+      return ui::ColorProviderKey::SchemeVariant::kNeutral;
+    case ui::mojom::BrowserColorVariant::kVibrant:
+      return ui::ColorProviderKey::SchemeVariant::kVibrant;
+    case ui::mojom::BrowserColorVariant::kExpressive:
+      return ui::ColorProviderKey::SchemeVariant::kExpressive;
+  }
+}
+
 sync_pb::ThemeSpecifics::BrowserColorScheme BrowserColorSchemeToProtoEnum(
     ThemeService::BrowserColorScheme color_scheme) {
   switch (color_scheme) {
@@ -82,4 +101,28 @@ ThemeService::BrowserColorScheme ProtoEnumToBrowserColorScheme(
         ThemeSpecifics_BrowserColorScheme_BROWSER_COLOR_SCHEME_UNSPECIFIED:
       return ThemeService::BrowserColorScheme::kSystem;
   }
+}
+
+AndroidCustomThemeColors GenerateAndroidCustomThemeColors(
+    SkColor seed_color,
+    ui::mojom::BrowserColorVariant variant) {
+  std::unique_ptr<ui::Palette> palette = ui::GeneratePalette(
+      seed_color, BrowserColorVariantToSchemeVariant(variant).value_or(
+                      ui::ColorProviderKey::SchemeVariant::kTonalSpot));
+  // Why `primary_dark` uses Tone 67 instead of Tone 80:
+  // Java's `DynamicColorsOptions.Builder.setContentBasedSource()` constructs a
+  // `SchemeContent` (Fidelity) palette, which pins `colorPrimaryContainer` to
+  // the input seed's tone and enforces a `ToneDeltaPair` constraint keeping
+  // `colorPrimary` at least 10 tone units further from the surface. Passing
+  // Tone 67 (`palette->primary().get(67)`) satisfies `80 - 67 = 13 >= 10`, so
+  // Java's dark-mode `colorPrimary` lands at Tone 80 (matching C++
+  // `kColorSysPrimary` and the 9 presets in `one_off_colors.xml`), whereas
+  // passing Tone 80 pushes Java's dark-mode `colorPrimary` up to Tone 90
+  // (washed out).
+  return AndroidCustomThemeColors{
+      .primary_light = palette->primary().get(40),
+      .primary_dark = palette->primary().get(67),
+      .background_light = palette->neutral().get(98),
+      .background_dark = palette->secondary().get(25),
+  };
 }

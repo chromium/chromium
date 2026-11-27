@@ -187,6 +187,14 @@ struct ChromaTonePair {
 
 std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
                                          SchemeVariant variant) {
+  // If the seed color is black, libmonet defaults to a pink primary color. This
+  // results in an unexpected user experience where all other shades of gray
+  // result in the default blue primary color. Set `seed_color` one step above
+  // black to ensure the primary blue is used, see crbug.com/1457314.
+  if (seed_color == SK_ColorBLACK) {
+    seed_color = SkColorSetRGB(0x01, 0x01, 0x01);
+  }
+
   Config config;
   switch (variant) {
     case SchemeVariant::kTonalSpot:

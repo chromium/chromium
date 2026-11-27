@@ -14,7 +14,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -126,19 +125,6 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
   pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
 }
 #endif
-
-ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
-    ui::mojom::BrowserColorVariant color_variant) {
-  using BCV = ui::mojom::BrowserColorVariant;
-  using SV = ui::ColorProviderKey::SchemeVariant;
-  static constexpr auto kSchemeVariantMap = base::MakeFixedFlatMap<BCV, SV>({
-      {BCV::kTonalSpot, SV::kTonalSpot},
-      {BCV::kNeutral, SV::kNeutral},
-      {BCV::kVibrant, SV::kVibrant},
-      {BCV::kExpressive, SV::kExpressive},
-  });
-  return kSchemeVariantMap.at(color_variant);
-}
 
 class DefaultThemeProviderDelegate : public BrowserThemeProviderDelegate {
  public:
@@ -899,9 +885,9 @@ ui::ColorProviderKey ThemeService::GetColorProviderKey(
   }
 
   if (!is_grayscale) {
-    ui::mojom::BrowserColorVariant color_variant = GetBrowserColorVariant();
-    if (color_variant != ui::mojom::BrowserColorVariant::kSystem) {
-      key.scheme_variant = GetSchemeVariant(color_variant);
+    if (auto scheme_variant =
+            BrowserColorVariantToSchemeVariant(GetBrowserColorVariant())) {
+      key.scheme_variant = scheme_variant;
     }
   }
 

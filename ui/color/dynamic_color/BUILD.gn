@@ -19,3 +19,17 @@ component("dynamic_color") {
     "//ui/color:color_headers",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "palette_factory_unittest.cc" ]
+
+  deps = [
+    ":dynamic_color",
+    "//base",
+    "//skia",
+    "//testing/gtest",
+    "//ui/color:color_provider_key",
+  ]
+}

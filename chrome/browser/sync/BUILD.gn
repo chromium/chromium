@@ -215,8 +215,6 @@ source_set("sync") {
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
-      "//ui/color:color_provider_key",
-      "//ui/color/dynamic_color",
     ]
   } else {
     sources += [

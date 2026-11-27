@@ -9,13 +9,11 @@
 #include "chrome/browser/ntp_customization/jni_headers/CrossDeviceThemeTracker_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
+#include "chrome/browser/themes/theme_service_utils.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/jni_zero/system_jni/List_jni.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_key.h"
-#include "ui/color/dynamic_color/palette.h"
-#include "ui/color/dynamic_color/palette_factory.h"
 
 using base::android::AttachCurrentThread;
 
@@ -99,10 +97,7 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
   bool is_color_daily_refresh = false;
 
   bool has_user_color = false;
-  SkColor primary_light = 0;
-  SkColor primary_dark = 0;
-  SkColor background_light = 0;
-  SkColor background_dark = 0;
+  AndroidCustomThemeColors custom_colors;
 
   if (has_chrome_color) {
     const sync_pb::ChromeColorInfo& color_info = specifics.chrome_color_info();
@@ -112,48 +107,10 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
   } else if (specifics.has_user_color_theme() &&
              specifics.user_color_theme().has_color()) {
     has_user_color = true;
-    // TODO(crbug.com/517615321): Refactor this palette generation logic to a
-    // shared helper function in chrome/browser/themes/theme_service_utils.h
-    // so it can be shared with other theme consumers.
     const sync_pb::UserColorTheme& user_color = specifics.user_color_theme();
-    SkColor seed_color = static_cast<SkColor>(user_color.color());
-
-    ui::ColorProviderKey::SchemeVariant scheme_variant =
-        ui::ColorProviderKey::SchemeVariant::kTonalSpot;
-    bool is_baseline = false;
-    if (user_color.has_browser_color_variant()) {
-      switch (user_color.browser_color_variant()) {
-        case sync_pb::UserColorTheme_BrowserColorVariant_SYSTEM:
-        case sync_pb::
-            UserColorTheme_BrowserColorVariant_BROWSER_COLOR_VARIANT_UNSPECIFIED:
-          is_baseline = true;
-          break;
-        case sync_pb::UserColorTheme_BrowserColorVariant_NEUTRAL:
-          scheme_variant = ui::ColorProviderKey::SchemeVariant::kNeutral;
-          break;
-        case sync_pb::UserColorTheme_BrowserColorVariant_VIBRANT:
-          scheme_variant = ui::ColorProviderKey::SchemeVariant::kVibrant;
-          break;
-        case sync_pb::UserColorTheme_BrowserColorVariant_EXPRESSIVE:
-          scheme_variant = ui::ColorProviderKey::SchemeVariant::kExpressive;
-          break;
-        case sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT:
-        default:
-          scheme_variant = ui::ColorProviderKey::SchemeVariant::kTonalSpot;
-          break;
-      }
-    } else {
-      is_baseline = true;
-    }
-
-    std::unique_ptr<ui::Palette> palette =
-        ui::GeneratePalette(seed_color, scheme_variant);
-    primary_light = palette->primary().get(40);
-    primary_dark = palette->primary().get(80);
-    background_light =
-        is_baseline ? palette->neutral().get(100) : palette->neutral().get(98);
-    background_dark =
-        is_baseline ? palette->neutral().get(25) : palette->secondary().get(25);
+    custom_colors = GenerateAndroidCustomThemeColors(
+        static_cast<SkColor>(user_color.color()),
+        ProtoEnumToBrowserColorVariant(user_color.browser_color_variant()));
   }
 
   // 3. Send extracted info up to Java.
@@ -162,16 +119,17 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
         env, jcontext, platform_type, bg_url, bg_collection_id,
         is_bg_daily_refresh, bg_attribution_line_1, bg_attribution_line_2,
         bg_attribution_action_url, has_chrome_color, chrome_color_id,
-        has_user_color, static_cast<int32_t>(primary_light));
+        has_user_color, static_cast<int32_t>(custom_colors.primary_light));
   } else if (has_chrome_color) {
     return CrossDeviceThemeTrackerJni::createColorData(
         env, jcontext, platform_type, chrome_color_id, is_color_daily_refresh);
   } else if (has_user_color) {
     return CrossDeviceThemeTrackerJni::createCustomizedColorData(
-        env, jcontext, platform_type, static_cast<int32_t>(primary_light),
-        static_cast<int32_t>(primary_dark),
-        static_cast<int32_t>(background_light),
-        static_cast<int32_t>(background_dark));
+        env, jcontext, platform_type,
+        static_cast<int32_t>(custom_colors.primary_light),
+        static_cast<int32_t>(custom_colors.primary_dark),
+        static_cast<int32_t>(custom_colors.background_light),
+        static_cast<int32_t>(custom_colors.background_dark));
   }
   return nullptr;
 }

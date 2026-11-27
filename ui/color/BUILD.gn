@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:features",
     "//ui/color/dynamic_color",
+    "//ui/color/dynamic_color:unit_tests",
   ]
 }
 
