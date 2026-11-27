@@ -29,5 +29,20 @@
         "pathname": "/%EF%BF%BD/b/c",
         "search": "",
         "hash": ""
+    },
+    {
+        "input": "http://www.google.com/asdf#\uD800",
+        "base": null,
+        "href": "http://www.google.com/asdf#%EF%BF%BD",
+        "origin": "http://www.google.com",
+        "protocol": "http:",
+        "username": "",
+        "password": "",
+        "host": "www.google.com",
+        "hostname": "www.google.com",
+        "port": "",
+        "pathname": "/asdf",
+        "search": "",
+        "hash": "#%EF%BF%BD"
     }
 ]

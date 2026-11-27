@@ -3748,6 +3748,96 @@
     "search": "",
     "hash": ""
   },
+  {
+    "input": "HTTP://example.com/",
+    "base": null,
+    "href": "http://example.com/",
+    "origin": "http://example.com",
+    "protocol": "http:",
+    "username": "",
+    "password": "",
+    "host": "example.com",
+    "hostname": "example.com",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "javascript:",
+    "base": null,
+    "href": "javascript:",
+    "origin": "null",
+    "protocol": "javascript:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "JavaScript:Foo",
+    "base": null,
+    "href": "javascript:Foo",
+    "origin": "null",
+    "protocol": "javascript:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "Foo",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "javascript:alert(\t 1 \n\r)",
+    "base": null,
+    "href": "javascript:alert( 1 )",
+    "origin": "null",
+    "protocol": "javascript:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "alert( 1 )",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "javascript:alert(\" \u0001 \u03B2 \")",
+    "base": null,
+    "href": "javascript:alert(\" %01 %CE%B2 \")",
+    "origin": "null",
+    "protocol": "javascript:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "alert(\" %01 %CE%B2 \")",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "http:////////user:@google.com:99?foo",
+    "base": null,
+    "href": "http://user@google.com:99/?foo",
+    "origin": "http://google.com:99",
+    "protocol": "http:",
+    "username": "user",
+    "password": "",
+    "host": "google.com:99",
+    "hostname": "google.com",
+    "port": "99",
+    "pathname": "/",
+    "search": "?foo",
+    "hash": ""
+  },
   "# Based on http://trac.webkit.org/browser/trunk/LayoutTests/fast/url/host.html",
   "Basic canonicalization, uppercase should be converted to lowercase",
   {
@@ -4164,6 +4254,17 @@
     "base": "http://other.com/",
     "failure": true
   },
+  "Fullwidth solidus and colon are mapped to forbidden domain code points",
+  {
+    "input": "http://example.com／foo/",
+    "base": null,
+    "failure": true
+  },
+  {
+    "input": "http://www.lookout.net：80/",
+    "base": null,
+    "failure": true
+  },
   "Basic IDN support, UTF-8 and UTF-16 input should be converted to IDN",
   {
     "input": "http://你好你好",
@@ -4392,6 +4493,21 @@
   {
     "input": "http://%5B::1]",
     "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://[2001::1",
+    "base": null,
+    "failure": true
+  },
+  {
+    "input": "http://[[::]]",
+    "base": null,
+    "failure": true
+  },
+  {
+    "input": "http://[61:27]:98",
+    "base": null,
     "failure": true
   },
   "Misc Unicode",
