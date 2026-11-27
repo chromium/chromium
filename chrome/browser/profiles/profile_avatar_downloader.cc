@@ -43,6 +43,7 @@ ProfileAvatarDownloader::ProfileAvatarDownloader(size_t icon_index,
             "User selects a new avatar in chrome://settings for their profile"
           data: "None, only the filename of the png to download."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
         }
         policy {
           cookies_allowed: NO

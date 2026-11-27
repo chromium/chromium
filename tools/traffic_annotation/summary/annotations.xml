@@ -142,7 +142,7 @@ Refer to README.md for content description and update process.
  <item id="popular_sites_fetch" added_in_milestone="62" content_hash_code="00697083" os_list="linux,windows,chromeos,android" file_path="components/ntp_tiles/popular_sites_impl.cc" />
  <item id="port_forwarding_controller_socket" added_in_milestone="65" content_hash_code="074810e4" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc" />
  <item id="predictive_prefetch" added_in_milestone="85" content_hash_code="00ebd1fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/predictors/prefetch_manager.cc" />
- <item id="profile_avatar" added_in_milestone="62" content_hash_code="06c4a5fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_avatar_downloader.cc" />
+ <item id="profile_avatar" added_in_milestone="62" content_hash_code="02d86f80" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_avatar_downloader.cc" />
  <item id="profile_resetter_upload" added_in_milestone="62" content_hash_code="07b56813" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc" />
  <item id="proxy_config_direct" added_in_milestone="67" content_hash_code="032a4682" os_list="linux,windows,chromeos,android" file_path="net/proxy_resolution/proxy_config_with_annotation.cc" />
  <item id="proxy_config_headless" added_in_milestone="67" content_hash_code="049def4d" os_list="linux,windows,chromeos" file_path="headless/lib/browser/headless_request_context_manager.cc" />
@@ -184,7 +184,7 @@ Refer to README.md for content description and update process.
  <item id="service_worker_script_load" added_in_milestone="90" content_hash_code="035ab34f" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_new_script_fetcher.cc" />
  <item id="service_worker_update_checker" added_in_milestone="71" content_hash_code="01ef068e" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_single_script_update_checker.cc" />
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" content_hash_code="007c2dac" os_list="linux,windows,chromeos,android" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc" />
- <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="064a36f4" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
+ <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="04818d1d" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
  <item id="site_token_fetcher" added_in_milestone="153" content_hash_code="06b485cd" os_list="linux,windows,chromeos,android" file_path="components/site_token_provider/site_token_provider.cc" />
  <item id="socket_bio_adapter" added_in_milestone="66" content_hash_code="014a4058" os_list="linux,windows,chromeos,android" file_path="net/socket/socket_bio_adapter.cc" />
  <item id="spdy_session_control" added_in_milestone="66" content_hash_code="01c6f3f0" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
