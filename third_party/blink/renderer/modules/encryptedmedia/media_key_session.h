@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_status_map.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -73,7 +74,7 @@ class MediaKeys;
 // WebContentDecryptionModuleSession, it may outlive any JavaScript references
 // as long as the MediaKeys object is alive.
 // The WebContentDecryptionModuleSession has the same lifetime as this object.
-class MediaKeySession final
+class MODULES_EXPORT MediaKeySession final
     : public EventTarget,
       public ActiveScriptWrappable<MediaKeySession>,
       public ExecutionContextLifecycleObserver,
@@ -82,7 +83,7 @@ class MediaKeySession final
   USING_PRE_FINALIZER(MediaKeySession, Dispose);
 
  public:
-  MediaKeySession(ScriptState*,
+  MediaKeySession(ExecutionContext*,
                   MediaKeys*,
                   WebEncryptedMediaSessionType,
                   const MediaKeysConfig&);
