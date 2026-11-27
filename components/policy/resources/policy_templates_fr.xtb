@@ -11782,15 +11782,15 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
           Si cette règle n'est pas définie, le paramètre "BlockKeygen" est utilisé, et l'utilisateur est en mesure de le modifier.</translation>
 <translation id="8314214821702356835">Autoriser les utilisateurs à lire des contenus multimédias lorsque l'appareil est verrouillé</translation>
 <translation id="8316940611391250886">Interdire les certificats sans extension subjectAlternativeName</translation>
-<translation id="8317862469025200834">Ce paramètre détermine si la navigation sécurisée peut envoyer des hachages partiels des URL à Google au travers d'un proxy, via un protocole HTTP Oblivious, pour déterminer si elles peuvent être consultées de manière sécurisée.
+<translation id="8317862469025200834">Ce paramètre détermine si la navigation sécurisée peut envoyer des hachages partiels d'URL à Google au travers d'un proxy, via un protocole HTTP Oblivious, pour déterminer si elles peuvent être consultées de manière sécurisée.
 
-Le proxy permet aux navigateurs d'importer des hachages partiels d'URL sans les associer à l'adresse IP de l'utilisateur. La règle permet également aux navigateurs d'importer les hachages partiels d'URL avec une fréquence plus élevée pour améliorer la qualité de la protection de la navigation sécurisée.
+Le proxy permet aux navigateurs d'importer des hachages partiels d'URL sans les associer à l'adresse IP de l'utilisateur. La règle permet également aux navigateurs d'envoyer les hachages partiels d'URL plus fréquemment afin d'améliorer la qualité de la protection offerte par la navigation sécurisée.
 
 Cette règle est ignorée si la navigation sécurisée est désactivée.
 
-Si cette règle est activée ou n'est pas configurée, la recherche d'une protection supérieure via proxy est activée.
+Si cette règle est activée ou n'est pas configurée, les recherches via proxy offrant une protection supérieure sont autorisées.
 
-Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les hachages partiels d'URL sont importés directement sur Google avec une fréquence beaucoup plus faible, ce qui réduit la protection.</translation>
+Si cette règle est désactivée, les recherches via proxy offrant une protection supérieure ne sont pas autorisées. Les hachages partiels d'URL sont importés directement sur Google beaucoup moins fréquemment, ce qui réduit la protection.</translation>
 <translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
 <translation id="8320576119308783142">Le clavier à l'écran s'affiche dans les circonstances appropriées.</translation>

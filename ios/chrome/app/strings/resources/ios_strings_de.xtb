@@ -168,7 +168,6 @@
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="147259385261660284">seitdem du „Tabgruppe erstellen“ abgeschlossen hast</translation>
 <translation id="147982357559798527">Geändert</translation>
-<translation id="1481450969185702334">Suchen und ausfüllen</translation>
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1486096554574027028">Passwörter suchen</translation>
 <translation id="1491277525950327607">Zum Aktivieren bzw. Deaktivieren doppeltippen</translation>
@@ -2091,6 +2090,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7458706065921255639">Personalisierung &amp; Verknüpfung</translation>
 <translation id="745899714366929493">Ganztägig</translation>
 <translation id="7460698861522306757">Mobile Website anfordern</translation>
+<translation id="746106463537553249">Das Beste von Google für das iPad</translation>
 <translation id="7464143666517313304">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht.</translation>
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
 <translation id="746872191028309255">Du kannst ganz einfach kaufen, was du mit deiner Kamera oder in der Fotogalerie siehst.</translation>
@@ -2383,6 +2383,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8299417921174340354">Du musst zuerst einen Sicherheitscode auf deinem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8307481894409578819">Diese Datei konnte nicht hochgeladen werden</translation>
 <translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
+<translation id="8317979391645758996">Links in YouTube, Maps und anderen Apps schnell öffnen</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8319282042900445670">Erinnerung für den <ph name="DATE" /> um <ph name="TIME" /> eingerichtet</translation>
 <translation id="8320212361750431956">Letzte Aktivität</translation>
@@ -2514,6 +2515,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>
 <translation id="8712637175834984815">Ok</translation>
+<translation id="8717444419717043666">Einfach in Drive und Fotos speichern</translation>
 <translation id="8717519179050551968">Weniger einfügen, mehr surfen</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8722229818691036192">Konten auf diesem Gerät</translation>
@@ -2525,6 +2527,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
 <translation id="87371078663613140">Optionen in der Menüleiste ansehen</translation>
+<translation id="8737778096770727055">Das Beste von Google für das iPhone</translation>
 <translation id="8739546376441802490">Angepinnte Website ist bereits vorhanden</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tab ansehen…}other{Alle Tabs ansehen…}}</translation>
 <translation id="8741995161408053644">Möglicherweise sind in deinem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>

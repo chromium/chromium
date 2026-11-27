@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012">Перемотать на <ph name="NUMBER_OF_SECONDS" /> с. вперед</translation>
 <translation id="1984328900355667246">Невозможно прочитать страницу</translation>
+<translation id="2009730553732772041">Содержимое и URL текущей страницы будут переданы Google для генерации аудио. Этот параметр можно в любое время изменить в настройках.</translation>
 <translation id="2019727681730021602">Стандартное воспроизведение</translation>
 <translation id="2224347680315897176">уравновешенный</translation>
 <translation id="2575502321843437554">Недостаточно интересно</translation>
 <translation id="2611765907167846862">умиротворенный</translation>
 <translation id="3023502830214299618">Прочитать эту страницу вслух пока нельзя. Повторите попытку позже.</translation>
+<translation id="3431227249425330101">Чтобы продолжить, разрешите Chrome использовать содержимое страницы для функции "Прочитать эту страницу вслух"</translation>
 <translation id="3493899379487634969">Какие возникли проблемы?</translation>
 <translation id="3730775656877876887">Создание аудиопересказа</translation>
 <translation id="3778044272390020426">Меню с вариантами отрицательных отзывов</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Проигрыватель функции "Озвучить эту страницу"</translation>
 <translation id="7051308646573997571">Коралловый</translation>
 <translation id="7138678301420049075">Другое</translation>
+<translation id="7161867604252594316">Функция "Прочитать эту страницу вслух" отключена.</translation>
 <translation id="7221920857098237570">мягкий</translation>
 <translation id="7237590978482584900">беззаботный</translation>
 <translation id="7282547042039404307">Плавность</translation>

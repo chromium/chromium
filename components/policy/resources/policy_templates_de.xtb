@@ -1638,6 +1638,7 @@ Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch 
       Wenn du die Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
 <translation id="2000937390924915996">Automatische Datenträgerbereinigung während der Anmeldung nicht ausführen</translation>
 <translation id="2004382785802837840">Schließen von Warnungen zu gehackten Passwörtern deaktivieren</translation>
+<translation id="2004512344164086061">Nutzerinstallierte Erweiterungen sind im isolierten Modus standardmäßig aktiviert und können deaktiviert werden</translation>
 <translation id="2005506794355327448">Auszuführende Aktion, wenn das Gerät zugeklappt wird.</translation>
 <translation id="2006530844219044261">Energieverwaltung</translation>
 <translation id="2006954055163088863">Nutzer wird während der Videowiedergabe als inaktiv angesehen</translation>
@@ -5149,6 +5150,7 @@ Weitere Informationen findest du unter https://chromium.googlesource.com/chromiu
 
 Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unter iOS deaktiviert. Die Richtlinie ist verwaltet und wird nicht mehr unterstützt.</translation>
 <translation id="4252522848899331223">Zulassen, dass Nutzer Safe Browsing-Warnungen umgehen</translation>
+<translation id="4256907317578690291">Verhalten von nutzerinstallierten Erweiterungen im isolierten Modus steuern</translation>
 <translation id="4261641564041253502">Clientzertifikate, die mit Filtern für <ph name="PRODUCT_NAME" />-Sicherheitssignalberichte übereinstimmen, automatisch auswählen.</translation>
 <translation id="4261820385751181068">Sprache der Anmeldeseite</translation>
 <translation id="4263788921751326798">Melden von Informationen zu Absturzberichten auf Geräten deaktivieren</translation>
@@ -5848,6 +5850,21 @@ Wenn vorhandene Browserdaten nicht in das verwaltete Profil übernommen werden, 
 Ist die Richtlinie auf „<ph name="BR_UNDER_USER_CONTROL" />“ festgelegt, werden Nutzer dazu aufgefordert anzugeben, ob sie die Standortdienste von Google verwenden möchten. Wenn sie die Standortdienste aktivieren, ermitteln Android-Apps den Standort des Geräts und senden Google anonyme Standortdaten.
 
 Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel aktivieren oder deaktivieren.</translation>
+<translation id="4669742017587504409">Gibt das Verhalten für vom Nutzer installierte Erweiterungen im isolierten Modus an. Dies gilt für alle Erweiterungen, deren Installation nicht per Richtlinie erzwungen wird, einschließlich Erweiterungen, die per Richtlinie installiert werden, aber vom Nutzer deaktiviert werden können.
+
+Wenn die Richtlinie auf „0“ gesetzt oder nicht konfiguriert ist, sind vom Nutzer installierte Erweiterungen im isolierten Modus standardmäßig aktiviert und können vom Nutzer deaktiviert werden.
+
+Wenn die Richtlinie auf „1“ gesetzt ist, sind vom Nutzer installierte Erweiterungen im isolierten Modus standardmäßig deaktiviert und können vom Nutzer aktiviert werden.
+
+Wenn die Richtlinie auf „2“ gesetzt ist, werden vom Nutzer installierte Erweiterungen im isolierten Modus blockiert und können vom Nutzer nicht aktiviert werden.
+
+Wenn die Richtlinie auf „0“ oder „1“ gesetzt ist und ein Nutzer eine Erweiterung im isolierten Modus explizit aktiviert oder deaktiviert hat, hat die Auswahl des Nutzers Vorrang vor der Standardeinstellung der Richtlinie.
+
+Erweiterungen, die in ihrem Manifest „<ph name="INCOGNITO_MANIFEST_KEY" />“ auf „<ph name="INCOGNITO_NOT_ALLOWED_VALUE" />“ festlegen, können unabhängig von dieser Richtlinie nicht im isolierten Modus ausgeführt werden.
+
+Diese Richtlinie wird nur angewendet, wenn „<ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" />“ aktiviert ist.
+
+Für diese Richtlinie ist eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lizenz erforderlich, damit sie wirksam wird.</translation>
 <translation id="4670865688564083639">Minimum:</translation>
 <translation id="467236746355332046">Unterstützte Funktionen:</translation>
 <translation id="4672774129073185053">Überschreiben des IPv6-Erreichbarkeitstests aktivieren</translation>
@@ -7599,6 +7616,7 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, werden keine Protok
 <translation id="5746149754419996562">Dadurch können Glanceables-Widgets in <ph name="PRODUCT_OS_NAME" /> verwendet werden. Das gilt insbesondere für die Widgets, die über den Datums-Chip in der Ablage verfügbar sind.
 Wenn diese Richtlinie aktiviert ist, sind Glanceables in <ph name="PRODUCT_OS_NAME" /> aktiviert.
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables in <ph name="PRODUCT_OS_NAME" /> nicht aktiviert.</translation>
+<translation id="5748390678919882160">Nutzerinstallierte Erweiterungen sind im isolierten Modus standardmäßig deaktiviert und können aktiviert werden</translation>
 <translation id="5749396052108288586">Diese Richtlinie ist veraltet. Bitte verwende stattdessen die Richtlinie <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Tastenkombinationen für Bedienungshilfen auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5755002458331714762"> Die Web Components v0 APIs (Shadow DOM v0, Custom Elements v0 und HTML Imports) wurden 2018 eingestellt und ab M80 standardmäßig deaktiviert. Mit dieser Richtlinie lassen sich die Funktionen selektiv bis M84 wieder aktivieren.
@@ -12677,6 +12695,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind die in „<ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" />“ ausgewählten Integrationen aktiviert.
 
 Ist die Richtlinie deaktiviert, sind alle Integrationen deaktiviert.</translation>
+<translation id="8990909333443674504">Nutzerinstallierte Erweiterungen sind im isolierten Modus blockiert</translation>
 <translation id="8992176907758534924">Anzeige von Bildern für alle Websites blockieren</translation>
 <translation id="8994850249590725417">Keine Datenschutzhinweise anzeigen</translation>
 <translation id="8994954504552592260">Migration der von <ph name="MS_AD_NAME" /> verwalteten Geräten zur Cloud-Verwaltung aktivieren. Durch diese Richtlinie lässt sich die berührungslose Migration von mehreren Geräten innerhalb eines Unternehmens aus der Ferne starten. Die Migration ist für Endnutzer dabei so transparent wie möglich.

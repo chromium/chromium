@@ -2163,7 +2163,7 @@
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> аркылуу <ph name="MERCHANT_ORIGIN" /> сайтында берилген буйрутмаңызды иштетүүдө ката кетти.</translation>
 <translation id="4612904677925722054">Бул сайтта чоң кишилерге арналган контент болушу мүмкүн. Ата-энең же камкорчуң вебсайтка кирүүңө уруксат бериши керек.</translation>
 <translation id="4613873770449493819">URL <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> доменин көрсөтүшү керек.</translation>
-<translation id="4615154194248230658">Бул үлгү жарактуу электрондук почта дарегинин доменине дал келбейт окшойт. Колдонуучулар кире албай калышы же учурдагы профилдер өчүрүлүшү мүмкүн.</translation>
+<translation id="4615154194248230658">Электрондук почта домени туура эмес жазылган окшойт. Колдонуучулар кире албай калышы же учурдагы профилдер өчүрүлүшү мүмкүн.</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
 <translation id="4619669610757527494">Айдоочунун күбөлүгүн Google Капчыкка сактоо</translation>
 <translation id="4622292761762557753">Баары бир өткөрүлсүн</translation>
@@ -4228,7 +4228,7 @@
 <translation id="8029829038322015001">Кызыл 1</translation>
 <translation id="8032546467100845887">Тунуктук</translation>
 <translation id="8035152190676905274">Калем</translation>
-<translation id="803703704549420287">Чыпкаларды тазалоо</translation>
+<translation id="803703704549420287">Чыпкаларды өчүрүү</translation>
 <translation id="8037117624646282037">Түзмөктү акыркы жолу ким колдонду</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Кызыл 2</translation>

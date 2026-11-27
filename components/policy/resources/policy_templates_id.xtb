@@ -12288,14 +12288,13 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
           Jika kebijakan ini tidak disetel, 'BlockKeygen' akan digunakan dan pengguna dapat mengubahnya.</translation>
 <translation id="8314214821702356835">Memungkinkan pengguna memutar media saat perangkat terkunci</translation>
 <translation id="8316940611391250886">Larang sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName</translation>
-<translation id="8317862469025200834">Kebijakan ini mengontrol apakah Safe Browsing diizinkan untuk mengirim hash sebagian dari URL
-ke Google melalui proxy via Oblivious HTTP guna menentukan apakah URL tersebut aman
-untuk dibuka.
+<translation id="8317862469025200834">Kebijakan ini mengontrol apakah Safe Browsing dapat mengirim sebagian hash URL
+ke Google melalui proxy via Oblivious HTTP untuk mengecek URL tersebut aman dikunjungi atau tidak.
 
-Proxy memungkinkan browser mengupload hash sebagian dari URL ke Google
-tanpa dikaitkan ke alamat IP pengguna. Kebijakan ini juga memungkinkan
-browser mengupload hash sebagian dari URL dengan frekuensi yang lebih tinggi untuk
-mendapatkan kualitas perlindungan Safe Browsing yang lebih baik.
+Proxy ini memungkinkan browser mengupload sebagian hash URL ke Google
+tanpa menautkannya ke alamat IP pengguna. Kebijakan ini juga memungkinkan
+browser mengupload sebagian hash URL dengan frekuensi lebih tinggi untuk
+meningkatkan kualitas perlindungan Safe Browsing.
 
 Kebijakan ini akan diabaikan jika Safe Browsing dinonaktifkan.
 
@@ -12303,8 +12302,7 @@ Jika kebijakan ini disetel ke Aktif atau tidak disetel, pemeriksaan
 melalui proxy dengan perlindungan yang lebih tinggi akan diizinkan.
 
 Jika kebijakan ini disetel ke Nonaktif, pemeriksaan melalui proxy dengan perlindungan yang lebih tinggi
-tidak akan diizinkan. Hash sebagian dari URL akan diupload langsung ke Google dengan frekuensi yang
-jauh lebih rendah, sehingga kualitas perlindungan akan menurun.</translation>
+tidak akan diizinkan. Sebagian Hash URL akan diupload langsung ke Google dengan frekuensi jauh lebih rendah, sehingga kualitas perlindungan akan menurun.</translation>
 <translation id="8319678975002906774">Menyetel nilai konfigurasi terkelola bagi situs untuk sumber tertentu</translation>
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
 <translation id="8320576119308783142">Tampilkan keyboard virtual jika diperlukan.</translation>

@@ -949,6 +949,11 @@ Ngưỡng tối thiểu là 1 phút.
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể thêm và định cấu hình máy in của riêng họ. Họ cũng sẽ không thể in bằng bất kỳ máy in nào đã định cấu hình trước đó.
       </translation>
 <translation id="1613327425322354195">Báo cáo trạng thái bảo mật của thiết bị</translation>
+<translation id="1613552398317518165">Chính sách này không được dùng nữa và không còn hiệu lực. Các yêu cầu tìm kiếm mặc định luôn được gửi bằng phương thức GET, vì vậy, các tham số do chính sách này chỉ định sẽ không bao giờ được áp dụng. Thay vào đó, hãy sử dụng <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> để định cấu hình URL tìm kiếm, bao gồm cả phần giữ chỗ <ph name="SEARCH_TERM_MARKER" />.
+
+Các tham số POST chỉ được hỗ trợ cho tính năng tìm kiếm hình ảnh, thông qua <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Trước đây, nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> sẽ chỉ định các tham số khi tìm một URL bằng phương thức POST, dưới dạng các cặp tên-giá trị được phân tách bằng dấu phẩy.</translation>
 <translation id="1615221548356595305">Cho phép hợp nhất các đường kết nối HTTP/2 đối với những máy chủ này kể cả khi sử dụng chứng chỉ ứng dụng khách</translation>
 <translation id="1616280227447957376">Cho phép tiếp tục từ trang cảnh báo SSL trên các nguồn gốc cụ thể</translation>
 <translation id="1617235075406854669">Bật xóa nhật ký duyệt web và lịch sử tải xuống</translation>
@@ -6072,6 +6077,11 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 <translation id="4725801978265372736">Yêu cầu tên của người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa phải khớp với nhau</translation>
 <translation id="4726228171190098009">Không cho phép thiết bị yêu cầu định dạng lại</translation>
 <translation id="4726895359147376813">Liên kết từ mã cố định đến cấu hình máy ảo</translation>
+<translation id="473189306848333308">Chính sách này không được dùng nữa và không còn hiệu lực. Các yêu cầu đề xuất luôn được gửi bằng phương thức GET, vì vậy, các tham số do chính sách này chỉ định sẽ không bao giờ được áp dụng. Thay vào đó, hãy sử dụng <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> để định cấu hình URL đề xuất, bao gồm cả phần giữ chỗ <ph name="SEARCH_TERM_MARKER" />.
+
+Các tham số POST chỉ được hỗ trợ cho tính năng tìm kiếm hình ảnh, thông qua <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Trước đây, nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> sẽ chỉ định các tham số khi yêu cầu đề xuất tìm kiếm bằng phương thức POST, dưới dạng các cặp tên-giá trị được phân tách bằng dấu phẩy.</translation>
 <translation id="4732069502693984686">Bật tính năng tự động chụp ảnh nhiều màn hình</translation>
 <translation id="4733471537137819387">Các chính sách liên quan đến xác thực HTTP tích hợp.</translation>
 <translation id="4737832614429402441">Sử dụng Giá trị mặc định cho thoả thuận về khoá hậu lượng tử cho TLS</translation>
