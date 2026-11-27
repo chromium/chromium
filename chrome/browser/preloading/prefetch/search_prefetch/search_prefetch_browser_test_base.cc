@@ -339,6 +339,19 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
     return CreateDeferrableResponse(net::HTTP_BAD_GATEWAY, response_headers,
                                     "<html><body>prefetch</body></html>");
   }
+  if (request.GetURL().spec().find("302_on_prefetch") != std::string::npos &&
+      is_prefetch) {
+    response_headers.emplace_back(
+        "Location",
+        GetSearchServerQueryURLWithNoQuery("/redirected.html").spec());
+    return CreateDeferrableResponse(net::HTTP_FOUND, response_headers, "");
+  }
+  if (request.GetURL().spec().find("302_always") != std::string::npos) {
+    response_headers.emplace_back(
+        "Location",
+        GetSearchServerQueryURLWithNoQuery("/redirected.html").spec());
+    return CreateDeferrableResponse(net::HTTP_FOUND, response_headers, "");
+  }
   std::string content = "<html><body> ";
   content.append(is_prefetch ? "prefetch" : "regular");
   content.append(" </body></html>");

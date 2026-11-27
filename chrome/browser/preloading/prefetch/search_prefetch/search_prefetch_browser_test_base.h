@@ -159,6 +159,10 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
       SearchSuggestionTuple("502_on_prefetch",
                             {"502_on_prefetch"},
                             /*prefetch_index=*/0,
+                            /*prerender_index=*/-1),
+      SearchSuggestionTuple("302_on_prefetch",
+                            {"302_on_prefetch"},
+                            /*prefetch_index=*/0,
                             /*prerender_index=*/-1)};
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.

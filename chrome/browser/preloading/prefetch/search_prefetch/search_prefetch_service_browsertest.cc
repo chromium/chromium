@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -88,10 +89,14 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/url_request/redirect_info.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -103,6 +108,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
@@ -115,6 +121,8 @@ namespace {
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
 constexpr char kOmniboxErrorQuery[] = "502_on_prefetch";
+constexpr char kOmniboxRedirectQuery[] = "302_on_prefetch";
+constexpr char kOmniboxAlwaysRedirectQuery[] = "302_always";
 constexpr char kLoadInSubframe[] = "/load_in_subframe";
 constexpr char kClientHintsURL[] = "/accept_ch.html";
 constexpr char kThrottleHeader[] = "porgs-header";
@@ -2612,6 +2620,119 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
           frame, "performance.getEntriesByType('navigation')[0].deliveryType"));
 }
 
+// Unclaimed prefetch fails on 3xx redirect without triggering error backoff.
+//
+// Scenario:
+//
+// 1. Start a suggestion prefetch for `kOmniboxRedirectQuery`
+//    (`302_on_prefetch`).
+// 2. Receive a 302 redirect before any navigation claims the prefetch, which
+//    transitions its status to `SearchPrefetchStatus::kRequestFailed`.
+// 3. Verify that error backoff is not triggered (a subsequent prefetch still
+//    completes) and a regular navigation to the URL succeeds.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchRedirectBeforeServing) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  GURL prefetch_url = GetSearchServerQueryURL(kOmniboxRedirectQuery);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kRequestFailed);
+
+  // A 3xx redirect should not trigger error backoff for subsequent prefetches.
+  GURL next_prefetch_url = GetSearchServerQueryURL("other_query");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(next_prefetch_url,
+                                                        GetWebContents()));
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(next_prefetch_url),
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), prefetch_url));
+  EXPECT_TRUE(GetDocumentInnerHTML().contains("regular"));
+}
+
+// Claimed in-flight prefetch falls back to regular navigation on 3xx redirect.
+//
+// Scenario:
+//
+// 1. Trigger an omnibox suggestion prefetch for `kOmniboxRedirectQuery`
+//    (`302_on_prefetch`) with response headers deferred.
+// 2. Open the omnibox selection so the navigation claims the in-flight
+//    prefetch loader before headers arrive.
+// 3. Dispatch the 302 redirect to the prefetch request, triggering fallback to
+//    a regular navigation request (without prefetch headers).
+// 4. Dispatch the 200 OK response to the fallback request and verify that the
+//    navigation commits the regular response without triggering error backoff.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchFallbackFromRedirect) {
+  base::HistogramTester histogram_tester;
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferHeader);
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  std::string search_terms = kOmniboxRedirectQuery;
+
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
+  LocationBar* location_bar =
+      BrowserWindow::FromBrowser(browser())->GetLocationBar();
+  AutocompleteController* autocomplete_controller =
+      location_bar->GetOmniboxController()->autocomplete_controller();
+
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+  GURL canonical_search_url = GetCanonicalSearchURL(
+      autocomplete_controller->result().match_at(0).destination_url);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kCanBeServed);
+
+  location_bar->GetOmniboxController()->edit_model()->OpenCurrentSelection();
+
+  // Wait until the in-flight prefetch loader is claimed by the navigation.
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
+
+  // Dispatch the 302 redirect response to the prefetch request, triggering
+  // fallback.
+  DispatchDelayedResponseTask();
+
+  // Dispatch the 200 OK response to the fallback navigation request.
+  DispatchDelayedResponseTask();
+  content::WaitForLoadStop(GetWebContents());
+
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
+
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ReceivedServableResponse2.Initial."
+      "SuggestionPrefetch",
+      0);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.ReceivedServableResponse2.Fallback."
+      "SuggestionPrefetch",
+      /*sample=*/true, 1);
+
+  // A 3xx redirect should not trigger error backoff.
+  GURL next_prefetch_url = GetSearchServerQueryURL("other_query");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(next_prefetch_url,
+                                                        GetWebContents()));
+  DispatchDelayedResponseTask();
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(next_prefetch_url),
+                           SearchPrefetchStatus::kComplete);
+}
+
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchSecureSecurityState) {
   set_service_deferral_type(
@@ -4430,6 +4551,219 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       GetCanonicalSearchURL(autocomplete_match.destination_url));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+}
+
+// Fallback navigation follows subsequent 3xx redirects to final destination.
+//
+// Scenario:
+//
+// 1. Start a navigation prefetch for `kOmniboxAlwaysRedirectQuery`
+//    (`302_always`) with response headers deferred, and start a real
+//    navigation that claims the in-flight prefetch loader.
+// 2. Dispatch a 302 redirect to the in-flight prefetch, triggering
+//    `Fallback()`.
+// 3. Dispatch a 302 redirect to the fallback navigation request, which is
+//    forwarded to `NavigationURLLoaderImpl` to follow the redirect.
+// 4. Dispatch 200 OK for `/redirected.html` and verify that the navigation
+//    commits the redirected page instead of failing with `net::ERR_ABORTED`.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
+                       NavigationPrefetchFallbackFromRedirectFollowsRedirect) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  RegisterStaticFile("/redirected.html",
+                     "<html><body> redirected </body></html>", "text/html");
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferHeader);
+  base::HistogramTester histogram_tester;
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = kOmniboxAlwaysRedirectQuery;
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  EXPECT_TRUE(search_prefetch_service->OnNavigationLikely(
+      1, autocomplete_match, NavigationPredictor::kTouchDown,
+      GetWebContents()));
+
+  GURL canonical_search_url =
+      GetCanonicalSearchURL(autocomplete_match.destination_url);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kCanBeServed);
+
+  auto [_, search_url] = GetSearchPrefetchAndNonPrefetch(search_terms);
+  content::TestNavigationObserver nav_observer(GetWebContents());
+  GetWebContents()->GetController().LoadURL(search_url, content::Referrer(),
+                                            ui::PAGE_TRANSITION_GENERATED,
+                                            std::string());
+
+  // Wait until the in-flight navigation prefetch is claimed by the navigation.
+  WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
+
+  // 1. Dispatch 302 redirect for the in-flight prefetch -> triggers Fallback().
+  DispatchDelayedResponseTask();
+  // 2. Dispatch 302 redirect for the fallback navigation request -> forwarded
+  //    to NavigationURLLoaderImpl, which follows the redirect.
+  DispatchDelayedResponseTask();
+  // 3. Dispatch 200 OK for /redirected.html.
+  DispatchDelayedResponseTask();
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(GetSearchServerQueryURLWithNoQuery("/redirected.html"),
+            GetWebContents()->GetLastCommittedURL());
+  EXPECT_TRUE(GetDocumentInnerHTML().contains("redirected"));
+
+  // Because the fallback request also redirects, `NavigationURLLoaderImpl`
+  // resets this single-request loader on redirect before `OnComplete()`,
+  // recording `kStartedServing`.
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kStartedServing, 1);
+}
+
+// Redirect arriving between prefetch claim and activation defers fallback.
+//
+// Scenario:
+//
+// 1. Intercept only the prefetch request (`Sec-Purpose: prefetch`) via
+//    `content::URLLoaderInterceptor` to hold it in-flight, while letting the
+//    subsequent fallback request pass through to `EmbeddedTestServer`.
+// 2. Call `TakePrefetchResponseFromMemoryCache()` directly and hold
+//    `serving_handler` (`SetUpForwardingClient()`) uninvoked, freezing the
+//    loader in the `!streaming_prefetch_request_ && !is_activated_` window.
+// 3. Deliver a 302 redirect via `prefetch_loader_client` and verify that
+//    `StartOrScheduleFallback()` immediately disconnects the prefetch pipe and
+//    schedules fallback.
+// 4. Invoke `serving_handler` and verify that the scheduled `Fallback()` runs
+//    against `EmbeddedTestServer` and serves the regular 200 OK response.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
+                       NavigationPrefetchRedirectBeforeActivation) {
+  class StubNetworkURLLoader : public network::mojom::URLLoader {
+   public:
+    void FollowRedirect(
+        network::HttpRequestHeadersUpdateParams headers_update_params,
+        const std::optional<GURL>& new_url) override {}
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override {}
+  };
+
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  base::HistogramTester histogram_tester;
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "deferred_redirect_query";
+  auto [_, search_url] = GetSearchPrefetchAndNonPrefetch(search_terms);
+
+  StubNetworkURLLoader stub_loader;
+  mojo::Receiver<network::mojom::URLLoader> prefetch_loader_receiver(
+      &stub_loader);
+  mojo::Remote<network::mojom::URLLoaderClient> prefetch_loader_client;
+  base::test::TestFuture<void> prefetch_intercepted_future;
+  base::test::TestFuture<void> prefetch_disconnected_future;
+
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        if (!params->url_request.headers.HasHeader(
+                blink::kSecPurposeHeaderName)) {
+          return false;
+        }
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](mojo::Receiver<network::mojom::URLLoader>* receiver,
+                   mojo::Remote<network::mojom::URLLoaderClient>* client,
+                   base::OnceClosure on_disconnect,
+                   base::OnceClosure on_intercepted,
+                   mojo::PendingReceiver<network::mojom::URLLoader>
+                       pending_receiver,
+                   mojo::PendingRemote<network::mojom::URLLoaderClient>
+                       pending_client) {
+                  receiver->Bind(std::move(pending_receiver));
+                  receiver->set_disconnect_handler(std::move(on_disconnect));
+                  client->Bind(std::move(pending_client));
+                  std::move(on_intercepted).Run();
+                },
+                &prefetch_loader_receiver, &prefetch_loader_client,
+                prefetch_disconnected_future.GetCallback(),
+                prefetch_intercepted_future.GetCallback(),
+                std::move(params->receiver), params->client.Unbind()));
+        return true;
+      }));
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  EXPECT_TRUE(search_prefetch_service->OnNavigationLikely(
+      1, autocomplete_match, NavigationPredictor::kTouchDown,
+      GetWebContents()));
+
+  GURL canonical_search_url =
+      GetCanonicalSearchURL(autocomplete_match.destination_url);
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kCanBeServed);
+  ASSERT_TRUE(prefetch_intercepted_future.Wait());
+
+  // Claim the in-flight prefetch loader (`ClearOwnerPointer()`), leaving
+  // `SetUpForwardingClient()` (`serving_handler`) not yet invoked.
+  network::ResourceRequest serving_request;
+  serving_request.url = search_url;
+  serving_request.method = net::HttpRequestHeaders::kGetMethod;
+  serving_request.is_outermost_main_frame = true;
+  serving_request.transition_type =
+      ui::PAGE_TRANSITION_GENERATED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
+  SearchPrefetchURLLoader::RequestHandler serving_handler =
+      search_prefetch_service->TakePrefetchResponseFromMemoryCache(
+          serving_request);
+  ASSERT_TRUE(serving_handler);
+  EXPECT_FALSE(search_prefetch_service
+                   ->GetSearchPrefetchStatusForTesting(canonical_search_url)
+                   .has_value());
+
+  // Deliver a 302 redirect to the claimed-but-unactivated prefetch loader and
+  // wait until `StartOrScheduleFallback()` resets the prefetch URLLoader pipe.
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = net::HTTP_FOUND;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url =
+      GetSearchServerQueryURLWithNoQuery("/redirected.html");
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 302 Found\r\nLocation: /redirected.html\r\n\r\n");
+  prefetch_loader_client->OnReceiveRedirect(redirect_info, std::move(head));
+  ASSERT_TRUE(prefetch_disconnected_future.Wait());
+
+  // Now invoke `SetUpForwardingClient()`, which should immediately run the
+  // scheduled `Fallback()` request against `search_url`.
+  mojo::Remote<network::mojom::URLLoader> serving_loader;
+  network::TestURLLoaderClient serving_client;
+  std::move(serving_handler)
+      .Run(serving_request, serving_loader.BindNewPipeAndPassReceiver(),
+           serving_client.CreateRemote());
+
+  serving_client.RunUntilComplete();
+  EXPECT_FALSE(serving_client.has_received_redirect());
+  EXPECT_EQ(net::OK, serving_client.completion_status().error_code);
+  ASSERT_TRUE(serving_client.response_body().is_valid());
+  std::string body;
+  ASSERT_TRUE(mojo::BlockingCopyToString(serving_client.response_body_release(),
+                                         &body));
+  EXPECT_TRUE(body.contains("regular"));
+  EXPECT_FALSE(body.contains("prefetch"));
+
+  serving_loader.reset();
+  serving_client.Unbind();
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
 
 // Test suite to check the PreloadingAttempt with prefetch_holdback.

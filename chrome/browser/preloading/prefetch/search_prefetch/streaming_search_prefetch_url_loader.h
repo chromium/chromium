@@ -325,6 +325,10 @@ class StreamingSearchPrefetchURLLoader
   // ResponseReader can own this instance.
   void PostTaskToReleaseOwnership();
 
+  // Starts fallback immediately if `SetUpForwardingClient()` has already been
+  // called, or defers fallback until `SetUpForwardingClient()` runs.
+  void StartOrScheduleFallback();
+
   // Creates a default network URL loader for the original request.
   void Fallback();
 
