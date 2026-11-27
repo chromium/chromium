@@ -21,6 +21,10 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
 // TODO: Remove this definition by targeting version 22+ NDK at build time.
@@ -28,11 +32,11 @@
 extern "C" int mallopt(int __option, int __value) __attribute__((weak));
 #endif
 
-using testing::Le;
-using testing::Ge;
-using testing::AllOf;
 using memory_instrumentation::GlobalMemoryDump;
 using memory_instrumentation::mojom::ProcessType;
+using testing::AllOf;
+using testing::Ge;
+using testing::Le;
 
 namespace content {
 
@@ -86,6 +90,12 @@ uint64_t GetPrivateFootprintKb() {
 // TODO(hjd): Move this once we have a resource_coordinator folder in browser.
 IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
                        MAYBE_PrivateFootprintComputation) {
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
+  // TODO(crbug.com/591055820): Fails consistently on macOS 26 Debug builds.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Fails on macOS 26 Debug.";
+  }
+#endif
 #if BUILDFLAG(IS_ANDROID)
   // The allocator in Android N and above will defer madvising large allocations
   // until the purge interval, which is set at 1 second. If we are on N or
