@@ -2695,9 +2695,13 @@ void RenderWidgetHostImpl::OnMouseEventAck(
     const input::MouseEventWithLatencyInfo& mouse_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  const auto weak_this = weak_factory_.GetWeakPtr();
   GetRenderInputRouter()->GetLatencyTracker()->OnInputEventAck(
       mouse_event.event, &mouse_event.latency, ack_result);
   NotifyObserversOfInputEventAcks(ack_source, ack_result, mouse_event.event);
+  if (!weak_this) {
+    return;
+  }
 
   // Give the delegate the ability to handle a mouse event that wasn't consumed
   // by the renderer. eg. Back/Forward mouse buttons.
@@ -2866,9 +2870,13 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
     const input::NativeWebKeyboardEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  const auto weak_this = weak_factory_.GetWeakPtr();
   GetRenderInputRouter()->GetLatencyTracker()->OnInputEventAck(
       event.event, &event.latency, ack_result);
   NotifyObserversOfInputEventAcks(ack_source, ack_result, event.event);
+  if (!weak_this) {
+    return;
+  }
 
   bool processed =
       (blink::mojom::InputEventResultState::kConsumed == ack_result);
@@ -2878,7 +2886,6 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // of this key event.
   if (delegate_ && !processed && !IsHidden() &&
       !event.event.skip_if_unhandled) {
-    const auto weak_this = weak_factory_.GetWeakPtr();
     if (delegate_->HandleKeyboardEvent(event.event)) {
       if (event.event.is_browser_shortcut) {
         DismissUnboundedSurfaceOnKeyDown(weak_this, event.event);
@@ -3016,8 +3023,12 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventWithSource(
     const WebInputEvent& event,
     input::InputEventSource source,
     bool dispatched_to_renderer) {
+  auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : input_event_observers_) {
     observer.OnInputEvent(*this, event, source);
+    if (!weak_this) {
+      return;
+    }
   }
 
   // This call includes non-dispatched events, see the header file comment.
@@ -3032,8 +3043,12 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result,
     const WebInputEvent& event) {
+  auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& input_event_observer : input_event_observers_) {
     input_event_observer.OnInputEventAck(*this, ack_source, ack_result, event);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 

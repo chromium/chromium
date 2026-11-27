@@ -3007,4 +3007,150 @@ TEST_F(InputRouterImplTest, SynchronousDestructionDuringWheelAck) {
   EXPECT_EQ(nullptr, input_router_);
 }
 
+TEST_F(InputRouterImplTest, SynchronousDestructionDuringDispatchCallback) {
+  blink::WebMouseEvent mouse_event =
+      blink::SyntheticWebMouseEventBuilder::Build(
+          WebInputEvent::Type::kMouseDown, 10, 10, 0);
+  mouse_event.button = blink::WebPointerProperties::Button::kBack;
+
+  input::ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](InputRouterImplTest* test, const blink::WebInputEvent&,
+         input::DispatchToRendererResult result) {
+        EXPECT_EQ(input::DispatchToRendererResult::kDispatched, result);
+        test->DestroyInputRouter();
+      },
+      base::Unretained(this)));
+  input_router_->SendMouseEvent(
+      input::MouseEventWithLatencyInfo(mouse_event),
+      disposition_handler_->CreateMouseEventCallback(),
+      dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, input_router_);
+  EXPECT_EQ(0, client_->in_flight_event_count());
+  EXPECT_TRUE(GetAndResetDispatchedMessages().empty());
+}
+
+TEST_F(InputRouterImplTest,
+       SynchronousDestructionDuringFilteredDispatchCallback) {
+  client_->set_filter_state(blink::mojom::InputEventResultState::kConsumed);
+  blink::WebMouseEvent mouse_event =
+      blink::SyntheticWebMouseEventBuilder::Build(
+          WebInputEvent::Type::kMouseDown, 10, 10, 0);
+
+  input::ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](InputRouterImplTest* test, const blink::WebInputEvent&,
+         input::DispatchToRendererResult result) {
+        EXPECT_EQ(input::DispatchToRendererResult::kNotDispatched, result);
+        test->DestroyInputRouter();
+      },
+      base::Unretained(this)));
+  input_router_->SendMouseEvent(
+      input::MouseEventWithLatencyInfo(mouse_event),
+      disposition_handler_->CreateMouseEventCallback(),
+      dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, input_router_);
+  EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
+}
+
+TEST_F(InputRouterImplTest,
+       SynchronousDestructionDuringGestureFlingDispatchCallback) {
+  blink::WebGestureEvent fling_cancel =
+      blink::SyntheticWebGestureEventBuilder::Build(
+          WebInputEvent::Type::kGestureFlingCancel,
+          blink::WebGestureDevice::kTouchscreen);
+
+  input::ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](InputRouterImplTest* test, const blink::WebInputEvent&,
+         input::DispatchToRendererResult result) {
+        EXPECT_EQ(input::DispatchToRendererResult::kNotDispatched, result);
+        test->DestroyInputRouter();
+      },
+      base::Unretained(this)));
+  input_router_->SendGestureEvent(
+      input::GestureEventWithLatencyInfo(fling_cancel),
+      dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, input_router_);
+  EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
+}
+
+TEST_F(InputRouterImplTest,
+       SynchronousDestructionDuringDeferredGestureQueueFlush) {
+  // Queue a TouchStart with a touch-event handler so that gestures wait for the
+  // main thread allowed touch action (`FilterGestureEventResult::kDelayed`).
+  auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
+      HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
+  OnHasTouchEventConsumers(std::move(touch_event_consumers));
+  PressTouchPoint(1, 1);
+  SendTouchEvent();
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultSource::kCompositorThread,
+      ui::LatencyInfo(), blink::mojom::InputEventResultState::kNotConsumed,
+      nullptr, blink::mojom::TouchActionOptional::New(cc::TouchAction::kPan));
+  ASSERT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+
+  blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          2.f, 2.f, blink::WebGestureDevice::kTouchscreen,
+          /*pointer_count=*/1);
+  scroll_begin.primary_pointer_type =
+      blink::WebPointerProperties::PointerType::kPen;
+  input::ScopedDispatchToRendererCallback first_dispatch(base::BindOnce(
+      [](InputRouterImplTest* test, const blink::WebInputEvent&,
+         input::DispatchToRendererResult) { test->DestroyInputRouter(); },
+      base::Unretained(this)));
+  input_router_->SendGestureEvent(
+      input::GestureEventWithLatencyInfo(scroll_begin),
+      first_dispatch.callback);
+  ASSERT_NE(nullptr, input_router_);
+
+  bool second_called = false;
+  blink::WebGestureEvent scroll_update =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
+          0, 10, 0, blink::WebGestureDevice::kTouchscreen);
+  scroll_update.primary_pointer_type =
+      blink::WebPointerProperties::PointerType::kPen;
+  input::ScopedDispatchToRendererCallback second_dispatch(
+      base::BindOnce([](bool* called, const blink::WebInputEvent&,
+                        input::DispatchToRendererResult) { *called = true; },
+                     base::Unretained(&second_called)));
+  input_router_->SendGestureEvent(
+      input::GestureEventWithLatencyInfo(scroll_update),
+      second_dispatch.callback);
+  ASSERT_NE(nullptr, input_router_);
+
+  input_router_->SetTouchActionFromMain(cc::TouchAction::kAuto);
+
+  EXPECT_EQ(nullptr, input_router_);
+  EXPECT_FALSE(second_called);
+}
+
+TEST_F(InputRouterImplTest,
+       SynchronousDestructionDuringPinchWheelDispatchCallback) {
+  blink::WebGestureEvent pinch_event =
+      blink::SyntheticWebGestureEventBuilder::BuildPinchUpdate(
+          1.2f, 10, 10, 0, blink::WebGestureDevice::kTouchpad);
+  blink::WebMouseWheelEvent wheel_event =
+      blink::SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 10, 10, 0, 1, WebInputEvent::kControlKey,
+          ui::ScrollGranularity::kScrollByPrecisePixel);
+
+  input::ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](InputRouterImplTest* test, const blink::WebInputEvent&,
+         input::DispatchToRendererResult result) {
+        EXPECT_EQ(input::DispatchToRendererResult::kNotDispatched, result);
+        test->DestroyInputRouter();
+      },
+      base::Unretained(this)));
+  static_cast<input::TouchpadPinchEventQueueClient*>(input_router_.get())
+      ->SendMouseWheelEventForPinchImmediately(
+          pinch_event, input::MouseWheelEventWithLatencyInfo(wheel_event),
+          base::DoNothing(), dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, input_router_);
+}
+
 }  // namespace content

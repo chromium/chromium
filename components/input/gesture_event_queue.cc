@@ -260,11 +260,16 @@ void GestureEventQueue::SendScrollEndingEventsNow() {
   if (debouncing_deferral_queue_.empty()) {
     return;
   }
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   GestureWithCallbackQueue debouncing_deferral_queue;
   debouncing_deferral_queue.swap(debouncing_deferral_queue_);
   for (auto& gesture_with_callback : debouncing_deferral_queue) {
-    if (!fling_controller_.ObserveAndMaybeConsumeGestureEvent(
-            gesture_with_callback)) {
+    const bool consumed = fling_controller_.ObserveAndMaybeConsumeGestureEvent(
+        gesture_with_callback);
+    if (!weak_this) {
+      return;
+    }
+    if (!consumed) {
       if (gesture_with_callback.event.GetType() ==
           WebInputEvent::Type::kGestureScrollEnd) {
         scroll_end_filtered_by_deboucing_deferral_queue_ = false;
@@ -275,6 +280,9 @@ void GestureEventQueue::SendScrollEndingEventsNow() {
       std::move(gesture_with_callback.dispatch_callback)
           .Run(gesture_with_callback.event,
                DispatchToRendererResult::kNotDispatched);
+    }
+    if (!weak_this) {
+      return;
     }
   }
 }

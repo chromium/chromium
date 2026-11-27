@@ -64,8 +64,6 @@ void MouseWheelEventQueue::QueueEvent(
       // Terminate the LatencyInfo of the event before it gets coalesced away.
       event.latency.Terminate();
 
-      std::move(dispatch_callback)
-          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       last_event->CoalesceWith(event);
       // The deltas for the coalesced event change; the corresponding action
       // might be different now.
@@ -75,6 +73,8 @@ void MouseWheelEventQueue::QueueEvent(
       TRACE_EVENT_INSTANT("input", "MouseWheelEventQueue::CoalescedWheelEvent",
                           "total_dx", last_event->event.delta_x, "total_dy",
                           last_event->event.delta_y);
+      std::move(dispatch_callback)
+          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       return;
     }
   }
@@ -250,22 +250,36 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
                             blink::WebMouseWheelEvent::kPhaseBegan) {
       send_wheel_events_async_ = true;
 
-      if (!client_->IsWheelScrollInProgress())
+      if (!client_->IsWheelScrollInProgress()) {
         SendScrollBegin(scroll_update, synthetic);
+        if (!weak_this) {
+          return;
+        }
+      }
     }
 
     if (needs_update) {
       // It is possible that the wheel event with phaseBegan is consumed and
       // no GSB is sent.
-      if (!client_->IsWheelScrollInProgress())
+      if (!client_->IsWheelScrollInProgress()) {
         SendScrollBegin(scroll_update, synthetic);
+        if (!weak_this) {
+          return;
+        }
+      }
       client_->ForwardGestureEventWithLatencyInfo(scroll_update,
                                                   ui::LatencyInfo());
+      if (!weak_this) {
+        return;
+      }
     }
 
     if (current_phase_ended && client_->IsWheelScrollInProgress()) {
       // Send GSE when GSB is sent and no fling is going to happen next.
       SendScrollEnd(scroll_update, synthetic);
+      if (!weak_this) {
+        return;
+      }
     }
   }
 
@@ -310,11 +324,16 @@ void MouseWheelEventQueue::TryForwardNextEventToRenderer() {
         WebInputEvent::DispatchType::kEventNonBlocking;
   }
 
+  // Keep stack-local copies of `event` and `dispatch_callback` so they stay
+  // valid if `SendMouseWheelEventImmediately` synchronously destroys `this`.
+  const MouseWheelEventWithLatencyInfo event = *event_sent_for_gesture_ack_;
+  DispatchToRendererCallback dispatch_callback =
+      std::move(event_sent_for_gesture_ack_->dispatch_callback);
   client_->SendMouseWheelEventImmediately(
-      *event_sent_for_gesture_ack_,
+      event,
       base::BindOnce(&MouseWheelEventQueue::ProcessMouseWheelAck,
                      weak_ptr_factory_.GetWeakPtr()),
-      event_sent_for_gesture_ack_->dispatch_callback);
+      dispatch_callback);
 }
 
 void MouseWheelEventQueue::SendScrollEnd(WebGestureEvent update_event,

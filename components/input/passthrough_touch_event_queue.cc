@@ -105,8 +105,12 @@ void PassthroughTouchEventQueue::QueueEvent(
   TRACE_EVENT0("input", "PassthroughTouchEventQueue::QueueEvent");
 
   if (FilterBeforeForwarding(event.event) != PreFilterResult::kUnfiltered) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(dispatch_callback)
         .Run(event.event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     client_->OnFilteringTouchEvent(event.event);
 
     TouchEventWithLatencyInfoAndAckState event_with_ack_state = event;

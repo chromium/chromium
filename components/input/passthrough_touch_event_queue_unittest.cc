@@ -2081,4 +2081,27 @@ TEST_F(PassthroughTouchEventQueueTest, SynchronousDestructionDuringAck) {
   EXPECT_EQ(nullptr, queue_);
 }
 
+TEST_F(PassthroughTouchEventQueueTest,
+       SynchronousDestructionDuringFilteredDispatchCallback) {
+  PassthroughTouchEventQueue::Config config;
+  config.skip_touch_filter = false;
+  queue_ = std::make_unique<PassthroughTouchEventQueue>(this, config);
+  queue_->OnHasTouchEventHandlers(false);
+
+  blink::SyntheticWebTouchEvent touch;
+  touch.PressPoint(1, 1);
+
+  ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](std::unique_ptr<PassthroughTouchEventQueue>* queue,
+         const blink::WebInputEvent&, DispatchToRendererResult result) {
+        EXPECT_EQ(DispatchToRendererResult::kNotDispatched, result);
+        queue->reset();
+      },
+      base::Unretained(&queue_)));
+  queue_->QueueEvent(TouchEventWithLatencyInfo(touch),
+                     dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, queue_);
+}
+
 }  // namespace input

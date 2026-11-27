@@ -22,7 +22,12 @@ MockRenderInputRouter::MockRenderInputRouter(
   mock_widget_input_handler_ = std::make_unique<MockWidgetInputHandler>();
 }
 
-MockRenderInputRouter::~MockRenderInputRouter() = default;
+MockRenderInputRouter::~MockRenderInputRouter() {
+  // Destroy `input_router_` before `mock_widget_input_handler_` tears down
+  // pending `DispatchedEventMessage`s so their destructors do not deliver fake
+  // ACKs into a half-destroyed `RenderWidgetHostImpl`.
+  input_router_.reset();
+}
 
 void MockRenderInputRouter::OnTouchEventAck(
     const input::TouchEventWithLatencyInfo& event,

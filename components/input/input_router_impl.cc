@@ -128,8 +128,12 @@ void InputRouterImpl::SendMouseEvent(
            ->ShouldSuppressMouseUp())) {
     // See the comment in `FilterAndSendWebInputEvent` about the order of the
     // callbacks here.
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(dispatch_callback)
         .Run(mouse_event.event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
 
     std::move(event_result_callback)
         .Run(mouse_event, blink::mojom::InputEventResultSource::kBrowser,
@@ -151,7 +155,12 @@ void InputRouterImpl::SendKeyboardEvent(
     const NativeWebKeyboardEventWithLatencyInfo& key_event,
     KeyboardEventCallback event_result_callback,
     DispatchToRendererCallback& dispatch_callback) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   gesture_event_queue_.StopFling();
+  if (!weak_this) {
+    dispatch_callback.Reset();
+    return;
+  }
   blink::mojom::WidgetInputHandler::DispatchEventCallback callback =
       base::BindOnce(&InputRouterImpl::KeyboardEventHandled, weak_this_,
                      key_event, std::move(event_result_callback));
@@ -167,13 +176,23 @@ void InputRouterImpl::SendGestureEvent(
 
   GestureEventWithLatencyInfo gesture_event(original_gesture_event);
 
-  if (gesture_event_queue_.PassToFlingController(gesture_event)) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  const bool consumed_by_fling =
+      gesture_event_queue_.PassToFlingController(gesture_event);
+  if (!weak_this) {
+    dispatch_callback.Reset();
+    return;
+  }
+  if (consumed_by_fling) {
     TRACE_EVENT_INSTANT("input", "FilteredForFling");
     // See the comment in `FilterAndSendWebInputEvent` about the order of the
     // callbacks here.
     std::move(dispatch_callback)
         .Run(original_gesture_event.event,
              DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     disposition_handler_->OnGestureEventAck(
         gesture_event, blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kConsumed);
@@ -196,12 +215,16 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
     DispatchToRendererCallback& dispatch_callback) {
   TRACE_EVENT0("input", "InputRouterImpl::SendGestureEventWithoutQueueing");
   DCHECK_NE(existing_result, FilterGestureEventResult::kDelayed);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (existing_result == FilterGestureEventResult::kFiltered) {
     TRACE_EVENT_INSTANT("input", "FilteredForTouchAction");
     // See the comment in `FilterAndSendWebInputEvent` about the order of the
     // callbacks here.
     std::move(dispatch_callback)
         .Run(gesture_event.event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     disposition_handler_->OnGestureEventAck(
         gesture_event, blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kConsumed);
@@ -210,9 +233,18 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
 
   // Handle scroll gesture events for stylus writing. If we could not start
   // writing for any reason, we should not filter the scroll events.
-  if (HandleGestureScrollForStylusWriting(gesture_event.event)) {
+  const bool handled_for_stylus_writing =
+      HandleGestureScrollForStylusWriting(gesture_event.event);
+  if (!weak_this) {
+    dispatch_callback.Reset();
+    return;
+  }
+  if (handled_for_stylus_writing) {
     std::move(dispatch_callback)
         .Run(gesture_event.event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     disposition_handler_->OnGestureEventAck(
         gesture_event, blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kConsumed);
@@ -236,6 +268,10 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
       touch_scroll_started_sent_ = true;
       touch_event_queue_.PrependTouchScrollNotification(
           gesture_event.event.primary_unique_touch_event_id);
+      if (!weak_this) {
+        dispatch_callback.Reset();
+        return;
+      }
     }
   }
 
@@ -251,6 +287,9 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
     // Notify about input event before running the ack below.
     std::move(client_->GetDispatchToRendererCallback())
         .Run(gesture_event.event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     disposition_handler_->OnGestureEventAck(
         gesture_event, blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kConsumed);
@@ -361,21 +400,29 @@ void InputRouterImpl::StopFling() {
 
 void InputRouterImpl::ProcessDeferredGestureEventQueue() {
   TRACE_EVENT0("input", "InputRouterImpl::ProcessDeferredGestureEventQueue");
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   GestureEventQueue::GestureWithCallbackQueue deferred_gesture_events =
       gesture_event_queue_.TakeDeferredEvents();
   for (auto& it : deferred_gesture_events) {
     FilterGestureEventResult result =
         touch_action_filter_.FilterGestureEvent(&(it.event));
     SendGestureEventWithoutQueueing(it, result, it.dispatch_callback);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
 void InputRouterImpl::SetTouchActionFromMain(cc::TouchAction touch_action) {
   TRACE_EVENT1("input", "InputRouterImpl::SetTouchActionFromMain",
                "touch_action", TouchActionToString(touch_action));
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   touch_action_filter_.OnSetTouchAction(touch_action);
   touch_event_queue_.StopTimeoutMonitor();
   ProcessDeferredGestureEventQueue();
+  if (!weak_this) {
+    return;
+  }
   UpdateTouchAckTimeoutEnabled();
   touch_event_queue_.OnTouchActionFromMain();
 }
@@ -398,10 +445,18 @@ void InputRouterImpl::OnSetCompositorAllowedTouchAction(
     cc::TouchAction touch_action) {
   TRACE_EVENT1("input", "InputRouterImpl::OnSetCompositorAllowedTouchAction",
                "action", cc::TouchActionToString(touch_action));
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   touch_action_filter_.OnSetCompositorAllowedTouchAction(touch_action);
   client_->OnSetCompositorAllowedTouchAction(touch_action);
-  if (touch_action == cc::TouchAction::kAuto)
+  if (!weak_this) {
+    return;
+  }
+  if (touch_action == cc::TouchAction::kAuto) {
     FlushDeferredGestureQueue();
+    if (!weak_this) {
+      return;
+    }
+  }
   UpdateTouchAckTimeoutEnabled();
 }
 
@@ -615,8 +670,12 @@ void InputRouterImpl::SendMouseWheelEventForPinchImmediately(
   // NeedsWheelEvent. PinchEvent is sent to RenderWidgetHost input observers
   // below when the callback is run. We pass a new callback below which can then
   // be used for notifying about synthetic wheel event.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   std::move(dispatch_callback)
       .Run(pinch_event, DispatchToRendererResult::kNotDispatched);
+  if (!weak_this) {
+    return;
+  }
   {
     ScopedDispatchToRendererCallback wheel_dispatch_callback(
         client_->GetDispatchToRendererCallback());
@@ -653,14 +712,22 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
 
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   output_stream_validator_.Validate(input_event);
   blink::mojom::InputEventResultState filtered_state =
       client_->FilterInputEvent(input_event, latency_info);
+  if (!weak_this) {
+    dispatch_callback.Reset();
+    return;
+  }
 
   if (WasHandled(filtered_state)) {
     TRACE_EVENT_INSTANT("input", "InputEventFiltered");
     std::move(dispatch_callback)
         .Run(input_event, DispatchToRendererResult::kNotDispatched);
+    if (!weak_this) {
+      return;
+    }
     if (filtered_state != blink::mojom::InputEventResultState::kUnknown) {
       std::move(callback).Run(blink::mojom::InputEventResultSource::kBrowser,
                               latency_info, filtered_state, nullptr, nullptr);
@@ -670,6 +737,9 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
 
   std::move(dispatch_callback)
       .Run(input_event, DispatchToRendererResult::kDispatched);
+  if (!weak_this) {
+    return;
+  }
 
   std::unique_ptr<blink::WebCoalescedInputEvent> event =
       ScaleEvent(input_event, device_scale_factor_, latency_info);
@@ -818,8 +888,13 @@ void InputRouterImpl::TouchEventHandled(
   // time the ACK is handled.
   if (touch_action) {
     // For main thread ACKs, Blink will directly call SetTouchActionFromMain.
-    if (source == blink::mojom::InputEventResultSource::kCompositorThread)
+    if (source == blink::mojom::InputEventResultSource::kCompositorThread) {
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
       OnSetCompositorAllowedTouchAction(touch_action->touch_action);
+      if (!weak_this) {
+        return;
+      }
+    }
   }
 
   // TODO(crbug.com/40623448): find a proper way to stop the timeout monitor.
@@ -854,7 +929,11 @@ void InputRouterImpl::GestureEventHandled(
   if (overscroll) {
     DCHECK_EQ(WebInputEvent::Type::kGestureScrollUpdate,
               gesture_event.event.GetType());
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     DidOverscroll(std::move(overscroll));
+    if (!weak_this) {
+      return;
+    }
   }
 
   // |gesture_event_queue_| will forward to OnGestureEventAck when appropriate.
@@ -877,8 +956,13 @@ void InputRouterImpl::MouseWheelEventHandled(
     client_->DecrementInFlightEventCount(source);
   event.latency.AddNewLatencyFrom(latency);
 
-  if (overscroll)
+  if (overscroll) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     DidOverscroll(std::move(overscroll));
+    if (!weak_this) {
+      return;
+    }
+  }
 
   std::move(callback).Run(event, source, state);
 }

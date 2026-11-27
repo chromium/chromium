@@ -126,6 +126,8 @@ class GestureEventQueueTest : public testing::Test,
                           input::kDefaultPixelsPerInch);
   }
 
+  void DestroyQueue() { queue_.reset(); }
+
  protected:
   static GestureEventQueue::Config DefaultConfig() {
     return GestureEventQueue::Config();
@@ -663,6 +665,40 @@ TEST_F(GestureEventQueueTest, SynchronousDestructionDuringAck) {
                     blink::mojom::InputEventResultState::kConsumed);
 
   EXPECT_EQ(nullptr, queue());
+}
+
+TEST_F(GestureEventQueueTest, SynchronousDestructionDuringDebounceFlush) {
+  SetUpForDebounce(10);
+  SimulateGestureScrollUpdateEvent(8, -5, 0);
+  EXPECT_EQ(1U, GetAndResetSentGestureEventCount());
+
+  auto queue_deferred = [&](WebInputEvent::Type type,
+                            DispatchToRendererCallback cb) {
+    GestureEventWithLatencyInfo event(
+        blink::SyntheticWebGestureEventBuilder::Build(
+            type, blink::WebGestureDevice::kTouchscreen));
+    ScopedDispatchToRendererCallback scoped(std::move(cb));
+    EXPECT_FALSE(queue()->DebounceOrForwardEvent(event, scoped.callback));
+  };
+
+  queue_deferred(
+      WebInputEvent::Type::kGestureScrollEnd,
+      base::BindOnce(
+          [](GestureEventQueueTest* test, const blink::WebInputEvent&,
+             DispatchToRendererResult) { test->DestroyQueue(); },
+          base::Unretained(this)));
+  bool second_called = false;
+  queue_deferred(
+      WebInputEvent::Type::kGestureTapDown,
+      base::BindOnce([](bool* called, const blink::WebInputEvent&,
+                        DispatchToRendererResult) { *called = true; },
+                     base::Unretained(&second_called)));
+
+  EXPECT_EQ(2U, GestureEventDebouncingQueueSize());
+  FastForwardBy(base::Milliseconds(20));
+
+  EXPECT_EQ(nullptr, queue());
+  EXPECT_FALSE(second_called);
 }
 
 }  // namespace input

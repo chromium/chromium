@@ -592,7 +592,8 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   }
 
   // Delegate must be non-null, due to `IsIgnoringWebInputEvents()` test.
-  if (delegate_->PreHandleGestureEvent(gesture_event)) {
+  auto weak_this = weak_factory_.GetWeakPtr();
+  if (delegate_->PreHandleGestureEvent(gesture_event) || !weak_this) {
     return;
   }
 
@@ -616,17 +617,21 @@ void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
 
 DispatchToRendererCallback RenderInputRouter::GetDispatchToRendererCallback() {
   return base::BindOnce(&RenderInputRouter::OnInputDispatchedToRendererResult,
-                        base::Unretained(this));
+                        weak_factory_.GetWeakPtr());
 }
 
 void RenderInputRouter::OnWheelEventAck(
     const input::MouseWheelEventWithLatencyInfo& wheel_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  auto weak_this = weak_factory_.GetWeakPtr();
   latency_tracker_->OnInputEventAck(wheel_event.event, &wheel_event.latency,
                                     ack_result);
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              wheel_event.event);
+  if (!weak_this) {
+    return;
+  }
 
   delegate_->OnWheelEventAck(wheel_event, ack_source, ack_result);
 }
@@ -635,9 +640,13 @@ void RenderInputRouter::OnTouchEventAck(
     const input::TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  auto weak_this = weak_factory_.GetWeakPtr();
   latency_tracker_->OnInputEventAck(event.event, &event.latency, ack_result);
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              event.event);
+  if (!weak_this) {
+    return;
+  }
 
   auto* input_event_router = delegate_->GetInputEventRouter();
 
@@ -661,15 +670,22 @@ void RenderInputRouter::OnGestureEventAck(
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT1("input", "RenderInputRouter::OnGestureEventAck", "type",
                blink::WebInputEvent::GetName(event.event.GetType()));
+  auto weak_this = weak_factory_.GetWeakPtr();
   latency_tracker_->OnInputEventAck(event.event, &event.latency, ack_result);
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              event.event);
+  if (!weak_this) {
+    return;
+  }
 
   // If the TouchEmulator didn't exist when this GestureEvent was sent, we
   // shouldn't create it here.
   if (auto* touch_emulator =
           delegate_->GetTouchEmulator(/*create_if_necessary=*/false)) {
     touch_emulator->OnGestureEventAck(event.event, view_input_.get());
+    if (!weak_this) {
+      return;
+    }
   }
 
   if (view_input_) {

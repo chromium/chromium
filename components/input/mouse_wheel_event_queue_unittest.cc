@@ -732,4 +732,35 @@ TEST_F(MouseWheelEventQueueTest, SynchronousDestructionDuringAck) {
   EXPECT_EQ(nullptr, queue_);
 }
 
+TEST_F(MouseWheelEventQueueTest,
+       SynchronousDestructionDuringCoalesceDispatchCallback) {
+  SendMouseWheel(kWheelScrollX, kWheelScrollY, kWheelScrollGlobalX,
+                 kWheelScrollGlobalY, 0, -5, 0, false,
+                 WebMouseWheelEvent::kPhaseBegan,
+                 WebMouseWheelEvent::kPhaseNone);
+  SendMouseWheel(kWheelScrollX, kWheelScrollY, kWheelScrollGlobalX,
+                 kWheelScrollGlobalY, 0, -5, 0, false,
+                 WebMouseWheelEvent::kPhaseChanged,
+                 WebMouseWheelEvent::kPhaseNone);
+  EXPECT_EQ(1U, queued_event_count());
+
+  WebMouseWheelEvent wheel = blink::SyntheticWebMouseWheelEventBuilder::Build(
+      kWheelScrollX, kWheelScrollY, kWheelScrollGlobalX, kWheelScrollGlobalY, 0,
+      -5, 0, ui::ScrollGranularity::kScrollByPixel);
+  wheel.phase = WebMouseWheelEvent::kPhaseChanged;
+  wheel.momentum_phase = WebMouseWheelEvent::kPhaseNone;
+
+  ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](std::unique_ptr<MouseWheelEventQueue>* queue,
+         const blink::WebInputEvent&, DispatchToRendererResult result) {
+        EXPECT_EQ(DispatchToRendererResult::kNotDispatched, result);
+        queue->reset();
+      },
+      base::Unretained(&queue_)));
+  queue_->QueueEvent(MouseWheelEventWithLatencyInfo(wheel),
+                     dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, queue_);
+}
+
 }  // namespace input

@@ -116,14 +116,14 @@ void TouchpadPinchEventQueue::QueueEvent(
       // Terminate the LatencyInfo of the event before it gets coalesced away.
       event.latency.Terminate();
 
-      std::move(dispatch_callback)
-          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       last_event->CoalesceWith(event);
       DCHECK_EQ(blink::WebInputEvent::Type::kGesturePinchUpdate,
                 last_event->event.GetType());
       TRACE_EVENT_INSTANT("input",
                           "TouchpadPinchEventQueue::CoalescedPinchEvent",
                           "scale", last_event->event.data.pinch_update.scale);
+      std::move(dispatch_callback)
+          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       return;
     }
   }
@@ -225,11 +225,17 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   const MouseWheelEventWithLatencyInfo synthetic_wheel(
       wheel_event_awaiting_ack, pinch_event_awaiting_ack_->latency);
 
+  // Keep stack-local copies of `pinch_event` and `dispatch_callback` so they
+  // stay valid if `SendMouseWheelEventForPinchImmediately` synchronously
+  // destroys `this`.
+  const blink::WebGestureEvent pinch_event = pinch_event_awaiting_ack_->event;
+  DispatchToRendererCallback dispatch_callback =
+      std::move(pinch_event_awaiting_ack_->dispatch_callback);
   client_->SendMouseWheelEventForPinchImmediately(
-      pinch_event_awaiting_ack_->event, synthetic_wheel,
+      pinch_event, synthetic_wheel,
       base::BindOnce(&TouchpadPinchEventQueue::ProcessMouseWheelAck,
                      weak_ptr_factory_.GetWeakPtr()),
-      pinch_event_awaiting_ack_->dispatch_callback);
+      dispatch_callback);
 }
 
 bool TouchpadPinchEventQueue::has_pending() const {

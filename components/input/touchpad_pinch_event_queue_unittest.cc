@@ -676,4 +676,40 @@ TEST_F(TouchpadPinchEventQueueTest,
   EXPECT_EQ(nullptr, queue_);
 }
 
+TEST_F(TouchpadPinchEventQueueTest,
+       SynchronousDestructionDuringCoalesceDispatchCallback) {
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::Type::kGesturePinchBegin),
+                  blink::mojom::InputEventResultSource::kBrowser,
+                  blink::mojom::InputEventResultState::kIgnored));
+  EXPECT_CALL(mock_client_, SendMouseWheelEventForPinchImmediately(testing::_));
+
+  QueuePinchBegin();
+  QueuePinchUpdate(1.23, false);
+  QueuePinchUpdate(1.23, false);
+
+  blink::WebGestureEvent pinch_update(
+      blink::WebInputEvent::Type::kGesturePinchUpdate,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+  pinch_update.SetPositionInWidget(gfx::PointF(1, 1));
+  pinch_update.SetPositionInScreen(gfx::PointF(1, 1));
+  pinch_update.SetNeedsWheelEvent(true);
+  pinch_update.data.pinch_update.scale = 1.23;
+
+  ScopedDispatchToRendererCallback dispatch_callback(base::BindOnce(
+      [](std::unique_ptr<TouchpadPinchEventQueue>* queue,
+         const blink::WebInputEvent&, DispatchToRendererResult result) {
+        EXPECT_EQ(DispatchToRendererResult::kNotDispatched, result);
+        queue->reset();
+      },
+      base::Unretained(&queue_)));
+  queue_->QueueEvent(GestureEventWithLatencyInfo(pinch_update),
+                     dispatch_callback.callback);
+
+  EXPECT_EQ(nullptr, queue_);
+}
+
 }  // namespace input

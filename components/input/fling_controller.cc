@@ -260,7 +260,11 @@ void FlingController::ProgressFling(
       event_generation_time = current_fling_parameters_.fling_start_event_time;
     }
 
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     GenerateAndSendFlingProgressEvents(event_generation_time, delta_to_scroll);
+    if (!weak_this) {
+      return;
+    }
     last_progress_time_ = current_time;
   }
 
@@ -338,6 +342,7 @@ void FlingController::GenerateAndSendGestureScrollEvents(
 void FlingController::GenerateAndSendFlingProgressEvents(
     base::TimeTicks event_generation_time,
     const gfx::Vector2dF& delta) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   switch (current_fling_parameters_.source_device) {
     case blink::WebGestureDevice::kTouchpad: {
       blink::WebMouseWheelEvent::Phase phase =
@@ -357,6 +362,9 @@ void FlingController::GenerateAndSendFlingProgressEvents(
       NOTREACHED()
           << "Fling controller doesn't handle flings with source device:"
           << static_cast<int>(current_fling_parameters_.source_device);
+  }
+  if (!weak_this) {
+    return;
   }
   fling_booster_.ObserveProgressFling(current_fling_parameters_.velocity);
 }
@@ -382,13 +390,20 @@ void FlingController::GenerateAndSendFlingEndEvents(
 }
 
 void FlingController::EndCurrentFling(base::TimeTicks current_time) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   last_progress_time_ = base::TimeTicks();
 
   GenerateAndSendFlingEndEvents(current_time);
+  if (!weak_this) {
+    return;
+  }
   current_fling_parameters_ = ActiveFlingParameters();
 
   if (fling_curve_) {
     scheduler_client_->DidStopFlingingOnBrowser(weak_ptr_factory_.GetWeakPtr());
+    if (!weak_this) {
+      return;
+    }
     TRACE_EVENT_END("input",
                     perfetto::NamedTrack::FromPointer(
                         perfetto::StaticString(kFlingTraceName), this));
