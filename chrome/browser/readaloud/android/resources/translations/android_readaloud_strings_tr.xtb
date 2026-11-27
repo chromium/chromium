@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Yakut</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> saniye ileri sar</translation>
 <translation id="1984328900355667246">Oynatılamıyor</translation>
+<translation id="2009730553732772041">Ses oluşturulabilmesi için bulunduğunuz sayfanın içeriği ve URL'si Google ile paylaşılacaktır. Bu seçimi istediğiniz zaman ayarlardan güncelleyebilirsiniz.</translation>
 <translation id="2019727681730021602">Standart oynatma</translation>
 <translation id="2224347680315897176">Kontrollü</translation>
 <translation id="2575502321843437554">Yeterince ilgi çekici değil</translation>
 <translation id="2611765907167846862">Sakin</translation>
 <translation id="3023502830214299618">Oynatma özelliği maalesef şu anda bu sayfada kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
+<translation id="3431227249425330101">Devam etmek için Chrome'un "Bu sayfayı dinle" özelliğinin sayfa içeriğini kullanmasına izin verilsin mi?</translation>
 <translation id="3493899379487634969">Sorun neydi?</translation>
 <translation id="3730775656877876887">Yapay zeka destekli oynatma üretiliyor</translation>
 <translation id="3778044272390020426">Olumsuz geri bildirim seçenekleri menüsü</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">"Bu sayfayı sesli oku" oynatıcısı</translation>
 <translation id="7051308646573997571">Mercan</translation>
 <translation id="7138678301420049075">Diğer</translation>
+<translation id="7161867604252594316">"Bu sayfayı dinle" özelliği kapalı</translation>
 <translation id="7221920857098237570">Yumuşak</translation>
 <translation id="7237590978482584900">Neşeli</translation>
 <translation id="7282547042039404307">Sorunsuz</translation>

@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Las funciones que necesiten un micrófono no se podrán utilizar</translation>
 <translation id="1622717322707146952">Selecciona Añadir a Google Calendar o Añadir a Calendario de Apple.</translation>
 <translation id="1629162218487290695">Demuestra que eres tú…</translation>
+<translation id="1633084385573994059">No usar este sitio</translation>
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtén indicaciones para llegar a tu destino con guías detalladas usando la función de navegación</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">No permitir que los sitios usen tu micrófono</translation>
 <translation id="2104436223719117661">Tendencias de búsqueda</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
+<translation id="2113761902638026426">¿Permitir que Gemini vaya a <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Mantén tu navegación privada cambiando al modo Incógnito</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
 <translation id="2119962645034852864">Algunos servicios no están disponibles en tu cuenta</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Cambios guardados</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está gestionada.</translation>
 <translation id="3365529507898144230">Guardar en Fotos</translation>
+<translation id="3371168305258344914">Gemini está a punto de realizar una acción en un sitio que puede incluir información sensible tuya</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus marcadores, contraseñas y otros elementos guardados se muestran en la parte superior.</translation>
 <translation id="3378214228000661758">Crea una llave de acceso para</translation>
@@ -1508,6 +1511,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para usar y guardar contraseñas en tu cuenta de Google, debes verificar que eres tú.</translation>
 <translation id="5684761169742812828">Esta contraseña se ha visto expuesta en una brecha de seguridad de datos en Internet. Si ahora mismo no tienes tiempo de cambiarla, te recomendamos que guardes esta advertencia para acordarte más adelante.</translation>
+<translation id="5691020463738411542">Sincroniza las preferencias de Navegación segura en todos tus dispositivos</translation>
 <translation id="5694848685995373177">Guardado en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Puedes cambiar la vista predeterminada de los sitios a la vista como ordenador en Configuración y, después, Configuración de contenido</translation>
 <translation id="5702108177581350218">Si compartes una copia de tu nombre de usuario y de tu contraseña, el miembro de tu familia podrá rellenarlos con el Gestor de contraseñas de Google.</translation>
@@ -1586,6 +1590,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5948605885471592910">Consulta y gestiona todo lo que tienes abierto</translation>
 <translation id="5952641243319721872">¿Seguro que quieres descartar tu selección?</translation>
 <translation id="5956112131836209882">Pestaña del grupo de pestañas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Iniciar tarea</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Abrir enlaces aquí la próxima vez</translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
@@ -1806,6 +1811,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6565899972286925956">Crea cualquier cosa</translation>
 <translation id="6571070086367343653">Editar tarjeta de crédito</translation>
+<translation id="6571502147204686607">Protégete de sitios no seguros</translation>
 <translation id="6574092468346088891">Activar notificaciones de Comprobación de tu estado</translation>
 <translation id="6579867704846662339">Puedes abrir URLs entrantes desde otras aplicaciones en Incógnito.</translation>
 <translation id="6585618849026997638">Si añades un marcador a una página que consideres importante, podrás volver a ella más tarde.</translation>
@@ -2246,6 +2252,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7921559948846049514">Elige un tema, un color u otras opciones para tu fondo</translation>
 <translation id="792357691529995513">No se han detectado problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
+<translation id="7926290435065552539">Protege tus contraseñas</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
 <translation id="792762900715361006">Hacer foto o vídeo</translation>
 <translation id="7927711904086083099">No esta seleccionado</translation>
@@ -2664,6 +2671,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9144230693397287797">Recibe actualizaciones de los recordatorios que hayas definido y de las pestañas de otros dispositivos</translation>
 <translation id="914781932147356857">Marcar todas…</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
+<translation id="914964947703922647">Revisar tarea</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Elige un tema o color, o sube una imagen</translation>
 <translation id="9153159728062222866">Olvídate de copiar y pegar</translation>

@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">ທັບທິມ</translation>
 <translation id="1921351128855867012">ເລື່ອນໄປໜ້າ <ph name="NUMBER_OF_SECONDS" /> ວິນາທີ</translation>
 <translation id="1984328900355667246">ບໍ່ສາມາດຫຼິ້ນສຽງໄດ້</translation>
+<translation id="2009730553732772041">ລະບົບຈະແບ່ງປັນເນື້ອຫາ ແລະ URL ຂອງໜ້າທີ່ທ່ານເປີດຢູ່ກັບ Google ເພື່ອສ້າງສຽງ. ທ່ານສາມາດອັບເດດຕົວເລືອກນີ້ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2019727681730021602">ການຫຼິ້ນມາດຕະຖານ</translation>
 <translation id="2224347680315897176">ຄົງທີ່</translation>
 <translation id="2575502321843437554">ບໍ່ມີສ່ວນຮ່ວມພຽງພໍ</translation>
 <translation id="2611765907167846862">ປອດໂປ່ງ</translation>
 <translation id="3023502830214299618">ຂໍອະໄພ, ບໍ່ສາມາດຫຼິ້ນສຽງສຳລັບໜ້ານີ້ໄດ້ໃນເວລານີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="3431227249425330101">ເພື່ອສືບຕໍ່, ໃຫ້ Chrome ໃຊ້ເນື້ອຫາໜ້າເວັບສຳລັບຟັງໜ້ານີ້ບໍ?</translation>
 <translation id="3493899379487634969">ມີຫຍັງຜິດພາດບໍ?</translation>
 <translation id="3730775656877876887">ກຳລັງສ້າງການຫຼິ້ນສຳລັບ AI</translation>
 <translation id="3778044272390020426">ເມນູຕົວເລືອກຄຳຕິຊົມທາງລົບ</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">ຕົວຫຼິ້ນ “ຟັງໜ້ານີ້”</translation>
 <translation id="7051308646573997571">ສີສົ້ມອົມຊົມພູ</translation>
 <translation id="7138678301420049075">ອື່ນໆ</translation>
+<translation id="7161867604252594316">“ຟັງໜ້ານີ້” ປິດຢູ່</translation>
 <translation id="7221920857098237570">ອ່ອນໂຍນ</translation>
 <translation id="7237590978482584900">ສົດຊື່ນ</translation>
 <translation id="7282547042039404307">ຄ່ອງແຄ້ວ</translation>

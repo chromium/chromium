@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Skopiowany obraz</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – aby zamknąć pełny ekran, przeciągnij od góry i kliknij przycisk Wstecz</translation>
 <translation id="1132789342529761192">Przesyłanie nie jest zalecane</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, zaznaczone, pozycja menu. Wybierz, aby wyłączyć udostępnianie</translation>
 <translation id="11370190534773372">Wypełniono dane karty</translation>
 <translation id="1138458427267715730">Otrzymuj alerty, gdy cena spadnie w dowolnej witrynie w internecie</translation>
 <translation id="1142713751288681188">Typ papieru</translation>
@@ -928,6 +929,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2526062290525841862">Aby uruchomić tę aplikację, ponownie włącz tryb programisty izolowanych aplikacji internetowych</translation>
 <translation id="2526280916094749336">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, zaznaczone</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
 <translation id="2530042584066815841">Blokowanie i używanie myszy</translation>
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
@@ -1012,6 +1014,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2666092431469916601">Do góry</translation>
 <translation id="2666117266261740852">Zamknij inne karty lub aplikacje</translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, pozycja menu. Wybierz, aby włączyć udostępnianie</translation>
 <translation id="2672201172023654893">Twoja przeglądarka nie jest zarządzana.</translation>
 <translation id="2674170444375937751">Czy na pewno chcesz usunąć te strony z historii?</translation>
 <translation id="2675716371350192683">Twoje treści nie będą wykorzystywane do ulepszania AI. Organizacja może w dowolnym momencie zmienić te ustawienia.</translation>
@@ -1992,6 +1995,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4297502707443874121">Miniatura strony <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Atrybut <ph name="ATTRIBUTE_NAME" /> został zaktualizowany</translation>
 <translation id="4298148761711700950">Płać natychmiast bez przesyłania kodu QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Pliki cookie tej witryny są synchronizowane na Twoich urządzeniach z ChromeOS. Aby zarządzać synchronizacją, otwórz <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> – źródło: <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Nazwa skrótu jest za długa. Maksymalna dozwolona liczba znaków: <ph name="MAX_LENGTH" />.</translation>
@@ -2201,6 +2205,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4682496302933121474">Przetłumaczyć stronę?</translation>
 <translation id="468314109939257734">Wyświetl numer karty wirtualnej</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
+<translation id="468826602575103388">Wybierz, aby wyłączyć udostępnianie</translation>
 <translation id="4690205240253392065">Wybierz dostawcę usługi płatności odroczonych</translation>
 <translation id="469028408546145398">Przycisk Zamknij okna incognito; aktywuj, aby zamknąć wszystkie otwarte okna incognito</translation>
 <translation id="4692623383562244444">Wyszukiwarki</translation>
@@ -4172,6 +4177,7 @@ Dodatkowe informacje:
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943397946612013052">Pobieranie jest zablokowane</translation>
 <translation id="7943893128817522649">Może prosić o zgodę na automatyczne pobieranie wielu plików</translation>
+<translation id="7947144323420971076">Wybierz, aby włączyć udostępnianie</translation>
 <translation id="7947285636476623132">Sprawdź rok ważności i spróbuj ponownie</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby poznać funkcje Chrome</translation>
 <translation id="7947964969544524438">Bezpiecznie zapisz numer KTN</translation>
@@ -4299,6 +4305,7 @@ Dodatkowe informacje:
 <translation id="8172809706700703589">Utwórz listę rzeczy do spakowania na wyjazd</translation>
 <translation id="8174047975335711832">Informacje o urządzeniu</translation>
 <translation id="8175053171643471349">Zarządzaj kartami lojalnościowymi</translation>
+<translation id="817536628389054635">Wypełnił informacje kontaktowe: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Jako zalogowany użytkownik możesz zapisać karty na Twoim koncie Google w Chrome. Możesz to zmienić w ustawieniach.</translation>
 <translation id="8176440868214972690">Administrator tego urządzenia wysłał do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="818254048113802060">{0,plural, =1{Plik <ph name="FILE_NAME" /> został zablokowany z powodu zawartości}few{<ph name="FILE_COUNT" /> pliki zostały zablokowane z powodu zawartości}many{<ph name="FILE_COUNT" /> plików zostało zablokowanych z powodu zawartości}other{<ph name="FILE_COUNT" /> pliku zostało zablokowane z powodu zawartości}}</translation>

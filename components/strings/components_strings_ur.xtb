@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="1132789342529761192">اپ لوڈ کرنے کی تجویز نہیں کی جاتی ہے</translation>
+<translation id="1136582904187541177">‫<ph name="ITEM_LABEL" />، نشان زد کردہ، مینو آئٹم۔ اشتراک کو آف کرنے کے لیے منتخب کریں</translation>
 <translation id="11370190534773372">کارڈ کی تفصیلات پُر کی گئیں</translation>
 <translation id="1138458427267715730">ویب پر کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="1142713751288681188">کاغذ کی قسم</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">اس ایپ کو چلانے کے لیے علیحدہ کردہ ویب ایپ ڈویلپر وضع کو دوبارہ فعال کریں</translation>
 <translation id="2526280916094749336">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="2527451058878391043">‏آپ کا CVC آپ کے کارڈ کے سامنے کی طرف ہے۔ یہ بالائی دائیں جانب آپ کے کارڈ نمبر کے اوپر موجود 4 ہندسوں کا کوڈ ہے۔</translation>
+<translation id="2527614414460013324">‫<ph name="ITEM_LABEL" />، نشان زد</translation>
 <translation id="2529899080962247600">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہیے۔ مزید تمام اندراجات کو نظر انداز کر دیا جائے گا۔</translation>
 <translation id="2530042584066815841">ماؤس لاک اور استعمال</translation>
 <translation id="2535585790302968248">نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولیں</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2666117266261740852">دیگر ٹیبز یا ایپس کو بند کریں</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
+<translation id="2670682833829583790">‫<ph name="ITEM_LABEL" />، مینو آئٹم۔ اشتراک کو آن کرنے کے لیے منتخب کریں</translation>
 <translation id="2672201172023654893">آپ کا براؤزر نظم کردہ نہیں ہے۔</translation>
 <translation id="2674170444375937751">کیا آپ واقعی ان صفحات کو اپنی سرگزشت سے حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2675716371350192683">‏آپ کا مواد AI کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔ آپ کی تنظیم کسی بھی وقت ان ترتیبات کو تبدیل کر سکتی ہے۔</translation>
@@ -1993,6 +1996,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> صفحہ کا تھمب نیل</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> کو اپ ڈیٹ کیا گیا</translation>
 <translation id="4298148761711700950">‏‫QR اپ لوڈ کے بغیر فوری طور پر ادائیگی کریں</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">‏اس سائٹ کیلئے کوکیز کو آپ کے ChromeOS آلات پر سنک کیا جاتا ہے۔ آپ جو سنک کرتے ہیں، اس کے نظم کیلئے <ph name="SYNC_SETTINGS" /> پر جائیں۔</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> ماخذ <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">شارٹ کٹ کا نام <ph name="MAX_LENGTH" /> حروف کی زیادہ سے زیادہ اجازت شدہ لمبائی سے زیادہ ہے۔</translation>
@@ -2202,6 +2206,7 @@
 <translation id="4682496302933121474">صفحہ کا ترجمہ کریں؟</translation>
 <translation id="468314109939257734">اپنا ورچوئل کارڈ نمبر دیکھیں</translation>
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
+<translation id="468826602575103388">اشتراک کو آف کرنے کے لیے منتخب کریں</translation>
 <translation id="4690205240253392065">بعد میں ادائیگی کریں فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="469028408546145398">پوشیدگی ونڈوز کو بند کریں بٹن، ان تمام پوشیدگی ونڈوز کو بند کرنے کے لیے فعال کریں جو فی الحال کھلی ہیں</translation>
 <translation id="4692623383562244444">سرچ انجنز</translation>
@@ -4173,6 +4178,7 @@
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7943397946612013052">ڈاؤن لوڈ کرنا مسدود ہے</translation>
 <translation id="7943893128817522649">سائٹ خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہے</translation>
+<translation id="7947144323420971076">اشتراک کو آن کرنے کے لیے منتخب کریں</translation>
 <translation id="7947285636476623132">اپنا اختتامی سال چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="7947964969544524438">معلوم مسافر نمبر کو محفوظ طریقے سے محفوظ کریں</translation>
@@ -4300,6 +4306,7 @@
 <translation id="8172809706700703589">میرے آنے والے سفر کے لیے پیکنگ کی فہرست بنائیں</translation>
 <translation id="8174047975335711832">آلہ کی معلومات</translation>
 <translation id="8175053171643471349">لائلٹی کارڈز کا نظم کریں</translation>
+<translation id="817536628389054635">رابطے کی معلومات پُر کی گئی: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">‏آپ کے سائن ان ہونے کی وجہ سے Chrome آپ کے کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کرنے کی پیشکش کر رہا ہے۔ آپ اس برتاؤ کو ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8176440868214972690">اس آلہ کے منتظم نے کچھ معلومات جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹ پر بھیجی ہیں۔</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> کو مواد کی وجہ سے بلاک کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو مواد کی وجہ سے بلاک کر دیا گیا}}</translation>

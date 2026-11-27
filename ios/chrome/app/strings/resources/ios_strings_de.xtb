@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Funktionen, die ein Mikrofon benötigen, funktionieren dann nicht</translation>
 <translation id="1622717322707146952">Wähle „Zu Google Kalender hinzufügen“ oder „Zu Apple Kalender hinzufügen“ aus.</translation>
 <translation id="1629162218487290695">Identität bestätigen…</translation>
+<translation id="1633084385573994059">Diese Website nicht verwenden</translation>
 <translation id="1634520742547161889">MM/JJ</translation>
 <translation id="1636234353664774105">Mit der detaillierten Routenführung eine Wegbeschreibung zu deinem Ziel erhalten</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Websites dürfen mein Mikrofon nicht verwenden</translation>
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
+<translation id="2113761902638026426">Gemini erlauben, <ph name="SITE_DOMAIN" /> aufzurufen?</translation>
 <translation id="2117650889962717098">Im Inkognitomodus bleiben deine Browsing-Aktivitäten privat</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Änderungen gespeichert</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dieses Konto ist verwaltet.</translation>
 <translation id="3365529507898144230">In Fotos speichern</translation>
+<translation id="3371168305258344914">Gemini ist im Begriff, auf einer Website aktiv zu werden, die möglicherweise vertrauliche Daten von dir enthält</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
 <translation id="3378214228000661758">Passkey für dieses Konto erstellen</translation>
@@ -1508,6 +1511,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="5684761169742812828">Dieses Passwort wurde aufgrund einer Datenpanne im Internet preisgegeben. Falls du gerade keine Zeit hast, das Passwort zu ändern, empfiehlt Google, diese Warnung offen zu lassen, damit du später daran erinnert wirst.</translation>
+<translation id="5691020463738411542">Safe Browsing-Einstellungen zwischen Geräten synchronisieren</translation>
 <translation id="5694848685995373177">In Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="570209299585559496">Du kannst die Desktopansicht als Standardeinstellung festlegen, wenn du zu den Einstellungen und dann zu den Inhaltseinstellungen gehst</translation>
 <translation id="5702108177581350218">Wenn du eine Kopie deines Nutzernamens und deines Passworts teilst, können Familienmitglieder diese Angaben über den Google Passwortmanager eintragen.</translation>
@@ -1586,6 +1590,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5948605885471592910">Alle geöffneten Inhalte ansehen und verwalten</translation>
 <translation id="5952641243319721872">Möchtest du deine Auswahl wirklich verwerfen?</translation>
 <translation id="5956112131836209882">Tabgruppen-Tab. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Aufgabe starten</translation>
 <translation id="595769230373966252">Mit <ph name="SEARCH_PROVIDER" /> suchen</translation>
 <translation id="5963694076845073027">Links beim nächsten Mal hier öffnen</translation>
 <translation id="5963939892571022323">Zum markierten Text kann kein Link erstellt werden.</translation>
@@ -1805,6 +1810,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6565899972286925956">Kreativität ohne Grenzen</translation>
 <translation id="6571070086367343653">Kreditkarte bearbeiten</translation>
+<translation id="6571502147204686607">Schutz vor unsicheren Websites</translation>
 <translation id="6574092468346088891">Sicherheitscheck-Benachrichtigungen aktivieren</translation>
 <translation id="6579867704846662339">Du kannst eingehende URLs aus anderen Apps inkognito öffnen.</translation>
 <translation id="6585618849026997638">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
@@ -2245,6 +2251,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7921559948846049514">Wähle ein Design, eine Farbe oder eine andere Option für deinen Hintergrund aus</translation>
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
 <translation id="7925108652071887026">Autofill-Daten</translation>
+<translation id="7926290435065552539">Passwörter gut schützen</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
 <translation id="792762900715361006">Foto/Video aufnehmen</translation>
 <translation id="7927711904086083099">Nicht ausgewählt</translation>
@@ -2662,6 +2669,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9144230693397287797">Benachrichtigungen zu von dir eingerichteten Erinnerungen und zu Tabs auf anderen Geräten erhalten</translation>
 <translation id="914781932147356857">Alle markieren…</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
+<translation id="914964947703922647">Aufgabe prüfen</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9153159728062222866">Kein Kopieren und Einfügen mehr</translation>

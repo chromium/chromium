@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Atlasiet failu un pēc tam nospiediet <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Nevar atvērt failu}zero{Nevar atvērt failus}one{Nevar atvērt failus}other{Nevar atvērt failus}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{un vēl viena}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="1283126956823499975">Iestatot šo ierīci, radās problēma</translation>
 <translation id="1285992161347843613">Atrast tālruni</translation>
 <translation id="1287002645302686982">Jau ir saglabāta darbvieta ar nosaukumu “<ph name="DESK_TEMPLATE_NAME" />”.</translation>
@@ -2193,6 +2194,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6249795363855770621">Nevarēja atzīmēt kā pabeigtu. Mēģiniet vēlreiz, kad būsiet tiešsaistē.</translation>
 <translation id="625369703868467034">Tīkla darbspēja</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{un vēl viena saite}zero{un vēl # saites}one{un vēl # saite}other{un vēl # saites}}</translation>
 <translation id="6259776178973198997">Atsvaidzināt informāciju par Wi-Fi Direct īpašniekiem</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>

@@ -210,6 +210,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1820408774134375111">Oturum açma alt sayfası</translation>
 <translation id="1824902652744048041">Tarama verilerini sil'e dokunun.</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
+<translation id="1831587114257679402">Güvenle göz atabilmeniz için güvenlik odaklı olarak tasarlandı</translation>
 <translation id="1832459821645506983">Evet, etkinleştir</translation>
 <translation id="1845958458910716240">Verilerinizin korunması için Chrome'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> bu sekmeyle paylaşılıyor</translation>
@@ -2086,6 +2087,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8865415417596392024">Hesabınızdaki Chrome verileri</translation>
 <translation id="886968456388055613">Göz atanlara göre filtreleyin</translation>
 <translation id="8872506776304248286">Uygulamada aç</translation>
+<translation id="8876112961028111440">Yer işaretlerinize, şifrelerinize, otomatik doldurma bilgilerinize ve daha fazlasına tüm cihazlarınızdan erişmek için oturum açın.</translation>
 <translation id="8880275451109933094">İki sayfalı görünüm</translation>
 <translation id="8890668505403261809">Gizli sekmelerinizde arayın</translation>
 <translation id="8892234476517513962">Oturumunuz zaten açık</translation>

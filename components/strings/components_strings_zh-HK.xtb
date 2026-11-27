@@ -78,7 +78,7 @@
 <translation id="1131264053432022307">您複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />：如要離開全螢幕，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1132789342529761192">不建議上載</translation>
-<translation id="1136582904187541177"><ph name="ITEM_LABEL" />，已勾選的選單項目。選取即可關閉分享功能</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />，剔選咗，選單項目。揀選就可以閂咗分享功能</translation>
 <translation id="11370190534773372">已填入信用卡詳情</translation>
 <translation id="1138458427267715730">如果產品在網絡上的任何網站降價，系統將通知你</translation>
 <translation id="1142713751288681188">紙張類型</translation>
@@ -929,7 +929,7 @@
 <translation id="2526062290525841862">如要執行此應用程式，請重新啟用「隔離的網絡應用程式開發人員模式」</translation>
 <translation id="2526280916094749336">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">CVC 喺信用卡嘅正面，即係信用卡號碼右上方嘅 4 位數字。</translation>
-<translation id="2527614414460013324"><ph name="ITEM_LABEL" />，已勾選</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />，剔選咗</translation>
 <translation id="2529899080962247600">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會被忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定與使用</translation>
 <translation id="2535585790302968248">開啟新的無痕式分頁以私下瀏覽內容</translation>
@@ -1014,7 +1014,7 @@
 <translation id="2666092431469916601">返回頁首</translation>
 <translation id="2666117266261740852">關閉其他分頁或應用程式</translation>
 <translation id="266935134738038806">瀏覽網站</translation>
-<translation id="2670682833829583790"><ph name="ITEM_LABEL" />，選單項目。選取即可開啟分享功能</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />，選單項目。揀選就可以開咗分享功能</translation>
 <translation id="2672201172023654893">您的瀏覽器未受管理。</translation>
 <translation id="2674170444375937751">確定要從記錄中刪除這些頁面嗎？</translation>
 <translation id="2675716371350192683">你的內容不會用於提升 AI 技術。你的機構隨時可變更這些設定。</translation>
@@ -2204,7 +2204,7 @@
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
 <translation id="4686942373615810936">剛才建立</translation>
-<translation id="468826602575103388">選取即可關閉分享功能</translation>
+<translation id="468826602575103388">揀選就可以閂咗分享功能</translation>
 <translation id="4690205240253392065">選擇稍後付款服務商</translation>
 <translation id="469028408546145398">閂無痕式視窗按鈕，啟動之後就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
@@ -4176,7 +4176,7 @@
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943397946612013052">已禁止下載</translation>
 <translation id="7943893128817522649">可要求自動下載多個檔案</translation>
-<translation id="7947144323420971076">選取即可開啟分享功能</translation>
+<translation id="7947144323420971076">揀選就可以開咗分享功能</translation>
 <translation id="7947285636476623132">請檢查您的到期年份，然後再試一次</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="7947964969544524438">安全地儲存已知旅客號碼</translation>
@@ -4304,7 +4304,7 @@
 <translation id="8172809706700703589">為我的旅程建立行李清單</translation>
 <translation id="8174047975335711832">裝置資料</translation>
 <translation id="8175053171643471349">管理會員卡</translation>
-<translation id="817536628389054635">已填入聯絡資訊：<ph name="FILLED_TYPES" /></translation>
+<translation id="817536628389054635">已填入聯絡資料：<ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="818254048113802060">{0,plural, =1{「<ph name="FILE_NAME" />」因內容而被封鎖}other{<ph name="FILE_COUNT" /> 個檔案因內容而被封鎖}}</translation>

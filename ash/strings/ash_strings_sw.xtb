@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Chagua faili, kisha ubofye <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Haiwezi kufungua faili}other{Haiwezi kufungua faili}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{na 1 zaidi}other{na # zaidi}}</translation>
 <translation id="1283126956823499975">Hitilafu fulani imetokea wakati wa kuweka mipangilio ya kifaa</translation>
 <translation id="1285992161347843613">Kupata simu</translation>
 <translation id="1287002645302686982">Eneokazi lililohifadhiwa kwa jina la <ph name="DESK_TEMPLATE_NAME" /> tayari lipo</translation>
@@ -2189,6 +2190,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6249795363855770621">Imeshindwa kutia alama kuwa limekamilika. Jaribu tena ukiwa mtandaoni.</translation>
 <translation id="625369703868467034">Ubora wa Mtandao</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{na kiungo 1 zaidi}other{na viungo # zaidi}}</translation>
 <translation id="6259776178973198997">Onyesha upya Maelezo ya Seva Zinazounganisha Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>

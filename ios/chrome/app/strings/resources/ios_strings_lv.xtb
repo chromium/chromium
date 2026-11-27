@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Funkcijas, kurām nepieciešama piekļuve mikrofonam, nedarbosies</translation>
 <translation id="1622717322707146952">Atlasiet “Pievienot Google kalendāram” vai “Pievienot kalendāram Apple Calendar”.</translation>
 <translation id="1629162218487290695">Identitātes apstiprināšana</translation>
+<translation id="1633084385573994059">Neizmantot šo vietni</translation>
 <translation id="1634520742547161889">MM/GG</translation>
 <translation id="1636234353664774105">Iegūt detalizētas norādes nokļūšanai galamērķī, izmantojot navigācijas funkciju</translation>
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Neļaut vietnēm izmantot jūsu mikrofonu</translation>
 <translation id="2104436223719117661">Populāri meklēšanas vaicājumi</translation>
 <translation id="21133533946938348">Piespraust cilni</translation>
+<translation id="2113761902638026426">Vai atļaut Gemini pāriet uz vietni <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Nodrošiniet pārlūkošanas konfidencialitāti, pārejot uz inkognito režīmu</translation>
 <translation id="2119636449201577317">Atvērt šeit:</translation>
 <translation id="2119962645034852864">Noteikti pakalpojumi nav pieejami jūsu kontam.</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Labojumi ir saglabāti.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Šis konts tiek pārvaldīts.</translation>
 <translation id="3365529507898144230">Saglabāt pakalpojumā Fotoattēli</translation>
+<translation id="3371168305258344914">Gemini veiks darbības vietnē, kurā, iespējams, ir sensitīva informācija par jums.</translation>
 <translation id="3371831930909698441">Ir pieejams tulkojums. Opcijas, kas pieejamas ekrāna apakšējā daļā.</translation>
 <translation id="3377063233124932127">Tagad jūsu saglabātās grāmatzīmes, paroles un citi dati atrodas augšdaļā.</translation>
 <translation id="3378214228000661758">Izveidojiet piekļuves atslēgu vietnei</translation>
@@ -1508,6 +1511,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="567881659373499783">Versija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Lai Google kontā varētu izmantot un saglabāt paroles, apstipriniet savu identitāti.</translation>
 <translation id="5684761169742812828">Šī parole tika atklāta datu aizsardzības pārkāpumā internetā. Ja jums šobrīd nav laika nomainīt paroli, Google iesaka saglabāt šo brīdinājumu kā atgādinājumu sev, lai to izdarītu vēlāk.</translation>
+<translation id="5691020463738411542">Sinhronizējiet drošas pārlūkošanas preferences dažādās ierīcēs</translation>
 <translation id="5694848685995373177">Saglabāts konta <ph name="USER_EMAIL" /> Diskā.</translation>
 <translation id="570209299585559496">Sadaļā “Iestatījumi” &gt; “Satura iestatījumi” varat mainīt noklusējuma vietnes skatu uz datoriem paredzēto skatu.</translation>
 <translation id="5702108177581350218">Ja kopīgosiet sava lietotājvārda un paroles kopiju, jūsu ģimenes loceklis varēs to aizpildīt, izmantojot Google paroļu pārvaldnieku.</translation>
@@ -1586,6 +1590,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5948605885471592910">Skatiet un pārvaldiet visu, ko esat atvēris</translation>
 <translation id="5952641243319721872">Vai tiešām vēlaties atmest atlasi?</translation>
 <translation id="5956112131836209882">Ciļņu grupas cilne. Numur <ph name="TAB_INDEX_IN_GROUP" />, kopējais skaits ir <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Sākt uzdevumu</translation>
 <translation id="595769230373966252">Meklēt, izmantojot meklētājprogramu <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Nākamreiz atvērt saites šeit</translation>
 <translation id="5963939892571022323">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
@@ -1806,6 +1811,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="656065428026159829">Skatīt vairāk</translation>
 <translation id="6565899972286925956">Varat izveidot jebko</translation>
 <translation id="6571070086367343653">Rediģēt kredītkarti</translation>
+<translation id="6571502147204686607">Piesargieties no nedrošām vietnēm</translation>
 <translation id="6574092468346088891">Ieslēgt paziņojumus par drošības pārbaudi</translation>
 <translation id="6579867704846662339">Varat izvēlēties atvērt ienākošos vietrāžus URL no citām lietotnēm inkognito režīmā.</translation>
 <translation id="6585618849026997638">Varat pievienot grāmatzīmi, lai varētu atgriezties vajadzīgajā lapā</translation>
@@ -2246,6 +2252,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7921559948846049514">Izvēlieties fonam motīvu, krāsu vai citus iestatījumus.</translation>
 <translation id="792357691529995513">Problēmas netika atrastas</translation>
 <translation id="7925108652071887026">Automātiskās aizpildes dati</translation>
+<translation id="7926290435065552539">Uzglabājiet savas paroles drošā veidā</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
 <translation id="792762900715361006">Uzņemt fotoattēlu vai videoklipu</translation>
 <translation id="7927711904086083099">Nav atlasīts</translation>
@@ -2664,6 +2671,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="9144230693397287797">Saņemiet paziņojumus par iestatītajiem atgādinājumiem un cilnēm no citām ierīcēm.</translation>
 <translation id="914781932147356857">Atzīmēt visus…</translation>
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
+<translation id="914964947703922647">Pārskatīt uzdevumu</translation>
 <translation id="9149866541089851383">Rediģēt ...</translation>
 <translation id="9152637745605628097">Izvēlieties kādu no motīviem vai krāsām vai augšupielādējiet attēlu.</translation>
 <translation id="9153159728062222866">Izlaidiet kopēšanu un ielīmēšanu</translation>

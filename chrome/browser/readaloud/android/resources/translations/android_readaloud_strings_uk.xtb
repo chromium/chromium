@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Рубін</translation>
 <translation id="1921351128855867012">Перемотати вперед на <ph name="NUMBER_OF_SECONDS" /> с</translation>
 <translation id="1984328900355667246">Відтворення недоступне</translation>
+<translation id="2009730553732772041">Контент і URL-адресу поточної сторінки буде надіслано в Google, щоб створити аудіо. Ви можете будь-коли змінити свій вибір у налаштуваннях.</translation>
 <translation id="2019727681730021602">Стандартне відтворення</translation>
 <translation id="2224347680315897176">стабільний</translation>
 <translation id="2575502321843437554">Не дуже цікаво</translation>
 <translation id="2611765907167846862">Безтурботний</translation>
 <translation id="3023502830214299618">На жаль, відтворення на цій сторінці зараз недоступне. Спробуйте пізніше.</translation>
+<translation id="3431227249425330101">Дозволити Chrome застосувати функцію "Прослухати цю сторінку"?</translation>
 <translation id="3493899379487634969">У чому була проблема?</translation>
 <translation id="3730775656877876887">Підготовка до відтворення аудіопереказів</translation>
 <translation id="3778044272390020426">Меню варіантів негативного відгуку</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Програвач функції "Прослухати цю сторінку"</translation>
 <translation id="7051308646573997571">Кораловий</translation>
 <translation id="7138678301420049075">Інше</translation>
+<translation id="7161867604252594316">Функцію "Прослухати цю сторінку" вимкнено</translation>
 <translation id="7221920857098237570">Тихий</translation>
 <translation id="7237590978482584900">Свіжий</translation>
 <translation id="7282547042039404307">Плавно</translation>

@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> Sekunden vorspulen</translation>
 <translation id="1984328900355667246">Wiedergabe nicht verfügbar</translation>
+<translation id="2009730553732772041">Der Inhalt und die URL der Seite, auf der du dich befindest, werden zum Generieren der Audioinhalte mit Google geteilt. Du kannst diese Option jederzeit in den Einstellungen ändern.</translation>
 <translation id="2019727681730021602">Standard-Wiedergabe</translation>
 <translation id="2224347680315897176">Gleichbleibend</translation>
 <translation id="2575502321843437554">Nicht ansprechend genug</translation>
 <translation id="2611765907167846862">Ruhig</translation>
 <translation id="3023502830214299618">Die Wiedergabe ist für diese Seite derzeit leider nicht möglich. Bitte versuch es später noch einmal.</translation>
+<translation id="3431227249425330101">Soll Chrome Seiteninhalte für „Seiteninhalt vorlesen“ verwenden, um fortzufahren?</translation>
 <translation id="3493899379487634969">Was ist schiefgelaufen?</translation>
 <translation id="3730775656877876887">KI-Wiedergabe wird erstellt</translation>
 <translation id="3778044272390020426">Menü mit Optionen für negatives Feedback</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Player für „Diese Seite anhören“</translation>
 <translation id="7051308646573997571">Korallenrot</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
+<translation id="7161867604252594316">„Seiteninhalt vorlesen“ ist deaktiviert</translation>
 <translation id="7221920857098237570">Sanft</translation>
 <translation id="7237590978482584900">Lebhaft</translation>
 <translation id="7282547042039404307">Gleichmäßig</translation>

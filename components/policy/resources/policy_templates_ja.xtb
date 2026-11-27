@@ -9977,9 +9977,6 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
 <translation id="7402257017733669351">ブラウザ プロセスで動的コードが作成されないようにする</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7406276857470642718">外部 IdP を使用して SAML で認証されたユーザーの設定を管理する</translation>
-<translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
-
-      このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="7408815947231046196"><ph name="PRODUCT_NAME" /> データのバックアップを許可する</translation>
 <translation id="740885188496462583">バッテリー セーバー モードを有効にする</translation>
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> にリモートホストからプロキシ送信される　WebAuthn API リクエストの実行を許可します。</translation>
@@ -12046,8 +12043,6 @@ M119 よりデフォルトで無効になります）。
 <translation id="8812091410765157924">ポップアップの表示元ページで操作が明示的に許可されている場合に限り、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたポップアップにその表示元ページの操作を許可する</translation>
 <translation id="8812631362927615118">ユーザーのセキュリティ シグナルを報告する際のファーストパーティ認証を有効にする</translation>
 <translation id="8816370949847593408">サポート終了の段階に応じて、一部の Chrome アプリの実行を許可しない。</translation>
-<translation id="8818768076343557335">モバイル以外のネットワークでのネットワーク動作を予測します。
-          （バージョン 50 でサポート終了、バージョン 52 で削除。バージョン 52 以降は、値 1 が設定されている場合は 0 として扱われ、あらゆるネットワーク接続でネットワーク動作を予測します。）</translation>
 <translation id="8820434908768990758">すべてのウェブサイトでサイト分離を有効にするが、ユーザーがオプトアウトできるようにする</translation>
 <translation id="8821678641132607468">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザから閲覧履歴が読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時に閲覧履歴は読み込まれません。
 

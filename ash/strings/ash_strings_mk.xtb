@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Изберете ја датотеката, а потоа притиснете <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Датотеката не може да се отвори}one{Датотеките не може да се отворат}other{Датотеките не може да се отворат}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{И уште 1}one{И уште #}other{И уште #}}</translation>
 <translation id="1283126956823499975">Нешто тргна наопаку со поставувањето на уредот</translation>
 <translation id="1285992161347843613">Лоцирај го телефонот</translation>
 <translation id="1287002645302686982">Зачувана работна површина со име <ph name="DESK_TEMPLATE_NAME" /> веќе постои</translation>
@@ -2192,6 +2193,7 @@
 <translation id="6249795363855770621">Не можеше да се означи како завршено. Обидете се повторно кога ќе бидете онлајн.</translation>
 <translation id="625369703868467034">Состојба на мрежата</translation>
 <translation id="6254629735336163724">Заклучен хоризонтално</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{И уште 1 линк}one{И уште # линк}other{И уште # линка}}</translation>
 <translation id="6259776178973198997">Освежи ги информациите за сопствениците на Wi-Fi Direct:</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Се активира...</translation>

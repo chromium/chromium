@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Dosyayı seçip <ph name="KEY" /> tuşuna basın</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Dosya açılamıyor}other{Dosyalar açılamıyor}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 tane daha}other{+# tane daha}}</translation>
 <translation id="1283126956823499975">Cihaz kurulurken bir hata oluştu</translation>
 <translation id="1285992161347843613">Telefonu bul</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> adında kayıtlı bir masa zaten var</translation>
@@ -2189,6 +2190,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6249795363855770621">Tamamlandı olarak işaretlenemedi. İnternete bağlandığınızda tekrar deneyin.</translation>
 <translation id="625369703868467034">Ağ Sağlığı</translation>
 <translation id="6254629735336163724">Yatay olarak kilitlendi</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 bağlantı daha}other{+# bağlantı daha}}</translation>
 <translation id="6259776178973198997">WiFi Direct Sahip Bilgisini Yenile</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Etkinleştiriliyor...</translation>

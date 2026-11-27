@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Allalaadimine ...</translation>
 <translation id="1651617469580841801">Kui kasutate Google Lensi, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) Google'ile. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Ava link Chrome'i inko&amp;gnito aknas</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> – jagate seda vahelehte Google’i otsinguga.</translation>
 <translation id="1682634494516646069">Google Chrome ei saa andmekataloogi lugeda ega sellesse kirjutada:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -256,6 +257,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3380249972812870825">Gemini avamiseks Chrome'is vajutage klahvikombinatsiooni <ph name="GLOBAL_HOTKEY" />.</translation>
 <translation id="3392127217442962664">Chrome lisas AI, mis töötab teie seadmes. Saidid ja Chrome saavad seda kasutada järgmiste funktsioonide jaoks.</translation>
 <translation id="3396977131400919238">Installimisel ilmnes operatsioonisüsteemi viga. Palun laadige Google Chrome uuesti alla.</translation>
+<translation id="3404531968986217414">Alusta uut lõime Google’i otsinguga</translation>
 <translation id="3428747202529429621">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud</translation>
 <translation id="3438681572027105609">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chrome'i</translation>
 <translation id="3450887623636316740">See fail võib olla ohtlik<ph name="LINE_BREAK" />Chrome võib seda allalaadimist teie eest kontrollida, kui sisestate parooli. Failiga seotud teave saadetakse teenusesse Google'i ohutu sirvimine, aga faili sisu ja parool jäävad teie seadmesse.</translation>
@@ -398,6 +400,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5003967926796347400">Klõpsake „Google'i paroolihaldur”</translation>
 <translation id="5043786843026425788">Lisateave Chrome'is Google Lensiga otsimise kohta</translation>
 <translation id="504867494566807945">Avage mis tahes rakenduse lingid Chrome'is. Lihtsaks juurdepääsuks kinnitatakse see teie tegumiribale.</translation>
+<translation id="507983337152787026">Alusta uut lõime Google’i otsinguga</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="5105120510934353742">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 12.</translation>
 <translation id="5114340746415930644">Sisestage parool, et Chrome'i andmeid kasutada ja oma kontole <ph name="USER_EMAIL" /> salvestada</translation>
@@ -424,6 +427,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="524751727772074981">Saate Geminilt Chrome'is küsida kõike, just seal, kus olete</translation>
 <translation id="5247617065091903691">Saate Google'i otsingu külgpaneeli kinnitada, et sirvimise ajal küsimusi esitada</translation>
 <translation id="5271833978500241046">Kasutage neid koos teiste Gemini funktsioonidega Chrome'is</translation>
+<translation id="528611299569739095">See hallatav brauser saab kasutada Geminit, mille <ph name="DOMAIN" /> on töö jaoks seadistanud. See saab otsida teavet ning anda organisatsiooni failide ja teenuste põhjal vastuseid. Vahetamiseks tuleb Chrome uuesti käivitada.</translation>
 <translation id="5320351714793324716">Kui lubate küpsised, võib Chrome neid eellaadimise ajal kasutada</translation>
 <translation id="5321325624576443340">Google Lens pole saadaval. Proovige hiljem uuesti.</translation>
 <translation id="5346389065299425353">Otsingu süvendamine mitme vahelehe, faili ja tööriista lisamisega.</translation>
@@ -446,7 +450,9 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5600352656975192682">Kinnitage Chrome tegumiribale, et sellele igal ajal kiiresti juurde pääseda.</translation>
 <translation id="5602351063754773347">Chrome soovitab selle eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Lülituge Gemini Enterprise’ile, mida haldab <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Logige Chrome'i sisse</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Lõpeta vahelehe jagamine Google’i otsinguga}other{Lõpeta # vahelehe jagamine Google’i otsinguga}}</translation>
 <translation id="5649156266046089790">Chrome'i profiilidega saate eraldada kogu oma Chrome'i sisu. Looge profiile sõprade või pereliikmete jaoks või eraldage nende abil töö ja lõbu.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> võib olla ohtlik, mistõttu Chrome blokeeris selle.</translation>
 <translation id="566568153320186256">Chrome säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave Energiasäästja kohta<ph name="END_LINK" /></translation>
@@ -540,6 +546,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6417690341895039567">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="6426623519983252346">Näete järgmisel korral Chrome'i iOS-i avamisel viipa, et proovida funktsiooni <ph name="FEATURE_NAME" />.</translation>
+<translation id="6431496891888891615">Saate lülituda teie Google’i kontoga algselt seotud Geminile, mida <ph name="DOMAIN" /> ei halda. Vahetamiseks tuleb Chrome uuesti käivitada.</translation>
 <translation id="6434035853014503219">Täname, et valisite Chrome'i oma vaikebrauseriks!</translation>
 <translation id="6438015621983209660">Laiendage telefonis Chrome'iga täiustatud ohutut sirvimist</translation>
 <translation id="6442774133615368941">Ostke, tõlkige ja tuvastage, mida näete, kasutades Chrome'i iOS-i rakenduses oma kaamerat.</translation>
@@ -576,6 +583,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6712881677154121168">Allalaadimisviga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Muutke Chrome kiiremaks</translation>
 <translation id="6734827584173583205">Te pole hiljuti külastanud. Chrome eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="COUNT" />.</translation>
+<translation id="6737759643107005803">Lülituge tagasi Geminile, mida <ph name="DOMAIN" /> ei halda</translation>
 <translation id="674891594898436429">Loobu aktiivsest otsingust sellel vahelehel</translation>
 <translation id="6750954913813541382">Õigekirjavigade parandamiseks saadab Chrome brauseris sisestatava teksti Google'ile</translation>
 <translation id="6760235774835597023">Kiirendab Chrome'i V8 mootoriga saite, kuid muudab Chrome'i rünnetele veidi vähem vastupidavaks. See seade on sisse lülitatud.</translation>
@@ -654,6 +662,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
 <translation id="7496017508659652909">Chrome eellaadib lehed, muutes sirvimise ja otsimise kiiremaks. <ph name="BEGIN_LINK" />Lisateave lehtede eellaadimise kohta<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Jagate seda vahelehte Google’i otsinguga.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -741,6 +750,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8286862437124483331">Google Chrome proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8291415872436043161">Laadige Chrome alla</translation>
 <translation id="829923460755755423">Lisage otsetee Google'i paroolihaldurisse</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Jaga vahelehte Google’i otsinguga}other{Jaga # vahelehte Google’i otsinguga}}</translation>
 <translation id="8313851650939857356">Käivitamisel ilmnes viga: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Õnnestus! Nüüd saate Google'i otsingu paneeli kaudu sirvimise ajal hõlpsasti küsimusi esitada</translation>
 <translation id="8336463659890584292">Kui sait palub lehel olevad lingid privaatselt eellaadida, kasutab Chrome Google'i servereid. See peidab teie identiteedi eellaaditud saidi eest, kuid Google saab teada, milliseid saite eellaaditakse.</translation>
@@ -795,6 +805,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma lugemisloendile ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Logi Chrome'ist välja</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Jaga vahelehte Google’i otsinguga}other{Jaga # vahelehte Google’i otsinguga}}</translation>
 <translation id="873133009373065397">Google Chrome ei saa määrata ega seadistada vaikebrauserit</translation>
 <translation id="8747073452963259673">otsinguala vasak alanurk: <ph name="LEFT" />% vasakul, <ph name="BOTTOM" />% all</translation>
 <translation id="8748735421235723888">Chrome vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chrome'i kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lisateave mälusäästja kohta<ph name="END_LINK" /></translation>
@@ -846,6 +857,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google'i liikmesus.</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
 <translation id="93760716455950538">Taaskäivitage Chrome OS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Lõpeta vahelehe jagamine Google’i otsinguga}other{Lõpeta # vahelehe jagamine Google’i otsinguga}}</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="983803489796659991">Installimine ebaõnnestus, kuna värskendusserveril pole rakenduse kohta räsiandmeid.</translation>
 <translation id="989816563149873169">Chrome'i profiilide vahel vahetamiseks vajutage klahve <ph name="SHORTCUT" /></translation>

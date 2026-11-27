@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1006344083777662909">Está a partilhar este separador com a Pesquisa</translation>
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="1029669172902658969">Reiniciar para atualizar o &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">O Chromium recomenda que reveja esta extensão</translation>
@@ -85,6 +86,7 @@
 <translation id="1880495786739455486">Pode reabrir a Pesquisa no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
 <translation id="188102464690227119">O botão "Pesquisa no painel lateral" na barra de ferramentas tem um novo ícone. Clique no ícone para fazer perguntas enquanto navega com a Pesquisa no painel lateral.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> – Está a partilhar este separador com a Pesquisa</translation>
 <translation id="1896836275755235458">O Chromium poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Serviço do atualizador do Chromium</translation>
 <translation id="1929939181775079593">O Chromium não responde. Reiniciar agora?</translation>
@@ -104,6 +106,7 @@
 <translation id="2086476982681781442">O Chromium bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="208726765006323911">É apresentada uma indicação para experimentar o <ph name="FEATURE_NAME" /> da próxima vez que abrir o Chromium no iOS.</translation>
 <translation id="2099452623287920103">As suas palavras-passe e outros dados do Chromium que guardou na sua Conta Google vão ser removidos deste dispositivo. Para os usar novamente no Chromium, volte a iniciar sessão.</translation>
+<translation id="2104346008417283366">Pode mudar para o Gemini originalmente associado à sua Conta Google e não gerido por <ph name="DOMAIN" />. A mudança requer o reinício do Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}}</translation>
 <translation id="2126108037660393668">O ficheiro transferido falhou na validação.</translation>
 <translation id="2135919691573380097">Denuncie este site</translation>
@@ -272,6 +275,7 @@
 <translation id="3941890832296813527">Erro de instalação: o nome de ficheiro do instalador é inválido ou não é suportado.</translation>
 <translation id="3945058413678539331">O Chromium está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="3950481960271781644">Para aceder às suas informações guardadas e muito mais em todos os seus dispositivos, inicie sessão no Chromium</translation>
+<translation id="3956384805063254165">Este navegador gerido pode usar o Gemini configurado para o trabalho por <ph name="DOMAIN" />. Este pode encontrar informações e dar respostas ancoradas nos ficheiros e serviços da organização. A mudança requer o reinício do Chromium.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Experimente uma página diferente.</translation>
 <translation id="3962647064319009959">Saiba como o Chromium mantém a sua segurança</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
@@ -364,6 +368,7 @@
 <translation id="494490797786467921">Clicar para fechar a caixa de diálogo de início de sessão do Chromium</translation>
 <translation id="4950660488495335294">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="4992938037305302429">A sua conta no Chromium</translation>
+<translation id="5088350632679445418">Iniciar nova discussão com a Pesquisa</translation>
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>
 <translation id="5141988424377517949">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
@@ -402,6 +407,7 @@
 <translation id="5473971139929175403">O Chromium pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
 <translation id="5475924890392386523">O Chromium bloqueou esta transferência porque o ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Cancelar a partilha do separador com a Pesquisa}other{Cancelar a partilha de # separadores com a Pesquisa}}</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5557035028197464376">A Pesquisa no Chrome foi afixada à barra de ferramentas!</translation>
@@ -412,8 +418,10 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas informações guardadas e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por predefinição e afixe-o</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Partilhar separador com a Pesquisa}other{Partilhar # separadores com a Pesquisa}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. A janela isolada não vai ser reaberta.}other{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5608863008645990586">Mude para o Gemini Enterprise gerido por <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823">Está disponível uma <ph name="IMPORTANT_UPDATE" />. Pode reiniciar agora ou definir o Chromium para ser atualizado na próxima vez que o ecrã permanecer ligado e não for usado durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
@@ -507,6 +515,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6455857529632101747">Damos-lhe as boas-vindas aos perfis do Chromium</translation>
 <translation id="6460614424172581323">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para usar grupos de separadores.</translation>
 <translation id="6466344609055215035">Remover conta do Chromium</translation>
+<translation id="6475125381371849386">Iniciar nova discussão com a Pesquisa</translation>
 <translation id="6475912303565314141">Também controla a página apresentada quando inicia o Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar o Chromium</translation>
 <translation id="651535675648445253">Os atalhos são abertos no Chromium</translation>
@@ -521,6 +530,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6598877126913850652">Aceder às definições de notificação do Chromium</translation>
 <translation id="6600016381025017075">Pesquise qualquer conteúdo nesta página</translation>
 <translation id="6613594504749178791">As alterações serão aplicadas da próxima vez que reiniciar o Chromium.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Partilhar separador com a Pesquisa}other{Partilhar # separadores com a Pesquisa}}</translation>
 <translation id="6637855549677695722">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para aceder às melhores funcionalidades de segurança do Chromium.</translation>
 <translation id="6637908313088374648">O Chromium agora é iniciado quando o Windows arranca para poder começar a navegar instantaneamente. Pode desativar esta opção nas definições.</translation>
 <translation id="6644846457769259194">A atualizar o dispositivo (<ph name="PROGRESS_PERCENT" />)…</translation>
@@ -535,6 +545,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 Algumas funcionalidades podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Chromium.</translation>
 <translation id="6729124504294600478">Para usar a personalização e outras funcionalidades, inclua o Chromium na Atividade da Web e de apps e nos serviços Google associados</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
+<translation id="6737759643107005803">Volte ao Gemini não gerido por <ph name="DOMAIN" /></translation>
 <translation id="6742093177587589736">Para aceder aos seus marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Este marcador é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="674891594898436429">Ignorar pesquisa ativa neste separador</translation>
 <translation id="6751374565094704799">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques. Esta definição está ativada.</translation>
@@ -730,6 +741,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8556055872671007529">Algumas funcionalidades e extensões do Chromium incluem atalhos. Pode optar por voltar a ativá-las.</translation>
 <translation id="8556420416730706394">Pode fixar a pesquisa de imagens para acesso fácil. Clique no botão Fixar na parte superior do painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Cancelar a partilha do separador com a Pesquisa}other{Cancelar a partilha de # separadores com a Pesquisa}}</translation>
 <translation id="8576826849825683917">Várias organizações gerem o Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>

@@ -1381,6 +1381,15 @@ Dit heeft invloed op de instellingen van <ph name="MAX_CONNECTIONS_PER_PROXY_POL
 In plaats van dat zij de bovengrens bepalen, is de bovengrens 2 keer hun waarden (maar de verwachte waarde in de praktijk is eerder 1,2 keer hun waarden).
 
 Dit staat standaard aan voor alle groepen, maar met dit beleid kun je de functie specifiek uitzetten voor proxygroepen.</translation>
+<translation id="1862891578460546154">Met dit beleid wordt het beheerde clientcertificaat ingesteld dat wordt ingericht als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> wordt toegepast.
+
+Het veld <ph name="COMMON_NAME_SOURCE_FIELD" /> geeft de bron aan van de Subject Common Name (CN) van het certificaat:
+
+- Als dit niet is ingesteld of is ingesteld op <ph name="PROFILE_ID_VALUE" />, wordt de Subject Common Name van het certificaat ingesteld op de browserprofiel-ID.
+
+- Als je dit instelt op <ph name="COMPUTER_NAME_VALUE" />, wordt de algemene naam van het onderwerp van het certificaat ingesteld op de hostnaam van het apparaat als de gebruiker toestemming heeft gegeven om apparaatsignalen te delen of is gekoppeld aan de beheerde browser. Anders wordt de browserprofiel-ID (<ph name="PROFILE_ID_VALUE" />) gebruikt. Opmerking: Als je deze property instelt op <ph name="COMPUTER_NAME_VALUE" />, wordt een property op apparaatniveau gebruikt in een certificaat met profielbereik. Dit heeft privacygevolgen voor onbeheerde of gedeelde apparaten, omdat de hostnaam van het apparaat wordt opgenomen in het certificaat.
+
+Dit beleid heeft geen effect als <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> uitstaat of niet is ingesteld.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
 <translation id="1865867000796030567">Als je het beleid toepast, wordt de waarde van de manifestsleutel <ph name="REQUIRED_PLATFORM_VERSION" /> voor de automatisch gelanceerde kiosk-app zonder vertraging gebruikt als voorvoegsel voor de doelversie van de automatische update.
 
@@ -10322,9 +10331,6 @@ De werkelijke waarden van gevoelige gegevens (zoals cookies of invoerwaarden) wo
 <translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
 <translation id="7406276857470642718">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
-<translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling aangezet, maar kan de gebruiker dit wijzigen.</translation>
 <translation id="7408815947231046196">Back-up van <ph name="PRODUCT_NAME" />-gegevens toestaan</translation>
 <translation id="740885188496462583">Batterijbesparingsmodus aanzetten</translation>
 <translation id="7410074797376205571">Toestaan dat <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-verzoeken uitvoert die afkomstig zijn van een externe host.</translation>
@@ -10573,6 +10579,13 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
+<translation id="7584167491998111123">Hiermee bepaal je of de pdf-viewer in <ph name="PRODUCT_NAME" /> een out-of-process iframe (OOPIF) gebruikt. In de toekomst wordt dit de nieuwe pdf-viewerarchitectuur, omdat dit eenvoudiger is en het makkelijker maakt om nieuwe functies toe te voegen. De bestaande GuestView-pdf-viewer is een verouderde, complexe architectuur die wordt beëindigd.
+
+Als je dit beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de OOPIF-pdf-viewerarchitectuur gebruiken. Wanneer je dit beleid toepast of niet instelt, wordt het standaardgedrag bepaald door <ph name="PRODUCT_NAME" />.
+
+Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> uitsluitend de bestaande GuestView-pdf-viewer. Hiermee wordt een webpagina met een afzonderlijke framestructuur ingesloten in een andere webpagina.
+
+Dit beleid is beëindigd in M152 en verwijderd in M160. De GuestView-pdf-viewer is verwijderd en de out-of-process iframe (OOPIF)-pdf-viewerarchitectuur wordt altijd gebruikt.</translation>
 <translation id="7584363090329234690">VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="7585312329612243723">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's in beheerde browsers</translation>
 <translation id="7586199729147257934">Hiermee wordt de registratie van clientcertificaten voor beheerde browsers aangezet</translation>
@@ -12453,8 +12466,6 @@ Dit beleid geldt alleen voor aangesloten gebruikers.</translation>
 <translation id="8812091410765157924">Alleen toestaan dat pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die de pop-up heeft geopend als de openende pagina expliciet toestemming geeft voor dergelijke interactie</translation>
 <translation id="8812631362927615118">First-party verificatie aanzetten bij het rapporteren van gebruikersbeveiligingssignalen</translation>
 <translation id="8816370949847593408">Afhankelijk van de status van de uitrol van de beëindiging kun je mogelijk geen Chrome-apps uitvoeren.</translation>
-<translation id="8818768076343557335">Netwerkacties voorspellen op elk netwerk dat niet mobiel is.
-          (Beëindigd in 50, verwijderd in 52. Als na 52 waarde 1 is ingesteld, wordt deze waarde verwerkt als 0 - netwerkacties voorspellen voor elke netwerkverbinding.)</translation>
 <translation id="8820434908768990758">Site-isolatie aanzetten voor alle websites, maar de gebruiker toestaan zich hiervoor af te melden</translation>
 <translation id="8821678641132607468">Als je het beleid toepast, wordt de browsegeschiedenis van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, wordt de browsegeschiedenis niet geïmporteerd bij de eerste uitvoering.
 

@@ -516,6 +516,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1570990174567554976">Lesezeichenordner „<ph name="BOOKMARK_TITLE" />“ erstellt.</translation>
 <translation id="1571041387761170095">Keine schwachen oder wiederverwendeten Passwörter</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
+<translation id="1571371559291327711">&amp;Suchen, bearbeiten und weitere Tools</translation>
 <translation id="1571738973904005196">Tab <ph name="TAB_ORIGIN" /> ansehen</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gast)</translation>
 <translation id="1573127087832371028">Bitte schildere das Problem</translation>
@@ -952,6 +953,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2050339315714019657">Porträt</translation>
 <translation id="2051669996101374349">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen. Du kannst diese Einstellung nicht ändern, da das erweiterte Sicherheitsprogramm aktiviert ist.</translation>
+<translation id="2052353138844549871">Die Verwendung von Gemini Enterprise mit einem nicht verwalteten Profil wird möglicherweise nicht empfohlen</translation>
 <translation id="2052723746739622752">Gemini loslösen</translation>
 <translation id="2061366302742593739">Nichts zum Anzeigen verfügbar</translation>
 <translation id="2061589908388230480">Wenn Chromium eines deiner Passwörter bei einer öffentlichen Datenpanne findet, kann der Google Passwortmanager dir bei der Anmeldung anbieten, dein Passwort zu ändern. <ph name="BEGIN_LINK" />Weitere Informationen zur automatisierten Passwortänderung<ph name="END_LINK" /></translation>
@@ -1215,6 +1217,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Berechtigung angefordert. Drücke „Ctrl + Weiter“, um zu reagieren.</translation>
 <translation id="2349610121459545414">Weiterhin zulassen, dass diese Website auf deinen Standort zugreifen kann</translation>
 <translation id="2350133097354918058">Neu geladen</translation>
+<translation id="2351165193188463938">Du surfst jetzt mit Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
 <translation id="2353682139907904963">Neue Erweiterungen an die Symbolleiste anpinnen</translation>
@@ -1262,6 +1265,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2409709393952490731">Smartphone oder Tablet verwenden</translation>
 <translation id="2410940059315936967">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Werbung und Text. Cookies, die von diesen anderen Websites gesetzt werden, werden als Drittanbieter-Cookies bezeichnet.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Fokus auf 1 Tab}other{Fokus auf # Tabs}}</translation>
 <translation id="2413009156320833859">Mit Erweiterungen aus dem <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /> kannst du deinen Browser noch weiter personalisieren.</translation>
 <translation id="2414159296888870200">Suche nach <ph name="MODULE_TITLE" /> fortsetzen</translation>
 <translation id="2414886740292270097">Dunkel</translation>
@@ -1667,6 +1671,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2849926636739429924">Weitere Optionen für „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="285033512555869047">Geschlossen</translation>
 <translation id="2851291081585704741">Du bist offline</translation>
+<translation id="2851527955600412545">Deine Organisation hat die Richtlinien für Gemini Enterprise in Chrome aktualisiert. Dein Chatverlauf wird möglicherweise nicht übernommen.</translation>
 <translation id="285237063405807022">(wird geladen)</translation>
 <translation id="2853121255651601031">Passwort gespeichert</translation>
 <translation id="2855243985454069333">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
@@ -2607,6 +2612,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern lesen</translation>
 <translation id="3810770279996899697">Der Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
 <translation id="3810973564298564668">Verwalten</translation>
+<translation id="3811424142236602772">Du kannst mit Gemini surfen. Gemini wurde von <ph name="DOMAIN" /> für die Arbeit eingerichtet. Du hast die Möglichkeit, beim Surfen Fragen zu stellen, indem du Tabs als Kontext teilst, und erhältst Antworten, die auf den Dateien und Diensten deiner Organisation basieren.</translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
 <translation id="3813296892522778813">Wenn du keine Ergebnisse erhältst, <ph name="BEGIN_LINK_CHROMIUM" />rufe die Google Chrome-Hilfe auf<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3815509884387832993">Diese Seite lässt sich über die KI-Wiedergabe wie ein Podcast anhören. Verwende dazu den Button „KI-Wiedergabe aktivieren“ in der Symbolleiste des Lesemodus.</translation>
@@ -3200,6 +3206,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4500055235123625757">Gemini kann Fragen zu Videos oder Audioinhalten beantworten, die du auf <ph name="LINK_BEGIN" />bestimmten Websites<ph name="LINK_END" /> abgespielt hast.</translation>
 <translation id="4500647907053779331">Auswahl auf <ph name="LANGUAGE" /> überse&amp;tzen</translation>
 <translation id="4502477450742595012">Klicke mit der rechten Maustaste auf einen Tab und wähle „Tab neuer Gruppe hinzufügen“ aus</translation>
+<translation id="450300557121092531">Tabs nach Gerät</translation>
 <translation id="4503362512377701151">Du siehst deine zuletzt verwendeten Tabgruppen, damit du leichter dort weitermachen kannst, wo du aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3252,6 +3259,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4562155266774382038">Vorschlag ablehnen</translation>
 <translation id="4563883094055457792">Geteilte Ansicht w&amp;iederherstellen</translation>
 <translation id="456449593072900590">Beim Beenden löschen</translation>
+<translation id="4564636746145660922">Prüfe deine Verbindung und versuch es noch einmal.</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4565465014351935093">Nur auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
@@ -3422,6 +3430,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
 <translation id="4751925628341802838">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4754590344707355551">Browser mit Erweiterungen optimieren</translation>
+<translation id="4754903312643763797">Es gelten möglicherweise andere Datenschutzbestimmungen</translation>
 <translation id="4756130875344525429">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
@@ -4097,6 +4106,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5509914365760201064">Aussteller: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Bildbeschreibungen von Google verwenden</translation>
 <translation id="5512739112435045339">Gib Speicherplatz auf dem Gerät frei. Versuch dann, die Datei noch einmal herunterzuladen.</translation>
+<translation id="5513121759801003159">Dein Chatverlauf wird nicht übertragen</translation>
 <translation id="5514315914873062345">Tabulatortaste</translation>
 <translation id="5515048886012998157">Weitere Optionen für <ph name="EXTENSION_NAME" /> ansehen</translation>
 <translation id="5521078259930077036">Ist das deine erwartete Startseite?</translation>
@@ -4894,6 +4904,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6451861213630784801">Du bist abgemeldet</translation>
 <translation id="6453191633103419909">Projektionsqualität auf Tab oder Bildschirm</translation>
 <translation id="6453306703004115497">In <ph name="LANGUAGE" /> übersetzt</translation>
+<translation id="6454212815056355439">In On-Device-KI suchen</translation>
 <translation id="645433497989692531">Dadurch werden die Browserdaten dauerhaft von diesem Gerät gelöscht. Wenn du die Daten wiederherstellen möchtest, melde dich an als</translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
 <translation id="6455521402703088376">Deaktiviert • Die Veröffentlichung dieser Erweiterung wurde vom Entwickler aufgehoben</translation>
@@ -5062,6 +5073,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="663569763553406962">Erweiterungen, die eine Website lesen oder ändern können</translation>
 <translation id="6636258750460740634">Verlauf</translation>
 <translation id="6636623428211296678">Weitere Einstellungen ansehen oder jetzt beenden</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Die Funktion „Skills“ ist derzeit deaktiviert. Aktualisiere deine Chrome-Einstellungen, um loszulegen.</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
 <translation id="6640268266988685324">Geöffneter Tab</translation>
@@ -5194,6 +5206,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6785779729084003225">Du kannst Gemini in Chrome mit <ph name="FOCUS_TOGGLE_HOTKEY" /> öffnen</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786480815699355166">Übersetzungen sind nur in die unterstützten Sprachen für automatische Untertitel möglich</translation>
+<translation id="6786498102134843646">Antworten basieren nicht auf Dateien oder Diensten, die von <ph name="DOMAIN" /> verwaltet werden</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6786804673213172567">Stufe 3: HOCH</translation>
 <translation id="6787531944787756058">Der Nutzername <ph name="USER_EMAIL" /> wird nur auf diesem Gerät gespeichert. Details ansehen</translation>
@@ -5355,6 +5368,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6941514251635934269">Frage zu diesem Dokument stellen</translation>
 <translation id="694168622559714949">Dein Administrator hat eine Standardsprache festgelegt, die nicht geändert werden kann.</translation>
 <translation id="6941953303876950920">Neustart erforderlich, um Gemini weiterhin beim Surfen zu verwenden</translation>
+<translation id="6943803108751887058">Zum Schließen die Esc-Taste drücken</translation>
 <translation id="6944854424004126054">Fenster wiederherstellen</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="694592694773692225">Weiterleitung auf dieser Seite blockiert.</translation>
@@ -5680,6 +5694,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7293774463163321848">Suchverlauf, Gemini-Verlauf und Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="7296503797589217366">Ordner „<ph name="FOLDER_TITLE" />“ auswählen</translation>
 <translation id="7297228218361240128">Informationen von besuchten Seiten in Google Wallet speichern</translation>
+<translation id="7297535265731442945">Gemini Enterprise wurde aktualisiert</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
 <translation id="7298195798382681320">Empfohlen</translation>
 <translation id="7299515639584427954">Standard-App für unterstützte Links ändern?</translation>
@@ -5701,6 +5716,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="731827437403763009">KI-Innovationen</translation>
 <translation id="7319983568955948908">Freigabe beenden</translation>
 <translation id="7321545336522791733">Server nicht erreichbar</translation>
+<translation id="7321838786611890851">Für deine Interaktionen mit Gemini gelten möglicherweise nicht die von <ph name="DOMAIN" /> eingerichteten Schutzmaßnahmen und es gelten möglicherweise andere Datenschutzbestimmungen</translation>
 <translation id="7322515217754205362">Websiteberechtigungen</translation>
 <translation id="7324020307732396723">Spracheinstellungen öffnen</translation>
 <translation id="7325209047678309347">Papierstau</translation>
@@ -5996,6 +6012,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7653354650639364202">{0,plural, =1{Isoliertes Fenster schließen}other{# isolierte Fenster schließen}}</translation>
 <translation id="7654941827281939388">Dieses Konto wird bereits auf dem Computer verwendet.</translation>
 <translation id="7655411746932645568">Websites dürfen nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchten</translation>
+<translation id="7656674791025857763">Melde dich an, um <ph name="ASSISTANT_NAME" /> zu verwenden</translation>
 <translation id="7657090467145778067">Geringe Einsparungen</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andere Arten von Aktivitäten<ph name="END_LINK_GOOGLE" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
@@ -6206,6 +6223,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7904492297081735975">&amp;Lesezeichenmanager öffnen</translation>
 <translation id="7907312522152480478">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, bestätige deine Identität und synchronisiere deinen Verlauf und deine Tabs. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
 <translation id="7907837847548254634">Fokussiertes Element kurz hervorheben</translation>
+<translation id="7908205867885088429">Weitere Informationen zum Zurücksetzen der Einstellungen auf die Standardwerte</translation>
 <translation id="7908835530772972485">Daten löschen, wenn alle Fenster geschlossen werden</translation>
 <translation id="7909324225945368569">Profil umbenennen</translation>
 <translation id="7909969815743704077">Im Inkognitomodus heruntergeladen</translation>
@@ -6595,6 +6613,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8323317289166663449">Alle deine Daten auf deinem Computer und allen Websites lesen und ändern</translation>
 <translation id="8323518750352551353">Getrenntes Surfen?</translation>
 <translation id="8323744572398547859">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
+<translation id="8324035203198677529">Deine Organisation hat Gemini Enterprise in Chrome deaktiviert. Du kannst Gemini in Chrome weiterhin verwenden, aber Gemini kann Informationen, die von deiner Organisation verwaltet werden, nicht mehr finden oder darauf verweisen. Dein Chatverlauf wird möglicherweise nicht übernommen.</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
 <translation id="8327386430364625757">Mathematische Schriftart</translation>
@@ -6800,6 +6819,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8551388862522347954">Lizenzen</translation>
 <translation id="8552102814346875916">In der Liste „Diese Websites immer aktiv lassen“ speichern</translation>
 <translation id="8552947739661397736">Aufgabe übernehmen, Gemini hat derzeit die Kontrolle</translation>
+<translation id="8555042096950728024">Mit den Pfeiltasten oder durch Ziehen neu anordnen</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – erweiterte Inhalte werden angezeigt</translation>
 <translation id="8557022314818157177">Berühre mehrmals den Fingerabdrucksensor auf deinem Sicherheitsschlüssel, bis der Fingerabdruck gespeichert ist</translation>
 <translation id="8557100046150195444">Zum Fortfahren Touch ID verwenden</translation>
@@ -6892,6 +6912,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8651806635673244884">Du kannst deine Tabs wieder nach oben verschieben, indem du mit der rechten Maustaste auf einen beliebigen Tab klickst und „Tabs horizontal anzeigen“ auswählst</translation>
 <translation id="8652400352452647993">Erweiterung packen: Fehler</translation>
 <translation id="8654151524613148204">Dein Computer kann diese Datei leider nicht verarbeiten, da sie zu groß ist.</translation>
+<translation id="8654872240409864765">Deine Organisation hat Gemini Enterprise in Chrome eingerichtet. Du kannst Gemini beim Surfen Fragen stellen und Antworten erhalten, die auf Dateien und Diensten in deiner Organisation basieren.</translation>
 <translation id="8657393004602556571">Möchtest du das Feedback verwerfen?</translation>
 <translation id="865857184419171576">Untertitel übersetzen:</translation>
 <translation id="865936634714975126">Füge der URL einen Suchparameter hinzu, um beim Seitenaufbau Typen auszuwählen. Beispiel: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7055,6 +7076,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8813937837706331325">Mittlere Einsparungen</translation>
 <translation id="8815742860876889867">Link in i&amp;soliertem Fenster öffnen</translation>
 <translation id="881799181680267069">Andere ausblenden</translation>
+<translation id="8820301999480837183">Fokus auf Gruppe „<ph name="GROUP_NAME" />“</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8821206216942230957">Mit deinem Konto hast du keinen Zugriff auf Gemini in Chrome</translation>
 <translation id="8823514049557262177">Linkte&amp;xt kopieren</translation>
@@ -7094,6 +7116,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wird mit <ph name="APP_NAME" /> geteilt</translation>
 <translation id="8864104359314908853">Dein Passwort wurde gespeichert</translation>
+<translation id="8865924457197342642">Gemini Enterprise ist nicht mehr verfügbar</translation>
 <translation id="8866424952450451412">Verwalte deine benutzerdefinierten Workflows powered by</translation>
 <translation id="8867102760244540173">Auf Tabs suchen…</translation>
 <translation id="8867568208303837180">Wird gesendet...</translation>
@@ -7305,6 +7328,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9096776523567481218">nicht lokal installiert</translation>
 <translation id="9099383880226822604">Regenwald</translation>
 <translation id="9100765901046053179">Erweiterte Einstellungen</translation>
+<translation id="9100928301185810363">Fokus auf unbenannter Gruppe – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Gewähre Chrome zum Streamen Zugriff über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
 <translation id="9107096627210171112">Übe&amp;rsetzen…</translation>

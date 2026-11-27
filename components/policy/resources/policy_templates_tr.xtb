@@ -10567,9 +10567,6 @@ Hassas verilerin (ör. çerezler veya giriş değerleri) gerçek değerleri TOPL
 <translation id="7402257017733669351">Tarayıcı işleminin dinamik kod oluşturmasını engelle</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> devre dışı bırakıldığında Android Yedekleme ve Geri Yükleme özelliği düzgün çalışmaz.</translation>
 <translation id="7406276857470642718">Harici IdP ile SAML kullanılarak doğrulanmış kullanıcıların ayarlarını kontrol eder</translation>
-<translation id="7407441173422042771">Bu politika, <ph name="PRODUCT_NAME" /> içinde ağ tahminini kontrol eder. DNS'nin önceden getirilmesini, TCP ve SSL ön bağlantısını ve web sayfalarının önceden oluşturulmasını kontrol eder.
-
-      Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Bu politika ayarlanmadan bırakılırsa ağ tahmini etkinleştirilir, ancak kullanıcı bunu değiştirebilir.</translation>
 <translation id="7408815947231046196"><ph name="PRODUCT_NAME" /> verilerinin yedeklenmesine izin ver</translation>
 <translation id="740885188496462583">Pil Tasarrufu Modu'nu etkinleştir</translation>
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ürününün uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
@@ -12754,8 +12751,6 @@ Bu politika yalnızca ilişkili kullanıcılar için geçerli olur.</translation
 <translation id="8812091410765157924">Yalnızca <ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan pop-up'lara, pop-up'ı açan sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça etkinleştirirse verilir.</translation>
 <translation id="8812631362927615118">Kullanıcı güvenlik sinyallerini raporlarken birinci taraf kimlik doğrulamasını etkinleştir</translation>
 <translation id="8816370949847593408">Kullanımdan kaldırma durumuna bağlı olarak Chrome Uygulamalarının çalışmasına izin verilmeyebilir.</translation>
-<translation id="8818768076343557335">Hücresel olmayan ağlarda ağ işlemlerini tahmin et.
-          (50'de kullanımdan kaldırılmıştır, 52'de kaldırılmıştır. 52'den sonra, 1 değeri ayarlanırsa 0 olarak (ağ bağlantılarında ağ işlemlerini tahmin et değeri gibi) işlem görür.)</translation>
 <translation id="8820434908768990758">Site izolasyonunu tüm web siteleri için etkinleştir, ancak kullanıcının bu özelliği devre dışı bırakmasına izin ver</translation>
 <translation id="8821678641132607468">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan tarama geçmişi ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi ilk çalıştırmada içe aktarılmaz.
 

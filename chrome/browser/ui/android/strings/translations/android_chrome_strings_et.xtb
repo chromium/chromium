@@ -210,6 +210,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1820408774134375111">Sisselogimise alumine leht</translation>
 <translation id="1824902652744048041">Puudutage valikut Sirvimisandmete kustutamine.</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
+<translation id="1831587114257679402">Loodud turvaliseks, et saaksite sirvida enesekindlalt</translation>
 <translation id="1832459821645506983">Jah, sobib</translation>
 <translation id="1845958458910716240">Andmete kaitsmiseks laske Chrome'il eemaldada load saitidelt, mida te pole hiljuti külastanud</translation>
 <translation id="1851551847729706116">Vahelehte <ph name="TAB_NAME" /> jagatakse selle vahelehega</translation>
@@ -2086,6 +2087,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>
 <translation id="886968456388055613">Filtreeri sirvija järgi</translation>
 <translation id="8872506776304248286">Ava rakenduses</translation>
+<translation id="8876112961028111440">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele, paroolidele, automaatselt täidetavale teabele ja muule.</translation>
 <translation id="8880275451109933094">Kahe lehe vaade</translation>
 <translation id="8890668505403261809">Otsige oma inkognito vahelehtedelt</translation>
 <translation id="8892234476517513962">Olete juba sisse logitud</translation>

@@ -2582,6 +2582,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3771721161825963003">Tabbladen verticaal tonen</translation>
 <translation id="3771851622616482156">Je wordt uitgelogd van deze site, waaronder in geopende tabbladen</translation>
 <translation id="3772951945682043324">Geen recent gesloten tabbladen</translation>
+<translation id="3775389358290351377">Van provider wisselen (Tab)</translation>
 <translation id="3775432569830822555">SSL-servercertificaat</translation>
 <translation id="3776508619697147021">Sites kunnen vragen of ze automatisch meerdere bestanden mogen downloaden</translation>
 <translation id="3776796446459804932">Deze extensie schendt het beleid voor de Chrome Web Store.</translation>
@@ -3046,6 +3047,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="429530814437327574">Gestapeld tonen</translation>
 <translation id="4296632172536745000">Je oorspronkelijke wachtwoord voor deze site is gevonden bij een openbaar gegevenslek. Op <ph name="DATE" /> heb je <ph name="BRAND" /> gevraagd om je wachtwoord automatisch voor je te wijzigen.</translation>
 <translation id="42981349822642051">Uitvouwen</translation>
+<translation id="4298381759837744019">Zoeken naar <ph name="QUERY" /> in instellingen</translation>
 <translation id="4298660926525614540">Namen verwijderbare opslagapparaten</translation>
 <translation id="4299022904780065004">Nieuw &amp;incognitovenster</translation>
 <translation id="4301231341924904092">Wijzigen voor mij</translation>
@@ -4280,6 +4282,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5689516760719285838">Locatie</translation>
 <translation id="568984110402742489">Kan geen feedback sturen</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
+<translation id="5693100627879528952">Meer informatie over instellingen voor zoekmachines en Site Search</translation>
 <translation id="5693255400847650006">Microfoon in gebruik</translation>
 <translation id="5693806089748511108">Je vaardigheden</translation>
 <translation id="5694689722959820210">Tabbladgroep maken</translation>

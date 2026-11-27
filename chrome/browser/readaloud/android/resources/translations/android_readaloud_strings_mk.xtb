@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012">Премотај напред <ph name="NUMBER_OF_SECONDS" /> секунди</translation>
 <translation id="1984328900355667246">Репродукцијата е недостапна</translation>
+<translation id="2009730553732772041">Содржините и URL-адресата на страницата на којашто се наоѓате ќе се споделат со Google за да се генерира аудио. Овој избор може да го ажурирате во поставките во секое време.</translation>
 <translation id="2019727681730021602">Стандардно пуштање</translation>
 <translation id="2224347680315897176">Стабилен</translation>
 <translation id="2575502321843437554">Недоволно интересно</translation>
 <translation id="2611765907167846862">Смирен</translation>
 <translation id="3023502830214299618">За жал, репродукцијата е недостапна за страницава во моментов. Обидете се повторно подоцна.</translation>
+<translation id="3431227249425330101">За да продолжите, да му се дозволи на Chrome да ги користи содржините на страницата за „Слушајте ја страницава“?</translation>
 <translation id="3493899379487634969">Што тргна наопаку?</translation>
 <translation id="3730775656877876887">Се генерира AI-пуштање</translation>
 <translation id="3778044272390020426">Мени со опции за негативни повратни информации</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Плеер на „Слушајте ја страницава“</translation>
 <translation id="7051308646573997571">Корална</translation>
 <translation id="7138678301420049075">Друго</translation>
+<translation id="7161867604252594316">„Слушајте ја страницава“ е исклучена</translation>
 <translation id="7221920857098237570">Нежен</translation>
 <translation id="7237590978482584900">Весел</translation>
 <translation id="7282547042039404307">Мазен</translation>

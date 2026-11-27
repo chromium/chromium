@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Picha Uliyonakili</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Ili ufunge skrini nzima, buruta kutoka juu na uguse kitufe cha kurudi nyuma</translation>
 <translation id="1132789342529761192">Upakiaji haupendekezwi</translation>
+<translation id="1136582904187541177">Umechagua <ph name="ITEM_LABEL" />, kipengee cha menyu. Chagua ili uzime kipengele cha kuruhusu ufikiaji</translation>
 <translation id="11370190534773372">Maelezo ya kadi yamewekwa</translation>
 <translation id="1138458427267715730">Pata arifa bei inapopungua kwenye tovuti yoyote katika wavuti</translation>
 <translation id="1142713751288681188">Aina ya karatasi</translation>
@@ -928,6 +929,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2526062290525841862">Washa tena Hali ya Wasanidi Programu katika Programu ya Wavuti Iliyotengwa ili utumie programu hii</translation>
 <translation id="2526280916094749336">Unaweza kutumia anwani zilizohifadhiwa kwenye bidhaa zote za Google. Anwani hii itahifadhiwa kwenye Akaunti yako ya Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC yako ipo kwenye sehemu ya mbele ya kadi yako. Ni msimbo wa tarakimu 4 uliopo sehemu ya juu kulia juu ya namba ya kadi yako.</translation>
+<translation id="2527614414460013324">Umechagua <ph name="ITEM_LABEL" /></translation>
 <translation id="2529899080962247600">Hupaswi kuweka zaidi ya vipengee <ph name="MAX_ITEMS_LIMIT" /> katika sehemu hii. Vipengee vyote vya ziada vitapuuzwa.</translation>
 <translation id="2530042584066815841">Kufunga na kutumia kipanya</translation>
 <translation id="2535585790302968248">Fungua kichupo fiche kipya ili uvinjari kwa faragha</translation>
@@ -1012,6 +1014,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2666092431469916601">Juu</translation>
 <translation id="2666117266261740852">Funga vichupo au programu nyingine</translation>
 <translation id="266935134738038806">Tembelea tovuti</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, kipengee cha menyu. Chagua ili uwashe kipengele cha kuruhusu ufikiaji</translation>
 <translation id="2672201172023654893">Kivinjari chako hakidhibitiwi.</translation>
 <translation id="2674170444375937751">Je, una hakika kuwa ungependa kufuta kurasa hizi kutoka historia yako?</translation>
 <translation id="2675716371350192683">Maudhui yako hayatatumiwa kuboresha AI. Shirika lako linaweza kubadilisha mipangilio hii wakati wowote.</translation>
@@ -1992,6 +1995,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4297502707443874121">Kijipicha cha ukurasa wa <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Imesasisha <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">Lipa papo hapo bila kupakia QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Vidakuzi kwenye tovuti hii vimesawazishwa kwenye vifaa vyako vinavyotumia mfumo wa uendeshaji wa ChromeOS. Ili udhibiti unachosawazisha, nenda kwenye <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760">Chanzo cha <ph name="APP_NAME" /> <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Jina la njia ya mkato linazidi urefu wa juu unaoruhusiwa wa herufi <ph name="MAX_LENGTH" />.</translation>
@@ -2201,6 +2205,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4682496302933121474">Ungependa kutafsiri ukurasa huu?</translation>
 <translation id="468314109939257734">Angalia namba yako ya kadi pepe</translation>
 <translation id="4686942373615810936">Kimeundwa sasa hivi</translation>
+<translation id="468826602575103388">Chagua ili uzime kipengele cha kuruhusu ufikiaji</translation>
 <translation id="4690205240253392065">Chagua mtoa huduma za malipo ya baadaye</translation>
 <translation id="469028408546145398">Kitufe cha 'Funga madirisha Fiche', washa ili ufunge madirisha yote Fiche yaliyofunguliwa kwa sasa</translation>
 <translation id="4692623383562244444">Mitambo ya kutafuta</translation>
@@ -4170,6 +4175,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7942349550061667556">Nyekundu</translation>
 <translation id="7943397946612013052">Upakuaji umezuiwa</translation>
 <translation id="7943893128817522649">Inaweza kuomba ruhusa ya kupakua faili nyingi kiotomatiki</translation>
+<translation id="7947144323420971076">Chagua ili uwashe kipengele cha kuruhusu ufikiaji</translation>
 <translation id="7947285636476623132">Angalia mwaka kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili upate maelezo kuhusu vipengele vya Chrome</translation>
 <translation id="7947964969544524438">Hifadhi Namba ya Msafiri Anayejulikana kwa njia salama</translation>
@@ -4297,6 +4303,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8172809706700703589">Nitayarishie orodha ya vitu ninavyopaswa kubeba kwa safari</translation>
 <translation id="8174047975335711832">Maelezo ya kifaa</translation>
 <translation id="8175053171643471349">Dhibiti kadi za kutuza uaminifu</translation>
+<translation id="817536628389054635">Imejaza maelezo ya mawasiliano: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome ina huduma ya kuhifadhi kadi zako kwenye Akaunti yako ya Google kwa sababu umeingia katika akaunti. Unaweza kubadilisha hali hii katika mipangilio.</translation>
 <translation id="8176440868214972690">Msimamizi wa kifaa hiki ametuma maelezo fulani kwenye tovuti zifuatazo, kama vile mipangilio au sera.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> ilizuiwa kwa sababu ya maudhui}other{Faili <ph name="FILE_COUNT" /> zilizuiwa kwa sababu ya maudhui}}</translation>

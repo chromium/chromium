@@ -75,6 +75,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1640672724030957280">Inapakua...</translation>
 <translation id="1651617469580841801">Unapotumia Lenzi ya Google, jina la ukurasa, URL na maudhui, ikijumuisha PDF, hutumwa kwenda Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Fungua Kiungo katika Dirisha Fiche la Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Unairuhusu huduma ya Tafuta na Google ifikie kichupo hiki</translation>
 <translation id="1682634494516646069">Google Chrome haiwezi kusoma na kuandika kwenye saraka yake ya data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3380249972812870825">Ili ufungue Gemini kwenye Chrome, bonyeza <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome imeweka AI inayotumika kwenye kifaa chako. Tovuti na Chrome zinaweza kuitumia katika vipengele kama vile:</translation>
 <translation id="3396977131400919238">Hitilafu ya mfumo wa uendeshaji imetokea wakati wa kusanidi. Tafadhali pakua Google Chrome tena.</translation>
+<translation id="3404531968986217414">Anzisha mazungumzo mapya ukitumia huduma ya Tafuta na Google</translation>
 <translation id="3428747202529429621">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti</translation>
 <translation id="3438681572027105609">Ili upate manenosiri yako na zaidi kwenye vifaa vyako vyote, ingia katika akaunti kwenye Chrome</translation>
 <translation id="3450887623636316740">Huenda faili hii ni hatari<ph name="LINE_BREAK" />Chrome inaweza kukagua kwa niaba yako kipakuliwa hiki ikiwa utaweka nenosiri. Maelezo kuhusu faili hutumwa katika Kipengele cha Kuvinjari Salama na Google, lakini maudhui ya faili na nenosiri husalia kwenye kifaa chako.</translation>
@@ -400,6 +402,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="5003967926796347400">Bofya “Kidhibiti cha Manenosiri cha Google”</translation>
 <translation id="5043786843026425788">Pata maelezo zaidi kuhusu kutafuta ukitumia Lenzi ya Google kwenye Chrome</translation>
 <translation id="504867494566807945">Fungua viungo kwenye Chrome ukitumia programu yoyote. Pia, itabandikwa katika upauzana wako ili ufikie kwa urahisi.</translation>
+<translation id="507983337152787026">Anzisha Mazungumzo Mapya ukitumia huduma ya Tafuta na Google</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="5105120510934353742">Utahitaji toleo la macOS 13 au matoleo mapya zaidi ili upate masasisho ya Google Chrome ya siku zijazo. Kompyuta hii inatumia toleo la macOS 12.</translation>
 <translation id="5114340746415930644">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="USER_EMAIL" /></translation>
@@ -426,6 +429,7 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="524751727772074981">Uliza chochote, popote ulipo, ukitumia Gemini kwenye Chrome</translation>
 <translation id="5247617065091903691">Unaweza kubandika kidirisha cha pembeni cha huduma ya Tafuta na Google ili uulize maswali unapovinjari</translation>
 <translation id="5271833978500241046">Tumia ujuzi pamoja na vipengele vingine vya Gemini kwenye Chrome</translation>
+<translation id="528611299569739095">Kivinjari hiki kinachodhibitiwa kinaweza kutumia Gemini iliyowekewa mipangilio ya kazini na <ph name="DOMAIN" />. Kinaweza kupata maelezo na kutoa majibu yanayoyakinishwa na faili na huduma za shirika. Unahitaji kufungua Chrome tena ili ubadili.</translation>
 <translation id="5320351714793324716">Ukiruhusu vidakuzi, Chrome inaweza kuvitumia inapopakia mapema</translation>
 <translation id="5321325624576443340">Lenzi ya Google haipatikani. Jaribu tena baadaye.</translation>
 <translation id="5346389065299425353">Boresha utafutaji wako kwa kuweka vichupo, faili na zana nyingi</translation>
@@ -450,7 +454,9 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5600352656975192682">Bandika Chrome kwenye upauzana wako ili uifikie kwa haraka wakati wowote</translation>
 <translation id="5602351063754773347">Chrome inapendekeza ukiondoe. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu viendelezi vinavyotumika<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Badili utumie Gemini Enterprise inayodhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Fanya Chrome Ikufae</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Acha kuiruhusu huduma ya Tafuta na Google ifikie kichupo}other{Acha kuiruhusu huduma ya Tafuta na Google ifikie vichupo #}}</translation>
 <translation id="5649156266046089790">Ukitumia wasifu kwenye Chrome, unaweza kutenganisha vitu vyako vyote vya Chrome. Unda wasifu wa marafiki na familia au utenganishe kazi na burudani.</translation>
 <translation id="565744775970812598">Huenda <ph name="FILE_NAME" /> ni hatari, kwa hivyo Chromium imeizuia.</translation>
 <translation id="566568153320186256">Chrome huhifadhi chaji ya betri kwa kudhibiti shughuli za chinichini na madoido ya picha kama vile, usogezaji rahisi na kasi za picha za video. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Kiokoa Nishati<ph name="END_LINK" /></translation>
@@ -544,6 +550,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika 1. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}other{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika #. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}}</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
 <translation id="6426623519983252346">Utaona kidokezo cha kujaribu <ph name="FEATURE_NAME" /> utakapofungua Chrome kwenye kifaa cha iOS tena.</translation>
+<translation id="6431496891888891615">Unaweza kubadili utumie Gemini iliyohusishwa awali na Akaunti yako ya Google na isiyodhibitiwa na <ph name="DOMAIN" />. Unahitaji kufungua Chrome tena ili ubadili.</translation>
 <translation id="6434035853014503219">Asante kwa kuchagua Chrome iwe kivinjari chako chaguomsingi!</translation>
 <translation id="6438015621983209660">Panua idhini ya kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa ukitumia Chrome kwenye simu yako</translation>
 <translation id="6442774133615368941">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako katika programu ya Chrome inayotumika kwenye iOS</translation>
@@ -580,6 +587,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6712881677154121168">Hitilafu wakati wa kupakua: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ifanye Chrome iwe na kasi</translation>
 <translation id="6734827584173583205">Hujazitembelea hivi majuzi. Chrome imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="COUNT" /> zaidi.</translation>
+<translation id="6737759643107005803">Rejea kwenye Gemini isiyodhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Ondoa utafutaji unaoendelea kwenye kichupo hiki</translation>
 <translation id="6750954913813541382">Ili kurekebisha makosa ya tahajia, Chrome hutuma kwa Google maandishi unayoandika kwenye kivinjari</translation>
 <translation id="6760235774835597023">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini hufanya Chrome isistahimili sana mashambulio. Mipangilio hii imewashwa.</translation>
@@ -658,6 +666,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7481213027396403996">Pata usalama thabiti zaidi kutoka Chrome</translation>
 <translation id="749228101751499733">Wakati umeingia katika akaunti, unaweza kutumia manenosiri yako na mengineyo kwenye Akaunti yako ya Google katika Chrome. <ph name="SHORTCUT" /> inaweza kubadilisha mipangilio yako ya huduma za Google.</translation>
 <translation id="7496017508659652909">Chrome hupakia mapema kurasa, hali inayofanya shughuli za kuvinjari na utafutaji ziwe za haraka zaidi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu kurasa zinazopakiwa mapema<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Unairuhusu huduma ya Tafuta na Google ifikie kichupo hiki</translation>
 <translation id="7514258452813684157">Huduma ya Kisasishaji cha Google</translation>
 <translation id="7515191208480168435">Unaweza kubandika Lenzi ya Google ili uifikie kwa urahisi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -745,6 +754,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8286862437124483331">Google Chrome inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="8291415872436043161">Pakua Chrome</translation>
 <translation id="829923460755755423">Weka njia ya mkato ya Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Iruhusu huduma ya Tafuta na Google ifikie Kichupo}other{Iruhusu huduma ya Tafuta na Google ifikie Vichupo #}}</translation>
 <translation id="8313851650939857356">Hitilafu ya kuwasha: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Umemaliza! Sasa unaweza kuuliza maswali kwa urahisi unapovinjari ukitumia kidirisha cha huduma ya Tafuta na Google</translation>
 <translation id="8336463659890584292">Chrome hutumia seva za Google, tovuti inapoomba viungo vipakiwe mapema kwenye ukurasa wake kwa njia ya faragha. Hali hii huficha utambulisho wako usionekane na tovuti inayopakiwa mapema lakini Google hufahamu tovuti zinazopakiwa mapema.</translation>
@@ -799,6 +809,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8712767363896337380">Inakaribia kukamilisha usasishaji! Fungua Chrome tena ili ukamilishe mchakato wa kusasisha.</translation>
 <translation id="8717554232729236539">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata orodha yako ya kusoma na zaidi kwenye <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Ondoka kwenye Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Iruhusu huduma ya Tafuta na Google ifikie kichupo}other{Iruhusu huduma ya Tafuta na Google ifikie vichupo #}}</translation>
 <translation id="873133009373065397">Google Chrome haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="8747073452963259673">kona ya chini kushoto ya eneo la utafutaji: kushoto asilimia <ph name="LEFT" />, chini asilimia <ph name="BOTTOM" /></translation>
 <translation id="8748735421235723888">Chrome hurejesha hifadhi iliyopo kwenye vichupo visivyotumika. Hii hufanya vichupo vinavyotumika na programu nyinginezo ziwe na nyenzo zaidi za kompyuta na huifanya Chrome iwe na kasi ya utendaji. Vichupo ambavyo hutumii vitaanza kutumika tena kiotomatiki utakaporudi kwenye vichupo hivyo. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Kiokoa Hifadhi<ph name="END_LINK" /></translation>
@@ -850,6 +861,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Uanachama wa Google.</translation>
 <translation id="922152298093051471">Weka mipangilio ya Chrome upendavyo</translation>
 <translation id="93760716455950538">Zima kisha uwashe ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Acha Kuiruhusu huduma ya Tafuta na Google ifikie Kichupo}other{Acha Kuiruhusu huduma ya Tafuta na Google ifikie Vichupo #}}</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="983803489796659991">Imeshindwa kusakinisha kwa sababu seva ya usasishaji haina data ya kupunguza urefu ya programu.</translation>
 <translation id="989816563149873169">Unaweza kubonyeza <ph name="SHORTCUT" /> ili ubadilishe kati ya wasifu mmoja wa Chrome na mwingine</translation>

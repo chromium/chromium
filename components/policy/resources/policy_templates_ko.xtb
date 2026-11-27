@@ -10564,9 +10564,6 @@ URL 패턴은 <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책과 
 <translation id="7402257017733669351">브라우저 프로세스에서 동적 코드를 만들지 못하도록 방지</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" />를 사용 중지하면 Android 백업 및 복원이 제대로 작동하지 않게 됩니다.</translation>
 <translation id="7406276857470642718">외부 IdP로 SAML을 통해 인증된 사용자를 위한 설정을 관리합니다.</translation>
-<translation id="7407441173422042771">이 정책은 <ph name="PRODUCT_NAME" />의 네트워크 예측을 제어합니다. 또한 DNS 미리 가져오기, TCP 및 SSL 사전 연결, 웹페이지 사전 렌더링을 제어합니다.
-
-      정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 네트워크 예측이 사용 설정되지만 사용자가 이를 변경할 수 있습니다.</translation>
 <translation id="7408815947231046196"><ph name="PRODUCT_NAME" /> 데이터 백업 허용</translation>
 <translation id="740885188496462583">절전 모드 사용 설정</translation>
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />이(가) 원격 호스트에서 프록시된 WebAuthn API 요청을 실행하도록 허용합니다.</translation>
@@ -12734,8 +12731,6 @@ False로 설정되면 관련 웹사이트 세트 기능이 사용 중지됩니�
 <translation id="8812091410765157924">팝업이 열리는 페이지가 팝업 상호작용을 명시적으로 수락하는 경우 <ph name="BLANK_PAGE_NAME" /> 대상으로 열리는 팝업만 팝업을 표시하는 페이지와 상호작용하도록 허용</translation>
 <translation id="8812631362927615118">사용자 보안 신호를 보고할 때 퍼스트 파티 인증 사용 설정</translation>
 <translation id="8816370949847593408">지원 중단 출시 상태에 따라 Chrome 앱이 실행되지 않을 수도 있습니다.</translation>
-<translation id="8818768076343557335">이동통신망을 사용하지 않는 모든 네트워크의 네트워크 활동을 예측합니다.
-          (50에서 중지되고 52에서 삭제됩니다. 52가 넘은 경우 값을 1로 설정해도 0으로 처리됩니다. 모든 네트워크 연결 시 네트워크 활동을 예측합니다.)</translation>
 <translation id="8820434908768990758">모든 웹사이트에 사이트 격리를 사용 설정하되 사용자에게 선택 해제 허용</translation>
 <translation id="8821678641132607468">정책을 '사용'으로 설정하면 최초 실행 시 이전 기본 브라우저의 방문 기록을 가져옵니다. 정책을 '사용 안함'으로 설정하거나 설정하지 않으면 최초 실행 시 방문 기록을 가져오지 않습니다.
 

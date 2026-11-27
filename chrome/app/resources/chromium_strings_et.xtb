@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1006344083777662909">Jagate seda vahelehte Otsinguga.</translation>
 <translation id="1026101648481255140">Jätka installimist</translation>
 <translation id="1029669172902658969">Taaskäivitage &amp;Chromium OS-i värskendamiseks</translation>
 <translation id="1040916596585577953">Chromium soovitab teil selle laienduse üle vaadata.</translation>
@@ -84,6 +85,7 @@
 <translation id="1880495786739455486">Saate otsingu külgpaneelil uuesti avada, et sirvimise ajal küsimusi esitada</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="188102464690227119">Tööriistariba nupul „Otsi külgpaneelil“ on uus ikoon. Klõpsake sellel, et külgpaneelil oleva otsingu kaudu sirvimise ajal küsimusi esitada.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> – jagate seda vahelehte Otsinguga</translation>
 <translation id="1896836275755235458">Chromium säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave energiasäästja kohta<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1929939181775079593">Chromium ei reageeri. Kas soovite kohe taaskäivitada?</translation>
@@ -103,6 +105,7 @@
 <translation id="2086476982681781442">Chromium blokeeris selle allalaadimise, kuna fail on petlik ja võib teie seadmes ootamatuid muudatusi teha</translation>
 <translation id="208726765006323911">Näete järgmisel korral Chromiumi iOS-i avamisel viipa, et proovida funktsiooni <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Teie paroolid ja muud Chromiumi andmed, mille olete oma Google'i kontole salvestanud, eemaldatakse sellest seadmest. Selleks et neid Chromiumis uuesti kasutada, logige taas sisse.</translation>
+<translation id="2104346008417283366">Saate lülituda teie Google’i kontoga algselt seotud Geminile, mida <ph name="DOMAIN" /> ei halda. Vahetamiseks tuleb Chromium uuesti käivitada.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
 <translation id="2126108037660393668">Allalaaditud faili kinnitamine ebaõnnestus.</translation>
 <translation id="2135919691573380097">Teavitage sellest saidist</translation>
@@ -270,6 +273,7 @@
 <translation id="3941890832296813527">Installimisviga: installiprogrammi failinimi on sobimatu või seda ei toetata.</translation>
 <translation id="3945058413678539331">Chromium püüab kopeerida paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="3950481960271781644">Kõigis oma seadmetes salvestatud teabele ja muule sisule juurdepääsemiseks logige sisse Chromiumi.</translation>
+<translation id="3956384805063254165">See hallatav brauser saab kasutada Geminit, mille <ph name="DOMAIN" /> on töö jaoks seadistanud. See saab otsida teavet ning anda organisatsiooni failide ja teenuste põhjal vastuseid. Vahetamiseks tuleb Chromium uuesti käivitada.</translation>
 <translation id="395904275706073188">Kaitstud lehti ei saa lugeda. Proovige teist lehte.</translation>
 <translation id="3962647064319009959">Vaadake, kuidas Chromium teid kaitseb</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
@@ -362,6 +366,7 @@
 <translation id="494490797786467921">Klõpsake, et Chromiumi sisselogimise dialoog sulgeda</translation>
 <translation id="4950660488495335294">Chromiumi profiilidega saate eraldada kogu oma Chromiumi sisu. Looge profiile sõprade või pereliikmete jaoks või eraldage nende abil töö ja lõbu.</translation>
 <translation id="4992938037305302429">Teie konto Chromiumis</translation>
+<translation id="5088350632679445418">Alustage uut lõime Otsinguga</translation>
 <translation id="5123973130450702873">Chromium vajab teie käeliigutuste jälgimiseks luba</translation>
 <translation id="5141988424377517949">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Logige Chromiumi sisse</translation>
@@ -400,6 +405,7 @@
 <translation id="5473971139929175403">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam selles Linuxi versioonis</translation>
 <translation id="5475924890392386523">Chromium blokeeris selle allalaadimise, kuna fail võib kahjustada teie isiklikke ja sotsiaalvõrgustiku kontosid</translation>
 <translation id="5496810170689441661">Chromium püüab paroole muuta. Selle lubamiseks sisestage Windowsi parool.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Lõpeta vahelehe jagamine Otsinguga}other{Lõpeta # vahelehe jagamine Otsinguga}}</translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
 <translation id="5527463683072221100">Ava PDF-id Chromiumis</translation>
 <translation id="5557035028197464376">Otsing Chrome'is on tööriistaribale kinnitatud!</translation>
@@ -410,8 +416,10 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma salvestatud teabele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5580770360767802657">Kasutage vaikimisi Chromiumit ja laske see kinnitada</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Jaga vahelehte Otsinguga}other{Jaga # vahelehte Otsinguga}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie isoleeritud akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
+<translation id="5608863008645990586">Lülituge Gemini Enterprise’ile, mida haldab <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> on valmis. Võite kohe uuesti käivitada või seadistada Chromiumi värskendama järgmine kord, kui teie ekraan jääb sisselülitatuks ja seda ei kasutata <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumi värskendus on saadaval}=1{Chromiumi värskendus on saadaval}other{Chromiumi värskendus on # päeva saadaval olnud}}</translation>
 <translation id="5643865575100044307">Saidiandmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>
@@ -505,6 +513,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6455857529632101747">Tere tulemast kasutama Chromiumi profiile</translation>
 <translation id="6460614424172581323">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile vahelehegruppide kasutamise viip.</translation>
 <translation id="6466344609055215035">Konto eemaldamine Chromiumist</translation>
+<translation id="6475125381371849386">Alustage uut lõime Otsinguga</translation>
 <translation id="6475912303565314141">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel.</translation>
 <translation id="6510925080656968729">Desinstalli Chromium</translation>
 <translation id="651535675648445253">Otseteed avanevad Chromiumis</translation>
@@ -519,6 +528,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6598877126913850652">Ava Chromiumi märguandeseaded</translation>
 <translation id="6600016381025017075">Otsige sellelt lehelt mida tahes</translation>
 <translation id="6613594504749178791">Teie muudatused jõustuvad järgmine kord, kui Chromiumi taaskäivitate.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Jaga vahelehte Otsinguga}other{Jaga # vahelehte Otsinguga}}</translation>
 <translation id="6637855549677695722">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile viip Chromiumi parimate ohutusfunktsioonide hankimiseks.</translation>
 <translation id="6637908313088374648">Chromium käivitub nüüd Windowsi käivitamisel, et saaksite kohe sirvimist alustada. Saate selle seadetes välja lülitada.</translation>
 <translation id="6644846457769259194">Seadme värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -533,6 +543,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloog või kasutage Chromiumi uuemat versiooni.</translation>
 <translation id="6729124504294600478">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chromium veebi- ja rakendustegevustesse ning lingitud Google'i teenustesse</translation>
 <translation id="6734291798041940871">Chromium on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
+<translation id="6737759643107005803">Lülituge tagasi Geminile, mida <ph name="DOMAIN" /> ei halda</translation>
 <translation id="6742093177587589736">Kõigis seadmetes oma järjehoidjate ja muu sisu kasutamiseks logige Chromiumisse sisse. See järjehoidja salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="674891594898436429">Loobu aktiivsest otsingust sellel vahelehel</translation>
 <translation id="6751374565094704799">Kiirendab Chromiumi V8 mootoriga saite, kuid muudab Chromiumi rünnetele veidi vähem vastupidavaks. See seade on sisse lülitatud.</translation>
@@ -728,6 +739,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8556055872671007529">Mõned Chromiumi funktsioonid ja laiendused hõlmavad otseteid. Saate need soovi korral uuesti sisse lülitada.</translation>
 <translation id="8556420416730706394">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>
 <translation id="856656450041460113">Keeleloendi otsing</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Lõpeta vahelehe jagamine Otsinguga}other{Lõpeta # vahelehe jagamine Otsinguga}}</translation>
 <translation id="8576826849825683917">Chromiumi haldab mitu organisatsiooni</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>

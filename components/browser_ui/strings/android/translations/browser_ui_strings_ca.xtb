@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Permès • Aproximada</translation>
 <translation id="1323433172918577554">Mostra'n més</translation>
 <translation id="1333965224356556482">No permetis que els llocs web vegin la teva ubicació</translation>
+<translation id="1352358548984352201">Afegeix pestanyes, imatges i més com a context per millorar la cerca</translation>
 <translation id="1369915414381695676">El lloc <ph name="SITE_NAME" /> s'ha afegit</translation>
 <translation id="1371239764779356792">Permet que un lloc web desi dades al dispositiu</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861244985839668297">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius HID. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius HID.</translation>
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
+<translation id="1871213582159462941">Pregunta sobre una pàgina o una foto</translation>
 <translation id="1881806992065048905">Full inferior de l'aparença de la pàgina Pestanya nova</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Els llocs web solen accedir als fitxers i a les carpetes del dispositiu per a funcions com ara desar automàticament la teva feina</translation>

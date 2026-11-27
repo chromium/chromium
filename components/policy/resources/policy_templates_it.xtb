@@ -10537,9 +10537,6 @@ Non vengono raccolti i valori effettivi dei dati sensibili (come cookie o valori
 <translation id="7402257017733669351">Impedisci al processo del browser di creare codice dinamico</translation>
 <translation id="7406039009275722824">Se disattivi <ph name="CHROME_SYNC_NAME" />, il servizio di backup e ripristino di Android non funzionerà correttamente.</translation>
 <translation id="7406276857470642718">Consente di gestire le impostazioni degli utenti autenticati tramite SAML con un IdP esterno</translation>
-<translation id="7407441173422042771">Questa policy consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.
-
-      Se la policy viene configurata, gli utenti non possono modificarla. Se non viene configurata, la previsione di rete viene attivata, ma gli utenti possono modificarla.</translation>
 <translation id="7408815947231046196">Consenti il backup dei dati di <ph name="PRODUCT_NAME" /></translation>
 <translation id="740885188496462583">Attiva la modalità Risparmio energetico</translation>
 <translation id="7410074797376205571">Consenti a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
@@ -12705,8 +12702,6 @@ Questa policy viene applicata solo agli utenti affiliati.</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
 <translation id="8812631362927615118">Attiva l'autenticazione proprietaria quando segnali di sicurezza dell'utente vengono inviati in report</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>
-<translation id="8818768076343557335">Prevedi sempre le azioni di rete su ogni rete non cellulare.
-          (obsoleto nella versione 50, rimosso nella 52. Dopo la versione 52, se viene impostato il valore 1, viene gestito come 0; prevedi le azioni di rete su qualsiasi connessione di rete).</translation>
 <translation id="8820434908768990758">Attiva l'isolamento dei siti per tutti i siti web, ma consenti agli utenti di disattivarlo</translation>
 <translation id="8821678641132607468">Se la policy viene impostata su Attivata, la cronologia di navigazione del precedente browser predefinito verrà importata alla prima esecuzione. Se la policy viene impostata su Disattivata o se non viene configurata, la cronologia di navigazione non verrà importata alla prima esecuzione.
 

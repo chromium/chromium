@@ -10575,9 +10575,6 @@ Giá trị thực tế của dữ liệu nhạy cảm (như cookie hoặc giá t
 <translation id="7402257017733669351">Ngăn quy trình của trình duyệt tạo mã động</translation>
 <translation id="7406039009275722824">Việc tắt <ph name="CHROME_SYNC_NAME" /> sẽ khiến tính năng Sao lưu và khôi phục trên Android hoạt động không bình thường.</translation>
 <translation id="7406276857470642718">Kiểm soát các chế độ cài đặt của người dùng được xác thực qua SAML bằng IdP bên ngoài</translation>
-<translation id="7407441173422042771">Chính sách này kiểm soát tính năng gợi ý mạng trong <ph name="PRODUCT_NAME" />. Chính sách này còn kiểm soát tính năng tìm nạp trước DNS, kết nối trước TCP và SSL, cũng như tính năng hiển thị trước trang web.
-
-      Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, tính năng gợi ý mạng sẽ bật nhưng người dùng có thể thay đổi tùy chọn này.</translation>
 <translation id="7408815947231046196">Cho phép sao lưu dữ liệu của <ph name="PRODUCT_NAME" /></translation>
 <translation id="740885188496462583">Bật Chế độ tiết kiệm pin</translation>
 <translation id="7410074797376205571">Cho phép <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> thực thi các yêu cầu API WebAuthn được gửi qua proxy trên một máy chủ từ xa.</translation>
@@ -12746,8 +12743,6 @@ Chính sách này chỉ áp dụng cho người dùng liên kết.</translation>
 <translation id="8812091410765157924">Chỉ cho phép cửa sổ bật lên ở trạng thái mở với mục tiêu <ph name="BLANK_PAGE_NAME" /> để tương tác với chính trang đã mở cửa sổ bật lên nếu trang mở thể hiện rõ việc chọn sử dụng hoạt động tương tác đó</translation>
 <translation id="8812631362927615118">Bật tính năng xác thực bên thứ nhất khi báo cáo tín hiệu an toàn của người dùng</translation>
 <translation id="8816370949847593408">Ứng dụng Chrome có thể không được phép chạy, tùy thuộc vào trạng thái của việc ngừng phát hành.</translation>
-<translation id="8818768076343557335">Dự đoán các tác vụ mạng trên bất kỳ mạng nào không phải là mạng di động.
-          (Không được dùng nữa là 50, đã xóa 52. Sau 52, nếu được đặt thì giá trị 1 sẽ được coi là 0 - dự đoán tác vụ mạng trên kết nối mạng bất kỳ.)</translation>
 <translation id="8820434908768990758">Bật tính năng tách biệt trang web đối với tất cả trang web nhưng cho phép người dùng chọn không bật</translation>
 <translation id="8821678641132607468">Nếu bạn đặt chính sách này thành Bật, thì nhật ký duyệt web trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì nhật ký duyệt web sẽ không được nhập trong lần chạy đầu tiên.
 

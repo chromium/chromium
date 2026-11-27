@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Permitido • Aproximada</translation>
 <translation id="1323433172918577554">Mostrar más</translation>
 <translation id="1333965224356556482">No permitir que los sitios accedan a tu ubicación</translation>
+<translation id="1352358548984352201">Añade pestañas, imágenes y otros elementos como contexto para mejorar tu búsqueda</translation>
 <translation id="1369915414381695676">Se ha añadido el sitio <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Permite que un sitio guarde datos en tu dispositivo</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Fuente Sans Serif</translation>
 <translation id="1861244985839668297">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos HID. Si está desactivada, los sitios no pueden usar dispositivos HID.</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
+<translation id="1871213582159462941">Pregunta sobre una página o una foto</translation>
 <translation id="1881806992065048905">Hoja inferior de apariencia de la página Nueva pestaña</translation>
 <translation id="1887786770086287077">El acceso a la ubicación está desactivado en este dispositivo. Actívalo en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Los sitios suelen acceder a archivos y carpetas de tu dispositivo para usarlos en funciones como la de guardar automáticamente tu trabajo.</translation>

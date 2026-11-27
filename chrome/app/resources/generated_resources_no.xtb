@@ -519,6 +519,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1570990174567554976">Bokmerkemappen «<ph name="BOOKMARK_TITLE" />» er opprettet.</translation>
 <translation id="1571041387761170095">Ingen svake eller gjenbrukte passord</translation>
 <translation id="1571304935088121812">Kopiér brukernavnet</translation>
+<translation id="1571371559291327711">&amp;Finn, rediger og flere verktøy</translation>
 <translation id="1571738973904005196">Vis fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gjest)</translation>
 <translation id="1573127087832371028">Beskriv problemet</translation>
@@ -963,6 +964,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="204914487372604757">Opprett snarvei</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2051669996101374349">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette. Du kan ikke endre denne innstillingen siden Avansert beskyttelse er slått på.</translation>
+<translation id="2052353138844549871">Det anbefales ikke å bruke Gemini Enterprise med en profil som ikke administreres</translation>
 <translation id="2052723746739622752">Løsne Gemini</translation>
 <translation id="2061366302742593739">Ingenting å vise</translation>
 <translation id="2061589908388230480">Hvis Chromium finner et av passordene dine i et offentlig databrudd, kan Google Passordlagring tilby å endre passordet for deg hvis du er logget på. <ph name="BEGIN_LINK" />Mer om automatisk passordendring<ph name="END_LINK" /></translation>
@@ -1231,6 +1233,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
 <translation id="2349610121459545414">Fortsett å la dette nettstedet ha tilgang til posisjonen din</translation>
 <translation id="2350133097354918058">Lastet inn på nytt</translation>
+<translation id="2351165193188463938">Nå surfer du med Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kameraet og mikrofonen er tillatt</translation>
 <translation id="2353682139907904963">Fest nye utvidelser på verktøylinjen</translation>
@@ -1278,6 +1281,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2409709393952490731">Bruk en telefon eller et nettbrett</translation>
 <translation id="2410940059315936967">Et nettsted du besøker, kan bygge inn innhold fra andre nettsteder, for eksempel bilder, annonser og tekst. Informasjonskapsler som angis av disse andre nettstedene, kalles informasjonskapsler fra tredjeparter.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Fokusert på 1 fane}other{Fokusert på # faner}}</translation>
 <translation id="2413009156320833859">Tilpass nettleseren din enda mer med utvidelser fra <ph name="BEGIN_LINK1" />Chrome Nettmarked<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Gjenoppta surfingen for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -1687,6 +1691,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2849926636739429924">Flere alternativer for <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Lukket</translation>
 <translation id="2851291081585704741">Du er uten nett</translation>
+<translation id="2851527955600412545">Organisasjonen din har oppdatert reglene sine for Gemini Enterprise i Chrome. Chatloggen din blir kanskje ikke overført.</translation>
 <translation id="285237063405807022">(laster inn)</translation>
 <translation id="2853121255651601031">Passordet er lagret</translation>
 <translation id="2855243985454069333">Sletter loggen fra alle synkroniserte enheter</translation>
@@ -2636,6 +2641,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan se filer i disse mappene</translation>
 <translation id="3810770279996899697">Passordlagring trenger tilgang til macOS-nøkkelring</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3811424142236602772">Surf med Gemini, som er konfigurert av <ph name="DOMAIN" /> for arbeid. Still spørsmål mens du surfer, ved å dele faner som kontekst, og få svar basert på organisasjonens filer og tjenester.</translation>
 <translation id="3812525830114410218">Ugyldig sertifikat</translation>
 <translation id="3813296892522778813">Gå til <ph name="BEGIN_LINK_CHROMIUM" />brukerstøtten for Google Chrome<ph name="END_LINK_CHROMIUM" /> hvis du ikke finner det du ser etter</translation>
 <translation id="3815509884387832993">Lytt til denne siden som om det var en podcast, med AI-avspilling ved å bruke Slå på AI-avspilling-knappen på verktøylinjen for lesemodus</translation>
@@ -3231,6 +3237,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4500055235123625757">Gemini kan svare på spørsmål om videoer eller lyd du har spilt av på <ph name="LINK_BEGIN" />enkelte nettsteder<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Oversett den markerte teksten til <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Høyreklikk på en fane, og velg «Legg fanen til i en ny gruppe»</translation>
+<translation id="450300557121092531">Faner etter enhet</translation>
 <translation id="4503362512377701151">Du ser fanegruppene du har brukt nylig, slik at du enkelt kan fortsette der du avsluttet.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3283,6 +3290,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4562155266774382038">Avvis forslaget</translation>
 <translation id="4563883094055457792">G&amp;jenopprett delt visning</translation>
 <translation id="456449593072900590">Slett ved avslutning</translation>
+<translation id="4564636746145660922">Sjekk tilkoblingen, og prøv på nytt.</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4565465014351935093">Vis bare på Ny fane-siden</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
@@ -3456,6 +3464,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="475088594373173692">Første bruker</translation>
 <translation id="4751925628341802838">Logg på og synkroniser loggen og fanene til <ph name="EMAIL" /> for å få loggen fra de andre enhetene. Du får også utvidelsene med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
 <translation id="4754590344707355551">Oppgrader nettleseren med utvidelser</translation>
+<translation id="4754903312643763797">Andre vilkår for datapersonvern kan gjelde</translation>
 <translation id="4756130875344525429">For å få loggen fra <ph name="DEVICE" />, logg på og synkroniser loggen og fanene til <ph name="EMAIL" />. Du får også den lagrede informasjonen med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
 <translation id="4756378406049221019">Stopp / last inn på nytt</translation>
 <translation id="4756388243121344051">&amp;Logg</translation>
@@ -4136,6 +4145,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5509914365760201064">Utsteder: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Få bildebeskrivelser fra Google</translation>
 <translation id="5512739112435045339">Frigjør plass på enheten. Prøv deretter å laste ned filen på nytt</translation>
+<translation id="5513121759801003159">Chatloggen din blir ikke overført</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Se flere alternativer for <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Er dette startsiden du forventet?</translation>
@@ -4944,6 +4954,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6451861213630784801">Du er logget av</translation>
 <translation id="6453191633103419909">Projeksjonskvalitet for faner og skjermer</translation>
 <translation id="6453306703004115497">Oversatt til <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Søk i AI på enheten</translation>
 <translation id="645433497989692531">Dette sletter nettlesingsdataene dine permanent fra denne enheten. For å gjenopprette dataene, logg på som</translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
 <translation id="6455521402703088376">Av • Utvikleren har avpublisert denne utvidelsen</translation>
@@ -5114,6 +5125,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="663569763553406962">Se hvilke utvidelser som kan lese eller endre nettsteder</translation>
 <translation id="6636258750460740634">Logg</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Ferdigheter-funksjonen er slått av for øyeblikket. Oppdater Chrome-innstillingene for å komme i gang.</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
@@ -5247,6 +5259,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6785779729084003225">Bruk <ph name="FOCUS_TOGGLE_HOTKEY" /> til å åpne Gemini i Chrome</translation>
 <translation id="67862343314499040">Fiolett</translation>
 <translation id="6786480815699355166">Bare støttede språk for direkteoversetting kan oversettes</translation>
+<translation id="6786498102134843646">Svarene blir ikke basert på filer eller tjenester som administreres av <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Utvidelser</translation>
 <translation id="6786804673213172567">Nivå 3: HØY</translation>
 <translation id="6787531944787756058">brukernavnet <ph name="USER_EMAIL" /> er bare lagret på denne enheten. Se detaljer</translation>
@@ -5409,6 +5422,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6941514251635934269">Spør om dette dokumentet</translation>
 <translation id="694168622559714949">Administratoren har angitt et standardspråk som ikke kan endres.</translation>
 <translation id="6941953303876950920">Du må starte på nytt for å fortsette å surfe med Gemini</translation>
+<translation id="6943803108751887058">Trykk på Esc for å lukke</translation>
 <translation id="6944854424004126054">Gjenopprett vinduet</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="694592694773692225">Viderekobling er blokkert på denne siden.</translation>
@@ -5735,6 +5749,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7293774463163321848">Søkeloggen, Gemini-loggen og passord kan slettes i innstillingene for administrering</translation>
 <translation id="7296503797589217366">Velg mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Lagre informasjon i Google Wallet fra sider du ser på</translation>
+<translation id="7297535265731442945">Gemini Enterprise er oppdatert</translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
 <translation id="7298195798382681320">Anbefalt</translation>
 <translation id="7299515639584427954">Vil du bytte standardapp for støttede linker?</translation>
@@ -5756,6 +5771,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="731827437403763009">AI-innovasjoner</translation>
 <translation id="7319983568955948908">Stopp deling</translation>
 <translation id="7321545336522791733">Tjeneren er ikke tilgjengelig</translation>
+<translation id="7321838786611890851">Interaksjonene dine med Gemini har kanskje ikke beskyttelsen som er konfigurert av <ph name="DOMAIN" />, og andre vilkår for datapersonvern kan gjelde</translation>
 <translation id="7322515217754205362">Nettstedstillatelser</translation>
 <translation id="7324020307732396723">Åpne språkinnstillingene</translation>
 <translation id="7325209047678309347">Papiret sitter fast</translation>
@@ -6052,6 +6068,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7653354650639364202">{0,plural, =1{Lukk isolert vindu}other{Lukk Isolerte (# vinduer)}}</translation>
 <translation id="7654941827281939388">Denne kontoen er allerede i bruk på denne datamaskinen.</translation>
 <translation id="7655411746932645568">Nettsteder kan be om å få koble til serielle porter</translation>
+<translation id="7656674791025857763">Logg på for å bruke <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Små besparelser</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andre typer aktiviteter<ph name="END_LINK_GOOGLE" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
@@ -6263,6 +6280,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7904492297081735975">&amp;Åpne bokmerkebehandlingen</translation>
 <translation id="7907312522152480478">For å få fanene dine fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="7907837847548254634">Vis en rask fremheving av objektet i fokus</translation>
+<translation id="7908205867885088429">Finn ut mer om hvordan du tilbakestiller innstillingene til standardinnstillingene</translation>
 <translation id="7908835530772972485">Slett data når du lukker alle vinduer</translation>
 <translation id="7909324225945368569">Gi profilen nytt navn</translation>
 <translation id="7909969815743704077">Lastet ned i inkognitomodus</translation>
@@ -6654,6 +6672,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8323317289166663449">lese og endre alle dataene på datamaskinen din og alle nettsteder</translation>
 <translation id="8323518750352551353">Separat surfing?</translation>
 <translation id="8323744572398547859">For å få fanene dine fra de andre enhetene dine, logg på og synkroniser loggen. Du får også passordene dine med mer på alle enhetene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
+<translation id="8324035203198677529">Organisasjonen din har slått av Gemini Enterprise i Chrome. Du kan fortsette å bruke Gemini i Chrome, men den kan ikke lenger finne eller referere til informasjon som administreres av organisasjonen din. Chatloggen din blir kanskje ikke overført.</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>
 <translation id="8327386430364625757">Matematisk skrifttype</translation>
@@ -6860,6 +6879,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8551388862522347954">Lisenser</translation>
 <translation id="8552102814346875916">Lagre på «La disse nettstedene alltid være aktive»-listen</translation>
 <translation id="8552947739661397736">Ta over oppgaven – Gemini har kontrollen nå</translation>
+<translation id="8555042096950728024">Dra eller bruk piltastene for å omorganisere</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – utvidet innhold vises</translation>
 <translation id="8557022314818157177">Fortsett å berøre sikkerhetsnøkkelen til fingeravtrykket er registrert</translation>
 <translation id="8557100046150195444">Touch ID for å fortsette</translation>
@@ -6952,6 +6972,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8651806635673244884">Du kan flytte fanene tilbake til toppen ved å høyreklikke på en fane og velge «Vis faner horisontalt»</translation>
 <translation id="8652400352452647993">Feil med pakkeutvidelse</translation>
 <translation id="8654151524613148204">Beklager, men filen er så stor at datamaskinen din ikke klarer å håndtere den.</translation>
+<translation id="8654872240409864765">Organisasjonen din har konfigurert Gemini Enterprise i Chrome. Spør Gemini om hva som helst mens du surfer, og få svar basert på filer og tjenester i hele organisasjonen din.</translation>
 <translation id="8657393004602556571">Vil du forkaste tilbakemeldingen?</translation>
 <translation id="865857184419171576">Oversett teksting til</translation>
 <translation id="865936634714975126">Legg til en søkeparameter i nettadressen for å velge typer når siden lastes inn. Eksempel: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7115,6 +7136,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8813937837706331325">Middels store besparelser</translation>
 <translation id="8815742860876889867">Åpne linken i et i&amp;solert vindu</translation>
 <translation id="881799181680267069">Skjul andre</translation>
+<translation id="8820301999480837183">Fokusert på gruppen <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="8821206216942230957">Kontoen har ikke tilgang til Gemini i Chrome</translation>
 <translation id="8823514049557262177">Kopiér linkte&amp;kst</translation>
@@ -7154,6 +7176,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8863753581171631212">Åpne linken i ny <ph name="APP" /></translation>
 <translation id="8864055848767439877">Deler <ph name="TAB_NAME" /> med <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Passordet er lagret</translation>
+<translation id="8865924457197342642">Gemini Enterprise er ikke tilgjengelig lenger</translation>
 <translation id="8866424952450451412">Administrer de egendefinerte arbeidsflytene som er basert på</translation>
 <translation id="8867102760244540173">Søk i faner…</translation>
 <translation id="8867568208303837180">Sender …</translation>
@@ -7366,6 +7389,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9096776523567481218">ikke installert lokalt</translation>
 <translation id="9099383880226822604">Regnskog</translation>
 <translation id="9100765901046053179">Avanserte innstillinger</translation>
+<translation id="9100928301185810363">Fokusert på gruppe uten navn – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">For å caste må du gi Chrome tilgang i <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalt nettverk &gt; Chrome</translation>
 <translation id="9103868373786083162">Trykk for å gå tilbake, eller trykk på kontekstmenyen for å se loggen</translation>
 <translation id="9107096627210171112">O&amp;versett…</translation>

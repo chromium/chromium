@@ -519,6 +519,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1570990174567554976">Boekmerkvouer “<ph name="BOOKMARK_TITLE" />” is geskep.</translation>
 <translation id="1571041387761170095">Geen swak of hergebruikte wagwoorde nie</translation>
 <translation id="1571304935088121812">Kopieer gebruikernaam</translation>
+<translation id="1571371559291327711">&amp;Soek-, wysig- en meer nutsgoed</translation>
 <translation id="1571738973904005196">Bekyk oortjie: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gas)</translation>
 <translation id="1573127087832371028">Beskryf die kwessie</translation>
@@ -966,6 +967,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051669996101374349">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie. Jy kan nie hierdie instelling verander nie omdat Gevorderde Beskerming geaktiveer is.</translation>
+<translation id="2052353138844549871">Dit word dalk nie aanbeveel om Gemini Enterprise met ’n onbestuurde profiel te gebruik nie</translation>
 <translation id="2052723746739622752">Speld Gemini los</translation>
 <translation id="2061366302742593739">Niks om te wys nie.</translation>
 <translation id="2061589908388230480">As Chromium een van jou wagwoorde in ’n publieke dataskending vind, kan Google Wagwoordbestuurder aanbied om jou wagwoord vir jou te verander as jy aangemeld is. <ph name="BEGIN_LINK" />Meer oor outomatiese wagwoordverandering<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – toestemming is versoek; druk Ctrl + Forward om te antwoord</translation>
 <translation id="2349610121459545414">Hou aan om vir hierdie werf toegang tot jou ligging te gee</translation>
 <translation id="2350133097354918058">Is herlaai</translation>
+<translation id="2351165193188463938">Jy blaai nou met Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2353682139907904963">Speld nuwe uitbreidings aan die nutsbalk vas</translation>
@@ -1281,6 +1284,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2409709393952490731">Gebruik ’n foon of tablet:</translation>
 <translation id="2410940059315936967">’n Werf wat jy besoek, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Webkoekies wat deur hierdie ander werwe gestel word, word derdepartywebkoekies genoem.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Gefokus op 1 oortjie}other{Gefokus op # oortjies}}</translation>
 <translation id="2413009156320833859">Pasmaak jou blaaier nóg meer met uitbreidings vanaf die <ph name="BEGIN_LINK1" />Chrome Webwinkel<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Hervat blaai vir <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -1690,6 +1694,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="2849926636739429924">Meer opsies vir <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Toe</translation>
 <translation id="2851291081585704741">Jy is vanlyn</translation>
+<translation id="2851527955600412545">Jou organisasie het hul beleide vir Gemini Enterprise in Chrome opgedateer. Jou kletsgeskiedenis sal dalk nie oorgedra word nie.</translation>
 <translation id="285237063405807022">(laai tans)</translation>
 <translation id="2853121255651601031">Wagwoord gestoor</translation>
 <translation id="2855243985454069333">Vee geskiedenis op alle gesinkroniseerde toestelle uit</translation>
@@ -2639,6 +2644,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan lêers in die volgende vouers bekyk</translation>
 <translation id="3810770279996899697">Wagwoordbestuurder het toegang tot MacOS Keychain nodig</translation>
 <translation id="3810973564298564668">Bestuur</translation>
+<translation id="3811424142236602772">Blaai met Gemini, wat deur <ph name="DOMAIN" /> vir werk opgestel is. Vra vrae terwyl jy blaai deur oortjies as konteks te deel, en kry antwoorde wat op jou organisasie se lêers en dienste gegrond is.</translation>
 <translation id="3812525830114410218">Swak sertifikaat</translation>
 <translation id="3813296892522778813">Gaan na <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-hulp<ph name="END_LINK_CHROMIUM" /> as jy nie kan kry wat jy soek nie</translation>
 <translation id="3815509884387832993">Luister na hierdie bladsy asof dit ’n podsending met KI-terugspeel is deur die Skakel KI-terugspeel Aan-knoppie in die Leesmodus-nutsbalk te gebruik</translation>
@@ -3236,6 +3242,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="4500055235123625757">Gemini kan vrae beantwoord oor die video of oudio wat jy op <ph name="LINK_BEGIN" />sekere webwerwe<ph name="LINK_END" /> gespeel het.</translation>
 <translation id="4500647907053779331">&amp;Vertaal keuse in <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Regsklik op ’n oortjie en kies "Voeg oortjie by nuwe groep"</translation>
+<translation id="450300557121092531">Oortjies volgens toestel</translation>
 <translation id="4503362512377701151">Jy sien die oortjiegroepe wat jy onlangs gebruik het om jou te help om maklik aan te gaan waar jy opgehou het.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="4562155266774382038">Maak voorstel toe</translation>
 <translation id="4563883094055457792">S&amp;tel verdeelde aansig terug</translation>
 <translation id="456449593072900590">Vee uit met uitgang</translation>
+<translation id="4564636746145660922">Gaan jou verbinding na en probeer weer.</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4565465014351935093">Wys slegs op Nuwe Oortjie-bladsy</translation>
 <translation id="4566417217121906555">Demp mikrofoon</translation>
@@ -3461,6 +3469,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="475088594373173692">Eerste gebruiker</translation>
 <translation id="4751925628341802838">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou uitbreidings en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4754590344707355551">Verbeter jou blaaier met uitbreidings</translation>
+<translation id="4754903312643763797">Verskillende dataprivaatheidbepalings kan geld</translation>
 <translation id="4756130875344525429">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4756378406049221019">Stop/Herlaai</translation>
 <translation id="4756388243121344051">Geskiedenis</translation>
@@ -4143,6 +4152,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="5509914365760201064">Uitreiker: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Kry prentbeskrywings van Google af</translation>
 <translation id="5512739112435045339">Maak spasie op jou toestel beskikbaar. Probeer dan weer aflaai</translation>
+<translation id="5513121759801003159">Jou kletsgeskiedenis sal nie oorgedra word nie</translation>
 <translation id="5514315914873062345">Tab-sleutel</translation>
 <translation id="5515048886012998157">Sien meer opsies vir <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
@@ -4952,6 +4962,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6451861213630784801">Jy is afgemeld</translation>
 <translation id="6453191633103419909">Gehalte van oortjie- of skermprojeksie</translation>
 <translation id="6453306703004115497">Vertaal in <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Soek KI op toestel</translation>
 <translation id="645433497989692531">Dit sal jou blaaierdata permanent van hierdie toestel af uitvee. Om die data te herwin, moet jy aanmeld as</translation>
 <translation id="6455264371803474013">Op spesifieke werwe</translation>
 <translation id="6455521402703088376">Af • Hierdie uitbreiding is deur die ontwikkelaar daarvan gedepubliseer</translation>
@@ -5122,6 +5133,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="663569763553406962">Sien watter uitbreidings ’n werf kan lees of verander</translation>
 <translation id="6636258750460740634">Geskiedenis</translation>
 <translation id="6636623428211296678">Verken meer instellings hieronder of maak nou klaar</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Die Vaardighede-kenmerk is tans gedeaktiveer. Dateer jou Chrome-instellings op om te begin.</translation>
 <translation id="6639554308659482635">SQLite-geheue</translation>
 <translation id="6640268266988685324">Oop oortjie</translation>
@@ -5255,6 +5267,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6785779729084003225">Gebruik <ph name="FOCUS_TOGGLE_HOTKEY" /> om Gemini in Chrome oop te maak</translation>
 <translation id="67862343314499040">Pers</translation>
 <translation id="6786480815699355166">Slegs gesteunde Intydse Onderskrifte-tale kan vertaal word</translation>
+<translation id="6786498102134843646">Antwoorde sal nie gegrond wees op lêers of dienste wat deur <ph name="DOMAIN" /> bestuur word nie</translation>
 <translation id="6786747875388722282">Uitbreidings</translation>
 <translation id="6786804673213172567">Vlak 3: HOOG</translation>
 <translation id="6787531944787756058">gebruikernaam <ph name="USER_EMAIL" /> word net op hierdie toestel gestoor Sien besonderhede</translation>
@@ -5417,6 +5430,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6941514251635934269">Vra oor hierdie dokument</translation>
 <translation id="694168622559714949">Jou administrateur het 'n verstektaal gestel wat nie gewysig kan word nie.</translation>
 <translation id="6941953303876950920">Herbegin word vereis om aan te hou om met Gemini te blaai</translation>
+<translation id="6943803108751887058">Druk Escape om toe te maak</translation>
 <translation id="6944854424004126054">Stel venster terug</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="694592694773692225">Herleiding is op hierdie bladsy geblokkeer.</translation>
@@ -5742,6 +5756,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7293774463163321848">Soekgeskiedenis, Gemini-geskiedenis en wagwoorde kan in hul bestuurinstellings uitgevee word</translation>
 <translation id="7296503797589217366">Kies vouer <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Stoor inligting in Google Wallet vanaf bladsye wat jy bekyk</translation>
+<translation id="7297535265731442945">Gemini Enterprise is opgedateer</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7298195798382681320">Aanbevole</translation>
 <translation id="7299515639584427954">Verander verstekprogram vir gesteunde skakels?</translation>
@@ -5763,6 +5778,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="731827437403763009">KI-innovasies</translation>
 <translation id="7319983568955948908">Hou op deel</translation>
 <translation id="7321545336522791733">Bediener onbereikbaar</translation>
+<translation id="7321838786611890851">Jou interaksies met Gemini sal dalk nie die beskermings hê wat deur <ph name="DOMAIN" /> opgestel is nie, en verskillende dataprivaatheidbepalings kan geld</translation>
 <translation id="7322515217754205362">Werftoestemmings</translation>
 <translation id="7324020307732396723">Maak Taalinstellings oop</translation>
 <translation id="7325209047678309347">Papier sit vas</translation>
@@ -6059,6 +6075,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7653354650639364202">{0,plural, =1{Maak geïsoleerde venster toe}other{Maak geïsoleerde vensters toe (#)}}</translation>
 <translation id="7654941827281939388">Hierdie rekening word reeds op hierdie rekenaar gebruik.</translation>
 <translation id="7655411746932645568">Werwe kan vra om aan reekspoorte te koppel</translation>
+<translation id="7656674791025857763">Meld aan om <ph name="ASSISTANT_NAME" /> te gebruik</translation>
 <translation id="7657090467145778067">Klein besparing</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Ander soorte aktiwiteit<ph name="END_LINK_GOOGLE" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
@@ -6270,6 +6287,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7904492297081735975">&amp;Maak boekmerkbestuurder oop</translation>
 <translation id="7907312522152480478">Om jou oortjies van jou ander toestelle te kry, verifieer dat dit jy is en sinkroniseer jou geskiedenis en oortjies. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7907837847548254634">Merk vinnig die voorwerp waarop gefokus word</translation>
+<translation id="7908205867885088429">Kry meer inligting oor die terugstel van instellings na verstek</translation>
 <translation id="7908835530772972485">Vee data uit wanneer jy alle vensters toemaak</translation>
 <translation id="7909324225945368569">Hernoem jou profiel</translation>
 <translation id="7909969815743704077">Afgelaai in Incognito</translation>
@@ -6661,6 +6679,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8323317289166663449">Lees en verander al jou data op jou rekenaar en alle webwerwe</translation>
 <translation id="8323518750352551353">Skei blaai?</translation>
 <translation id="8323744572398547859">Om jou oortjies van jou ander toestelle te kry, meld aan en sinkroniseer geskiedenis. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
+<translation id="8324035203198677529">Jou organisasie het Gemini Enterprise in Chrome afgeskakel. Jy kan aanhou om Gemini in Chrome te gebruik, maar dit sal nie meer inligting wat deur jou organisasie bestuur word, soek of daarna verwys nie. Jou kletsgeskiedenis sal dalk nie oorgedra word nie.</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>
 <translation id="8327386430364625757">Wiskundige lettertipe</translation>
@@ -6867,6 +6886,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8551388862522347954">Lisensies</translation>
 <translation id="8552102814346875916">Stoor op die "hou hierdie werwe altyd aktief"-lys</translation>
 <translation id="8552947739661397736">Neem taak oor (Gemini is tans in beheer)</translation>
+<translation id="8555042096950728024">Sleep of gebruik pylsleutels om te herrangskik</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – uitgevoude inhoud word gewys</translation>
 <translation id="8557022314818157177">Hou aan om jou sekuriteitsleutel te raak totdat jou vingerafdruk vasgevang is</translation>
 <translation id="8557100046150195444">Raak-ID om voort te gaan</translation>
@@ -6959,6 +6979,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8651806635673244884">Jy kan jou oortjies terugskuif na die bokant deur enige oortjie te regsklik en “Wys oortjies horisontaal” te kies</translation>
 <translation id="8652400352452647993">Pakketuitbreidingfout</translation>
 <translation id="8654151524613148204">Die lêer is te groot vir jou rekenaar om te hanteer. Jammer.</translation>
+<translation id="8654872240409864765">Jou organisasie het Gemini Enterprise in Chrome opgestel. Vra Gemini enigiets terwyl jy blaai, en kry antwoorde wat gegrond is op lêers en dienste in jou organisasie.</translation>
 <translation id="8657393004602556571">Wil jy die terugvoer weggooi?</translation>
 <translation id="865857184419171576">Vertaal onderskrifte in</translation>
 <translation id="865936634714975126">Voeg ’n navraagparameter by in die URL om tipes te kies wanneer die bladsy laai. Voorbeeld: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7122,6 +7143,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8813937837706331325">Middelmatige besparing</translation>
 <translation id="8815742860876889867">Maak skakel in geïsoleerde venster oop</translation>
 <translation id="881799181680267069">Versteek ander</translation>
+<translation id="8820301999480837183">Gefokus op groep <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8821206216942230957">Jou rekening het nie toegang tot Gemini in Chrome nie</translation>
 <translation id="8823514049557262177">Kopieer skakelteks</translation>
@@ -7161,6 +7183,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8863753581171631212">Maak skakel in nuwe <ph name="APP" /> oop</translation>
 <translation id="8864055848767439877">Deel <ph name="TAB_NAME" /> tans na <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Jou wagwoord is gestoor</translation>
+<translation id="8865924457197342642">Gemini Enterprise is nie meer beskikbaar nie</translation>
 <translation id="8866424952450451412">Bestuur jou gepasmaakte werkvloeie aangedryf deur</translation>
 <translation id="8867102760244540173">Soek oortjies …</translation>
 <translation id="8867568208303837180">Stuur tans …</translation>
@@ -7373,6 +7396,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9096776523567481218">nie plaaslik geïnstalleer nie</translation>
 <translation id="9099383880226822604">Reënwoud</translation>
 <translation id="9100765901046053179">Gevorderde instellings</translation>
+<translation id="9100928301185810363">Gefokus op naamlose groep – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Gee vir Chrome toegang in: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Plaaslike netwerk &gt; Chrome om uit te saai</translation>
 <translation id="9103868373786083162">Druk om terug te gaan, kontekskieslys om geskiedenis te sien</translation>
 <translation id="9107096627210171112">Vertaal …</translation>

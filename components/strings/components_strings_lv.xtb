@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Kopētais attēls</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> — lai izietu no pilnekrāna režīma, velciet no augšdaļas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="1132789342529761192">Nav ieteicams augšupielādēt</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, atzīmēts, izvēlnes vienums. Atlasiet, lai izslēgtu kopīgošanu</translation>
 <translation id="11370190534773372">Aizpildīti kartes dati</translation>
 <translation id="1138458427267715730">Saņemiet brīdinājumus, kad kādā tīmekļa vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="1142713751288681188">Papīra tips</translation>
@@ -928,6 +929,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2526062290525841862">Lai varētu palaist šo lietotni, atkārtoti iespējojiet izolētas tīmekļa lietotnes izstrādātāja režīmu.</translation>
 <translation id="2526280916094749336">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC kods ir norādīts kartes priekšpusē. Tas ir četrciparu kods augšējā labajā stūrī virs kartes numura.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, atzīmēts</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
 <translation id="2530042584066815841">Peles bloķēšana un izmantošana</translation>
 <translation id="2535585790302968248">Atvērt jaunu inkognito cilni privātai pārlūkošanai</translation>
@@ -1012,6 +1014,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2666092431469916601">Augša</translation>
 <translation id="2666117266261740852">Aizveriet citas cilnes vai lietotnes</translation>
 <translation id="266935134738038806">Apmeklēt vietni</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, izvēlnes vienums. Atlasiet, lai ieslēgtu kopīgošanu</translation>
 <translation id="2672201172023654893">Jūsu pārlūks netiek pārvaldīts.</translation>
 <translation id="2674170444375937751">Vai tiešām vēlaties dzēst šīs lapas no savas vēstures?</translation>
 <translation id="2675716371350192683">Jūsu saturs netiks izmantots, lai uzlabotu MI. Jūsu organizācija var jebkurā laikā mainīt šos iestatījumus.</translation>
@@ -1990,6 +1993,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
 <translation id="4297937944457164390">Atribūts “<ph name="ATTRIBUTE_NAME" />” ir atjaunināts</translation>
 <translation id="4298148761711700950">Maksājiet uzreiz bez kvadrātkoda augšupielādes</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Šīs vietnes sīkfaili tiek sinhronizēti visās jūsu Chrome OS ierīcēs. Lai pārvaldītu sinhronizētos datus, pārejiet uz vietni <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> avots <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Saīsnes nosaukums pārsniedz maksimālo atļauto garumu (<ph name="MAX_LENGTH" /> rakstzīmes).</translation>
@@ -2199,6 +2203,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
+<translation id="468826602575103388">Atlasiet, lai izslēgtu kopīgošanu</translation>
 <translation id="4690205240253392065">Izvēlieties pakalpojumu sniedzēju maksāšanai vēlāk</translation>
 <translation id="469028408546145398">Poga “Aizvērt inkognito režīma logus”. Aktivizējiet, lai aizvērtu visus atvērtos inkognito režīma logus.</translation>
 <translation id="4692623383562244444">Meklētājprogrammas</translation>
@@ -4170,6 +4175,7 @@ Papildu informācija:
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7943397946612013052">Bloķēta lejupielāde</translation>
 <translation id="7943893128817522649">Var pieprasīt atļauju automātiski lejupielādēt vairākus failus</translation>
+<translation id="7947144323420971076">Atlasiet, lai ieslēgtu kopīgošanu</translation>
 <translation id="7947285636476623132">Pārbaudiet derīguma termiņa gadu un mēģiniet vēlreiz.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai uzzinātu vairāk par Chrome funkcijām, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="7947964969544524438">Zināmā ceļotāja numura saglabāšana</translation>
@@ -4297,6 +4303,7 @@ Papildu informācija:
 <translation id="8172809706700703589">Izveido līdzi ņemamo mantu sarakstu manam ceļojumam</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8175053171643471349">Pārvaldīt lojalitātes kartes</translation>
+<translation id="817536628389054635">Tika aizpildīta kontaktinformācija: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Pārlūkprogrammā Chrome tiek piedāvāts saglabāt jūsu kartes Google kontā, jo esat pierakstījies. Varat mainīt šo darbību iestatījumos.</translation>
 <translation id="8176440868214972690">Šīs ierīces administrators ir nosūtījis informāciju, piemēram, iestatījumus vai politikas, uz tālāk norādītajām vietnēm.</translation>
 <translation id="818254048113802060">{0,plural, =1{Fails “<ph name="FILE_NAME" />” tika bloķēts satura dēļ}zero{<ph name="FILE_COUNT" /> faili tika bloķēti satura dēļ}one{<ph name="FILE_COUNT" /> fails tika bloķēts satura dēļ}other{<ph name="FILE_COUNT" /> faili tika bloķēti satura dēļ}}</translation>

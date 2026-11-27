@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Teie kopeeritud pilt</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="1132789342529761192">Üleslaadimine pole soovitatav</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, märgitud, menüü-üksus. Valige jagamise väljalülitamiseks.</translation>
 <translation id="11370190534773372">Kaardi andmed on täidetud</translation>
 <translation id="1138458427267715730">Teile saadetakse teavitus, kui hinda alandatakse ükskõik millisel veebisaidil</translation>
 <translation id="1142713751288681188">Paberi tüüp</translation>
@@ -928,6 +929,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2526062290525841862">Selle rakenduse käitamiseks lubage uuesti isoleeritud veebirakenduse arendaja režiim</translation>
 <translation id="2526280916094749336">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC asub kaardi esiküljel. See on kaardinumbrist paremal ülal asuv neljakohaline kood.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, märgitud</translation>
 <translation id="2529899080962247600">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõiki järgnevaid kirjeid eiratakse.</translation>
 <translation id="2530042584066815841">Hiire lukustamine ja kasutamine</translation>
 <translation id="2535585790302968248">Privaatselt sirvimiseks avage uus inkognito vaheleht</translation>
@@ -1012,6 +1014,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2666092431469916601">Üles</translation>
 <translation id="2666117266261740852">Sulgege muud vahelehed või rakendused</translation>
 <translation id="266935134738038806">Külasta saiti</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, menüü-üksus. Valige jagamise sisselülitamiseks.</translation>
 <translation id="2672201172023654893">Teie brauserit ei hallata.</translation>
 <translation id="2674170444375937751">Olete kindel, et soovite need leheküljed oma ajaloost kustutada?</translation>
 <translation id="2675716371350192683">Teie sisu ei kasutata AI täiustamiseks. Teie organisatsioon saab neid seadeid igal ajal muuta.</translation>
@@ -1992,6 +1995,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4297502707443874121">Lehe <ph name="THUMBNAIL_PAGE" /> pisipilt</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> on värskendatud</translation>
 <translation id="4298148761711700950">Maksa koheselt ilma QR-koodi üleslaadimiseta</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Selle saidi küpsiseid sünkroonitakse teie ChromeOS-i seadmetes. Avage <ph name="SYNC_SETTINGS" /> sünkroonimise haldamiseks.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> allikas <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Otsetee nimi ületab maksimaalset lubatud pikkust <ph name="MAX_LENGTH" /> tähemärki.</translation>
@@ -2201,6 +2205,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4682496302933121474">Kas tõlkida leht?</translation>
 <translation id="468314109939257734">Vaadake oma virtuaalkaardi numbrit</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>
+<translation id="468826602575103388">Valige jagamise väljalülitamiseks.</translation>
 <translation id="4690205240253392065">Valige järelmaksu teenusepakkuja</translation>
 <translation id="469028408546145398">Nupp Sule inkognito aknad, aktiveerige nupp kõigi praegu avatud inkognito akende sulgemiseks</translation>
 <translation id="4692623383562244444">Otsingumootorid</translation>
@@ -4172,6 +4177,7 @@ Lisateave:
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7943397946612013052">Blokeeritud allalaadimine</translation>
 <translation id="7943893128817522649">Saab küsida luba automaatselt mitu faili alla laadida</translation>
+<translation id="7947144323420971076">Valige jagamise sisselülitamiseks.</translation>
 <translation id="7947285636476623132">Kontrollige aegumisaastat ja proovige uuesti</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'i funktsioonide kohta lisateabe saamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="7947964969544524438">Known Traveler Numberi turvaliselt salvestamine</translation>
@@ -4299,6 +4305,7 @@ Lisateave:
 <translation id="8172809706700703589">Koosta minu reisi jaoks pakkimisnimekiri</translation>
 <translation id="8174047975335711832">Seadme teave</translation>
 <translation id="8175053171643471349">Kliendikaartide haldamine</translation>
+<translation id="817536628389054635">Täidetud kontaktteave: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome pakub võimalust salvestada kaardid teie Google'i kontole, kuna olete sisse logitud. Seda käitumist saab seadetes muuta.</translation>
 <translation id="8176440868214972690">Seadme administraator on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> blokeeriti sisu tõttu}other{<ph name="FILE_COUNT" /> faili blokeeriti sisu tõttu}}</translation>

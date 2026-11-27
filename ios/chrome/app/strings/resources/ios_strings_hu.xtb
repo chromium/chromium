@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">A mikrofont igénylő funkciók nem működnek majd</translation>
 <translation id="1622717322707146952">Válassza a „Hozzáadás a Google Naptárhoz” vagy a „Hozzáadás az Apple Naptárhoz” lehetőséget.</translation>
 <translation id="1629162218487290695">Személyazonosság igazolása…</translation>
+<translation id="1633084385573994059">Ne használja ezt a webhelyet</translation>
 <translation id="1634520742547161889">HH/ÉÉ</translation>
 <translation id="1636234353664774105">A navigációs funkció használatával részletes útvonaltervet kaphat úti céljához.</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">A webhelyek nem használhatják a mikrofont</translation>
 <translation id="2104436223719117661">Felkapott keresések</translation>
 <translation id="21133533946938348">Lap rögzítése</translation>
+<translation id="2113761902638026426">Engedélyezi a Gemini számára a(z) <ph name="SITE_DOMAIN" /> megnyitását?</translation>
 <translation id="2117650889962717098">Megőrizheti a böngészés privát jellegét az inkognitó módra való váltással</translation>
 <translation id="2119636449201577317">Megnyitás itt…</translation>
 <translation id="2119962645034852864">Egyes szolgáltatások nem állnak rendelkezésre a fiókjában</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Módosítások mentve</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ez egy felügyelt fiók.</translation>
 <translation id="3365529507898144230">Mentés a Fotókba</translation>
+<translation id="3371168305258344914">A Gemini egy olyan webhelyen fog műveletet végrehajtani, amelyen előfordulhat, hogy Önhöz tartozó bizalmas információk találhatók.</translation>
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
 <translation id="3377063233124932127">Mostantól a mentett könyvjelzők, jelszavak és egyebek felül jelennek meg.</translation>
 <translation id="3378214228000661758">Azonosítókulcs létrehozása a következő számára:</translation>
@@ -1508,6 +1511,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="567881659373499783">Verzió: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">A jelszavak Google-fiókban való használatához és mentéséhez igazolja személyazonosságát.</translation>
 <translation id="5684761169742812828">A jelszó nyilvánosságra került egy adatvédelmi incidens során az interneten. Ha jelenleg nincs ideje a módosításra, a Google azt javasolja, hogy tartsa meg ezt a figyelmeztetést, hogy később is emlékezzen rá.</translation>
+<translation id="5691020463738411542">A Biztonságos Böngészés beállításainak szinkronizálása az eszközök között</translation>
 <translation id="5694848685995373177">Mentve a Drive-ra a(z) <ph name="USER_EMAIL" /> fiókban.</translation>
 <translation id="570209299585559496">A Beállítások menü Tartalombeállítások szakaszában módosíthatja a webhelyek alapértelmezett nézetét asztali nézetre</translation>
 <translation id="5702108177581350218">Ha megosztja felhasználónevét és jelszavát, akkor családtagja kitöltheti őket a Google Jelszókezelővel.</translation>
@@ -1586,6 +1590,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5948605885471592910">Minden megnyitott elem megtekintése és kezelése</translation>
 <translation id="5952641243319721872">Biztosan szeretné elvetni a kijelölést?</translation>
 <translation id="5956112131836209882">Lapcsoportba tartozó lap. <ph name="NUMBER_OF_TABS_IN_GROUP" />/<ph name="TAB_INDEX_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Feladat indítása</translation>
 <translation id="595769230373966252">Keresőmotor: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Legközelebb megnyithatja itt a linkeket</translation>
 <translation id="5963939892571022323">Nem lehet linket létrehozni a kiemelt szöveghez.</translation>
@@ -1806,6 +1811,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>
 <translation id="6565899972286925956">Bármit létrehozhat</translation>
 <translation id="6571070086367343653">Hitelkártya szerkesztése</translation>
+<translation id="6571502147204686607">Védekezzen a nem biztonságos webhelyekkel szemben</translation>
 <translation id="6574092468346088891">A biztonsági ellenőrzés értesítéseinek bekapcsolása</translation>
 <translation id="6579867704846662339">Inkognitóban is megnyithatja más alkalmazások URL-jeit.</translation>
 <translation id="6585618849026997638">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben.</translation>
@@ -2246,6 +2252,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7921559948846049514">Válasszon témát, színt vagy egyebet a háttérhez</translation>
 <translation id="792357691529995513">Nem találtunk problémát</translation>
 <translation id="7925108652071887026">Automatikus kitöltés adatai</translation>
+<translation id="7926290435065552539">Tartsa biztonságban a jelszavait</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="792762900715361006">Fotó vagy videó készítése</translation>
 <translation id="7927711904086083099">Nincs kiválasztva</translation>
@@ -2664,6 +2671,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="9144230693397287797">Friss információkat kaphat a beállított emlékeztetőkről és a más eszközökön megnyitott lapokról.</translation>
 <translation id="914781932147356857">Az összes megjelölése…</translation>
 <translation id="9148126808321036104">Jelentkezzen be újra</translation>
+<translation id="914964947703922647">Feladat áttekintése</translation>
 <translation id="9149866541089851383">Szerkesztés...</translation>
 <translation id="9152637745605628097">Választhat témák és színek közül, vagy feltölthet képet</translation>
 <translation id="9153159728062222866">A másolás és beillesztés kihagyása</translation>

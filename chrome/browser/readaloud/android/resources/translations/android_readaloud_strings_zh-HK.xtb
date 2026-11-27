@@ -13,13 +13,13 @@
 <translation id="1807863182207623884">紅寶石</translation>
 <translation id="1921351128855867012">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="1984328900355667246">無法播放</translation>
-<translation id="2009730553732772041">系統會將你目前網頁的內容與網址提供給 Google，以產生音訊。你隨時可以前往設定更新這個選項。</translation>
+<translation id="2009730553732772041">你所在頁面的內容和網址會與 Google 分享，以生成音訊。你可隨時在設定中更新此選項。</translation>
 <translation id="2019727681730021602">標準播放</translation>
 <translation id="2224347680315897176">平穩</translation>
 <translation id="2575502321843437554">吸引力不足</translation>
 <translation id="2611765907167846862">穩重</translation>
 <translation id="3023502830214299618">很抱歉，目前無法播放此頁面。請稍後再試。</translation>
-<translation id="3431227249425330101">是否要繼續並允許 Chrome 使用網頁內容，以執行「朗讀這頁內容」功能？</translation>
+<translation id="3431227249425330101">如要繼續，要讓 Chrome 使用頁面內容朗讀此頁嗎？</translation>
 <translation id="3493899379487634969">出現什麼問題？</translation>
 <translation id="3730775656877876887">正在生成 AI 播放內容</translation>
 <translation id="3778044272390020426">負面意見選項選單</translation>
@@ -57,7 +57,7 @@
 <translation id="6889157801232138307">「朗讀此頁內容」播放器</translation>
 <translation id="7051308646573997571">珊瑚紅色</translation>
 <translation id="7138678301420049075">其他</translation>
-<translation id="7161867604252594316">「朗讀這頁內容」功能已關閉</translation>
+<translation id="7161867604252594316">「朗讀此頁面內容」已關閉</translation>
 <translation id="7221920857098237570">柔和</translation>
 <translation id="7237590978482584900">輕快</translation>
 <translation id="7282547042039404307">流暢</translation>

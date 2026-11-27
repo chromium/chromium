@@ -10108,9 +10108,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7402257017733669351">防止瀏覽器程序建立動態程式碼</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7406276857470642718">控制透過外部 IdP (使用 SAML) 進行驗證的使用者設定</translation>
-<translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
-
-      如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
 <translation id="7408815947231046196">允許備份 <ph name="PRODUCT_NAME" /> 資料</translation>
 <translation id="740885188496462583">啟用省電模式</translation>
 <translation id="7410074797376205571">允許 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
@@ -12202,8 +12199,6 @@ Proxy 可讓瀏覽器將網址的部分雜湊傳送給 Google，而不必連結�
 <translation id="8812091410765157924">只有在要求開啟彈出式視窗的網頁明確同意與該彈出式視窗互動時，才允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動</translation>
 <translation id="8812631362927615118">回報使用者安全信號時，啟用第一方驗證</translation>
 <translation id="8816370949847593408">視淘汰實施狀態而定，系統可能會不允許執行 Chrome 應用程式。</translation>
-<translation id="8818768076343557335">連上網路時一律預測網路動作 (行動網路除外)。
-          (在版本 50 中已不適用，在版本 52 中已遭移除。在 52 以上版本中，如果設定值為 1，系統會視為 0 - 連上網路時一律預測網路動作。)</translation>
 <translation id="8820434908768990758">啟用所有網站的網站隔離功能，但允許使用者停用</translation>
 <translation id="8821678641132607468">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入瀏覽記錄。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何瀏覽記錄。
 

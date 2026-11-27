@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012">Spol <ph name="NUMBER_OF_SECONDS" /> sekunder fremover</translation>
 <translation id="1984328900355667246">Avspilling er ikke tilgjengelig</translation>
+<translation id="2009730553732772041">Innholdet og nettadressen til siden du er på, deles med Google for å generere lyd. Du kan oppdatere dette valget i innstillingene når som helst.</translation>
 <translation id="2019727681730021602">Standard avspilling</translation>
 <translation id="2224347680315897176">Stødig</translation>
 <translation id="2575502321843437554">Ikke engasjerende nok</translation>
 <translation id="2611765907167846862">Rolig</translation>
 <translation id="3023502830214299618">Dessverre er avspilling ikke tilgjengelig for denne siden akkurat nå. Prøv igjen senere.</translation>
+<translation id="3431227249425330101">Vil du la Chrome bruke sideinnhold for Lytt til denne siden for å fortsette?</translation>
 <translation id="3493899379487634969">Hva gikk galt?</translation>
 <translation id="3730775656877876887">Genererer AI-avspilling</translation>
 <translation id="3778044272390020426">Meny med alternativer for negativ tilbakemelding</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">«Lytt til denne siden»-avspiller</translation>
 <translation id="7051308646573997571">Korallrød</translation>
 <translation id="7138678301420049075">Annet</translation>
+<translation id="7161867604252594316">«Lytt til denne siden» er av</translation>
 <translation id="7221920857098237570">Myk</translation>
 <translation id="7237590978482584900">Luftig</translation>
 <translation id="7282547042039404307">Jevn</translation>

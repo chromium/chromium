@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Imagem que copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair do ecrã inteiro, arraste a partir da parte superior e toque no botão anterior</translation>
 <translation id="1132789342529761192">Não é recomendado carregar</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, selecionado, item de menu. Selecionar para desativar a partilha</translation>
 <translation id="11370190534773372">Detalhes do cartão preenchidos</translation>
 <translation id="1138458427267715730">Receba alertas quando o preço descer em qualquer site na Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
@@ -928,6 +929,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2526062290525841862">Para executar esta app, reative o modo de programador para apps Web isoladas</translation>
 <translation id="2526280916094749336">Pode usar moradas guardadas em produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O seu Código de Segurança/CVC encontra-se na parte da frente do cartão. É o código de 4 dígitos no canto superior direito acima do número do cartão.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, selecionado</translation>
 <translation id="2529899080962247600">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão ignoradas.</translation>
 <translation id="2530042584066815841">Bloqueio e utilização do rato</translation>
 <translation id="2535585790302968248">Abra um novo separador de navegação anónima para navegar em privado</translation>
@@ -1012,6 +1014,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666117266261740852">Fechar outros separadores ou aplicações</translation>
 <translation id="266935134738038806">Visitar site</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, item de menu. Selecionar para ativar a partilha</translation>
 <translation id="2672201172023654893">O seu navegador não é gerido.</translation>
 <translation id="2674170444375937751">Tem a certeza de que quer eliminar estas páginas do seu histórico?</translation>
 <translation id="2675716371350192683">O seu conteúdo não vai ser usado para melhorar a IA. A sua organização pode alterar estas definições em qualquer altura.</translation>
@@ -1992,6 +1995,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> atualizado</translation>
 <translation id="4298148761711700950">Faça pagamentos instantâneos sem carregar códigos QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Os cookies deste site são sincronizados nos seus dispositivos com ChromeOS. Para gerir o que sincroniza, aceda a <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" />, fonte <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">O nome do atalho excede o comprimento máximo permitido de <ph name="MAX_LENGTH" /> carateres.</translation>
@@ -2201,6 +2205,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4682496302933121474">Traduzir a página?</translation>
 <translation id="468314109939257734">Veja o número do cartão virtual</translation>
 <translation id="4686942373615810936">Criado agora mesmo</translation>
+<translation id="468826602575103388">Selecione para desativar a partilha</translation>
 <translation id="4690205240253392065">Escolha um fornecedor de opções para pagar depois</translation>
 <translation id="469028408546145398">Botão Fechar janelas de navegação anónima; ative para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="4692623383562244444">Motores de pesquisa</translation>
@@ -4171,6 +4176,7 @@ Detalhes adicionais:
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943397946612013052">Transferência bloqueada</translation>
 <translation id="7943893128817522649">Pode solicitar a transferência automática de vários ficheiros</translation>
+<translation id="7947144323420971076">Selecione para ativar a partilha</translation>
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="7947964969544524438">Guarde o Known Traveler Number em segurança</translation>
@@ -4298,6 +4304,7 @@ Detalhes adicionais:
 <translation id="8172809706700703589">Cria uma lista de coisas a levar na mala para a minha viagem</translation>
 <translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8175053171643471349">Faça a gestão dos cartões de fidelidade</translation>
+<translation id="817536628389054635">Informações de contacto preenchidas: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições.</translation>
 <translation id="8176440868214972690">O administrador deste serviço enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="818254048113802060">{0,plural, =1{O ficheiro <ph name="FILE_NAME" /> foi bloqueado devido ao conteúdo}other{<ph name="FILE_COUNT" /> ficheiros foram bloqueados devido ao conteúdo}}</translation>

@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">ဖိုင်ကို ရွေးပြီး <ph name="KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ဖိုင်ကို ဖွင့်၍မရပါ}other{ဖိုင်များကို ဖွင့်၍မရပါ}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+နောက်ထပ် ၁ ခု}other{+နောက်ထပ် # ခု}}</translation>
 <translation id="1283126956823499975">စက်ပစ္စည်း စနစ်ထည့်သွင်းမှုတွင် တစ်ခုခု မှားသွားသည်</translation>
 <translation id="1285992161347843613">ဖုန်းရှာခြင်း</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> အမည်ရသည့် သိမ်းထားသောမျက်နှာပြင်သည် ရှိပြီးသားဖြစ်သည်</translation>
@@ -2189,6 +2190,7 @@
 <translation id="6249795363855770621">ပြီးပြီဟု မှတ်သား၍မရပါ။ အွန်လိုင်းချိတ်သည့်အခါ ထပ်စမ်းပါ။</translation>
 <translation id="625369703868467034">ကွန်ရက် အခြေအနေ</translation>
 <translation id="6254629735336163724">အလျားလိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+နောက်ထပ်လင့်ခ် ၁ ခု}other{+နောက်ထပ်လင့်ခ် # ခု}}</translation>
 <translation id="6259776178973198997">တိုက်ရိုက် WiFi ပိုင်ရှင်များ အချက်အလက်ကို ပြန်လည်စတင်ရန်</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />။ <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ဖွင့်ပေးနေ...</translation>

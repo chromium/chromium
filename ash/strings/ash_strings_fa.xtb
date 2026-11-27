@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">فایل را انتخاب کنید و <ph name="KEY" /> را فشار دهید</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{فایل باز نمی‌شود}one{فایل باز نمی‌شود}other{فایل‌ها باز نمی‌شود}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{‫۱+ مورد دیگر}one{‏‫‎+# نفر دیگر}other{‏‫‎+# نفر دیگر}}</translation>
 <translation id="1283126956823499975">هنگام راه‌اندازی دستگاه مشکلی پیش آمد</translation>
 <translation id="1285992161347843613">پیدا کردن تلفن</translation>
 <translation id="1287002645302686982">میز کار ذخیره‌شده‌ای با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل موجود است</translation>
@@ -2191,6 +2192,7 @@
 <translation id="6249795363855770621">به‌عنوان تکمیل‌شده علامت زده نشد. وقتی آنلاین شدید دوباره امتحان کنید.</translation>
 <translation id="625369703868467034">سلامت شبکه</translation>
 <translation id="6254629735336163724">قفل درحالت افقی</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{‫+۱ پیوند دیگر}one{‏‫‎+# پیوند دیگر}other{‏‫‎+# پیوند دیگر}}</translation>
 <translation id="6259776178973198997">‏بازآوری اطلاعات مالکان Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: در حال فعال‌سازی…</translation>

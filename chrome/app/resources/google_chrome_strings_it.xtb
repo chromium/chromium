@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1651617469580841801">Quando utilizzi Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Stai condividendo questa scheda con la Ricerca Google</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti agli strumenti di ricerca, all'AI e all'agente della tua organizzazione per ricevere suggerimenti.</translation>
 <translation id="1698376642261615901">Google Chrome è un browser web che apre pagine e applicazioni web con grande velocità. È veloce, stabile e facile da utilizzare. Esplora il Web in modo più sicuro grazie alla protezione contro malware e phishing incorporata in Google Chrome.</translation>
@@ -254,6 +255,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="3380249972812870825">Per aprire Gemini in Chrome, premi <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome ha aggiunto l'AI che viene eseguita sul tuo dispositivo. I siti e Chrome possono usarla per funzionalità come:</translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
+<translation id="3404531968986217414">Avvia un nuovo thread con la Ricerca Google</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3438681572027105609">Accedi a Chrome per trovare le password e altri dati su tutti i dispositivi</translation>
 <translation id="3450887623636316740">Questo file potrebbe essere pericoloso<ph name="LINE_BREAK" />Chrome può controllare il download per te se fornisci la password. Le informazioni sul file vengono inviate a Google Navigazione sicura, ma i contenuti e la password del file rimangono sul dispositivo.</translation>
@@ -395,6 +397,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
 <translation id="5043786843026425788">Scopri di più sulla ricerca con Google Lens in Chrome</translation>
 <translation id="504867494566807945">Apri i link in Chrome da qualsiasi app. Inoltre, per un accesso più facile, l'app viene fissata sulla barra delle applicazioni.</translation>
+<translation id="507983337152787026">Avvia un nuovo thread con la Ricerca Google</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{La protezione avanzata richiede il riavvio di Chrome per applicare un aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{La protezione avanzata richiede il riavvio di Chrome per applicare un aggiornamento. Ci sono # finestre Incognito e isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="5105120510934353742">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere macOS 13 o versioni successive. Su questo computer è installato macOS 12.</translation>
 <translation id="5114340746415930644">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="USER_EMAIL" /></translation>
@@ -419,6 +422,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="524751727772074981">Chiedi qualsiasi cosa, ovunque ti trovi, con Gemini in Chrome</translation>
 <translation id="5247617065091903691">Puoi fissare il riquadro laterale della Ricerca Google per fare domande mentre navighi</translation>
 <translation id="5271833978500241046">Usale insieme ad altre funzionalità di Gemini in Chrome</translation>
+<translation id="528611299569739095">Questo browser gestito può utilizzare Gemini configurato per il lavoro tramite <ph name="DOMAIN" />. Può trovare informazioni e fornire risposte fondate su file e servizi dell'organizzazione. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
 <translation id="5320351714793324716">Se consenti i cookie, Chromium potrebbe usarli durante il precaricamento</translation>
 <translation id="5321325624576443340">Google Lens non è disponibile. Riprova più tardi.</translation>
 <translation id="5346389065299425353">Approfondisci la ricerca aggiungendo più schede, file e strumenti</translation>
@@ -441,7 +445,9 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5600352656975192682">Fissa Chrome alla barra delle app per accedervi rapidamente in qualsiasi momento</translation>
 <translation id="5602351063754773347">Chrome consiglia di rimuoverla. <ph name="BEGIN_LINK" />Scopri di più sulle estensioni supportate<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Passa a Gemini Enterprise gestito da <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Personalizza Chrome</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Annulla la condivisione della scheda con la Ricerca Google}other{Annulla la condivisione di # schede con la Ricerca Google}}</translation>
 <translation id="5649156266046089790">Con i profili Chrome puoi separare tutti i tuoi contenuti di Chrome. Crea profili per amici e familiari oppure dividi i dati di lavoro e i contenuti di svago.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="566568153320186256">Chrome risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento fluido e le frequenze fotogrammi dei video. <ph name="BEGIN_LINK" />Scopri di più sulla modalità Risparmio energetico<ph name="END_LINK" /></translation>
@@ -535,6 +541,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6417690341895039567">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="6426623519983252346">La prossima volta che aprirai Chrome su iOS, ti verrà chiesto di provare <ph name="FEATURE_NAME" />.</translation>
+<translation id="6431496891888891615">Puoi passare a Gemini associato in origine al tuo Account Google e non gestito tramite <ph name="DOMAIN" />. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
 <translation id="6434035853014503219">Grazie per aver scelto Chrome come browser predefinito.</translation>
 <translation id="6438015621983209660">Estendi la Navigazione sicura avanzata con Chrome sul tuo smartphone</translation>
 <translation id="6442774133615368941">Acquista, traduci e identifica ciò che vedi con la fotocamera sull'app Chrome per iOS</translation>
@@ -571,6 +578,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6712881677154121168">Errore di download: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Rendi Chrome più veloce</translation>
 <translation id="6734827584173583205">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="COUNT" /> autorizzazioni.</translation>
+<translation id="6737759643107005803">Torna a Gemini non gestito da <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Chiudi la ricerca attiva in questa scheda</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
 <translation id="6760235774835597023">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi. Questa impostazione è attiva.</translation>
@@ -649,6 +657,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
 <translation id="7496017508659652909">Chrome precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Stai condividendo questa scheda con la Ricerca Google</translation>
 <translation id="7514258452813684157">Servizio di Google Updater</translation>
 <translation id="7515191208480168435">Puoi bloccare Google Lens per un facile accesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -735,6 +744,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8291415872436043161">Scarica Chrome</translation>
 <translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Condividi scheda con la Ricerca Google}other{Condividi # schede con la Ricerca Google}}</translation>
 <translation id="8313851650939857356">Errore di avvio: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321058241987390452">Operazione riuscita. Ora puoi fare domande in tutta semplicità mentre navighi con il riquadro della Ricerca Google</translation>
 <translation id="8336463659890584292">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chrome usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
@@ -789,6 +799,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8712767363896337380">Aggiornamento quasi terminato. Riavvia Chrome per terminare l'aggiornamento.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per tenere separata la tua navigazione, accedi a Chrome con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere all'elenco di lettura e molto altro dal <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Esci da Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Condividi scheda con la Ricerca Google}other{Condividi # schede con la Ricerca Google}}</translation>
 <translation id="873133009373065397">Google Chrome non è in grado di determinare o impostare il browser predefinito</translation>
 <translation id="8747073452963259673">angolo in basso a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in basso <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando ci torni. <ph name="BEGIN_LINK" />Scopri di più sulla modalità Risparmio memoria<ph name="END_LINK" /></translation>
@@ -840,6 +851,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Abbonamento Google.</translation>
 <translation id="922152298093051471">Personalizza Chrome</translation>
 <translation id="93760716455950538">Riavvia ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Annulla la condivisione della scheda con la Ricerca Google}other{Annulla la condivisione di # schede con la Ricerca Google}}</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="983803489796659991">Installazione non riuscita perché il server di aggiornamento non dispone di dati di hashing per l'applicazione.</translation>
 <translation id="989816563149873169">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chrome all'altro</translation>

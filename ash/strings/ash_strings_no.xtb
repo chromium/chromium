@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Velg en fil og trykk på <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Kan ikke åpne filen}other{Kan ikke åpne filene}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 til}other{+# til}}</translation>
 <translation id="1283126956823499975">Noe gikk galt under konfigureringen av enheten</translation>
 <translation id="1285992161347843613">Finn telefonen</translation>
 <translation id="1287002645302686982">Det finnes allerede et lagret skrivebord med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -2189,6 +2190,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6249795363855770621">Kunne ikke merke som fullført. Prøv på nytt når du er på nett.</translation>
 <translation id="625369703868467034">Nettverkstilstand</translation>
 <translation id="6254629735336163724">Låst til horisontal</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 link til}other{+# linker til}}</translation>
 <translation id="6259776178973198997">Last inn informasjon om Wifi Direct-eiere på nytt</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveres …</translation>

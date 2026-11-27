@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1006344083777662909">你正在與「搜尋」分享這個分頁</translation>
+<translation id="1006344083777662909">你目前正與「搜尋」分享此分頁</translation>
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="1029669172902658969">重新啟動以更新 &amp;Chromium 作業系統</translation>
 <translation id="1040916596585577953">Chromium 建議你審核此擴充程式</translation>
@@ -86,7 +86,7 @@
 <translation id="1880495786739455486">你可在側面板中重新開啟「搜尋」，以在瀏覽時提問</translation>
 <translation id="1880677175115548835">選擇文字</translation>
 <translation id="188102464690227119">工具列嘅 [在側面板搜尋] 掣換咗新圖示。㩒一下就可以透過側面板嘅「搜尋」，喺瀏覽嘅時候問問題。</translation>
-<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - 你正在與「搜尋」分享這個分頁</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - 你而家同「搜尋」分享緊呢個分頁</translation>
 <translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如流暢捲動和影片影格速率) 來節省電池電量。<ph name="BEGIN_LINK" />進一步瞭解省電模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新程式服務</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
@@ -106,7 +106,7 @@
 <translation id="2086476982681781442">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="208726765006323911">下次開啟 iOS 版 Chromium 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
 <translation id="2099452623287920103">你儲存在 Google 帳戶的密碼和其他 Chromium 資料，將會從這部裝置移除。如要再次在 Chromium 中使用這些資料，請重新登入。</translation>
-<translation id="2104346008417283366">你可以切換至原本與 Google 帳戶相關聯且不受「<ph name="DOMAIN" />」管理的 Gemini。切換時必須重新啟動 Chromium。</translation>
+<translation id="2104346008417283366">你可以切換至原本與 Google 帳戶關聯且不受 <ph name="DOMAIN" /> 管理的 Gemini。切換需要重新啟動 Chromium。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>
 <translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
 <translation id="2135919691573380097">舉報此網站</translation>
@@ -274,7 +274,7 @@
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="3950481960271781644">如要在你的所有裝置上取用已儲存的資料及其他設定，請登入 Chromium</translation>
-<translation id="3956384805063254165">這個受管理的瀏覽器可以使用由「<ph name="DOMAIN" />」設定的工作用 Gemini。這項功能可搜尋資訊，並根據貴機構的檔案和服務提供解答。切換時必須重新啟動 Chromium。</translation>
+<translation id="3956384805063254165">此受管瀏覽器可使用由 <ph name="DOMAIN" /> 為工作設定的 Gemini，根據機構檔案和服務尋找資料並提供答案。切換需要重新啟動 Chromium。</translation>
 <translation id="395904275706073188">無法讀取受保護的頁面，請嘗試其他頁面。</translation>
 <translation id="3962647064319009959">瞭解 Chromium 如何使用者的網上安全</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -367,7 +367,7 @@
 <translation id="494490797786467921">點擊即可關閉 Chromium 登入對話框</translation>
 <translation id="4950660488495335294">透過 Chromium 設定檔，你可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="4992938037305302429">你在 Chromium 的帳戶</translation>
-<translation id="5088350632679445418">透過「搜尋」發起新對話串</translation>
+<translation id="5088350632679445418">使用「搜尋」開始新對話串</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5141988424377517949">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
@@ -420,7 +420,7 @@
 <translation id="5595526984151073167">{NUM_TABS,plural, =1{與「搜尋」分享分頁}other{與「搜尋」分享 # 個分頁}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{管理員要求你重新啟動 Chromium 以套用更新。隔離視窗不會重開。}other{管理員要求你重新啟動 Chromium 以套用更新。# 個隔離視窗不會重開。}}</translation>
 <translation id="5596627076506792578">更多選項</translation>
-<translation id="5608863008645990586">切換至由「<ph name="DOMAIN" />」管理的 Gemini Enterprise</translation>
+<translation id="5608863008645990586">切換至由 <ph name="DOMAIN" /> 管理的 Gemini Enterprise</translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" />已準備就緒。你可立即重新啟動，亦可設定讓 Chromium 在下次螢幕保持開啟且閒置 <ph name="IDLE_DURATION" />後更新。</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發佈 # 天}}</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
@@ -514,7 +514,7 @@
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6460614424172581323">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用分頁群組。</translation>
 <translation id="6466344609055215035">從 Chromium 移除帳戶</translation>
-<translation id="6475125381371849386">透過「搜尋」發起新對話串</translation>
+<translation id="6475125381371849386">使用「搜尋」開始新對話串</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="651535675648445253">在 Chromium 中開啟捷徑</translation>
@@ -544,7 +544,7 @@
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chromium。</translation>
 <translation id="6729124504294600478">如要取得個人化和其他功能，請將 Chromium 加入「網絡和應用程式活動記錄」以及連結的 Google 服務</translation>
 <translation id="6734291798041940871">已為您電腦上的所有使用者安裝 Chromium。</translation>
-<translation id="6737759643107005803">切換回不受「<ph name="DOMAIN" />」管理的 Gemini</translation>
+<translation id="6737759643107005803">切換回非由 <ph name="DOMAIN" /> 管理的 Gemini</translation>
 <translation id="6742093177587589736">如要在你的所有裝置上取用書籤及其他設定，請登入 Chromium。登入後，此書籤就會儲存至 Google 帳戶。</translation>
 <translation id="674891594898436429">關閉此分頁進行中的搜尋</translation>
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防攻擊的能力會略為下降。此設定已開啟。</translation>
