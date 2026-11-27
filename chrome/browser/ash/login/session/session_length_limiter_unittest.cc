@@ -849,6 +849,15 @@ class DemoModeSessionLengthLimiterTest : public SessionLengthLimiterTest {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
+  void TearDown() override {
+    // Both are process-wide globals; leaking them makes later tests in the
+    // same process (e.g. AshTestHelper-based ones) misbehave.
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
+
+    SessionLengthLimiterTest::TearDown();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
   ScopedCrosSettingsTestHelper settings_helper_;
