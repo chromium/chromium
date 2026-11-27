@@ -759,7 +759,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaSpinbuttonValueChanged() {
         performTest(
                 "aria-spinbutton-value-change.html",
