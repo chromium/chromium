@@ -176,31 +176,6 @@ NSString* const kPopoverDismissRegionIdentifier = @"PopoverDismissRegion";
 NSString* const kShareSheetContainerIdentifier =
     @"ShareSheet.RemoteContainerView";
 
-// Returns the center of the largest band of `region` that is not covered by
-// `excluded`, among the bands above, below, left and right of `excluded`.
-CGPoint PointInRegionOutsideOfRect(CGRect region, CGRect excluded) {
-  CGFloat space_above = CGRectGetMinY(excluded) - CGRectGetMinY(region);
-  CGFloat space_below = CGRectGetMaxY(region) - CGRectGetMaxY(excluded);
-  CGFloat space_left = CGRectGetMinX(excluded) - CGRectGetMinX(region);
-  CGFloat space_right = CGRectGetMaxX(region) - CGRectGetMaxX(excluded);
-  CGFloat max_space =
-      std::max({space_above, space_below, space_left, space_right});
-  if (max_space == space_above) {
-    return CGPointMake(CGRectGetMidX(region),
-                       CGRectGetMinY(region) + space_above / 2);
-  }
-  if (max_space == space_below) {
-    return CGPointMake(CGRectGetMidX(region),
-                       CGRectGetMaxY(excluded) + space_below / 2);
-  }
-  if (max_space == space_left) {
-    return CGPointMake(CGRectGetMinX(region) + space_left / 2,
-                       CGRectGetMidY(region));
-  }
-  return CGPointMake(CGRectGetMaxX(excluded) + space_right / 2,
-                     CGRectGetMidY(region));
-}
-
 NSString* const kWaitForPageToStartLoadingError = @"Page did not start to load";
 NSString* const kWaitForPageToFinishLoadingError =
     @"Page did not finish loading";
@@ -256,6 +231,33 @@ void GREYAssertErrorNil(NSError* error, NSString* format, ...) {
   NSString* message = [[NSString alloc] initWithFormat:format arguments:args];
   va_end(args);
   GREYAssertNil(error, @"%@\n%@", message, error.description);
+}
+
+CGPoint PointInRegionOutsideOfRect(CGRect region, CGRect excluded) {
+  excluded = CGRectIntersection(region, excluded);
+  if (CGRectIsNull(excluded) || CGRectIsEmpty(excluded)) {
+    return CGPointMake(CGRectGetMidX(region), CGRectGetMidY(region));
+  }
+  CGFloat space_above = CGRectGetMinY(excluded) - CGRectGetMinY(region);
+  CGFloat space_below = CGRectGetMaxY(region) - CGRectGetMaxY(excluded);
+  CGFloat space_left = CGRectGetMinX(excluded) - CGRectGetMinX(region);
+  CGFloat space_right = CGRectGetMaxX(region) - CGRectGetMaxX(excluded);
+  CGFloat max_space =
+      std::max({space_above, space_below, space_left, space_right});
+  if (max_space == space_above) {
+    return CGPointMake(CGRectGetMidX(region),
+                       CGRectGetMinY(region) + space_above / 2);
+  }
+  if (max_space == space_below) {
+    return CGPointMake(CGRectGetMidX(region),
+                       CGRectGetMaxY(excluded) + space_below / 2);
+  }
+  if (max_space == space_left) {
+    return CGPointMake(CGRectGetMinX(region) + space_left / 2,
+                       CGRectGetMidY(region));
+  }
+  return CGPointMake(CGRectGetMaxX(excluded) + space_right / 2,
+                     CGRectGetMidY(region));
 }
 }  // namespace chrome_test_util
 
@@ -2214,8 +2216,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       // iPad), so only its on-screen part is considered.
       CGRect visibleRegion =
           CGRectIntersection(dismissRegion.frame, application.frame);
-      CGPoint tapPoint =
-          PointInRegionOutsideOfRect(visibleRegion, shareSheet.frame);
+      CGPoint tapPoint = chrome_test_util::PointInRegionOutsideOfRect(
+          visibleRegion, shareSheet.frame);
       XCUICoordinate* screenOrigin =
           [application coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
       [[screenOrigin coordinateWithOffset:CGVectorMake(tapPoint.x, tapPoint.y)]

@@ -47,6 +47,13 @@ void GREYAssertErrorNil(NSError* error);
 void GREYAssertErrorNil(NSError* error, NSString* format, ...)
     NS_FORMAT_FUNCTION(2, 3);
 
+// Returns the center of the band of `region` with the greatest clearance
+// outside `excluded` (above, below, left, or right of `excluded`). `excluded`
+// is clipped to `region` so views extending past `region` (e.g., into
+// safe-area insets) still produce an in-bounds point; callers must ensure
+// `excluded` does not cover all of `region`.
+CGPoint PointInRegionOutsideOfRect(CGRect region, CGRect excluded);
+
 }  // namespace chrome_test_util
 
 // Overload of grey_longPressWithDuration() taking a base::TimeDelta.

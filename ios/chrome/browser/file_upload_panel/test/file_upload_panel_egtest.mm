@@ -22,6 +22,7 @@
 #import "ios/chrome/test/buildflags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -133,6 +134,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Opens the file picker and navigates to the downloads directory.
 - (void)openFilePickerAndNavigateToDownloads;
+
+// Dismisses the file upload panel context menu and waits for it to disappear.
+- (void)dismissContextMenu;
 
 // Waits for the SubmittedFileCount histogram to be recorded with the given
 // `expectedCount`.
@@ -284,6 +288,17 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   XCUIElement* targetCell =
       [self cellWithIdentifierPrefix:@"ios_chrome_eg2tests" inApp:serviceApp];
   [self forceTap:targetCell];
+}
+
+- (void)dismissContextMenu {
+  GREYAssertTrue([ChromeEarlGreyUI dismissContextMenuIfPresent],
+                 @"Failed to dismiss file upload panel.");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_kindOfClassName(@"_UIContextMenuContainerView")];
+  // `waitForUIElementToDisappearWithMatcher:` polls without waiting for UIKit
+  // animations to finish. Wait for idle so UIKit's dismissal completion block
+  // records `IOS.FileUploadPanel.SubmittedFileCount` before asserting metrics.
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // Waits for the SubmittedFileCount histogram to be recorded with the given
@@ -606,12 +621,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                           IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
-  // Tap somewhere else to dismiss the panel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
+  // Dismiss the panel.
+  [self dismissContextMenu];
 
   NSError* error = nil;
   error = [MetricsAppInterface
@@ -630,12 +641,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                           IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
 
-  // Tap somewhere else to dismiss the panel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL)];
+  // Dismiss the panel.
+  [self dismissContextMenu];
 
   // Check that the metric was recorded twice.
   error = [MetricsAppInterface

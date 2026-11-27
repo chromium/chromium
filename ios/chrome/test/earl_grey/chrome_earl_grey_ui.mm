@@ -4,7 +4,10 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 
+#import <XCTest/XCTest.h>
+
 #import "base/ios/ios_util.h"
+#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -116,6 +119,11 @@ bool IsAppCompactWidth() {
 
   return sizeClass == UIUserInterfaceSizeClassCompact;
 }
+
+// Minimum distance in points between the tap point and the excluded view
+// (and, since the tap lands at the midpoint of the free band, the safe-area
+// edge as well) so UIKit touch slop does not hit the view or system chrome.
+constexpr CGFloat kMinimumTapEdgeDistance = 2.0;
 
 // Maximum number of times `typeTextInOmnibox:andPressEnter:` will attempt to
 // type the given text in the Omnibox. If it still cannot be typed properly
@@ -455,17 +463,67 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (BOOL)dismissContextMenuIfPresent {
-  // There is no way to programmatically dismiss the native context menu from
-  // application side, so instead tap on the context menu container view if it
-  // exists.
+  id<GREYMatcher> containerMatcher =
+      grey_allOf(grey_kindOfClassName(@"_UIContextMenuContainerView"),
+                 grey_sufficientlyVisible(), nil);
   NSError* err = nil;
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
-                                              @"_UIContextMenuContainerView"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))
+  [[EarlGrey selectElementWithMatcher:containerMatcher]
+      performAction:[ChromeEarlGreyAppInterface actionToDismissContextMenu]
               error:&err];
-  return err == nil;
+  if (err) {
+    if (!([err.domain isEqualToString:kGREYInteractionErrorDomain] &&
+          err.code == kGREYInteractionElementNotFoundErrorCode)) {
+      LOG(WARNING) << "dismissContextMenuIfPresent failed: "
+                   << base::SysNSStringToUTF8(err.localizedDescription);
+    }
+    return NO;
+  }
+  return YES;
+}
+
+- (void)tapOutsideElementWithMatcher:(id<GREYMatcher>)matcher {
+  // On iOS 27, EarlGrey's in-process taps do not reliably dismiss native UIKit
+  // sheets or popovers, and tapping outside the safe area can hit the status
+  // bar, Dynamic Island, or home indicator instead of the dismissing backdrop.
+  // Tap via XCUITest inside the owning window's safe area outside `matcher`.
+  EDORemoteVariable<NSValue*>* elementFrame = [[EDORemoteVariable alloc] init];
+  EDORemoteVariable<NSValue*>* safeArea = [[EDORemoteVariable alloc] init];
+  [[EarlGrey selectElementWithMatcher:matcher]
+      performAction:[ChromeEarlGreyAppInterface
+                        actionToReadScreenFrame:elementFrame
+                                       safeArea:safeArea]];
+  EG_TEST_HELPER_ASSERT_TRUE(
+      elementFrame.object && safeArea.object,
+      ([NSString stringWithFormat:@"Missing screen bounds (frame=%@, "
+                                  @"safeArea=%@, matcher=%@).",
+                                  elementFrame.object, safeArea.object,
+                                  matcher]));
+  const CGRect excludedRect = elementFrame.object.CGRectValue;
+  const CGRect windowSafeArea = safeArea.object.CGRectValue;
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  const CGRect appFrame = app.frame;
+  const CGRect tapRegion = CGRectIntersection(windowSafeArea, appFrame);
+  EG_TEST_HELPER_ASSERT_TRUE(
+      !CGRectIsNull(tapRegion) && !CGRectIsEmpty(tapRegion),
+      ([NSString stringWithFormat:@"Safe tap region is empty (safeArea=%@, "
+                                  @"appFrame=%@, matcher=%@).",
+                                  NSStringFromCGRect(windowSafeArea),
+                                  NSStringFromCGRect(appFrame), matcher]));
+  const CGPoint tapPoint =
+      chrome_test_util::PointInRegionOutsideOfRect(tapRegion, excludedRect);
+  EG_TEST_HELPER_ASSERT_TRUE(
+      !CGRectContainsPoint(CGRectInset(excludedRect, -kMinimumTapEdgeDistance,
+                                       -kMinimumTapEdgeDistance),
+                           tapPoint),
+      ([NSString stringWithFormat:@"No tappable space outside frame %@ within "
+                                  @"safe area %@ (matcher: %@).",
+                                  NSStringFromCGRect(excludedRect),
+                                  NSStringFromCGRect(tapRegion), matcher]));
+  XCUICoordinate* origin =
+      [app coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  [[origin coordinateWithOffset:CGVectorMake(
+                                    tapPoint.x - CGRectGetMinX(appFrame),
+                                    tapPoint.y - CGRectGetMinY(appFrame))] tap];
 }
 
 - (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher {

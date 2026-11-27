@@ -378,6 +378,23 @@ NSSet<UISceneSession*>* AllSceneSessions() {
   return sessions;
 }
 
+// Appends every `UIContextMenuInteraction` attached to `view` or its
+// descendants (including hidden views, such as `ContextMenuPresenter`'s anchor
+// button) to `interactions`.
+void CollectContextMenuInteractions(
+    UIView* view,
+    NSMutableArray<UIContextMenuInteraction*>* interactions) {
+  for (id<UIInteraction> interaction in view.interactions) {
+    if (UIContextMenuInteraction* context_menu_interaction =
+            base::apple::ObjCCast<UIContextMenuInteraction>(interaction)) {
+      [interactions addObject:context_menu_interaction];
+    }
+  }
+  for (UIView* subview in view.subviews) {
+    CollectContextMenuInteractions(subview, interactions);
+  }
+}
+
 }  // namespace
 
 @implementation JavaScriptExecutionResult
@@ -2365,6 +2382,86 @@ NSSet<UISceneSession*>* AllSceneSessions() {
   return InAppWaiter::Get().PrepareCondition(^bool {
     return ![self isViewAnimatingWithAccessibilityID:expectedID];
   });
+}
+
+#pragma mark - UI Utilities
+
++ (id<GREYAction>)actionToReadScreenFrame:(EDORemoteVariable*)outFrame
+                                 safeArea:(EDORemoteVariable*)outSafeArea {
+  return [GREYActionBlock
+      actionWithName:@"Read view screen bounds"
+         constraints:grey_kindOfClass([UIView class])
+        performBlock:^BOOL(id element, __strong NSError** errorOrNil) {
+          UIView* view = base::apple::ObjCCastStrict<UIView>(element);
+          UIWindow* window = view.window;
+          if (!window || !window.screen || CGRectIsEmpty(window.bounds)) {
+            if (errorOrNil) {
+              *errorOrNil = testing::NSErrorWithLocalizedDescription(
+                  @"Matched view has no valid window or screen.");
+            }
+            return NO;
+          }
+          CGRect safeBounds =
+              UIEdgeInsetsInsetRect(window.bounds, window.safeAreaInsets);
+          if (CGRectIsEmpty(safeBounds)) {
+            if (errorOrNil) {
+              *errorOrNil = testing::NSErrorWithLocalizedDescription(
+                  @"Owning window has an empty safe area.");
+            }
+            return NO;
+          }
+          CGRect viewBounds = [view convertRect:view.bounds toView:window];
+          if (CGRectIsNull(viewBounds) || CGRectIsEmpty(viewBounds)) {
+            if (errorOrNil) {
+              *errorOrNil = testing::NSErrorWithLocalizedDescription(
+                  @"Matched view has an empty frame.");
+            }
+            return NO;
+          }
+          id<UICoordinateSpace> screenSpace = window.screen.coordinateSpace;
+          outFrame.object =
+              [NSValue valueWithCGRect:[window convertRect:viewBounds
+                                           toCoordinateSpace:screenSpace]];
+          outSafeArea.object =
+              [NSValue valueWithCGRect:[window convertRect:safeBounds
+                                           toCoordinateSpace:screenSpace]];
+          return YES;
+        }];
+}
+
++ (id<GREYAction>)actionToDismissContextMenu {
+  return [GREYActionBlock
+      actionWithName:@"Dismiss context menu"
+         constraints:grey_kindOfClass([UIView class])
+        performBlock:^BOOL(id element, __strong NSError** errorOrNil) {
+          UIView* view = base::apple::ObjCCastStrict<UIView>(element);
+          UIWindow* window = view.window;
+          if (!window) {
+            if (errorOrNil) {
+              *errorOrNil = testing::NSErrorWithLocalizedDescription(
+                  @"Matched view has no valid window.");
+            }
+            return NO;
+          }
+          NSArray<UIWindow*>* windows =
+              window.windowScene ? window.windowScene.windows : @[ window ];
+          NSMutableArray<UIContextMenuInteraction*>* interactions =
+              [[NSMutableArray alloc] init];
+          for (UIWindow* sceneWindow in windows) {
+            CollectContextMenuInteractions(sceneWindow, interactions);
+          }
+          if (interactions.count == 0) {
+            if (errorOrNil) {
+              *errorOrNil = testing::NSErrorWithLocalizedDescription(
+                  @"No UIContextMenuInteraction found in window scene.");
+            }
+            return NO;
+          }
+          for (UIContextMenuInteraction* interaction in interactions) {
+            [interaction dismissMenu];
+          }
+          return YES;
+        }];
 }
 
 @end

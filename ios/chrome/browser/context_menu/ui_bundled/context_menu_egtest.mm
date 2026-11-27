@@ -55,7 +55,6 @@ using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
-using chrome_test_util::WebViewMatcher;
 
 namespace {
 // Directory containing the `kLogoPagePath` and `kLogoPageImageSourcePath`
@@ -310,11 +309,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Taps on the web view to dismiss the context menu without using anything on
-// it.
+// Dismisses the presented context menu and waits for it to disappear.
 void ClearContextMenu() {
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  GREYAssertTrue([ChromeEarlGreyUI dismissContextMenuIfPresent],
+                 @"Failed to dismiss context menu.");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_kindOfClassName(@"_UIContextMenuContainerView")];
 }
 
 // Taps on `context_menu_item_button` context menu item.

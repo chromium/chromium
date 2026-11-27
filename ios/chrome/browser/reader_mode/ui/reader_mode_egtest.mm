@@ -858,9 +858,10 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   // Open Reading Mode options view.
   [self openReaderModeCustomizationOptions];
 
-  // Tap on the top left corner of the screen to dismiss the options view.
-  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
-      performAction:grey_tapAtPoint(CGPointMake(5, 5))];
+  // Tap outside of the options view to dismiss it.
+  [ChromeEarlGreyUI
+      tapOutsideElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
 
   // The options view should be hidden.
   [ChromeEarlGrey

@@ -165,9 +165,17 @@
 // Waits for the app to idle.
 - (void)waitForAppToIdle;
 
-// Tries to dismiss any presented native context menu.
-// Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
+// Tries to dismiss any presented native context menu via
+// `-[UIContextMenuInteraction dismissMenu]`. Returns `YES` if a context menu
+// was found and dismissal was requested, otherwise returns `NO`. Does not wait
+// for the menu to disappear.
 - (BOOL)dismissContextMenuIfPresent;
+
+// Taps via XCUITest inside the owning window's safe area outside the view
+// matching `matcher`. Preferred over EarlGrey taps when dismissing native
+// UIKit sheets or popovers that ignore in-process taps on iOS 27. Does not
+// wait for dismissal. Induces a `GREYAssert` on failure.
+- (void)tapOutsideElementWithMatcher:(id<GREYMatcher>)matcher;
 
 // Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
 // YES.

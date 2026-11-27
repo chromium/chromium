@@ -14,7 +14,9 @@
 #import "components/sync/base/data_type.h"
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
+@class EDORemoteVariable;
 @class ElementSelector;
+@protocol GREYAction;
 @protocol GREYMatcher;
 enum class TipsNotificationType;
 
@@ -930,6 +932,22 @@ enum class TipsNotificationType;
 // Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForViewToStopAnimatingWithAccessibilityID:
     (NSString*)accessibilityID;
+
+#pragma mark - UI Utilities
+
+// Returns a `GREYAction` that writes the matched `UIView`'s frame to `outFrame`
+// and its owning window's safe-area bounds to `outSafeArea` (both boxed as
+// `NSValue`s in interface-oriented screen coordinates, i.e.
+// `UIScreen.coordinateSpace`). Fails the action if the view has no valid
+// window or either rect is empty.
++ (id<GREYAction>)actionToReadScreenFrame:(EDORemoteVariable*)outFrame
+                                 safeArea:(EDORemoteVariable*)outSafeArea;
+
+// Returns a `GREYAction` that dismisses the context menu hosted in the matched
+// `UIView`'s window scene via `-[UIContextMenuInteraction dismissMenu]`. Fails
+// the action if the view has no valid window or no `UIContextMenuInteraction`
+// is found.
++ (id<GREYAction>)actionToDismissContextMenu;
 
 @end
 
