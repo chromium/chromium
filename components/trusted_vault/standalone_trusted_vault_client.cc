@@ -89,7 +89,7 @@ void StandaloneTrustedVaultClient::Enroll(
 
 void StandaloneTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  frontend_->ClearLocalDataForAccount(account_info, security_domain_);
+  frontend_->ClearLocalDataForAccount(account_info);
 }
 
 void StandaloneTrustedVaultClient::WaitForIdleForTesting(

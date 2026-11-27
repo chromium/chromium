@@ -480,23 +480,10 @@ void LocalDomainsStorage::MutateDomain(
   WriteToDisk();
 }
 
-void LocalDomainsStorage::ClearDomainDataForUser(const GaiaId& gaia_id,
-                                                 SecurityDomainId domain) {
-  CHECK(data_.has_value());
-  trusted_vault_pb::UserDomainData* user = FindUser(gaia_id);
-  if (!user) {
-    return;
-  }
-  const int32_t domain_id = static_cast<int32_t>(domain);
-  const size_t removed_domains = google::protobuf::erase_if(
-      *user->mutable_domain_data(),
-      [domain_id](const trusted_vault_pb::DomainData& domain_data) {
-        return domain_data.domain_id() == domain_id;
-      });
-  const size_t removed_keys = vault_keys_.erase({gaia_id, domain});
-  if (removed_domains > 0 || removed_keys > 0) {
-    WriteToDisk();
-  }
+void LocalDomainsStorage::ClearDataForUser(const GaiaId& gaia_id) {
+  RemoveUsers([&](const trusted_vault_pb::UserDomainData& user) {
+    return user.gaia_id() == gaia_id.ToString();
+  });
 }
 
 void LocalDomainsStorage::ClearDataForUnknownUsersOrMarkForDeletion(

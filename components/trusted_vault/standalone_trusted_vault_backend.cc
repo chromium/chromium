@@ -732,19 +732,14 @@ void StandaloneTrustedVaultBackend::OnEnrolled(
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
-    const CoreAccountInfo& account_info,
-    SecurityDomainId security_domain) {
-  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  storage_->ClearDomainDataForUser(account_info.gaia, security_domain);
+    const CoreAccountInfo& account_info) {
+  storage_->ClearDataForUser(account_info.gaia);
 
-  // This codepath is invoked as part of sync reset. While sync reset can cause
-  // resetting the primary account, this is not the case for ChromeOS and Butter
-  // mode. Trigger recovery factor registration immediately for the primary
-  // account as it can succeed in these cases.
-  if (primary_account_.has_value() &&
-      primary_account_->gaia == account_info.gaia) {
-    MaybeRegisterLocalRecoveryFactors(security_domain);
-  }
+  // This codepath invoked as part of sync reset. While sync reset can cause
+  // resetting primary account, this is not the case for Chrome OS and Butter
+  // mode. Trigger recovery factor registration attempt immediately as it can
+  // succeed in these cases.
+  MaybeRegisterLocalRecoveryFactorsForAllDomains();
   NotifyIdleForTestingIfNecessary();
 }
 

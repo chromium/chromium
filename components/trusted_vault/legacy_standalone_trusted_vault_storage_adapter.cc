@@ -4,8 +4,6 @@
 
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
 
-#include <string>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -38,37 +36,10 @@ void LegacyStandaloneTrustedVaultStorageAdapter::ReadDataFromDisk() {
   storage_->ReadDataFromDisk();
 }
 
-void LegacyStandaloneTrustedVaultStorageAdapter::ClearDomainDataForUser(
-    const GaiaId& gaia_id,
-    SecurityDomainId domain) {
-  CHECK_EQ(domain, SecurityDomainId::kChromeSync);
-  if (!storage_->FindUserVault(gaia_id)) {
-    return;
-  }
-  storage_->MutateUserVault(gaia_id, [](UserVault& user_vault) {
-    const std::string preserved_gaia_id = user_vault.gaia_id();
-    const std::optional<bool> should_delete_keys_when_non_primary =
-        user_vault.has_should_delete_keys_when_non_primary()
-            ? std::optional<bool>(
-                  user_vault.should_delete_keys_when_non_primary())
-            : std::nullopt;
-    const std::optional<std::string> private_key_material =
-        user_vault.local_device_registration_info().has_private_key_material()
-            ? std::optional<std::string>(
-                  user_vault.local_device_registration_info()
-                      .private_key_material())
-            : std::nullopt;
-
-    user_vault.Clear();
-    user_vault.set_gaia_id(preserved_gaia_id);
-    if (should_delete_keys_when_non_primary.has_value()) {
-      user_vault.set_should_delete_keys_when_non_primary(
-          *should_delete_keys_when_non_primary);
-    }
-    if (private_key_material.has_value()) {
-      user_vault.mutable_local_device_registration_info()
-          ->set_private_key_material(*private_key_material);
-    }
+void LegacyStandaloneTrustedVaultStorageAdapter::ClearDataForUser(
+    const GaiaId& gaia_id) {
+  storage_->RemoveUserVaults([&](const UserVault& vault) {
+    return vault.gaia_id() == gaia_id.ToString();
   });
 }
 
