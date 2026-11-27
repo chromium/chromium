@@ -176,8 +176,10 @@ class TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) = 0;
 
-  // Clears all data associated with |account_info|. Doesn't remove account from
-  // storage.
+  // Clears local data associated with `account_info` for this client's
+  // security domain, preserving data for other security domains and shared
+  // local recovery factor key material (such as physical device key pairs).
+  // Doesn't remove `account_info` from storage.
   virtual void ClearLocalDataForAccount(
       const CoreAccountInfo& account_info) = 0;
 };

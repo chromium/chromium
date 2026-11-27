@@ -87,7 +87,7 @@ enum class MutationType {
   kSetLastRegistrationReturnedLocalDataObsolete,
   kSetLastFailedRequestMillis,
   kSetDegradedRecoverabilityState,
-  kClearDataForUser,
+  kClearDomainDataForUser,
   kClearDataForUnknownUsersOrMarkForDeletion,
   kClearDataForUsersMarkedForDeletion,
 };
@@ -300,8 +300,8 @@ void ApplyMutation(StandaloneTrustedVaultStorage& storage,
       storage.SetDegradedRecoverabilityState(gaia_id, kDomain, state);
       return;
     }
-    case MutationType::kClearDataForUser:
-      storage.ClearDataForUser(gaia_id);
+    case MutationType::kClearDomainDataForUser:
+      storage.ClearDomainDataForUser(gaia_id, kDomain);
       return;
     case MutationType::kClearDataForUnknownUsersOrMarkForDeletion: {
       base::flat_set<GaiaId> known_gaia_ids;
@@ -363,7 +363,7 @@ auto FuzzedMutationDomain() {
           MutationType::kSetLastRegistrationReturnedLocalDataObsolete,
           MutationType::kSetLastFailedRequestMillis,
           MutationType::kSetDegradedRecoverabilityState,
-          MutationType::kClearDataForUser,
+          MutationType::kClearDomainDataForUser,
           MutationType::kClearDataForUnknownUsersOrMarkForDeletion,
           MutationType::kClearDataForUsersMarkedForDeletion,
       }),

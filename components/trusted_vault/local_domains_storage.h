@@ -70,7 +70,8 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
 
   // StandaloneTrustedVaultStorage implementation:
   void ReadDataFromDisk() override;
-  void ClearDataForUser(const GaiaId& gaia_id) override;
+  void ClearDomainDataForUser(const GaiaId& gaia_id,
+                              SecurityDomainId domain) override;
   void ClearDataForUnknownUsersOrMarkForDeletion(
       const base::flat_set<GaiaId>& known_gaia_ids,
       const std::optional<GaiaId>& primary_account_gaia_id) override;
