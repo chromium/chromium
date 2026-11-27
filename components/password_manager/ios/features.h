@@ -47,6 +47,14 @@ extern const base::FeatureParam<AutoSubmissionType>::Option
 // A value of 0 means no wait period.
 extern const base::FeatureParam<int> kAutoSubmissionWaitPeriodMsParam;
 
+// Enables showing a dedicated no-passwords screen in the remote actor
+// credential sharing bottom sheet when no saved passwords are found for the
+// requested site.
+BASE_DECLARE_FEATURE(kRemoteActorCredentialSharingNoPasswordsUI);
+
+// Returns whether `kRemoteActorCredentialSharingNoPasswordsUI` is enabled.
+bool IsRemoteActorCredentialSharingNoPasswordsUIEnabled();
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_FEATURES_H_

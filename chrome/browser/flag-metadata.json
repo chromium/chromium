@@ -8692,6 +8692,16 @@
     "expiry_milestone": 166
   },
   {
+    "name": "remote-actor-credential-sharing-no-passwords-ui",
+    "owners": [
+      "novakovica@google.com",
+      "sugoi@chromium.org",
+      "tmartino@chromium.org",
+      "bling-transactions@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "render-document",
     "owners": [ "rakina@chromium.org" ],
     "expiry_milestone": 150

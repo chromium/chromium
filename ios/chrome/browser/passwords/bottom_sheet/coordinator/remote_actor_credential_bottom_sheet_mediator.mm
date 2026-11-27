@@ -25,6 +25,7 @@
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_utils.h"
+#import "components/password_manager/ios/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
@@ -284,7 +285,9 @@ using password_manager::RemoteActorCredentialSharingResult;
   // Keeps the sheet open so the user learns why the remote actor can't sign
   // in, until they go back to it. Nothing was shared, so there is no loading
   // state to end.
-  if (result == RemoteActorCredentialSharingResult::kNoPasswordsFound) {
+  if (result == RemoteActorCredentialSharingResult::kNoPasswordsFound &&
+      password_manager::features::
+          IsRemoteActorCredentialSharingNoPasswordsUIEnabled()) {
     _noPasswordsFound = YES;
     [_consumer showNoSavedPasswords];
     return;

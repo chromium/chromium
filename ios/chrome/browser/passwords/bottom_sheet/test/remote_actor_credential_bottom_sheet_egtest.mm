@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/remote_actor/remote_actor_config.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
+#import "components/password_manager/ios/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
@@ -187,6 +188,16 @@ void DismissBottomSheetWithCancel() {
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(
       password_manager::features::kRemoteActorCredentialSharing);
+  if ([self
+          isRunningTest:
+              @selector(
+                  testBottomSheetDismissesOnNoSavedPasswordsWhenFlagDisabled)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kRemoteActorCredentialSharingNoPasswordsUI);
+  } else {
+    config.features_enabled.push_back(
+        password_manager::features::kRemoteActorCredentialSharingNoPasswordsUI);
+  }
   config.features_disabled.push_back(kEnableNewStartupFlow);
   return config;
 }
@@ -412,6 +423,18 @@ void DismissBottomSheetWithCancel() {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:backToGeminiButtonMatcher];
+}
+
+// Tests that navigating to a valid Remote Actor URL for a domain without saved
+// passwords finishes immediately with `kNoPasswordsFound` and dismisses the
+// bottom sheet when `kRemoteActorCredentialSharingNoPasswordsUI` is disabled.
+- (void)testBottomSheetDismissesOnNoSavedPasswordsWhenFlagDisabled {
+  [self openRemoteActorURLWithSuggestions:@[]];
+
+  WaitForResult(RemoteActorCredentialSharingResult::kNoPasswordsFound);
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier)];
 }
 
 @end

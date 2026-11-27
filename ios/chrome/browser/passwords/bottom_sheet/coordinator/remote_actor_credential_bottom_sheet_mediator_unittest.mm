@@ -15,6 +15,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
@@ -26,6 +27,7 @@
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
+#import "components/password_manager/ios/features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/test/test_sync_service.h"
@@ -545,10 +547,12 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 }
 
 // Tests that finding no saved passwords shows the no saved passwords state
-// instead of finishing, and that leaving the sheet then reports
-// `kNoPasswordsFound`.
+// instead of finishing when `kRemoteActorCredentialSharingNoPasswordsUI` is
+// enabled, and that leaving the sheet then reports `kNoPasswordsFound`.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestNoPasswordsFoundShowsNoSavedPasswords) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kRemoteActorCredentialSharingNoPasswordsUI);
   mediator_ = CreateMediatorWithSignedInSyncingUser();
   OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
   mediator_.consumer = consumer_;
@@ -560,4 +564,31 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
             didFinishWithResult:RemoteActorCredentialSharingResult::
                                     kNoPasswordsFound]);
   [mediator_ didCancel];
+}
+
+// Tests that finding no saved passwords finishes immediately with
+// `kNoPasswordsFound` without showing the no saved passwords UI when
+// `kRemoteActorCredentialSharingNoPasswordsUI` is disabled.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestNoPasswordsFoundFinishesImmediatelyWhenFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kRemoteActorCredentialSharingNoPasswordsUI);
+  mediator_ = CreateMediatorWithSignedInSyncingUser();
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+  mediator_.consumer = consumer_;
+
+  base::test::TestFuture<void> finished_future;
+  base::RepeatingClosure finished_callback =
+      finished_future.GetRepeatingCallback();
+  OCMExpect([consumer_ setLoading:NO]);
+  OCMExpect([delegate_ mediator:mediator_
+                didFinishWithResult:RemoteActorCredentialSharingResult::
+                                        kNoPasswordsFound])
+      .andDo(^(NSInvocation*) {
+        finished_callback.Run();
+      });
+
+  [mediator_ start];
+  EXPECT_TRUE(finished_future.Wait());
 }

@@ -23,4 +23,12 @@ const base::FeatureParam<AutoSubmissionType> kAutoSubmissionTypeParam{
 const base::FeatureParam<int> kAutoSubmissionWaitPeriodMsParam{
     &kIOSPasswordAutoSubmission, "auto-submission-wait-period-ms", 0};
 
+BASE_FEATURE(kRemoteActorCredentialSharingNoPasswordsUI,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRemoteActorCredentialSharingNoPasswordsUIEnabled() {
+  return base::FeatureList::IsEnabled(
+      kRemoteActorCredentialSharingNoPasswordsUI);
+}
+
 }  // namespace password_manager::features

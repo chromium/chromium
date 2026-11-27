@@ -1859,6 +1859,13 @@ inline constexpr char kRemoteActorCredentialSharingDescription[] =
     "account. When requested, the user will be prompted to select a password "
     "and authenticate.";
 
+inline constexpr char kRemoteActorCredentialSharingNoPasswordsUIName[] =
+    "Enable the no-passwords UI for remote actor credential sharing";
+inline constexpr char kRemoteActorCredentialSharingNoPasswordsUIDescription[] =
+    "When enabled, shows an informational screen in the remote actor "
+    "credential bottom sheet when no saved password is found for the requested "
+    "site, instead of returning immediately to the actor.";
+
 inline constexpr char kRemoveExcessNTPsExperimentName[] =
     "Remove extra New Tab Pages";
 inline constexpr char kRemoveExcessNTPsExperimentDescription[] =

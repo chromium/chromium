@@ -3249,6 +3249,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kMagicStackSurfaceAwareRankingName,
      flag_descriptions::kMagicStackSurfaceAwareRankingDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMagicStackSurfaceAwareRanking)},
+    {"remote-actor-credential-sharing-no-passwords-ui",
+     flag_descriptions::kRemoteActorCredentialSharingNoPasswordsUIName,
+     flag_descriptions::kRemoteActorCredentialSharingNoPasswordsUIDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kRemoteActorCredentialSharingNoPasswordsUI)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
