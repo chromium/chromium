@@ -68,6 +68,18 @@ typedef NS_ENUM(NSInteger, GeminiCancelType);
 // Called when the Nano Banana attachment selection in the input plate changes.
 - (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected;
 
+// Called when a discovery banner of `bannerType` (e.g. the personalization
+// notice) is shown for `conversationID`.
+- (void)didPresentDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID;
+
+// Called when a previously presented discovery banner of `bannerType` is fully
+// dismissed for `conversationID`.
+- (void)didDismissDiscoveryBannerWithType:
+            (ios::provider::GeminiDiscoveryBannerType)bannerType
+                           conversationID:(NSString*)conversationID;
+
 // Called when a request to detach a tab with the given ID is made.
 - (void)didRequestToDetachTabWithID:(NSString*)tabID;
 

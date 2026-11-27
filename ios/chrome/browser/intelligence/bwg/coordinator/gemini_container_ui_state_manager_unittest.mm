@@ -551,11 +551,13 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUpdateDetent) {
 TEST_F(GeminiContainerUIStateManagerTest, TestReset) {
   [state_manager_ setupInitialUIStateWithConversation:NO];
   state_manager_.hasConversation = YES;
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:YES];
   [state_manager_ reset];
   EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown, state_manager_.viewMode);
   EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
             state_manager_.processingStatus);
   EXPECT_FALSE(state_manager_.hasConversation);
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
 }
 
 // Tests that shouldBeDismissed returns YES only when Floaty is minimized in

@@ -230,6 +230,10 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   [self updateUIState:[self defaultFloatyUIState]];
 }
 
+- (void)handlePersonalizationNoticeVisibilityChanged:(BOOL)visible {
+  _zeroStateSuggestionChipsSuppressed = visible;
+}
+
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
                                      error:(NSError*)error {
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
@@ -260,6 +264,7 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   _hasConversation = NO;
   _viewMode = GeminiViewMode::kUnknown;
   _processingStatus = GeminiClientMode::kUnknown;
+  _zeroStateSuggestionChipsSuppressed = NO;
   _currentUIState = {};
 }
 
