@@ -5,6 +5,7 @@
 // clang-format off
 import type {SettingsSiteDataElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {CrDialogElement} from 'chrome://settings/settings.js';
 import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -55,8 +56,9 @@ suite('SiteDataTest', function() {
     page.remove();
   });
 
-  function getDefaultBlockDialog() {
-    return page.shadowRoot!.querySelector('#defaultBlockDialog');
+  function getDefaultBlockDialog(): CrDialogElement|null {
+    return page.shadowRoot!.querySelector<CrDialogElement>(
+        '#defaultBlockDialog');
   }
 
   test('DefaultSettingAllowUpdatesPref', async function() {
@@ -241,5 +243,30 @@ suite('SiteDataTest', function() {
     assertTrue(!!blockExceptionsList);
     assertEquals(
         'combined', blockExceptionsList.getAttribute('cookies-exception-type'));
+  });
+
+  test('BlockSiteDataEscapeCancelsDialogAndAllowsReopen', async function() {
+    // Default is 'allow' and confirmation dialog is not shown.
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
+    assertEquals(null, getDefaultBlockDialog());
+
+    page.$.defaultBlock.click();
+    await eventToPromise('change', page.$.defaultGroup);
+    const dialog = getDefaultBlockDialog();
+    assertTrue(dialog !== null);
+
+    // Dismissing the dialog via Escape fires 'cancel' on cr-dialog.
+    dialog.cancel();
+    await flushTasks();
+
+    assertEquals(null, getDefaultBlockDialog());
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
+
+    // Re-selecting block must be able to open the confirmation dialog again.
+    page.$.defaultBlock.click();
+    await eventToPromise('change', page.$.defaultGroup);
+    assertTrue(getDefaultBlockDialog() !== null);
   });
 });

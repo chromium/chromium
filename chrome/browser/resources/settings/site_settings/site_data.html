@@ -71,7 +71,8 @@
     cookies-exception-type="combined">
 </site-list>
 <template is="dom-if" if="[[showDefaultBlockDialog_]]" restamp>
-  <cr-dialog id="defaultBlockDialog" show-on-attach>
+  <cr-dialog id="defaultBlockDialog" show-on-attach
+      on-cancel="onDefaultBlockDialogCancel_">
     <div slot="title">$i18n{siteDataPageBlockConfirmDialogTitle}</div>
     <div slot="body">$i18n{siteDataPageBlockConfirmDialogDescription}</div>
     <div slot="button-container">
