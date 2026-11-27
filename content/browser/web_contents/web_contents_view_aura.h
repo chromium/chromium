@@ -64,6 +64,12 @@ class CONTENT_EXPORT WebContentsViewAura
   // Allow the WebContentsViewDelegate to be set explicitly.
   void SetDelegateForTesting(std::unique_ptr<WebContentsViewDelegate> delegate);
 
+  // Whether the view currently observes the window that hosts its native view
+  // and its native view's WindowTreeHost for bounds changes. See
+  // WindowObserver.
+  bool IsObservingHostWindowForTesting() const;
+  bool IsObservingWindowTreeHostForTesting() const;
+
   // Set a flag to pass nullptr as the parent_view argument to
   // RenderWidgetHostViewAura::InitAsChild().
   void set_init_rwhv_with_null_parent_for_testing(bool set) {

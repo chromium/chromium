@@ -383,6 +383,73 @@ TEST_F(WebContentsViewAuraTest, ShowHideParent) {
   EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
 }
 
+// The host window and the WindowTreeHost are observed for bounds changes only
+// while the view's window is visible, whether it is the window itself or an
+// ancestor that is hidden.
+TEST_F(WebContentsViewAuraTest, ObservesHostsOnlyWhileVisible) {
+  WebContentsViewAura* view = GetView();
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+
+  GetNativeView()->Hide();
+  EXPECT_FALSE(view->IsObservingHostWindowForTesting());
+  EXPECT_FALSE(view->IsObservingWindowTreeHostForTesting());
+  GetNativeView()->Show();
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+
+  root_window()->Hide();
+  EXPECT_FALSE(view->IsObservingHostWindowForTesting());
+  EXPECT_FALSE(view->IsObservingWindowTreeHostForTesting());
+  root_window()->Show();
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+
+  // Out of the window tree there is nothing to observe, visible or not.
+  root_window()->RemoveChild(GetNativeView());
+  EXPECT_FALSE(view->IsObservingHostWindowForTesting());
+  EXPECT_FALSE(view->IsObservingWindowTreeHostForTesting());
+  root_window()->AddChild(GetNativeView());
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+}
+
+// A hidden WebContents that is still rendered, because it is captured or has
+// picture-in-picture content for instance, keeps its widget shown, and the
+// renderer keeps taking screen rects. RenderWidgetHostViewAura shows the
+// widget's window, a child of the view's window, for exactly as long as that
+// lasts, so the hosts are observed while a child window is shown even though
+// the view's window is hidden.
+TEST_F(WebContentsViewAuraTest, ObservesHostsWhileWidgetWindowShown) {
+  WebContentsViewAura* view = GetView();
+  // The test RenderWidgetHostView's window is not a child of the view's
+  // window, unlike one made by RenderWidgetHostViewAura::InitAsChild().
+  aura::Window* const widget_window =
+      web_contents()->GetRenderWidgetHostView()->GetNativeView();
+  widget_window->Hide();
+  GetNativeView()->AddChild(widget_window);
+
+  GetNativeView()->Hide();
+  EXPECT_FALSE(view->IsObservingHostWindowForTesting());
+  EXPECT_FALSE(view->IsObservingWindowTreeHostForTesting());
+
+  widget_window->Show();
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+
+  widget_window->Hide();
+  EXPECT_FALSE(view->IsObservingHostWindowForTesting());
+  EXPECT_FALSE(view->IsObservingWindowTreeHostForTesting());
+
+  // A visible view's window is observed whatever the state of its widget.
+  GetNativeView()->Show();
+  EXPECT_TRUE(view->IsObservingHostWindowForTesting());
+  EXPECT_TRUE(view->IsObservingWindowTreeHostForTesting());
+
+  GetNativeView()->RemoveChild(widget_window);
+  widget_window->Show();
+}
+
 TEST_F(WebContentsViewAuraTest, WebContentsDestroyedDuringClick) {
   RunCallbackOnActivation delegate(base::BindOnce(
       &RenderViewHostTestHarness::DeleteContents, base::Unretained(this)));

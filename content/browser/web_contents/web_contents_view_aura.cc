@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -473,34 +474,42 @@ class WebContentsViewAura::WindowObserver
   WindowObserver(const WindowObserver&) = delete;
   WindowObserver& operator=(const WindowObserver&) = delete;
 
-  ~WindowObserver() override {
-    view_->window_->RemoveObserver(this);
-    if (view_->window_->GetHost())
-      view_->window_->GetHost()->RemoveObserver(this);
-    if (host_window_)
-      host_window_->RemoveObserver(this);
+  ~WindowObserver() override { view_->window_->RemoveObserver(this); }
+
+  bool IsObservingHostWindow() const {
+    return host_window_observation_.IsObserving();
+  }
+  bool IsObservingWindowTreeHost() const {
+    return host_tree_observation_.IsObserving();
   }
 
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override {
-    if (window != view_->window_.get())
-      return;
+    if (window == view_->window_.get()) {
+      UpdateHostObservations();
+    }
+  }
 
-    aura::Window* const host_window = GetHostWindow(window);
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    // `window` is the view's window, one of its ancestors or descendants, or
+    // the host window, so ShouldObserveHosts() may have changed either way.
+    UpdateHostObservations();
+  }
 
-    if (host_window_)
-      host_window_->RemoveObserver(this);
-
-    host_window_ = host_window;
-    if (host_window)
-      host_window->AddObserver(this);
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (window == view_->window_.get() && key == aura::client::kHostWindowKey) {
+      UpdateHostObservations();
+    }
   }
 
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override {
-    CHECK(window == host_window_ || window == view_->window_.get(),
+    CHECK(host_window_observation_.IsObservingSource(window) ||
+              window == view_->window_.get(),
           base::NotFatalUntil::M158);
     if (!ShouldNotifyOfBoundsChanges())
       return;
@@ -515,9 +524,8 @@ class WebContentsViewAura::WindowObserver
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    if (window == host_window_) {
-      host_window_->RemoveObserver(this);
-      host_window_ = nullptr;
+    if (host_window_observation_.IsObservingSource(window)) {
+      host_window_observation_.Reset();
     }
   }
 
@@ -525,7 +533,7 @@ class WebContentsViewAura::WindowObserver
     if (window != view_->window_.get())
       return;
 
-    window->GetHost()->AddObserver(this);
+    UpdateHostObservations();
     if (view_->web_contents_->IsBeingCaptured())
       view_->video_capture_lock_ = window->GetHost()->CreateVideoCaptureLock();
   }
@@ -533,8 +541,7 @@ class WebContentsViewAura::WindowObserver
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override {
     if (window == view_->window_.get()) {
-      window->GetHost()->RemoveObserver(this);
-      pending_window_changes_.reset();
+      StopObservingWindowTreeHost();
       view_->video_capture_lock_.reset();
     }
   }
@@ -574,6 +581,70 @@ class WebContentsViewAura::WindowObserver
   }
 
  private:
+  // Whether the host window and the WindowTreeHost have to be observed.
+  // RenderWidgetHostImpl::SendScreenRects() forwards bounds changes only
+  // while the widget is shown, and RenderWidgetHostViewAura shows its window,
+  // a child of the view's window, exactly then. A hidden view's window can
+  // still have a shown child, e.g. while the WebContents is captured (see
+  // WebContentsImpl::CalculatePageVisibilityState()).
+  bool ShouldObserveHosts() const {
+    aura::Window* const window = view_->window_.get();
+    if (window->IsVisible()) {
+      return true;
+    }
+    for (aura::Window* child : window->children()) {
+      if (child->TargetVisibility()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Observes the host window (see GetHostWindow()) and the WindowTreeHost
+  // only while ShouldObserveHosts(), so that their observer lists do not grow
+  // with the number of tabs in a browser window.
+  void UpdateHostObservations() {
+    aura::Window* const window = view_->window_.get();
+    // A host window that is not visible, like the container that holds a view
+    // between two widgets on ChromeOS, is not where the view is shown, so its
+    // bounds are of no use to the renderer and there is nothing to observe.
+    aura::Window* const host_window = GetHostWindow(window);
+    const bool observe =
+        host_window && host_window->IsVisible() && ShouldObserveHosts();
+    const bool was_observing_host_window =
+        host_window && host_window_observation_.IsObservingSource(host_window);
+
+    if (!(observe && was_observing_host_window)) {
+      host_window_observation_.Reset();
+      if (observe) {
+        host_window_observation_.Observe(host_window);
+      }
+    }
+
+    aura::WindowTreeHost* const host = window->GetHost();
+    if (!(observe && host && host_tree_observation_.IsObservingSource(host))) {
+      StopObservingWindowTreeHost();
+      if (observe && host) {
+        host_tree_observation_.Observe(host);
+      }
+    }
+
+    // Bounds changes of the hosts were not forwarded while they were not
+    // observed, so pass the current rects on now. RenderWidgetHostImpl::
+    // SendScreenRects() ignores unchanged rects and, for a hidden widget,
+    // the call altogether, since WasShown() sends them anyway.
+    if (observe && !was_observing_host_window &&
+        ShouldNotifyOfBoundsChanges()) {
+      SendScreenRects();
+    }
+  }
+
+  void StopObservingWindowTreeHost() {
+    host_tree_observation_.Reset();
+    // A bounds change the host had started is no longer ours to finish.
+    pending_window_changes_.reset();
+  }
+
   bool ShouldNotifyOfBoundsChanges() const {
     // Do not notify of bounds changes for guests as guests' window bounds are
     // supposed to come from its embedder.
@@ -626,9 +697,12 @@ class WebContentsViewAura::WindowObserver
 
   raw_ptr<WebContentsViewAura> view_;
 
-  // The parent window that hosts the constrained windows. We cache the old host
-  // view so that we can unregister when it's not the parent anymore.
-  raw_ptr<aura::Window> host_window_ = nullptr;
+  // The host window and the WindowTreeHost, observed only while
+  // ShouldObserveHosts(). See UpdateHostObservations().
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      host_window_observation_{this};
+  base::ScopedObservation<aura::WindowTreeHost, aura::WindowTreeHostObserver>
+      host_tree_observation_{this};
 
   std::unique_ptr<PendingWindowChanges> pending_window_changes_;
 };
@@ -657,6 +731,14 @@ WebContentsViewAura::~WebContentsViewAura() {
   // Window needs a valid delegate during its destructor, so we explicitly
   // delete it here.
   window_.reset();
+}
+
+bool WebContentsViewAura::IsObservingHostWindowForTesting() const {
+  return window_observer_ && window_observer_->IsObservingHostWindow();
+}
+
+bool WebContentsViewAura::IsObservingWindowTreeHostForTesting() const {
+  return window_observer_ && window_observer_->IsObservingWindowTreeHost();
 }
 
 void WebContentsViewAura::SetDelegateForTesting(
