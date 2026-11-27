@@ -18596,4 +18596,41 @@ TEST_F(HttpCacheTest, SetMaxBytesZeroAfterInit) {
   EXPECT_EQ(base::ByteSize(1), backend->GetMaxBytesForTesting());
 }
 
+TEST_F(HttpCacheTest, ReadReleasesBufferOnSyncCompletion) {
+  MockHttpCache cache;
+  MockHttpCache::SetTestMode(TEST_MODE_SYNC_ALL);
+  base::ScopedClosureRunner reset_mode(
+      base::BindOnce(&MockHttpCache::SetTestMode, 0));
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.test_mode = TEST_MODE_SYNC_ALL;
+
+  // Verify both an uncached network read and a subsequent cache hit release
+  // `read_buf_` when `Read()` completes synchronously.
+  for (int i = 0; i < 2; ++i) {
+    MockHttpRequest request(transaction);
+    std::unique_ptr<HttpTransaction> trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
+
+    TestCompletionCallback callback;
+    int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+    rv = callback.GetResult(rv);
+    ASSERT_THAT(rv, IsOk());
+
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
+    rv = trans->Read(buf.get(), buf->size(), callback.callback());
+    ASSERT_GT(rv, 0);
+    EXPECT_TRUE(buf->HasOneRef());
+
+    // Drain to EOF so the first pass commits the entry to the cache.
+    while (rv > 0) {
+      rv = trans->Read(buf.get(), buf->size(), callback.callback());
+      ASSERT_NE(rv, ERR_IO_PENDING);
+      EXPECT_TRUE(buf->HasOneRef());
+    }
+    EXPECT_EQ(0, rv);
+  }
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+}
+
 }  // namespace net

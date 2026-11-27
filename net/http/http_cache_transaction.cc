@@ -327,6 +327,7 @@ int HttpCache::Transaction::Read(IOBuffer* buf,
   read_buf_len_ = buf_len;
   int rv = TransitionToReadingState();
   if (rv != OK || next_state_ == STATE_NONE) {
+    read_buf_ = nullptr;
     return rv;
   }
 
@@ -335,6 +336,8 @@ int HttpCache::Transaction::Read(IOBuffer* buf,
   if (rv == ERR_IO_PENDING) {
     DCHECK(callback_.is_null());
     callback_ = std::move(callback);
+  } else {
+    read_buf_ = nullptr;
   }
   return rv;
 }
