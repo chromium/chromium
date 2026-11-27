@@ -189,12 +189,21 @@ void PartitionAddressSpace::Init() {
 #if PA_BUILDFLAG(IS_ANDROID)
   // On Android, Adreno-GSL library fails to mmap if we snatch address
   // 0x400000000. Find a different address instead.
-  if (setup_.regular_pool_base_address_ == 0x400000000) {
-    uintptr_t new_base_address = map_base_pages(glued_pool_sizes);
-    FreePages(setup_.regular_pool_base_address_, glued_pool_sizes);
-    setup_.regular_pool_base_address_ = new_base_address;
+  static constexpr uintptr_t kForbiddenBaseAddress = 0x400000000ULL;
+#elif PA_BUILDFLAG(IS_WIN)
+  // On Windows, some Intel GPU drivers erroneously call VirtualFree on
+  // 0x600000000000. Find a different address instead.
+  static constexpr uintptr_t kForbiddenBaseAddress = 0x600000000000ULL;
+#else
+  static constexpr uintptr_t kForbiddenBaseAddress = 0;
+#endif
+  if constexpr (kForbiddenBaseAddress != 0) {
+    if (setup_.regular_pool_base_address_ == kForbiddenBaseAddress) {
+      uintptr_t new_base_address = map_base_pages(glued_pool_sizes);
+      FreePages(setup_.regular_pool_base_address_, glued_pool_sizes);
+      setup_.regular_pool_base_address_ = new_base_address;
+    }
   }
-#endif  // PA_BUILDFLAG(IS_ANDROID)
   if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
   }
