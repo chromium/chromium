@@ -54,10 +54,13 @@ bool IsSidePanelLayout(UITraitCollection* trait_collection);
 // Returns true if the layout is currently iPhone landscape.
 bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection);
 
-// Applies side panel aesthetics (rounded corners on content, shadow on shadow
-// view).
+// Applies side panel aesthetics (rounded corners and border on `content_view`,
+// shadow on `shadow_view`) resolved for `trait_collection` when `active` is
+// true (defaulting to light mode if `trait_collection` is nil or unspecified),
+// or resets those styling properties when `active` is false.
 void ApplyAssistantSidePanelAesthetics(UIView* content_view,
                                        UIView* shadow_view,
+                                       UITraitCollection* trait_collection,
                                        bool active);
 
 // Encapsulates the dynamically computed styling properties with sub-pixel

@@ -25,7 +25,7 @@ constexpr CGFloat kAssistantSidePanelBorderAlpha = 0.46;
 // Constants used for the floating card shadow.
 const CGSize kAssistantSidePanelShadowOffset = {0, 13};
 constexpr CGFloat kAssistantSidePanelShadowRadius = 8.0;
-constexpr CGFloat kAssistantSidePanelShadowOpacity = 0.16;
+constexpr float kAssistantSidePanelShadowOpacity = 0.16f;
 
 }  // namespace
 
@@ -61,33 +61,41 @@ bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection) {
 
 void ApplyAssistantSidePanelAesthetics(UIView* content_view,
                                        UIView* shadow_view,
+                                       UITraitCollection* trait_collection,
                                        bool active) {
   if (!active) {
     content_view.layer.cornerRadius = 0.0;
     content_view.layer.borderWidth = 0.0;
-    shadow_view.layer.shadowOpacity = 0.0;
-    shadow_view.backgroundColor = [UIColor clearColor];
+    content_view.layer.borderColor = nullptr;
+    shadow_view.layer.cornerRadius = 0.0;
+    shadow_view.layer.shadowOpacity = 0.0f;
+    shadow_view.backgroundColor = UIColor.clearColor;
     return;
   }
 
+  const bool is_dark_mode =
+      trait_collection &&
+      trait_collection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  UIColor* border_color =
+      is_dark_mode
+          ? [[UIColor colorNamed:kSeparatorColor]
+                resolvedColorWithTraitCollection:trait_collection]
+          : [UIColor.whiteColor
+                colorWithAlphaComponent:kAssistantSidePanelBorderAlpha];
   content_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
   content_view.layer.cornerCurve = kCACornerCurveContinuous;
   content_view.layer.borderWidth = kAssistantSidePanelBorderWidth;
-  content_view.layer.borderColor =
-      [[UIColor whiteColor]
-          colorWithAlphaComponent:kAssistantSidePanelBorderAlpha]
-          .CGColor;
+  content_view.layer.borderColor = border_color.CGColor;
 
   // The view must be opaque to cast a shadow.
   shadow_view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   shadow_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
   shadow_view.layer.cornerCurve = kCACornerCurveContinuous;
-  // TODO(crbug.com/494503434): Update the shadow color to a dynamic color or
-  // handle dark mode properly later.
-  shadow_view.layer.shadowColor = [UIColor blackColor].CGColor;
+  shadow_view.layer.shadowColor = UIColor.blackColor.CGColor;
   shadow_view.layer.shadowOffset = kAssistantSidePanelShadowOffset;
   shadow_view.layer.shadowRadius = kAssistantSidePanelShadowRadius;
-  shadow_view.layer.shadowOpacity = kAssistantSidePanelShadowOpacity;
+  shadow_view.layer.shadowOpacity =
+      is_dark_mode ? 0.0f : kAssistantSidePanelShadowOpacity;
 }
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {

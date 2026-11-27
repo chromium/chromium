@@ -48,3 +48,22 @@ source_set("ui") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scene_view_controller_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/coordinator/scene/state:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
+  ]
+}

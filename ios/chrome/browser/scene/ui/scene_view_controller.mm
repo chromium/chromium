@@ -180,6 +180,9 @@ inline LayoutStateScenePassKey PassKey() {
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
                    withTarget:self
                        action:@selector(viewTraitDidChange)];
+  [view registerForTraitChanges:@[ [UITraitUserInterfaceStyle class] ]
+                     withTarget:self
+                         action:@selector(userInterfaceStyleDidChange)];
   [self viewTraitDidChange];
 }
 
@@ -365,7 +368,7 @@ inline LayoutStateScenePassKey PassKey() {
                      _assistantShadowView);
 
   [self updateAssistantLayoutConstraints];
-  [self updateAssistantVisualStyling:self.layoutState.containedLayoutSupported];
+  [self updateAssistantVisualStyling:self.layoutState.containedLayoutActive];
 }
 
 - (void)removeAssistantContainerViewController {
@@ -529,6 +532,14 @@ inline LayoutStateScenePassKey PassKey() {
   UpdateVerticalBarConfiguration(self);
 }
 
+// Updates side panel aesthetics when the view's user interface style changes.
+- (void)userInterfaceStyleDidChange {
+  if (!self.layoutState.containedLayoutActive) {
+    return;
+  }
+  [self updateAssistantVisualStyling:YES];
+}
+
 // Helper to update app content constraints for panel layout.
 - (void)updateAppContentConstraintsForPanel:(BOOL)active {
   // We animate constants instead of switching constraint arrays to avoid layout
@@ -563,7 +574,7 @@ inline LayoutStateScenePassKey PassKey() {
 // Updates both constraints and visual styling for the Assistant container.
 - (void)updateAssistantLayout {
   [self updateAssistantLayoutConstraints];
-  [self updateAssistantVisualStyling:self.layoutState.containedLayoutSupported];
+  [self updateAssistantVisualStyling:self.layoutState.containedLayoutActive];
 }
 
 // Updates the active assistant constraints for the current active layout.
@@ -621,14 +632,15 @@ inline LayoutStateScenePassKey PassKey() {
     return;
   }
 
+  UITraitCollection* traitCollection = self.view.traitCollection;
   if (_assistantContainerViewController) {
     UIView* assistantView = _assistantContainerViewController.view;
     ApplyAssistantSidePanelAesthetics(assistantView, _assistantShadowView,
-                                      active);
+                                      traitCollection, active);
   }
 
   ApplyAssistantSidePanelAesthetics(_appContentView, _appContentContainerView,
-                                    active);
+                                    traitCollection, active);
 }
 
 // Updates the layout of the scene views depending on the active layout strategy
