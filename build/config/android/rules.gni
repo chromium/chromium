@@ -1292,7 +1292,8 @@ if (!is_robolectric && enable_java_templates) {
     group(target_name) {
       forward_variables_from(invoker,
                              "*",
-                             _build_config_vars + TESTONLY_AND_VISIBILITY)
+                             _build_config_vars + TESTONLY_AND_VISIBILITY +
+                                 [ "aar_native_libs_dep" ])
       if (_is_resource_group) {
         if (!defined(deps)) {
           deps = []
@@ -1306,6 +1307,9 @@ if (!is_robolectric && enable_java_templates) {
         java_walk_keys = _lib_walk_deps
         if (_has_generated_proguard_configs) {
           proguard_config_deps = _other_deps
+        }
+        if (defined(invoker.aar_native_libs_dep)) {
+          aar_native_libs_deps = [ invoker.aar_native_libs_dep ]
         }
         if (_is_resource_group) {
           # Consumed by generate_r_java() and resource, manifest, lint,
@@ -1495,10 +1499,13 @@ if (!is_robolectric && enable_java_templates) {
       package_apk("$_apkbuilder_target_name") {
         build_config = _build_config
         min_sdk_version = default_min_sdk_version
-        deps = _java_assetres_deps + [
-                 ":$_build_config_target_name",
-                 ":$_compile_resources_target_name",
-               ]
+        deps = [
+          ":$_build_config_target_name",
+          ":$_compile_resources_target_name",
+        ]
+
+        # Walk __assetres to depend only on android_assets() targets.
+        assets_walk_deps = _java_assetres_deps
 
         is_robolectric_apk = true
         packaged_resources_path = _resource_arsc_output
@@ -2659,12 +2666,12 @@ if (!is_robolectric && enable_java_templates) {
       _version_name = android_default_version_name
     }
 
+    _non_java_deps = []
     if (defined(invoker.deps)) {
-      _invoker_deps = invoker.deps
-    } else {
-      _invoker_deps = []
+      # Exclude Java/resource targets to isolate non-Java deps (e.g. targets
+      # generating loadable_modules or resources configs).
+      _non_java_deps = filter_exclude(invoker.deps, java_target_patterns)
     }
-    _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
     _java_assetres_deps = [ ":${_java_target_name}__assetres" ]
 
     _srcjar_deps = []
@@ -3301,22 +3308,34 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
+    # asset_deps may contain both android_assets() targets and native
+    # loadable_modules; split them so asset walks do not wait on native linking.
+    _asset_only_deps = []
+    _non_asset_asset_deps = []
+    if (defined(invoker.asset_deps)) {
+      foreach(_dep, invoker.asset_deps) {
+        _dep_label = get_label_info(_dep, "label_no_toolchain")
+        if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+          _asset_only_deps += [ _dep ]
+        } else {
+          _non_asset_asset_deps += [ _dep ]
+        }
+      }
+    }
+    _packaging_native_deps =
+        _all_native_libs_deps + _sanitizer_deps + _non_asset_asset_deps
+    if (_loadable_modules != [] ||
+        (defined(invoker.secondary_abi_loadable_modules) &&
+         invoker.secondary_abi_loadable_modules != [])) {
+      _packaging_native_deps += _non_java_deps
+    }
+
     if (_is_bundle_module) {
-      _final_deps += [
+      _final_deps += _packaging_native_deps + [
                        ":$_build_config_target",
                        ":$_compile_resources_target",
                        ":$_merge_manifest_target",
-                     ] + _all_native_libs_deps
-      if (_proguard_enabled && !is_cronet_for_aosp_build) {
-        # Preserve asset, non-Java loadable_modules, and sanitizer deps that
-        # were previously pulled in via :$_java_target_name without pulling in
-        # unused library __dex targets.
-        _final_deps += [ ":${_java_target_name}__assetres" ] + _non_java_deps +
-                       _sanitizer_deps
-      }
-      if (defined(invoker.asset_deps)) {
-        _final_deps += invoker.asset_deps
-      }
+                     ] + _asset_only_deps
       if (defined(_final_dex_target_dep)) {
         not_needed([ "_final_dex_target_dep" ])
       }
@@ -3336,14 +3355,14 @@ if (!is_robolectric && enable_java_templates) {
             res_size_info_path = _res_size_info_path
             unprocessed_jar_path = "$target_out_dir/$_template_name.javac.jar"
             deps = [
-              ":$_build_config_target",
-              ":$_compile_resources_target",
-              ":$_java_target_name",
-              ":${_template_name}__compile_java",
-            ]
-            if (defined(invoker.asset_deps)) {
-              deps += invoker.asset_deps
-            }
+                     ":$_build_config_target",
+                     ":$_compile_resources_target",
+                     ":${_template_name}__compile_java",
+                   ] + _java_host_deps
+
+            # Walk asset/resource graphs to depend only on .pak android_assets()
+            # targets (which produce .pak.info files).
+            pak_assets_walk_deps = _java_assetres_deps + _asset_only_deps
           }
           _final_deps += [ ":$_size_info_target" ]
         } else {
@@ -3377,19 +3396,19 @@ if (!is_robolectric && enable_java_templates) {
         build_config = _build_config
         min_sdk_version = _min_sdk_version
 
-        # Need full deps rather than _non_java_deps, because loadable_modules
-        # may include .so files extracted by __unpack_aar targets.
-        deps = _invoker_deps + _sanitizer_deps + [ ":$_build_config_target" ]
-        if (defined(invoker.asset_deps)) {
-          deps += invoker.asset_deps
-        }
+        deps = _packaging_native_deps + [
+                 ":$_build_config_target",
+                 ":$_compile_resources_target",
+                 ":$_merge_manifest_target",
+                 _final_dex_target_dep,
+               ]
+
+        # Walk asset and java graphs to depend only on android_assets(),
+        # java_resources, and extracted AAR native libraries.
+        assets_walk_deps = _java_assetres_deps + _asset_only_deps
+        java_walk_deps = [ ":$_java_target_name" ]
 
         loadable_modules = _loadable_modules + _sanitizer_loadable_modules
-        deps += _all_native_libs_deps + [
-                  ":$_compile_resources_target",
-                  ":$_merge_manifest_target",
-                  _final_dex_target_dep,
-                ]
         if (_use_tiered_dex) {
           deps += [ ":${_java_target_name}__dex" ]
         }
@@ -3493,13 +3512,34 @@ if (!is_robolectric && enable_java_templates) {
                  ])
     }
 
+    if (_is_bundle_module) {
+      # Lightweight group carrying module data, data_deps, and validations so
+      # android_app_bundle can propagate runtime_deps without depending on
+      # _module_target's full public_deps.
+      group("${_template_name}__data_deps") {
+        forward_variables_from(invoker,
+                               [
+                                 "data",
+                                 "data_deps",
+                               ])
+
+        # Use deps (not data_deps) so shared_library/loadable_module runtime
+        # outputs propagate for stack symbolization without exporting action
+        # outputs (e.g. unpacked AAR files) into runtime_deps.
+        deps = _packaging_native_deps
+        if (_enable_lint) {
+          validations = [ ":${_template_name}__lint" ]
+        }
+        metadata = {
+          # Prevents native libraries in this module from leaking into targets
+          # that have a data_dep on the bundle or its .apks target.
+          shared_libraries_barrier = []
+        }
+      }
+    }
+
     group(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "assert_no_deps",
-                               "data",
-                               "data_deps",
-                             ])
+      forward_variables_from(invoker, [ "assert_no_deps" ])
       metadata = {
         if (defined(invoker.metadata)) {
           forward_variables_from(invoker.metadata, "*")
@@ -3512,6 +3552,13 @@ if (!is_robolectric && enable_java_templates) {
         # Allows metadata collection via apk targets that traverse only java
         # deps.
         java_walk_keys = _java_host_deps
+        if (_is_bundle_module) {
+          android_assetres_walk_keys = _asset_only_deps
+          android_java_walk_keys = []
+          if (_packaging_native_deps != []) {
+            bundle_module_native_deps = _packaging_native_deps
+          }
+        }
       }
 
       # Generate apk related operations at runtime.
@@ -3520,14 +3567,23 @@ if (!is_robolectric && enable_java_templates) {
       # GN requires targets listed in java_walk_keys to be direct deps.
       deps = _java_host_deps
 
-      if (!defined(data_deps)) {
-        data_deps = []
-      }
+      if (_is_bundle_module) {
+        data_deps = [ ":${_template_name}__data_deps" ]
+      } else {
+        forward_variables_from(invoker,
+                               [
+                                 "data",
+                                 "data_deps",
+                               ])
+        if (!defined(data_deps)) {
+          data_deps = []
+        }
 
-      # Include unstripped native libraries so tests can symbolize stacks.
-      data_deps += _all_native_libs_deps
-      if (_enable_lint) {
-        validations = [ ":${target_name}__lint" ]
+        # Include unstripped native libraries so tests can symbolize stacks.
+        data_deps += _all_native_libs_deps
+        if (_enable_lint) {
+          validations = [ ":${target_name}__lint" ]
+        }
       }
     }
   }
@@ -4816,6 +4872,9 @@ if (!is_robolectric && enable_java_templates) {
       if (_should_process_manifest) {
         mergeable_android_manifests = [ "${_output_path}/AndroidManifest.xml" ]
       }
+      if (_extract_native_libraries && _scanned_files.has_native_libraries) {
+        aar_native_libs_dep = ":$_unpack_target_name"
+      }
     }
   }
 
@@ -4990,11 +5049,13 @@ if (!is_robolectric && enable_java_templates) {
     # Make build config, which is required for synchronized proguarding.
     _module_java_targets = []
     _module_java_host_targets = []
+    _module_data_deps_targets = []
     _module_targets = []
     foreach(_module, _modules) {
       _module_targets += [ _module.module_target ]
       _module_java_targets += [ "${_module.module_target}__java" ]
       _module_java_host_targets += [ "${_module.module_target}__java__host" ]
+      _module_data_deps_targets += [ "${_module.module_target}__data_deps" ]
     }
 
     # Used to expose the module Java targets of the bundle.
@@ -5199,9 +5260,16 @@ if (!is_robolectric && enable_java_templates) {
         }
 
         deps = [
+          "${_module_target}__compile_resources",
           _build_config_target,
           _dex_target_for_module,
           _module_build_config_target,
+        ]
+
+        # Walk module asset/resource graphs to depend only on android_assets()
+        # targets without waiting on native library linking.
+        assets_walk_deps = [
+          "${_module_target}__java__assetres",
           _module_target,
         ]
 
@@ -5265,6 +5333,18 @@ if (!is_robolectric && enable_java_templates) {
     _rebased_keystore_path = rebase_path(_keystore_path, root_build_dir)
 
     _bundle_target_name = "${_target_name}__bundle"
+    _bundle_native_deps_target = "${_bundle_target_name}__native_deps"
+
+    # Collects native library deps from bundle modules and AARs without making
+    # create_android_app_bundle_module() wait on native linking.
+    walk_deps_group(_bundle_native_deps_target) {
+      walk_deps = _module_targets + _module_java_targets
+      dep_keys = [
+        "aar_native_libs_deps",
+        "bundle_module_native_deps",
+      ]
+      walk_keys = [ "android_java_walk_keys" ]
+    }
 
     python_action(_bundle_target_name) {
       python_binary = "//build/android:create_app_bundle"
@@ -5273,7 +5353,10 @@ if (!is_robolectric && enable_java_templates) {
                signflinger_inputs
       outputs = [ _bundle_path ]
       depfile = "$target_gen_dir/$_bundle_target_name.d"
-      deps = _all_create_module_targets + [ _build_config_target ]
+      deps = _all_create_module_targets + [
+               ":$_bundle_native_deps_target",
+               _build_config_target,
+             ]
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -5345,10 +5428,24 @@ if (!is_robolectric && enable_java_templates) {
     # (have proguard enabled).
     if (_proguard_enabled) {
       _size_info_target = "${_target_name}__size_info"
+      _size_info_deps = _module_java_host_targets + [ _build_config_target ]
+      _size_info_pak_walk_deps = _module_targets
+      foreach(_module, _modules) {
+        _size_info_deps += [
+          "${_module.module_target}__compile_resources",
+          _module.build_config_target,
+        ]
+        _size_info_pak_walk_deps +=
+            [ "${_module.module_target}__java__assetres" ]
+      }
 
       create_size_info_files(_size_info_target) {
         name = "$_bundle_name.aab"
-        deps = _module_targets + [ _build_config_target ]
+        deps = _size_info_deps
+
+        # Walk module asset/resource graphs to depend only on .pak
+        # android_assets() targets (which produce .pak.info files).
+        pak_assets_walk_deps = _size_info_pak_walk_deps
         modules = _modules
         build_config = _build_config
       }
@@ -5434,6 +5531,7 @@ if (!is_robolectric && enable_java_templates) {
         ":$_bundle_target_name",
         ":${_target_name}__wrapper_script",
       ]
+      data_deps = _module_data_deps_targets
       if (defined(_size_info_target)) {
         public_deps += [ ":$_size_info_target" ]
       }
@@ -5462,7 +5560,7 @@ if (!is_robolectric && enable_java_templates) {
       data = [ _apks_path ]
 
       # Devil installs .apks files via bundletool.
-      data_deps = [ "//third_party/jdk:java_data" ]
+      data_deps = [ "//third_party/jdk:java_data" ] + _module_data_deps_targets
       args = [
         "--bundle",
         _rebased_bundle_path,

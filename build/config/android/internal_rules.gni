@@ -2985,11 +2985,30 @@ if (enable_java_templates) {
   #   build_config: Path to APK's build config file. Used to extract the
   #       list of input .jar files from its dependencies.
   #   name: Name of the apk or app bundle (e.g. "Foo.apk").
+  #   pak_assets_walk_deps: (optional) Targets to walk for .pak android_assets
+  #       deps via android_pak_assets_deps / android_assetres_walk_keys.
   #   res_size_info_path: Path to input .ap_.info file (for apks).
   #
   template("create_size_info_files") {
+    _deps = invoker.deps
+    if (defined(invoker.pak_assets_walk_deps) &&
+        invoker.pak_assets_walk_deps != []) {
+      # Walk asset/resource graphs without depending on them and depend only on
+      # android_assets() targets that package .pak files (which emit .pak.info).
+      _pak_assets_deps_target = "${target_name}__pak_assets_deps"
+
+      walk_deps_group(_pak_assets_deps_target) {
+        forward_variables_from(invoker, [ "testonly" ])
+        walk_deps = invoker.pak_assets_walk_deps
+        dep_keys = [ "android_pak_assets_deps" ]
+        walk_keys = [ "android_assetres_walk_keys" ]
+      }
+      _deps += [ ":$_pak_assets_deps_target" ]
+    }
+
     python_action(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      deps = _deps
       python_binary = "//build/android:create_size_info_files"
       _jar_info_path = "$root_build_dir/size-info/${invoker.name}.jar.info"
       outputs = [ _jar_info_path ]
@@ -3061,12 +3080,17 @@ if (enable_java_templates) {
   #       be used to generate .info files later used by the supersize tool.
   #   assets_build_config: Path to android_apk .build_config.json containing merged
   #       asset information.
+  #   assets_walk_deps: (optional) Targets to walk for android_assets deps via
+  #       android_assets_deps / android_assetres_walk_keys.
   #   deps: Specifies the dependencies of this target.
   #   dex_paths: List of paths to classes.dex or dex.jar files to include (optional).
   #   expected_libs_and_assets: Verify the list of included native libraries
   #     and assets is consistent with the given expectation file.
   #   expected_libs_and_assets_base: Treat expected_libs_and_assets as a diff
   #     with this file as the base.
+  #   java_walk_deps: (optional) Targets to walk for packaged java resources and
+  #       extracted AAR native libs via java_resources_deps /
+  #       aar_native_libs_deps / android_java_walk_keys.
   #   packaged_resources_path: Path to .ap_ to use.
   #   output_apk_path: Output path for the generated .apk.
   #   min_sdk_version: The minimum Android SDK version this target supports.
@@ -3084,10 +3108,37 @@ if (enable_java_templates) {
   #   keystore_name: Key alias to use.
   #   keystore_password: Keystore password.
   template("package_apk") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _is_robolectric_apk =
         defined(invoker.is_robolectric_apk) && invoker.is_robolectric_apk
     _deps = invoker.deps
+    if (defined(invoker.assets_walk_deps) && invoker.assets_walk_deps != []) {
+      # Walk asset/resource graphs without depending on them and depend only on
+      # android_assets() targets that actually package asset files.
+      _assets_deps_target = "${target_name}__assets_deps"
+
+      walk_deps_group(_assets_deps_target) {
+        walk_deps = invoker.assets_walk_deps
+        dep_keys = [ "android_assets_deps" ]
+        walk_keys = [ "android_assetres_walk_keys" ]
+      }
+      _deps += [ ":$_assets_deps_target" ]
+    }
+    if (defined(invoker.java_walk_deps) && invoker.java_walk_deps != []) {
+      # Walk java targets without depending on them and depend only on targets
+      # providing packaged java resources or extracted AAR native libraries.
+      _java_deps_target = "${target_name}__java_deps"
+
+      walk_deps_group(_java_deps_target) {
+        walk_deps = invoker.java_walk_deps
+        dep_keys = [
+          "aar_native_libs_deps",
+          "java_resources_deps",
+        ]
+        walk_keys = [ "android_java_walk_keys" ]
+      }
+      _deps += [ ":$_java_deps_target" ]
+    }
     _native_lib_placeholders = []
     if (defined(invoker.native_lib_placeholders)) {
       _native_lib_placeholders = invoker.native_lib_placeholders
@@ -3189,9 +3240,15 @@ if (enable_java_templates) {
       _args += [ "--secondary-android-abi=$android_app_secondary_abi" ]
     }
     if (defined(invoker.loadable_modules) && invoker.loadable_modules != []) {
-      _inputs += invoker.loadable_modules
+      # Checked-in loadable_modules are listed in inputs for gn analyze;
+      # generated ones (e.g. extracted by __unpack_aar via dep_keys) are
+      # tracked by the depfile and Siso handler.
       _rebased_loadable_modules =
           rebase_path(invoker.loadable_modules, root_build_dir)
+      _inputs +=
+          rebase_path(filter_include(_rebased_loadable_modules, [ "../*" ]),
+                      ".",
+                      root_build_dir)
       _args += [ "--native-libs=$_rebased_loadable_modules" ]
     }
     if (defined(invoker.native_libs_filearg)) {
@@ -3207,9 +3264,11 @@ if (enable_java_templates) {
       ]
     }
     if (defined(invoker.secondary_abi_loadable_modules)) {
-      _inputs += invoker.secondary_abi_loadable_modules
       _rebased_secondary_abi_loadable_modules =
           rebase_path(invoker.secondary_abi_loadable_modules, root_build_dir)
+      _inputs +=
+          rebase_path(filter_include(_rebased_secondary_abi_loadable_modules,
+                                     [ "../*" ]), ".", root_build_dir)
       _args +=
           [ "--secondary-native-libs=$_rebased_secondary_abi_loadable_modules" ]
     }
@@ -3263,6 +3322,7 @@ if (enable_java_templates) {
     }
 
     python_action(target_name) {
+      forward_variables_from(invoker, [ "public_deps" ])
       depfile = "$target_gen_dir/$target_name.d"
       inputs = _inputs
       deps = _deps
@@ -5141,6 +5201,9 @@ if (enable_java_templates) {
     _has_embedded_proguard_configs =
         _is_library && _build_host_jar &&
         (_is_prebuilt || defined(invoker.additional_jar_files))
+    _has_java_resources =
+        _build_host_jar && defined(invoker.include_java_resources) &&
+        invoker.include_java_resources
     _emit_dex_metadata = defined(_dex_target_name) &&
                          !(defined(invoker.omit_dex_path_from_build_config) &&
                            invoker.omit_dex_path_from_build_config)
@@ -5263,7 +5326,7 @@ if (enable_java_templates) {
       if (defined(invoker.api_database_dep)) {
         deps += [ invoker.api_database_dep ]
       }
-      if (_has_embedded_proguard_configs &&
+      if ((_has_embedded_proguard_configs || _has_java_resources) &&
           !defined(_process_jar_target_name) && _has_sources) {
         # Needed so dep_keys can reference :$_compile_java_target directly.
         deps += [ ":$_compile_java_target" ]
@@ -5305,6 +5368,9 @@ if (enable_java_templates) {
         metadata.proguard_embedded_config_jars =
             [ rebase_path(_processed_jar_path, root_build_dir) ]
         metadata.proguard_embedded_config_jar_deps = _processed_jar_deps
+      }
+      if (_has_java_resources) {
+        metadata.java_resources_deps = _processed_jar_deps
       }
       if (_emit_dex_metadata) {
         metadata.android_dex_deps = [ ":$_dex_target_name" ]
@@ -5354,6 +5420,8 @@ if (enable_java_templates) {
 # zips.
 #
 # Variables:
+#   assets_walk_deps: Targets to walk for android_assets deps via
+#     android_assets_deps / android_assetres_walk_keys.
 #   module_zip_path: Output skeleton module zip path.
 #   module_spec_path: Output ZipBuilder spec path.
 #   build_config: Path to build_config of the android_apk_or_module() target.
@@ -5382,15 +5450,25 @@ template("create_android_app_bundle_module") {
       rebase_path(invoker.app_bundle_build_config, root_build_dir)
 
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-  _deps = invoker.deps
+
+  # Walk asset/resource graphs without depending on them and depend only on
+  # android_assets() targets that actually package asset files.
+  _assets_deps_target = "${target_name}__assets_deps"
+
+  walk_deps_group(_assets_deps_target) {
+    walk_deps = invoker.assets_walk_deps
+    dep_keys = [ "android_assets_deps" ]
+    walk_keys = [ "android_assetres_walk_keys" ]
+  }
+  _deps = invoker.deps + [ ":$_assets_deps_target" ]
   _python_binary = "//build/android:apkbuilder"
 
   # NOTE: Compared to the inputs of the "package_apk" template action,
   #       this list is much smaller, since apkbuilder.py --format=bundle-module
   #       neither signs nor invokes signflinger. Native library paths are only
   #       recorded in the zipspec (tracked in create_app_bundle.py's depfile);
-  #       other @FileArg() inputs (resources, dex, assets, java resources) are
-  #       listed in this action's depfile instead.
+  #       other @FileArg() inputs (resources, dex, assets) are listed in this
+  #       action's depfile instead.
   _inputs = [
     invoker.build_config,
     invoker.app_bundle_build_config,
