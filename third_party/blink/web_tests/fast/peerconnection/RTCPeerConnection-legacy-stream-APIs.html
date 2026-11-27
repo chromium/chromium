@@ -230,25 +230,6 @@ promise_test(async t => {
   assert_equals(sender.track, null);
 }, 'removeTrack() after addTrack() removes from local streams and senders.');
 
-promise_test(async t => {
-  const pc = new RTCPeerConnection();
-  t.add_cleanup(() => pc.close());
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  stream.getTracks().forEach(track => t.add_cleanup(() => track.stop()));
-  pc.addStream(stream);
-  pc.createDTMFSender(stream.getTracks()[0]);
-}, 'createDTMFSender() with addStream()-track.');
-
-promise_test(async t => {
-  const pc = new RTCPeerConnection();
-  t.add_cleanup(() => pc.close());
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  stream.getTracks().forEach(track => t.add_cleanup(() => track.stop()));
-  let track = stream.getTracks()[0];
-  pc.addTrack(track);
-  pc.createDTMFSender(track);
-}, 'createDTMFSender() with addTrack()-track.');
-
 </script>
 </body>
 </html>

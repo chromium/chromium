@@ -6643,7 +6643,6 @@ crbug.com/554992299 [ tvOS26-simulator ] fast/parser/tabindex-parsing.html [ Fai
 crbug.com/554992299 [ tvOS26-simulator ] fast/parser/text-node-break-crash.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/parser/xhtml-alternate-entities.xml [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/parser/xslt-with-html.xml [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] fast/peerconnection/RTCPeerConnection-createDTMFSender.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/performance/performance-observer-after-gc.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/reflections/abs-position-in-reflection.html [ Failure ]

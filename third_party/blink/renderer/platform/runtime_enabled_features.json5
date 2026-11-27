@@ -5958,6 +5958,12 @@
       status: "experimental",
     },
     {
+      // Non-standard RTCPeerConnection.createDTMFSender() method. Off by
+      // default (method removed). Enable via Finch to restore if sites break.
+      // https://crbug.com/553274713
+      name: "RTCPeerConnectionCreateDTMFSender",
+    },
+    {
       name: "RTCRequireSessionDescriptionType",
       status: "experimental",
     },

@@ -268,7 +268,8 @@
         // Send DTMF tones. Allocate the sender in the window to keep it from
         // being garbage collected. https://crbug.com/486654.
         var track = gLocalStream.getAudioTracks()[0];
-        window.sender = gFirstConnection.createDTMFSender(track);
+        window.sender =
+            gFirstConnection.getSenders().find(s => s.track == track).dtmf;
         var receivedTones = '';
         return new Promise(resolve => {
           window.sender.ontonechange = tone => {

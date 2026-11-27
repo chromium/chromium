@@ -8393,7 +8393,6 @@ interface RTCPeerConnection : EventTarget
     method close
     method constructor
     method createAnswer
-    method createDTMFSender
     method createDataChannel
     method createOffer
     method getConfiguration
@@ -13601,7 +13600,6 @@ interface webkitRTCPeerConnection : EventTarget
     method close
     method constructor
     method createAnswer
-    method createDTMFSender
     method createDataChannel
     method createOffer
     method getConfiguration

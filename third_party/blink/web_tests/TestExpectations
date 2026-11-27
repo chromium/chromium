@@ -7174,7 +7174,6 @@ crbug.com/356930166 [ Mac ] wpt_internal/webrtc-encoded-transform/RTCRtpSender-c
 [ Mac15 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 [ Mac15 ] fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html [ Timeout ]
 crbug.com/524093885 [ Mac15 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Timeout ]
-crbug.com/524093885 [ Mac15 ] fast/peerconnection/RTCPeerConnection-createDTMFSender.html [ Failure Timeout ]  # Flaky output
 crbug.com/524093885 [ Mac15 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Timeout ]
 crbug.com/524093885 [ Mac15 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Timeout ]
 [ Mac15-arm64 ] compositing/webgl/webgl-with-accelerated-background-color.html [ Timeout ]
