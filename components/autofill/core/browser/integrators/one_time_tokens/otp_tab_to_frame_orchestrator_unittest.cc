@@ -423,18 +423,10 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   SendSmsOtp("333333");
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 
-  autofill_driver().SetIsActive(false);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnAutofillManagerStateChanged,
-      AutofillManager::LifecycleState::kActive,
-      AutofillManager::LifecycleState::kInactive);
+  DeactivateAutofillDriver(autofill_driver());
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), IsEmpty());
 
-  autofill_driver().SetIsActive(true);
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnAutofillManagerStateChanged,
-      AutofillManager::LifecycleState::kInactive,
-      AutofillManager::LifecycleState::kActive);
+  ActivateAutofillDriver(autofill_driver());
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 }
 

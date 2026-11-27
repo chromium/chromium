@@ -1091,7 +1091,6 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
 
   auto inactive_driver = std::make_unique<GetParentCountingAutofillDriver>(
       &client_, ukm::UkmRecorder::GetNewSourceID());
-  inactive_driver->SetIsActive(false);
   inactive_driver->set_autofill_manager(
       std::make_unique<TestBrowserAutofillManager>(inactive_driver.get()));
   GetParentCountingAutofillDriver* inactive_driver_ptr = inactive_driver.get();

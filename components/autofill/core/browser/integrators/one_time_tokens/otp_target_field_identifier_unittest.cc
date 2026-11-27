@@ -187,7 +187,7 @@ TEST_F(OtpTargetFieldIdentifierTest, InactiveFrameIsIgnored) {
   identifier.OnFocusChanged(autofill_driver(1).GetFrameToken(),
                             otp_form_1.global_id(),
                             otp_form_1.fields()[0].global_id());
-  autofill_driver(1).SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver(1));
   EXPECT_FALSE(identifier.GetTarget().has_value());
   identifier.OnFrameBecameInactive(autofill_driver(1).GetFrameToken());
 
@@ -250,7 +250,7 @@ TEST_F(OtpTargetFieldIdentifierTest, ChildFrameLifecycleAndRegistration) {
   // While the child frame is inactive, the field is excluded from target
   // resolution and typed-input checks, and `OnFrameBecameInactive()` clears
   // focus.
-  autofill_driver(1).SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver(1));
   EXPECT_FALSE(identifier.GetTarget().has_value());
   identifier.OnFrameBecameInactive(autofill_driver(1).GetFrameToken());
   EXPECT_FALSE(identifier.IsFieldFocused(child_otp_field));
@@ -261,7 +261,7 @@ TEST_F(OtpTargetFieldIdentifierTest, ChildFrameLifecycleAndRegistration) {
   // Reactivating frame 1 makes the flattened field eligible again; destroying
   // and unregistering child frame 1 excludes fields hosted in frame 1 even if
   // parent frame 0 still caches the form.
-  autofill_driver(1).SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver(1));
   EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
   std::optional<OtpTarget> target = identifier.GetTarget();
   ASSERT_TRUE(target.has_value());

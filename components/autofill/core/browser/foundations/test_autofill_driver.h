@@ -17,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -32,6 +33,8 @@ class AutofillVisibilityObserver;
 }  // namespace autofill::mojom
 
 namespace autofill {
+
+class TestAutofillDriverFactory;
 
 // This class is only for easier writing of tests. There are two instances of
 // the template:
@@ -163,7 +166,11 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
 
   void SetParent(TestAutofillDriver* parent) { parent_ = parent; }
 
-  void SetIsActive(bool is_active) { is_active_ = is_active; }
+  // Called by TestAutofillDriverFactory::Activate() and Deactivate() so that
+  // IsActive() is consistent with GetLifecycleState(), like in production.
+  void SetIsActive(bool is_active, base::PassKey<TestAutofillDriverFactory>) {
+    is_active_ = is_active;
+  }
 
   void SetIsEmbedded(bool is_embedded) { is_embedded_ = is_embedded; }
 
@@ -191,7 +198,7 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   LocalFrameToken frame_token_;
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriver> parent_ = nullptr;
-  bool is_active_ = true;
+  bool is_active_ = false;
   bool is_embedded_ = false;
   bool policy_controlled_feature_autofill_enabled_ = false;
   bool policy_controlled_feature_manual_text_enabled_ = false;

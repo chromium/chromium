@@ -196,7 +196,7 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
               FieldsAre(form, form->field(1)));
   ASSERT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
   EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
               FieldsAre(nullptr, nullptr));
@@ -204,7 +204,7 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
               FieldsAre(nullptr, nullptr));
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
-  autofill_driver().SetIsActive(true);
+  ActivateAutofillDriver(autofill_driver());
 
   const AutofillDriver::LifecycleState initial_state =
       autofill_driver().GetLifecycleState();
@@ -271,7 +271,6 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
   // Deactivating the child frame suppresses lookup, eligibility, and
   // typed-input detection for fields hosted in that child frame.
   DeactivateAutofillDriver(autofill_driver(1));
-  autofill_driver(1).SetIsActive(false);
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
               FieldsAre(nullptr, nullptr));
   EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
@@ -282,7 +281,6 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
   // suppresses it.
   autofill_driver(1).SetParent(nullptr);
   autofill_driver(1).SetIsEmbedded(true);
-  autofill_driver(1).SetIsActive(true);
   ActivateAutofillDriver(autofill_driver(1));
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
               FieldsAre(nullptr, nullptr));

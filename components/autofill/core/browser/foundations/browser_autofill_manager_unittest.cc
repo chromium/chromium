@@ -5634,9 +5634,10 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
     if (is_active()) {
       ActivateAutofillDriver(autofill_driver(1));
     }
+  } else if (!is_active()) {
+    DeactivateAutofillDriver(autofill_driver(0));
   }
   const size_t index = has_parent() ? 1 : 0;
-  autofill_driver(index).SetIsActive(is_active());
   auto& manager = autofill_manager(index);
 
   MockAutofillManagerObserver observer;

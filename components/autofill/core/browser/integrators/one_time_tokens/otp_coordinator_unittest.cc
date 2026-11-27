@@ -1358,7 +1358,7 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
       HasValue("111111"));
 
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().deliveries(), IsEmpty());
   EXPECT_THAT(
@@ -1379,7 +1379,7 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsLoggedProactiveOutcomes) {
   ASSERT_FALSE(
       test_api_coordinator().logged_proactive_outcomes_by_field().empty());
 
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().logged_proactive_outcomes_by_field(),
               IsEmpty());

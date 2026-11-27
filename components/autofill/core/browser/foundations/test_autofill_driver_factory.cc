@@ -53,11 +53,13 @@ TestAutofillDriver& TestAutofillDriverFactory::TakeOwnership(
 
 void TestAutofillDriverFactory::Activate(TestAutofillDriver& driver) {
   CHECK(IsOwned(driver));
+  driver.SetIsActive(true, /*pass_key=*/{});
   SetLifecycleStateAndNotifyObservers(driver, LifecycleState::kActive);
 }
 
 void TestAutofillDriverFactory::Deactivate(TestAutofillDriver& driver) {
   CHECK(IsOwned(driver));
+  driver.SetIsActive(false, /*pass_key=*/{});
   SetLifecycleStateAndNotifyObservers(driver, LifecycleState::kInactive);
 }
 

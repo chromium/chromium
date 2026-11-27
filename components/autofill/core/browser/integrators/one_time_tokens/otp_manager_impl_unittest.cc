@@ -4668,7 +4668,7 @@ TEST_F(OtpManagerImplTest,
 TEST_F(OtpManagerImplTest, InactiveFrame_SuppressesFetchingAndSuggestions) {
   SetUpGmailOtpRetrieval();
   OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
 
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
@@ -4707,7 +4707,7 @@ TEST_F(OtpManagerImplTest,
       .OnGmailOtpRetrieved(CreateSampleGmailOtpResult("654321"));
   ASSERT_TRUE(phish_guard_callback);
 
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
   std::move(phish_guard_callback).Run(kNotPhishing);
 }
 
@@ -4733,7 +4733,7 @@ TEST_F(OtpManagerImplTest,
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
   ASSERT_TRUE(phish_guard_callback);
 
-  autofill_driver().SetIsActive(false);
+  DeactivateAutofillDriver(autofill_driver());
   std::move(phish_guard_callback).Run(kNotPhishing);
 
   EXPECT_TRUE(future.Get().empty());
