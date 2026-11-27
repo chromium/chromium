@@ -266,8 +266,8 @@ Refer to README.md for content description and update process.
  <item id="nearby_connections_wifi_lan" added_in_milestone="99" content_hash_code="06b30010" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/wifi_lan_medium.cc" />
  <item id="timezone_lookup" added_in_milestone="98" content_hash_code="0477d6fe" os_list="chromeos" file_path="chromeos/ash/components/timezone/timezone_request.cc" />
  <item id="wallpaper_google_photos_albums" added_in_milestone="99" content_hash_code="01fc1529" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />
- <item id="webapk_create" added_in_milestone="99" content_hash_code="07b8fd35" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
- <item id="webapk_update" added_in_milestone="99" content_hash_code="0763f8a7" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
+ <item id="webapk_create" added_in_milestone="99" content_hash_code="0353820d" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
+ <item id="webapk_update" added_in_milestone="99" content_hash_code="063cd7e4" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
  <item id="safe_browsing_extension_telemetry" added_in_milestone="98" content_hash_code="01c13fb8" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.cc" />
  <item id="fast_pair_device_metadata_fetcher" added_in_milestone="100" content_hash_code="0099c721" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc" />
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="04839870" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />

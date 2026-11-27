@@ -384,6 +384,7 @@ void WebApkInstaller::OnReadUpdateRequest(
             "  * the ABI and Android OS version of the device that made the "
             "request"
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "webapk.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -520,6 +521,7 @@ void WebApkInstaller::OnInstallProtoBuilt(
             "  * the ABI and Android OS version of the device that made the "
             "request"
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "webapk.googleapis.com"
         }
         policy {
           cookies_allowed: NO
