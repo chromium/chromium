@@ -150,9 +150,11 @@ class CORE_EXPORT MediaQueryExpValue {
     kTreeCounting = 1 << 5,
     kLineHeightRelative = 1 << 6,
     kAttr = 1 << 7,
+    kGlyphRelative = 1 << 8,
+    kLogicalDirectionRelative = 1 << 9,
   };
 
-  static const int kUnitFlagsBits = 8;
+  static const int kUnitFlagsBits = 10;
 
   unsigned GetUnitFlags() const;
 

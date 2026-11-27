@@ -66,6 +66,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnAttr() const {
     return (unit_flags_ & MediaQueryExpValue::UnitFlags::kAttr) != 0;
   }
+  bool DependsOnLogicalUnits() const {
+    return (unit_flags_ &
+            MediaQueryExpValue::UnitFlags::kLogicalDirectionRelative) != 0;
+  }
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
@@ -74,7 +78,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
     return DependsOnSize() || DependsOnStuck() || DependsOnSnapped() ||
-           DependsOnScrollable() || DependsOnScrolled();
+           DependsOnScrollable() || DependsOnScrolled() ||
+           DependsOnLogicalUnits();
   }
 
   enum class Change : uint8_t {

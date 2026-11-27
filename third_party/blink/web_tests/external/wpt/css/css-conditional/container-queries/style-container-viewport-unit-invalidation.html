@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Container Queries Test: style() queries with viewport units</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#style-container">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  const red = "rgb(255, 0, 0)";
+  const green = "rgb(0, 128, 0)";
+
+  function loadIframe(srcdoc) {
+    return new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.style.width = "400px";
+      iframe.style.height = "200px";
+      iframe.onload = () => resolve(iframe);
+      iframe.srcdoc = srcdoc;
+      document.body.appendChild(iframe);
+    });
+  }
+
+  promise_test(async (t) => {
+    const iframe = await loadIframe(`<!DOCTYPE html>
+      <style>
+        @property --vi-threshold {
+          syntax: "<length>";
+          inherits: true;
+          initial-value: 300px;
+        }
+        #container {
+          container-name: wm-q;
+          writing-mode: horizontal-tb;
+          --vi-threshold: 300px;
+        }
+        #mid {
+          writing-mode: horizontal-tb;
+        }
+        #vi-target {
+          color: rgb(255, 0, 0);
+        }
+        @container wm-q style(--vi-threshold > 100vi) {
+          #vi-target { color: rgb(0, 128, 0); }
+        }
+      </style>
+      <div id="container">
+        <div id="mid">
+          <div id="vi-target"></div>
+        </div>
+      </div>`);
+    t.add_cleanup(() => iframe.remove());
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+    const container = doc.getElementById("container");
+    const viTarget = doc.getElementById("vi-target");
+
+    assert_equals(win.getComputedStyle(viTarget).color, red, "horizontal-tb 100vi = 400px");
+    container.style.writingMode = "vertical-rl";
+    assert_equals(win.getComputedStyle(viTarget).color, green, "vertical-rl 100vi = 200px");
+    container.style.writingMode = "horizontal-tb";
+    assert_equals(win.getComputedStyle(viTarget).color, red, "restored horizontal-tb 100vi");
+  }, "Changing writing-mode invalidates style() query using vi");
+</script>

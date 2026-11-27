@@ -276,6 +276,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                            MediaQueryExpValue::UnitFlags::kContainer)) {
     match_result.SetDependsOnStaticViewportUnits();
   }
+  if (result.unit_flags & MediaQueryExpValue::UnitFlags::kContainer) {
+    match_result.SetDependsOnSizeContainerQueries();
+  }
   if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootRelative) {
     match_result.SetDependsOnRootUnitContainerQueries();
   }
@@ -342,6 +345,11 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
        MediaQueryExpValue::UnitFlags::kLineHeightRelative) != 0) {
     Element* container = ContainerElement();
     container->GetDocument().GetStyleEngine().SetUsesLineHeightUnits(true);
+  }
+  if ((result.unit_flags & MediaQueryExpValue::UnitFlags::kGlyphRelative) !=
+      0) {
+    Element* container = ContainerElement();
+    container->GetDocument().GetStyleEngine().SetUsesGlyphRelativeUnits(true);
   }
   unit_flags_ |= result.unit_flags;
 
@@ -995,8 +1003,8 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
         break;
     }
   }
-  if (invalidate_for_relative_units || DependsOnTreeCounting() ||
-      DependsOnAttr() ||
+  if (invalidate_for_writing_direction || invalidate_for_relative_units ||
+      DependsOnTreeCounting() || DependsOnAttr() ||
       old_style.InheritedVariables() != new_style.InheritedVariables() ||
       old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
       old_style.InitialData() != new_style.InitialData()) {

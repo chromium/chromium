@@ -1756,6 +1756,9 @@ unsigned ConversionFlagsToUnitFlags(
                           static_cast<Flags>(Flag::kGlyphRelative))) {
     unit_flags |= UnitFlags::kFontRelative;
   }
+  if (conversion_flags & static_cast<Flags>(Flag::kGlyphRelative)) {
+    unit_flags |= UnitFlags::kGlyphRelative;
+  }
   if (conversion_flags & (static_cast<Flags>(Flag::kRootFontRelative) |
                           static_cast<Flags>(Flag::kRlhRelative))) {
     unit_flags |= UnitFlags::kRootRelative;
@@ -1773,8 +1776,13 @@ unsigned ConversionFlagsToUnitFlags(
   if (conversion_flags & static_cast<Flags>(Flag::kSiblingRelative)) {
     unit_flags |= UnitFlags::kTreeCounting;
   }
-  if (conversion_flags & static_cast<Flags>(Flag::kLhRelative)) {
+  if (conversion_flags & (static_cast<Flags>(Flag::kLhRelative) |
+                          static_cast<Flags>(Flag::kRlhRelative))) {
     unit_flags |= UnitFlags::kLineHeightRelative;
+  }
+  if (conversion_flags &
+      static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
+    unit_flags |= UnitFlags::kLogicalDirectionRelative;
   }
 
   return unit_flags;

@@ -752,7 +752,25 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
     unit_flags |= UnitFlags::kFontRelative;
   }
 
-  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight)) {
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontXSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeZeroCharacterWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontCapitalHeight) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeIdeographicFullWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontXSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeRootFontCapitalHeight) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeRootFontZeroCharacterWidth) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeRootFontIdeographicFullWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootLineHeight)) {
+    unit_flags |= UnitFlags::kGlyphRelative;
+  }
+
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootLineHeight)) {
     unit_flags |= UnitFlags::kLineHeightRelative;
   }
 
@@ -783,6 +801,25 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerMin) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerMax)) {
     unit_flags |= UnitFlags::kContainer;
+  }
+
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportInlineSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportBlockSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeSmallViewportInlineSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeSmallViewportBlockSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeLargeViewportInlineSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeLargeViewportBlockSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportInlineSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportBlockSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerInlineSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerBlockSize)) {
+    unit_flags |= UnitFlags::kLogicalDirectionRelative;
   }
 
   return unit_flags;

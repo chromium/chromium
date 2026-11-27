@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Container Queries Test: style() queries with relative units</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#style-container">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @property --threshold {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  @property --rlh-threshold {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 30px;
+  }
+
+  @property --rch-threshold {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 15px;
+  }
+
+  @property --cqi-threshold {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  :root {
+    line-height: 20px;
+    font-size: 20px;
+    font-family: monospace;
+  }
+
+  #size-container {
+    container-type: inline-size;
+    width: 300px;
+  }
+
+  #style-container {
+    container-name: styleq;
+    --threshold: 200px;
+  }
+
+  #range-target,
+  #equality-target,
+  #rlh-target,
+  #rch-target,
+  #cqi-target {
+    color: rgb(255, 0, 0);
+  }
+
+  @container styleq style(--threshold > 100cqw) {
+    #range-target {
+      color: rgb(0, 128, 0);
+    }
+  }
+
+  @container styleq style(--threshold: 100cqw) {
+    #equality-target {
+      color: rgb(0, 128, 0);
+    }
+  }
+
+  #if-target {
+    color: if(style(--threshold > 100cqw): rgb(0, 128, 0); else: rgb(255, 0, 0));
+  }
+
+  #rlh-container {
+    container-name: rlh-q;
+    line-height: 20px;
+    --rlh-threshold: 30px;
+  }
+
+  @container rlh-q style(--rlh-threshold < 1rlh) {
+    #rlh-target {
+      color: rgb(0, 128, 0);
+    }
+  }
+
+  #rch-container {
+    container-name: rch-q;
+    font-family: sans-serif;
+    --rch-threshold: 15px;
+  }
+
+  @container rch-q style(--rch-threshold < 1rch) {
+    #rch-target {
+      color: rgb(0, 128, 0);
+    }
+  }
+
+  #cqi-outer {
+    container-type: size;
+    width: 300px;
+    height: 100px;
+  }
+
+  #cqi-container {
+    container-name: cqi-q;
+    writing-mode: horizontal-tb;
+    --cqi-threshold: 200px;
+  }
+
+  #cqi-mid {
+    writing-mode: horizontal-tb;
+  }
+
+  @container cqi-q style(--cqi-threshold > 100cqi) {
+    #cqi-target {
+      color: rgb(0, 128, 0);
+    }
+  }
+</style>
+<div id="size-container">
+  <div id="style-container">
+    <div id="range-target"></div>
+    <div id="equality-target"></div>
+    <div id="if-target"></div>
+  </div>
+</div>
+<div id="rlh-container">
+  <div id="rlh-target"></div>
+</div>
+<div id="rch-container">
+  <div id="rch-target"></div>
+</div>
+<div id="cqi-outer">
+  <div id="cqi-container">
+    <div id="cqi-mid">
+      <div id="cqi-target"></div>
+    </div>
+  </div>
+</div>
+<script>
+  const red = "rgb(255, 0, 0)";
+  const green = "rgb(0, 128, 0)";
+  const sizeContainer = document.getElementById("size-container");
+  const rangeTarget = document.getElementById("range-target");
+  const equalityTarget = document.getElementById("equality-target");
+  const ifTarget = document.getElementById("if-target");
+
+  test(() => {
+    assert_equals(getComputedStyle(rangeTarget).color, red);
+    assert_equals(getComputedStyle(equalityTarget).color, red);
+    assert_equals(getComputedStyle(ifTarget).color, red);
+  }, "Initial state with 300px outer size container");
+
+  test(() => {
+    sizeContainer.style.width = "200px";
+    assert_equals(getComputedStyle(equalityTarget).color, green);
+    assert_equals(getComputedStyle(rangeTarget).color, red);
+    assert_equals(getComputedStyle(ifTarget).color, red);
+  }, "Resizing outer size container to 200px matches equality style() query");
+
+  test(() => {
+    sizeContainer.style.width = "150px";
+    assert_equals(getComputedStyle(rangeTarget).color, green);
+    assert_equals(getComputedStyle(equalityTarget).color, red);
+    assert_equals(getComputedStyle(ifTarget).color, green);
+  }, "Resizing outer size container to 150px matches range style() query and if()");
+
+  test(() => {
+    sizeContainer.style.width = "300px";
+    assert_equals(getComputedStyle(rangeTarget).color, red);
+    assert_equals(getComputedStyle(equalityTarget).color, red);
+    assert_equals(getComputedStyle(ifTarget).color, red);
+  }, "Restoring outer size container to 300px clears style() query matches");
+
+  test((t) => {
+    t.add_cleanup(() => {
+      document.documentElement.style.lineHeight = "";
+    });
+    const target = document.getElementById("rlh-target");
+
+    assert_equals(getComputedStyle(target).color, red, "initial 1rlh = 20px");
+    document.documentElement.style.lineHeight = "40px";
+    assert_equals(getComputedStyle(target).color, green, "updated 1rlh = 40px");
+    document.documentElement.style.lineHeight = "20px";
+    assert_equals(getComputedStyle(target).color, red, "restored 1rlh = 20px");
+  }, "Changing :root line-height invalidates style() query using rlh");
+
+  promise_test(async (t) => {
+    t.add_cleanup(() => {
+      document.documentElement.style.fontFamily = "";
+    });
+    const target = document.getElementById("rch-target");
+
+    await document.fonts.load("20px Ahem");
+    assert_equals(getComputedStyle(target).color, red, "initial monospace 1rch < 15px");
+    document.documentElement.style.fontFamily = "Ahem";
+    assert_equals(getComputedStyle(target).color, green, "Ahem 1rch = 20px > 15px");
+    document.documentElement.style.fontFamily = "monospace";
+    assert_equals(getComputedStyle(target).color, red, "restored monospace 1rch < 15px");
+  }, "Changing :root font-family invalidates style() query using rch");
+
+  test((t) => {
+    const container = document.getElementById("cqi-container");
+    const target = document.getElementById("cqi-target");
+    t.add_cleanup(() => {
+      container.style.writingMode = "";
+    });
+
+    assert_equals(getComputedStyle(target).color, red, "horizontal-tb 100cqi = 300px");
+    container.style.writingMode = "vertical-rl";
+    assert_equals(getComputedStyle(target).color, green, "vertical-rl 100cqi = 100px");
+    container.style.writingMode = "horizontal-tb";
+    assert_equals(getComputedStyle(target).color, red, "restored horizontal-tb 100cqi");
+  }, "Changing writing-mode invalidates style() query using cqi");
+</script>
