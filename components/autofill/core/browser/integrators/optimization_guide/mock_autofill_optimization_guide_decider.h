@@ -52,7 +52,6 @@ class MockAutofillOptimizationGuideDecider
               IsUrlEligibleForOmniboxAutofill,
               (const GURL&),
               (const, override));
-  MOCK_METHOD(bool, ShouldBlockAtMemory, (const GURL&), (const, override));
 };
 
 }  // namespace autofill
