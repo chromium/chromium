@@ -8,8 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
@@ -26,6 +24,9 @@ constexpr int kCurrentVersion = 1;
 // The lowest version of the database schema such that old versions of the code
 // can still read/write the current database.
 constexpr int kCompatibleVersion = 1;
+
+constexpr char kDeleteStorageKeySql[] =
+    "DELETE FROM media_device_salts WHERE storage_key=?";
 }  // namespace
 
 std::string CreateRandomSalt() {
@@ -131,14 +132,16 @@ void MediaDeviceSaltDatabase::DeleteEntries(
     return;
   }
 
-  const std::string delete_storage_keys_sql =
-      base::StrCat({"DELETE FROM media_device_salts "
-                    "WHERE storage_key IN ('",
-                    base::JoinString(serialized_storage_keys, "','"), "')"});
-  DCHECK(db_.IsSQLValid(delete_storage_keys_sql));
-  sql::Statement delete_statement(
-      db_.GetUniqueStatement(delete_storage_keys_sql));
-  delete_statement.Run() && transaction.Commit();
+  DCHECK(db_.IsSQLValid(kDeleteStorageKeySql));
+  sql::Statement delete_statement(db_.GetUniqueStatement(kDeleteStorageKeySql));
+  for (const std::string& serialized_storage_key : serialized_storage_keys) {
+    delete_statement.Reset(/*clear_bound_vars=*/true);
+    delete_statement.BindString(0, serialized_storage_key);
+    if (!delete_statement.Run()) {
+      return;
+    }
+  }
+  transaction.Commit();
 }
 
 void MediaDeviceSaltDatabase::DeleteEntry(
@@ -147,9 +150,6 @@ void MediaDeviceSaltDatabase::DeleteEntry(
   if (storage_key.origin().opaque() || !EnsureOpen()) {
     return;
   }
-  static constexpr char kDeleteStorageKeySql[] =
-      "DELETE FROM media_device_salts "
-      "WHERE storage_key=?";
   DCHECK(db_.IsSQLValid(kDeleteStorageKeySql));
   sql::Statement statement(db_.GetUniqueStatement(kDeleteStorageKeySql));
   statement.BindString(0, storage_key.Serialize());

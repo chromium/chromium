@@ -185,6 +185,47 @@ TEST_P(MediaDeviceSaltDatabaseTest, DeleteSomeStorageKeysUsingMatcher) {
               ElementsAre(std::pair(StorageKey2(), "salt2")));
 }
 
+TEST_P(MediaDeviceSaltDatabaseTest,
+       DeleteEntriesWithSqlMetacharactersInStorageKey) {
+  constexpr char kHostileOrigin[] =
+      "http://')or(1=1)or(storage_key)in('.evil.com:8081/";
+  const blink::StorageKey hostile_key =
+      blink::StorageKey::CreateFromStringForTesting(kHostileOrigin);
+  ASSERT_FALSE(hostile_key.origin().opaque());
+  ASSERT_EQ(hostile_key.Serialize(), kHostileOrigin);
+  ASSERT_TRUE(db().GetOrInsertSalt(hostile_key, "hostile_salt").has_value());
+  ASSERT_TRUE(db().GetOrInsertSalt(StorageKey1(), "salt1").has_value());
+  ASSERT_TRUE(db().GetOrInsertSalt(StorageKey2(), "salt2").has_value());
+  ASSERT_TRUE(db().GetOrInsertSalt(StorageKey3(), "salt3").has_value());
+
+  db().DeleteEntries(base::Time(), base::Time::Max(),
+                     CreateMatcherForKeys({hostile_key, StorageKey1()}));
+  EXPECT_THAT(GetAllStoredEntries(),
+              UnorderedElementsAre(std::pair(StorageKey2(), "salt2"),
+                                   std::pair(StorageKey3(), "salt3")));
+}
+
+TEST_P(MediaDeviceSaltDatabaseTest,
+       DeleteEntriesWithNonDeserializableSqlMetacharacters) {
+  ASSERT_TRUE(db().GetOrInsertSalt(StorageKey1(), "salt1").has_value());
+  ASSERT_TRUE(db().GetOrInsertSalt(StorageKey2(), "salt2").has_value());
+
+  sql::Statement insert_raw(db().DatabaseForTesting().GetUniqueStatement(
+      "INSERT INTO media_device_salts(storage_key,creation_time,salt) "
+      "VALUES(?,?,?)"));
+  insert_raw.BindString(0, "') OR 1=1 --");
+  insert_raw.BindTime(1, base::Time::Now());
+  insert_raw.BindString(2, "raw_salt");
+  ASSERT_TRUE(insert_raw.Run());
+
+  // Matcher matches nothing, so only the non-deserializable row is deleted.
+  db().DeleteEntries(base::Time(), base::Time::Max(),
+                     CreateMatcherForKeys({StorageKey3()}));
+  EXPECT_THAT(GetAllStoredEntries(),
+              UnorderedElementsAre(std::pair(StorageKey1(), "salt1"),
+                                   std::pair(StorageKey2(), "salt2")));
+}
+
 TEST_P(MediaDeviceSaltDatabaseTest, DeleteSingleStorageKey) {
   db().GetOrInsertSalt(StorageKey1(), "salt1");
   db().GetOrInsertSalt(StorageKey2(), "salt2");
