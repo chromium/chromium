@@ -207,6 +207,7 @@ include_rules = [
   "+components/location/android",
   "+components/lookalikes/core",
   "+components/login",
+  "+components/login_detection",
   "+components/media_device_salt",
   "+components/media_gallery_util",
   "+components/media_message_center",

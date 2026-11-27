@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
-#define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
+#ifndef COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
+#define COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
 
 #include <vector>
 
@@ -42,4 +42,4 @@ std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service);
 
 }  // namespace login_detection::prefs
 
-#endif  // CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_
+#endif  // COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_PREFS_H_

@@ -1,0 +1,24 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/site_isolation",
+  "+components/user_prefs",
+  "+content/public/browser",
+  "+net/base",
+  "+services/metrics/public/cpp",
+  "+ui/base",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*_(unit|browser)test\\.cc": [
+    "+components/ukm",
+    "+components/user_prefs/test",
+    "+content/public/test",
+    "+content/shell/browser",
+    "+net/dns",
+    "+net/test",
+    "+testing/gmock",
+    "+testing/gtest",
+  ],
+}

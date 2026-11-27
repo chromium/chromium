@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/login_detection/login_detection_util.h"
+#include "components/login_detection/login_detection_util.h"
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
@@ -41,8 +41,9 @@ std::string GetSiteNameForURL(const GURL& url) {
 std::set<std::string> GetOAuthLoginStartQueryParams() {
   std::string param = GetFieldTrialParamValueByFeature(
       kLoginDetection, "oauth_login_start_request_params");
-  if (param.empty())
+  if (param.empty()) {
     param = "client_id";
+  }
   auto params = base::SplitString(param, ",", base::TRIM_WHITESPACE,
                                   base::SPLIT_WANT_NONEMPTY);
 
@@ -52,8 +53,9 @@ std::set<std::string> GetOAuthLoginStartQueryParams() {
 std::set<std::string> GetOAuthLoginCompleteQueryParams() {
   std::string param = GetFieldTrialParamValueByFeature(
       kLoginDetection, "oauth_login_complete_request_params");
-  if (param.empty())
+  if (param.empty()) {
     param = "code, access_token, id_token";
+  }
   auto params = base::SplitString(param, ",", base::TRIM_WHITESPACE,
                                   base::SPLIT_WANT_NONEMPTY);
 
@@ -77,8 +79,9 @@ std::vector<std::string> GetLoggedInSitesFromFieldTrial() {
   // Get the field trial parameter which is a list of comma separated sites.
   std::string param =
       GetFieldTrialParamValueByFeature(kLoginDetection, "logged_in_sites");
-  if (param.empty())
+  if (param.empty()) {
     return std::vector<std::string>();
+  }
   return base::SplitString(param, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
 }

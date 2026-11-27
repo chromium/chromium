@@ -1,10 +1,10 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/login_detection/oauth_login_detector.h"
+#include "components/login_detection/oauth_login_detector.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
+#include "components/login_detection/login_detection_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

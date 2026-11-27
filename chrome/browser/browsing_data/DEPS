@@ -69,7 +69,6 @@ include_rules = [
   "+chrome/browser/history/web_history_service_factory.h",
   "+chrome/browser/language/url_language_histogram_factory.h",
   "+chrome/browser/lifetime/browser_shutdown.h",
-  "+chrome/browser/login_detection/login_detection_prefs.h",
   "+chrome/browser/media/cdm_document_service_impl.h",
   "+chrome/browser/media/clear_key_cdm_test_helper.h",
   "+chrome/browser/media/media_engagement_service.h",

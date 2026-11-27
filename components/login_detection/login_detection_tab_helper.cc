@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/login_detection/login_detection_tab_helper.h"
+#include "components/login_detection/login_detection_tab_helper.h"
 
 #include <utility>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/login_detection/login_detection_prefs.h"
-#include "chrome/browser/login_detection/login_detection_type.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
+#include "components/login_detection/login_detection_prefs.h"
+#include "components/login_detection/login_detection_type.h"
+#include "components/login_detection/login_detection_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/user_prefs/user_prefs.h"
@@ -175,7 +175,7 @@ void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
   ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 }
 
-void LoginDetectionTabHelper::WebContentsDestroyed() {
+void LoginDetectionTabHelper::WebContentsDestroyed() {  // nocheck
   if (auto login_info = oauth_login_detector_->GetPopUpLoginFlowSite()) {
     ProcessNewSignedInSite(login_info->oauth_requestor_site);
     RecordLoginDetectionMetrics(

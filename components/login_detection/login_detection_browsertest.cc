@@ -2,61 +2,79 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/login_detection/login_detection_tab_helper.h"
-#include "chrome/browser/login_detection/login_detection_type.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "components/login_detection/login_detection_keyed_service.h"
+#include "components/login_detection/login_detection_prefs.h"
+#include "components/login_detection/login_detection_tab_helper.h"
+#include "components/login_detection/login_detection_type.h"
+#include "components/login_detection/login_detection_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/site_isolation/features.h"
+#include "components/site_isolation/site_isolation_policy.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace login_detection {
 
-class LoginDetectionBrowserTest : public InProcessBrowserTest {
+class LoginDetectionBrowserTest : public content::ContentBrowserTest {
  public:
   LoginDetectionBrowserTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {kLoginDetection, {}},
-            {site_isolation::features::kSiteIsolationForPasswordSites, {}},
+            {site_isolation::features::kSiteIsolationForOAuthSites, {}},
         },
         {});
+    prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void SetUpOnMainThread() override {
-    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    content::ContentBrowserTest::SetUpOnMainThread();
+    https_test_server_.ServeFilesFromSourceDirectory("content/test/data");
     host_resolver()->AddRule("*", "127.0.0.1");
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     ASSERT_TRUE(https_test_server_.Start());
+    user_prefs::UserPrefs::Set(GetWebContents()->GetBrowserContext(),
+                               &pref_service_);
+    LoginDetectionTabHelper::MaybeCreateForWebContents(GetWebContents(),
+                                                       base::NullCallback());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
     cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    content::ContentBrowserTest::SetUpInProcessBrowserTestFixture();
     cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     cert_verifier_.TearDownInProcessBrowserTestFixture();
-    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+    content::ContentBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   void ResetHistogramTester() {
@@ -78,11 +96,10 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
                                           expected_bucket_count);
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  content::WebContents* GetWebContents() { return shell()->web_contents(); }
 
  protected:
+  TestingPrefServiceSimple pref_service_;
   net::EmbeddedTestServer https_test_server_;
   content::ContentMockCertVerifier cert_verifier_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -98,15 +115,19 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   ResetHistogramTester();
 
   // Create a popup for the navigation flow.
-  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+  const GURL popup_url = https_test_server_.GetURL(
+      "www.oauthprovider.com", "/title2.html?client_id=123");
+  content::TestNavigationObserver observer(popup_url);
+  observer.StartWatchingNewWebContents();
+  content::ShellAddedObserver new_shell_observer;
   ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       content::JsReplace(
           "window.open($1, 'oauth_window', 'width=10,height=10');",
-          https_test_server_.GetURL("www.oauthprovider.com",
-                                    "/title2.html?client_id=123"))));
-  auto* popup_contents = tab_added_waiter.Wait();
-  content::TestNavigationObserver observer(popup_contents);
+          popup_url)));
+  content::Shell* popup_shell = new_shell_observer.GetShell();
+  ASSERT_TRUE(popup_shell);
+  auto* popup_contents = popup_shell->web_contents();
   observer.WaitForNavigationFinished();
   EXPECT_TRUE(observer.last_navigation_succeeded());
   // This popup navigation is treated as not logged-in too.
@@ -115,10 +136,19 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
 
   // When the popup is closed, it will be detected as OAuth login.
   content::WebContentsDestroyedWatcher destroyed_watcher(popup_contents);
-  EXPECT_TRUE(ExecJs(popup_contents, "window.close()"));
+  EXPECT_TRUE(content::ExecJs(popup_contents, "window.close()"));
   destroyed_watcher.Wait();
   ExpectLoginDetectionTypeMetric(
       LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);
+  EXPECT_TRUE(prefs::IsSiteInOAuthSignedInList(&pref_service_,
+                                               GURL("https://www.foo.com")));
+  ASSERT_TRUE(
+      site_isolation::SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled());
+  EXPECT_TRUE(content::ChildProcessSecurityPolicy::GetInstance()
+                  ->IsIsolatedSiteFromSource(
+                      url::Origin::Create(GURL("https://foo.com")),
+                      content::ChildProcessSecurityPolicy::
+                          IsolatedOriginSource::USER_TRIGGERED));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
@@ -155,6 +185,35 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, OAuthLoginFlowRecordsMetric) {
       GetWebContents(), https_test_server_.GetURL(
                             "www.foo.com", "/title1.html#access_token=token")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthFirstTimeLoginFlow);
+  EXPECT_TRUE(prefs::IsSiteInOAuthSignedInList(&pref_service_,
+                                               GURL("https://www.foo.com")));
+  ASSERT_TRUE(
+      site_isolation::SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled());
+  EXPECT_TRUE(content::ChildProcessSecurityPolicy::GetInstance()
+                  ->IsIsolatedSiteFromSource(
+                      url::Origin::Create(GURL("https://foo.com")),
+                      content::ChildProcessSecurityPolicy::
+                          IsolatedOriginSource::USER_TRIGGERED));
+}
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
+                       KeyedServiceIsolatesStoredOAuthSites) {
+  prefs::SaveSiteToOAuthSignedInList(&pref_service_,
+                                     GURL("https://stored-oauth.com"));
+  ResetHistogramTester();
+
+  LoginDetectionKeyedService keyed_service(
+      GetWebContents()->GetBrowserContext());
+
+  ASSERT_TRUE(
+      site_isolation::SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled());
+  EXPECT_TRUE(content::ChildProcessSecurityPolicy::GetInstance()
+                  ->IsIsolatedSiteFromSource(
+                      url::Origin::Create(GURL("https://stored-oauth.com")),
+                      content::ChildProcessSecurityPolicy::
+                          IsolatedOriginSource::USER_TRIGGERED));
+  histogram_tester_->ExpectUniqueSample("SiteIsolation.SavedOAuthSites.Size", 1,
+                                        1);
 }
 
 class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {

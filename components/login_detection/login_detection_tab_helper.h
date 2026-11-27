@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
-#define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
+#ifndef COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
+#define COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/login_detection/oauth_login_detector.h"
+#include "components/login_detection/oauth_login_detector.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -63,7 +63,7 @@ class LoginDetectionTabHelper
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void WebContentsDestroyed() override;
+  void WebContentsDestroyed() override;  // nocheck
 
   // Called when a new signed-in site has just been discovered from one of the
   // supported OAuth login flows.
@@ -84,4 +84,4 @@ class LoginDetectionTabHelper
 
 }  // namespace login_detection
 
-#endif  // CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
+#endif  // COMPONENTS_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_

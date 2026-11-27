@@ -2,33 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/login_detection/login_detection_tab_helper.h"
+#include "components/login_detection/login_detection_tab_helper.h"
 
-#include "base/run_loop.h"
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/login_detection/login_detection_type.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/login_detection/login_detection_prefs.h"
+#include "components/login_detection/login_detection_type.h"
+#include "components/login_detection/login_detection_util.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace login_detection {
 
-class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
+class LoginDetectionTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   LoginDetectionTabHelperTest() = default;
 
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    auto browser_context =
+        std::make_unique<user_prefs::TestBrowserContextWithPrefs>();
+    prefs::RegisterProfilePrefs(browser_context->pref_registry());
+    return browser_context;
+  }
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(kLoginDetection);
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     ResetMetricsTesters();
     LoginDetectionTabHelper::MaybeCreateForWebContents(
         web_contents(), federated_login_callback_.Get());
@@ -122,13 +134,9 @@ TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
       GURL("https://foo.com/oauth_signin"), web_contents());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/authenticate?client_id=123"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/user_login"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/?username=user&password=123"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 
@@ -169,15 +177,10 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
       GURL("https://foo.com/oauth_signin"), web_contents());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/authenticate?client_id=123"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/user_login"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/?username=user&password=123"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://bar.com/page.html"));
-  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 

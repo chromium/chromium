@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/login_detection/login_detection_keyed_service.h"
+#include "components/login_detection/login_detection_keyed_service.h"
 
 #include "base/check.h"
-#include "chrome/browser/login_detection/login_detection_prefs.h"
+#include "components/login_detection/login_detection_prefs.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"

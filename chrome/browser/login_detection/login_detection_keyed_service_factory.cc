@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/login_detection/login_detection_keyed_service.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/login_detection/login_detection_keyed_service.h"
+#include "components/login_detection/login_detection_util.h"
 #include "content/public/browser/browser_context.h"
 
 namespace login_detection {

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/login_detection/oauth_login_detector.h"
+#include "components/login_detection/oauth_login_detector.h"
 
 #include <string_view>
 
 #include "base/strings/string_split.h"
-#include "chrome/browser/login_detection/login_detection_util.h"
+#include "components/login_detection/login_detection_util.h"
 #include "net/base/url_util.h"
 
 namespace login_detection {
@@ -128,8 +128,9 @@ OAuthLoginDetector::GetSuccessfulLoginFlowSite(
       }
     }
   }
-  if (login_flow_info_)
+  if (login_flow_info_) {
     login_flow_info_->count_navigations_since_login_flow_start++;
+  }
   return std::nullopt;
 }
 
@@ -144,12 +145,14 @@ void OAuthLoginDetector::DidOpenAsPopUp(const GURL& opener_navigation_url) {
 std::optional<OAuthLoginDetector::OAuthLoginFlowInfo>
 OAuthLoginDetector::GetPopUpLoginFlowSite() const {
   // OAuth has never started.
-  if (!login_flow_info_)
+  if (!login_flow_info_) {
     return std::nullopt;
+  }
 
   // Only consider OAuth completion when this is a popup window.
-  if (!popup_opener_navigation_site_)
+  if (!popup_opener_navigation_site_) {
     return std::nullopt;
+  }
 
   return OAuthLoginFlowInfo(login_flow_info_->oauth_provider_site,
                             login_flow_info_->oauth_requestor_site);
@@ -187,8 +190,9 @@ bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(
 
   // PopUp based login completion flow should only navigate within the OAuth
   // provider site.
-  if (popup_opener_navigation_site_)
+  if (popup_opener_navigation_site_) {
     login_flow_info_.reset();
+  }
 
   return false;
 }
