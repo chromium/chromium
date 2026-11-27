@@ -267,12 +267,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     // that supposed to produce linear buffers.
     if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
       auto modifier = buffer_handle.native_pixmap_handle().modifier;
-      if (modifier != gfx::NativePixmapHandle::kNoModifier &&
-          modifier != gfx::NativePixmapHandle::kLinearModifier) {
-        base::AutoLock lock(lock_);
-        SCOPED_CRASH_KEY_NUMBER("shared-image", "modifier", modifier);
-        NOTREACHED(base::NotFatalUntil::M158);
-      }
+      CHECK(modifier == gfx::NativePixmapHandle::kNoModifier ||
+            modifier == gfx::NativePixmapHandle::kLinearModifier);
     }
   }
 #endif

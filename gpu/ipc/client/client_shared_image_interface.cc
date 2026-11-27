@@ -172,8 +172,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   // Only valid client from renderer on ChromeOS and Linux is VideoCapture, that
   // uses SCANOUT_VEA_CPU_READ.
   if (gpu_channel_->client_type() == viz::mojom::GpuClientType::kRenderer) {
-    CHECK_EQ(buffer_usage, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-             base::NotFatalUntil::M158);
+    CHECK_EQ(buffer_usage, gfx::BufferUsage::SCANOUT_VEA_CPU_READ);
   }
 #endif
 
@@ -202,8 +201,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 #if !BUILDFLAG(IS_FUCHSIA)
   // This path of creating SI with buffer_handle inside renderer is used only on
   // Fuchsia for video decoder.
-  CHECK_NE(gpu_channel_->client_type(), viz::mojom::GpuClientType::kRenderer,
-           base::NotFatalUntil::M158);
+  CHECK_NE(gpu_channel_->client_type(), viz::mojom::GpuClientType::kRenderer);
 #endif
 
   auto buffer_handle_type = buffer_handle.type;

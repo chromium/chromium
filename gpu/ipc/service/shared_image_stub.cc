@@ -796,6 +796,19 @@ bool SharedImageStub::ValidateGpuMemoryBufferHandle(
   }
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (channel_->client_type() == viz::mojom::GpuClientType::kRenderer) {
+    if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+      auto modifier = buffer_handle.native_pixmap_handle().modifier;
+      if (modifier != gfx::NativePixmapHandle::kNoModifier &&
+          modifier != gfx::NativePixmapHandle::kLinearModifier) {
+        LOG(ERROR) << "Only linear buffers are allowed from renderer processes";
+        return false;
+      }
+    }
+  }
+#endif
+
   // TODO(crbug.com/565252393): Add validation
   return true;
 }
