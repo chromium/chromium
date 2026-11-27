@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
@@ -218,7 +220,7 @@ public class MediaNotificationThrottlerTest extends MediaNotificationTestBase {
         getController().clearNotification();
 
         verify(getThrottler()).clearPendingNotifications();
-        verify(getPendingIntentInitializer()).clearDelayedTask();
+        verify(getPendingIntentInitializer()).clearPendingTasks();
     }
 
     @Test
@@ -431,6 +433,79 @@ public class MediaNotificationThrottlerTest extends MediaNotificationTestBase {
         verify(getController()).showNotification(info);
         assertNull(getThrottler().mThrottleTask);
         assertNull(getThrottler().mLastPendingInfo);
+    }
+
+    @Test
+    public void testHideNotificationBeforeFirstShowClearsPendingTasks() {
+        MediaNotificationInfo info = mMediaNotificationInfoBuilder.setInstanceId(1).build();
+        getController().mPendingIntentInitializer =
+                new MediaNotificationController.PendingIntentInitializer(getController());
+        getController().mPendingIntentActionSwipe = null;
+
+        getThrottler().queueNotification(info);
+        assertNull(getController().mMediaNotificationInfo);
+        assertNotNull(getThrottler().mThrottleTask);
+        assertSame(info, getThrottler().mLastPendingInfo);
+        assertNotNull(getPendingIntentInitializer().mSwipeInitTask);
+        assertNotNull(getPendingIntentInitializer().mIdleHandler);
+
+        assertTrue(getController().hideNotification(1));
+        assertNull(getThrottler().mThrottleTask);
+        assertNull(getThrottler().mLastPendingInfo);
+        assertNull(getPendingIntentInitializer().mSwipeInitTask);
+        assertNull(getPendingIntentInitializer().mIdleHandler);
+
+        flushMainLooperIdleHandlers();
+        advanceTimeByMillis(MAX_INIT_WAIT_TIME_MILLIS + THROTTLE_MILLIS);
+        assertNull(getController().mPendingIntentActionSwipe);
+        verify(getController(), never()).showNotification(any(MediaNotificationInfo.class));
+    }
+
+    @Test
+    public void testClearNotificationAllowsReschedulingPendingIntentInit() {
+        MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
+        getController().mPendingIntentInitializer =
+                spy(new MediaNotificationController.PendingIntentInitializer(getController()));
+        getController().mPendingIntentActionSwipe = null;
+
+        getThrottler().queueNotification(info);
+        assertNotNull(getPendingIntentInitializer().mSwipeInitTask);
+        assertNotNull(getPendingIntentInitializer().mIdleHandler);
+
+        getController().clearNotification();
+        assertNull(getPendingIntentInitializer().mSwipeInitTask);
+        assertNull(getPendingIntentInitializer().mIdleHandler);
+
+        flushMainLooperIdleHandlers();
+        advanceTimeByMillis(MAX_INIT_WAIT_TIME_MILLIS + THROTTLE_MILLIS);
+        assertNull(getController().mPendingIntentActionSwipe);
+        verify(getController(), never()).showNotification(any(MediaNotificationInfo.class));
+
+        // Queueing again after clearing should reschedule pending intent initialization and show
+        // the notification once initialized.
+        clearInvocations(getPendingIntentInitializer());
+        getThrottler().queueNotification(info);
+        verify(getPendingIntentInitializer()).postDelayedTask();
+        verify(getPendingIntentInitializer()).scheduleIdleTask();
+
+        advanceTimeByMillis(MAX_INIT_WAIT_TIME_MILLIS + THROTTLE_MILLIS);
+        assertNotNull(getController().mPendingIntentActionSwipe);
+        verify(getController()).showNotification(info);
+    }
+
+    @Test
+    public void testClearNotificationResetsPauseTimestampBeforeFirstShow() {
+        MediaNotificationInfo pausedInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+        getController().mPendingIntentInitializer =
+                new MediaNotificationController.PendingIntentInitializer(getController());
+        getController().mPendingIntentActionSwipe = null;
+
+        getController().queueNotification(pausedInfo);
+        assertNull(getController().mMediaNotificationInfo);
+        assertTrue(getController().mTimeOfLastPauseMs >= 0);
+
+        getController().clearNotification();
+        assertEquals(-1, getController().mTimeOfLastPauseMs);
     }
 
     private MediaNotificationController.Throttler getThrottler() {

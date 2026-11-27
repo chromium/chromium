@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -45,6 +46,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Map;
 
 /** JUnit tests for {@link MediaNotificationManager} to verify multiple notifications support. */
@@ -847,6 +849,291 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         assertNotNull(shadowNM.getNotification(liveMediaNotificationId));
         assertNotNull(shadowNM.getNotification(browserNotificationId));
         assertNotNull(shadowNM.getNotification(uniqueId1));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideBeforePendingIntentInitCancelsThrottledStart_MultipleNotifications() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        assertNull(controller1.mMediaNotificationInfo);
+        assertNotNull(controller1.mThrottler.mThrottleTask);
+        assertNotNull(controller1.mPendingIntentInitializer);
+        assertNotNull(controller1.mPendingIntentInitializer.mSwipeInitTask);
+        assertNotNull(controller1.mPendingIntentInitializer.mIdleHandler);
+
+        MediaNotificationManager.hide(1, getNotificationId());
+
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
+        assertNull(controller1.mThrottler.mThrottleTask);
+        assertNull(controller1.mThrottler.mLastPendingInfo);
+        assertNull(controller1.mPendingIntentInitializer.mSwipeInitTask);
+        assertNull(controller1.mPendingIntentInitializer.mIdleHandler);
+
+        flushMainLooperIdleHandlers();
+        advanceTimeByMillis(
+                MediaNotificationController.PendingIntentInitializer.MAX_INIT_WAIT_TIME_MILLIS
+                        + MediaNotificationController.Throttler.THROTTLE_MILLIS);
+
+        assertNull(controller1.mMediaNotificationInfo);
+        assertNull(controller1.mPendingIntentActionSwipe);
+        verify(mMockForegroundServiceUtils, never()).startForegroundService(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideBeforePendingIntentInitCancelsThrottledStart_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        assertNull(controller.mMediaNotificationInfo);
+        assertNotNull(controller.mThrottler.mThrottleTask);
+        assertNotNull(controller.mPendingIntentInitializer);
+        assertNotNull(controller.mPendingIntentInitializer.mSwipeInitTask);
+        assertNotNull(controller.mPendingIntentInitializer.mIdleHandler);
+
+        MediaNotificationManager.hide(1, getNotificationId());
+
+        assertNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertNull(controller.mThrottler.mThrottleTask);
+        assertNull(controller.mThrottler.mLastPendingInfo);
+        assertNull(controller.mPendingIntentInitializer.mSwipeInitTask);
+        assertNull(controller.mPendingIntentInitializer.mIdleHandler);
+
+        flushMainLooperIdleHandlers();
+        advanceTimeByMillis(
+                MediaNotificationController.PendingIntentInitializer.MAX_INIT_WAIT_TIME_MILLIS
+                        + MediaNotificationController.Throttler.THROTTLE_MILLIS);
+
+        assertNull(controller.mMediaNotificationInfo);
+        assertNull(controller.mPendingIntentActionSwipe);
+        verify(mMockForegroundServiceUtils, never()).startForegroundService(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideOtherTabDoesNotCancelPendingNotification_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        assertNull(controller.mMediaNotificationInfo);
+        assertNotNull(controller.mThrottler.mLastPendingInfo);
+
+        // Hiding an unrelated tab should not evict or cancel Tab 1's pending notification.
+        MediaNotificationManager.hide(2, getNotificationId());
+
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertNotNull(controller.mThrottler.mThrottleTask);
+        assertNotNull(controller.mThrottler.mLastPendingInfo);
+
+        advanceTimeByMillis(
+                MediaNotificationController.PendingIntentInitializer.MAX_INIT_WAIT_TIME_MILLIS
+                        + MediaNotificationController.Throttler.THROTTLE_MILLIS);
+
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        verify(mMockForegroundServiceUtils, times(1)).startForegroundService(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideQueuedReplacementTabLeavesActiveNotification_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        controller.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+
+        // Transition Tab 1 to paused so its pause timestamp is recorded and the throttler re-enters
+        // the throttle window.
+        MediaNotificationInfo info1Paused =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info1Paused);
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertTrue(controller.mMediaNotificationInfo.isPaused);
+        assertTrue(controller.mTimeOfLastPauseMs >= 0);
+        assertNotNull(controller.mThrottler.mThrottleTask);
+        clearInvocations(mMockForegroundServiceUtils);
+
+        // Queue Tab 2 playing while the throttler is still in the throttle window.
+        MediaNotificationInfo info2 =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info2);
+        assertNotNull(controller.mThrottler.mLastPendingInfo);
+        assertEquals(2, controller.mThrottler.mLastPendingInfo.instanceId);
+        assertEquals(-1, controller.mTimeOfLastPauseMs);
+
+        // Closing Tab 2 drops its queued replacement without clearing Tab 1's notification and
+        // re-syncs the pause timestamp for Tab 1.
+        MediaNotificationManager.hide(2, getNotificationId());
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertNull(controller.mThrottler.mLastPendingInfo);
+        assertTrue(controller.mTimeOfLastPauseMs >= 0);
+
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertTrue(controller.mMediaNotificationInfo.isPaused);
+        verify(mMockForegroundServiceUtils, never()).startForegroundService(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideOtherTabPreservesActiveAndQueuedUpdates_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        controller.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertNull(controller.mThrottler.mLastPendingInfo);
+
+        // Hiding an unrelated tab when no update is queued should not throw or clear Tab 1.
+        MediaNotificationManager.hide(2, getNotificationId());
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+
+        // Queue a throttled update for Tab 1 and verify hiding Tab 2 preserves it.
+        MediaNotificationInfo info1Paused =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info1Paused);
+        assertEquals(info1Paused, controller.mThrottler.mLastPendingInfo);
+
+        MediaNotificationManager.hide(2, getNotificationId());
+        assertEquals(info1Paused, controller.mThrottler.mLastPendingInfo);
+
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertTrue(controller.mMediaNotificationInfo.isPaused);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideAfterIgnoredEmptyActionsShowClearsPendingIntentInit() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder
+                        .setInstanceId(1)
+                        .setPaused(false)
+                        .setMediaSessionActions(Collections.emptySet())
+                        .build();
+        ChromeMediaNotificationManager.show(info1);
+
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        assertNull(controller1.mMediaNotificationInfo);
+        assertNull(controller1.mThrottler.mLastPendingInfo);
+        assertNotNull(controller1.mPendingIntentInitializer);
+        assertNotNull(controller1.mPendingIntentInitializer.mSwipeInitTask);
+        assertNotNull(controller1.mPendingIntentInitializer.mIdleHandler);
+
+        MediaNotificationManager.hide(1, getNotificationId());
+
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
+        assertNull(controller1.mPendingIntentInitializer.mSwipeInitTask);
+        assertNull(controller1.mPendingIntentInitializer.mIdleHandler);
+
+        flushMainLooperIdleHandlers();
+        advanceTimeByMillis(
+                MediaNotificationController.PendingIntentInitializer.MAX_INIT_WAIT_TIME_MILLIS
+                        + MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNull(controller1.mPendingIntentActionSwipe);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideShownTabHandsOffToQueuedPlayingTab_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        controller.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertNotNull(controller.mThrottler.mThrottleTask);
+
+        // Queue Tab 2 playing during the throttle window.
+        MediaNotificationInfo info2 =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info2);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertNotNull(controller.mThrottler.mLastPendingInfo);
+        assertEquals(2, controller.mThrottler.mLastPendingInfo.instanceId);
+
+        // Closing Tab 1 immediately hands off the notification to Tab 2 without evicting the
+        // controller.
+        MediaNotificationManager.hide(1, getNotificationId());
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(2, controller.mMediaNotificationInfo.instanceId);
+        assertFalse(controller.mMediaNotificationInfo.isPaused);
+        assertNull(controller.mThrottler.mLastPendingInfo);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideShownTabClearsWhenQueuedOtherTabIsPaused_SingleNotification() {
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        MediaNotificationController controller =
+                MediaNotificationManager.getControllerByNotificationId(getNotificationId());
+        assertNotNull(controller);
+        controller.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(MediaNotificationController.Throttler.THROTTLE_MILLIS);
+        assertNotNull(controller.mMediaNotificationInfo);
+        assertEquals(1, controller.mMediaNotificationInfo.instanceId);
+        assertNotNull(controller.mThrottler.mThrottleTask);
+
+        // Tab 2 starts playing and pauses within the same throttle window.
+        MediaNotificationInfo info2Playing =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info2Playing);
+        MediaNotificationInfo info2Paused =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info2Paused);
+        assertNotNull(controller.mThrottler.mLastPendingInfo);
+        assertEquals(2, controller.mThrottler.mLastPendingInfo.instanceId);
+        assertTrue(controller.mThrottler.mLastPendingInfo.isPaused);
+
+        // Closing Tab 1 clears the controller rather than trying to hand off to a paused tab.
+        MediaNotificationManager.hide(1, getNotificationId());
+        assertNull(MediaNotificationManager.getControllerByNotificationId(getNotificationId()));
+        assertNull(controller.mMediaNotificationInfo);
+        assertNull(controller.mThrottler.mLastPendingInfo);
+        assertNull(controller.mThrottler.mThrottleTask);
     }
 
     private void startAndRegisterService() {

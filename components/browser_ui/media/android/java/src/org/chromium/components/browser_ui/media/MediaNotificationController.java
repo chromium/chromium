@@ -15,7 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.MessageQueue;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -188,7 +188,7 @@ public class MediaNotificationController {
         }
 
         /**
-         * Clears the pending notification and `PendingIntentInitializer` task, and enter
+         * Clears the pending notification and `PendingIntentInitializer` tasks, and enters the
          * unthrottled state.
          */
         public void clearPendingNotifications() {
@@ -199,7 +199,7 @@ public class MediaNotificationController {
             mThrottleTask = null;
 
             if (mController.mPendingIntentInitializer != null) {
-                mController.mPendingIntentInitializer.clearDelayedTask();
+                mController.mPendingIntentInitializer.clearPendingTasks();
             }
         }
 
@@ -272,6 +272,9 @@ public class MediaNotificationController {
         // `MAX_INIT_WAIT_TIME_MILLIS`.
         @VisibleForTesting public @Nullable Runnable mSwipeInitTask;
 
+        // Idle handler to initialize the pending intent when the UI thread message queue is idle.
+        @VisibleForTesting public MessageQueue.@Nullable IdleHandler mIdleHandler;
+
         // Indicates whether the tasks to initialize the pending intent have been scheduled or not.
         private boolean mTasksScheduled;
 
@@ -300,7 +303,7 @@ public class MediaNotificationController {
                 return;
             }
 
-            clearDelayedTask();
+            clearPendingTasks();
             mController.mPendingIntentActionSwipe = mController.createPendingIntent(ACTION_SWIPE);
             mController.mPendingIntentInitializer = null;
         }
@@ -321,21 +324,29 @@ public class MediaNotificationController {
          */
         @VisibleForTesting
         public void scheduleIdleTask() {
-            Looper.myQueue()
-                    .addIdleHandler(
-                            () -> {
-                                createPendingIntentActionSwipeIfNeeded();
-                                return false;
-                            });
+            mIdleHandler =
+                    () -> {
+                        mIdleHandler = null;
+                        createPendingIntentActionSwipeIfNeeded();
+                        return false;
+                    };
+            mHandler.getLooper().getQueue().addIdleHandler(mIdleHandler);
         }
 
-        /** Clears the `mIdleSwipeInitTask` delayed task */
+        /**
+         * Cancels any scheduled delayed task and idle handler so initialization can be rescheduled.
+         */
         @VisibleForTesting
-        public void clearDelayedTask() {
+        public void clearPendingTasks() {
             if (mSwipeInitTask != null) {
                 mHandler.removeCallbacks(mSwipeInitTask);
                 mSwipeInitTask = null;
             }
+            if (mIdleHandler != null) {
+                mHandler.getLooper().getQueue().removeIdleHandler(mIdleHandler);
+                mIdleHandler = null;
+            }
+            mTasksScheduled = false;
         }
     }
 
@@ -835,8 +846,8 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo != null) {
             BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
             mMediaNotificationInfo = null;
-            mTimeOfLastPauseMs = -1;
         }
+        mTimeOfLastPauseMs = -1;
 
         if (mMediaSession != null) {
             mMediaSession.setCallback(null);
@@ -908,11 +919,43 @@ public class MediaNotificationController {
         mThrottler.queueNotification(mediaNotificationInfo);
     }
 
-    public void hideNotification(int instanceId) {
-        if (mMediaNotificationInfo == null || instanceId != mMediaNotificationInfo.instanceId) {
-            return;
+    /**
+     * Hides the notification for {@code instanceId} and cancels any pending throttled update or
+     * initialization tasks owned by it.
+     *
+     * @return True if the controller was cleared and may be removed by the manager; false if
+     *     another instance still owns the active or pending notification.
+     */
+    public boolean hideNotification(int instanceId) {
+        MediaNotificationInfo pendingInfo = mThrottler.mLastPendingInfo;
+
+        // Another tab owns the pending notification: keep it queued, unless the closing tab is
+        // currently shown and needs to hand off (or clear if the pending tab is already paused).
+        if (pendingInfo != null && pendingInfo.instanceId != instanceId) {
+            if (mMediaNotificationInfo != null && mMediaNotificationInfo.instanceId == instanceId) {
+                if (pendingInfo.isPaused) {
+                    clearNotification();
+                    return true;
+                }
+                mThrottler.clearPendingNotifications();
+                queueNotification(pendingInfo);
+            }
+            return false;
         }
+
+        // If pendingInfo is non-null here, it belongs to instanceId. When another tab owns the
+        // shown notification, drop instanceId's queued replacement and re-sync the pause timestamp
+        // without clearing the shown notification.
+        if (mMediaNotificationInfo != null && mMediaNotificationInfo.instanceId != instanceId) {
+            if (pendingInfo != null) {
+                mThrottler.mLastPendingInfo = null;
+                updateTimeOfLastPause(mMediaNotificationInfo.isPaused);
+            }
+            return false;
+        }
+
         clearNotification();
+        return true;
     }
 
     /** Schedules the `mPendingIntentActionSwipe` construction if needed. */

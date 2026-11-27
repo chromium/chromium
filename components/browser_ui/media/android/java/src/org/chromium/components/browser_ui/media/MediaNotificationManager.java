@@ -288,14 +288,11 @@ public class MediaNotificationManager {
         MediaNotificationController controller = getControllerByNotificationId(notificationId);
         if (controller == null) return;
 
-        // In single-notification mode, multiple tabs share the same controller. Only hide
-        // the notification if it is currently showing for the tab that is requesting to hide it.
-        if (controller.mMediaNotificationInfo != null
-                && controller.mMediaNotificationInfo.instanceId != tabId) {
+        // In single-notification mode, multiple tabs share the same controller. Only remove it
+        // when it is cleared for the tab requesting hide.
+        if (!controller.hideNotification(tabId)) {
             return;
         }
-
-        controller.hideNotification(tabId);
 
         sControllers.remove(notificationId);
         Pair<Integer, Integer> mapKey = Pair.create(tabId, mediaTypeId);

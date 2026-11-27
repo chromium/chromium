@@ -19,6 +19,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import org.junit.After;
@@ -297,5 +299,11 @@ public class MediaNotificationTestBase {
 
     void advanceTimeByMillis(int timeMillis) {
         ShadowLooper.idleMainLooper(timeMillis, TimeUnit.MILLISECONDS);
+    }
+
+    void flushMainLooperIdleHandlers() {
+        // ShadowPausedLooper only triggers MessageQueue.IdleHandlers after dispatching a message.
+        new Handler(Looper.getMainLooper()).post(() -> {});
+        ShadowLooper.idleMainLooper();
     }
 }
