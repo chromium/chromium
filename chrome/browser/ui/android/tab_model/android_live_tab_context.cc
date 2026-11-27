@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/glic/glic_tab_restore_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -304,18 +305,31 @@ void AndroidLiveTabContext::CloseTab() {
   NOTIMPLEMENTED();
 }
 
+namespace {
+
+bool IsRestorableTabModel(const TabModel* model, const Profile* profile) {
+  return model && profile && model->GetProfile() == profile &&
+         !model->IsOffTheRecord() && model->GetSessionId().is_valid() &&
+         model->activity_type() == chrome::android::ActivityType::kTabbed &&
+         model->GetTabModelType() == TabModel::TabModelType::kStandard;
+}
+
+}  // namespace
+
 // static.
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
     const content::WebContents* contents) {
   const TabAndroid* tab_android = TabAndroid::FromWebContents(contents);
-  if (!tab_android) {
+  if (!tab_android || !tab_android->GetWindowId().is_valid()) {
     return nullptr;
   }
 
   TabModel* model =
       TabModelList::FindTabModelWithWindowSessionId(tab_android->GetWindowId());
 
-  return model ? model->GetLiveTabContext() : nullptr;
+  return IsRestorableTabModel(model, tab_android->profile())
+             ? model->GetLiveTabContext()
+             : nullptr;
 }
 
 // static.
@@ -324,18 +338,19 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
     Profile* profile) {
   CHECK(profile);
   // Find the model with desired id.
-  TabModel* tab_model =
-      TabModelList::FindTabModelWithWindowSessionId(desired_id);
-  if (tab_model && tab_model->GetProfile() == profile &&
-      !tab_model->IsOffTheRecord()) {
-    return tab_model->GetLiveTabContext();
+  if (desired_id.is_valid()) {
+    TabModel* tab_model =
+        TabModelList::FindTabModelWithWindowSessionId(desired_id);
+    if (IsRestorableTabModel(tab_model, profile)) {
+      return tab_model->GetLiveTabContext();
+    }
   }
 
-  // If we can't find the correct model, fall back to first non-incognito model
-  // for `profile`.
+  // If we can't find the correct model, fall back to the first standard tabbed
+  // non-incognito model for `profile`.
   const TabModel* fallback_model = nullptr;
   TabModelList::ForEach(profile, [&](TabModel* model) {
-    if (!model->IsOffTheRecord()) {
+    if (IsRestorableTabModel(model, profile)) {
       fallback_model = model;
       return false;
     }

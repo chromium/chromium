@@ -102,10 +102,15 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
       const split_tabs::SplitTabVisualData& visual_data) override;
   void CloseTab() override;
 
+  // Finds the standard tabbed non-incognito LiveTabContext for `contents`, or
+  // nullptr if `contents` has no valid window association or belongs to a
+  // non-standard/non-tabbed/incognito TabModel. `contents` must be non-null.
   static LiveTabContext* FindContextForWebContents(
       const content::WebContents* contents);
   // Finds the LiveTabContext with `desired_id` for `profile`, falling back to
-  // the first non-incognito LiveTabContext belonging to `profile` if not found.
+  // the first eligible LiveTabContext belonging to `profile` if not found. Both
+  // direct lookup and fallback require a standard, tabbed, non-incognito
+  // TabModel with a valid window SessionID (returning nullptr if none exists).
   // `profile` must be non-null.
   static sessions::LiveTabContext* FindContextWithID(SessionID desired_id,
                                                      Profile* profile);

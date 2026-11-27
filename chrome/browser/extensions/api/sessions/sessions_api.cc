@@ -231,12 +231,14 @@ sessions::LiveTabContext* GetLiveTabContextForBrowser(
 #endif
 }
 
-// Returns the `BrowserWindowInterface` for a `Profile` or null if none is
-// found.
+// Returns the normal `BrowserWindowInterface` for a `Profile` or null if none
+// is found.
 BrowserWindowInterface* FindBrowserWindowInterfaceWithProfile(
     Profile* profile) {
   for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
-    if (bwi->GetProfile() == profile) {
+    if (bwi->GetProfile() == profile &&
+        bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+        !bwi->IsDeleteScheduled() && TabListInterface::From(bwi)) {
       return bwi;
     }
   }

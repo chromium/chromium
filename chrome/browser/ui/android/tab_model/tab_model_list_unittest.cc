@@ -265,6 +265,81 @@ TEST_F(TabModelListTest, FindLiveTabContextWithIDIsScopedToProfile) {
             client.FindLiveTabContextWithID(otr_window_id));
 }
 
+TEST_F(TabModelListTest, FindLiveTabContextWithIDRequiresStandardTabbedModel) {
+  // Register non-tabbed, non-standard, and unassociated TabModels before any
+  // associated tabbed model so they would be visited first by
+  // TabModelList::ForEach fallback.
+  PopupCapturingTabModel auth_tab_model(
+      profile(), chrome::android::ActivityType::kAuthTab);
+  PopupCapturingTabModel custom_tab_model(
+      profile(), chrome::android::ActivityType::kCustomTab);
+  const SessionID custom_tab_window_id = SessionID::NewUnique();
+  custom_tab_model.SetSessionId(custom_tab_window_id);
+  PopupCapturingTabModel headless_model(profile(),
+                                        chrome::android::ActivityType::kTabbed,
+                                        TabModel::TabModelType::kHeadless);
+  const SessionID headless_window_id = SessionID::NewUnique();
+  headless_model.SetSessionId(headless_window_id);
+  PopupCapturingTabModel unassociated_tabbed_model(
+      profile(), chrome::android::ActivityType::kTabbed,
+      TabModel::TabModelType::kStandard);
+  ASSERT_FALSE(unassociated_tabbed_model.GetSessionId().is_valid());
+
+  const SessionID unknown_window_id = SessionID::NewUnique();
+
+  // Direct lookup (including invalid SessionID) and fallback must ignore
+  // non-tabbed, non-standard, and unassociated models.
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(
+                         SessionID::InvalidValue(), profile()));
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(
+                         custom_tab_window_id, profile()));
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(
+                         headless_window_id, profile()));
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(unknown_window_id,
+                                                              profile()));
+
+  // Once a standard tabbed model exists, fallback and invalid/non-tabbed
+  // lookups resolve to it instead of the earlier non-tabbed/headless models.
+  PopupCapturingTabModel tabbed_model(profile(),
+                                      chrome::android::ActivityType::kTabbed,
+                                      TabModel::TabModelType::kStandard);
+  const SessionID tabbed_window_id = SessionID::NewUnique();
+  tabbed_model.SetSessionId(tabbed_window_id);
+
+  EXPECT_EQ(
+      tabbed_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextWithID(tabbed_window_id, profile()));
+  EXPECT_EQ(tabbed_model.GetLiveTabContext(),
+            AndroidLiveTabContext::FindContextWithID(SessionID::InvalidValue(),
+                                                     profile()));
+  EXPECT_EQ(tabbed_model.GetLiveTabContext(),
+            AndroidLiveTabContext::FindContextWithID(custom_tab_window_id,
+                                                     profile()));
+  EXPECT_EQ(
+      tabbed_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextWithID(unknown_window_id, profile()));
+
+  // FindContextForWebContents enforces the same valid-SessionID and standard
+  // tabbed non-incognito requirements.
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  sessions::SessionTabHelper::CreateForWebContents(contents.get(),
+                                                   base::NullCallback());
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile(), /*tab_id=*/101, std::move(contents));
+  ASSERT_FALSE(tab->GetWindowId().is_valid());
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextForWebContents(
+                         tab->web_contents()));
+
+  tab->SetWindowSessionID(custom_tab_window_id);
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextForWebContents(
+                         tab->web_contents()));
+
+  tab->SetWindowSessionID(tabbed_window_id);
+  EXPECT_EQ(
+      tabbed_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextForWebContents(tab->web_contents()));
+}
+
 TEST_F(TabModelListTest, ProfileKeyedAndGlobalIteration) {
   Profile* otr = profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   std::unique_ptr<TestingProfile> other = TestingProfile::Builder().Build();
