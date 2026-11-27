@@ -4518,9 +4518,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       EXPECT_TRUE(success_site_instance->IsRelatedSiteInstance(
           error_site_instance.get()));
     }
-    EXPECT_NE(success_site_instance->GetOrCreateProcessForTesting()
-                  ->GetDeprecatedID(),
-              error_site_instance->GetProcess()->GetDeprecatedID());
+    EXPECT_NE(success_site_instance->GetOrCreateProcessForTesting()->GetID(),
+              error_site_instance->GetProcess()->GetID());
     EXPECT_TRUE(HasErrorPageSiteInfo(error_site_instance.get()));
 
     // Verify that the error page process is locked to origin
@@ -4558,9 +4557,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       EXPECT_TRUE(success_site_instance->IsRelatedSiteInstance(
           error_site_instance.get()));
     }
-    EXPECT_NE(success_site_instance->GetOrCreateProcessForTesting()
-                  ->GetDeprecatedID(),
-              error_site_instance->GetProcess()->GetDeprecatedID());
+    EXPECT_NE(success_site_instance->GetOrCreateProcessForTesting()->GetID(),
+              error_site_instance->GetProcess()->GetID());
     EXPECT_TRUE(HasErrorPageSiteInfo(error_site_instance.get()));
 
     // Verify that the error page process is locked to origin

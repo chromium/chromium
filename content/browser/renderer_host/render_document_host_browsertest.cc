@@ -9,6 +9,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -143,12 +144,11 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ(url_1, EvalJs(new_contents, "window.location.href;"));
 
   // 3) Navigate the new window same-process.
-  int process_id =
-      new_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  ChildProcessId process_id =
+      new_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURL(new_contents, url_2));
-  EXPECT_EQ(
-      process_id,
-      new_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(process_id,
+            new_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // The URL is accessible from each side and correctly reflects the current
   // value.

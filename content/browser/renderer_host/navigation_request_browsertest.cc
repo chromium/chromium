@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -2476,11 +2477,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     // Reloading the blocked document from the browser process still ends up
     // in the error page process.
-    int process_id = shell()
-                         ->web_contents()
-                         ->GetPrimaryMainFrame()
-                         ->GetProcess()
-                         ->GetDeprecatedID();
+    ChildProcessId process_id =
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
     NavigationHandleObserver observer(shell()->web_contents(), blocked_url);
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
 
@@ -2499,7 +2497,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                                 ->web_contents()
                                 ->GetPrimaryMainFrame()
                                 ->GetProcess()
-                                ->GetDeprecatedID());
+                                ->GetID());
     } else if (AreAllSitesIsolatedForTesting()) {
       EXPECT_NE(
           site_instance,
@@ -3464,17 +3462,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
   }
   {
     base::HistogramTester histograms;
-    int previous_process_id = shell()
-                                  ->web_contents()
-                                  ->GetPrimaryMainFrame()
-                                  ->GetProcess()
-                                  ->GetDeprecatedID();
+    ChildProcessId previous_process_id =
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
     EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-    bool process_changed = (previous_process_id != shell()
-                                                       ->web_contents()
-                                                       ->GetPrimaryMainFrame()
-                                                       ->GetProcess()
-                                                       ->GetDeprecatedID());
+    bool process_changed =
+        (previous_process_id !=
+         shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
     check_navigation(histograms,
                      process_changed ? ProcessType::kCross : ProcessType::kSame,
                      FrameType::kMain, TransitionType::kNew);
@@ -4666,8 +4659,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestNonStandardErrorPageBrowserTest,
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   auto* root = contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1u, root->child_count());
-  const int process_id =
-      root->child_at(0)->current_frame_host()->GetProcess()->GetDeprecatedID();
+  const ChildProcessId process_id =
+      root->child_at(0)->current_frame_host()->GetProcess()->GetID();
 
   class ErrorPageCommitObserver : public DidCommitNavigationInterceptor {
    public:
@@ -4708,7 +4701,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestNonStandardErrorPageBrowserTest,
 
   RenderFrameHostImpl* error_frame = root->child_at(0)->current_frame_host();
   EXPECT_TRUE(error_frame->IsErrorDocument());
-  EXPECT_EQ(process_id, error_frame->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(process_id, error_frame->GetProcess()->GetID());
   EXPECT_EQ(kUnreachableWebDataURL, EvalJs(error_frame, "document.URL"));
   EXPECT_EQ("null", EvalJs(error_frame, "self.origin"));
 }

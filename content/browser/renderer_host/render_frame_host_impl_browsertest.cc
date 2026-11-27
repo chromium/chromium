@@ -69,6 +69,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -6804,7 +6805,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_b =
       root_frame_host()->child_at(0)->current_frame_host();
-  int subframe_process_id = rfh_b->GetProcess()->GetDeprecatedID();
+  ChildProcessId subframe_process_id = rfh_b->GetProcess()->GetID();
   RenderFrameDeletedObserver delete_rfh_b(rfh_b);
   TestFrameNavigationObserver commit_observer(
       web_contents()->GetPrimaryFrameTree().root());
@@ -6839,7 +6840,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   RenderFrameHostImpl* new_rfh_b =
       root_frame_host()->child_at(0)->current_frame_host();
   ASSERT_EQ(RenderProcessHostImpl::ShouldDelayProcessShutdown(),
-            subframe_process_id == new_rfh_b->GetProcess()->GetDeprecatedID());
+            subframe_process_id == new_rfh_b->GetProcess()->GetID());
 
   // The process should no longer be in the pending-delete tracker, as it has
   // been reused.

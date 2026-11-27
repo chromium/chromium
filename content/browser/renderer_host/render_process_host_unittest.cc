@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -766,15 +767,12 @@ TEST_F(RenderProcessHostUnitTest, ReuseNavigationProcess) {
   // Remember the process id and cancel the navigation. Getting
   // RenderProcessHost with the kReusePendingOrCommittedSite policy should
   // no longer return the process of the speculative RenderFrameHost.
-  int speculative_process_host_id = contents()
-                                        ->GetSpeculativePrimaryMainFrame()
-                                        ->GetProcess()
-                                        ->GetDeprecatedID();
+  ChildProcessId speculative_process_host_id =
+      contents()->GetSpeculativePrimaryMainFrame()->GetProcess()->GetID();
   navigation->Fail(net::ERR_ABORTED);
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kUrl2);
-  EXPECT_NE(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
 }
 
 // Tests that RenderProcessHost reuse considers navigations correctly during
@@ -878,10 +876,8 @@ TEST_F(RenderProcessHostUnitTest,
   contents()->GetController().LoadURL(kUrl, Referrer(),
                                       ui::PAGE_TRANSITION_TYPED, std::string());
   main_test_rfh()->SimulateBeforeUnloadCompleted(true);
-  int speculative_process_host_id = contents()
-                                        ->GetSpeculativePrimaryMainFrame()
-                                        ->GetProcess()
-                                        ->GetDeprecatedID();
+  ChildProcessId speculative_process_host_id =
+      contents()->GetSpeculativePrimaryMainFrame()->GetProcess()->GetID();
   bool speculative_is_default_site_instance =
       contents()
           ->GetSpeculativePrimaryMainFrame()
@@ -889,8 +885,7 @@ TEST_F(RenderProcessHostUnitTest,
           ->IsDefaultSiteInstance();
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kUrl);
-  EXPECT_EQ(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 
   // Simulate a same-site redirect. Getting RenderProcessHost with the
   // kReusePendingOrCommittedSite policy should return the speculative
@@ -898,8 +893,7 @@ TEST_F(RenderProcessHostUnitTest,
   main_test_rfh()->SimulateRedirect(kRedirectUrl1);
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kUrl);
-  EXPECT_EQ(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 
   // Simulate a cross-site redirect. Getting a RenderProcessHost with the
   // kReusePendingOrCommittedSite policy should no longer return the
@@ -909,20 +903,19 @@ TEST_F(RenderProcessHostUnitTest,
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  EXPECT_NE(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kRedirectUrl2);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
   if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(speculative_process_host_id,
-              site_instance->GetProcess()->GetDeprecatedID());
+              site_instance->GetProcess()->GetID());
   } else {
     EXPECT_TRUE(speculative_is_default_site_instance);
     // The process ID should be the same as the default SiteInstance because
     // kRedirectUrl1 and kRedirectUrl2 do not require a dedicated process.
     EXPECT_EQ(speculative_process_host_id,
-              site_instance->GetProcess()->GetDeprecatedID());
+              site_instance->GetProcess()->GetID());
   }
 
   // Once the navigation is ready to commit, Getting RenderProcessHost with the
@@ -930,19 +923,15 @@ TEST_F(RenderProcessHostUnitTest,
   // process for the final site, but not the initial one. The current process
   // shouldn't be returned either.
   main_test_rfh()->PrepareForCommit();
-  speculative_process_host_id = contents()
-                                    ->GetSpeculativePrimaryMainFrame()
-                                    ->GetProcess()
-                                    ->GetDeprecatedID();
+  speculative_process_host_id =
+      contents()->GetSpeculativePrimaryMainFrame()->GetProcess()->GetID();
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  EXPECT_NE(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kRedirectUrl2);
-  EXPECT_EQ(speculative_process_host_id,
-            site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 }
 
 // Tests that RenderProcessHost reuse works correctly even if the site URL of a
@@ -1428,13 +1417,13 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
   EXPECT_EQ(old_spare, rph_factory_.GetProcesses()->at(0).get());
   // Remember the ID of the spare, so as to not compare a pointer of a deleted
   // RenderProcessHost at the end of the test.
-  int old_spare_id = old_spare->GetDeprecatedID();
+  ChildProcessId old_spare_id = old_spare->GetID();
 
   const GURL kUrl1("http://foo.com");
   base::HistogramTester histograms;
   SetContents(CreateTestWebContents());
   NavigateAndCommit(kUrl1);
-  EXPECT_NE(old_spare_id, main_test_rfh()->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(old_spare_id, main_test_rfh()->GetProcess()->GetID());
   ExpectSpareProcessMaybeTakeActionBucket(
       histograms, SpareProcessMaybeTakeAction::kMismatchedBrowserContext);
 
@@ -1449,7 +1438,7 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
     EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
     ASSERT_EQ(1U, spare_manager.GetSpares().size());
     RenderProcessHost* new_spare = spare_manager.GetSpares()[0];
-    ASSERT_NE(old_spare_id, new_spare->GetDeprecatedID());
+    ASSERT_NE(old_spare_id, new_spare->GetID());
     EXPECT_EQ(GetBrowserContext(), new_spare->GetBrowserContext());
   } else {
     EXPECT_EQ(1U, rph_factory_.GetProcesses()->size());
