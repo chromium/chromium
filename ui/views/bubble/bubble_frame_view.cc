@@ -625,8 +625,9 @@ void BubbleFrameView::Layout(PassKey) {
                            0, 0));
   }
 
-  CHECK_EQ(button_area_rect.size(), GetButtonAreaSize(),
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/590702820): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(button_area_rect.size(), GetButtonAreaSize());
 
   // Lay out the header.
   gfx::Rect header_rect = contents_bounds;
