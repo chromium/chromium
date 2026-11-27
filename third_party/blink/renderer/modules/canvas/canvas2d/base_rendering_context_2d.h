@@ -141,8 +141,17 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
+  // Recording limits for auto-flushing.
+  static constexpr size_t kMaxRecordedOpBytes = 2 * 1024 * 1024;
+  // Graphite can generally handle more ops, increase the size accordingly.
+  static constexpr size_t kMaxRecordedOpGraphiteBytes = 6 * 1024 * 1024;
+  static constexpr size_t kMaxPinnedImageBytes = 32 * 1024 * 1024;
+
   size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
   size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
+  void SetMaxPinnedImageBytesForTesting(size_t bytes) final {
+    max_pinned_image_bytes_ = bytes;
+  }
 
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
@@ -437,7 +446,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   scoped_refptr<ExportedCanvasResource> CreateExportedResource(
       scoped_refptr<Resource> resource);
 
-  void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}
   // Schedules dispatching the contextlost event (or defers it until the
@@ -554,8 +562,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool is_cleared_ = false;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
-  size_t max_recorded_op_bytes_ = 0;
-  size_t max_pinned_image_bytes_ = 0;
+  size_t max_recorded_op_bytes_ = kMaxRecordedOpBytes;
+  size_t max_pinned_image_bytes_ = kMaxPinnedImageBytes;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
   base::RepeatingClosure on_restore_failed_callback_for_testing_;

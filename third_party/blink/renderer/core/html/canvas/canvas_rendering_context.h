@@ -277,6 +277,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool Is2DCanvasAccelerated() const { NOTREACHED(); }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
+  virtual void SetMaxPinnedImageBytesForTesting(size_t) { NOTREACHED(); }
   void RecordUKMCanvasAccessibilityForTesting() {
     RecordUKMCanvasAccessibility();
   }

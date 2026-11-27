@@ -248,11 +248,8 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       color_params_(attrs.color_space,
                     attrs.hdr_metadata,
                     attrs.pixel_format,
-                    attrs.alpha),
-      max_pinned_image_bytes_(
-          static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024) {
+                    attrs.alpha) {
   FlushForImageListener::Get()->AddObserver(this);
-  UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
@@ -1291,7 +1288,8 @@ void BaseRenderingContext2D::ConfigureRecorder(const gfx::Size& size,
   if (is_graphite) {
     recorder_->DisableLineDrawingAsPaths();
   }
-  UpdateRecordingLimits(is_graphite);
+  max_recorded_op_bytes_ =
+      is_graphite ? kMaxRecordedOpGraphiteBytes : kMaxRecordedOpBytes;
 }
 
 void BaseRenderingContext2D::ResetRecorder() {
@@ -1304,13 +1302,6 @@ bool BaseRenderingContext2D::IsGraphite() const {
                  .GetGpuFeatureInfo()
                  .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
              gpu::kGpuFeatureStatusEnabled;
-}
-
-void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
-  max_recorded_op_bytes_ =
-      static_cast<size_t>(is_graphite ? features::kMaxRecordedOpGraphiteKB.Get()
-                                      : features::kMaxRecordedOpKB.Get()) *
-      1024;
 }
 
 void BaseRenderingContext2D::ResetInternal() {

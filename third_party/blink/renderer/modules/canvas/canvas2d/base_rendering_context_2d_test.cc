@@ -304,22 +304,21 @@ TEST(BaseRenderingContext2DTest, RecordingLimits) {
   const MemoryManagedPaintRecorder* initial_recorder = context->Recorder();
   EXPECT_NE(initial_recorder, nullptr);
   EXPECT_EQ(context->max_recorded_op_bytes(),
-            static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
+            BaseRenderingContext2D::kMaxRecordedOpBytes);
   EXPECT_EQ(context->max_pinned_image_bytes(),
-            static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
+            BaseRenderingContext2D::kMaxPinnedImageBytes);
 
   context->ConfigureRecorder(gfx::Size(300, 300), /*is_graphite=*/true);
   EXPECT_EQ(context->Recorder(), initial_recorder);
-  EXPECT_EQ(
-      context->max_recorded_op_bytes(),
-      static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024);
+  EXPECT_EQ(context->max_recorded_op_bytes(),
+            BaseRenderingContext2D::kMaxRecordedOpGraphiteBytes);
   EXPECT_EQ(context->max_pinned_image_bytes(),
-            static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
+            BaseRenderingContext2D::kMaxPinnedImageBytes);
 
   context->ConfigureRecorder(gfx::Size(300, 300), /*is_graphite=*/false);
   EXPECT_EQ(context->Recorder(), initial_recorder);
   EXPECT_EQ(context->max_recorded_op_bytes(),
-            static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
+            BaseRenderingContext2D::kMaxRecordedOpBytes);
 }
 
 TEST(BaseRenderingContext2DTest, FlushIfRecordingLimitExceeded) {

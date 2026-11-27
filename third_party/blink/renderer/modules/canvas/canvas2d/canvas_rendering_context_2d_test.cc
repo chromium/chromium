@@ -20,11 +20,9 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -361,7 +359,6 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   enum LatencyMode { kNormalLatency, kLowLatency };
 
   static constexpr size_t kMaxPinnedImageKB = 1;
-  static constexpr size_t kMaxRecordedOpKB = 10;
 
   void CreateContext(
       LatencyMode = kNormalLatency,
@@ -423,7 +420,6 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
@@ -570,14 +566,6 @@ void CanvasRenderingContext2DTestBase::CreateContext(
 }
 
 void CanvasRenderingContext2DTestBase::SetUp() {
-  base::FieldTrialParams auto_flush_params;
-  auto_flush_params["max_pinned_image_kb"] =
-      base::NumberToString(kMaxPinnedImageKB);
-  auto_flush_params["max_recorded_op_kb"] =
-      base::NumberToString(kMaxRecordedOpKB);
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kCanvas2DAutoFlushParams, auto_flush_params);
-
   // Create a `TestContextProvider` that automatically restores itself after a
   // GPU context loss.
   CreateContextProvider(SetIsContextLost::kSetToFalse);
@@ -625,7 +613,6 @@ void CanvasRenderingContext2DTestBase::SetUp() {
 }
 
 void CanvasRenderingContext2DTestBase::TearDown() {
-  feature_list_.Reset();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
@@ -1682,7 +1669,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
 
   while (Context2D()->Recorder()->TotalOpBytesUsed() <=
-         kMaxRecordedOpKB * 1024) {
+         BaseRenderingContext2D::kMaxRecordedOpBytes) {
     Context2D()->fillRect(0, 0, 1, 1);
     // Verify that auto-flush did not happen
     ASSERT_GT(Context2D()->Recorder()->TotalOpCount(), initial_op_count);
@@ -1699,6 +1686,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   CanvasElement().SetSize(size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
+  Context2D()->SetMaxPinnedImageBytesForTesting(kMaxPinnedImageKB * 1024);
 
   constexpr unsigned int kImageSize = 10;
   constexpr unsigned int kBytesPerImage = 400;
@@ -1755,6 +1743,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   CanvasElement().SetSize(size);
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
+  Context2D()->SetMaxPinnedImageBytesForTesting(kMaxPinnedImageKB * 1024);
   size_t expected_op_count = Context2D()->Recorder()->TotalOpCount();
 
   constexpr unsigned int kImageSize = 10;
@@ -1784,7 +1773,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
                           BeginLayerOptions::Create(), exception_state);
   const size_t initial_op_count = Context2D()->Recorder()->TotalOpCount();
   while (Context2D()->Recorder()->TotalOpBytesUsed() <=
-         kMaxRecordedOpKB * 1024 * 2) {
+         BaseRenderingContext2D::kMaxRecordedOpBytes + 1024) {
     Context2D()->fillRect(0, 0, 1, 1);
     ASSERT_GT(Context2D()->Recorder()->TotalOpCount(), initial_op_count);
   }

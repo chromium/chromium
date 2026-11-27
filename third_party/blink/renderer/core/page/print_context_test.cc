@@ -15,12 +15,12 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -112,16 +112,11 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     RenderingTest::SetUp();
     print_context_ =
         MakeGarbageCollected<PrintContext>(GetDocument().GetFrame());
-    base::FieldTrialParams auto_flush_params;
-    auto_flush_params["max_pinned_image_kb"] = "1";
-    print_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kCanvas2DAutoFlushParams, auto_flush_params);
   }
 
   void TearDown() override {
     RenderingTest::TearDown();
     CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
-    print_feature_list_.Reset();
   }
 
   PrintContext& GetPrintContext() { return *print_context_.Get(); }
@@ -187,7 +182,6 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
  private:
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<PrintContext> print_context_;
-  base::test::ScopedFeatureList print_feature_list_;
 };
 
 class PrintContextFrameTest : public PrintContextTest {
@@ -1034,11 +1028,15 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushingSuppressed) {
   // a canvas's PaintOps in order to support vector printing whenever possible.
   MockPageContextCanvas canvas;
   SetBodyInnerHTML("<canvas id='c' width=200 height=100></canvas>");
+  To<HTMLCanvasElement>(GetElementById("c"))
+      ->GetCanvasRenderingContext(GetDocument().GetExecutionContext(), "2d",
+                                  CanvasContextCreationAttributesCore())
+      ->SetMaxPinnedImageBytesForTesting(100);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* const script_element =
       GetDocument().CreateRawElement(html_names::kScriptTag);
   // Note: source_canvas is 10x10, which consumes 400 bytes for pixel data,
-  // which is larger than the 100 limit set in PrintContextTest::SetUp().
+  // which is larger than the 100 byte limit set above.
   script_element->setTextContent(
       "source_canvas = document.createElement('canvas');"
       "source_canvas.width = 10;"
@@ -1227,11 +1225,15 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushBeforePrinting) {
   // cannot be vector printed.
   MockPageContextCanvas canvas;
   SetBodyInnerHTML("<canvas id='c' width=200 height=100></canvas>");
+  To<HTMLCanvasElement>(GetElementById("c"))
+      ->GetCanvasRenderingContext(GetDocument().GetExecutionContext(), "2d",
+                                  CanvasContextCreationAttributesCore())
+      ->SetMaxPinnedImageBytesForTesting(1024);
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* const script_element =
       GetDocument().CreateRawElement(html_names::kScriptTag);
   // Note: source_canvas is 20x20, which consumes 1600 bytes for pixel data,
-  // which is larger than the 1KB limit set in PrintContextTest::SetUp().
+  // which is larger than the 1KB limit set above.
   script_element->setTextContent(
       "source_canvas = document.createElement('canvas');"
       "source_canvas.width = 20;"
