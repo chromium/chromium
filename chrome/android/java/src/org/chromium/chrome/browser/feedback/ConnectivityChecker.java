@@ -57,6 +57,7 @@ public final class ConnectivityChecker {
                       trigger: "User triggers the application feedback flow."
                       data: "No additional data."
                       destination: GOOGLE_OWNED_SERVICE
+                      legacy_api_url: "https://clients4.google.com/generate_204"
                       internal {
                         contacts {
                           email: "clank-dev@google.com"
