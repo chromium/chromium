@@ -848,12 +848,6 @@ TEST_F(BackForwardCacheMemoryPressureStatefulTest,
 
 TEST_F(BackForwardCacheMemoryPressureStatefulTest,
        ModeratePressureDoesNotBypassAckWhenAboveBaseline) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kBFCachePerformanceManagerPolicy,
-        {{"foreground_cache_size_on_moderate_pressure", "3"}}}},
-      {});
-
   // Set baseline limit to 1.
   contents()
       ->GetController()

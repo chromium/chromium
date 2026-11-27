@@ -67,7 +67,6 @@ BASE_FEATURE(kAllowCrossOriginNotRestoredReasons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kBackForwardCacheSizeCacheSize;
 CONTENT_EXPORT extern const base::FeatureParam<int>
@@ -135,12 +134,12 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
 //       in `RenderFrameHostImpl::StartBackForwardCacheEvictionTimer()` to
 //       evicts the outermost frame after
 //       `kDefaultTimeToLiveInBackForwardCacheInSeconds` seconds.
-// 2. In `performance_manager::policies::BFCachePolicy`:
-//    A. [Desktop-only] On moderate memory pressure, the number of entries in a
-//       visible tab's cache is pruned to
-//       `ForegroundCacheSizeOnModeratePressure()`. The number in a non-visible
-//       tab is pruned to `BackgroundCacheSizeOnModeratePressure()`.
-//    B. [Desktop-only] On critical memory pressure, the cache is cleared.
+// 2. Under memory pressure (via `base::MemoryConsumer`):
+//    A. On moderate memory pressure, the number of entries in a visible tab's
+//       cache is pruned to `kForegroundCacheSizeOnModeratePressure`. The number
+//       in a non-visible tab is pruned to
+//       `kBackgroundCacheSizeOnModeratePressure`.
+//    B. On critical memory pressure, the cache is cleared.
 class CONTENT_EXPORT BackForwardCacheImpl
     : public BackForwardCache,
       public RenderProcessHostInternalObserver,
@@ -515,7 +514,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Stateful memory pressure helpers:
   // Returns true if the cache size follows the memory limit (stateful mode).
   bool IsStatefulMemoryPressureEnabled() const;
-  int GetConfiguredPressureLimit(base::MemoryLimit limit);
+  size_t GetConfiguredPressureLimit(base::MemoryLimit limit);
   BackForwardCacheMetrics::NotRestoredReason GetPressureReason(
       base::MemoryLimit limit);
   size_t GetTargetCacheSize();
@@ -766,7 +765,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   std::optional<base::TimeDelta> embedder_supplied_time_to_live_;
   std::optional<bool> embedder_supplied_cache_forward_entries_allowed_;
 
-  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
 
