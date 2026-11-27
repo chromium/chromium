@@ -75,7 +75,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableLeakChecks;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -971,7 +970,6 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testNavigationFromXHRCallback() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -994,7 +992,6 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/543459084")
     public void testNavigationFromXHRCallbackAndShortTimeout() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -1057,7 +1054,6 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testNavigationWithFallbackURL() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
@@ -1364,7 +1360,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testIntentURIWithEmptySchemeDoesNothing() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String targetUrl =
@@ -1890,7 +1885,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testExternalNavigationMessage() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
 
