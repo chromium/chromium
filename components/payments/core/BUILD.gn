@@ -23,6 +23,8 @@ static_library("core") {
     "has_enrolled_instrument_query.h",
     "journey_logger.cc",
     "journey_logger.h",
+    "merchant_page_classifier.cc",
+    "merchant_page_classifier.h",
     "payer_data.cc",
     "payer_data.h",
     "payment_address.cc",
@@ -187,6 +189,7 @@ source_set("unit_tests") {
     "error_message_util_unittest.cc",
     "has_enrolled_instrument_query_unittest.cc",
     "journey_logger_unittest.cc",
+    "merchant_page_classifier_unittest.cc",
     "payment_currency_amount_unittest.cc",
     "payment_details_modifier_unittest.cc",
     "payment_details_unittest.cc",
@@ -240,5 +243,6 @@ source_set("unit_tests") {
     "//third_party/fuzztest",
     "//third_party/libaddressinput:test_support",
     "//ui/base",
+    "//url",
   ]
 }
