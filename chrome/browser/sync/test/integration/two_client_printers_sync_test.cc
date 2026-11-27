@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
@@ -59,6 +60,12 @@ class TwoClientPrintersSyncTest : public SyncTest {
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return SetupSyncMode::kSyncTheFeature;
   }
+
+  [[nodiscard]] bool WaitForPrintersMatch(
+      const base::Location& location = FROM_HERE) {
+    return PrintersMatchChecker(GetSyncServices(), GetAllProfiles())
+        .Wait(location);
+  }
 };
 
 }  // namespace
@@ -66,7 +73,7 @@ class TwoClientPrintersSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, NoPrinters) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, OnePrinter) {
@@ -74,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, OnePrinter) {
 
   AddPrinter(GetPrinterStore(0), CreateTestPrinter(2));
 
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimultaneousAdd) {
@@ -88,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimultaneousAdd) {
   ASSERT_EQ(1, GetPrinterCount(0));
   ASSERT_EQ(1, GetPrinterCount(1));
 
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
   EXPECT_EQ(2, GetPrinterCount(0));
 }
 
@@ -100,13 +107,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, RemovePrinter) {
   AddPrinter(GetPrinterStore(0), CreateTestPrinter(3));
 
   // Verify the profiles have the same printers
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
   EXPECT_EQ(3, GetPrinterCount(0));
 
   // Remove printer 2 from store 1
   RemovePrinter(GetPrinterStore(1), 2);
 
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
   EXPECT_EQ(2, GetPrinterCount(0));
 }
 
@@ -120,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, RemoveAndEditPrinters) {
   AddPrinter(GetPrinterStore(0), CreateTestPrinter(3));
 
   // Verify the profiles have the same printers
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
   EXPECT_EQ(3, GetPrinterCount(0));
 
   // Edit printer 1 from store 0
@@ -130,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, RemoveAndEditPrinters) {
   // Remove printer 2 from store 1
   RemovePrinter(GetPrinterStore(1), 2);
 
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
   EXPECT_EQ(2, GetPrinterCount(0));
   EXPECT_EQ(updated_description,
             GetPrinterStore(1)->GetSavedPrinters()[0].description());
@@ -144,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   AddPrinter(GetPrinterStore(0), CreateTestPrinter(3));
 
   // Store 0 and 1 have 3 printers now.
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 
   // Client 1 makes a local change.
   ASSERT_TRUE(
@@ -175,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
 
   // Run tasks until the most recent update has been applied to all stores.
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 
   EXPECT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
@@ -193,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   AddPrinter(GetPrinterStore(0), CreateTestPrinter(3));
 
   // Store 0 and 1 have 3 printers now.
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 
   // Client 1 makes a local change.
   ASSERT_TRUE(
@@ -213,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   // that the one with latest modification timestamp (kLatestDescription) wins,
   // which can mean local wins or remote wins, depending on which client is
   // involved.
-  ASSERT_TRUE(PrintersMatchChecker().Wait());
+  ASSERT_TRUE(WaitForPrintersMatch());
 
   EXPECT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
@@ -237,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimpleMerge) {
 
   // Stores should contain the same values now.
   EXPECT_EQ(4, GetPrinterCount(0));
-  EXPECT_TRUE(AllProfilesContainSamePrinters());
+  EXPECT_TRUE(AllProfilesContainSamePrinters(GetAllProfiles()));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {

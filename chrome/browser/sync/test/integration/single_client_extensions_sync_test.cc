@@ -5,14 +5,15 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -132,16 +133,29 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsSyncTest, InstallSomeExtensions) {
   ASSERT_TRUE(TestServerExtensionIds({id0, id1, id2}).Wait());
 }
 
-// Helper function for waiting to see the extension count in a profile
-// become a specific number.
-static bool ExtensionCountCheck(Profile* profile,
-                                size_t expected_count,
-                                std::ostream* os) {
-  const size_t actual_count = GetInstalledExtensions(profile).size();
-  *os << "Waiting for profile to have " << expected_count
-      << " extensions; actual count " << actual_count;
-  return actual_count == expected_count;
-}
+// Waits until the number of installed extensions in `profile` equals
+// `expected_count`. `profile` must be non-null and must outlive `this`.
+class InstalledExtensionCountChecker : public SingleClientStatusChangeChecker {
+ public:
+  InstalledExtensionCountChecker(syncer::SyncServiceImpl* service,
+                                 Profile* profile,
+                                 size_t expected_count)
+      : SingleClientStatusChangeChecker(service),
+        profile_(CHECK_DEREF(profile)),
+        expected_count_(expected_count) {}
+
+  // SingleClientStatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    const size_t actual_count = GetInstalledExtensions(&profile_.get()).size();
+    *os << "Waiting for profile to have " << expected_count_
+        << " extensions; actual count " << actual_count;
+    return actual_count == expected_count_;
+  }
+
+ private:
+  const raw_ref<Profile> profile_;
+  const size_t expected_count_;
+};
 
 // Tests the case of an uninstall from the server conflicting with a local
 // modification, which we expect to be resolved in favor of the uninstall.
@@ -169,9 +183,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
   GetFakeServer()->InjectEntity(std::move(tombstone));
 
   // Expect the extension to get uninstalled locally.
-  AwaitMatchStatusChangeChecker checker(base::BindRepeating(
-      &ExtensionCountCheck, GetProfile(0), /*expected_count=*/0u));
-  EXPECT_TRUE(checker.Wait());
+  EXPECT_TRUE(InstalledExtensionCountChecker(GetSyncService(0), GetProfile(0),
+                                             /*expected_count=*/0u)
+                  .Wait());
   GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::SUCCESS);
   EXPECT_TRUE(GetInstalledExtensions(GetProfile(0)).empty());
 

@@ -12,15 +12,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/test_utils.h"
-
-using sync_datatype_helper::test;
 
 namespace printers_helper {
 
@@ -141,15 +142,19 @@ int GetPrinterCount(int index) {
   return GetPrinterStore(index)->GetSavedPrinters().size();
 }
 
-bool AllProfilesContainSamePrinters(std::ostream* os) {
+bool AllProfilesContainSamePrinters(
+    const std::vector<raw_ptr<Profile>>& profiles,
+    std::ostream* os) {
+  CHECK(!profiles.empty());
   std::vector<chromeos::Printer> reference_printers =
-      GetPrinterStore(0)->GetSavedPrinters();
-  for (int i = 1; i < test()->num_clients(); ++i) {
+      GetPrinterStore(profiles[0])->GetSavedPrinters();
+  for (size_t i = 1; i < profiles.size(); ++i) {
     std::vector<chromeos::Printer> printers =
-        GetPrinterStore(i)->GetSavedPrinters();
+        GetPrinterStore(profiles[i])->GetSavedPrinters();
     if (!ListsContainTheSamePrinters(reference_printers, printers)) {
       if (os) {
-        *os << "Printers in client [" << i << "] don't match client 0";
+        *os << "Printers in profile " << profiles[i]->GetDebugName()
+            << " don't match profile " << profiles[0]->GetDebugName();
       }
       return false;
     }
@@ -158,11 +163,19 @@ bool AllProfilesContainSamePrinters(std::ostream* os) {
   return true;
 }
 
-PrintersMatchChecker::PrintersMatchChecker()
-    : AwaitMatchStatusChangeChecker(base::BindRepeating(
-          &printers_helper::AllProfilesContainSamePrinters)) {}
+PrintersMatchChecker::PrintersMatchChecker(
+    std::vector<raw_ptr<syncer::SyncServiceImpl>> services,
+    std::vector<raw_ptr<Profile>> profiles)
+    : MultiClientStatusChangeChecker(std::move(services)),
+      profiles_(std::move(profiles)) {
+  CHECK_EQ(this->services().size(), profiles_.size());
+}
 
 PrintersMatchChecker::~PrintersMatchChecker() = default;
+
+bool PrintersMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return AllProfilesContainSamePrinters(profiles_, os);
+}
 
 ServerPrinterMatchChecker::ServerPrinterMatchChecker(const Matcher& matcher)
     : matcher_(matcher) {}

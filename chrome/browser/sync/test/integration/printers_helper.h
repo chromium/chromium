@@ -9,17 +9,25 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
-#include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class Profile;
+
 namespace content {
 class BrowserContext;
 }
+
+namespace syncer {
+class SyncServiceImpl;
+}  // namespace syncer
 
 namespace printers_helper {
 
@@ -52,25 +60,35 @@ ash::SyncedPrintersManager* GetPrinterStore(int index);
 // Returns the number of printers in printer store |index|.
 int GetPrinterCount(int index);
 
-// Returns true if all profiles contain the same printers as profile 0.
-bool AllProfilesContainSamePrinters(std::ostream* os = nullptr);
+// Returns true if all `profiles` contain the same printers as `profiles[0]`.
+bool AllProfilesContainSamePrinters(
+    const std::vector<raw_ptr<Profile>>& profiles,
+    std::ostream* os = nullptr);
 
-// A waiter that can block until we can satisfy
-// AllProfilesContainSamePrinters().
+// A waiter that can block until `AllProfilesContainSamePrinters()` is
+// satisfied.
 // Example:
 //     // Make changes that you expect to sync.
 //
-//     ASSERT_TRUE(PrintersMatchChecker().Wait());
+//     ASSERT_TRUE(
+//         PrintersMatchChecker(GetSyncServices(), GetAllProfiles()).Wait());
 //
-//     // Sync is complete, verify the chagnes.
-class PrintersMatchChecker : public AwaitMatchStatusChangeChecker {
+//     // Sync is complete, verify the changes.
+class PrintersMatchChecker : public MultiClientStatusChangeChecker {
  public:
-  PrintersMatchChecker();
+  PrintersMatchChecker(std::vector<raw_ptr<syncer::SyncServiceImpl>> services,
+                       std::vector<raw_ptr<Profile>> profiles);
 
   PrintersMatchChecker(const PrintersMatchChecker&) = delete;
   PrintersMatchChecker& operator=(const PrintersMatchChecker&) = delete;
 
   ~PrintersMatchChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const std::vector<raw_ptr<Profile>> profiles_;
 };
 
 // A waiter that blocks until the fake server has printer specifics matching
