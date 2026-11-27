@@ -2077,7 +2077,7 @@ void URLLoader::NotifyCompleted(int error_code) {
   }
 
   if (url_loader_client_.Get()) {
-    if (should_send_response_to_client_) {
+    if (should_send_response_to_client_ && !is_more_orb_sniffing_needed_) {
       SendResponseToClient();
     }
 

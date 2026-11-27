@@ -9812,4 +9812,53 @@ TEST_F(URLLoaderTest, StagedReadErrorClosesBodyPipeBeforeCompletion) {
   EXPECT_EQ(kFirstChunk, body);
 }
 
+TEST_F(URLLoaderTest,
+       ProvidedResponseBodyStreamConsumerClosedDuringOrbSniffing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kURLLoaderUseProvidedResponseBodyStream,
+       features::kStageNetToMojoBuffer},
+      {});
+
+  AddMultipleWritesInterceptor({"{\"secret\":1}"}, net::OK,
+                               /*async_reads=*/true);
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", MultipleWritesInterceptor::GetURL());
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator =
+      url::Origin::Create(GURL("https://other.example"));
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(4096, producer, consumer));
+  // Close the consumer end before ORB sniffing completes so
+  // `OnResponseBodyStreamConsumerClosed()` triggers `NotifyCompleted()`.
+  consumer.reset();
+
+  ASSERT_TRUE(request.trusted_params);
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::renderer(RendererProcessId(1));
+  context().mutable_factory_params().is_orb_enabled = true;
+  context().mutable_factory_params().request_initiator_origin_lock =
+      request.request_initiator;
+
+  URLLoaderOptions loader_options;
+  url_loader = loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  EXPECT_FALSE(client()->has_received_response());
+  EXPECT_EQ(net::ERR_FAILED, client()->completion_status().error_code);
+  delete_run_loop.Run();
+}
+
 }  // namespace network
