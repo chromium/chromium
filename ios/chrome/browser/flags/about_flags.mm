@@ -3245,6 +3245,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSGeolocationSitePermissionsName,
      flag_descriptions::kIOSGeolocationSitePermissionsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSGeolocationSitePermissions)},
+    {"magic-stack-surface-aware-ranking",
+     flag_descriptions::kMagicStackSurfaceAwareRankingName,
+     flag_descriptions::kMagicStackSurfaceAwareRankingDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMagicStackSurfaceAwareRanking)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

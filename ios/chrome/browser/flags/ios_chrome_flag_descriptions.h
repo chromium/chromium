@@ -1451,6 +1451,13 @@ inline constexpr char kMagicStackNTPThemeTipIosDescription[] =
     "Enables the NTP Theme tip on iOS with Non-Actionable or Actionable "
     "variations";
 
+inline constexpr char kMagicStackSurfaceAwareRankingName[] =
+    "Magic Stack surface-aware ranking";
+inline constexpr char kMagicStackSurfaceAwareRankingDescription[] =
+    "When enabled, Magic Stack adjusts card ranking based on the surface, "
+    "prioritizing Tab Resumption on the Start surface and Shortcuts on the New "
+    "Tab Page.";
+
 inline constexpr char kMagicStackTipsNotificationTipIosName[] =
     "Magic Stack Tips Notification tip";
 inline constexpr char kMagicStackTipsNotificationTipIosDescription[] =

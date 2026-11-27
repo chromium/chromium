@@ -1287,3 +1287,24 @@ bool IsIOSGeolocationSitePermissionsEnabled() {
   }
   return false;
 }
+
+BASE_FEATURE(kMagicStackSurfaceAwareRanking, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(double,
+                   kMagicStackStartSurfaceResumeBoost,
+                   &kMagicStackSurfaceAwareRanking,
+                   5.0);
+
+BASE_FEATURE_PARAM(double,
+                   kMagicStackStartSurfaceCrossDeviceBoost,
+                   &kMagicStackSurfaceAwareRanking,
+                   0.0);
+
+BASE_FEATURE_PARAM(double,
+                   kMagicStackNTPAccelerateBoost,
+                   &kMagicStackSurfaceAwareRanking,
+                   5.0);
+
+bool IsMagicStackSurfaceAwareRankingEnabled() {
+  return base::FeatureList::IsEnabled(kMagicStackSurfaceAwareRanking);
+}

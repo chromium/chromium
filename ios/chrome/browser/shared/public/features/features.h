@@ -1055,4 +1055,26 @@ BASE_DECLARE_FEATURE(kIOSGeolocationSitePermissions);
 // `web::features::kNewGeolocationPermissionDelegate` are enabled.
 bool IsIOSGeolocationSitePermissionsEnabled();
 
+// Enables client-side surface-aware score adjustments for Magic Stack permanent
+// cards (Start surface vs. NTP). Offsets are additive (rather than
+// multiplicative) on `IosModuleRanker`'s unnormalized linear score scale, where
+// raw scores can be strongly negative.
+BASE_DECLARE_FEATURE(kMagicStackSurfaceAwareRanking);
+
+// Additive score boost applied to Resume-intent cards (`TabResumption`) on the
+// Start surface.
+BASE_DECLARE_FEATURE_PARAM(double, kMagicStackStartSurfaceResumeBoost);
+
+// Optional extra additive score boost applied to cross-device synced
+// `TabResumption` cards (`kLastSyncedTab`) on the Start surface, added on top
+// of `kMagicStackStartSurfaceResumeBoost`.
+BASE_DECLARE_FEATURE_PARAM(double, kMagicStackStartSurfaceCrossDeviceBoost);
+
+// Additive score boost applied to Accelerate-intent cards (`Shortcuts`) on the
+// mid-session NTP surface (non-Start).
+BASE_DECLARE_FEATURE_PARAM(double, kMagicStackNTPAccelerateBoost);
+
+// Returns true if `kMagicStackSurfaceAwareRanking` is enabled.
+bool IsMagicStackSurfaceAwareRankingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
