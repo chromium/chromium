@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view_controller.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
@@ -14,6 +16,7 @@
 
 @interface FakeGeminiContainerMutator : NSObject <GeminiContainerMutator>
 @property(nonatomic, assign) BOOL keyboardDidShowCalled;
+@property(nonatomic, assign) CGFloat actuationHeight;
 @end
 
 @implementation FakeGeminiContainerMutator
@@ -23,6 +26,7 @@
 }
 
 - (void)containerDidChangeActuationHeight:(CGFloat)height {
+  self.actuationHeight = height;
 }
 @end
 
@@ -49,7 +53,8 @@ class GeminiContainerViewControllerTest : public PlatformTest {
     [child_view_controller_.view addSubview:internal_text_field_];
 
     container_view_controller_ = [[GeminiContainerViewController alloc]
-        initWithWorklogViewController:nil];
+        initWithWorklogViewController:nil
+           interventionViewController:nil];
     [container_view_controller_ setGeminiViewController:child_view_controller_];
     mutator_ = [[FakeGeminiContainerMutator alloc] init];
     container_view_controller_.mutator = mutator_;
@@ -131,7 +136,8 @@ TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
       .active = YES;
 
   GeminiContainerViewController* container =
-      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil];
+      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil
+                                                interventionViewController:nil];
   container.zeroStateViewController = zero_state_view_controller;
   [scoped_key_window_.Get() addSubview:container.view];
   [container loadViewIfNeeded];
@@ -159,7 +165,8 @@ TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
 TEST_F(GeminiContainerViewControllerTest, TestContentPadding) {
   constexpr CGFloat kContainerPadding = 14.0;
   GeminiContainerViewController* container =
-      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil];
+      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil
+                                                interventionViewController:nil];
   [scoped_key_window_.Get() addSubview:container.view];
   container.view.frame = CGRectMake(0, 0, 300, 400);
   [container.view setNeedsLayout];
@@ -203,36 +210,120 @@ TEST_F(GeminiContainerViewControllerTest, TestContentPadding) {
 
 // Tests that during actuation, the worklog replaces the Gemini content, except
 // at the expanded mode where the Gemini content shows the worklog inline, even
-// if the worklog activates late (i.e. once its task registers).
+// if the worklog activates late (i.e. once its task registers). The
+// intervention is shown with the worklog, except while minimized.
 TEST_F(GeminiContainerViewControllerTest, TestActuationContentVisibility) {
   ActuationWorklogViewController* worklog_view_controller =
       [[ActuationWorklogViewController alloc] init];
+  ActuationInterventionViewController* intervention_view_controller =
+      [[ActuationInterventionViewController alloc] init];
   GeminiContainerViewController* container =
       [[GeminiContainerViewController alloc]
-          initWithWorklogViewController:worklog_view_controller];
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
   [scoped_key_window_.Get() addSubview:container.view];
   [container loadViewIfNeeded];
   [container setGeminiViewController:child_view_controller_];
   UIView* gemini_view = child_view_controller_.view;
   UIView* worklog_view = worklog_view_controller.view;
+  UIView* intervention_view = intervention_view_controller.view;
 
   [container setWorklogDisplayMode:ActuationWorklogDisplayModeExpanded];
   [container setActuationActive:YES];
   [worklog_view_controller setActuationActive:YES];
   EXPECT_FALSE(IsHiddenInHierarchy(gemini_view));
   EXPECT_TRUE(IsHiddenInHierarchy(worklog_view));
+  EXPECT_TRUE(IsHiddenInHierarchy(intervention_view));
 
   [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
   EXPECT_TRUE(IsHiddenInHierarchy(gemini_view));
   EXPECT_FALSE(IsHiddenInHierarchy(worklog_view));
+  EXPECT_FALSE(IsHiddenInHierarchy(intervention_view));
 
   [container setWorklogDisplayMode:ActuationWorklogDisplayModeMinimized];
   EXPECT_TRUE(IsHiddenInHierarchy(gemini_view));
   EXPECT_FALSE(IsHiddenInHierarchy(worklog_view));
+  EXPECT_TRUE(IsHiddenInHierarchy(intervention_view));
 
   [container setActuationActive:NO];
   EXPECT_FALSE(IsHiddenInHierarchy(gemini_view));
   EXPECT_TRUE(IsHiddenInHierarchy(worklog_view));
+  EXPECT_TRUE(IsHiddenInHierarchy(intervention_view));
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that the actuation state set before the view loads is applied once it
+// loads.
+TEST_F(GeminiContainerViewControllerTest, TestActuationStateBeforeViewLoad) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  ActuationInterventionViewController* intervention_view_controller =
+      [[ActuationInterventionViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  [container setActuationActive:YES];
+
+  [container loadViewIfNeeded];
+  [worklog_view_controller setActuationActive:YES];
+  EXPECT_FALSE(IsHiddenInHierarchy(worklog_view_controller.view));
+  EXPECT_FALSE(IsHiddenInHierarchy(intervention_view_controller.view));
+}
+
+// Tests that the reported actuation height fits the compact worklog and the
+// intervention below it, and that it is reported again when the intervention
+// changes or actuation starts.
+TEST_F(GeminiContainerViewControllerTest, TestActuationHeight) {
+  ActuationWorklogViewController* worklog_view_controller =
+      [[ActuationWorklogViewController alloc] init];
+  ActuationInterventionViewController* intervention_view_controller =
+      [[ActuationInterventionViewController alloc] init];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:worklog_view_controller
+             interventionViewController:intervention_view_controller];
+  container.mutator = mutator_;
+  [scoped_key_window_.Get() addSubview:container.view];
+  container.view.frame = CGRectMake(0, 0, 300, 600);
+  [container setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  // Laid out first so that the children are measured at the container width.
+  [container.view layoutIfNeeded];
+  [container setActuationActive:YES];
+  CGFloat worklog_height = [worklog_view_controller
+      heightForDisplayMode:ActuationWorklogDisplayModeCompact];
+  CGFloat insets_height = 2 * intelligence::actor::kSpacingLarge;
+  EXPECT_DOUBLE_EQ(mutator_.actuationHeight, worklog_height + insets_height);
+
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:@"Continue"];
+  [intervention_view_controller
+      setIntervention:[ActuationInterventionData
+                          rowItemWithActions:@[ action ]]];
+  CGFloat intervention_height = [intervention_view_controller fittingHeight];
+  EXPECT_GT(intervention_height, 0.0);
+  CGFloat expected_height =
+      worklog_height + intervention_height + insets_height;
+  EXPECT_DOUBLE_EQ(mutator_.actuationHeight, expected_height);
+
+  // In a container of the reported height, the intervention starts right below
+  // the worklog's compact content. Frames are rounded to pixels.
+  container.view.frame = CGRectMake(0, 0, 300, mutator_.actuationHeight);
+  [container.view layoutIfNeeded];
+  EXPECT_NEAR(
+      CGRectGetMinY(worklog_view_controller.view.frame) + worklog_height,
+      CGRectGetMinY(intervention_view_controller.view.frame), 1.0);
+
+  mutator_.actuationHeight = 0;
+  [container setActuationActive:NO];
+  [container setActuationActive:YES];
+  EXPECT_DOUBLE_EQ(mutator_.actuationHeight, expected_height);
+
+  [intervention_view_controller setIntervention:nil];
+  EXPECT_DOUBLE_EQ(mutator_.actuationHeight, worklog_height + insets_height);
 
   [container.view removeFromSuperview];
 }

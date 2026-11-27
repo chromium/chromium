@@ -6,6 +6,8 @@
 
 #import <algorithm>
 
+#import "base/check_op.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view_controller.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -17,13 +19,15 @@ namespace {
 // Small padding applied to all sides inside the container.
 constexpr CGFloat kContainerPadding = 14.0;
 
-// Standard insets applied around the worklog inside the container.
+// Standard insets applied around the worklog and the intervention inside the
+// container.
 constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
     NSDirectionalEdgeInsets{intelligence::actor::kSpacingLarge, 0,
                             intelligence::actor::kSpacingLarge, 0};
 }  // namespace
 
 @interface GeminiContainerViewController () <
+    ActuationInterventionViewControllerDelegate,
     ActuationWorklogViewControllerDelegate>
 @end
 
@@ -33,8 +37,11 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   UIViewController* _geminiViewController;
   // The child view controller displaying compact actuation status.
   ActuationWorklogViewController* _worklogViewController;
-  // Wrapper holding the worklog, hidden by the container since the worklog
-  // manages its own view's `hidden`.
+  // The child view controller displaying the actuation intervention, below
+  // `_worklogViewController`.
+  ActuationInterventionViewController* _interventionViewController;
+  // Wrapper holding the worklog and the intervention, hidden by the container
+  // since the worklog manages its own view's `hidden`.
   UIView* _actuationContentView;
   // Wrapper view holding the Gemini UI and zero-state suggestions. This allows
   // to hide all of gemini UI without forcing a collapse with the default
@@ -58,10 +65,15 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 - (instancetype)initWithWorklogViewController:
-    (ActuationWorklogViewController*)worklogViewController {
+                    (ActuationWorklogViewController*)worklogViewController
+                   interventionViewController:
+                       (ActuationInterventionViewController*)
+                           interventionViewController {
+  CHECK_EQ(worklogViewController == nil, interventionViewController == nil);
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _worklogViewController = worklogViewController;
+    _interventionViewController = interventionViewController;
     _hasPadding = YES;
   }
   return self;
@@ -116,17 +128,23 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   }
 
   if (_worklogViewController) {
-    [self addWorklogSubviews];
+    [self addActuationSubviews];
   }
   [self updateActuationContentVisibility];
 }
 
 #pragma mark - ActuationWorklogViewControllerDelegate
 
-- (void)worklogViewController:(ActuationWorklogViewController*)viewController
-              didChangeHeight:(CGFloat)height {
-  [self.mutator containerDidChangeActuationHeight:
-                    [self containerHeightForWorklogHeight:height]];
+- (void)worklogViewControllerDidChangeHeight:
+    (ActuationWorklogViewController*)viewController {
+  [self reportActuationHeight];
+}
+
+#pragma mark - ActuationInterventionViewControllerDelegate
+
+- (void)interventionViewControllerDidChangeHeight:
+    (ActuationInterventionViewController*)viewController {
+  [self reportActuationHeight];
 }
 
 #pragma mark - GeminiContainerConsumer
@@ -172,10 +190,10 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   if (!active) {
     return;
   }
-  // The worklog may have reported its height before the mutator entered the
+  // The children may have reported their height before the mutator entered the
   // actuating state (`ActorService` observer order is not guaranteed), in which
   // case that report was ignored. Re-send it now that it will be applied.
-  [_worklogViewController notifyHeightDidChange];
+  [self reportActuationHeight];
 }
 
 - (void)setHasPadding:(BOOL)hasPadding {
@@ -216,7 +234,8 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
 // Shows either the Gemini content or the worklog. During actuation, the worklog
 // is shown, except at its expanded mode where the Gemini content and its inline
-// worklog replace the full worklog.
+// worklog replace the full worklog. The intervention is shown with the worklog,
+// except while minimized.
 // TODO(crbug.com/587910518): Keep the worklog header and interventions visible
 // around the Gemini content at the expanded mode.
 - (void)updateActuationContentVisibility {
@@ -225,6 +244,9 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
       _worklogViewController.displayMode == ActuationWorklogDisplayModeExpanded;
   _geminiContentView.hidden = !showGeminiContent;
   _actuationContentView.hidden = showGeminiContent;
+  _interventionViewController.view.hidden =
+      _worklogViewController.displayMode ==
+      ActuationWorklogDisplayModeMinimized;
 }
 
 // Updates content view layout constraints based on whether padding is applied.
@@ -240,12 +262,26 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 // Returns the container height needed to fit `worklogHeight`, accounting for
-// the insets applied around the worklog in `addWorklogSubviews`.
+// the insets applied around the worklog in `addActuationSubviews`.
 // TODO(crbug.com/581337610): Move `kWorklogContainerInsets` into
 // `ActuationWorklogViewController` so it reports padded heights directly.
 - (CGFloat)containerHeightForWorklogHeight:(CGFloat)worklogHeight {
   return worklogHeight + kWorklogContainerInsets.top +
          kWorklogContainerInsets.bottom;
+}
+
+// Reports the container height fitting the compact worklog and the
+// intervention below it, used for the medium detent.
+- (void)reportActuationHeight {
+  if (!_worklogViewController) {
+    return;
+  }
+  CGFloat actuationHeight =
+      [_worklogViewController
+          heightForDisplayMode:ActuationWorklogDisplayModeCompact] +
+      [_interventionViewController fittingHeight];
+  [self.mutator containerDidChangeActuationHeight:
+                    [self containerHeightForWorklogHeight:actuationHeight]];
 }
 
 // Adds the zero-state view controller to `containerStack`.
@@ -272,8 +308,9 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [_geminiViewController didMoveToParentViewController:self];
 }
 
-// Adds the actuation worklog to the view hierarchy.
-- (void)addWorklogSubviews {
+// Adds the actuation worklog to the view hierarchy, with the intervention drawn
+// over its bottom, below the worklog's content.
+- (void)addActuationSubviews {
   _actuationContentView = [[UIView alloc] init];
   _actuationContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_actuationContentView];
@@ -282,10 +319,20 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
   _worklogViewController.delegate = self;
   [self addChildViewController:_worklogViewController];
-  _worklogViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [_actuationContentView addSubview:_worklogViewController.view];
-  AddSameConstraints(_worklogViewController.view, _actuationContentView);
+  UIView* worklogView = _worklogViewController.view;
+  worklogView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_actuationContentView addSubview:worklogView];
+  AddSameConstraints(worklogView, _actuationContentView);
   [_worklogViewController didMoveToParentViewController:self];
+
+  _interventionViewController.delegate = self;
+  [self addChildViewController:_interventionViewController];
+  UIView* interventionView = _interventionViewController.view;
+  interventionView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_actuationContentView addSubview:interventionView];
+  AddSameConstraintsToSides(interventionView, _actuationContentView,
+                            LayoutSides::kBottom | LayoutSides::kHorizontal);
+  [_interventionViewController didMoveToParentViewController:self];
 }
 
 // Called right before the keyboard is shown.

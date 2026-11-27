@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_entries_diff.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 
@@ -52,6 +53,7 @@
   _state = nil;
   [self.consumer setActuationActive:NO];
   [self.consumer reset];
+  [self.interventionConsumer setIntervention:nil];
   [self.suggestionsConsumer setSuggestions:nil
                    selectedSuggestionIndex:NSNotFound
                       forActiveWorklogItem:nil];
@@ -60,6 +62,7 @@
 - (void)disconnect {
   [self stopObservingDataSource];
   self.consumer = nil;
+  self.interventionConsumer = nil;
   self.suggestionsConsumer = nil;
 }
 
@@ -84,7 +87,7 @@
   [self updateEntriesWithDiff:diff
                     lastEntry:state.entries.lastObject
                      animated:animated];
-  [self.consumer setIntervention:state.intervention];
+  [self.interventionConsumer setIntervention:state.intervention];
   [self.suggestionsConsumer setSuggestions:state.suggestions
                    selectedSuggestionIndex:state.selectedSuggestionIndex
                       forActiveWorklogItem:state.suggestionsEntry.item];
@@ -126,6 +129,8 @@
 - (void)pauseActuation {
   [_actionHandler pauseTask];
 }
+
+#pragma mark - ActuationInterventionMutator
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
   [_actionHandler resolveInterventionWithAction:action];

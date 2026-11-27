@@ -57,13 +57,16 @@ TEST_F(ActuationWorklogCoordinatorTest, TestStartAndStopLifecycle) {
                              browser:browser_.get()];
 
   EXPECT_EQ(coordinator.viewController, nil);
+  EXPECT_EQ(coordinator.interventionViewController, nil);
 
   [coordinator start];
   EXPECT_NE(coordinator.viewController, nil);
+  EXPECT_NE(coordinator.interventionViewController, nil);
   EXPECT_EQ(coordinator.viewController.suggestionsPresenter, nil);
 
   [coordinator stop];
   EXPECT_EQ(coordinator.viewController, nil);
+  EXPECT_EQ(coordinator.interventionViewController, nil);
 }
 
 // Tests that setting the presented suggestions again only updates the worklog

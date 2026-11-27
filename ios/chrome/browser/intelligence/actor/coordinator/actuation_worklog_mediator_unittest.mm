@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -41,9 +42,11 @@ ActuationInterventionData* CreateIntervention() {
 
 }  // namespace
 
-// Records what the worklog and its suggestions display.
+// Records what the worklog, its intervention and its suggestions display.
 @interface FakeActuationWorklogConsumer
-    : NSObject <ActuationSuggestionsConsumer, ActuationWorklogConsumer>
+    : NSObject <ActuationInterventionConsumer,
+                ActuationSuggestionsConsumer,
+                ActuationWorklogConsumer>
 @property(nonatomic, assign) BOOL actuationActive;
 @property(nonatomic, strong)
     ActuationHeaderContentVariants* headerContentVariants;
@@ -89,7 +92,6 @@ ActuationInterventionData* CreateIntervention() {
   [_animated removeAllObjects];
   _chip = nil;
   _headerContentVariants = nil;
-  _intervention = nil;
 }
 
 - (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
@@ -172,6 +174,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
                   compactContent:content
                  expandedContent:content];
     mediator_.consumer = consumer_;
+    mediator_.interventionConsumer = consumer_;
     mediator_.suggestionsConsumer = consumer_;
   }
 
@@ -375,9 +378,9 @@ TEST_F(ActuationWorklogMediatorTest, TestHeaderContentVariantsAreUpdated) {
 }
 
 // Tests that stopping observation detaches from the data source and resets the
-// consumer.
+// consumers.
 TEST_F(ActuationWorklogMediatorTest, TestStopObservingResetsConsumer) {
-  Publish(@[ Entry(@"A") ]);
+  Publish(@[ Entry(@"A") ], CreateIntervention());
   StartObserving();
 
   [mediator_ stopObservingDataSource];
@@ -386,6 +389,7 @@ TEST_F(ActuationWorklogMediatorTest, TestStopObservingResetsConsumer) {
   EXPECT_FALSE(consumer_.actuationActive);
   EXPECT_EQ(consumer_.headerContentVariants, nil);
   EXPECT_EQ(consumer_.items.count, 0u);
+  EXPECT_EQ(consumer_.intervention, nil);
 }
 
 // Tests that observing the observed data source again is a no-op.

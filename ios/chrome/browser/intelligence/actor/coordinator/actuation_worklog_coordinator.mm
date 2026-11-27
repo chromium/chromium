@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_mediator.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view_controller.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
@@ -19,6 +20,8 @@
   ActuationWorklogMediator* _mediator;
   // View controller displaying the worklog UI.
   ActuationWorklogViewController* _viewController;
+  // View controller displaying the intervention UI.
+  ActuationInterventionViewController* _interventionViewController;
   // Coordinator managing suggestion picker presentation.
   ActuationSuggestionsCoordinator* _suggestionsCoordinator;
   // Suggestions presented by `_suggestionsCoordinator`.
@@ -31,10 +34,14 @@
   CHECK(self.browser);
 
   _viewController = [[ActuationWorklogViewController alloc] init];
+  _interventionViewController =
+      [[ActuationInterventionViewController alloc] init];
   _mediator = [[ActuationWorklogMediator alloc] init];
   _mediator.consumer = _viewController;
+  _mediator.interventionConsumer = _interventionViewController;
   _mediator.suggestionsConsumer = self;
   _viewController.mutator = _mediator;
+  _interventionViewController.mutator = _mediator;
 }
 
 - (void)stop {
@@ -44,6 +51,8 @@
   _viewController.mutator = nil;
   _viewController.suggestionsPresenter = nil;
   _viewController = nil;
+  _interventionViewController.mutator = nil;
+  _interventionViewController = nil;
 }
 
 #pragma mark - ActuationSuggestionsConsumer
@@ -90,6 +99,10 @@
 
 - (ActuationWorklogViewController*)viewController {
   return _viewController;
+}
+
+- (ActuationInterventionViewController*)interventionViewController {
+  return _interventionViewController;
 }
 
 #pragma mark - Private

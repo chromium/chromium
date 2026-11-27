@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ActuationInterventionViewController;
 @class ActuationWorklogViewController;
 @protocol ActorTaskActionHandler;
 @protocol ActorTaskDataSource;
@@ -18,6 +19,11 @@
 
 // The view controller displaying the actuation worklog.
 @property(nonatomic, readonly) ActuationWorklogViewController* viewController;
+
+// The view controller displaying the intervention of the task, meant to be
+// laid out below `viewController`.
+@property(nonatomic, readonly)
+    ActuationInterventionViewController* interventionViewController;
 
 // Starts displaying the worklog published by `dataSource`, replacing any
 // previously observed one. The user actions on the worklog are forwarded to

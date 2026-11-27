@@ -24,6 +24,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/intelligence/bwg/coordinator:actor_task_store",
+    "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/util",

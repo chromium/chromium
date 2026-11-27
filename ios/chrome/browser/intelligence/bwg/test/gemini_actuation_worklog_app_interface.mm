@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/test/gemini_actuation_worklog_test_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -56,9 +57,17 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
   [coordinator start];
 
   ActuationWorklogViewController* viewController = coordinator.viewController;
-  viewController.displayMode = ActuationWorklogDisplayModeCompact;
-  viewController.modalPresentationStyle = UIModalPresentationFullScreen;
-  [coordinator.baseViewController presentViewController:viewController
+  // Hosts the worklog and its intervention like the Gemini floaty does.
+  GeminiContainerViewController* containerViewController =
+      [[GeminiContainerViewController alloc]
+          initWithWorklogViewController:viewController
+             interventionViewController:coordinator.interventionViewController];
+  [containerViewController
+      setWorklogDisplayMode:ActuationWorklogDisplayModeCompact];
+  [containerViewController setActuationActive:YES];
+  containerViewController.modalPresentationStyle =
+      UIModalPresentationFullScreen;
+  [coordinator.baseViewController presentViewController:containerViewController
                                                animated:NO
                                              completion:nil];
 }
@@ -87,6 +96,8 @@ std::vector<actor::ActorTaskId>& GetCreatedTaskIds() {
 }
 
 + (void)setWorklogDisplayModeExpanded {
+  // Bypasses the container, which shows the Gemini content instead of the full
+  // worklog at the expanded mode, so that tests can tap the full worklog.
   [GeminiActuationWorklogAppInterface sharedWorklogHelper]
       .coordinator.viewController.displayMode =
       ActuationWorklogDisplayModeExpanded;

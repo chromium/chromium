@@ -18,9 +18,10 @@
 // Delegate protocol for ActuationWorklogViewController events.
 @protocol ActuationWorklogViewControllerDelegate <NSObject>
 
-// Called when the worklog view controller's fitting height changes.
-- (void)worklogViewController:(ActuationWorklogViewController*)viewController
-              didChangeHeight:(CGFloat)height;
+// Called when the fitting height of `viewController` in
+// `ActuationWorklogDisplayModeCompact` may have changed.
+- (void)worklogViewControllerDidChangeHeight:
+    (ActuationWorklogViewController*)viewController;
 
 @end
 
@@ -46,10 +47,6 @@
 // Returns the fitting height of the worklog when presented in `mode`,
 // regardless of the currently active `displayMode`.
 - (CGFloat)heightForDisplayMode:(ActuationWorklogDisplayMode)mode;
-
-// Calculates the current fitting height and reports it to `delegate`. Use this
-// when `delegate` may have ignored a previous report.
-- (void)notifyHeightDidChange;
 
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

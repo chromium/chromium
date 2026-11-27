@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
 
+@class ActuationInterventionViewController;
 @class ActuationWorklogViewController;
 
 // A view controller that acts as a container for Gemini features.
@@ -22,10 +23,13 @@
 // The child zero-state view controller.
 @property(nonatomic, weak) UIViewController* zeroStateViewController;
 
-// Initializes the container with an optional actuation worklog view controller.
+// Initializes the container with optional actuation view controllers, both nil
+// or both non-nil: the worklog at the top, and the intervention at the bottom.
 - (instancetype)initWithWorklogViewController:
-    (ActuationWorklogViewController*)worklogViewController
-    NS_DESIGNATED_INITIALIZER;
+                    (ActuationWorklogViewController*)worklogViewController
+                   interventionViewController:
+                       (ActuationInterventionViewController*)
+                           interventionViewController NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

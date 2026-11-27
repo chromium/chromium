@@ -8,20 +8,28 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 
 @protocol ActorTaskActionHandler;
 @protocol ActorTaskDataSource;
+@protocol ActuationInterventionConsumer;
 @protocol ActuationSuggestionsConsumer;
 @protocol ActuationWorklogConsumer;
 
 // Displays the worklog states published by an `ActorTaskDataSource` in an
-// `ActuationWorklogConsumer`, sending only the entries that changed.
-@interface ActuationWorklogMediator
-    : NSObject <ActuationSuggestionsDelegate, ActuationWorklogMutator>
+// `ActuationWorklogConsumer`, sending only the entries that changed, and their
+// intervention in an `ActuationInterventionConsumer`.
+@interface ActuationWorklogMediator : NSObject <ActuationInterventionMutator,
+                                                ActuationSuggestionsDelegate,
+                                                ActuationWorklogMutator>
 
 // The consumer that receives formatted worklog updates.
 @property(nonatomic, weak) id<ActuationWorklogConsumer> consumer;
+
+// The consumer that receives the intervention of the task.
+@property(nonatomic, weak) id<ActuationInterventionConsumer>
+    interventionConsumer;
 
 // Consumer handling suggestion coordinator lifecycle.
 @property(nonatomic, weak) id<ActuationSuggestionsConsumer> suggestionsConsumer;

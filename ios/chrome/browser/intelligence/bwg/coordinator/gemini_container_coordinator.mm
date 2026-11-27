@@ -262,12 +262,15 @@
 // Starts and presents the Gemini container.
 - (void)startContainer {
   ActuationWorklogViewController* worklogViewController = nil;
+  ActuationInterventionViewController* interventionViewController = nil;
   if (IsGeminiActorEnabled()) {
     _actuationWorklogCoordinator = [[ActuationWorklogCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:self.browser];
     [_actuationWorklogCoordinator start];
     worklogViewController = _actuationWorklogCoordinator.viewController;
+    interventionViewController =
+        _actuationWorklogCoordinator.interventionViewController;
     // The SDK decides whether Chrome renders a block when the block is first
     // shown, so the provider must be in place before the first response.
     _inlineWorklogViewProvider = [[GeminiInlineWorklogViewProvider alloc] init];
@@ -280,7 +283,8 @@
   }
 
   _viewController = [[GeminiContainerViewController alloc]
-      initWithWorklogViewController:worklogViewController];
+      initWithWorklogViewController:worklogViewController
+         interventionViewController:interventionViewController];
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 

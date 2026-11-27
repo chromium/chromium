@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
@@ -39,7 +38,6 @@ IntelligenceHeaderDensity HeaderDensityForDisplayMode(
 using intelligence::actor::kSpacingLarge;
 
 @interface ActuationWorklogViewController () <
-    ActuationInterventionViewDelegate,
     ActuationWorklogCompactViewDelegate,
     ActuationWorklogViewDelegate,
     IntelligenceHeaderViewDelegate>
@@ -59,16 +57,12 @@ using intelligence::actor::kSpacingLarge;
   // Scrollable container for the `_fullView`. Visible in
   // `ActuationWorklogDisplayModeExpanded`.
   UIScrollView* _scrollView;
-  // Interactive intervention UI pinned to the bottom of the worklog.
-  ActuationInterventionView* _interventionView;
   // Height of `_compactView`. Adjusted dynamically when its content changes.
   NSLayoutConstraint* _compactHeightConstraint;
   // Mode-specific header content applied to `_headerView`.
   ActuationHeaderContentVariants* _headerContentVariants;
   // Offscreen header for content-independent height calculation.
   IntelligenceHeaderView* _sizingHeaderView;
-  // Intervention displayed by `_interventionView`, if any.
-  ActuationInterventionData* _intervention;
 
   BOOL _actuationActive;
 }
@@ -94,24 +88,19 @@ using intelligence::actor::kSpacingLarge;
 }
 
 - (CGFloat)heightForDisplayMode:(ActuationWorklogDisplayMode)mode {
-  CGFloat width = self.view.bounds.size.width;
-  // `_interventionView` owns its padding and collapses to zero height when no
-  // intervention is active.
-  CGFloat interventionHeight = [self fittingHeightForView:_interventionView
-                                              targetWidth:width];
   CGFloat headerHeight = [self headerHeightForDisplayMode:mode];
   switch (mode) {
     case ActuationWorklogDisplayModeMinimized:
       return headerHeight;
     case ActuationWorklogDisplayModeCompact:
-      return headerHeight + _compactHeightConstraint.constant +
-             interventionHeight;
+      return headerHeight + _compactHeightConstraint.constant;
     case ActuationWorklogDisplayModeExpanded:
       // Height needed to show the full timeline without scrolling, including
       // the bottom inset applied to `_fullView` in its scroll view.
       return headerHeight +
-             [self fittingHeightForView:_fullView targetWidth:width] +
-             kSpacingLarge + interventionHeight;
+             [self fittingHeightForView:_fullView
+                            targetWidth:self.view.bounds.size.width] +
+             kSpacingLarge;
   }
 }
 
@@ -124,7 +113,6 @@ using intelligence::actor::kSpacingLarge;
   [self setupConstraints];
   [self updateHeader];
   [self updateVisibility];
-  [self updateIntervention];
 }
 
 #pragma mark - ActuationWorklogConsumer
@@ -164,16 +152,6 @@ using intelligence::actor::kSpacingLarge;
   [self notifyHeightDidChange];
 }
 
-- (void)setIntervention:(ActuationInterventionData*)intervention {
-  // Configuring `_interventionView` again would redraw its buttons.
-  if (_intervention == intervention) {
-    return;
-  }
-  _intervention = intervention;
-  [self updateIntervention];
-  [self notifyHeightDidChange];
-}
-
 - (void)reset {
   _headerContentVariants = nil;
   [self updateHeader];
@@ -181,9 +159,6 @@ using intelligence::actor::kSpacingLarge;
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
   _compactHeightConstraint.constant = 0.0;
-  // The height must be reported even without an intervention update.
-  _intervention = nil;
-  [self updateIntervention];
   [self notifyHeightDidChange];
 }
 
@@ -243,11 +218,6 @@ using intelligence::actor::kSpacingLarge;
   _fullView.actuating = _actuationActive;
   _fullView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:_fullView];
-
-  _interventionView = [[ActuationInterventionView alloc] init];
-  _interventionView.delegate = self;
-  _interventionView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_interventionView];
 }
 
 // Configures layout constraints.
@@ -258,18 +228,15 @@ using intelligence::actor::kSpacingLarge;
   AddSameConstraintsToSides(_headerView, self.view,
                             LayoutSides::kTop | LayoutSides::kHorizontal);
   AddSameConstraintsToSides(_compactView, self.view, LayoutSides::kHorizontal);
-  AddSameConstraintsToSides(_scrollView, self.view, LayoutSides::kHorizontal);
+  AddSameConstraintsToSides(_scrollView, self.view,
+                            LayoutSides::kHorizontal | LayoutSides::kBottom);
   AddSameConstraintsWithInsets(_fullView, _scrollView.contentLayoutGuide,
                                NSDirectionalEdgeInsets{0, 0, kSpacingLarge, 0});
-  AddSameConstraintsToSides(_interventionView, self.view,
-                            LayoutSides::kHorizontal | LayoutSides::kBottom);
 
   [NSLayoutConstraint activateConstraints:@[
     [_compactView.topAnchor constraintEqualToAnchor:_headerView.bottomAnchor],
     _compactHeightConstraint,
     [_scrollView.topAnchor constraintEqualToAnchor:_headerView.bottomAnchor],
-    [_scrollView.bottomAnchor
-        constraintEqualToAnchor:_interventionView.topAnchor],
     [_fullView.widthAnchor
         constraintEqualToAnchor:_scrollView.frameLayoutGuide.widthAnchor],
   ]];
@@ -309,26 +276,11 @@ using intelligence::actor::kSpacingLarge;
   self.view.hidden = !_actuationActive;
   _compactView.hidden = _displayMode != ActuationWorklogDisplayModeCompact;
   _scrollView.hidden = _displayMode != ActuationWorklogDisplayModeExpanded;
-  // `_interventionView` drives its own `hidden` state from its data, so it is
-  // concealed through `alpha` instead while minimized.
-  BOOL minimized = _displayMode == ActuationWorklogDisplayModeMinimized;
-  _interventionView.alpha = minimized ? 0.0 : 1.0;
-  _interventionView.accessibilityElementsHidden = minimized;
 }
 
-// Updates `_interventionView` for `_intervention`.
-- (void)updateIntervention {
-  [_interventionView configureWithData:_intervention];
-}
-
-// Calculates current fitting height and notifies the delegate. The reported
-// height always reflects the compact layout, regardless of `_displayMode`,
-// since only the compact layout has a dynamic height.
+// Notifies the delegate that the compact height may have changed.
 - (void)notifyHeightDidChange {
-  [self.delegate
-      worklogViewController:self
-            didChangeHeight:
-                [self heightForDisplayMode:ActuationWorklogDisplayModeCompact]];
+  [self.delegate worklogViewControllerDidChangeHeight:self];
 }
 
 // Returns the header height for any given `mode`. A sizing view ensures we do
@@ -374,13 +326,6 @@ using intelligence::actor::kSpacingLarge;
     [_scrollView setContentOffset:CGPointMake(0, bottomOffsetY)
                          animated:animated];
   }
-}
-
-#pragma mark - ActuationInterventionViewDelegate
-
-- (void)interventionView:(ActuationInterventionView*)view
-        didTriggerAction:(ActuationInterventionAction*)action {
-  [self.mutator didTriggerInterventionAction:action];
 }
 
 #pragma mark - IntelligenceHeaderViewDelegate

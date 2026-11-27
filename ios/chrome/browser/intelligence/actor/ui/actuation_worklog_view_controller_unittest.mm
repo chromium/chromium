@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
@@ -12,14 +11,12 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
-#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 @interface FakeActuationWorklogMutator : NSObject <ActuationWorklogMutator>
-@property(nonatomic, strong) ActuationInterventionAction* triggeredAction;
 @property(nonatomic, assign) BOOL stopActuationCalled;
 @property(nonatomic, assign) BOOL pauseActuationCalled;
 @end
@@ -32,20 +29,12 @@
 - (void)pauseActuation {
   _pauseActuationCalled = YES;
 }
-
-- (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
-  _triggeredAction = action;
-}
 @end
 
 namespace {
 
 using chrome_test_util::FindViewById;
 using chrome_test_util::FindViewsByClass;
-
-// Arbitrary identifier for the test action.
-constexpr InterventionActionIdentifier kActionIdentifier =
-    InterventionActionIdentifier::kContinue;
 
 // Returns a header item with `identifier` and accessibility identifier
 // `accessibility_id`.
@@ -183,62 +172,6 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderContentVariants) {
   view_controller_.displayMode = ActuationWorklogDisplayModeExpanded;
   EXPECT_NSEQ(header_view.title, @"Expanded Title");
   EXPECT_EQ(header_view.subtitle, nil);
-}
-
-// Tests that setting an intervention forwards it to the intervention view,
-// routes the triggered action to the mutator, and reset clears it.
-TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
-  UIView* card_view = FindViewById(
-      view_controller_.view, kActuationInterventionCardAccessibilityIdentifier);
-  ASSERT_NE(card_view, nil);
-  EXPECT_TRUE(card_view.hidden);
-
-  ActuationInterventionAction* action =
-      [[ActuationInterventionAction alloc] initWithIdentifier:kActionIdentifier
-                                                        title:@"Continue"];
-  [consumer() setIntervention:[ActuationInterventionData
-                                  cardItemWithTitle:@"Intervention Title"
-                                           subtitle:@"Intervention Subtitle"
-                                             action:action]];
-  EXPECT_FALSE(card_view.hidden);
-
-  // Verify mutator dispatch on button tap. A card intervention renders the
-  // card's own action button, not the standalone intervention button.
-  ChromeButton* action_button = FindViewById<ChromeButton>(
-      view_controller_.view,
-      kActuationTaskCardActionButtonAccessibilityIdentifier);
-  ASSERT_NE(action_button, nil);
-  EXPECT_NSEQ(action_button.title, @"Continue");
-  [action_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(fake_mutator_.triggeredAction, action);
-
-  // Reset clears intervention.
-  [consumer() reset];
-  EXPECT_TRUE(card_view.hidden);
-}
-
-// Tests that setting the displayed intervention again doesn't redraw it, and
-// that it can be displayed again after a reset.
-TEST_F(ActuationWorklogViewControllerTest, TestSameInterventionIsNotRedrawn) {
-  ActuationInterventionAction* action =
-      [[ActuationInterventionAction alloc] initWithIdentifier:kActionIdentifier
-                                                        title:@"Continue"];
-  ActuationInterventionData* intervention =
-      [ActuationInterventionData rowItemWithActions:@[ action ]];
-  NSString* button_id =
-      ActuationInterventionActionButtonAccessibilityIdentifier(0);
-
-  [consumer() setIntervention:intervention];
-  UIView* button = FindViewById(view_controller_.view, button_id);
-  ASSERT_NE(button, nil);
-
-  [consumer() setIntervention:intervention];
-  EXPECT_EQ(FindViewById(view_controller_.view, button_id), button);
-
-  [consumer() reset];
-  EXPECT_EQ(FindViewById(view_controller_.view, button_id), nil);
-  [consumer() setIntervention:intervention];
-  EXPECT_NE(FindViewById(view_controller_.view, button_id), nil);
 }
 
 // Tests that the header shows the close button without variants, displays the
