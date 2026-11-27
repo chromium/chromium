@@ -79,6 +79,12 @@ class Annotator : public mojom::Annotator {
   // can have a long aspect ratio.)
   static constexpr double kIconMaxAspectRatio = 5.0;
 
+  // The minimum side length needed to request OCR annotations.
+  static constexpr int32_t kOcrMinDimension = 16;
+
+  // The maximum aspect ratio permitted to request OCR annotations.
+  static constexpr double kOcrMaxAspectRatio = 200.0;
+
   // Constructs an annotator.
   //  |pixels_server_url| : the URL to use when the annotator sends image
   //                        pixel data to get back annotations. The
@@ -207,6 +213,10 @@ class Annotator : public mojom::Annotator {
   // backend (i.e. the image has size / shape on which it is acceptable to run
   // the icon model).
   static bool IsWithinIconPolicy(int32_t width, int32_t height);
+
+  // Returns true if the given dimensions fit the policy of the OCR backend
+  // (i.e. the image has a size / shape on which the server will run OCR).
+  static bool IsWithinOcrPolicy(int32_t width, int32_t height);
 
   // Constructs and returns a JSON object containing an request for the
   // given images.

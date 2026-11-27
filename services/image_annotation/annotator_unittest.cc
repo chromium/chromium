@@ -2780,8 +2780,9 @@ void RunAnchovyAnnotatorTest(
     std::unique_ptr<FakeAnchovyProvider> fake_provider,
     std::vector<mojom::Annotation>* annotations,
     std::optional<mojom::AnnotateImageError>* out_error = nullptr,
-    int32_t image_dim = kDescDim,
-    int* out_request_count = nullptr) {
+    int32_t image_width = kDescDim,
+    int* out_request_count = nullptr,
+    std::optional<int32_t> image_height = std::nullopt) {
   base::test::ScopedFeatureList enabled_features;
   enabled_features.InitAndEnableFeature(
       features::kImageDescriptionsAlternateRouting);
@@ -2817,7 +2818,8 @@ void RunAnchovyAnnotatorTest(
   ASSERT_THAT(processor.callbacks(), SizeIs(1));
 
   // Send back image data.
-  std::move(processor.callbacks()[0]).Run({1, 2, 3}, image_dim, image_dim);
+  std::move(processor.callbacks()[0])
+      .Run({1, 2, 3}, image_width, image_height.value_or(image_width));
   processor.callbacks().pop_back();
 
   test_task_env.FastForwardBy(base::Seconds(1));
@@ -3657,26 +3659,304 @@ TEST(AnnotatorTest, AnchovyIconSelectionClampingAndInvalidFallback) {
   }
 }
 
-// Verifies that images smaller than kDescMinDimension (150x150) are filtered by
-// IsWithinDescPolicy and not sent to AnchovyProvider.
-TEST(AnnotatorTest, AnchovySkipsImagesOutsideDescPolicy) {
-  base::ListValue results;
-  results.Append(base::DictValue()
-                     .Set("type", manta::anchovy::kTypePrimaryCaption)
-                     .Set("score", 0.9)
-                     .Set("text", "Should not be requested"));
-  int request_count = -1;
-  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
-      base::DictValue().Set("results", std::move(results)));
+// Verifies Manta size/aspect-ratio policy gating (`< 16x16` px or `> 200:1`
+// aspect ratio skipped locally; icon-sized, wide OCR-only, and
+// description-sized images sent to AnchovyProvider) and
+// `ImageRequestIncludes*` histograms.
+TEST(AnnotatorTest, AnchovyImageSizePolicyRoutingAndHistograms) {
+  // Case 1: Images below `kOcrMinDimension` (0x0, 10x10, 15x16, 16x15) or
+  // exceeding `kOcrMaxAspectRatio` (4000x16 and 16x4000, both sides >= 16) are
+  // skipped locally without calling AnchovyProvider.
+  const std::array<std::pair<int32_t, int32_t>, 6> kSkippedSizes = {
+      {{0, 0}, {10, 10}, {15, 16}, {16, 15}, {4000, 16}, {16, 4000}}};
+  for (const auto& [width, height] : kSkippedSizes) {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeOcr)
+                       .Set("score", 0.9)
+                       .Set("text", "Should not be requested"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations, &error, width, &request_count, height);
 
-  std::vector<mojom::Annotation> annotations;
-  std::optional<mojom::AnnotateImageError> error;
-  RunAnchovyAnnotatorTest(std::move(fake_provider), &annotations, &error,
-                          /*image_dim=*/50, &request_count);
+    EXPECT_EQ(request_count, 0);
+    EXPECT_TRUE(annotations.empty());
+    EXPECT_EQ(error, mojom::AnnotateImageError::kFailure);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesDesc, false, 1);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesIcon, false, 1);
+  }
 
-  EXPECT_EQ(request_count, 0);
-  EXPECT_TRUE(annotations.empty());
-  EXPECT_EQ(error, mojom::AnnotateImageError::kFailure);
+  // Case 2: Exact OCR aspect ratio boundary (3200x16 = 200:1) is sent.
+  {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeOcr)
+                       .Set("score", 0.85)
+                       .Set("text", "Banner text"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations, &error, /*image_width=*/3200, &request_count,
+        /*image_height=*/16);
+
+    EXPECT_EQ(request_count, 1);
+    EXPECT_EQ(error, std::nullopt);
+    ASSERT_EQ(annotations.size(), 1u);
+    EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kOcr);
+    EXPECT_EQ(annotations[0].text, "Banner text");
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesDesc, false, 1);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesIcon, false, 1);
+  }
+
+  // Case 3: Icon-sized images smaller than `kDescMinDimension` (20x20, 50x50)
+  // are sent with `IncludesDesc=false` and `IncludesIcon=true`.
+  for (const int32_t dim : {20, 50}) {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeIcon)
+                       .Set("score", 0.88)
+                       .Set("text", "ICON_PLUS"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations, &error, dim, &request_count);
+
+    EXPECT_EQ(request_count, 1);
+    EXPECT_EQ(error, std::nullopt);
+    ASSERT_EQ(annotations.size(), 1u);
+    EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kIcon);
+    EXPECT_EQ(annotations[0].text, "ICON_PLUS");
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesDesc, false, 1);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesIcon, true, 1);
+  }
+
+  // Case 4: Wide OCR-only image (400x60: outside desc and icon policies, inside
+  // OCR policy) emits `kOcr` when >= 0.7 and filters it out when < 0.7.
+  {
+    base::HistogramTester histogram_tester;
+    base::ListValue high_conf_results;
+    high_conf_results.Append(base::DictValue()
+                                 .Set("type", manta::anchovy::kTypeOcr)
+                                 .Set("score", 0.85)
+                                 .Set("text", "Breaking News"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(high_conf_results))),
+        &annotations, &error, /*image_width=*/400, &request_count,
+        /*image_height=*/60);
+
+    EXPECT_EQ(request_count, 1);
+    EXPECT_EQ(error, std::nullopt);
+    ASSERT_EQ(annotations.size(), 1u);
+    EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kOcr);
+    EXPECT_EQ(annotations[0].text, "Breaking News");
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesDesc, false, 1);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesIcon, false, 1);
+  }
+  {
+    base::ListValue low_conf_results;
+    low_conf_results.Append(base::DictValue()
+                                .Set("type", manta::anchovy::kTypeOcr)
+                                .Set("score", 0.50)
+                                .Set("text", "Noisy text"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(low_conf_results))),
+        &annotations, &error, /*image_width=*/400, &request_count,
+        /*image_height=*/60);
+
+    EXPECT_EQ(request_count, 1);
+    EXPECT_TRUE(annotations.empty());
+    EXPECT_EQ(error, mojom::AnnotateImageError::kFailure);
+  }
+
+  // Case 5: Description-only image larger than `kIconMaxDimension` (300x300)
+  // logs `IncludesDesc=true` and `IncludesIcon=false`.
+  {
+    base::HistogramTester histogram_tester;
+    base::ListValue results;
+    results.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypePrimaryCaption)
+                       .Set("score", 0.90)
+                       .Set("text", "A mountain lake"));
+    int request_count = -1;
+    std::vector<mojom::Annotation> annotations;
+    std::optional<mojom::AnnotateImageError> error;
+    RunAnchovyAnnotatorTest(
+        std::make_unique<FakeAnchovyProvider>(
+            base::DictValue().Set("results", std::move(results))),
+        &annotations, &error, /*image_width=*/300, &request_count);
+
+    EXPECT_EQ(request_count, 1);
+    EXPECT_EQ(error, std::nullopt);
+    ASSERT_EQ(annotations.size(), 1u);
+    EXPECT_EQ(annotations[0].type, mojom::AnnotationType::kCaption);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesDesc, true, 1);
+    histogram_tester.ExpectUniqueSample(
+        metrics_internal::kImageRequestIncludesIcon, false, 1);
+  }
+}
+
+// Verifies that caption-sized (200x200), icon-sized (32x32), and wide OCR-only
+// (400x60) images share a single batched Manta request and demux cleanly while
+// an out-of-policy image (10x10) is skipped locally before batching.
+TEST(AnnotatorTest, AnchovyBatchesMixedSizeCaptionIconAndOcrImages) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  auto fake_provider =
+      std::make_unique<FakeAnchovyProvider>(base::BindRepeating(
+          [](const manta::anchovy::ImageDescriptionBatchRequest& request) {
+            base::DictValue results_by_tag;
+            for (const auto& entry : request.images) {
+              base::ListValue entries;
+              if (entry.tag == "0") {
+                entries.Append(
+                    base::DictValue()
+                        .Set("type", manta::anchovy::kTypePrimaryCaption)
+                        .Set("score", 0.90)
+                        .Set("text", "A sunny park"));
+              } else if (entry.tag == "1") {
+                entries.Append(base::DictValue()
+                                   .Set("type", manta::anchovy::kTypeIcon)
+                                   .Set("score", 0.88)
+                                   .Set("text", "ICON_MAGNIFYING_GLASS"));
+              } else if (entry.tag == "2") {
+                entries.Append(base::DictValue()
+                                   .Set("type", manta::anchovy::kTypeOcr)
+                                   .Set("score", 0.85)
+                                   .Set("text", "SALE 50%"));
+              }
+              results_by_tag.Set(entry.tag, std::move(entries));
+            }
+            return std::make_pair(
+                base::DictValue().Set(manta::anchovy::kResultsByTagKey,
+                                      std::move(results_by_tag)),
+                manta::MantaStatusCode::kOk);
+          }));
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  TestImageProcessor proc_caption;
+  TestImageProcessor proc_icon;
+  TestImageProcessor proc_ocr;
+  TestImageProcessor proc_skipped;
+  std::optional<mojom::AnnotateImageError> err_caption, err_icon, err_ocr,
+      err_skipped;
+  std::vector<mojom::Annotation> ann_caption, ann_icon, ann_ocr, ann_skipped;
+
+  base::RunLoop loop;
+  base::RepeatingClosure barrier = base::BarrierClosure(4, loop.QuitClosure());
+
+  remote_annotator->AnnotateImage(
+      kImage1Url, "en", proc_caption.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_caption, &ann_caption).Then(barrier));
+  remote_annotator->AnnotateImage(
+      kImage2Url, "en", proc_icon.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_icon, &ann_icon).Then(barrier));
+  remote_annotator->AnnotateImage(
+      kImage3Url, "en", proc_ocr.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_ocr, &ann_ocr).Then(barrier));
+  remote_annotator->AnnotateImage(
+      "https://www.example.com/image4.jpg", "en",
+      proc_skipped.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_skipped, &ann_skipped).Then(barrier));
+
+  proc_caption.WaitForGetJpgImageData();
+  proc_icon.WaitForGetJpgImageData();
+  proc_ocr.WaitForGetJpgImageData();
+  proc_skipped.WaitForGetJpgImageData();
+
+  std::move(proc_caption.callbacks()[0]).Run({1}, 200, 200);
+  proc_caption.callbacks().pop_back();
+  test_task_env.FastForwardBy(base::Milliseconds(1));
+  std::move(proc_icon.callbacks()[0]).Run({2}, 32, 32);
+  proc_icon.callbacks().pop_back();
+  test_task_env.FastForwardBy(base::Milliseconds(1));
+  std::move(proc_ocr.callbacks()[0]).Run({3}, 400, 60);
+  proc_ocr.callbacks().pop_back();
+  test_task_env.FastForwardBy(base::Milliseconds(1));
+  std::move(proc_skipped.callbacks()[0]).Run({4}, 10, 10);
+  proc_skipped.callbacks().pop_back();
+
+  test_task_env.FastForwardBy(kBatchThrottle);
+  loop.Run();
+
+  ASSERT_EQ(provider_ptr->request_count(), 1);
+  ASSERT_EQ(provider_ptr->captured_batches().size(), 1u);
+  EXPECT_THAT(provider_ptr->captured_batches()[0].tags,
+              ElementsAre("0", "1", "2"));
+
+  EXPECT_EQ(err_caption, std::nullopt);
+  ASSERT_EQ(ann_caption.size(), 1u);
+  EXPECT_EQ(ann_caption[0].type, mojom::AnnotationType::kCaption);
+  EXPECT_EQ(ann_caption[0].text, "A sunny park");
+
+  EXPECT_EQ(err_icon, std::nullopt);
+  ASSERT_EQ(ann_icon.size(), 1u);
+  EXPECT_EQ(ann_icon[0].type, mojom::AnnotationType::kIcon);
+  EXPECT_EQ(ann_icon[0].text, "ICON_MAGNIFYING_GLASS");
+
+  EXPECT_EQ(err_ocr, std::nullopt);
+  ASSERT_EQ(ann_ocr.size(), 1u);
+  EXPECT_EQ(ann_ocr[0].type, mojom::AnnotationType::kOcr);
+  EXPECT_EQ(ann_ocr[0].text, "SALE 50%");
+
+  EXPECT_EQ(err_skipped, mojom::AnnotateImageError::kFailure);
+  EXPECT_TRUE(ann_skipped.empty());
+
+  histogram_tester.ExpectBucketCount(
+      metrics_internal::kImageRequestIncludesDesc, true, 1);
+  histogram_tester.ExpectBucketCount(
+      metrics_internal::kImageRequestIncludesDesc, false, 3);
+  histogram_tester.ExpectBucketCount(
+      metrics_internal::kImageRequestIncludesIcon, true, 2);
+  histogram_tester.ExpectBucketCount(
+      metrics_internal::kImageRequestIncludesIcon, false, 2);
 }
 
 // Verifies that FetchServerLanguages() is not called when

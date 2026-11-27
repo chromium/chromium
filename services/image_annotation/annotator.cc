@@ -608,6 +608,18 @@ static_assert(Annotator::kDescMaxAspectRatio > 0.0,
               "Description engine must accept images of some aspect ratios.");
 static_assert(Annotator::kIconMinDimension > 0,
               "Icon engine must accept images of some sizes.");
+static_assert(Annotator::kOcrMinDimension > 0,
+              "OCR engine must accept images of some sizes.");
+static_assert(Annotator::kOcrMaxAspectRatio > 0.0,
+              "OCR engine must accept images of some aspect ratios.");
+static_assert(Annotator::kDescMinDimension >= Annotator::kOcrMinDimension &&
+                  Annotator::kIconMinDimension >= Annotator::kOcrMinDimension &&
+                  Annotator::kDescMaxAspectRatio <=
+                      Annotator::kOcrMaxAspectRatio &&
+                  Annotator::kIconMaxAspectRatio <=
+                      Annotator::kOcrMaxAspectRatio,
+              "Description and icon policies must stay within the OCR size and "
+              "aspect-ratio floor.");
 
 Annotator::ClientRequestInfo::ClientRequestInfo(
     mojo::PendingRemote<mojom::ImageProcessor> in_image_processor,
@@ -680,8 +692,7 @@ Annotator::Annotator(
       FROM_HERE, throttle,
       base::BindRepeating(&Annotator::SendRequestBatchToServer,
                           weak_factory_.GetWeakPtr()));
-  // Do not query the legacy languages endpoint when alternate routing is
-  // enabled.
+  // Do not query the legacy languages endpoint when using Manta.
   if (!features::IsImageDescriptionsAlternateRoutingEnabled()) {
     FetchServerLanguages();
   }
@@ -798,6 +809,23 @@ bool Annotator::IsWithinIconPolicy(const int32_t width, const int32_t height) {
 }
 
 // static
+bool Annotator::IsWithinOcrPolicy(const int32_t width, const int32_t height) {
+  if (width < kOcrMinDimension || height < kOcrMinDimension) {
+    return false;
+  }
+
+  // Can't be 0 or inf because `kOcrMinDimension` is guaranteed positive (via a
+  // static_assert).
+  const double aspect_ratio = static_cast<double>(width) / height;
+  if (aspect_ratio < 1.0 / kOcrMaxAspectRatio ||
+      aspect_ratio > kOcrMaxAspectRatio) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
 std::string Annotator::FormatJsonRequest(
     const std::deque<ServerRequestInfo>::iterator begin,
     const std::deque<ServerRequestInfo>::iterator end) {
@@ -904,22 +932,23 @@ void Annotator::OnJpgImageDataReceived(
   local_processors_.erase(request_key);
 
   const bool desc_requested = IsWithinDescPolicy(width, height);
+  const bool icon_requested = IsWithinIconPolicy(width, height);
+  const bool ocr_requested = IsWithinOcrPolicy(width, height);
   if (features::IsImageDescriptionsAlternateRoutingEnabled() &&
-      !desc_requested) {
-    // Under alternate routing, the server requires images to meet
-    // IsWithinDescPolicy() (which covers captions, labels, and in-policy OCR)
-    // and does not support icon classification or OCR-only requests for
-    // smaller/wider images. Fail out-of-policy images immediately without
-    // buffering image_bytes or occupying a batch throttle slot.
+      !desc_requested && !icon_requested && !ocr_requested) {
+    // The Manta server skips all signals for images outside the description,
+    // icon, and OCR size/aspect-ratio policies (< 16x16 px or > 200:1 aspect
+    // ratio). Fail ineligible images immediately without buffering
+    // `image_bytes` or occupying a batch throttle slot.
     ReportImageRequestIncludesDesc(false);
+    ReportImageRequestIncludesIcon(false);
     ProcessResult(request_key, {});
     return;
   }
 
   // Schedule a server request for this image.
   server_request_queue_.emplace_front(request_key, desc_requested,
-                                      IsWithinIconPolicy(width, height),
-                                      image_bytes);
+                                      icon_requested, image_bytes);
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.
@@ -958,8 +987,10 @@ void Annotator::SendRequestBatchToServer() {
         std::pair<std::string, std::vector<const ServerRequestInfo*>>;
     std::vector<LanguageGroup> language_groups;
     for (const auto& request_info : batch) {
-      CHECK(request_info.desc_requested);
+      // Manta requests forward images eligible for captions, icons, or OCR so
+      // the server can select signals from the encoded image dimensions.
       ReportImageRequestIncludesDesc(request_info.desc_requested);
+      ReportImageRequestIncludesIcon(request_info.icon_requested);
 
       // Group eligible requests by exact `desc_lang_tag` in chronological
       // arrival order because each Manta request carries a single shared
