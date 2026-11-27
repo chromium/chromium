@@ -335,10 +335,6 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
 
 scoped_refptr<CanvasNon2DResourceProvider::Resource>
 CanvasNon2DResourceProvider::NewOrRecycledResource() {
-  if (!image_pool_) {
-    return nullptr;
-  }
-
   auto resource = image_pool_->GetImage();
   if (!resource) {
     return nullptr;
@@ -374,9 +370,7 @@ void CanvasNon2DResourceProvider::OnContextLost() {
   if (notified_context_lost_) {
     return;
   }
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
+  image_pool_->Clear();
   // Notify the owner of this resource provider that the GPU context was
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
@@ -396,9 +390,7 @@ void CanvasNon2DResourceProvider::OnContextDestroyed() {
     skia_canvas_->reset_image_provider();
   }
   canvas_image_provider_.reset();
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
+  image_pool_->Clear();
 }
 
 void CanvasNon2DResourceProvider::NotifyGpuContextLostTask(
@@ -784,10 +776,7 @@ void CanvasNon2DResourceProvider::FlushRecording(
 }
 
 base::ByteSize CanvasNon2DResourceProvider::EstimatedSizeInBytes() const {
-  base::ByteSize result;
-  if (image_pool_) {
-    result += image_pool_->EstimatedSizeInBytes();
-  }
+  base::ByteSize result = image_pool_->EstimatedSizeInBytes();
   if (resource_) {
     result += resource_->GetSharedImage()->EstimatedSizeInBytes();
   }
