@@ -6689,6 +6689,12 @@
       status: {"Android": "test"},
     },
     {
+      // Kill switch for clearing event- and DOM-created SMIL instance times
+      // when the timeline is seeked backwards. crbug.com/40957718
+      name: "SmilBackwardsSeekClearsInstanceTimes",
+      status: "stable",
+    },
+    {
       // Snapshot scroll-timelines post layout only. See
       // RunSnapshotPostLayoutStateSteps flag.
       name: "SnapshotScrollTimelinesPostLayout",

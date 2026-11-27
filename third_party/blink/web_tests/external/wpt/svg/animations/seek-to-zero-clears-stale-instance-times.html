@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>Seeking the timeline backwards clears stale dynamic instance times</title>
+<link rel="help" href="https://www.w3.org/TR/REC-smil/smil-timing.html#q44">
+<link rel="help" href="https://issues.chromium.org/40957718">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<svg width="100" height="20">
+  <rect width="10" height="20">
+    <animate attributeName="x" from="30" to="90" dur="3s"
+             begin="indefinite" fill="freeze"/>
+  </rect>
+</svg>
+<script>
+async_test(t => {
+  const svg = document.querySelector('svg');
+  const animate = document.querySelector('animate');
+
+  window.addEventListener('load', t.step_func(() => {
+    requestAnimationFrame(t.step_func_done(() => {
+      svg.pauseAnimations();
+      svg.setCurrentTime(1);
+      animate.beginElement();
+      assert_equals(animate.getStartTime(), 1,
+                    'interval begins at the first beginElement()');
+
+      // Restarts the element, making the first instance time stale.
+      svg.setCurrentTime(2);
+      animate.beginElement();
+      svg.setCurrentTime(3);
+      assert_equals(animate.getStartTime(), 2,
+                    'interval begins at the second beginElement()');
+
+      // A backwards seek into the current interval keeps its begin.
+      svg.setCurrentTime(2.5);
+      assert_equals(animate.getStartTime(), 2,
+                    'current interval begin is kept');
+
+      // Seeking before the interval begin clears the script-created
+      // instance times, so no interval remains.
+      svg.setCurrentTime(0);
+      assert_throws_dom('InvalidStateError', () => animate.getStartTime(),
+                        'no interval after rewinding past its begin');
+    }));
+  }));
+});
+</script>

@@ -127,16 +127,24 @@ void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
 }
 
 void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
+  // Instance times are never unresolved, so nothing is kept.
+  RemoveWithOriginExceptTime(origin, SMILTime::Unresolved());
+}
+
+void SMILInstanceTimeList::RemoveWithOriginExceptTime(SMILTimeOrigin origin,
+                                                      SMILTime time_to_keep) {
   if (!time_origins_.Has(origin)) {
     return;
   }
   auto removed = std::ranges::remove_if(
-      instance_times_, [origin](const SMILTimeWithOrigin& instance_time) {
-        return instance_time.Origin() == origin;
+      instance_times_,
+      [origin, time_to_keep](const SMILTimeWithOrigin& instance_time) {
+        return instance_time.Origin() == origin &&
+               instance_time.Time() != time_to_keep;
       });
   instance_times_.Shrink(
       static_cast<wtf_size_t>(removed.begin() - instance_times_.begin()));
-  time_origins_.Remove(origin);
+  RemoveTimeOriginIfNotFound(origin);
 }
 
 void SMILInstanceTimeList::RemoveBeforeWithOrigin(SMILTime before_time,
@@ -410,7 +418,10 @@ void SVGSMILElement::BuildPendingResource() {
   ConnectConditions();
 }
 
-void SVGSMILElement::Reset() {
+void SVGSMILElement::Reset(SMILTime presentation_time, SMILTime rewind_target) {
+  if (RuntimeEnabledFeatures::SmilBackwardsSeekClearsInstanceTimesEnabled()) {
+    PruneDynamicInstanceTimesOnTimelineRewind(presentation_time, rewind_target);
+  }
   active_state_ = kInactive;
   is_waiting_for_first_interval_ = true;
   interval_ = SMILInterval::Unresolved();
@@ -1627,6 +1638,27 @@ void SVGSMILElement::BeginByLinkActivation() {
 
 void SVGSMILElement::StartedActiveInterval() {
   is_waiting_for_first_interval_ = false;
+}
+
+void SVGSMILElement::PruneDynamicInstanceTimesOnTimelineRewind(
+    SMILTime presentation_time,
+    SMILTime rewind_target) {
+  // When a time container restarts, instance times from past events and DOM
+  // method calls are cleared, except an instance time that defines the begin
+  // of the current (or most recent, per GetActiveInterval()) interval - and
+  // only if that begin can still define an interval after the rewind, i.e. it
+  // is not in the future relative to the seek target.
+  // https://www.w3.org/TR/REC-smil/smil-timing.html#q44
+  const SMILInterval& current_interval = GetActiveInterval(presentation_time);
+  const SMILTime current_interval_begin =
+      current_interval.begin <= rewind_target ? current_interval.begin
+                                              : SMILTime::Unresolved();
+  for (SMILTimeOrigin origin :
+       {SMILTimeOrigin::kScript, SMILTimeOrigin::kEvent,
+        SMILTimeOrigin::kRepeat, SMILTimeOrigin::kLinkActivation}) {
+    begin_times_.RemoveWithOriginExceptTime(origin, current_interval_begin);
+    end_times_.RemoveWithOrigin(origin);
+  }
 }
 
 void SVGSMILElement::PruneOldInstanceTimes(

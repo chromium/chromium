@@ -49,6 +49,7 @@ class CORE_EXPORT SMILInstanceTimeList {
   void Append(SMILTime, SMILTimeOrigin);
   void InsertSortedAndUnique(SMILTime, SMILTimeOrigin);
   void RemoveWithOrigin(SMILTimeOrigin);
+  void RemoveWithOriginExceptTime(SMILTimeOrigin, SMILTime time_to_keep);
   void RemoveBeforeWithOrigin(SMILTime, SMILTimeOrigin);
   void RemoveBelowThresholdWithOrigin(wtf_size_t num_to_remove,
                                       const Vector<SMILTime>& times_to_keep,
@@ -131,7 +132,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
                                    IncludeRepeats) const;
   SMILTime NextProgressTime(SMILTime elapsed) const;
 
-  void Reset();
+  void Reset(SMILTime presentation_time, SMILTime rewind_target);
 
   static SMILTime ParseClockValue(const StringView&);
   static SMILTime ParseOffsetValue(const StringView&);
@@ -189,6 +190,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
   void ClearConditions();
 
   void StartedActiveInterval();
+  void PruneDynamicInstanceTimesOnTimelineRewind(SMILTime presentation_time,
+                                                 SMILTime rewind_target);
   void PruneOldInstanceTimes(SMILInstanceTimeList& instance_times);
 
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {

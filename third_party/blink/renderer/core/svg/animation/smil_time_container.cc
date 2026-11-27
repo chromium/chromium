@@ -606,17 +606,18 @@ void SMILTimeContainer::PrepareSeek(TimingUpdate& update) {
   // forward to the new presentation time. If we're moving forward we can just
   // perform the update in the normal fashion.
   if (update.TargetTime() < update.Time()) {
-    ResetIntervals();
+    ResetIntervals(update.Time(), update.TargetTime());
     // TODO(fs): Clear resolved end times.
     update.RewindTimeToZero();
   }
 }
 
-void SMILTimeContainer::ResetIntervals() {
+void SMILTimeContainer::ResetIntervals(SMILTime presentation_time,
+                                       SMILTime rewind_target) {
   base::AutoReset<bool> updating_intervals_scope(&is_updating_intervals_, true);
   AnimationTargetsMutationsForbidden scope(this);
   for (auto& entry : priority_queue_)
-    entry.second->Reset();
+    entry.second->Reset(presentation_time, rewind_target);
   // (Re)set the priority of all the elements in the queue to the earliest
   // possible, so that a later call to UpdateIntervals() will run an update for
   // all of them.

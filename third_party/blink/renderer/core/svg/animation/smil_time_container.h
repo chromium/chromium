@@ -105,7 +105,7 @@ class CORE_EXPORT SMILTimeContainer final
   class TimingUpdate;
   bool UpdateAnimationsAndScheduleFrameIfNeeded(TimingUpdate&);
   void PrepareSeek(TimingUpdate&);
-  void ResetIntervals();
+  void ResetIntervals(SMILTime presentation_time, SMILTime rewind_target);
   void UpdateIntervals(TimingUpdate&);
   void UpdateTimedElements(TimingUpdate&);
   bool ApplyTimedEffects(SMILTime elapsed);
