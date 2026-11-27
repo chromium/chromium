@@ -103,8 +103,7 @@ class AvatarMenu : public ProfileAttributesStorage::Observer {
   // Creates a new profile.
   void AddNewProfile();
 
-  // Opens the profile settings in response to clicking the edit button next to
-  // an item.
+  // Opens the UI to edit the profile of the item at `index`.
   void EditProfile(size_t index);
 
   // Rebuilds the menu from the cache. Note: If this is done in response to the

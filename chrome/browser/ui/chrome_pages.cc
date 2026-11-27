@@ -13,6 +13,7 @@
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -693,6 +694,31 @@ void ShowManageProfile(BrowserWindowInterface* browser) {
     return;
   }
   ShowSettingsSubPage(browser, kManageProfileSubPage);
+}
+
+void ShowManageProfileForProfile(Profile* profile) {
+  if (switches::IsManageProfileDialogEnabled()) {
+    base::WeakPtr<BrowserWindowInterface> browser;
+    {
+      // `ScopedTabbedBrowserDisplayer` ensures minimized windows are restored.
+      ScopedTabbedBrowserDisplayer displayer(profile);
+      if (!displayer.browser_window_interface()) {
+        return;
+      }
+      browser = displayer.browser_window_interface()->GetWeakPtr();
+      if (browser->GetTabStripModel()->empty()) {
+        // A new browser has no tab yet, but the dialog needs an active tab.
+        ShowSingletonTab(browser.get(), GURL(kChromeUINewTabURL));
+      }
+    }
+    // The browser is restored and shown when `displayer` is destroyed, before
+    // the dialog is shown.
+    if (browser) {
+      ShowManageProfile(browser.get());
+    }
+    return;
+  }
+  ShowSettingsSubPageForProfile(profile, kManageProfileSubPage);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

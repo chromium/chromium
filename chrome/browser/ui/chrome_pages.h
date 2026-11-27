@@ -159,6 +159,9 @@ void ShowOffersAndLoyaltyCards(BrowserWindowInterface* bwi);
 // TODO(crbug.com/585482119): Move next to the dialog once the settings page is
 // removed.
 void ShowManageProfile(BrowserWindowInterface* browser);
+// Same as `ShowManageProfile()`, in a tabbed browser of `profile`, which is
+// opened if there is none.
+void ShowManageProfileForProfile(Profile* profile);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Shows all recent shared tab group activities.

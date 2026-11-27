@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,9 +30,16 @@
 #include "chrome/test/base/scoped_browser_test_keep_alive.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif
 
 class AvatarMenuBrowserTest : public InProcessBrowserTest {
  public:
@@ -68,47 +77,6 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, AddNewProfile) {
   g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,
                                                false);
   EXPECT_FALSE(menu()->ShouldShowAddNewProfileLink());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
-  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
-  ASSERT_TRUE(active_profile_index.has_value());
-  ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
-            browser()->GetProfile()->GetPath());
-  EXPECT_TRUE(menu()->ShouldShowEditProfileLink());
-  menu()->EditProfile(*active_profile_index);
-
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  EXPECT_EQ(web_contents->GetVisibleURL(),
-            chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
-}
-
-// Click on "Edit" will open a new browser if none exists for a profile.
-IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
-  // Keep the browser process running while browsers are closed.
-  Profile* profile = browser()->GetProfile();
-  ScopedBrowserTestKeepAlive keep_alive(*profile);
-
-  CloseBrowserSynchronously(browser());
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
-
-  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
-  ASSERT_TRUE(active_profile_index.has_value());
-  ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
-            profile->GetPath());
-  EXPECT_TRUE(menu()->ShouldShowEditProfileLink());
-  menu()->EditProfile(*active_profile_index);
-
-  // A new browser is opened.
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 1U);
-  BrowserWindowInterface* new_browser =
-      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
-  ASSERT_TRUE(new_browser);
-  content::WebContents* web_contents =
-      new_browser->GetTabStripModel()->GetActiveWebContents();
-  EXPECT_EQ(web_contents->GetVisibleURL(),
-            chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
 }
 
 // "Edit" does not unlock the profile (regression test for
@@ -199,3 +167,93 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   // This should not crash.
   EXPECT_FALSE(menu()->ShouldShowEditProfileLink());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// The param is whether kReplaceManageProfileWithDialog is enabled.
+class AvatarMenuEditProfileBrowserTest
+    : public AvatarMenuBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AvatarMenuEditProfileBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        switches::kReplaceManageProfileWithDialog,
+        ReplaceManageProfileWithDialog());
+  }
+
+  bool ReplaceManageProfileWithDialog() const { return GetParam(); }
+
+  // Checks that chrome://settings/manageProfile is the active tab of `browser`.
+  void ExpectManageProfileSettingsPage(BrowserWindowInterface* browser) {
+    content::WebContents* web_contents =
+        browser->GetTabStripModel()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetVisibleURL(),
+              chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
+  }
+
+  // Waits for the edit profile dialog in `browser`, and closes it.
+  void ExpectEditProfileDialog(BrowserWindowInterface* browser) {
+    SigninViewController* controller = SigninViewController::From(browser);
+    ASSERT_TRUE(
+        base::test::RunUntil([&] { return controller->ShowsModalDialog(); }));
+    EXPECT_EQ(
+        GetProfileCustomizationStyle(
+            controller->GetModalDialogWebContentsForTesting()->GetVisibleURL()),
+        ProfileCustomizationStyle::kEditProfile);
+    controller->CloseModalSignin();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AvatarMenuEditProfileBrowserTest, EditProfile) {
+  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
+  ASSERT_TRUE(active_profile_index.has_value());
+  ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
+            browser()->GetProfile()->GetPath());
+  EXPECT_TRUE(menu()->ShouldShowEditProfileLink());
+  menu()->EditProfile(*active_profile_index);
+
+  if (ReplaceManageProfileWithDialog()) {
+    ExpectEditProfileDialog(browser());
+  } else {
+    ExpectManageProfileSettingsPage(browser());
+  }
+}
+
+// Click on "Edit" will open a new browser if none exists for a profile.
+IN_PROC_BROWSER_TEST_P(AvatarMenuEditProfileBrowserTest,
+                       EditProfile_NoBrowser) {
+  // Keep the browser process running while browsers are closed.
+  Profile* profile = browser()->GetProfile();
+  ScopedBrowserTestKeepAlive keep_alive(*profile);
+
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
+
+  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
+  ASSERT_TRUE(active_profile_index.has_value());
+  ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
+            profile->GetPath());
+  EXPECT_TRUE(menu()->ShouldShowEditProfileLink());
+  menu()->EditProfile(*active_profile_index);
+
+  // A new browser is opened.
+  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 1U);
+  BrowserWindowInterface* new_browser =
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
+  ASSERT_TRUE(new_browser);
+  if (ReplaceManageProfileWithDialog()) {
+    ExpectEditProfileDialog(new_browser);
+  } else {
+    ExpectManageProfileSettingsPage(new_browser);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AvatarMenuEditProfileBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Dialog" : "SettingsPage";
+                         });
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

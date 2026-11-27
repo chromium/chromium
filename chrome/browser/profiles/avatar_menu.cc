@@ -26,7 +26,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,7 +143,7 @@ void AvatarMenu::EditProfile(size_t index) {
       g_browser_process->profile_manager()->GetProfileByPath(item.profile_path);
   CHECK(profile, base::NotFatalUntil::M162);
 
-  chrome::ShowSettingsSubPageForProfile(profile, chrome::kManageProfileSubPage);
+  chrome::ShowManageProfileForProfile(profile);
 }
 
 void AvatarMenu::RebuildMenu() {

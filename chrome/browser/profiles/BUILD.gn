@@ -1353,6 +1353,13 @@ if (!is_android) {
         "//chrome/browser/profiles/keep_alive:test_support",
         "//chrome/test/base:scoped_browser_test_keep_alive",
       ]
+      if (enable_dice_support) {
+        deps += [
+          "//chrome/browser/ui/signin",
+          "//chrome/browser/ui/webui/signin:signin_utils",
+          "//components/signin/public/base",
+        ]
+      }
     }
 
     if (is_mac || is_win || is_linux) {
