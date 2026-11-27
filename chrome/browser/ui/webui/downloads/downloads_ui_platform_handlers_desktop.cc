@@ -4,7 +4,10 @@
 
 #include "base/check.h"
 #include "base/task/current_thread.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/icon_manager.h"
@@ -22,6 +25,12 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
 
 namespace downloads {
 
@@ -68,6 +77,43 @@ bool ShowEsbSettings(content::WebContents* web_contents) {
       browser,
       safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
   return true;
+}
+
+void PromptForScanningPassword(download::DownloadItem* item,
+                               content::WebContents* web_contents) {
+  CHECK(item);
+  // ChromeOS does not have the download bubble and does not support local
+  // password prompts for deep scans.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!web_contents) {
+    return;
+  }
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return;
+  }
+  BrowserWindow::FromBrowser(browser)
+      ->GetDownloadBubbleUIController()
+      ->GetDownloadDisplayController()
+      ->OpenSecuritySubpage(OfflineItemUtils::GetContentIdForDownload(item));
+#endif
+}
+
+void StartDeepScan(download::DownloadItem* item) {
+  CHECK(item);
+  DownloadItemModel model(item);
+  DownloadCommands commands(model.GetWeakPtr());
+  commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
+}
+
+void BypassDeepScan(download::DownloadItem* item) {
+  CHECK(item);
+  DownloadItemModel model(item);
+  DownloadCommands commands(model.GetWeakPtr());
+  // The button says "Download suspicious file" which does not imply opening
+  // the file.
+  commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
 }
 
 }  // namespace downloads

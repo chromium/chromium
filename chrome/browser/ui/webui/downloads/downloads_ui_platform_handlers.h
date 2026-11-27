@@ -36,6 +36,24 @@ void DragDownload(const download::DownloadItem* item,
 // no ESB settings page, in which case the caller should not record the click.
 bool ShowEsbSettings(content::WebContents* web_contents);
 
+// Prompts the user for a password to deep-scan an encrypted archive `item`
+// via the download bubble for the browser hosting `web_contents`. `item` must
+// be non-null; `web_contents` may be null. Does nothing if `web_contents` is
+// null or not hosted in a browser window. Expected to do nothing on platforms
+// without the download bubble (including ChromeOS and Android).
+void PromptForScanningPassword(download::DownloadItem* item,
+                               content::WebContents* web_contents);
+
+// Starts a deep scan for `item`. `item` must be non-null. Expected to do
+// nothing on platforms where the downloads page never offers a deep scan
+// prompt.
+void StartDeepScan(download::DownloadItem* item);
+
+// Bypasses deep scanning for `item` without opening the file. `item` must be
+// non-null. Expected to do nothing on platforms where the downloads page never
+// offers a deep scan prompt.
+void BypassDeepScan(download::DownloadItem* item);
+
 }  // namespace downloads
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_UI_PLATFORM_HANDLERS_H_

@@ -31,16 +31,12 @@
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
-#include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
@@ -73,10 +69,6 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #endif
 
 using content::BrowserThread;
@@ -119,24 +111,6 @@ void CountDownloadsDOMEvents(DownloadsDOMEvent event) {
 
 bool CanLogWarningMetrics(download::DownloadItem* file) {
   return file && file->IsDangerous() && !file->IsDone();
-}
-
-void PromptForScanningInBubble(content::WebContents* web_contents,
-                               download::DownloadItem* download) {
-  // ChromeOS does not have the download bubble and does not support local
-  // password prompts for deep scans.
-#if !BUILDFLAG(IS_CHROMEOS)
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  if (!browser) {
-    return;
-  }
-  BrowserWindow::FromBrowser(browser)
-      ->GetDownloadBubbleUIController()
-      ->GetDownloadDisplayController()
-      ->OpenSecuritySubpage(
-          OfflineItemUtils::GetContentIdForDownload(download));
-#endif
 }
 
 // Records DownloadItemWarningData and maybe sends the Safe Browsing report.
@@ -614,9 +588,8 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
   }
 
   if (DownloadItemWarningData::IsTopLevelEncryptedArchive(download)) {
-    // For encrypted archives, we need a password from the user. We will request
-    // this in the download bubble.
-    PromptForScanningInBubble(GetWebUIWebContents(), download);
+    // For encrypted archives, we need a password from the user.
+    downloads::PromptForScanningPassword(download, GetWebUIWebContents());
     return;
   }
 
@@ -627,9 +600,7 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
   DownloadItemWarningData::AddWarningActionEvent(
       download, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
       DownloadItemWarningData::WarningAction::ACCEPT_DEEP_SCAN);
-  DownloadItemModel model(download);
-  DownloadCommands commands(model.GetWeakPtr());
-  commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
+  downloads::StartDeepScan(download);
 }
 
 void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
@@ -647,11 +618,7 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
       MaybeTriggerDownloadWarningHatsSurvey(
           download, DownloadWarningHatsType::kDownloadsPageBypass);
     }
-    DownloadItemModel model(download);
-    DownloadCommands commands(model.GetWeakPtr());
-    // The button says "Download suspicious file" which does not imply opening
-    // the file.
-    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
+    downloads::BypassDeepScan(download);
   }
 }
 
