@@ -769,3 +769,4 @@ crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/t
 
 # Gardening suppression 2026-11-27
 crbug.com/591068135 [ iOS26 iPhone Simulator ] SharedTabGroupsTestCase/testCancelShareGroupOnAccountSwitch [Pass Failure]
+crbug.com/579560993 AutofillAIEGTest/testSubmitRedressForm [ Pass Failure ]
