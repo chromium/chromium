@@ -711,17 +711,15 @@ void WaylandToplevelWindow::UpdateActivationState() {
 
   if (prev_is_active != is_active_) {
     ++bubble_activation_epoch_;
-    if (is_active_) {
-      // A bubble activated while unfocused stays active.
-      if (!active_bubble_) {
-        delegate()->OnActivationChanged(true);
-      }
-    } else if (WaylandBubble* prev = std::exchange(active_bubble_, nullptr)) {
-      if (!prev->shutting_down()) {
-        prev->delegate()->OnActivationChanged(false);
+    // `active_bubble_` is kept across OS deactivation, so that it rather than
+    // this toplevel is reactivated when the toplevel regains activation, e.g.
+    // after a file chooser opened from the bubble closes.
+    if (active_bubble_) {
+      if (!active_bubble_->shutting_down()) {
+        active_bubble_->delegate()->OnActivationChanged(is_active_);
       }
     } else {
-      delegate()->OnActivationChanged(false);
+      delegate()->OnActivationChanged(is_active_);
     }
   }
 }

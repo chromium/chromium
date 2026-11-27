@@ -7904,15 +7904,31 @@ TEST_P(WaylandWindowTest, WaylandBubbleUnfocusedToplevelAndTeardown) {
   nested_bubble->Activate();
   ASSERT_TRUE(nested_bubble->IsActive());
 
-  // OS deactivation of the toplevel clears `active_bubble_` and deactivates
-  // `nested_bubble`.
+  // OS deactivation of the toplevel deactivates `nested_bubble` but keeps it
+  // as `active_bubble_`.
   EXPECT_CALL(nested_delegate, OnActivationChanged(false)).Times(1);
   SendConfigureEvent(surface_id_, {0, 0}, MakeStateArray({}));
   AdvanceFrameToCurrent(window_.get(), delegate_);
   EXPECT_FALSE(window_->IsActive());
-  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(), nullptr);
+  EXPECT_EQ(window_->AsWaylandToplevelWindow()->active_bubble(),
+            nested_bubble->AsWaylandBubble());
   EXPECT_FALSE(nested_bubble->IsActive());
   testing::Mock::VerifyAndClearExpectations(&nested_delegate);
+
+  // OS reactivation reactivates `nested_bubble` instead of `window_`.
+  EXPECT_CALL(nested_delegate, OnActivationChanged(true)).Times(1);
+  EXPECT_CALL(delegate_, OnActivationChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, {0, 0},
+                     MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED}));
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_TRUE(window_->IsActive());
+  EXPECT_TRUE(nested_bubble->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&nested_delegate);
+  VerifyAndClearExpectations();
+
+  SendConfigureEvent(surface_id_, {0, 0}, MakeStateArray({}));
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  ASSERT_FALSE(window_->IsActive());
 
   // Like Aura activation, a bubble can be activated while the toplevel is
   // unfocused.
