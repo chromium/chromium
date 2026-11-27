@@ -319,14 +319,17 @@ class ScreenshotController {
    * @param {!Element} divScreenshot Viewport element for the screenshot.
    * @param {!Element} divScreenshotInfo Info bar element.
    * @param {!Object} callbacks
+   * @param {function(?number)} callbacks.onHover Invoked when cursor hovers
+   *     over a View (as index) or leaves the canvas (null).
    * @param {function()} callbacks.onResize Invoked when the viewport is
    *     resized.
    */
-  constructor(model, divScreenshot, divScreenshotInfo, {onResize}) {
+  constructor(model, divScreenshot, divScreenshotInfo, {onHover, onResize}) {
     this.model = model;
     this.vis = new ScreenshotVis(divScreenshot, divScreenshotInfo, this.model);
     this.el = this.vis.el;
     this.visOpts = this.model.visOpts;
+    this.onHover = onHover;
     this.onResize = onResize;
 
     this.pointer = new ScreenshotPointer(this.el.inner, this.visOpts);
@@ -368,6 +371,12 @@ class ScreenshotController {
   _clearHoverState() {
     this.pointer.leave();
     this.vis.screenshotInfoVis.update();
+    this.onHover(null);
+  }
+
+  _refreshViewHighlight() {
+    const topIndex = this.model.queryHit(this.pointer.pt);
+    this.onHover(topIndex);
   }
 
   _bindHandlers(elt, handlers) {
@@ -394,6 +403,7 @@ class ScreenshotController {
 
       this.vis.screenshotInfoVis.update(this.pointer,
                                         this.vis.screenshotImageData);
+      this._refreshViewHighlight();
     };
 
     this._bindHandlers(this.el.inner, handlers);

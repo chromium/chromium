@@ -157,5 +157,12 @@ class Rectangle {
   get bottom() { return this.rightBottom.y; }
   get width()  { return this.right - this.left; }
   get height() { return this.bottom - this.top; }
+  get area()   { return this.width * this.height; }
+
+  /** @return {boolean} Whether `pt` is within the incl.-excl. bounds. */
+  containsInclExcl(pt) {
+    return this.left <= pt.x && pt.x < this.right &&
+           this.top <= pt.y && pt.y < this.bottom;
+  }
   // clang-format on
 }

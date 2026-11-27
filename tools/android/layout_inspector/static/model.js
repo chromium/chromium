@@ -229,6 +229,7 @@ class ViewNode {
     this.resourceId = resourceId;
 
     this.rect = rect;
+    this.area = this.rect.area;
   }
 
   /**
@@ -263,6 +264,98 @@ class ViewNode {
   }
 }
 
+/******** HitTester ********/
+/**
+ * Grid-based spatial partition to accelerate view lookups.
+ */
+class HitTester {
+  /**
+   * @param {!Array<!ViewNode>} views
+   * @param {!Dims2D} wDims
+   * @param {number=} cellSize
+   */
+  constructor(views, wDims, cellSize = 16) {
+    // To optimize hit test, the screen is partitioned into square cells (each
+    // measuring `cellSize` x `cellSize`), forming a lower-resolution grid. Each
+    // cell stores a list of `ViewNode`s that intersect with it. The data is
+    // initialized here by "painting" each `view` into the grid. `query()` will
+    // then perform hit test for a given point `(x, y)` as follows: Find the
+    // containing cell, visit the stored `ViewNode`s, check `(x, y)` inclusion,
+    // and select the best candidate.
+
+    /** @type {number} Width and height of each cell in grid. */
+    this.cellSize = cellSize;
+
+    /** @type {number} Grid width, not using `Dims2D` due to frequent access. */
+    this.gridW = Math.ceil(wDims.w / cellSize);
+    /** @type {number} Grid height. */
+    this.gridH = Math.ceil(wDims.h / cellSize);
+
+    /**
+     * @type {!Array<?Array<!ViewNode>>} Flattened 1D array that maps each cell
+     *     to a list of `ViewNode`s that intersects with it.
+     */
+    this.grid = Array(this.gridW * this.gridH).fill(null);
+
+    // A View's Rectangle coordinates are pixel *boundaries*, but hit tests use
+    // pixel *interior*. Use `right - 1` and `bottom - 1` before floor-division
+    // so inclusive-inclusive cell bounds don't spill into adjacent cells when
+    // edges lie on cell boundaries.
+    const maxX = this.gridW - 1;
+    const maxY = this.gridH - 1;
+
+    for (const view of views) {
+      const {left, top, right, bottom} = view.rect;
+      if (left >= right || top >= bottom || right <= 0 || left >= wDims.w ||
+          bottom <= 0 || top >= wDims.h) {
+        continue;
+      }
+      const c1 = clip(0, Math.floor(left / cellSize), maxX);
+      const c2 = clip(0, Math.floor((right - 1) / cellSize), maxX);
+      const r1 = clip(0, Math.floor(top / cellSize), maxY);
+      const r2 = clip(0, Math.floor((bottom - 1) / cellSize), maxY);
+
+      for (let row = r1; row <= r2; row++) {
+        for (let col = c1; col <= c2; col++) {
+          const index = row * this.gridW + col;
+          if (!this.grid[index]) {
+            this.grid[index] = [];
+          }
+          this.grid[index].push(view);
+        }
+      }
+    }
+  }
+
+  /**
+   * @param {!PointXY} wpt
+   * @return {?ViewNode} The smallest / deepest View containing `wpt`, chosen so
+   *     that large (possibly ancestral) Views would not obscure smaller ones.
+   */
+  query(wpt) {
+    const c = Math.floor(wpt.x / this.cellSize);
+    const r = Math.floor(wpt.y / this.cellSize);
+    if (c < 0 || c >= this.gridW || r < 0 || r >= this.gridH) {
+      return null;
+    }
+
+    const index = r * this.gridW + c;
+    const candidates = this.grid[index] || [];
+    let best = null;
+
+    for (const view of candidates) {
+      if (view.rect.containsInclExcl(wpt)) {
+        // Tie-breaker: Later index (appearing later in view list).
+        if (!best || (view.area < best.area) ||
+            (view.area === best.area && view.index > best.index)) {
+          best = view;
+        }
+      }
+    }
+    return best;
+  }
+}
+
 /******** ViewEngaged ********/
 class ViewEngaged {
   constructor() {
@@ -292,6 +385,7 @@ class MainModel {
     this.views = [];
 
     this.engaged = new ViewEngaged();
+    this.hitTester = null;
   }
 
   /**
@@ -345,6 +439,14 @@ class MainModel {
     }
   }
 
+  /**
+   * @param {!PointXY} wpt
+   * @return {?number} Index of the hit View, or null if none.
+   */
+  queryHit(wpt) {
+    return this.hitTester ? (this.hitTester.query(wpt)?.index ?? null) : null;
+  }
+
   /** Fetches the latest device data from the ADB server. */
   async _fetchData() {
     const [screenshotResponse, uiDumpResponse, densityResponse] =
@@ -391,6 +493,7 @@ class MainModel {
 
     const xmlDoc = new DOMParser().parseFromString(uiDumpData.xml, 'text/xml');
     this._populateViewForest(xmlDoc);
+    this.hitTester = new HitTester(this.views, this.visOpts.wDims);
 
     this.isLoaded = true;
   }
@@ -399,6 +502,7 @@ class MainModel {
     this.isLoaded = false;
 
     this.engaged.clear();
+    this.hitTester = null;
     this.views.length = 0;
     this.windowInfos.length = 0;
     this.imgScreenshot = null;

@@ -105,6 +105,7 @@ class MainController {
 
     this.screenshotCtrl = new ScreenshotController(
         this.model, this.el.divScreenshot, this.el.divScreenshotInfo, {
+          onHover: (index) => this.handleHover(index),
           onResize: () => this.vis.updateZoomFitLabel(),
         });
 
