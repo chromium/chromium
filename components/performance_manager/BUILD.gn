@@ -456,6 +456,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/url_matcher",
     "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
   ]

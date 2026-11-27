@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/features.h"
 
@@ -54,10 +55,21 @@ bool IsImportant(const FrameNode* frame_node) {
         return true;
       }
 
-      // The frame is important if it either intersects with a large area of the
-      // viewport or if the user interacted with it.
-      return frame_node->IsIntersectingLargeArea() ||
-             frame_node->HadUserActivation();
+      // The frame is important if the user interacted with it.
+      if (frame_node->HadUserActivation()) {
+        return true;
+      }
+
+      // Otherwise, the frame is important unless it is known to intersect only
+      // a small area of the viewport.
+      switch (frame_node->GetViewportIntersectionArea()) {
+        case ViewportIntersectionArea::kUnknown:
+        case ViewportIntersectionArea::kLarge:
+          return true;
+        case ViewportIntersectionArea::kSmallOrNone:
+          return false;
+      }
+      NOTREACHED();
   }
 }
 
@@ -95,7 +107,7 @@ void ImportantFrameDecorator::OnViewportIntersectionChanged(
   FrameNodeImpl::FromNode(frame_node)->SetIsImportant(IsImportant(frame_node));
 }
 
-void ImportantFrameDecorator::OnIsIntersectingLargeAreaChanged(
+void ImportantFrameDecorator::OnViewportIntersectionAreaChanged(
     const FrameNode* frame_node) {
   FrameNodeImpl::FromNode(frame_node)->SetIsImportant(IsImportant(frame_node));
 }

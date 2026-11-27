@@ -33,9 +33,10 @@ TEST_F(ImportantFrameDecoratorTest, HadUserActivation) {
 
   auto& frame_node = mock_graph.child_frame;
 
-  // Intersects with a non-large area of the viewport. Not important.
+  // Intersects with a small area of the viewport. Not important.
   frame_node->SetViewportIntersection(ViewportIntersection::kIntersecting);
-  frame_node->SetIsIntersectingLargeArea(false);
+  frame_node->SetViewportIntersectionArea(
+      ViewportIntersectionArea::kSmallOrNone);
 
   // No user activation. Not important.
   EXPECT_FALSE(frame_node->HadUserActivation());
@@ -46,7 +47,8 @@ TEST_F(ImportantFrameDecoratorTest, HadUserActivation) {
   EXPECT_TRUE(frame_node->IsImportant());
 }
 
-TEST_F(ImportantFrameDecoratorTest, ViewportIntersection) {
+TEST_F(ImportantFrameDecoratorTest,
+       ViewportIntersectionAndViewportIntersectionArea) {
   // Create a graph with a child frame as only child frames can be unimportant.
   MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
 
@@ -54,46 +56,56 @@ TEST_F(ImportantFrameDecoratorTest, ViewportIntersection) {
 
   EXPECT_FALSE(frame_node->HadUserActivation());
 
-  // No viewport intersection yet. Important is assumed, regardless of the value
-  // of `IsIntersectingLargeArea`.
+  // Unknown viewport intersection: `GetViewportIntersectionArea()` is clamped
+  // to `kUnknown` and important is assumed, regardless of any
+  // `SetViewportIntersectionArea()` calls.
   EXPECT_EQ(frame_node->GetViewportIntersection(),
             ViewportIntersection::kUnknown);
-
-  frame_node->SetIsIntersectingLargeArea(false);
+  EXPECT_EQ(frame_node->GetViewportIntersectionArea(),
+            ViewportIntersectionArea::kUnknown);
   EXPECT_TRUE(frame_node->IsImportant());
 
-  frame_node->SetIsIntersectingLargeArea(true);
+  frame_node->SetViewportIntersectionArea(
+      ViewportIntersectionArea::kSmallOrNone);
   EXPECT_TRUE(frame_node->IsImportant());
 
-  // Not rendered. Not important, regardless of the value of
-  // `IsIntersectingLargeArea`.
+  frame_node->SetViewportIntersectionArea(ViewportIntersectionArea::kLarge);
+  EXPECT_TRUE(frame_node->IsImportant());
+
+  // Not rendered: never important, regardless of
+  // `SetViewportIntersectionArea()`.
   frame_node->SetViewportIntersection(ViewportIntersection::kNotRendered);
-
-  frame_node->SetIsIntersectingLargeArea(false);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  frame_node->SetIsIntersectingLargeArea(true);
+  frame_node->SetViewportIntersectionArea(
+      ViewportIntersectionArea::kSmallOrNone);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  // Rendered outside the viewport. Not important, regardless of the value of
-  // `IsIntersectingLargeArea`.
+  frame_node->SetViewportIntersectionArea(ViewportIntersectionArea::kLarge);
+  EXPECT_FALSE(frame_node->IsImportant());
+
+  // Rendered outside the viewport: never important, regardless of
+  // `SetViewportIntersectionArea()`.
   frame_node->SetViewportIntersection(
       ViewportIntersection::kRenderedOutOfViewport);
-
-  frame_node->SetIsIntersectingLargeArea(false);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  frame_node->SetIsIntersectingLargeArea(true);
+  frame_node->SetViewportIntersectionArea(
+      ViewportIntersectionArea::kSmallOrNone);
+  EXPECT_FALSE(frame_node->IsImportant());
+
+  frame_node->SetViewportIntersectionArea(ViewportIntersectionArea::kLarge);
   EXPECT_FALSE(frame_node->IsImportant());
 
   // Intersects with the viewport. It'll be important if it intersects with a
   // large area of the viewport.
   frame_node->SetViewportIntersection(ViewportIntersection::kIntersecting);
 
-  frame_node->SetIsIntersectingLargeArea(false);
+  frame_node->SetViewportIntersectionArea(
+      ViewportIntersectionArea::kSmallOrNone);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  frame_node->SetIsIntersectingLargeArea(true);
+  frame_node->SetViewportIntersectionArea(ViewportIntersectionArea::kLarge);
   EXPECT_TRUE(frame_node->IsImportant());
 }
 

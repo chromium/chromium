@@ -24,6 +24,17 @@ enum class ViewportIntersection {
   kIntersecting,
 };
 
+// Categorizes the area of the frame's intersection with the outermost
+// viewport relative to `blink::features::kLargeFrameSizePercentThreshold`.
+// For outermost main frames, this is always `kLarge`.
+enum class ViewportIntersectionArea {
+  kUnknown,
+  // Intersects <= threshold of the viewport (or not intersecting).
+  kSmallOrNone,
+  // Intersects > threshold of the viewport.
+  kLarge,
+};
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_VIEWPORT_INTERSECTION_H_

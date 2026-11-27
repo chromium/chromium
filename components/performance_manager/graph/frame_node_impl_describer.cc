@@ -38,6 +38,18 @@ std::string ViewportIntersectionToString(
   NOTREACHED();
 }
 
+std::string ViewportIntersectionAreaToString(ViewportIntersectionArea area) {
+  switch (area) {
+    case ViewportIntersectionArea::kUnknown:
+      return "Unknown";
+    case ViewportIntersectionArea::kSmallOrNone:
+      return "Small or none";
+    case ViewportIntersectionArea::kLarge:
+      return "Large";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 FrameNodeImplDescriber::~FrameNodeImplDescriber() = default;
@@ -93,7 +105,9 @@ base::DictValue FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("viewport_intersection",
           ViewportIntersectionToString(impl->GetViewportIntersection()));
   ret.Set("visibility", impl->visibility_->ToString());
-  ret.Set("is_intersecting_large_area", impl->IsIntersectingLargeArea());
+  ret.Set(
+      "viewport_intersection_area",
+      ViewportIntersectionAreaToString(impl->GetViewportIntersectionArea()));
   ret.Set("is_important", impl->is_important_.value());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 

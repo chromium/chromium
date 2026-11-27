@@ -267,12 +267,12 @@ class FrameNode : public TypedNode<FrameNode> {
   // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
 
-  // Returns true if this frame is intersecting with a large area of the
-  // viewport. This property is assumed to be true if its value is unknown.
-  // However if `GetViewportIntersection()` returns `kNotRendered` or
-  // `kRenderedOutOfViewport`, it returns false because the frame is known to
-  // not be intersecting at all.
-  virtual bool IsIntersectingLargeArea() const = 0;
+  // Returns the `ViewportIntersectionArea` of this frame. For outermost main
+  // frames, this is always `kLarge`. Clamped to `kUnknown` when
+  // `GetViewportIntersection()` is `kUnknown`, and to `kSmallOrNone` when
+  // `GetViewportIntersection()` is `kNotRendered` or
+  // `kRenderedOutOfViewport`.
+  virtual ViewportIntersectionArea GetViewportIntersectionArea() const = 0;
 
   // Returns true if the frame is deemed important. This means that the frame
   // had been interacted with by the user, or is intersecting with a large area
@@ -453,8 +453,8 @@ class FrameNodeObserver : public base::CheckedObserver {
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
 
-  // Invoked when the `IsIntersectingLargeArea()` property changes.
-  virtual void OnIsIntersectingLargeAreaChanged(const FrameNode* frame_node) {}
+  // Invoked when the `GetViewportIntersectionArea()` property changes.
+  virtual void OnViewportIntersectionAreaChanged(const FrameNode* frame_node) {}
 
   // Invoked when the `IsImportant` property changes.
   virtual void OnIsImportantChanged(const FrameNode* frame_node) {}

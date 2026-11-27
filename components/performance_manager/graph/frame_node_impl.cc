@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -134,7 +135,7 @@ void FrameNodeImpl::SetOuterDocumentForInnerFrameRoot(
       observer.OnParentOrOuterDocumentChanged(this, previous_outer_document);
     }
 
-    // `is_intersecting_large_area_` was either inherited from or reported
+    // `viewport_intersection_area_` was either inherited from or reported
     // relative to the previous outer document. Adopt the state of the new
     // outer document until the next update is received for this frame.
     //
@@ -142,7 +143,9 @@ void FrameNodeImpl::SetOuterDocumentForInnerFrameRoot(
     // detached inner frame root keeps its last known state, like in
     // GetViewportIntersection().
     if (outer_document) {
-      SetIsIntersectingLargeAreaImpl(outer_document->IsIntersectingLargeArea());
+      SetViewportIntersectionAndArea(
+          viewport_intersection_,
+          outer_document->GetViewportIntersectionArea());
     }
   }
 }
@@ -367,20 +370,11 @@ bool FrameNodeImpl::HasFreezingOriginTrialOptOut() const {
 }
 
 ViewportIntersection FrameNodeImpl::GetViewportIntersection() const {
-  if (!parent_or_outer_document_or_embedder()) {
-    if (is_inner_frame_root_) {
-      // Note: An inner frame root that is detached from its outer document (see
-      // SetOuterDocumentForInnerFrameRoot()) is not an outermost main frame, so
-      // it keeps its last known viewport intersection.
-      CHECK(
-          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
-    } else {
-      // The outermost main frame or embedder is always intersecting with the
-      // viewport.
-      return ViewportIntersection::kIntersecting;
-    }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsAlwaysIntersectingViewport()) {
+    return ViewportIntersection::kIntersecting;
   }
-  return viewport_intersection_.value();
+  return viewport_intersection_;
 }
 
 FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
@@ -388,15 +382,22 @@ FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
   return visibility_.value();
 }
 
-bool FrameNodeImpl::IsIntersectingLargeArea() const {
-  // For consistency's sake, return false if this frame is not rendered or
-  // doesn't intersect with the viewport.
-  if (GetViewportIntersection() == ViewportIntersection::kNotRendered ||
-      GetViewportIntersection() ==
-          ViewportIntersection::kRenderedOutOfViewport) {
-    return false;
+ViewportIntersectionArea FrameNodeImpl::GetViewportIntersectionArea() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsAlwaysIntersectingViewport()) {
+    return ViewportIntersectionArea::kLarge;
   }
-  return is_intersecting_large_area_;
+  switch (viewport_intersection_) {
+    case ViewportIntersection::kUnknown:
+      return ViewportIntersectionArea::kUnknown;
+    case ViewportIntersection::kNotRendered:
+    case ViewportIntersection::kRenderedOutOfViewport:
+      // No intersection.
+      return ViewportIntersectionArea::kSmallOrNone;
+    case ViewportIntersection::kIntersecting:
+      return viewport_intersection_area_;
+  }
+  NOTREACHED();
 }
 
 bool FrameNodeImpl::IsImportant() const {
@@ -540,42 +541,24 @@ void FrameNodeImpl::SetIsCapturingMediaStream(bool is_capturing_media_stream) {
 void FrameNodeImpl::SetViewportIntersection(
     ViewportIntersection viewport_intersection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(CanSetAndNotifyProperty());
   CHECK_NE(viewport_intersection, ViewportIntersection::kUnknown);
 
-  // The outermost main frame or embedder is always fully intersecting with the
-  // viewport, so it is not tracked.
-  if (!parent_or_outer_document_or_embedder()) {
-    if (is_inner_frame_root_) {
-      // An inner frame root that is detached from its outer document (see
-      // SetOuterDocumentForInnerFrameRoot()) is not rendered in any outer
-      // document. Ignore viewport intersection updates until it is attached
-      // again.
-      CHECK(
-          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
-      return;
-    }
-    mojo::ReportBadMessage(
-        "The viewport intersection is never sent for the outermost main "
-        "frame.");
+  if (!CanSetViewportIntersection()) {
     return;
   }
 
-  const bool was_intersecting_large_area = IsIntersectingLargeArea();
-
-  viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
-
-  // Inherit the state from the parent or outer document or embedder if
-  // SetIsIntersectingLargeArea() was not called for this frame.
-  if (!has_is_intersecting_large_area_updates_) {
-    is_intersecting_large_area_ =
-        parent_or_outer_document_or_embedder()->IsIntersectingLargeArea();
+  // Inherit the `ViewportIntersectionArea` state from a same-process parent
+  // frame if `SetViewportIntersectionArea()` was not called for this frame.
+  // Cross-process local roots receive their own viewport intersection updates
+  // and remain `kUnknown` until `SetViewportIntersectionArea()` is triggered
+  // by a mojo message.
+  ViewportIntersectionArea area = viewport_intersection_area_;
+  if (!has_viewport_intersection_area_updates_ && parent_frame_node_ &&
+      parent_frame_node_->process_node() == process_node()) {
+    area = parent_frame_node_->GetViewportIntersectionArea();
   }
-
-  if (was_intersecting_large_area != IsIntersectingLargeArea()) {
-    for (auto& observer : GetObservers()) {
-      observer.OnIsIntersectingLargeAreaChanged(this);
-    }
-  }
+  SetViewportIntersectionAndArea(viewport_intersection, area);
 }
 
 void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
@@ -588,12 +571,17 @@ void FrameNodeImpl::SetVisibility(Visibility visibility) {
   visibility_.SetAndMaybeNotify(this, visibility);
 }
 
-void FrameNodeImpl::SetIsIntersectingLargeArea(
-    bool is_intersecting_large_area) {
+void FrameNodeImpl::SetViewportIntersectionArea(ViewportIntersectionArea area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(CanSetAndNotifyProperty());
+  CHECK_NE(area, ViewportIntersectionArea::kUnknown);
 
-  has_is_intersecting_large_area_updates_ = true;
-  SetIsIntersectingLargeAreaImpl(is_intersecting_large_area);
+  if (!CanSetViewportIntersection()) {
+    return;
+  }
+
+  has_viewport_intersection_area_updates_ = true;
+  SetViewportIntersectionAndArea(viewport_intersection_, area);
 }
 
 void FrameNodeImpl::SetIsImportant(bool is_important) {
@@ -864,8 +852,9 @@ void FrameNodeImpl::OnInitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Wire this up to the other nodes in the graph.
-  if (parent_frame_node_)
+  if (parent_frame_node_) {
     parent_frame_node_->AddChildFrame(this);
+  }
   page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
   if (auto* observer_list = TracingObserverList::GetFromGraph()) {
@@ -973,8 +962,9 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
 
 FrameNodeImpl* FrameNodeImpl::GetFrameTreeRoot() const {
   FrameNodeImpl* root = const_cast<FrameNodeImpl*>(this);
-  while (root->parent_frame_node())
+  while (root->parent_frame_node()) {
     root = parent_frame_node();
+  }
   DCHECK_NE(nullptr, root);
   return root;
 }
@@ -1004,50 +994,101 @@ bool FrameNodeImpl::HasFrameNodeInTree(FrameNodeImpl* frame_node) const {
   return GetFrameTreeRoot() == frame_node->GetFrameTreeRoot();
 }
 
-
-void FrameNodeImpl::SetInheritedIsIntersectingLargeArea(
-    bool is_intersecting_large_area) {
+void FrameNodeImpl::SetInheritedViewportIntersectionArea(
+    ViewportIntersectionArea area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Since this frame's `IsIntersectingLargeArea()` property is directly set by
-  // a call to SetIsIntersectingLargeArea(), it doesn't have to inherit the
-  // value from its parent.
-  if (has_is_intersecting_large_area_updates_) {
+  // Since this frame's `GetViewportIntersectionArea()` property is directly set
+  // by a call to `SetViewportIntersectionArea()`, it doesn't have to inherit
+  // the value from its parent.
+  if (has_viewport_intersection_area_updates_) {
     return;
   }
 
-  SetIsIntersectingLargeAreaImpl(is_intersecting_large_area);
+  SetViewportIntersectionAndArea(viewport_intersection_, area);
 }
 
-void FrameNodeImpl::SetIsIntersectingLargeAreaImpl(
-    bool is_intersecting_large_area) {
+void FrameNodeImpl::SetViewportIntersectionAndArea(
+    ViewportIntersection viewport_intersection,
+    ViewportIntersectionArea viewport_intersection_area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_intersecting_large_area_ == is_intersecting_large_area) {
+  if (viewport_intersection_ == viewport_intersection &&
+      viewport_intersection_area_ == viewport_intersection_area) {
     return;
   }
 
-  is_intersecting_large_area_ = is_intersecting_large_area;
+  const ViewportIntersection previous_intersection = GetViewportIntersection();
+  const ViewportIntersectionArea previous_area = GetViewportIntersectionArea();
 
-  // Don't notify observers if this frame's viewport intersection is
-  // `kNotRendered` or `kRenderedOutOfViewport`, as `IsIntersectingLargeArea()`
-  // always returns false in those cases.
-  if (GetViewportIntersection() != ViewportIntersection::kNotRendered &&
-      GetViewportIntersection() !=
-          ViewportIntersection::kRenderedOutOfViewport) {
+  viewport_intersection_ = viewport_intersection;
+  viewport_intersection_area_ = viewport_intersection_area;
+
+  if (GetViewportIntersection() != previous_intersection) {
     for (auto& observer : GetObservers()) {
-      observer.OnIsIntersectingLargeAreaChanged(this);
+      observer.OnViewportIntersectionChanged(this);
     }
   }
 
-  // Ensure local child frames inherit the `IsIntersectingLargeArea()` property
-  // for their parent.
-  for (FrameNodeImpl* child_frame_node : child_frame_nodes()) {
-    if (child_frame_node->process_node() == process_node()) {
-      child_frame_node->SetInheritedIsIntersectingLargeArea(
-          is_intersecting_large_area);
+  // Don't notify observers if the value returned by
+  // `GetViewportIntersectionArea()`, which can be clamped when
+  // `viewport_intersection_` is not `kIntersecting`, hasn't changed.
+  const ViewportIntersectionArea new_area = GetViewportIntersectionArea();
+  if (new_area != previous_area) {
+    for (auto& observer : GetObservers()) {
+      observer.OnViewportIntersectionAreaChanged(this);
+    }
+
+    // Ensure local child frames inherit the `GetViewportIntersectionArea()`
+    // property for their parent. (This stores the clamped value instead of the
+    // true `viewport_intersection_area_`, but this function will be called
+    // again and update children if the clamping changes.)
+    for (FrameNodeImpl* child_frame_node : child_frame_nodes()) {
+      if (child_frame_node->process_node() == process_node()) {
+        child_frame_node->SetInheritedViewportIntersectionArea(new_area);
+      }
     }
   }
+}
+
+bool FrameNodeImpl::IsAlwaysIntersectingViewport() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!parent_or_outer_document_or_embedder()) {
+    if (is_inner_frame_root_) {
+      // Note: An inner frame root that is detached from its outer document (see
+      // SetOuterDocumentForInnerFrameRoot()) is not an outermost main frame, so
+      // it keeps its last known viewport intersection.
+      CHECK(
+          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
+      return false;
+    }
+    // The outermost main frame or embedder is always intersecting with the
+    // viewport.
+    return true;
+  }
+  return false;
+}
+
+bool FrameNodeImpl::CanSetViewportIntersection() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The outermost main frame or embedder is always fully intersecting with the
+  // viewport, so it is not tracked.
+  if (!parent_or_outer_document_or_embedder()) {
+    if (is_inner_frame_root_) {
+      // An inner frame root that is detached from its outer document (see
+      // SetOuterDocumentForInnerFrameRoot()) is not rendered in any outer
+      // document. Ignore viewport intersection updates until it is attached
+      // again.
+      CHECK(
+          base::FeatureList::IsEnabled(blink::features::kPersistentWidgetAPI));
+      return false;
+    }
+    mojo::ReportBadMessage(
+        "Viewport intersection state is never sent for the outermost main "
+        "frame.");
+    return false;
+  }
+  return true;
 }
 
 FrameNodeImpl::DocumentProperties::DocumentProperties() = default;

@@ -35,7 +35,7 @@ class ImportantFrameDecorator : public GraphOwnedDefaultImpl,
       const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnHadUserActivationChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
-  void OnIsIntersectingLargeAreaChanged(const FrameNode* frame_node) override;
+  void OnViewportIntersectionAreaChanged(const FrameNode* frame_node) override;
 };
 
 }  // namespace performance_manager

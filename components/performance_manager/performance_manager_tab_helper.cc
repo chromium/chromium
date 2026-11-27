@@ -101,6 +101,33 @@ bool IsUserOrBrowserInitiated(content::NavigationHandle* navigation_handle) {
          navigation_handle->StartedWithTransientActivation();
 }
 
+// Returns true if a viewport intersection or visibility notification for
+// `render_frame_host` (with associated `frame_node`, which may be null) is
+// stale and should be ignored.
+bool IsStaleViewportIntersectionChange(
+    const content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
+    const FrameNodeImpl* frame_node) {
+  if (!frame_node) {
+    // This can be invoked for a crashed RenderFrameHost, as its view still
+    // occupies space on the page. Just ignore it as clearly its content is not
+    // visible.
+    CHECK(!render_frame_host->IsRenderFrameLive());
+    return true;
+  }
+  CHECK(render_frame_host->IsRenderFrameLive());
+
+  // An attached Surface Embed child can outlive its embedder's FrameNode.
+  // Its main frame then has no graph parent, so viewport intersection is not
+  // tracked even though visibility notifications can still arrive.
+  if (web_contents->GetSurfaceEmbedConnector() &&
+      !frame_node->parent_or_outer_document_or_embedder()) {
+    return true;
+  }
+
+  return false;
+}
+
 // A navigation that isn't user- or browser-initiated and starts within this
 // delay of the current document's commit is considered a client redirect that
 // continues the current load. This is based on the client redirect heuristic
@@ -415,21 +442,17 @@ void PerformanceManagerTabHelper::
         const blink::mojom::ViewportIntersectionState&
             viewport_intersection_state) {
   FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
-  if (!frame_node) {
-    // This can be invoked for a crashed RenderFrameHost, as its view still
-    // occupies space on the page. Just ignore it as clearly its content is not
-    // visible.
-    CHECK(!render_frame_host->IsRenderFrameLive());
+  if (IsStaleViewportIntersectionChange(web_contents(), render_frame_host,
+                                        frame_node)) {
     return;
   }
-  CHECK(render_frame_host->IsRenderFrameLive());
 
-  bool is_intersecting_large_area = [&]() {
+  ViewportIntersectionArea area = [&]() {
     const gfx::Rect& viewport_intersection =
         viewport_intersection_state.viewport_intersection;
 
     if (viewport_intersection.IsEmpty()) {
-      return false;
+      return ViewportIntersectionArea::kSmallOrNone;
     }
 
     int viewport_intersect_area =
@@ -438,35 +461,24 @@ void PerformanceManagerTabHelper::
         viewport_intersection_state.outermost_main_frame_size.GetCheckedArea()
             .ValueOrDefault(INT_MAX);
     if (outermost_main_frame_area == 0) {
-      return false;
+      return ViewportIntersectionArea::kSmallOrNone;
     }
     float ratio = 1.0f * viewport_intersect_area / outermost_main_frame_area;
     const float ratio_threshold =
         blink::features::kLargeFrameSizePercentThreshold.Get() / 100.f;
-    return ratio > ratio_threshold;
+    return ratio > ratio_threshold ? ViewportIntersectionArea::kLarge
+                                   : ViewportIntersectionArea::kSmallOrNone;
   }();
 
-  frame_node->SetIsIntersectingLargeArea(is_intersecting_large_area);
+  frame_node->SetViewportIntersectionArea(area);
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::FrameVisibility visibility) {
   FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
-  if (!frame_node) {
-    // This can be invoked for a crashed RenderFrameHost, as its view still
-    // occupies space on the page. Just ignore it as clearly its content is not
-    // visible.
-    CHECK(!render_frame_host->IsRenderFrameLive());
-    return;
-  }
-  CHECK(render_frame_host->IsRenderFrameLive());
-
-  // An attached Surface Embed child can outlive its embedder's FrameNode.
-  // Its main frame then has no graph parent, so viewport intersection is not
-  // tracked even though visibility notifications can still arrive.
-  if (web_contents()->GetSurfaceEmbedConnector() &&
-      !frame_node->parent_or_outer_document_or_embedder()) {
+  if (IsStaleViewportIntersectionChange(web_contents(), render_frame_host,
+                                        frame_node)) {
     return;
   }
 

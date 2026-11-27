@@ -124,7 +124,7 @@ class FrameNodeImpl
   bool HasFreezingOriginTrialOptOut() const override;
   ViewportIntersection GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
-  bool IsIntersectingLargeArea() const override;
+  ViewportIntersectionArea GetViewportIntersectionArea() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   base::ByteSize GetResidentSetEstimate() const override;
@@ -163,7 +163,7 @@ class FrameNodeImpl
   void SetViewportIntersection(ViewportIntersection viewport_intersection);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
-  void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
+  void SetViewportIntersectionArea(ViewportIntersectionArea area);
   void SetIsImportant(bool is_important);
   void SetResidentSetEstimate(base::ByteSize rss_estimate);
   void SetPrivateFootprintEstimate(base::ByteSize private_footprint_estimate);
@@ -176,9 +176,9 @@ class FrameNodeImpl
   // FrameNodeObserver::OnParentOrOuterDocumentChanged().
   //
   // A detached inner frame root keeps its last known viewport intersection and
-  // IsIntersectingLargeArea() state. When it is attached to a new outer
-  // document, it adopts that document's IsIntersectingLargeArea() state, and
-  // its viewport intersection is updated the next time
+  // GetViewportIntersectionArea() state. When it is attached to a new outer
+  // document, it adopts that document's GetViewportIntersectionArea() state,
+  // and its viewport intersection is updated the next time
   // SetViewportIntersection() is called.
   //
   // This is only expected to be used for the root of a <persistentwidget>
@@ -333,11 +333,25 @@ class FrameNodeImpl
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
 
+  // Updates the inherited `GetViewportIntersectionArea()` property of this
+  // frame.
+  void SetInheritedViewportIntersectionArea(ViewportIntersectionArea area);
 
-  // Updates the inherited `IsIntersectingLargeArea()` property of this frame.
-  void SetInheritedIsIntersectingLargeArea(bool is_intersecting_large_area);
+  // Sets `viewport_intersection_` and `viewport_intersection_area_`, notifying
+  // observers whenever the value returned by `GetViewportIntersection()` or
+  // `GetViewportIntersectionArea()` changes, and propagating
+  // `viewport_intersection_area_` changes to same-process child frames.
+  void SetViewportIntersectionAndArea(
+      ViewportIntersection viewport_intersection,
+      ViewportIntersectionArea viewport_intersection_area);
 
-  void SetIsIntersectingLargeAreaImpl(bool is_intersecting_large_area);
+  // Returns true if this frame is always fully intersecting with the viewport
+  // because it is an outermost main frame or embedder.
+  bool IsAlwaysIntersectingViewport() const;
+
+  // Returns true if viewport intersection / area updates are tracked for this
+  // frame. Otherwise returns false, possibly reporting a bad Mojo message.
+  bool CanSetViewportIntersection() const;
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -470,10 +484,11 @@ class FrameNodeImpl
   // `ViewportIntersection::kIntersecting` for the outermost main frame. This is
   // because it always occupies the entirety of the viewport, so there is no
   // point in tracking it.
-  ObservedProperty::NotifiesOnlyOnChanges<
-      ViewportIntersection,
-      &FrameNodeObserver::OnViewportIntersectionChanged>
-      viewport_intersection_{ViewportIntersection::kUnknown};
+  //
+  // Not using ObservedProperty here so `SetViewportIntersection()` can update
+  // `viewport_intersection_` alongside inherited `viewport_intersection_area_`
+  // before notifying observers.
+  ViewportIntersection viewport_intersection_ = ViewportIntersection::kUnknown;
 
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
@@ -483,14 +498,20 @@ class FrameNodeImpl
       TracedWrapper<Visibility>>
       visibility_;
 
-  // Indicates if this frame intersects with a large area of the viewport.
-  // Defaults to true when its value is unknown.
-  bool is_intersecting_large_area_ = true;
+  // Indicates the area of the frame's intersection with the outermost
+  // viewport.
+  //
+  // Note that calling `GetViewportIntersectionArea()` returns
+  // `ViewportIntersectionArea::kLarge` for an outermost main frame, and clamps
+  // to `kUnknown` or `kSmallOrNone` if `GetViewportIntersection()` is not
+  // `kIntersecting`.
+  ViewportIntersectionArea viewport_intersection_area_ =
+      ViewportIntersectionArea::kUnknown;
 
-  // Indicates that SetIsIntersectingLargeArea() was called for this frame. This
-  // is only called for local root frames and means this frame should not
+  // Indicates that `SetViewportIntersectionArea()` was called for this frame.
+  // This is only called for local root frames and means this frame should not
   // inherit the value of its parent.
-  bool has_is_intersecting_large_area_updates_ = false;
+  bool has_viewport_intersection_area_updates_ = false;
 
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsImportantChanged>
