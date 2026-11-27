@@ -132,8 +132,9 @@ int ResettableSettingsSnapshot::FindDifferentFields(
 
 void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
-  CHECK(!cancellation_flag_.get() && !shortcuts_determined(),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/589258720): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!cancellation_flag_.get() && !shortcuts_determined());
 
   cancellation_flag_ = new SharedCancellationFlag;
 #if BUILDFLAG(IS_WIN)
