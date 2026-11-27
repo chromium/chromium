@@ -304,6 +304,29 @@ FROM processed_timestamps_and_metadata;
 -- frame-associated (after inputs are coalesced into a frame) stages of a
 -- scroll.
 CREATE PERFETTO TABLE _scroll_update_frame_timestamps_and_metadata AS
+WITH
+  -- Materialize the relevant non-null surface frame steps to avoid repeated
+  -- linear scans of `chrome_graphics_pipeline_surface_frame_steps` (whose
+  -- `surface_frame_trace_id` column is nullable and unsorted).
+  surface_frame_steps AS MATERIALIZED (
+    SELECT
+      id,
+      ts,
+      dur,
+      step,
+      surface_frame_trace_id,
+      utid,
+      task_start_time_ts
+    FROM chrome_graphics_pipeline_surface_frame_steps
+    WHERE
+      surface_frame_trace_id IS NOT NULL
+      AND step IN (
+        'STEP_RECEIVE_BEGIN_FRAME',
+        'STEP_GENERATE_COMPOSITOR_FRAME',
+        'STEP_SUBMIT_COMPOSITOR_FRAME',
+        'STEP_RECEIVE_COMPOSITOR_FRAME'
+      )
+  )
 SELECT
   refs.scroll_update_latency_id AS id,
   refs.display_trace_id,
@@ -358,19 +381,19 @@ LEFT JOIN chrome_input_pipeline_steps AS compositor_resample_step
   AND compositor_resample_step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
   AND compositor_resample_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_receive_begin_frame_step
+LEFT JOIN surface_frame_steps AS compositor_receive_begin_frame_step
   ON compositor_receive_begin_frame_step.surface_frame_trace_id = refs.surface_frame_id
   AND compositor_receive_begin_frame_step.step = 'STEP_RECEIVE_BEGIN_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_generate_compositor_frame_step
+LEFT JOIN surface_frame_steps AS compositor_generate_compositor_frame_step
   ON compositor_generate_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
   AND compositor_generate_compositor_frame_step.step = 'STEP_GENERATE_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_submit_compositor_frame_step
+LEFT JOIN surface_frame_steps AS compositor_submit_compositor_frame_step
   ON compositor_submit_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
   AND compositor_submit_compositor_frame_step.step = 'STEP_SUBMIT_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS viz_receive_compositor_frame_step
+LEFT JOIN surface_frame_steps AS viz_receive_compositor_frame_step
   ON viz_receive_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
   AND viz_receive_compositor_frame_step.step = 'STEP_RECEIVE_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
