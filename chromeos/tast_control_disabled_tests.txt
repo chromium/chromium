@@ -27,9 +27,6 @@ tast.ui.WebUIJSErrors.field_trial_on
 # b/394409115
 tast.network.AllowCACertificateManagement
 
-# b/409064294
-tast.apps.SystemWebAppsInstallGuest
-
 # b/422132031, b/384060114
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
