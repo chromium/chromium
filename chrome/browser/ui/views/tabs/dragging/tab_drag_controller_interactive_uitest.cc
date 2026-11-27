@@ -4266,13 +4266,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
   ResetIDs(model2, 100);
   StopAnimating(tab_strip2);
 
+  // Select the first and second tabs so they are the only ones selected. This
+  // sets the selection directly instead of clicking, because a click's mouse
+  // release can arrive late on Wayland and reset the selection.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->SelectTabAt(1);
+
   RunTestSequence(
       StartDragStatePollers(/*attach_target=*/tab_strip2),
-
-      // Click the first tab and select the second tab so they are the only ones
-      // selected.
-      PressTab(tab_strip, 0), ReleaseMouse(ui_controls::LEFT),
-      Do([&]() { browser()->GetTabStripModel()->SelectTabAt(1); }),
 
       // Drag both tabs into `browser2`.
       PressTab(tab_strip, 0), MoveTabOutUntilDetached(tab_strip, 0),
