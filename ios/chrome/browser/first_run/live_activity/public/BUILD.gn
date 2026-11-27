@@ -10,3 +10,46 @@ source_set("features") {
   public_deps = [ "//base" ]
   deps = [ "//ios/chrome/browser/live_activity/public:features" ]
 }
+
+source_set("public") {
+  sources = [
+    "first_run_live_activity_constants.h",
+    "first_run_live_activity_screen_util.h",
+    "first_run_live_activity_screen_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "first_run_live_activity_screen_util_unittest.mm" ]
+  deps = [
+    ":public",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/regional_capabilities:test_support",
+    "//components/search_engines",
+    "//ios/chrome/browser/first_run/coordinator:first_run_provider",
+    "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

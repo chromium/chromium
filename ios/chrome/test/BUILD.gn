@@ -407,6 +407,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/first_run/default_browser/ui:unit_tests",
     "//ios/chrome/browser/first_run/guided_tour/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/live_activity/model:unit_tests",
+    "//ios/chrome/browser/first_run/live_activity/public:unit_tests",
     "//ios/chrome/browser/first_run/tos/coordinator:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
     "//ios/chrome/browser/fullscreen/coordinator:unit_tests",
