@@ -539,6 +539,13 @@ class FakeFilterGraph final
                           ChainInterfaces<IGraphBuilder, IFilterGraph>,
                           ChainInterfaces<IMediaControl, IDispatch>> {
  public:
+  // Like the real graph, tell the remaining filters that it goes away.
+  ~FakeFilterGraph() override {
+    for (auto& filter : filters_) {
+      filter->JoinFilterGraph(nullptr, nullptr);
+    }
+  }
+
   void set_stop_result(HRESULT hr) { stop_result_ = hr; }
   void set_disconnect_on_remove(bool disconnect) {
     disconnect_on_remove_ = disconnect;
@@ -1327,6 +1334,26 @@ TEST_F(VideoCaptureDeviceWinTest, PinEnumeratorFollowsIEnumPinsContract) {
   ASSERT_EQ(fetched, 1u);
   EXPECT_EQ(pins[0], sink_filter->GetPin(0));
   pins[0]->Release();
+}
+
+TEST_F(VideoCaptureDeviceWinTest, SinkFilterDoesNotKeepGraphAlive) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  FILTER_INFO info = {};
+  ASSERT_HRESULT_SUCCEEDED(sink_filter->QueryFilterInfo(&info));
+  EXPECT_FALSE(info.pGraph);
+
+  ComPtr<FakeFilterGraph> graph = Make<FakeFilterGraph>();
+  ASSERT_HRESULT_SUCCEEDED(graph->AddFilter(sink_filter.get(), nullptr));
+  ASSERT_HRESULT_SUCCEEDED(sink_filter->QueryFilterInfo(&info));
+  ASSERT_EQ(info.pGraph, graph.Get());
+  info.pGraph->Release();
+
+  // The filter holds no reference, so this releases the graph, which leaves
+  // the filter with no graph.
+  EXPECT_EQ(graph.Reset(), 0u);
+  ASSERT_HRESULT_SUCCEEDED(sink_filter->QueryFilterInfo(&info));
+  EXPECT_FALSE(info.pGraph);
 }
 
 TEST_F(VideoCaptureDeviceWinTest,

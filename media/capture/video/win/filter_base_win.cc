@@ -112,7 +112,7 @@ HRESULT FilterBase::FindPin(LPCWSTR id, IPin** pin) {
 HRESULT FilterBase::QueryFilterInfo(FILTER_INFO* info) {
   info->achName[0] = L'\0';
   base::AutoLock lock(lock_);
-  info->pGraph = owning_graph_.Get();
+  info->pGraph = owning_graph_;
   if (info->pGraph) {
     info->pGraph->AddRef();
   }
@@ -120,12 +120,10 @@ HRESULT FilterBase::QueryFilterInfo(FILTER_INFO* info) {
 }
 
 HRESULT FilterBase::JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) {
-  // Take and drop the graph references outside |lock_|.
-  Microsoft::WRL::ComPtr<IFilterGraph> other_graph(graph);
-  {
-    base::AutoLock lock(lock_);
-    owning_graph_.Swap(other_graph);
-  }
+  // Per the JoinFilterGraph() contract, don't hold a reference to the graph;
+  // the graph calls this again with null before it goes away.
+  base::AutoLock lock(lock_);
+  owning_graph_ = graph;
   return S_OK;
 }
 

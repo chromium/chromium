@@ -13,8 +13,8 @@
 #define NO_DSHOW_STRSAFE
 #include <dshow.h>
 #include <stddef.h>
-#include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -75,7 +75,8 @@ class FilterBase : public IBaseFilter,
  private:
   base::Lock lock_;
   FILTER_STATE state_ GUARDED_BY(lock_);
-  Microsoft::WRL::ComPtr<IFilterGraph> owning_graph_ GUARDED_BY(lock_);
+  // Not a reference; see JoinFilterGraph().
+  raw_ptr<IFilterGraph> owning_graph_ GUARDED_BY(lock_) = nullptr;
 };
 
 }  // namespace media
