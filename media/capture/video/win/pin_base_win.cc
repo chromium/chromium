@@ -85,11 +85,15 @@ class TypeEnumerator final : public IEnumMediaTypes,
 
   // Implement from IUnknown.
   IFACEMETHODIMP QueryInterface(REFIID iid, void** object_ptr) override {
+    if (!object_ptr) {
+      return E_POINTER;
+    }
     if (iid == IID_IEnumMediaTypes || iid == IID_IUnknown) {
       AddRef();
       *object_ptr = static_cast<IEnumMediaTypes*>(this);
       return S_OK;
     }
+    *object_ptr = nullptr;
     return E_NOINTERFACE;
   }
 
@@ -107,6 +111,9 @@ class TypeEnumerator final : public IEnumMediaTypes,
   IFACEMETHODIMP Next(ULONG count,
                       AM_MEDIA_TYPE** types,
                       ULONG* fetched) override {
+    if (!types) {
+      return E_POINTER;
+    }
     if (count > 1 && !fetched) {
       return E_INVALIDARG;
     }
@@ -170,6 +177,9 @@ class TypeEnumerator final : public IEnumMediaTypes,
   }
 
   IFACEMETHODIMP Clone(IEnumMediaTypes** clone) override {
+    if (!clone) {
+      return E_POINTER;
+    }
     auto type_enum = base::MakeRefCounted<TypeEnumerator>(pin_.get());
     type_enum->AddRef();
     type_enum->index_ = index_;
@@ -257,6 +267,9 @@ HRESULT PinBase::Disconnect() {
 }
 
 HRESULT PinBase::ConnectedTo(IPin** pin) {
+  if (!pin) {
+    return E_POINTER;
+  }
   base::AutoLock lock(lock_);
   *pin = connected_pin_.Get();
   if (!connected_pin_) {
@@ -268,6 +281,9 @@ HRESULT PinBase::ConnectedTo(IPin** pin) {
 }
 
 HRESULT PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
+  if (!media_type) {
+    return E_POINTER;
+  }
   base::AutoLock lock(lock_);
   if (!connected_pin_) {
     *media_type = {};
@@ -277,6 +293,9 @@ HRESULT PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
 }
 
 HRESULT PinBase::QueryPinInfo(PIN_INFO* info) {
+  if (!info) {
+    return E_POINTER;
+  }
   info->dir = PINDIR_INPUT;
   info->achName[0] = L'\0';
   base::AutoLock lock(lock_);
@@ -288,12 +307,19 @@ HRESULT PinBase::QueryPinInfo(PIN_INFO* info) {
 }
 
 HRESULT PinBase::QueryDirection(PIN_DIRECTION* pin_dir) {
+  if (!pin_dir) {
+    return E_POINTER;
+  }
   *pin_dir = PINDIR_INPUT;
   return S_OK;
 }
 
 HRESULT PinBase::QueryId(LPWSTR* id) {
-  NOTREACHED();
+  if (!id) {
+    return E_POINTER;
+  }
+  *id = nullptr;
+  return E_NOTIMPL;
 }
 
 HRESULT PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
@@ -301,6 +327,9 @@ HRESULT PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
 }
 
 HRESULT PinBase::EnumMediaTypes(IEnumMediaTypes** types) {
+  if (!types) {
+    return E_POINTER;
+  }
   auto type_enum = base::MakeRefCounted<TypeEnumerator>(this);
   type_enum->AddRef();
   *types = type_enum.get();
@@ -331,26 +360,41 @@ HRESULT PinBase::NewSegment(REFERENCE_TIME start,
 
 // Inherited from IMemInputPin.
 HRESULT PinBase::GetAllocator(IMemAllocator** allocator) {
+  if (!allocator) {
+    return E_POINTER;
+  }
+  *allocator = nullptr;
   return VFW_E_NO_ALLOCATOR;
 }
 
 HRESULT PinBase::NotifyAllocator(IMemAllocator* allocator, BOOL read_only) {
+  if (!allocator) {
+    return E_POINTER;
+  }
   return S_OK;
 }
 
 HRESULT PinBase::GetAllocatorRequirements(ALLOCATOR_PROPERTIES* properties) {
+  if (!properties) {
+    return E_POINTER;
+  }
   return E_NOTIMPL;
 }
 
 HRESULT PinBase::ReceiveMultiple(IMediaSample** samples,
                                  long sample_count,
                                  long* processed) {
-  DCHECK(samples);
+  if (!samples || !processed) {
+    return E_POINTER;
+  }
+  *processed = 0;
+  if (sample_count < 0) {
+    return E_INVALIDARG;
+  }
 
   HRESULT hr = S_OK;
-  *processed = 0;
-  while (sample_count--) {
-    hr = Receive(UNSAFE_TODO(samples[*processed]));
+  for (long i = 0; i < sample_count; ++i) {
+    hr = Receive(UNSAFE_TODO(samples[i]));
     // S_FALSE means don't send any more.
     if (hr != S_OK)
       break;
@@ -365,11 +409,15 @@ HRESULT PinBase::ReceiveCanBlock() {
 
 // Inherited from IUnknown.
 HRESULT PinBase::QueryInterface(REFIID id, void** object_ptr) {
+  if (!object_ptr) {
+    return E_POINTER;
+  }
   if (id == IID_IPin || id == IID_IUnknown) {
     *object_ptr = static_cast<IPin*>(this);
   } else if (id == IID_IMemInputPin) {
     *object_ptr = static_cast<IMemInputPin*>(this);
   } else {
+    *object_ptr = nullptr;
     return E_NOINTERFACE;
   }
   AddRef();

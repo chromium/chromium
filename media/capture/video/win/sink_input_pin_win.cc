@@ -143,7 +143,9 @@ std::optional<ParsedMediaType> ParseMediaType(const AM_MEDIA_TYPE* media_type) {
 
 SinkInputPin::SinkInputPin(IBaseFilter* filter, SinkFilterObserver* observer)
     : PinBase(filter),
+      requested_pixel_format_(PIXEL_FORMAT_UNKNOWN),
       requested_frame_rate_(0),
+      requested_info_header_{},
       flip_y_(false),
       observer_(observer) {}
 
@@ -190,8 +192,10 @@ HRESULT SinkInputPin::ReceiveConnection(IPin* connector,
 }
 
 bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
-  if (media_type->cbFormat < sizeof(VIDEOINFOHEADER))
+  if (!media_type || media_type->cbFormat < sizeof(VIDEOINFOHEADER) ||
+      !media_type->pbFormat) {
     return false;
+  }
 
   base::AutoLock lock(sink_lock_);
   VIDEOINFOHEADER* const pvi =
@@ -287,6 +291,10 @@ HRESULT SinkInputPin::Disconnect() {
 }
 
 HRESULT SinkInputPin::Receive(IMediaSample* sample) {
+  if (!sample) {
+    return E_POINTER;
+  }
+
   // Hold |sink_lock_| for the whole call, including the calls into |sample|,
   // so that Shutdown() and Disconnect() wait for a streaming thread that is
   // anywhere inside this method. The upstream filter's Stop() doesn't
@@ -308,17 +316,19 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   }
 
   uint8_t* buffer = nullptr;
-  if (FAILED(sample->GetPointer(&buffer))) {
+  if (FAILED(sample->GetPointer(&buffer)) || !buffer) {
     observer_->FrameDropped(
         VideoCaptureFrameDropReason::
             kWinDirectShowFailedToGetMemoryPointerFromMediaSample);
     return S_FALSE;
   }
 
-  REFERENCE_TIME start_time, end_time;
+  REFERENCE_TIME start_time = 0;
+  REFERENCE_TIME end_time = 0;
   base::TimeDelta timestamp = kNoTimestamp;
-  if (SUCCEEDED(sample->GetTime(&start_time, &end_time))) {
-    DCHECK(start_time <= end_time);
+  const HRESULT time_hr = sample->GetTime(&start_time, &end_time);
+  if (SUCCEEDED(time_hr)) {
+    DCHECK(time_hr != S_OK || start_time <= end_time);
     timestamp = base::Microseconds(start_time / 10);
   }
 

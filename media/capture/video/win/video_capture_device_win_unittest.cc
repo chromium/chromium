@@ -105,9 +105,14 @@ class FakeMediaSample final
   FakeMediaSample(size_t size, uint8_t fill, base::OnceClosure on_get_time)
       : buffer_(size, fill), on_get_time_(std::move(on_get_time)) {}
 
+  // Makes GetPointer() succeed with a null buffer.
+  void set_null_buffer() { null_buffer_ = true; }
+  // Makes GetTime() report |start| and VFW_S_NO_STOP_TIME.
+  void set_start_time_only(REFERENCE_TIME start) { start_time_ = start; }
+
   // IMediaSample
   IFACEMETHODIMP GetPointer(BYTE** buffer) override {
-    *buffer = buffer_.data();
+    *buffer = null_buffer_ ? nullptr : buffer_.data();
     return S_OK;
   }
   IFACEMETHODIMP_(long) GetSize() override {
@@ -116,6 +121,11 @@ class FakeMediaSample final
   IFACEMETHODIMP GetTime(REFERENCE_TIME* start, REFERENCE_TIME* end) override {
     if (on_get_time_) {
       std::move(on_get_time_).Run();
+    }
+    if (start_time_) {
+      // Like a real sample without a stop time, leaves |end| untouched.
+      *start = *start_time_;
+      return VFW_S_NO_STOP_TIME;
     }
     return VFW_E_SAMPLE_TIME_NOT_SET;
   }
@@ -150,6 +160,8 @@ class FakeMediaSample final
  private:
   std::vector<uint8_t> buffer_;
   base::OnceClosure on_get_time_;
+  bool null_buffer_ = false;
+  std::optional<REFERENCE_TIME> start_time_;
 };
 
 // Delivers a sample to |pin|. |on_get_time| runs when the pin queries the
@@ -755,18 +767,27 @@ class CountingSinkObserver final : public SinkFilterObserver {
                      bool flip_y) override {
     ++frames_received_;
     last_format_ = format;
+    last_timestamp_ = timestamp;
     last_flip_y_ = flip_y;
   }
-  void FrameDropped(VideoCaptureFrameDropReason reason) override {}
+  void FrameDropped(VideoCaptureFrameDropReason reason) override {
+    last_drop_reason_ = reason;
+  }
 
   int frames_received() const { return frames_received_; }
   const VideoCaptureFormat& last_format() const { return last_format_; }
+  base::TimeDelta last_timestamp() const { return last_timestamp_; }
   bool last_flip_y() const { return last_flip_y_; }
+  std::optional<VideoCaptureFrameDropReason> last_drop_reason() const {
+    return last_drop_reason_;
+  }
 
  private:
   int frames_received_ = 0;
   VideoCaptureFormat last_format_;
+  base::TimeDelta last_timestamp_;
   bool last_flip_y_ = false;
+  std::optional<VideoCaptureFrameDropReason> last_drop_reason_;
 };
 
 }  // namespace
@@ -1400,6 +1421,128 @@ TEST_F(VideoCaptureDeviceWinTest,
   ASSERT_EQ(fetched, 1u);
   EXPECT_EQ(types[0]->subtype, MEDIASUBTYPE_RGB32);
   free_type(types[0]);
+}
+
+TEST_F(VideoCaptureDeviceWinTest, ComMethodsCheckPointers) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  IBaseFilter* const filter = sink_filter.get();
+  ComPtr<IBaseFilter> base_filter;
+  EXPECT_EQ(filter->QueryInterface(IID_PPV_ARGS(&base_filter)), S_OK);
+  EXPECT_EQ(base_filter.Get(), filter);
+  EXPECT_EQ(filter->QueryInterface(IID_IBaseFilter, nullptr), E_POINTER);
+  void* object = this;
+  EXPECT_EQ(filter->QueryInterface(IID_IMediaSeeking, &object), E_NOINTERFACE);
+  EXPECT_FALSE(object);
+  EXPECT_EQ(filter->EnumPins(nullptr), E_POINTER);
+  EXPECT_EQ(filter->FindPin(L"", nullptr), E_POINTER);
+  // Failing methods clear their out-parameters. |this| stands in for a stale
+  // value; it is never dereferenced.
+  IPin* found_pin = reinterpret_cast<IPin*>(this);
+  EXPECT_EQ(filter->FindPin(L"", &found_pin), E_NOTIMPL);
+  EXPECT_FALSE(found_pin);
+  EXPECT_EQ(filter->QueryFilterInfo(nullptr), E_POINTER);
+  EXPECT_EQ(filter->GetState(0, nullptr), E_POINTER);
+  EXPECT_EQ(filter->GetSyncSource(nullptr), E_POINTER);
+  IReferenceClock* clock = reinterpret_cast<IReferenceClock*>(this);
+  EXPECT_EQ(filter->GetSyncSource(&clock), E_NOTIMPL);
+  EXPECT_FALSE(clock);
+  EXPECT_EQ(filter->GetClassID(nullptr), E_POINTER);
+  EXPECT_EQ(filter->QueryVendorInfo(nullptr), E_POINTER);
+  wchar_t vendor_buffer[1] = {};
+  LPWSTR vendor_info = vendor_buffer;
+  EXPECT_EQ(filter->QueryVendorInfo(&vendor_info), E_NOTIMPL);
+  EXPECT_FALSE(vendor_info);
+
+  IPin* const pin = sink_filter->GetPin(0);
+  EXPECT_EQ(pin->QueryInterface(IID_IPin, nullptr), E_POINTER);
+  object = this;
+  EXPECT_EQ(pin->QueryInterface(IID_IBaseFilter, &object), E_NOINTERFACE);
+  EXPECT_FALSE(object);
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER info;
+  PopulateI420MediaType(&media_type, &info);
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+  EXPECT_EQ(pin->ReceiveConnection(nullptr, &media_type), E_POINTER);
+  EXPECT_EQ(pin->ReceiveConnection(upstream_pin.Get(), nullptr), E_POINTER);
+  EXPECT_EQ(pin->ConnectedTo(nullptr), E_POINTER);
+  EXPECT_EQ(pin->ConnectionMediaType(nullptr), E_POINTER);
+  EXPECT_EQ(pin->QueryPinInfo(nullptr), E_POINTER);
+  EXPECT_EQ(pin->QueryDirection(nullptr), E_POINTER);
+  EXPECT_EQ(pin->EnumMediaTypes(nullptr), E_POINTER);
+  EXPECT_EQ(pin->QueryId(nullptr), E_POINTER);
+  wchar_t id_buffer[1] = {};
+  LPWSTR id = id_buffer;
+  EXPECT_EQ(pin->QueryId(&id), E_NOTIMPL);
+  EXPECT_FALSE(id);
+
+  ComPtr<IMemInputPin> mem_input_pin;
+  ASSERT_HRESULT_SUCCEEDED(pin->QueryInterface(IID_PPV_ARGS(&mem_input_pin)));
+  EXPECT_EQ(mem_input_pin->GetAllocator(nullptr), E_POINTER);
+  IMemAllocator* allocator = reinterpret_cast<IMemAllocator*>(this);
+  EXPECT_EQ(mem_input_pin->GetAllocator(&allocator), VFW_E_NO_ALLOCATOR);
+  EXPECT_FALSE(allocator);
+  EXPECT_EQ(mem_input_pin->NotifyAllocator(nullptr, FALSE), E_POINTER);
+  EXPECT_EQ(mem_input_pin->GetAllocatorRequirements(nullptr), E_POINTER);
+  ALLOCATOR_PROPERTIES properties = {};
+  EXPECT_EQ(mem_input_pin->GetAllocatorRequirements(&properties), E_NOTIMPL);
+  EXPECT_EQ(mem_input_pin->Receive(nullptr), E_POINTER);
+  IMediaSample* samples[1] = {};
+  long processed = -1;
+  EXPECT_EQ(mem_input_pin->ReceiveMultiple(nullptr, 1, &processed), E_POINTER);
+  EXPECT_EQ(mem_input_pin->ReceiveMultiple(samples, 1, nullptr), E_POINTER);
+  EXPECT_EQ(mem_input_pin->ReceiveMultiple(samples, -1, &processed),
+            E_INVALIDARG);
+  EXPECT_EQ(processed, 0);
+
+  ComPtr<IEnumPins> enum_pins;
+  ASSERT_EQ(filter->EnumPins(&enum_pins), S_OK);
+  EXPECT_EQ(enum_pins->QueryInterface(IID_IEnumPins, nullptr), E_POINTER);
+  object = this;
+  EXPECT_EQ(enum_pins->QueryInterface(IID_IPin, &object), E_NOINTERFACE);
+  EXPECT_FALSE(object);
+  EXPECT_EQ(enum_pins->Next(1, nullptr, nullptr), E_POINTER);
+  EXPECT_EQ(enum_pins->Clone(nullptr), E_POINTER);
+  ComPtr<IEnumMediaTypes> enum_types;
+  ASSERT_EQ(pin->EnumMediaTypes(&enum_types), S_OK);
+  EXPECT_EQ(enum_types->QueryInterface(IID_IEnumMediaTypes, nullptr),
+            E_POINTER);
+  object = this;
+  EXPECT_EQ(enum_types->QueryInterface(IID_IPin, &object), E_NOINTERFACE);
+  EXPECT_FALSE(object);
+  EXPECT_EQ(enum_types->Next(1, nullptr, nullptr), E_POINTER);
+  EXPECT_EQ(enum_types->Clone(nullptr), E_POINTER);
+}
+
+TEST_F(VideoCaptureDeviceWinTest, ReceiveHandlesNullBufferAndNoStopTime) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  ComPtr<IMemInputPin> mem_input_pin;
+  ASSERT_HRESULT_SUCCEEDED(input_pin.As(&mem_input_pin));
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER info;
+  PopulateI420MediaType(&media_type, &info);
+  ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+            S_OK);
+
+  ComPtr<FakeMediaSample> sample =
+      Make<FakeMediaSample>(kI420FrameBytes, 0x5A, base::OnceClosure());
+  sample->set_null_buffer();
+  EXPECT_EQ(mem_input_pin->Receive(sample.Get()), S_FALSE);
+  EXPECT_EQ(observer.frames_received(), 0);
+  EXPECT_EQ(observer.last_drop_reason(),
+            VideoCaptureFrameDropReason::
+                kWinDirectShowFailedToGetMemoryPointerFromMediaSample);
+
+  // 100 ms in REFERENCE_TIME units of 100 ns.
+  sample = Make<FakeMediaSample>(kI420FrameBytes, 0x5A, base::OnceClosure());
+  sample->set_start_time_only(1'000'000);
+  EXPECT_EQ(mem_input_pin->Receive(sample.Get()), S_OK);
+  EXPECT_EQ(observer.frames_received(), 1);
+  EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(100));
+  EXPECT_EQ(input_pin->Disconnect(), S_OK);
 }
 
 }  // namespace media

@@ -39,6 +39,9 @@ IPin* SinkFilter::GetPin(int index) {
 }
 
 HRESULT SinkFilter::GetClassID(CLSID* clsid) {
+  if (!clsid) {
+    return E_POINTER;
+  }
   *clsid = __uuidof(SinkFilter);
   return S_OK;
 }

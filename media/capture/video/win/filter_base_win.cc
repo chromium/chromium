@@ -26,11 +26,15 @@ class PinEnumerator final : public IEnumPins,
 
   // IUnknown implementation.
   IFACEMETHODIMP QueryInterface(REFIID iid, void** object_ptr) override {
+    if (!object_ptr) {
+      return E_POINTER;
+    }
     if (iid == IID_IEnumPins || iid == IID_IUnknown) {
       AddRef();
       *object_ptr = static_cast<IEnumPins*>(this);
       return S_OK;
     }
+    *object_ptr = nullptr;
     return E_NOINTERFACE;
   }
 
@@ -46,6 +50,9 @@ class PinEnumerator final : public IEnumPins,
 
   // Implement IEnumPins.
   IFACEMETHODIMP Next(ULONG count, IPin** pins, ULONG* fetched) override {
+    if (!pins) {
+      return E_POINTER;
+    }
     if (count > 1 && !fetched) {
       return E_INVALIDARG;
     }
@@ -80,6 +87,9 @@ class PinEnumerator final : public IEnumPins,
   }
 
   IFACEMETHODIMP Clone(IEnumPins** clone) override {
+    if (!clone) {
+      return E_POINTER;
+    }
     auto pin_enum = base::MakeRefCounted<PinEnumerator>(filter_.get());
     pin_enum->AddRef();
     pin_enum->index_ = index_;
@@ -99,6 +109,9 @@ FilterBase::FilterBase() : state_(State_Stopped) {
 }
 
 HRESULT FilterBase::EnumPins(IEnumPins** enum_pins) {
+  if (!enum_pins) {
+    return E_POINTER;
+  }
   auto pin_enum = base::MakeRefCounted<PinEnumerator>(this);
   pin_enum->AddRef();
   *enum_pins = pin_enum.get();
@@ -106,10 +119,17 @@ HRESULT FilterBase::EnumPins(IEnumPins** enum_pins) {
 }
 
 HRESULT FilterBase::FindPin(LPCWSTR id, IPin** pin) {
+  if (!pin) {
+    return E_POINTER;
+  }
+  *pin = nullptr;
   return E_NOTIMPL;
 }
 
 HRESULT FilterBase::QueryFilterInfo(FILTER_INFO* info) {
+  if (!info) {
+    return E_POINTER;
+  }
   info->achName[0] = L'\0';
   base::AutoLock lock(lock_);
   info->pGraph = owning_graph_;
@@ -128,7 +148,11 @@ HRESULT FilterBase::JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) {
 }
 
 HRESULT FilterBase::QueryVendorInfo(LPWSTR* pVendorInfo) {
-  return S_OK;
+  if (!pVendorInfo) {
+    return E_POINTER;
+  }
+  *pVendorInfo = nullptr;
+  return E_NOTIMPL;
 }
 
 // Implement IMediaFilter.
@@ -151,6 +175,9 @@ HRESULT FilterBase::Run(REFERENCE_TIME start) {
 }
 
 HRESULT FilterBase::GetState(DWORD msec_timeout, FILTER_STATE* state) {
+  if (!state) {
+    return E_POINTER;
+  }
   base::AutoLock lock(lock_);
   *state = state_;
   return S_OK;
@@ -161,6 +188,10 @@ HRESULT FilterBase::SetSyncSource(IReferenceClock* clock) {
 }
 
 HRESULT FilterBase::GetSyncSource(IReferenceClock** clock) {
+  if (!clock) {
+    return E_POINTER;
+  }
+  *clock = nullptr;
   return E_NOTIMPL;
 }
 
@@ -171,11 +202,15 @@ HRESULT FilterBase::GetClassID(CLSID* class_id) {
 
 // Implement IUnknown.
 HRESULT FilterBase::QueryInterface(REFIID id, void** object_ptr) {
-  if (id == IID_IMediaFilter || id == IID_IUnknown) {
-    *object_ptr = static_cast<IMediaFilter*>(this);
+  if (!object_ptr) {
+    return E_POINTER;
+  }
+  if (id == IID_IBaseFilter || id == IID_IMediaFilter || id == IID_IUnknown) {
+    *object_ptr = static_cast<IBaseFilter*>(this);
   } else if (id == IID_IPersist) {
     *object_ptr = static_cast<IPersist*>(this);
   } else {
+    *object_ptr = nullptr;
     return E_NOINTERFACE;
   }
   AddRef();
