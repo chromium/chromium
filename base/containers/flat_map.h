@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_FLAT_MAP_H_
 #define BASE_CONTAINERS_FLAT_MAP_H_
 
+#include <stddef.h>
+
 #include <concepts>
 #include <functional>
 #include <initializer_list>
@@ -292,6 +294,15 @@ class flat_map
 
   friend void swap(flat_map& lhs, flat_map& rhs) noexcept { lhs.swap(rhs); }
 };
+
+namespace flat_tree_internal {
+
+template <class Key, class Mapped, class Compare, class Container>
+inline constexpr size_t
+    kFixedExtentImpl<flat_map<Key, Mapped, Compare, Container>> =
+        kFixedExtentImpl<Container>;
+
+}  // namespace flat_tree_internal
 
 // ----------------------------------------------------------------------------
 // Lookups.

@@ -5,7 +5,8 @@
 #ifndef BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 #define BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 
-#include <algorithm>
+#include <stddef.h>
+
 #include <array>
 #include <functional>
 #include <utility>
@@ -14,11 +15,6 @@
 #include "base/containers/flat_tree.h"
 
 namespace base {
-
-namespace fixed_flat_map_internal {
-// Not constexpr to trigger a compile error.
-void FixedFlatMapInputNotSortedOrNotUnique();
-}  // namespace fixed_flat_map_internal
 
 // fixed_flat_map is a immutable container with a std::map-like interface that
 // stores its contents in a sorted std::array.
@@ -93,6 +89,28 @@ template <class Key, class Mapped, size_t N, class Compare = std::less<>>
 using fixed_flat_map = base::
     flat_map<Key, Mapped, Compare, std::array<std::pair<const Key, Mapped>, N>>;
 
+namespace fixed_flat_map_internal {
+
+// Not constexpr to trigger a compile error.
+void FixedFlatMapInputNotUnique();
+
+template <class Key, class Mapped, class Compare, size_t N, class Array>
+consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapImpl(
+    Array&& data,
+    const Compare& comp) {
+  using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
+  typename FixedFlatMap::value_compare value_comp{comp};
+  if (!flat_tree_internal::SortAndCheckUnique(data, value_comp)) {
+    FixedFlatMapInputNotUnique();
+  }
+  return FixedFlatMap(
+      sorted_unique,
+      flat_tree_internal::ToArray<typename FixedFlatMap::value_type>(data),
+      comp);
+}
+
+}  // namespace fixed_flat_map_internal
+
 // Utility function to simplify constructing a fixed_flat_map from a fixed list
 // of keys and values. Requires that the passed in `data` contains unique keys.
 //
@@ -106,18 +124,39 @@ template <class Key, class Mapped, class Compare = std::less<>, size_t N>
 consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
     std::pair<Key, Mapped> (&&data)[N],
     const Compare& comp = Compare()) {
-  using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
-  typename FixedFlatMap::value_compare value_comp{comp};
-  if (!flat_tree_internal::is_sorted_and_unique(data, value_comp)) {
-    std::ranges::sort(data, value_comp);
-    if (!flat_tree_internal::is_sorted_and_unique(data, value_comp)) {
-      fixed_flat_map_internal::FixedFlatMapInputNotSortedOrNotUnique();
-    }
-  }
-  return FixedFlatMap(
-      sorted_unique,
-      flat_tree_internal::ToArray<typename FixedFlatMap::value_type>(data),
-      comp);
+  return fixed_flat_map_internal::MakeFixedFlatMapImpl<Key, Mapped, Compare, N>(
+      data, comp);
+}
+
+// Constructs a `fixed_flat_map` from a fixed-size container (`std::array`,
+// `fixed_flat_map`, or `fixed_flat_set`). Projects elements through optional
+// `proj` to construct `std::pair<Key, Mapped>` and sorts keys by optional
+// `comp`. Requires unique projected keys.
+//
+// Example usage:
+//   constexpr auto kInverted = base::MakeFixedFlatMap<int, std::string_view>(
+//       kMap, {}, [](const auto& e) { return std::pair(e.second, e.first); });
+template <class Key,
+          class Mapped,
+          class Compare = std::less<>,
+          int&... ExplicitArgumentBarrier,
+          class Range,
+          class Projection = std::identity>
+  requires flat_tree_internal::FixedRangeProjectableTo<
+               Range,
+               Projection,
+               std::pair<Key, Mapped>> &&
+           flat_tree_internal::KeyComparator<Compare, Key>
+consteval fixed_flat_map<Key,
+                         Mapped,
+                         flat_tree_internal::kFixedExtent<Range>,
+                         Compare>
+MakeFixedFlatMap(const Range& range,
+                 const Compare& comp = Compare(),
+                 const Projection& proj = Projection()) {
+  constexpr size_t N = flat_tree_internal::kFixedExtent<Range>;
+  return fixed_flat_map_internal::MakeFixedFlatMapImpl<Key, Mapped, Compare, N>(
+      flat_tree_internal::ToArray<std::pair<Key, Mapped>>(range, proj), comp);
 }
 
 }  // namespace base

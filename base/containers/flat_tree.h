@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_FLAT_TREE_H_
 #define BASE_CONTAINERS_FLAT_TREE_H_
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
 #include <compare>
@@ -66,23 +68,114 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
                             std::not_fn(comp)) == std::ranges::end(range);
 }
 
-// Helper inspired by C++20's std::to_array to convert a C-style array to a
-// std::array. As opposed to the C++20 version this implementation does not
-// provide an overload for rvalues and does not strip cv qualifers from the
-// returned std::array::value_type. The returned value_type needs to be
-// specified explicitly, allowing the construction of std::arrays with const
-// elements.
-//
-// Reference: https://en.cppreference.com/w/cpp/container/array/to_array
-template <typename U, typename T, size_t N>
-  requires(std::constructible_from<U, T>)
-constexpr std::array<U, N> ToArray(const T (&data)[N]) {
-  auto impl = [&]<size_t... I>(std::index_sequence<I...>) {
-    // SAFETY: `impl` is called with `make_index_sequence<N>`, so the largest
-    // `I` will be `N - 1`.
-    return std::array<U, N>({UNSAFE_BUFFERS(data[I])...});
-  };
-  return impl(std::make_index_sequence<N>());
+// Sorts `range` by `comp` unless it is already sorted. Returns false if
+// `range` contains duplicates.
+template <typename Range, typename Comp>
+consteval bool SortAndCheckUnique(Range& range, const Comp& comp) {
+  if (is_sorted_and_unique(range, comp)) {
+    return true;
+  }
+  std::sort(std::ranges::begin(range), std::ranges::end(range), comp);
+  return is_sorted_and_unique(range, comp);
+}
+
+template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
+class flat_tree;
+
+// Sentinel value indicating a type does not have a compile-time fixed extent.
+inline constexpr size_t kDynamicExtent = ~size_t{0};
+
+template <class T>
+inline constexpr size_t kFixedExtentImpl = kDynamicExtent;
+
+template <class T, size_t N>
+inline constexpr size_t kFixedExtentImpl<std::array<T, N>> = N;
+
+template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
+inline constexpr size_t
+    kFixedExtentImpl<flat_tree<Key, GetKeyFromValue, KeyCompare, Container>> =
+        kFixedExtentImpl<Container>;
+
+template <class T>
+inline constexpr size_t kFixedExtent = kFixedExtentImpl<std::remove_cvref_t<T>>;
+
+template <class Range>
+inline constexpr size_t kFixedExtentOrArray =
+    std::is_bounded_array_v<std::remove_cvref_t<Range>>
+        ? std::extent_v<std::remove_cvref_t<Range>>
+        : kFixedExtent<Range>;
+
+template <class From, class To>
+concept NonNarrowingConvertibleToImpl =
+    std::convertible_to<From, To> &&
+    requires(From&& from) { To{std::forward<From>(from)}; };
+
+template <class From, class To>
+inline constexpr bool kIsNonNarrowingConvertible =
+    NonNarrowingConvertibleToImpl<From, To>;
+
+// `std::pair`'s converting constructor uses direct-initialization rather than
+// list-initialization, so check both elements when converting from a
+// 2-tuple-like type (e.g. `std::pair` or `std::tuple`).
+template <class From, class Key, class Mapped>
+  requires requires(From&& from) {
+    typename std::tuple_size<std::remove_cvref_t<From>>::type;
+    requires std::tuple_size_v<std::remove_cvref_t<From>> == 2;
+    std::get<0>(std::forward<From>(from));
+    std::get<1>(std::forward<From>(from));
+  }
+inline constexpr bool kIsNonNarrowingConvertible<From, std::pair<Key, Mapped>> =
+    std::convertible_to<From, std::pair<Key, Mapped>> &&
+    kIsNonNarrowingConvertible<decltype(std::get<0>(std::declval<From>())),
+                               Key> &&
+    kIsNonNarrowingConvertible<decltype(std::get<1>(std::declval<From>())),
+                               Mapped>;
+
+template <class From, class To>
+concept NonNarrowingConvertibleTo = kIsNonNarrowingConvertible<From, To>;
+
+// True if `Range` is a supported fixed-extent container (`std::array`,
+// `fixed_flat_map`, or `fixed_flat_set`) whose elements can be projected by
+// `Projection` and implicitly converted to `Target` without narrowing.
+template <class Range, class Projection, class Target>
+concept FixedRangeProjectableTo =
+    kFixedExtent<Range> != kDynamicExtent &&
+    std::invocable<const Projection&,
+                   std::ranges::range_reference_t<const Range>> &&
+    NonNarrowingConvertibleTo<
+        std::invoke_result_t<const Projection&,
+                             std::ranges::range_reference_t<const Range>>,
+        Target>;
+
+// True if `Compare` is a copy-constructible key comparator whose `const` call
+// operator accepts two `const Key&` arguments and returns a value convertible
+// to `bool`.
+template <class Compare, class Key>
+concept KeyComparator =
+    std::copy_constructible<Compare> &&
+    requires(const Compare& comp, const Key& a, const Key& b) {
+      { comp(a, b) } -> std::convertible_to<bool>;
+    };
+
+// Projects each element of a fixed-size range (C-style array, `std::array`,
+// `fixed_flat_map`, or `fixed_flat_set`) into a `std::array<U, N>` with an
+// explicit element type `U`, allowing construction of `std::array`s with
+// `const` elements and avoiding default-construction of `U`.
+template <typename U,
+          int&... ExplicitArgumentBarrier,
+          typename Range,
+          typename Projection = std::identity,
+          size_t N = kFixedExtentOrArray<Range>>
+  requires(N != kDynamicExtent)
+consteval std::array<U, N> ToArray(const Range& range,
+                                   const Projection& proj = {}) {
+  return [&]<size_t... I>(std::index_sequence<I...>) {
+    // SAFETY: `I` is generated by `make_index_sequence<N>`, and `N` is
+    // deduced from `range`'s compile-time extent, so `I < N`. Also
+    // `consteval` bounds-checks every access at compile time.
+    return std::array<U, N>{
+        {std::invoke(proj, UNSAFE_BUFFERS(std::begin(range)[I]))...}};
+  }(std::make_index_sequence<N>());
 }
 
 // Helper that calls `container.reserve(std::size(source))`.

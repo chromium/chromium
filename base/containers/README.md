@@ -257,6 +257,21 @@ constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
 Both `MakeFixedFlatSet` and `MakeFixedFlatMap` require callers to explicitly
 specify the key (and mapped) type.
 
+Both helpers also accept fixed-size containers (`std::array`,
+`base::fixed_flat_map`, and `base::fixed_flat_set`) with optional comparator and
+projection arguments `(range, comp = {}, proj = {})`, matching
+`base::MakeFlatMap` and `base::MakeFlatSet`. This enables compile-time
+construction from `std::array` and transformations such as inverting a
+`fixed_flat_map` or extracting its keys:
+
+```cpp
+constexpr auto kInverted = base::MakeFixedFlatMap<int, std::string_view>(
+    kMap, {}, [](const auto& e) { return std::pair(e.second, e.first); });
+
+constexpr auto kKeys = base::MakeFixedFlatSet<std::string_view>(
+    kMap, {}, [](const auto& e) { return e.first; });
+```
+
 ### absl::flat\_hash\_map and absl::flat\_hash\_set
 
 A hash table. These use Abseil's "swiss table" design which is elaborated on in

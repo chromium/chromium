@@ -5,7 +5,8 @@
 #ifndef BASE_CONTAINERS_FIXED_FLAT_SET_H_
 #define BASE_CONTAINERS_FIXED_FLAT_SET_H_
 
-#include <algorithm>
+#include <stddef.h>
+
 #include <array>
 #include <functional>
 #include <type_traits>
@@ -14,11 +15,6 @@
 #include "base/containers/flat_tree.h"
 
 namespace base {
-
-namespace fixed_flat_set_internal {
-// Not constexpr to trigger a compile error.
-void FixedFlatSetInputNotSortedOrNotUnique();
-}  // namespace fixed_flat_set_internal
 
 // fixed_flat_set is a immutable container with a std::set-like interface that
 // stores its contents in a sorted std::array.
@@ -79,6 +75,27 @@ void FixedFlatSetInputNotSortedOrNotUnique();
 template <class Key, size_t N, class Compare = std::less<>>
 using fixed_flat_set = base::flat_set<Key, Compare, std::array<const Key, N>>;
 
+namespace fixed_flat_set_internal {
+
+// Not constexpr to trigger a compile error.
+void FixedFlatSetInputNotSortedOrNotUnique();
+void FixedFlatSetInputNotUnique();
+
+template <class Key, class Compare, size_t N, class Array>
+consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSetImpl(
+    Array&& data,
+    const Compare& comp) {
+  if (!flat_tree_internal::SortAndCheckUnique(data, comp)) {
+    FixedFlatSetInputNotUnique();
+  }
+  // Specify the value_type explicitly to ensure that the returned array has
+  // immutable keys.
+  return fixed_flat_set<Key, N, Compare>(
+      sorted_unique, flat_tree_internal::ToArray<const Key>(data), comp);
+}
+
+}  // namespace fixed_flat_set_internal
+
 // Utility function to simplify constructing a fixed_flat_set from a fixed list
 // of keys and values. Requires that the passed in `data` contains unique keys
 // and be sorted by key. See `MakeFixedFlatSet` for a variant that sorts the
@@ -105,7 +122,7 @@ consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
 // of keys. Requires that the passed in `data` contains unique keys.
 //
 // Large inputs will run into compiler limits, e.g. "constexpr evaluation hit
-// maximum step limit". In that case, use `MakeFixedFlatSet(sorted_unique)`.
+// maximum step limit", unless `data` is already sorted.
 //
 // Example usage:
 //   constexpr auto kIntSet = base::MakeFixedFlatSet<int>({1, 2, 3, 4});
@@ -120,8 +137,33 @@ template <class Key, class Compare = std::less<>, size_t N>
 consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
-  std::ranges::sort(data, comp);
-  return MakeFixedFlatSet<Key>(sorted_unique, std::move(data), comp);
+  return fixed_flat_set_internal::MakeFixedFlatSetImpl<Key, Compare, N>(data,
+                                                                        comp);
+}
+
+// Constructs a `fixed_flat_set` from a fixed-size container (`std::array`,
+// `fixed_flat_map`, or `fixed_flat_set`). Projects elements through optional
+// `proj` to construct `Key` and sorts keys by optional `comp`. Requires unique
+// projected keys.
+//
+// Example usage:
+//   constexpr auto kKeys = base::MakeFixedFlatSet<std::string_view>(
+//       kMap, {}, [](const auto& e) { return e.first; });
+template <class Key,
+          class Compare = std::less<>,
+          int&... ExplicitArgumentBarrier,
+          class Range,
+          class Projection = std::identity>
+  requires flat_tree_internal::
+               FixedRangeProjectableTo<Range, Projection, Key> &&
+           flat_tree_internal::KeyComparator<Compare, Key>
+consteval fixed_flat_set<Key, flat_tree_internal::kFixedExtent<Range>, Compare>
+MakeFixedFlatSet(const Range& range,
+                 const Compare& comp = Compare(),
+                 const Projection& proj = Projection()) {
+  constexpr size_t N = flat_tree_internal::kFixedExtent<Range>;
+  return fixed_flat_set_internal::MakeFixedFlatSetImpl<Key, Compare, N>(
+      flat_tree_internal::ToArray<Key>(range, proj), comp);
 }
 
 }  // namespace base
