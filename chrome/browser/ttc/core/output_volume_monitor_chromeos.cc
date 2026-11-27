@@ -9,13 +9,23 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ttc {
 
 namespace {
+
+// ChromeOS CRAS only: how long non-mute output volume updates wait to settle
+// before being reported. UnifiedVolumeSliderController sends continuous volume
+// steps during slider drags and calls SetOutputMute(false) synchronously before
+// CRAS echoes the new volume over D-Bus. Coalescing here keeps cross-platform
+// warning logic pure events without ChromeOS-specific timers.
+constexpr base::TimeDelta kVolumeSettleDelay = base::Milliseconds(200);
 
 // Follows the system output mute state and volume through CRAS, which already
 // runs in the browser process. CrasAudioHandler doesn't notify observers when
@@ -61,19 +71,43 @@ class OutputVolumeMonitorChromeOS
  private:
   void NotifyIfChanged() {
     std::optional<OutputVolumeState> state = GetState();
+    if (!state) {
+      settle_timer_.Stop();
+      last_state_ = std::nullopt;
+      return;
+    }
     if (state == last_state_) {
+      settle_timer_.Stop();
+      return;
+    }
+    // Muting silences all playback immediately, so report without waiting.
+    if (state->muted) {
+      settle_timer_.Stop();
+      last_state_ = state;
+      callback_.Run(*state);
+      return;
+    }
+    // ChromeOS CRAS only: wait briefly so slider drags and unmute-from-0%
+    // D-Bus updates settle before notifying cross-platform observers.
+    settle_timer_.Start(FROM_HERE, kVolumeSettleDelay, this,
+                        &OutputVolumeMonitorChromeOS::ReportSettledState);
+  }
+
+  void ReportSettledState() {
+    std::optional<OutputVolumeState> state = GetState();
+    if (!state || state == last_state_) {
       return;
     }
     last_state_ = state;
-    if (state) {
-      callback_.Run(*state);
-    }
+    callback_.Run(*state);
   }
 
   // `CrasAudioHandler` outlives the browser's profiles, hence TTC sessions.
   const raw_ref<ash::CrasAudioHandler> handler_;
   const StateChangedCallback callback_;
   std::optional<OutputVolumeState> last_state_;
+  // ChromeOS CRAS only: coalesces transient non-mute volume updates.
+  base::OneShotTimer settle_timer_;
   base::ScopedObservation<ash::CrasAudioHandler,
                           ash::CrasAudioHandler::AudioObserver>
       observation_{this};

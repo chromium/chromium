@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -20,6 +21,8 @@
 namespace ttc {
 
 namespace {
+
+constexpr base::TimeDelta kSettleDelay = base::Milliseconds(200);
 
 // Returns an output node that isn't the primary active one, or 0.
 uint64_t OtherOutputNode(ash::CrasAudioHandler& cras) {
@@ -37,7 +40,8 @@ class OutputVolumeMonitorChromeOSTest : public testing::Test {
  protected:
   ash::CrasAudioHandler& cras() { return cras_audio_handler_.Get(); }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   std::vector<OutputVolumeState> reported_;
   std::unique_ptr<OutputVolumeMonitor> monitor_ =
@@ -62,12 +66,17 @@ TEST_F(OutputVolumeMonitorChromeOSTest, ReadsMuteAndVolume) {
 TEST_F(OutputVolumeMonitorChromeOSTest, ReportsMuteChangesOnce) {
   ASSERT_TRUE(monitor_);
   cras().SetOutputVolumePercent(50);
+  task_environment_.FastForwardBy(kSettleDelay);
   reported_.clear();
 
   cras().SetOutputMute(true);
+  // Muting reports immediately.
+  EXPECT_THAT(reported_, testing::ElementsAre(
+                             OutputVolumeState{.muted = true, .level = 0.5f}));
   // Already muted: nothing new to report.
   cras().SetOutputMute(true);
   cras().SetOutputMute(false);
+  task_environment_.FastForwardBy(kSettleDelay);
 
   EXPECT_THAT(reported_, testing::ElementsAre(
                              OutputVolumeState{.muted = true, .level = 0.5f},
@@ -80,9 +89,67 @@ TEST_F(OutputVolumeMonitorChromeOSTest, ReportsVolumeChangesOnce) {
   cras().SetOutputVolumePercent(5);
   // Same volume again: nothing new to report.
   cras().SetOutputVolumePercent(5);
+  task_environment_.FastForwardBy(kSettleDelay);
 
   EXPECT_THAT(reported_, testing::ElementsAre(OutputVolumeState{
                              .muted = false, .level = 0.05f}));
+}
+
+// ChromeOS unmute-from-0% sets mute=false synchronously before CRAS echoes the
+// new volume over D-Bus. Coalescing hides the transient {muted: false, 0.0}.
+TEST_F(OutputVolumeMonitorChromeOSTest,
+       UnmuteFromZeroCoalescesAsyncVolumeRestore) {
+  ASSERT_TRUE(monitor_);
+  cras().SetOutputVolumePercent(0);
+  cras().SetOutputMute(true);
+  reported_.clear();
+
+  cras().SetOutputMute(false);
+  EXPECT_TRUE(reported_.empty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+  cras().SetOutputVolumePercent(50);
+  EXPECT_TRUE(reported_.empty());
+
+  task_environment_.FastForwardBy(kSettleDelay);
+  EXPECT_THAT(reported_, testing::ElementsAre(
+                             OutputVolumeState{.muted = false, .level = 0.5f}));
+}
+
+// Dragging the ChromeOS volume slider down to 0%/mute crosses low volume steps
+// before muting. Only the final mute should be reported, immediately.
+TEST_F(OutputVolumeMonitorChromeOSTest, DragDownToMuteReportsOnlyMute) {
+  ASSERT_TRUE(monitor_);
+  cras().SetOutputVolumePercent(50);
+  task_environment_.FastForwardBy(kSettleDelay);
+  reported_.clear();
+
+  cras().SetOutputVolumePercent(15);
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  cras().SetOutputVolumePercent(5);
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  cras().SetOutputVolumePercent(0);
+  cras().SetOutputMute(true);
+
+  EXPECT_THAT(reported_, testing::ElementsAre(
+                             OutputVolumeState{.muted = true, .level = 0.0f}));
+  task_environment_.FastForwardBy(kSettleDelay);
+  EXPECT_EQ(reported_.size(), 1u);
+}
+
+TEST_F(OutputVolumeMonitorChromeOSTest,
+       TransientVolumeReturningToLastStateIsIgnored) {
+  ASSERT_TRUE(monitor_);
+  cras().SetOutputVolumePercent(50);
+  task_environment_.FastForwardBy(kSettleDelay);
+  reported_.clear();
+
+  cras().SetOutputVolumePercent(10);
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  cras().SetOutputVolumePercent(50);
+  task_environment_.FastForwardBy(kSettleDelay);
+
+  EXPECT_TRUE(reported_.empty());
 }
 
 // CRAS applies one volume to all active outputs, whichever reports it.
@@ -92,10 +159,12 @@ TEST_F(OutputVolumeMonitorChromeOSTest, ReportsVolumeOfSecondaryActiveOutput) {
   const uint64_t other = OtherOutputNode(cras());
   ASSERT_NE(other, 0u);
   ASSERT_TRUE(cras().SetActiveOutputNodes({primary, other}));
+  task_environment_.FastForwardBy(kSettleDelay);
   reported_.clear();
 
   ash::FakeCrasAudioClient::Get()->NotifyOutputNodeVolumeChangedForTesting(
       other, 30);
+  task_environment_.FastForwardBy(kSettleDelay);
 
   EXPECT_THAT(reported_, testing::ElementsAre(
                              OutputVolumeState{.muted = false, .level = 0.3f}));
@@ -112,6 +181,7 @@ TEST_F(OutputVolumeMonitorChromeOSTest, ReportsActiveOutputChange) {
   reported_.clear();
 
   ASSERT_TRUE(cras().SetActiveOutputNodes({other}));
+  task_environment_.FastForwardBy(kSettleDelay);
 
   EXPECT_THAT(reported_, testing::ElementsAre(
                              OutputVolumeState{.muted = false, .level = 0.2f}));
@@ -131,6 +201,7 @@ TEST_F(OutputVolumeMonitorChromeOSTest, UnknownWithoutActiveOutput) {
 
   // A known state is reported again once an output is active.
   ASSERT_TRUE(cras().SetActiveOutputNodes({primary}));
+  task_environment_.FastForwardBy(kSettleDelay);
   EXPECT_EQ(reported_.size(), 1u);
 }
 
