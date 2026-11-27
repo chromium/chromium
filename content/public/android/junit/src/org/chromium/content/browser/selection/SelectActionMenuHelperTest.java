@@ -6,10 +6,14 @@ package org.chromium.content.browser.selection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -19,6 +23,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,6 +58,7 @@ public class SelectActionMenuHelperTest {
     @Mock private Context mContext;
     @Mock private TypedArray mTypedArray;
     @Mock private PackageManager mPackageManager;
+    @Mock private Drawable mDrawable;
 
     // Passing a null delegate will just build the items as they are with no customization.
     private final SelectActionMenuHelper.ItemBuilder mBuilder =
@@ -281,7 +287,8 @@ public class SelectActionMenuHelperTest {
     public void testAddTextProcessingItems() {
         ContextUtils.initApplicationContextForTests(mContext);
         List<ResolveInfo> list2 = new ArrayList<>();
-        ResolveInfo resolveInfo2 = createResolveInfoWithActivityInfo("ProcessTextActivity2", true);
+        ResolveInfo resolveInfo2 =
+                spy(createResolveInfoWithActivityInfo("ProcessTextActivity2", true));
         list2.add(resolveInfo2);
         doReturn(mPackageManager).when(mContext).getPackageManager();
         when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list2);
@@ -301,6 +308,8 @@ public class SelectActionMenuHelperTest {
         List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
         assertNotNull(menuItems);
         assertEquals(1, menuItems.size());
+        assertNull(menuItems.get(0).getIcon(mContext));
+        verify(resolveInfo2, never()).loadIcon(any());
 
         pendingMenu = new PendingSelectionMenu(mContext);
         SelectActionMenuHelper.addTextProcessingItems(
@@ -355,6 +364,80 @@ public class SelectActionMenuHelperTest {
                         < SelectionMenuItem.ItemGroupOffset.TEXT_PROCESSING_ITEMS);
     }
 
+    @Test
+    @Feature({"TextInput"})
+    public void testUntrustedIcons_areNotLoaded() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        List<ResolveInfo> resolveInfoList = new ArrayList<>();
+        ResolveInfo resolveInfo =
+                spy(createResolveInfoWithActivityInfo("ProcessTextActivity2", true));
+        resolveInfo.activityInfo.packageName = "ProcessTextActivity2";
+        resolveInfoList.add(resolveInfo);
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt()))
+                .thenReturn(resolveInfoList);
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate() {
+                    @Override
+                    public boolean shouldLoadTextProcessingIcons() {
+                        return false;
+                    }
+                };
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        SelectActionMenuHelper.addTextProcessingItems(
+                pendingMenu,
+                mContext,
+                MenuType.FLOATING,
+                false,
+                true,
+                "test",
+                true,
+                mBuilder,
+                selectionActionMenuDelegate);
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertNotNull(menuItems);
+        assertEquals(1, menuItems.size());
+        assertNull(menuItems.get(0).getIcon(mContext));
+        verify(resolveInfo, never()).loadIcon(any());
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void testUntrustedIcons_areLoaded_whenEnabledInDelegate() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        List<ResolveInfo> resolveInfoList = new ArrayList<>();
+        ResolveInfo resolveInfo =
+                spy(createResolveInfoWithActivityInfo("ProcessTextActivity2", true));
+        resolveInfo.activityInfo.packageName = "ProcessTextActivity2";
+        resolveInfoList.add(resolveInfo);
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt()))
+                .thenReturn(resolveInfoList);
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate() {
+                    @Override
+                    public boolean shouldLoadTextProcessingIcons() {
+                        return true;
+                    }
+                };
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        SelectActionMenuHelper.addTextProcessingItems(
+                pendingMenu,
+                mContext,
+                MenuType.FLOATING,
+                false,
+                true,
+                "test",
+                true,
+                mBuilder,
+                selectionActionMenuDelegate);
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertNotNull(menuItems);
+        assertEquals(1, menuItems.size());
+        assertEquals(mDrawable, menuItems.get(0).getIcon(mContext));
+        verify(resolveInfo).loadIcon(any());
+    }
+
     private ResolveInfo createResolveInfoWithActivityInfo(String activityName, boolean exported) {
         String packageName = "org.chromium.content.browser.selection.SelectActionMenuHelperTest";
 
@@ -370,6 +453,11 @@ public class SelectActionMenuHelperTest {
                     @Override
                     public CharSequence loadLabel(PackageManager pm) {
                         return "TEST_LABEL";
+                    }
+
+                    @Override
+                    public Drawable loadIcon(PackageManager pm) {
+                        return mDrawable;
                     }
                 };
         resolveInfo.activityInfo = activityInfo;

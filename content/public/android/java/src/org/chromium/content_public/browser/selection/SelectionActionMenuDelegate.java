@@ -124,4 +124,13 @@ public interface SelectionActionMenuDelegate {
     default @Nullable String getWebSearchMenuItemTitle(Context context, String selectedText) {
         return null;
     }
+
+    /**
+     * @return whether to load menu icons from other apps in the selection menu. This only applies
+     *     to text processing menu items which are provided by apps that handle PROCESS_TEXT
+     *     intents. See crbug.com/583315039.
+     */
+    default boolean shouldLoadTextProcessingIcons() {
+        return false;
+    }
 }

@@ -309,27 +309,30 @@ public class SelectActionMenuHelper {
             return;
         }
         final PackageManager packageManager = context.getPackageManager();
+        boolean shouldLoadIcon =
+                selectionActionMenuDelegate != null
+                        && selectionActionMenuDelegate.shouldLoadTextProcessingIcons();
         for (int i = 0; i < supportedActivities.size(); i++) {
             int category = ItemGroupOffset.TEXT_PROCESSING_ITEMS;
             int order = i;
             ResolveInfo resolveInfo = supportedActivities.get(i);
             if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
             CharSequence title = resolveInfo.loadLabel(packageManager);
-            Drawable icon;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
-                    StrictModeContext ignored2 = StrictModeContext.allowUnbufferedIo()) {
-                icon = resolveInfo.loadIcon(packageManager);
-            }
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
-            menu.maybeAddMenuItem(
-                    builder.buildItem(
-                            new SelectionMenuItem.Builder(title)
-                                    .setId(Menu.NONE)
-                                    .setGroupId(R.id.select_action_menu_text_processing_items)
-                                    .setIcon(icon)
-                                    .setOrderAndCategory(order, category)
-                                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                                    .setIntent(intent)));
+            SelectionMenuItem.Builder item =
+                    new SelectionMenuItem.Builder(title)
+                            .setId(Menu.NONE)
+                            .setGroupId(R.id.select_action_menu_text_processing_items)
+                            .setOrderAndCategory(order, category)
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                            .setIntent(intent);
+            if (shouldLoadIcon) {
+                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
+                        StrictModeContext ignored2 = StrictModeContext.allowUnbufferedIo()) {
+                    item.setIcon(resolveInfo.loadIcon(packageManager));
+                }
+            }
+            menu.maybeAddMenuItem(builder.buildItem(item));
         }
     }
 

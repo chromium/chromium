@@ -61,4 +61,11 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
         return mAutofillSelectionMenuItemHelper != null
                 && mAutofillSelectionMenuItemHelper.handleMenuItemClick(item);
     }
+
+    @Override
+    public boolean shouldLoadTextProcessingIcons() {
+        // This is the base class for all WebView delegates. WebView menus show
+        // icons so return true to ensure text processing icons are loaded.
+        return true;
+    }
 }
