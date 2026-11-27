@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_NOTIFICATION_UTILS_H_
 #define CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_NOTIFICATION_UTILS_H_
 
-class Profile;
-
 namespace message_center {
 class Notification;
 }  // namespace message_center
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -28,10 +30,11 @@ void UpdateNotificationIcon(message_center::Notification* notification,
                             const CupsPrintJob& job);
 
 // Updates the body message of the CUPS notification based on the current state
-// of `job`.
+// of `job`. `user` is the user who issued the `job`. Its profile must be
+// already loaded, and its AppService must be registered.
 void UpdateNotificationBodyMessage(message_center::Notification* notification,
                                    const CupsPrintJob& job,
-                                   Profile& profile);
+                                   const user_manager::User& user);
 
 }  // namespace printing::internal
 }  // namespace ash

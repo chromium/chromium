@@ -7,15 +7,19 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/branded_strings.h"
 #include "chromeos/printing/printer_error_codes.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -26,18 +30,18 @@ namespace {
 
 using ::chromeos::PrinterErrorCode;
 
-std::u16string GetAppShortNameUTF16(Profile* profile,
+// The AppService for the user represented by `account_id` must be registered.
+std::u16string GetAppShortNameUTF16(const AccountId& account_id,
                                     const std::string& app_id) {
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    std::optional<std::u16string> app_name;
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->AppRegistryCache()
-        .ForOneApp(app_id, [&app_name](const apps::AppUpdate& update) {
-          app_name = base::UTF8ToUTF16(update.ShortName());
-        });
-    if (app_name) {
-      return *app_name;
-    }
+  apps::AppService& app_service =
+      CHECK_DEREF(apps::AppServiceRegistry::Get()->Find(account_id));
+  std::optional<std::u16string> app_name;
+  app_service.AppRegistryCache().ForOneApp(
+      app_id, [&app_name](const apps::AppUpdate& update) {
+        app_name = base::UTF8ToUTF16(update.ShortName());
+      });
+  if (app_name) {
+    return *app_name;
   }
   // If no app name could be inferred, go with `Chrome` as a fallback option.
   return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
@@ -98,16 +102,24 @@ std::u16string GetNotificationTitleForError(const CupsPrintJob& job) {
 
 std::u16string GetNotificationBodyMessageForUnauthorizedClient(
     const CupsPrintJob& job,
-    const Profile& profile) {
+    const user_manager::User& user) {
   const std::u16string printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
   bool send_username_and_filename_policy_enabled =
-      profile.GetPrefs()->GetBoolean(
-          ash::prefs::kPrintingSendUsernameAndFilenameEnabled);
+      CHECK_DEREF(user.GetProfilePrefs())
+          .GetBoolean(ash::prefs::kPrintingSendUsernameAndFilenameEnabled);
   if (send_username_and_filename_policy_enabled) {
+    // Only the users with GAIA account have a user name to be shown.
+    // For other sessions, such as Kiosk, Managed Guest Session or Guest,
+    // an empty string is used, which is consistent with the primary account
+    // of IdentityManager. Use the display email (rather than the canonical
+    // email of AccountId), which is also sent to the printer as the user
+    // name.
+    const std::string user_name =
+        user.HasGaiaAccount() ? user.GetDisplayEmail() : std::string();
     return l10n_util::GetStringFUTF16(
         IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE,
-        base::UTF8ToUTF16(profile.GetProfileUserName()), printer_name);
+        base::UTF8ToUTF16(user_name), printer_name);
   } else {
     return l10n_util::GetStringFUTF16(
         IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE,
@@ -117,10 +129,10 @@ std::u16string GetNotificationBodyMessageForUnauthorizedClient(
 
 std::u16string GetNotificationBodyMessageForInProgressJob(
     const CupsPrintJob& job,
-    Profile& profile) {
+    const AccountId& account_id) {
   const std::u16string printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
-  auto app_name = GetAppShortNameUTF16(&profile, job.source_id());
+  auto app_name = GetAppShortNameUTF16(account_id, job.source_id());
   if (job.total_page_number() > 1) {
     const std::u16string pages =
         base::NumberToString16(job.total_page_number());
@@ -136,22 +148,22 @@ std::u16string GetNotificationBodyMessageForInProgressJob(
 
 std::u16string GetNotificationBodyMessageForCompletedJob(
     const CupsPrintJob& job,
-    Profile& profile) {
+    const AccountId& account_id) {
   const std::u16string printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
   return l10n_util::GetStringFUTF16(
       IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_DONE,
-      GetAppShortNameUTF16(&profile, job.source_id()), printer_name);
+      GetAppShortNameUTF16(account_id, job.source_id()), printer_name);
 }
 
 std::u16string GetNotificationBodyMessageForInterruptedJob(
     const CupsPrintJob& job,
-    Profile& profile) {
+    const AccountId& account_id) {
   const std::u16string printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
   return l10n_util::GetStringFUTF16(
       IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_INTERRUPTED,
-      GetAppShortNameUTF16(&profile, job.source_id()), printer_name);
+      GetAppShortNameUTF16(account_id, job.source_id()), printer_name);
 }
 
 }  // namespace
@@ -216,13 +228,14 @@ void UpdateNotificationIcon(message_center::Notification* notification,
 
 void UpdateNotificationBodyMessage(message_center::Notification* notification,
                                    const CupsPrintJob& job,
-                                   Profile& profile) {
+                                   const user_manager::User& user) {
   if (job.error_code() == PrinterErrorCode::CLIENT_UNAUTHORIZED) {
     notification->set_message(
-        GetNotificationBodyMessageForUnauthorizedClient(job, profile));
+        GetNotificationBodyMessageForUnauthorizedClient(job, user));
     return;
   }
 
+  const AccountId& account_id = user.GetAccountId();
   switch (job.state()) {
     case CupsPrintJob::State::STATE_WAITING:
     case CupsPrintJob::State::STATE_STARTED:
@@ -230,16 +243,16 @@ void UpdateNotificationBodyMessage(message_center::Notification* notification,
     case CupsPrintJob::State::STATE_SUSPENDED:
     case CupsPrintJob::State::STATE_RESUMED:
       notification->set_message(
-          GetNotificationBodyMessageForInProgressJob(job, profile));
+          GetNotificationBodyMessageForInProgressJob(job, account_id));
       return;
     case CupsPrintJob::State::STATE_DOCUMENT_DONE:
       notification->set_message(
-          GetNotificationBodyMessageForCompletedJob(job, profile));
+          GetNotificationBodyMessageForCompletedJob(job, account_id));
       return;
     case CupsPrintJob::State::STATE_FAILED:
     case CupsPrintJob::State::STATE_ERROR:
       notification->set_message(
-          GetNotificationBodyMessageForInterruptedJob(job, profile));
+          GetNotificationBodyMessageForInterruptedJob(job, account_id));
       return;
     case CupsPrintJob::State::STATE_CANCELLED:
       NOTREACHED();

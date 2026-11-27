@@ -93,7 +93,7 @@ CupsPrintJobNotification::CreateNotification() {
   printing::internal::UpdateNotificationTitle(notification.get(), *print_job_);
   printing::internal::UpdateNotificationIcon(notification.get(), *print_job_);
   printing::internal::UpdateNotificationBodyMessage(notification.get(),
-                                                    *print_job_, *profile_);
+                                                    *print_job_, *user_);
   return notification;
 }
 

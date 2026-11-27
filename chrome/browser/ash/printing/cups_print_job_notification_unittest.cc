@@ -6,10 +6,12 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
@@ -21,6 +23,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
@@ -126,6 +130,8 @@ class CupsPrintJobNotificationTest : public testing::Test,
         notification_manager_.get(), job, profile_);
   }
 
+  TestingProfile* profile() { return profile_; }
+
   std::u16string GetExpectedNotificationAppName() const {
     return IsWebPrintingTest()
                ? kAppName16
@@ -147,6 +153,9 @@ class CupsPrintJobNotificationTest : public testing::Test,
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  // Must outlive the Profiles, so that AppServiceProxy can be registered on
+  // the Profile creation and unregistered on its destruction.
+  apps::AppServiceRegistry app_service_registry_;
   std::unique_ptr<test::UserSessionTestEnvironment>
       user_session_test_environment_;
   raw_ptr<const user_manager::User> user_ = nullptr;
@@ -180,6 +189,35 @@ TEST_P(CupsPrintJobNotificationTest, ClientUnauthorized) {
               Eq(l10n_util::GetStringFUTF16(
                   IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE,
                   kPrinterName16)))));
+}
+
+// Validates notification for the CLIENT_UNAUTHORIZED error, with the user name
+// sent to the printer.
+TEST_P(CupsPrintJobNotificationTest, ClientUnauthorizedWithUserName) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrintingSendUsernameAndFilenameEnabled, true);
+  CupsPrintJob job = CreateCupsPrintJob(kPrinterName, /*total_page_number=*/1);
+
+  // Create notification.
+  auto cups_notification = CreateNotificationForJob(job.GetWeakPtr());
+
+  // Dispatch an update to move it to the FAILED state.
+  job.set_error_code(chromeos::PrinterErrorCode::CLIENT_UNAUTHORIZED);
+  job.set_state(CupsPrintJob::State::STATE_FAILED);
+  cups_notification->OnPrintJobStatusUpdated();
+
+  EXPECT_THAT(
+      GetNotification(job),
+      AllOf(
+          Property(&message_center::Notification::title,
+                   Eq(l10n_util::GetStringUTF16(
+                       IDS_PRINT_JOB_AUTHORIZATION_ERROR_NOTIFICATION_TITLE))),
+          Property(&message_center::Notification::message,
+                   Eq(l10n_util::GetStringFUTF16(
+                       IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE,
+                       base::UTF8ToUTF16(
+                           user_manager::StubAccountId().GetUserEmail()),
+                       kPrinterName16)))));
 }
 
 // Validates notification for a running job.
