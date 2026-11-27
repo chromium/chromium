@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/renderer/bindings/core/v8/async_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl_bigint.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -212,6 +213,54 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_EQ("foo", record[0].first);
     EXPECT_EQ("Hello, World!", record[0].second[0]);
     EXPECT_EQ("Hi, Mom!", record[0].second[1]);
+  }
+}
+
+TEST(NativeValueTraitsImplTest, IDLAsyncSequence) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  {
+    // 1. If Type(V) is not Object, throw a TypeError.
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_FALSE(NativeValueTraits<IDLAsyncSequence<IDLString>>::NativeValue(
+        scope.GetIsolate(), V8String(scope.GetIsolate(), "not an object"),
+        exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
+  }
+  {
+    // An object with neither iteration method is step 3.2's TypeError.
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_FALSE(NativeValueTraits<IDLAsyncSequence<IDLString>>::NativeValue(
+        scope.GetIsolate(), v8::Object::New(scope.GetIsolate()),
+        exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
+  }
+  {
+    NonThrowableExceptionState exception_state;
+    EXPECT_TRUE(NativeValueTraits<IDLAsyncSequence<IDLString>>::NativeValue(
+        scope.GetIsolate(), v8::Array::New(scope.GetIsolate()),
+        exception_state));
+  }
+}
+
+TEST(NativeValueTraitsImplTest, IDLAsyncSequenceNullable) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  {
+    NonThrowableExceptionState exception_state;
+    EXPECT_FALSE(
+        NativeValueTraits<IDLNullable<IDLAsyncSequence<IDLString>>>::
+            NativeValue(scope.GetIsolate(), v8::Null(scope.GetIsolate()),
+                        exception_state));
+  }
+  {
+    NonThrowableExceptionState exception_state;
+    EXPECT_TRUE(
+        NativeValueTraits<IDLNullable<IDLAsyncSequence<IDLString>>>::
+            NativeValue(scope.GetIsolate(), v8::Array::New(scope.GetIsolate()),
+                        exception_state));
   }
 }
 

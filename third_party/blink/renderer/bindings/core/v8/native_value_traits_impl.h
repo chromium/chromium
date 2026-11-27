@@ -9,6 +9,7 @@
 #include <optional>
 #include <type_traits>
 
+#include "third_party/blink/renderer/bindings/core/v8/async_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/pass_as_span.h"

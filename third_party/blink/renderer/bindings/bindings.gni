@@ -23,6 +23,9 @@ blink_core_sources_bindings =
                     "core/v8/async_iterable.h",
                     "core/v8/async_iterator_base.cc",
                     "core/v8/async_iterator_base.h",
+                    "core/v8/async_sequence.cc",
+                    "core/v8/async_sequence.h",
+                    "core/v8/async_sequence_iterator.h",
                     "core/v8/binding_security.cc",
                     "core/v8/binding_security.h",
                     "core/v8/boxed_v8_module.h",
@@ -225,6 +228,7 @@ blink_modules_sources_bindings = get_path_info(
 bindings_unittest_files = get_path_info(
         [
           "core/v8/activity_logger_test.cc",
+          "core/v8/async_sequence_test.cc",
           "core/v8/bigint_test.cc",
           "core/v8/binding_security_test.cc",
           "core/v8/boxed_v8_module_test.cc",

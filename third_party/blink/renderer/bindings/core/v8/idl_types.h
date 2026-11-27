@@ -214,6 +214,19 @@ struct IDLArray final : public IDLBase {
       VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
 };
 
+// Async sequence types
+//
+// Unlike a sequence, an async_sequence<T> is not converted eagerly: the
+// conversion only looks the iteration method up, and the values are produced
+// later, one at a time, by an AsyncSequenceIterator<T>. The Blink type is
+// therefore a garbage-collected object rather than a vector.
+// https://webidl.spec.whatwg.org/#idl-async-iterable-type
+template <typename T>
+class AsyncSequence;
+
+template <typename T>
+struct IDLAsyncSequence final : public IDLBaseHelper<AsyncSequence<T>*> {};
+
 // Record types
 template <typename Key, typename Value>
 struct IDLRecord final : public IDLBase {
