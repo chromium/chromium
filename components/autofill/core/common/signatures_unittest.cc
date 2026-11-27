@@ -164,4 +164,23 @@ TEST(SignaturesTest, StructuralFormSignatureLarge) {
             CalculateStructuralFormSignature(large_form).value());
 }
 
+TEST(SignaturesTest, StrToHashKnownAnswers) {
+  EXPECT_EQ(StrToHash64Bit(""), 0xda39a3ee5e6b4b0dULL);
+  EXPECT_EQ(StrToHash32Bit(""), 0xda39a3eeU);
+  EXPECT_EQ(StrToHash3Bit(""), 6);
+  EXPECT_EQ(StrToHash3Bit(u""), 6);
+
+  EXPECT_EQ(StrToHash64Bit("abc"), 0xa9993e364706816aULL);
+  EXPECT_EQ(StrToHash32Bit("abc"), 0xa9993e36U);
+  EXPECT_EQ(StrToHash3Bit("abc"), 5);
+  EXPECT_EQ(StrToHash3Bit(u"abc"), 5);
+
+  EXPECT_EQ(StrToHash64Bit("The quick brown fox jumps over the lazy dog"),
+            0x2fd4e1c67a2d28fcULL);
+  EXPECT_EQ(StrToHash32Bit("The quick brown fox jumps over the lazy dog"),
+            0x2fd4e1c6U);
+  EXPECT_EQ(StrToHash3Bit("The quick brown fox jumps over the lazy dog"), 1);
+  EXPECT_EQ(StrToHash3Bit(u"The quick brown fox jumps over the lazy dog"), 1);
+}
+
 }  // namespace autofill

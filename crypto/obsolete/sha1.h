@@ -41,6 +41,10 @@ namespace ash::quick_start {
 std::string GetHashedAuthToken(std::string_view authentication_token);
 }  // namespace ash::quick_start
 
+namespace autofill {
+uint64_t StrToHash64Bit(std::string_view str);
+}  // namespace autofill
+
 namespace component_updater {
 std::string HashUsername(std::string_view username);
 }
@@ -120,6 +124,7 @@ class CRYPTO_EXPORT Sha1 {
       std::string_view data);
   friend std::string ash::quick_start::GetHashedAuthToken(
       std::string_view authentication_token);
+  friend uint64_t autofill::StrToHash64Bit(std::string_view str);
   friend std::string component_updater::HashUsername(std::string_view username);
   friend std::string net::ComputeSecWebSocketAccept(std::string_view key);
   friend std::array<uint8_t, crypto::obsolete::kSha1Size> net::Sha1ForNSSTrust(

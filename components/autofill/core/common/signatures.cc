@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/hash/sha1.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "crypto/obsolete/sha1.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -89,16 +90,6 @@ std::string CalculateAlternativeFormSignatureBase(const FormData& form_data) {
   }
 
   return base::StrCat({scheme, "://", host, form_signature_field_types});
-}
-
-template <size_t N>
-uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
-  static_assert(N <= 8u,
-                "Error: Can't pack more than 8 bytes into a uint64_t.");
-  uint64_t result = 0;
-  for (auto byte : bytes)
-    result = (result << 8) | byte;
-  return result;
 }
 
 }  // namespace
@@ -201,21 +192,17 @@ FieldSignature CalculateFieldSignatureForField(
 }
 
 uint64_t StrToHash64Bit(std::string_view str) {
-  auto bytes = base::as_byte_span(str);
-  const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::span(digest).first<8>());
+  const auto digest = crypto::obsolete::Sha1::Hash(str);
+  return base::U64FromBigEndian(base::span(digest).first<8>());
 }
 
 uint32_t StrToHash32Bit(std::string_view str) {
-  auto bytes = base::as_byte_span(str);
-  const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::span(digest).first<4>());
+  return static_cast<uint32_t>(StrToHash64Bit(str) >> 32);
 }
 
 int32_t StrToHash3Bit(std::string_view str) {
-  const base::SHA1Digest digest = base::SHA1Hash(base::as_byte_span(str));
   // Keep only the first 3 bits of the SHA1 hash.
-  return static_cast<int32_t>((digest[0] >> 5) & 0x07);
+  return static_cast<int32_t>(StrToHash64Bit(str) >> 61);
 }
 
 int32_t StrToHash3Bit(std::u16string_view str) {
