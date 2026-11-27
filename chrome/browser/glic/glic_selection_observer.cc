@@ -225,19 +225,21 @@ const std::u16string& GlicSelectionObserver::GetSelectedText() const {
 }
 
 void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
-    const std::u16string& selected_text) {
-  UpdateSelectionState(selected_text, /*is_pending_selection=*/false,
-                       SelectionSource::kContextMenu);
-}
-
-void GlicSelectionObserver::UpdateSelectionStateFromSmartSuggestionContextMenu(
-    const std::u16string& selected_text) {
+    content::RenderFrameHost* render_frame_host,
+    const std::u16string& selected_text,
+    SelectionSource source) {
+  bounds_retry_count_ = 0;
   ResetPendingSelection();
-  if (last_selected_text_ == selected_text && has_sent_selection_context()) {
+  if (render_frame_host && !selected_text.empty()) {
+    last_selection_frame_token_ = render_frame_host->GetGlobalFrameToken();
+  } else {
+    last_selection_frame_token_.reset();
+  }
+  if (source == SelectionSource::kAutomatic &&
+      last_selected_text_ == selected_text && has_sent_selection_context()) {
     return;
   }
-  UpdateSelectionState(selected_text, /*is_pending_selection=*/false,
-                       SelectionSource::kAutomatic);
+  UpdateSelectionState(selected_text, /*is_pending_selection=*/false, source);
 }
 
 bool GlicSelectionObserver::has_sent_selection_context() const {

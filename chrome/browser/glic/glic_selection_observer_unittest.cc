@@ -231,7 +231,8 @@ class ScopedTestSender {
     eligibility_helper_.reset();
   }
 
-  bool send_called() const { return send_called_; }
+  bool send_called() const { return send_count_ > 0; }
+  int send_count() const { return send_count_; }
   const std::optional<std::u16string>& last_sent_text() const {
     return last_sent_text_;
   }
@@ -242,7 +243,7 @@ class ScopedTestSender {
     ON_CALL(instance_, IsLiveMode()).WillByDefault(Return(false));
     ON_CALL(instance_, SendAdditionalContext)
         .WillByDefault([this](mojom::AdditionalContextPtr context) {
-          send_called_ = true;
+          send_count_++;
           if (!context || context->parts.empty() ||
               !context->parts[0]->is_data()) {
             last_sent_text_ = u"";
@@ -273,7 +274,7 @@ class ScopedTestSender {
   std::unique_ptr<FakePageContextEligibilityHelper> eligibility_helper_;
   std::unique_ptr<FakeGlicSidePanelCoordinator> side_panel_coordinator_;
   std::unique_ptr<SelectionContextSender> sender_;
-  bool send_called_ = false;
+  int send_count_ = 0;
   std::optional<std::u16string> last_sent_text_;
 };
 
@@ -1324,8 +1325,11 @@ TEST_F(GlicSelectionObserverTest,
 
   // Set selection context sent (e.g. from context menu invocation in editable
   // or non-editable field).
-  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  observer->UpdateSelectionStateFromContextMenu(
+      main_rfh(), u"Selected text context",
+      GlicSelectionObserver::SelectionSource::kContextMenu);
   EXPECT_TRUE(observer->has_sent_selection_context());
+  EXPECT_EQ(main_rfh(), observer->GetSelectedFrame());
 
   // Simulate left click down on the page (clicking away).
   blink::WebMouseEvent mouse_down(
@@ -1338,9 +1342,10 @@ TEST_F(GlicSelectionObserverTest,
                          content::RenderWidgetHost::InputEventObserver::
                              InputEventSource::kUnknown);
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !observer->has_sent_selection_context(); }));
+      [observer]() { return !observer->has_sent_selection_context(); }));
 
   // Verify that the selection context has been cleared and empty context sent.
+  EXPECT_EQ(nullptr, observer->GetSelectedFrame());
   EXPECT_TRUE(sender.send_called());
   EXPECT_EQ(u"", *sender.last_sent_text());
 }
@@ -1355,7 +1360,9 @@ TEST_F(GlicSelectionObserverTest,
 
   observer->set_call_base_update_selection_state(true);
 
-  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  observer->UpdateSelectionStateFromContextMenu(
+      main_rfh(), u"Selected text context",
+      GlicSelectionObserver::SelectionSource::kContextMenu);
   EXPECT_TRUE(observer->has_sent_selection_context());
 
   // Simulate keyboard/programmatic deselection.
@@ -1380,7 +1387,9 @@ TEST_F(GlicSelectionObserverTest,
   // Navigate to an unshareable chrome:// URL.
   NavigateAndCommit(GURL("chrome://version"));
 
-  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  observer->UpdateSelectionStateFromContextMenu(
+      main_rfh(), u"Selected text context",
+      GlicSelectionObserver::SelectionSource::kContextMenu);
   EXPECT_TRUE(observer->has_sent_selection_context());
 
   // Simulate deselection on unshareable page.
@@ -1401,7 +1410,9 @@ TEST_F(GlicSelectionObserverTest,
 
   observer->set_call_base_update_selection_state(true);
 
-  observer->UpdateSelectionStateFromContextMenu(u"Selected text context");
+  observer->UpdateSelectionStateFromContextMenu(
+      main_rfh(), u"Selected text context",
+      GlicSelectionObserver::SelectionSource::kContextMenu);
   EXPECT_TRUE(observer->has_sent_selection_context());
 
   // Navigate to a new primary page.
@@ -1410,8 +1421,46 @@ TEST_F(GlicSelectionObserverTest,
   // Verify that navigating cleared the selection context and notified the
   // panel.
   EXPECT_FALSE(observer->has_sent_selection_context());
+  EXPECT_EQ(nullptr, observer->GetSelectedFrame());
   EXPECT_TRUE(sender.send_called());
   EXPECT_EQ(u"", *sender.last_sent_text());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       AutomaticContextMenuSelectionSyncsDedupesAndUpdatesFrame) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  ScopedTestSender sender(web_contents(), mock_glic_service(),
+                          /*panel_showing=*/true);
+  observer->set_call_base_update_selection_state(true);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+  ASSERT_TRUE(child_rfh);
+
+  observer->UpdateSelectionStateFromContextMenu(
+      main_rfh(), u"pressure",
+      GlicSelectionObserver::SelectionSource::kAutomatic);
+  EXPECT_EQ(main_rfh(), observer->GetSelectedFrame());
+  EXPECT_EQ(u"pressure", observer->GetSelectedText());
+  EXPECT_EQ(1, sender.send_count());
+  EXPECT_EQ(u"pressure", *sender.last_sent_text());
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+
+  // Selecting the same text in a different frame skips re-sending to the panel
+  // while still refreshing the tracked frame token.
+  observer->UpdateSelectionStateFromContextMenu(
+      child_rfh, u"pressure",
+      GlicSelectionObserver::SelectionSource::kAutomatic);
+  EXPECT_EQ(child_rfh, observer->GetSelectedFrame());
+  EXPECT_EQ(1, sender.send_count());
+
+  observer->UpdateSelectionStateFromContextMenu(
+      nullptr, u"pressure",
+      GlicSelectionObserver::SelectionSource::kContextMenu);
+  EXPECT_EQ(nullptr, observer->GetSelectedFrame());
 }
 
 TEST_F(GlicSelectionObserverTest, DismissUIClearsPendingSelection) {

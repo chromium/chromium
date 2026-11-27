@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
@@ -773,6 +774,32 @@ IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
                                        u"line1 line2 line3  line4"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
+                       GlicInvokeTracksSelectedTextAndFrame) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* selection_observer =
+      GlicSelectionObserver::From(browser()->tab_strip_model()->GetActiveTab());
+  ASSERT_TRUE(selection_observer);
+  EXPECT_EQ(selection_observer->GetSelectedFrame(), nullptr);
+
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"   valid text   ";
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, /*event_flags=*/0);
+  EXPECT_EQ(selection_observer->GetSelectedText(), u"valid text");
+  EXPECT_EQ(selection_observer->GetSelectedFrame(),
+            web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(selection_observer->has_sent_selection_context());
+  ASSERT_OK(WaitForGlicOpen());
+}
+
 class GlicTextSelectionContextMenuGeicBrowserTest
     : public GlicContextMenuBrowserTestBase {
  public:
@@ -1475,6 +1502,11 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
       GlicSelectionObserver::From(browser()->tab_strip_model()->GetActiveTab());
   ASSERT_TRUE(selection_observer);
   EXPECT_EQ(selection_observer->GetSelectedText(), u"selected text");
+  EXPECT_EQ(selection_observer->GetSelectedFrame(),
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame());
 
   // Password fields with a selection should not show the item.
   content::ContextMenuParams password_params;
@@ -1484,6 +1516,60 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
       blink::mojom::FormControlType::kInputPassword;
   EXPECT_FALSE(CreateContextMenuWithParams(password_params)
                    ->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ContextMenuSelectionPreservesBoundsForSubsequentInvoke) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  // Select text inside an <input>: Blink reports selection bounds to
+  // WebContents, while GlicSelectionObserver ignores automatic editable
+  // selections until the user explicitly invokes the context menu.
+  web_contents->Focus();
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    const input = document.createElement('input');
+    input.value = 'pressure';
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+  )"));
+  content::WaitForCopyableViewInWebContents(web_contents);
+  ASSERT_TRUE(base::test::RunUntil([web_contents]() {
+    std::optional<gfx::Rect> bounds = web_contents->GetTextSelectionBounds(
+        web_contents->GetPrimaryMainFrame());
+    return bounds.has_value() && !bounds->IsEmpty();
+  }));
+  EXPECT_FALSE(selection_observer->GetCurrentSelectionBounds().has_value());
+
+  content::ContextMenuParams params;
+  params.selection_text = u"pressure";
+  params.is_editable = true;
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
+  auto menu = CreateContextMenuWithParams(params);
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION,
+                       /*event_flags=*/0);
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timed out waiting for the selection overlay."));
+
+  // Dismiss the context-menu overlay (matching user clicking Cancel) and invoke
+  // from the toolbar button: the observer must still resolve selection bounds.
+  controller->Close();
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_TRUE(selection_observer->GetCurrentSelectionBounds().has_value());
+
+  InvokeSelectionOverlay(*tab, ::selection::EntryPoint::kToolbarButton);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  controller->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,

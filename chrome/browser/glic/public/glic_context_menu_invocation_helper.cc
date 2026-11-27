@@ -89,7 +89,9 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
 #if !BUILDFLAG(IS_ANDROID)
       if (auto* observer = GlicSelectionObserver::From(tab)) {
         observer->UpdateSelectionStateFromContextMenu(
-            std::u16string(trimmed_selection));
+            content::RenderFrameHost::FromID(rfh_id),
+            std::u16string(trimmed_selection),
+            GlicSelectionObserver::SelectionSource::kContextMenu);
       }
 #endif
 
@@ -161,8 +163,9 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
     entry_point = ::selection::EntryPoint::kContextMenuText;
     if (auto* observer = GlicSelectionObserver::From(
             tabs::TabInterface::MaybeGetFromContents(web_contents))) {
-      observer->UpdateSelectionStateFromSmartSuggestionContextMenu(
-          std::u16string(trimmed_selection));
+      observer->UpdateSelectionStateFromContextMenu(
+          &frame, std::u16string(trimmed_selection),
+          GlicSelectionObserver::SelectionSource::kAutomatic);
     }
     selection_bounds =
         web_contents->GetTextSelectionBounds(&frame).value_or(gfx::Rect());

@@ -70,15 +70,14 @@ class GlicSelectionObserver
   std::optional<gfx::Rect> GetCurrentSelectionBounds() const override;
   const std::u16string& GetSelectedText() const override;
 
-  // Notifies the observer that text selection context was sent to the Glic
-  // panel from the context menu entry point.
-  void UpdateSelectionStateFromContextMenu(const std::u16string& selected_text);
-
-  // Notifies the observer that the smart suggestion context menu was invoked
-  // on `selected_text`, ensuring the selection is tracked (and sent to the
-  // panel when open) even for selections in editable fields.
-  void UpdateSelectionStateFromSmartSuggestionContextMenu(
-      const std::u16string& selected_text);
+  // Tracks `selected_text` from `render_frame_host` for a context menu
+  // invocation. Pass `SelectionSource::kContextMenu` when the caller already
+  // sent the selection to the panel, or `SelectionSource::kAutomatic` to send
+  // it when the panel is open.
+  void UpdateSelectionStateFromContextMenu(
+      content::RenderFrameHost* render_frame_host,
+      const std::u16string& selected_text,
+      SelectionSource source);
 
   bool has_sent_selection_context() const;
 
