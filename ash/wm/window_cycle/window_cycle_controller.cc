@@ -62,13 +62,6 @@ enum class AltTabMode {
   kMaxValue = kCurrentDesk,
 };
 
-// Returns the most recently active window from the |window_list| or nullptr
-// if the list is empty.
-aura::Window* GetActiveWindow(
-    const WindowCycleController::WindowList& window_list) {
-  return window_list.empty() ? nullptr : window_list[0];
-}
-
 void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
   // Report only for users who have 2 or more desks, since we're only interested
   // in seeing how users of Virtual Desks use window cycling.
@@ -444,7 +437,6 @@ void WindowCycleController::SaveCurrentActiveDeskAndWindow(
     const WindowCycleController::WindowList& window_list) {
   active_desk_container_id_before_cycle_ =
       desks_util::GetActiveDeskContainerId();
-  active_window_before_window_cycle_ = GetActiveWindow(window_list);
 }
 
 void WindowCycleController::Step(WindowCyclingDirection direction,
@@ -466,6 +458,8 @@ void WindowCycleController::StopCycling() {
   event_filter_.reset();
 
   desks_observation_.Reset();
+  const aura::Window* active_window_before_window_cycle =
+      window_cycle_list_->active_window_before_window_cycle();
   window_cycle_list_.reset();
 
   // We can't use the MRU window list here to get the active window, since
@@ -476,14 +470,13 @@ void WindowCycleController::StopCycling() {
       window_util::GetActiveWindow();
 
   if (active_window_after_window_cycle != nullptr &&
-      active_window_before_window_cycle_ != active_window_after_window_cycle) {
+      active_window_before_window_cycle != active_window_after_window_cycle) {
     Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
         TaskSwitchSource::WINDOW_CYCLE_CONTROLLER);
 
     ReportPossibleDesksSwitchStats(active_desk_container_id_before_cycle_);
   }
 
-  active_window_before_window_cycle_ = nullptr;
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
   Shell::Get()->event_rewriter_controller()->SetAltDownRemappingEnabled(true);
 }

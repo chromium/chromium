@@ -217,11 +217,6 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // is used to determine whether a desk switch occurred when cycling ends.
   int active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
 
-  // Tracks what Window was active when starting to cycle and used to determine
-  // if the active Window changed in when ending cycling.
-  raw_ptr<aura::Window, DanglingUntriaged> active_window_before_window_cycle_ =
-      nullptr;
-
   // Non-null while actively cycling.
   std::unique_ptr<WindowCycleEventFilter> event_filter_;
 

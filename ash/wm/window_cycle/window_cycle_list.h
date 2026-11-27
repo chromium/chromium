@@ -105,6 +105,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   const WindowList& windows_for_testing() const { return windows_; }
 
+  const aura::Window* active_window_before_window_cycle() {
+    return active_window_before_window_cycle_;
+  }
+
  private:
   friend class ModeSelectionWindowCycleControllerTest;
   friend class MultiUserWindowCycleControllerTest;
