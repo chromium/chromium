@@ -80,7 +80,7 @@ public class TestListComputerTest {
     }
 
     @Config(instrumentedPackages = {"org.example.pkg"})
-    @LooperMode(LooperMode.Mode.LEGACY)
+    @LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
     @RunWith(BlockJUnit4ClassRunner.class)
     public static class InstrumentedPackageTestClass {
         @Test
@@ -97,7 +97,7 @@ public class TestListComputerTest {
         var configs = computer.createJson().getJSONObject("configs");
         Assert.assertEquals(
                 "[\"org.example.pkg\"]",
-                configs.getJSONObject("LEGACY/LEGACY")
+                configs.getJSONObject("LEGACY/INSTRUMENTATION_TEST")
                         .getJSONArray("instrumentedPackages")
                         .toString());
         Assert.assertEquals(
@@ -112,7 +112,7 @@ public class TestListComputerTest {
                         .toString());
         Assert.assertEquals(
                 "[]",
-                configs.getJSONObject("LEGACY/LEGACY")
+                configs.getJSONObject("LEGACY/INSTRUMENTATION_TEST")
                         .getJSONArray("instrumentedClasses")
                         .toString());
     }
