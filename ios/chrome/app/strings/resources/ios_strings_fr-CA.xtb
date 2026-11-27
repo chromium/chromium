@@ -888,7 +888,7 @@
 <translation id="3767529805486761639">Menu Édition</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3779810277399252432">Pas de connexion Internet.</translation>
-<translation id="3782614601387961027">Ignorer l'avertissement</translation>
+<translation id="3782614601387961027">Fermer l'avertissement</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3793603310364129123">Moins d'étapes, des liens plus rapides</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -900,7 +900,7 @@
 <translation id="3818293389945649617">Rechercher le suivant</translation>
 <translation id="3819183753496523827">Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 mode de paiement}one{# mode de paiement}other{# modes de paiement}}</translation>
-<translation id="3831560640878483188">Ignorer l'avertissement?</translation>
+<translation id="3831560640878483188">Fermer l'avertissement?</translation>
 <translation id="3832419617903252251">Mot de passe enregistré uniquement sur cet appareil</translation>
 <translation id="3835964409414434850">Accéder à l'onglet suivant</translation>
 <translation id="3838691874161539578">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et mieux vous protéger en ligne</translation>

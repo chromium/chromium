@@ -1295,6 +1295,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="244071666433939959">Aplikace se otevírají v okně</translation>
 <translation id="2442916515643169563">Stín textu</translation>
 <translation id="2443487764245141020">Weby také mohou potřebovat rozpoznávat vaše zařízení pomocí identifikátoru</translation>
+<translation id="2444282212665587861">aktualizace, aktualizovat, upgrade, verze, sestavení, informace, zkontrolovat aktualizace</translation>
 <translation id="244475495405467108">Zavřít karty vlevo</translation>
 <translation id="2444874983932528148">Snadno pokračujte, kde jste skončili</translation>
 <translation id="2445081178310039857">Je vyžadován kořenový adresář rozšíření.</translation>
@@ -2130,6 +2131,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3321512411079201586">&amp;Izolováno</translation>
 <translation id="3323288183237359315">Nainstalovat pro Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Kvůli ochraně vašeho soukromí byla jednomu webu odebrána oprávnění}few{Kvůli ochraně vašeho soukromí byla některým webům odebrána oprávnění}many{Kvůli ochraně vašeho soukromí byla některým webům odebrána oprávnění}other{Kvůli ochraně vašeho soukromí byla některým webům odebrána oprávnění}}</translation>
+<translation id="3325561120400598624">Chaty jsou kontrolovány a používají se k trénování modelů generativní umělé inteligence. Gemini je umělá inteligence a může se mýlit. Některý obsah nemusí být vhodný pro každého. Můžete <ph name="BEGIN_LINK_MANAGE_HISTORY" />spravovat svou historii<ph name="END_LINK_MANAGE_HISTORY" />, včetně <ph name="BEGIN_LINK_LOCATION_INFO" />informací o poloze<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace o vašich volbách<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Styl</translation>
 <translation id="3331974543021145906">O aplikaci</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se přehrává v režimu obrazu v obraze</translation>
@@ -2255,6 +2257,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Nahrajte 1 soubor PDF, který chcete s otázkou použít}few{Nahrajte až # soubory PDF, které chcete s otázkou použít}many{Nahrajte až # souboru PDF, které chcete s otázkou použít}other{Nahrajte až # souborů PDF, které chcete s otázkou použít}}</translation>
 <translation id="3456750372063895499">Otevřít odkaz v i&amp;zolovaném okně</translation>
 <translation id="345693547134384690">Otevřít o&amp;brázek na nové kartě</translation>
+<translation id="3456949031754827166">Přeuspořádat</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Zachovat skupinu}few{Zachovat skupiny}many{Zachovat skupiny}other{Zachovat skupiny}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Byla smazána 1 záložka}few{Byly smazány # záložky}many{Bylo smazáno # záložky}other{Bylo smazáno # záložek}}</translation>
 <translation id="3471687177769494956">Upravit navigační zkratku</translation>
@@ -3307,6 +3310,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4602776638371779614">Tato karta aktivně hledá zařízení Bluetooth</translation>
 <translation id="4605026046465576953">Tuto aplikaci nelze otevřít, protože nemáte oprávnění ke spouštění izolovaných webových aplikací</translation>
 <translation id="4606551464649945562">Nepovolovat webům vytvořit 3D mapu okolí ani sledovat polohu kamery</translation>
+<translation id="4606965546067937011">rychlost, RAM, prodleva, zamrznutí, pád, zdroj, využití, baterie, optimalizátor, pomalé, paměť, spořič paměti</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Smazat skupinu karet?}few{Smazat skupiny karet?}many{Smazat skupiny karet?}other{Smazat skupiny karet?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Nahrajte 1 soubor, který chcete s otázkou použít}few{Nahrajte až # soubory, které chcete s otázkou použít}many{Nahrajte až # souboru, které chcete s otázkou použít}other{Nahrajte až # souborů, které chcete s otázkou použít}}</translation>
 <translation id="4608500690299898628">&amp;Najít...</translation>
@@ -4137,6 +4141,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5535769176698670170">Vyměnit s horním zobrazením</translation>
 <translation id="5536642445914063887">Přepnout profil</translation>
 <translation id="5537725057119320332">Odeslat</translation>
+<translation id="553876896781261711">smazat, odstranit, zabezpečení, ochrana soukromí, vyčištění, úložiště, resetovat, mezipaměť, soubory cookie, pomalé, rychlost, historie</translation>
 <translation id="5541091577812545428">Heslo nebylo změněno</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Kontrola stavu...</translation>
@@ -4725,6 +4730,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6214157047210274853">Upravit v Peněžence Google</translation>
 <translation id="621470880408090483">Nepovolovat webům připojení k zařízením Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Z bezpečnostních důvodů se <ph name="BRAND" /> po 1 minutě nečinnosti zamkne}few{Z bezpečnostních důvodů se <ph name="BRAND" /> po # minutách neaktivity zamkne}many{Z bezpečnostních důvodů se <ph name="BRAND" /> po # minutě neaktivity zamkne}other{Z bezpečnostních důvodů se <ph name="BRAND" /> po # minutách neaktivity zamkne}}</translation>
+<translation id="6215427500141060726">Chaty jsou kontrolovány a používají se k trénování modelů generativní umělé inteligence. Gemini je umělá inteligence a může se mýlit. Můžete <ph name="BEGIN_LINK_MANAGE_HISTORY" />spravovat svou historii<ph name="END_LINK_MANAGE_HISTORY" />, včetně <ph name="BEGIN_LINK_LOCATION_INFO" />informací o poloze<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace o vašich volbách<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Zamítnuté weby a aplikace</translation>
 <translation id="6216696360484424239">Přihlašovat se automaticky</translation>
 <translation id="6218961554829577610">Hlas se mi nelíbil</translation>
@@ -4876,6 +4882,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="639880411171387127">Váš výběr Google Lens. Stisknutím klávesy Enter nebo Backspace výběr Google Lens smažete</translation>
 <translation id="6400360390396538896">Vždy zapnuto <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Zrušit výběr skupiny karet</translation>
+<translation id="6401522392962817913">Pokračováním vyjadřujete souhlas se smluvními podmínkami Google Payments. Postup při zpracovávání vašich údajů popisuje upozornění ve věci ochrany soukromí. Vaše karta je uložena ve vašem účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Pokud chcete zjistit proč, kontaktujte vývojáře aplikace</translation>
 <translation id="6402921224457714577">Weby mohou žádat o ovládání a přeprogramování vašich zařízení MIDI</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
@@ -4964,6 +4971,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6499143127267478107">Rozpoznávání hostitele ve skriptu proxy serveru...</translation>
 <translation id="6503077044568424649">Nejnavštěvovanější</translation>
 <translation id="6504601948739128893">Nemohou používat písma nainstalovaná ve vašem zařízení</translation>
+<translation id="6505525633061207363">identifikační údaje, přihlášení, přístupový klíč, zámek, sejf, klíče, přihlásit se</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> chce do tohoto zařízení nainstalovat následující aplikaci:}few{<ph name="APP_NAME" /> chce do tohoto zařízení nainstalovat následující aplikace:}many{<ph name="APP_NAME" /> chce do tohoto zařízení nainstalovat následující aplikace:}other{<ph name="APP_NAME" /> chce do tohoto zařízení nainstalovat následující aplikace:}}</translation>
 <translation id="6508248480704296122">Souvisí s: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikace: <ph name="APP_NAME" /></translation>

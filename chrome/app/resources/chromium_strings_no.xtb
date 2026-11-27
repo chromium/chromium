@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Du kan fjerne dem når som helst. Chromium kan laste dem ned på nytt automatisk når et nettsted eller en funksjon trenger dem.</translation>
 <translation id="1793486931176048546">Klikk på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-varselet for å feste Chromium til oppgavelinjen for rask tilgang</translation>
 <translation id="1808667845054772817">Installer Chromium på nytt</translation>
+<translation id="1814482312667514397">Få de beste sikkerhetsfunksjonene i Chromium uansett hvor du er, med Chromium-appen på telefonen</translation>
 <translation id="1820835682567584003">Chromium prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chromium i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også utvidelsene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Neste gang du åpner Chromium på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å bruke Google Passordlagring.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 HID-enhet brukes av en eller flere Chromium-utvidelser}other{# HID-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="2403703063067034158">Oppstartsfeil: En annen forekomst av konfigureringen kjører for øyeblikket. Prøv på nytt senere.</translation>
+<translation id="241044568699443215">Ta med deg sikkerheten til Chromium på farten med Chromium-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Åpne linker i Chromium fra hvilken som helst app, og fest nettleseren på oppgavelinjen for å ha den enkelt tilgjengelig</translation>
 <translation id="2425157128016763890">Klikk på Oppsummer-knappen for å dele dette dokumentet med Gemini i Chromium for å få en rask oversikt og stille oppfølgingsspørsmål</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktøy fra Chromium<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
@@ -517,6 +519,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6598877126913850652">Gå til innstillinger for Chromium-varsler</translation>
 <translation id="6600016381025017075">Søk etter hva som helst på denne siden</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>
+<translation id="6637855549677695722">Neste gang du åpner Chromium på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å få de beste sikkerhetsfunksjonene i Chromium.</translation>
 <translation id="6637908313088374648">Nå starter Chromium når Windows starter, slik at du kan begynne å surfe umiddelbart. Du kan slå dette av i innstillingene.</translation>
 <translation id="6644846457769259194">Oppdaterer enheten din (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
@@ -750,6 +753,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8910309838319708610">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med AI-modus for Søk</translation>
 <translation id="8932992523185907506">Chromium er ikke lenger standardnettleseren din. Vil du gjøre Chromium til standardnettleseren?</translation>
+<translation id="8940844567350264767">Få de beste sikkerhetsfunksjonene i Chromium med Chromium, uansett hvor du er</translation>
 <translation id="8941642502866065432">Kan ikke oppdatere Chromium</translation>
 <translation id="8944232836376404813">Denne handlingen vil:
           <ph name="LINE_BREAKS" />

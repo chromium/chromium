@@ -71,6 +71,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1792680680989393197">Ungawasusa noma kunini. IChromium ingase iwadawunilode ngokuzenzekelayo futhi lapho isayithi noma isakhi siwadinga.</translation>
 <translation id="1793486931176048546">Chofoza okuthi <ph name="BEGIN_BOLD" />Yebo<ph name="END_BOLD" /> esazisweni seWindows ukuze uphine iChromium ku-taskbar yakho ukuze uyifinyelele ngokushesha.</translation>
 <translation id="1808667845054772817">Phinda ufake i-Chromium</translation>
+<translation id="1814482312667514397">Thola izakhi zokuphepha ezihamba phambili zeChromium usendleleni, nge-app yeChromium efonini yakho</translation>
 <translation id="1820835682567584003">I-Chromium izama uku-<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukuze ugcine ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChromium kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" /> Uzophinde uthole izandiso zakho nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Ngokuzayo uma uvula iChromium ku-<ph name="DEVICE_TYPE" /> yakho, uzobona umyalelo wokusebenzisa Umphathi Wephasiwedi YeGoogle.</translation>
@@ -134,6 +135,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Idivayisi e-1 ye-HID ibifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}=1{Idivayisi e-1 ye-HID ifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}one{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}other{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}}</translation>
 <translation id="2401032172288869980">I-Chromium idinga izimvume zekhamera nemakrofoni kule sayithi</translation>
 <translation id="2403703063067034158">Iphutha lokuqala: esinye isenzakalo sokusetha siyaqalisa okwamanje, sicela uzame futhi ngokuhamba kwesikhathi.</translation>
+<translation id="241044568699443215">Yenza iChromium iphephe usendleleni nge-app yeChromium ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="2418322681019544463">Vula amalinki kuChromium kunoma iyiphi i-app futhi ugcine ibhrawuza ifinyeleleka ku-taskbar yakho</translation>
 <translation id="2425157128016763890">Chofoza inkinobho ethi Finyeza ukuze wabelane ngale dokhumenti neGemini kuChromium ukuze uthole iqoqa elisheshayo futhi ubuze imibuzo yokulandelela</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Ngamathuluzi avela ku-Chromium<ph name="END_LINK" />, ungabhrawuza ngokuphepha bese uhlala ulawula</translation>
@@ -752,6 +754,7 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8907580949721785412">I-Chromium izama ukubonisa amaphasiwedi. Thayipha iphasiwedi yakho ye-Windows ukuze uvumele lokhu.</translation>
 <translation id="8910309838319708610">Impumelelo! Manje usungakwazi ukubuza imibuzo kalula njengoba ubhrawuza ngeModi ye-AI Yokusesha</translation>
 <translation id="8932992523185907506">IChromium ayiseyona ibhrawuza yakho evuleka ngokuzenzekela. Yenza iChromium ibe yibhrawuza evuleka ngokuzenzekela?</translation>
+<translation id="8940844567350264767">Thola izakhi zokuphepha ezihamba phambili zeChromium usendleleni ngeChromium</translation>
 <translation id="8941642502866065432">Ayikwazi ukubuyekeza i-Chromium</translation>
 <translation id="8944232836376404813">Lesi senzo sizokwenza lokhu:
           <ph name="LINE_BREAKS" />

@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">A Chrome alkalmazás letöltése</translation>
 <translation id="1919130412786645364">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="1925069572871307609">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 1809-es vagy újabb verziójára lesz szüksége. Ezen a számítógépen a Windows 10 régebbi verziója fut.</translation>
+<translation id="1975069140856174874">Amikor legközelebb megnyitja a Chrome-ot <ph name="DEVICE_TYPE" /> eszközén, megjelenik egy üzenet a Google legjobb biztonsági funkcióinak használatával kapcsolatban.</translation>
 <translation id="1975400514743766362">A Chrome alkalmazással a Google által nyújtott biztonságot is magával viheti <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="1979600810166324878">A Biztonságos Böngészés fokozott védelemmel funkcióval biztonságosabban böngészhet útközben is az iOS rendszeren működő Chrome-mal.</translation>
 <translation id="2001586581944147178">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A Chrome biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
@@ -451,6 +452,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="568656514202614970">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben az oldalsó panelen lévő Google Keresővel.</translation>
 <translation id="5686916850681061684">A Google Chrome személyre szabása és beállításai Figyelmet kell fordítania valamire – a részletekért kattintson.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">A Chrome-mal útközben is használhatja a Google legjobb biztonsági funkcióit</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
 <translation id="5709557627224531708">A Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="5715427327524421317">A Chrome automatikusan letölti és frissíti ezeket az AI-modelleket.</translation>
@@ -616,6 +618,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7099479769133613710">Indítsa újra a ChromeOS frissítéséhez</translation>
 <translation id="7106741999175697885">Feladatkezelő - Google Chrome</translation>
 <translation id="7121179479711575744">Bejelentkezés a Chrome-ba</translation>
+<translation id="7137056136322108339">A telefonjára telepített Chrome alkalmazással útközben is használhatja a Google legjobb biztonsági funkcióit</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép.}=1{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Az inkognitó ablak nem fog újra megnyílni.}other{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="7161904924553537242">Üdvözli Önt a Google Chrome!</translation>
 <translation id="7193885263065350793">Szervezete bezárja a Chrome-ot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />.</translation>

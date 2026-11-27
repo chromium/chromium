@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Dozvoljeno • Približno</translation>
 <translation id="1323433172918577554">Prikaži više</translation>
 <translation id="1333965224356556482">Ne dozvoljavaj sajtovima da vide vašu lokaciju</translation>
+<translation id="1352358548984352201">Dodajte kartice, slike i drugo kao kontekst da biste poboljšali pretragu</translation>
 <translation id="1369915414381695676">Sajt <ph name="SITE_NAME" /> je dodat</translation>
 <translation id="1371239764779356792">Dozvolite da sajt čuva podatke na uređaju</translation>
 <translation id="1383876407941801731">Pretraži</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861244985839668297">Kada je uključeno, sajtovi mogu da traže da koriste HID uređaje. Kada je isključeno, sajtovi ne mogu da koriste HID uređaje.</translation>
 <translation id="1861262398884155592">Ovaj folder je prazan</translation>
+<translation id="1871213582159462941">Postavite pitanje o stranici ili slici</translation>
 <translation id="1881806992065048905">Donja tabela za izgled stranice nove kartice</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sajtovi obično pristupaju fajlovima i folderima na uređaju da bi vam bile dostupne funkcije poput automatskog čuvanja stavki na kojima radite</translation>

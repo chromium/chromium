@@ -72,6 +72,7 @@
 <translation id="1792680680989393197">Tes a posibilidade de quitalos cando queiras. Chromium poderá descargalos de novo automaticamente cando un sitio ou unha función os necesite.</translation>
 <translation id="1793486931176048546">Fai clic en <ph name="BEGIN_BOLD" />Si<ph name="END_BOLD" /> na notificación de Windows para fixar Chromium na barra de tarefas e poder acceder ao navegador rapidamente.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
+<translation id="1814482312667514397">Goza das mellores funcións de seguranza de Chromium esteas onde esteas coa aplicación Chromium no teléfono</translation>
 <translation id="1820835682567584003">Chromium está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar das extensións e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">A próxima vez que abras Chromium no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para usar o xestor de contrasinais de Google.</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
+<translation id="241044568699443215">Goza da seguranza de Chromium esteas onde esteas coa aplicación Chromium no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Abre ligazóns en Chromium desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
 <translation id="2425157128016763890">Fai clic no botón Resumir para compartir este documento con Gemini en Chromium e obter un resumo rápido, así como para facer consultas adicionais</translation>
 <translation id="2440750600860946460">Coas <ph name="BEGIN_LINK" />ferramentas de Chromium<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
@@ -753,6 +755,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8907580949721785412">Chromium está tentando mostrar contrasinais. Escribe os teus contrasinais de Windows para permitir esta acción.</translation>
 <translation id="8910309838319708610">Feito! Agora podes facer preguntas facilmente mentres navegas co modo IA da Busca</translation>
 <translation id="8932992523185907506">Chromium xa non é o teu navegador predeterminado. Queres establecer Chromium como navegador predeterminado?</translation>
+<translation id="8940844567350264767">Goza das mellores funcións de seguranza de Chromium esteas onde esteas con Chromium</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>
 <translation id="8944232836376404813">Ao levar a cabo esta acción:
           <ph name="LINE_BREAKS" />

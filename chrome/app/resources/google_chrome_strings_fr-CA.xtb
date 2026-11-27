@@ -103,6 +103,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1896602904211344018">Obtenir l'appli Chrome</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1925069572871307609">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 version 1809 ou une version ultérieure. Cet ordinateur utilise une ancienne version de Windows 10.</translation>
+<translation id="1975069140856174874">La prochaine fois que vous ouvrirez Chrome sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'obtenir les meilleures fonctionnalités de sécurité de Google.</translation>
 <translation id="1975400514743766362">Emportez la sécurité de Google partout avec l'appli Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Restez en sécurité lorsque vous êtes en déplacement grâce à la navigation sécurisée améliorée sur Chrome pour iOS</translation>
 <translation id="2001586581944147178">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir les sites que vous visitez. Chrome utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine).</translation>
@@ -458,6 +459,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="568656514202614970">Opération réussie! Vous pouvez désormais poser facilement des questions pendant que vous naviguez avec Recherche Google dans le panneau latéral</translation>
 <translation id="5686916850681061684">Personnaliser et gérer Google Chrome. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Profitez des meilleures fonctionnalités de sécurité de Google en déplacement grâce à Chrome</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur mandataire nécessite une authentification.</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
 <translation id="5715427327524421317">Chrome télécharge et met à jour ces modèles d'IA automatiquement</translation>
@@ -623,6 +625,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7099479769133613710">Relancer Chrome OS pour le mettre à jour</translation>
 <translation id="7106741999175697885">Gestionnaire de tâches — Google Chrome</translation>
 <translation id="7121179479711575744">Connexion à Chrome</translation>
+<translation id="7137056136322108339">Profitez des meilleures fonctionnalités de sécurité de Google en déplacement avec l'appli Chrome sur votre téléphone</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez.}=1{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Une nouvelle mise à jour de Chrome est proposée et sera appliquée dès que vous le relancerez. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="7161904924553537242">Bienvenue dans Google Chrome</translation>
 <translation id="7193885263065350793">Votre organisation ferme Chrome lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>

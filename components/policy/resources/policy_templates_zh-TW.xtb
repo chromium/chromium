@@ -7973,6 +7973,15 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6075316301208933536">如果將 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 設為<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，則你可以透過 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 自訂停止充電的時機 (根據電量百分比進行設定)。<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 的值必須至少比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 的值低 5 個百分點。
 
       如果不設定這項政策，系統會套用<ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />充電模式。</translation>
+<translation id="6077759101739558312">如果將這項政策設為啟用，安全瀏覽功能會信任你指定的網域，這表示該功能不會確認這些網域是否為網路釣魚、惡意軟體或垃圾軟體等危險資源。安全瀏覽功能的下載保護服務 (iOS 不支援) 不會檢查這些網域代管的下載內容，密碼保護服務也不會檢查密碼是否重複使用。
+
+如果不設定這項政策，系統會將預設的安全瀏覽保護功能套用至所有資源。
+
+這項政策不支援規則運算式，不過特定網域的子網域可加入許可清單，而且不一定要有完整網域名稱 (FQDN)。
+
+在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />。
+
+在 <ph name="MAC_OS_NAME" /> 上，這項政策適用的執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />。</translation>
 <translation id="6082161804984853051">設定這項政策後，無論使用者是否指定 --disk-cache-dir 旗標，<ph name="PRODUCT_NAME" /> 都會使用你提供的目錄將快取檔案儲存在磁碟上。
 
       如果未設定，<ph name="PRODUCT_NAME" /> 會使用預設的快取目錄，但使用者可透過 --disk-cache-dir 指令列旗標來變更這項設定。

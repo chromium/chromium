@@ -1307,6 +1307,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="244071666433939959">Programu hufunguka kwenye dirisha</translation>
 <translation id="2442916515643169563">Vivuli vya maandishi</translation>
 <translation id="2443487764245141020">Huenda tovuti zikahitaji pia kutambua kifaa chako kwa kutumia kitambulishi</translation>
+<translation id="2444282212665587861">sasisha, masasisho, toleo jipya, toleo, muundo, maelezo, angalia masasisho</translation>
 <translation id="244475495405467108">Funga Vichupo Vilivyo Upande wa Kushoto</translation>
 <translation id="2444874983932528148">Endelea kwa urahisi ulipoachia</translation>
 <translation id="2445081178310039857">Saraka la shina la kiendelezi linahitajika.</translation>
@@ -2144,6 +2145,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="3321512411079201586">&amp;Huru</translation>
 <translation id="3323288183237359315">Weka kwenye Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Ili kulinda faragha yako, ruhusa zimeondolewa kwenye tovuti}other{Ili kulinda faragha yako, ruhusa zimeondolewa kwenye baadhi ya tovuti}}</translation>
+<translation id="3325561120400598624">Magumzo huhakikiwa na kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Huenda baadhi ya maudhui yasifae kwa kila mtu. Unaweza <ph name="BEGIN_LINK_MANAGE_HISTORY" />kudhibiti historia yako<ph name="END_LINK_MANAGE_HISTORY" />, ikiwa ni pamoja na <ph name="BEGIN_LINK_LOCATION_INFO" />maelezo kuhusu mahali ulipo<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Muundo</translation>
 <translation id="3331974543021145906">Maelezo ya programu</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video inacheza katika hali ya picha ndani ya picha</translation>
@@ -2269,6 +2271,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Pakia faili 1 ya .pdf ili uitumie katika swali lako}other{Pakia hadi faili # za .pdf ili uzitumie katika swali lako}}</translation>
 <translation id="3456750372063895499">Fungua Kiungo katika Dirisha Lililotengwa</translation>
 <translation id="345693547134384690">Fungua p&amp;icha katika kichupo kipya</translation>
+<translation id="3456949031754827166">Panga upya</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Hifadhi Kikundi}other{Hifadhi Vikundi}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Alamisho 1 imefutwa}other{Alamisho # zimefutwa}}</translation>
 <translation id="3471687177769494956">Hariri njia ya mkato ya usogezaji</translation>
@@ -3320,6 +3323,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4602776638371779614">Kichupo hiki kinaendelea kutafuta vifaa vyenye Bluetooth</translation>
 <translation id="4605026046465576953">Programu hii haiwezi kufunguliwa kwa sababu huna ruhusa ya kutumia programu za wavuti zIlizotengwa</translation>
 <translation id="4606551464649945562">Usiruhusu tovuti zibuni ramani ya 3D ya mazingira yako wala kufuatilia mkao wa kamera</translation>
+<translation id="4606965546067937011">kasi, RAM, kuchelewa, kusimama, kuacha kufanya kazi, nyenzo, matumizi, betri, kiboreshaji, polepole, hifadhi, kiokoa hifadhi</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ungependa kufuta kikundi cha vichupo?}other{Ungependa kufuta vikundi vya vichupo?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Pakia faili 1 ili uitumie kwenye swali lako}other{Pakia hadi faili # ili uzitumie kwenye swali lako}}</translation>
 <translation id="4608500690299898628">Ta&amp;futa</translation>
@@ -4152,6 +4156,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5535769176698670170">Badilisha utumie mwonekano wa juu</translation>
 <translation id="5536642445914063887">Badilisha Wasifu</translation>
 <translation id="5537725057119320332">Tuma</translation>
+<translation id="553876896781261711">futa, ondoa, usalama, faragha, safisha, nafasi ya hifadhi, weka upya, akiba, vidakuzi, polepole, kasi, historia</translation>
 <translation id="5541091577812545428">Nenosiri halikubadilishwa</translation>
 <translation id="5542132724887566711">Wasifu</translation>
 <translation id="5543983818738093899">Inakagua hali...</translation>
@@ -4743,6 +4748,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6214157047210274853">Hariri kwenye Pochi ya Google</translation>
 <translation id="621470880408090483">Usiruhusu tovuti ziunganishe kwenye vifaa vyenye Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Ili kuimarisha usalama wa manenosiri, <ph name="BRAND" /> hujifunga baada ya dakika 1 kifaa kisipotumika}other{Ili kuimarisha usalama wa manenosiri, <ph name="BRAND" /> hujifunga baada ya dakika # kifaa kisipotumika}}</translation>
+<translation id="6215427500141060726">Magumzo huhakikiwa na kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Unaweza <ph name="BEGIN_LINK_MANAGE_HISTORY" />kudhibiti historia yako<ph name="END_LINK_MANAGE_HISTORY" />, ikiwa ni pamoja na <ph name="BEGIN_LINK_LOCATION_INFO" />maelezo kuhusu mahali ulipo<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Tovuti na programu zilizokataliwa</translation>
 <translation id="6216696360484424239">Ingia kiotomatiki</translation>
 <translation id="6218961554829577610">Sikuipenda sauti</translation>
@@ -4894,6 +4900,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="639880411171387127">Chaguo lako la Lenzi ya Google. Bonyeza 'enter' au 'backspace' ili kufuta chaguo lako la Lenzi ya Google</translation>
 <translation id="6400360390396538896">Kila wakati kwenye <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Acha kuangazia kikundi cha vichupo</translation>
+<translation id="6401522392962817913">Kwa kuendelea, unakubali Sheria na Masharti ya Google Payments. Ilani ya Faragha huelezea jinsi data yako inavyoshughulikiwa. Kadi yako imehifadhiwa kwenye Akaunti yako ya Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Ili upate maelezo kuhusu sababu zake, wasiliana na msanidi programu</translation>
 <translation id="6402921224457714577">Tovuti zinaweza kuomba zidhibiti na zisanidi upya vifaa vyako vya MIDI</translation>
 <translation id="6404511346730675251">Badilisha alamisho</translation>
@@ -4982,6 +4989,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6499143127267478107">Inatatua seva pangishi katika hati ya proksi...</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6504601948739128893">Zisizoruhusiwa kutumia fonti zilizosakinishwa kwenye kifaa chako</translation>
+<translation id="6505525633061207363">vitambulisho, kuingia katika akaunti, ufunguo wa siri, kufunga, hifadhi, funguo, kuingia katika akaunti, ingia katika akaunti, kuingia katika akaunti</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ingependa kusakinisha programu ifuatayo kwenye kifaa hiki:}other{"<ph name="APP_NAME" />" ingependa kusakinisha programu zifuatazo kwenye kifaa hiki:}}</translation>
 <translation id="6508248480704296122">Inahusiana na <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Programu: <ph name="APP_NAME" /></translation>

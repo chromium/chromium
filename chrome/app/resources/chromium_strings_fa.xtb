@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">‏هرزمان بخواهید می‌توانید آن‌ها را بردارید. وقتی سایت یا ویژگی‌ای به آن‌ها نیاز داشته باشد، Chromium ممکن است آن‌ها را به‌طور خودکار دوباره بارگیری کند.</translation>
 <translation id="1793486931176048546">‏روی <ph name="BEGIN_BOLD" />بله<ph name="END_BOLD" /> در اعلان Windows کلیک کنید تا Chromium را برای دسترسی سریع به نوار وظیفه سنجاق کنید.</translation>
 <translation id="1808667845054772817">‏نصب مجدد Chromium</translation>
+<translation id="1814482312667514397">‏با برنامه Chromium در تلفنتان، بهترین ویژگی‌های ایمنی Chromium را درحال حرکت دریافت کنید</translation>
 <translation id="1820835682567584003">‏Chromium در تلاش است <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chromium وارد شوید. همچنین افزونه‌ها و سایر موارد را از <ph name="DEVICE" /> دریافت خواهید کرد.</translation>
 <translation id="183031085822326697">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از «مدیر گذرواژه Google» خواهید دید.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی داشتند}=1{‏یک یا چند افزونه Chromium به یک «دستگاه میانای انسانی» (HID) دسترسی دارند}one{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}other{‏یک یا چند افزونه Chromium به # «دستگاه میانای انسانی» (HID) دسترسی دارند}}</translation>
 <translation id="2401032172288869980">‏Chromium برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="2403703063067034158">خطای راه‌اندازی: فعلاً راه‌اندازی دیگری درحال اجرا است، لطفاً کمی بعد دوباره امتحان کنید.</translation>
+<translation id="241044568699443215">‏با برنامه Chromium در <ph name="DEVICE_TYPE" />، ایمنی Chromium را درحرکت داشته باشید</translation>
 <translation id="2418322681019544463">‏پیوندها را از هر برنامه‌ای در Chromium باز کنید و مرورگر را در نوار وظیفه دردسترس نگه دارید</translation>
 <translation id="2425157128016763890">‏برای هم‌رسانی این سند با Gemini در Chromium و دریافت مرور کوتاه و پرسیدن سؤالات تعقیبی، روی دکمه «خلاصه کردن» کلیک کنید</translation>
 <translation id="2440750600860946460">‏با <ph name="BEGIN_LINK" />ابزارهای Chromium<ph name="END_LINK" />، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
@@ -516,6 +518,7 @@
 <translation id="6598877126913850652">‏رفتن به تنظیمات اعلان Chromium</translation>
 <translation id="6600016381025017075">هرچیزی در این صفحه را جستجو کنید</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
+<translation id="6637855549677695722">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای دریافت بهترین ویژگی‌های ایمنی Chromium خواهید دید.</translation>
 <translation id="6637908313088374648">‏اکنون Chromium با شروع Windows راه‌اندازی می‌شود تا بتوانید بلافاصله مرور را شروع کنید. می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="6644846457769259194">درحال به‌روزرسانی دستگاه شما (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">‏Chromium برای ایجاد نقشه سه‌بعدی از محیط اطراف شما به اجازه دوربین نیاز دارد</translation>
@@ -748,6 +751,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8907580949721785412">‏Chromium در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8910309838319708610">انجام شد! اکنون می‌توانید با «حالت هوشواره‌ای جستجو» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="8932992523185907506">‏‫Chromium دیگر مرورگر پیش‌فرض شما نیست. Chromium  مرورگر پیش‌فرض شود</translation>
+<translation id="8940844567350264767">‏با Chromium، بهترین ویژگی‌های ایمنی Chromium را در حرکت دریافت کنید</translation>
 <translation id="8941642502866065432">‏به‌روزرسانی Chromium امکان‌پذیر نیست</translation>
 <translation id="8944232836376404813">این کنش:
           <ph name="LINE_BREAKS" />

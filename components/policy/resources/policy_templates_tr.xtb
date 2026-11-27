@@ -8307,6 +8307,15 @@ Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.
 <translation id="6075316301208933536"><ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> olarak ayarlanırsa <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> ayarı, şarj yüzdesine göre pilin şarj edilmesinin ne zaman duracağını özelleştirir. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> değerinin en az yüzde 5 altında olmalıdır.
 
       Politika ayarlanmadan bırakılırsa <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> pil şarj modu uygulanır.</translation>
+<translation id="6077759101739558312">Politika, Etkin değerine ayarlanırsa Güvenli Tarama, belirttiğiniz alan adlarına güvenir. Bu alan adlarında kimlik avı, kötü amaçlı yazılım veya istenmeyen yazılım gibi tehlikeli kaynakların bulunup bulunmadığı kontrol edilmez. Güvenli Tarama'nın indirme işlemlerine yönelik koruma hizmeti (iOS'te desteklenmez), bu alanlarda barındırılan dosyaların indirilmesini kontrol etmez. Şifre koruma hizmeti, şifre yeniden kullanımını kontrol etmez.
+
+Politika ayarlanmadan bırakılırsa varsayılan Güvenli Tarama koruması tüm kaynaklar için geçerli olur.
+
+Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adları, izin verilenler listesine alınır. Tam etki alan adları (FQDN'ler) gerekli değildir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="6082161804984853051">Politika ayarlanırsa <ph name="PRODUCT_NAME" />, önbelleğe alınan dosyaları diskte depolamak için (kullanıcıların --disk-cache-dir bayrağını belirtip belirtmemelerinden bağımsız olarak) sağladığınız dizini kullanır.
 
       Ayarlanmazsa <ph name="PRODUCT_NAME" />, varsayılan önbellek dizinini kullanır, ancak kullanıcılar --disk-cache-dir komut satırı bayrağını kullanarak bu ayarı değiştirebilirler.

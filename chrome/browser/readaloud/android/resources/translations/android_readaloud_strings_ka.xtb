@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012">წინ გადახვევა <ph name="NUMBER_OF_SECONDS" /> წამით</translation>
 <translation id="1984328900355667246">დაკვრა მიუწვდომელია</translation>
+<translation id="2009730553732772041">იმ გვერდის კონტენტი და URL, რომელსაც ათვალიერებთ, გაუზიარდება Google-ს აუდიოს გენერირებისთვის. ამ არჩევანის განახლება ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="2019727681730021602">სტანდარტული დაკვრა</translation>
 <translation id="2224347680315897176">სტაბილური</translation>
 <translation id="2575502321843437554">საკმარისად საინტერესო არ არის</translation>
 <translation id="2611765907167846862">მშვიდი</translation>
 <translation id="3023502830214299618">სამწუხაროდ, დაკვრა ამჟამად მიუწვდომელია ამ გვერდისთვის. ცადეთ მოგვიანებით.</translation>
+<translation id="3431227249425330101">გასაგრძელებლად მისცემთ Chrome-ს გვერდის კონტენტის გამოყენების უფლებას ფუნქციისთვის „ამ გვერდის მოსმენა“?</translation>
 <translation id="3493899379487634969">რა შეცდომა მოხდა?</translation>
 <translation id="3730775656877876887">AI დაკვრის გენერირება</translation>
 <translation id="3778044272390020426">უარყოფითი გამოხმაურების ვარიანტების მენიუ</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">„ამ გვერდის მოსმენის“ დამკვრელი</translation>
 <translation id="7051308646573997571">მარჯნისფერი</translation>
 <translation id="7138678301420049075">სხვა</translation>
+<translation id="7161867604252594316">„ამ გვერდის მოსმენა“ გამორთულია</translation>
 <translation id="7221920857098237570">მსუბუქი</translation>
 <translation id="7237590978482584900">ცოცხალი</translation>
 <translation id="7282547042039404307">გლუვი</translation>

@@ -22,6 +22,7 @@
 <translation id="48558539577516920">Consenti a Chromium di accedere alla rete nelle impostazioni del firewall o del software
          antivirus.</translation>
 <translation id="4949828774841497663">Vai a Applicazioni &gt; Impostazioni di sistema &gt; Rete, seleziona la rete attiva, fai clic sul pulsante Dettagli… e deseleziona eventuali proxy che potrebbero essere stati selezionati.</translation>
+<translation id="5228339820845278804">Promemoria: le migliori funzionalità di sicurezza di Chromium sempre in tasca</translation>
 <translation id="6480456350195404966">Vai al
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -36,6 +37,7 @@
 <translation id="6549378540556750549">La realizzazione di Chromium è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
 <translation id="691026815377248078">Chromium richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Usa l'app Chromium per portare con te la sicurezza di Chromium ovunque ti trovi</translation>
 <translation id="7681937895330411637">La realizzazione di Chromium è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Seleziona il menu Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> e deseleziona "<ph name="NO_PREFETCH_DESCRIPTION" />".
 Se il problema non si risolve, dovresti riselezionare questa opzione per ottenere prestazioni migliori.</translation>

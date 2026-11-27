@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, přejeďte shora dolů a klepněte na tlačítko Zpět</translation>
+<translation id="1132789342529761192">Nahrávání se nedoporučuje</translation>
 <translation id="11370190534773372">Byly vyplněny údaje o kartě</translation>
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1142713751288681188">Typ papíru</translation>
@@ -603,6 +604,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2025891858974379949">Nezabezpečený obsah</translation>
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Karta není k dispozici</translation>
+<translation id="2028329426302356196">Stahování se nedoporučuje</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Zkontrolovat proxy server a firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Tato instance Chromu běží s ručně nastavenými příznaky příkazového řádku. Upozorňujeme, že příznaky příkazového řádku se mohou kdykoli změnit a neposkytujeme k nim podporu.</translation>
 <translation id="2033900728810589426">Zkratka nesmí být stejná jako klíčové slovo výchozího poskytovatele vyhledávání definované v zásadě <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1453,6 +1455,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3443504041532578451">Optický disk (saténový)</translation>
 <translation id="3447661539832366887">Vlastník tohoto zařízení hru s dinosaurem vypnul.</translation>
 <translation id="3447884698081792621">Zobrazit certifikát (vydavatel: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Tisk se nedoporučuje</translation>
 <translation id="3450323514459570273">Může požádat o ovládání a přeprogramování vašich zařízení MIDI</translation>
 <translation id="3452404311384756672">Interval načtení:</translation>
 <translation id="345268527248907593">Tento web není dostupný</translation>
@@ -2911,6 +2914,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
 <translation id="5851868085455377790">Vydavatel</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopírování se nedoporučuje</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>
 <translation id="5863515189965725638">Úprava čísla IBAN</translation>

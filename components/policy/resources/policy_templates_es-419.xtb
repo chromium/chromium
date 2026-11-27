@@ -8442,6 +8442,15 @@ Si se establece como falsa, no podrán acceder a la función.</translation>
 <translation id="6075316301208933536">Si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configuración <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> personalizará cuándo la batería deja de cargarse, en función del porcentaje de carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe estar al menos 5 puntos porcentuales por debajo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Si no estableces la política, se aplicará el modo de carga de la batería <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
+<translation id="6077759101739558312">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software no deseado, phishing o malware. El servicio de protección de descargas de la Navegación segura (no compatible con iOS) no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
+
+Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
+
+Esta política no admite expresiones regulares. Sin embargo, los subdominios de un dominio determinado se incluyen en la lista de entidades permitidas. Los nombres de dominio completamente calificados (FQDN) no son obligatorios.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Si estableces la política, <ph name="PRODUCT_NAME" /> utilizará el directorio que proporciones para guardar los archivos almacenados en caché que se encuentren en el disco, independientemente de si los usuarios especifican la función experimental --disk-cache-dir.
 
       Si no la estableces, <ph name="PRODUCT_NAME" /> utilizará el directorio predeterminado para el almacenamiento en caché, pero los usuarios podrán cambiar esa configuración con la función experimental de la línea de comandos --disk-cache-dir.

@@ -72,6 +72,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1792680680989393197">Þú getur fjarlægt þau hvenær sem er. Chromium kann að sækja þau aftur sjálfkrafa þegar vefsvæði eða eiginleiki þarf á þeim að halda.</translation>
 <translation id="1793486931176048546">Smelltu á <ph name="BEGIN_BOLD" />Já<ph name="END_BOLD" /> í Windows-tilkynningunni til að festa Chromium við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="1808667845054772817">Setja Chromium upp aftur</translation>
+<translation id="1814482312667514397">Fáðu bestu öryggiseiginleika Chromium á ferðinni með Chromium-forritinu í símanum þínum</translation>
 <translation id="1820835682567584003">Chromium er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig viðbæturnar þínar og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
@@ -135,6 +136,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tækjum}}</translation>
 <translation id="2401032172288869980">Chromium verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="2403703063067034158">Villa í ræsingu: annað tilvik af uppsetningu er í keyrslu, reyndu aftur síðar.</translation>
+<translation id="241044568699443215">Nýttu þér öryggi Chromium á ferðinni með Chromium-forritinu í <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Opnaðu tengla í Chromium úr hvaða forriti sem er og hafðu vafrann aðgengilegan á forritastikunni</translation>
 <translation id="2425157128016763890">Smelltu á hnappinn „Taka saman“ til að deila þessu skjali með Gemini í Chromium til að fá snöggt yfirlit og spyrja frekari spurninga</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Verkfæri Chromium<ph name="END_LINK" /> gera þér kleift að vafra á öruggan hátt og vera við stjórnvölinn</translation>
@@ -752,6 +754,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8907580949721785412">Chromium er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8910309838319708610">Tókst! Nú geturðu spurt spurninga á einfaldan máta á meðan þú vafrar með gervigreindarstillingu fyrir „Leit“</translation>
 <translation id="8932992523185907506">Chromium er ekki lengur sjálfgefni vafrinn þinn. Gera Chromium að sjálfgefnum vafra?</translation>
+<translation id="8940844567350264767">Fáðu bestu öryggiseiginleika Chromium á ferðinni með Chromium.</translation>
 <translation id="8941642502866065432">Ekki var hægt að uppfæra Chromium</translation>
 <translation id="8944232836376404813">Þessi aðgerð mun:
           <ph name="LINE_BREAKS" />

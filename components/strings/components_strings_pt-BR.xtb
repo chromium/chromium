@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
+<translation id="1132789342529761192">Não é recomendado fazer upload</translation>
 <translation id="11370190534773372">Detalhes do cartão preenchidos</translation>
 <translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
@@ -603,6 +604,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2025891858974379949">Conteúdo não seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2027707238798802149">Cartão indisponível</translation>
+<translation id="2028329426302356196">Não é recomendado fazer o download</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Essa instância do Chrome está sendo executada com flags de linha de comando definidas manualmente. As flags de linha de comando podem ser alteradas a qualquer momento e não são suportadas.</translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3443504041532578451">Disco óptico (acetinado)</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Não é recomendado imprimir</translation>
 <translation id="3450323514459570273">Pode pedir para controlar e reprogramar seus dispositivos MIDI</translation>
 <translation id="3452404311384756672">Buscar intervalo:</translation>
 <translation id="345268527248907593">Não foi possível acessar o site</translation>
@@ -2915,6 +2918,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Não é recomendado copiar o conteúdo</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
 <translation id="5863515189965725638">Editar IBAN</translation>

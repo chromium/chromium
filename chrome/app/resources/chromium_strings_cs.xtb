@@ -71,6 +71,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1792680680989393197">Můžete je kdykoli odstranit. Když je bude nějaký web nebo funkce potřebovat, může je Chromium automaticky znovu stáhnout.</translation>
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Ano<ph name="END_BOLD" /> v oznámení systému Windows připněte prohlížeč Chromium na hlavní panel, aby byl rychle k dispozici.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
+<translation id="1814482312667514397">Mějte ty nejlepší bezpečnostní funkce od Chromia k dispozici na cestách s aplikací Chromium na telefonu</translation>
 <translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Získáte také svá rozšíření a další položky z tohoto zařízení: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chromium, zobrazí se výzva k použití Správce hesel Google.</translation>
@@ -134,6 +135,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 zařízení HID bylo používáno jedním nebo více rozšířeními prohlížeče Chromium}=1{1 zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}few{# zařízení HID jsou používána jedním nebo více rozšířeními prohlížeče Chromium}many{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}other{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}}</translation>
 <translation id="2401032172288869980">Chromium pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
 <translation id="2403703063067034158">Chyba při spuštění: právě běží jiná instance instalace, zkuste to znovu později.</translation>
+<translation id="241044568699443215">Mějte zabezpečení Chromia vždy po ruce s aplikací Chromium na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Otevírejte v Chromiu odkazy ze všech aplikací a mějte ho k dispozici na hlavním panelu</translation>
 <translation id="2425157128016763890">Kliknutím na tlačítko Shrnout můžete tento dokument sdílet s Gemini v Chromiu a získat tak rychlý přehled a možnost klást doplňující otázky</translation>
 <translation id="2440750600860946460">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chromium<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
@@ -518,6 +520,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="6598877126913850652">Přejít na nastavení oznámení prohlížeče Chromium</translation>
 <translation id="6600016381025017075">Vyhledat cokoliv na této stránce</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
+<translation id="6637855549677695722">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chromium, zobrazí se výzva k používání nejlepších bezpečnostních funkcí Chromia.</translation>
 <translation id="6637908313088374648">Chromium se teď spouští zároveň s Windows a umožňuje tak začít hned procházet internet. Tuto možnost můžete vypnout v nastavení.</translation>
 <translation id="6644846457769259194">Aktualizace zařízení (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">K vytvoření 3D mapy vašeho okolí potřebuje Chromium přístup k fotoaparátu</translation>
@@ -751,6 +754,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="8910309838319708610">Podařilo se! Teď můžete pomocí režimu AI ve Vyhledávání snadno pokládat otázky přímo při prohlížení</translation>
 <translation id="8932992523185907506">Chromium už není vaším výchozím prohlížečem. Nastavit Chromium jako výchozí prohlížeč?</translation>
+<translation id="8940844567350264767">S Chromiem můžete mít špičkové bezpečnostní funkce od Chromia i na cestách</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>
 <translation id="8944232836376404813">Provedou se tyto akce:
           <ph name="LINE_BREAKS" />

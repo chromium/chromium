@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Reegli vahemälu töötab probleemideta</translation>
 <translation id="1131264053432022307">Teie kopeeritud pilt</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
+<translation id="1132789342529761192">Üleslaadimine pole soovitatav</translation>
 <translation id="11370190534773372">Kaardi andmed on täidetud</translation>
 <translation id="1138458427267715730">Teile saadetakse teavitus, kui hinda alandatakse ükskõik millisel veebisaidil</translation>
 <translation id="1142713751288681188">Paberi tüüp</translation>
@@ -603,6 +604,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2025891858974379949">Ebaturvaline sisu</translation>
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kaart ei ole saadaval</translation>
+<translation id="2028329426302356196">Allalaadimine pole soovitatav</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kontrollige puhverserverit ja tulemüüri<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">See Chrome'i eksemplar töötab käsitsi määratud käsurealippudega. Pange tähele, et käsurealipud võivad igal ajal muutuda ja neid ei toetata.</translation>
 <translation id="2033900728810589426">Otsetee ei tohi olla sama, mis vaikeotsingupakkuja märksõna, mille on määranud <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3443504041532578451">Optiline andmekandja (satiin)</translation>
 <translation id="3447661539832366887">Seadme omanik lülitas dinosaurusemängu välja.</translation>
 <translation id="3447884698081792621">Kuva sertifikaat (väljastas <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Printimine pole soovitatav</translation>
 <translation id="3450323514459570273">Sait saab küsida luba teie MIDI-seadmete juhtimiseks ja ümber programmeerimiseks</translation>
 <translation id="3452404311384756672">Hankimise intervall:</translation>
 <translation id="345268527248907593">Selle saidiga ei saanud ühendust</translation>
@@ -2915,6 +2918,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5851548754964597211">Vahelehtede loend</translation>
 <translation id="5851868085455377790">Väljastaja</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopeerimine pole soovitatav</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862579898803147654">Virnastaja 8</translation>
 <translation id="5863515189965725638">IBAN-i muutmine</translation>

@@ -455,6 +455,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="568656514202614970">Gatavs! Tagad varat ērti uzdot jautājumus pārlūkošanas laikā, izmantojot Google meklēšanas sānu paneli.</translation>
 <translation id="5686916850681061684">Pielāgojiet un kontrolējiet pārlūkprogrammu Google Chrome. Ir nepieciešama jūsu uzmanība. Noklikšķiniet, lai skatītu plašāku informāciju.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Izmantojiet lietotni Chrome, lai iegūtu Google labākās drošības funkcijas, atrodoties ceļā.</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
 <translation id="5715427327524421317">Chrome automātiski lejupielādē un atjaunina šos MI modeļus.</translation>
@@ -620,6 +621,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7099479769133613710">Atkārtoti palaist, lai atjauninātu &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Uzdevumu pārvaldnieks - Google Chrome</translation>
 <translation id="7121179479711575744">Pierakstīties pārlūkā Chrome</translation>
+<translation id="7137056136322108339">Izmantojiet lietotni Chrome savā tālrunī, lai iegūtu Google labākās drošības funkcijas, atrodoties ceļā</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku.}=1{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="7161904924553537242">Laipni lūdzam Google Chrome</translation>
 <translation id="7193885263065350793">Jūsu organizācija aizver pārlūku Chrome, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots.</translation>

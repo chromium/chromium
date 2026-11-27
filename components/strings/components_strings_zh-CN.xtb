@@ -77,6 +77,7 @@
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1131264053432022307">您复制的图片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如需退出全屏模式，请从顶部拖动，然后轻触返回按钮</translation>
+<translation id="1132789342529761192">不建议上传</translation>
 <translation id="11370190534773372">已填写银行卡详细信息</translation>
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1142713751288681188">纸张类型</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">不安全内容</translation>
 <translation id="2027465737841872819">塑料</translation>
 <translation id="2027707238798802149">卡不可用</translation>
+<translation id="2028329426302356196">不建议下载</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />检查代理服务器和防火墙<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">此 Chrome 实例在运行时使用了手动设置的命令行 flag。请注意，命令行 flag 随时可能更改，且不在官方支持范围内。</translation>
 <translation id="2033900728810589426">下述快捷字词不能与 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 所定义的默认搜索服务提供商关键字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -1454,6 +1456,7 @@
 <translation id="3443504041532578451">光盘（磨光）</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
+<translation id="3449239216441121005">不建议打印</translation>
 <translation id="3450323514459570273">可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
 <translation id="345268527248907593">无法访问此网站</translation>
@@ -2911,6 +2914,7 @@
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5851868085455377790">颁发者</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">不建议复制</translation>
 <translation id="5860491529813859533">开启</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>
 <translation id="5863515189965725638">修改 IBAN</translation>

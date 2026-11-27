@@ -519,6 +519,7 @@
 <translation id="6598877126913850652">转到 Chromium 通知设置部分</translation>
 <translation id="6600016381025017075">搜索此页面上的任何内容</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
+<translation id="6637855549677695722">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，您将看到获取 Chromium 最佳安全功能的提示。</translation>
 <translation id="6637908313088374648">现在，Chromium 会在 Windows 启动时启动，让您可以即刻开启浏览之旅。您可在“设置”中关闭此功能。</translation>
 <translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>

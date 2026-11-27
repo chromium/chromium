@@ -77,6 +77,7 @@
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – برای خارج شدن از حالت تمام‌صفحه، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
+<translation id="1132789342529761192">بارگذاری توصیه نمی‌شود</translation>
 <translation id="11370190534773372">جزئیات کارت پر شد</translation>
 <translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1142713751288681188">نوع کاغذ</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">محتوای ناامن</translation>
 <translation id="2027465737841872819">پلاستیک</translation>
 <translation id="2027707238798802149">کارت دردسترس نیست</translation>
+<translation id="2028329426302356196">بارگیری توصیه نمی‌شود</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />بررسی پروکسی و دیوار آتش<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">‏این نمونه از Chrome با پرچم‌های خط فرمانی که به‌صورت دستی تنظیم شده‌اند درحال اجرا است. توجه داشته باشید که پرچم‌های خط فرمان ممکن است هر زمان تغییر کنند و پشتیبانی نمی‌شوند.</translation>
 <translation id="2033900728810589426">میان‌بر نباید با کلیدواژه ارائه‌دهنده جستجوی پیش‌فرض که <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
@@ -1457,6 +1459,7 @@
 <translation id="3443504041532578451">لوح نوری (ساتن)</translation>
 <translation id="3447661539832366887">مالک این دستگاه بازی دایناسور را خاموش کرده است</translation>
 <translation id="3447884698081792621">نمایش  گواهی (صادرشده توسط <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">چاپ توصیه نمی‌شود</translation>
 <translation id="3450323514459570273">‏می‌تواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="3452404311384756672">فاصله زمانی واکشی:</translation>
 <translation id="345268527248907593">دسترسی به این سایت امکان‌پذیر نبود</translation>
@@ -2916,6 +2919,7 @@
 <translation id="5851548754964597211">فهرست برگه</translation>
 <translation id="5851868085455377790">صادرکننده</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">کپی کردن توصیه نمی‌شود</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5862579898803147654">پشته‌ساز ۸</translation>
 <translation id="5863515189965725638">‏ویرایش IBAN</translation>

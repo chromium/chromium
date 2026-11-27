@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Ezeket bármikor eltávolíthatja. A Chromium automatikusan letöltheti őket újra, amikor egy webhelynek vagy funkciónak szüksége van rájuk.</translation>
 <translation id="1793486931176048546">Kattintson a Windows értesítésében található <ph name="BEGIN_BOLD" />Igen<ph name="END_BOLD" /> gombra, hogy kitűzhesse a Chromiumot a tálcára a gyors hozzáférés érdekében.</translation>
 <translation id="1808667845054772817">A Chromium újratelepítése</translation>
+<translation id="1814482312667514397">A telefonjára telepített Chromium alkalmazással útközben is használhatja a Chromium legjobb biztonsági funkcióit</translation>
 <translation id="1820835682567584003">A Chromium megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a(z) <ph name="DEVICE" /> eszközön lévő bővítményeihez is hozzáférhet.</translation>
 <translation id="183031085822326697">Amikor legközelebb megnyitja a Chromiumot <ph name="DEVICE_TYPE" /> eszközén, megjelenik egy üzenet a Google Jelszókezelő használatával kapcsolatban.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
 <translation id="2401032172288869980">A Chromiumnak kamera- és mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="2403703063067034158">Indítási hiba: jelenleg a beállítás egy másik példánya fut; próbálkozzon újra később.</translation>
+<translation id="241044568699443215">A Chromium alkalmazással útközben is élvezheti a Chromium által nyújtott biztonságot <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="2418322681019544463">Bármelyik alkalmazásból megnyithatja a linkeket a Chromiumban, és a böngésző a tálcán is hozzáférhető marad</translation>
 <translation id="2425157128016763890">A Összegzés gombra kattintva megoszthatja ezt a dokumentumot a Geminivel a Chromiumban, hogy gyors áttekintést kapjon, és utánkövető kérdéseket tehessen fel</translation>
 <translation id="2440750600860946460">A <ph name="BEGIN_LINK" />Chromium eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
@@ -517,6 +519,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6598877126913850652">A Chromium értesítési beállításainak megnyitása</translation>
 <translation id="6600016381025017075">Bármire rákereshet ezen az oldalon</translation>
 <translation id="6613594504749178791">Módosításai a Chromium újraindítása után lépnek érvénybe.</translation>
+<translation id="6637855549677695722">Amikor legközelebb megnyitja a Chromiumot <ph name="DEVICE_TYPE" /> eszközén, megjelenik egy üzenet, amely a Chromium legjobb biztonsági funkcióinak használatát javasolja.</translation>
 <translation id="6637908313088374648">A Chromium mostantól elindul a Windows indításakor, így azonnal elkezdheti a böngészést. Ezt a funkciót a beállítások között lehet kikapcsolni.</translation>
 <translation id="6644846457769259194">Eszköz frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">A Chromiumnak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
@@ -748,6 +751,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8910309838319708610">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Kereső AI-módjával.</translation>
 <translation id="8932992523185907506">Már nem a Chromium az alapértelmezett böngésző. Beállítja a Chromiumot alapértelmezett böngészőként?</translation>
+<translation id="8940844567350264767">A Chromiummal útközben is használhatja a Chromium legjobb biztonsági funkcióit</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>
 <translation id="8944232836376404813">Ez a művelet:
           <ph name="LINE_BREAKS" />

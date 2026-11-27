@@ -15,11 +15,13 @@
 <translation id="48558539577516920">Autorisez Chromium à accéder au réseau dans les paramètres de votre pare-feu
         ou de votre antivirus.</translation>
 <translation id="4949828774841497663">Accédez à Applis &gt; Paramètres système &gt; Réseau, sélectionnez le réseau actif, cliquez sur le bouton Détails et désélectionnez tous les mandataires qui ont pu être sélectionnés.</translation>
+<translation id="5228339820845278804">Rappel : Les meilleures fonctionnalités de sécurité de Chromium dans votre poche</translation>
 <translation id="6480456350195404966">Accédez au menu Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Réseau et Internet &gt; Serveur mandataire et désélectionnez « Détecter automatiquement les paramètres ».</translation>
 <translation id="648062525172759633">Ces pages visent à être utilisées par les développeurs Chromium et ne peuvent pas être activement entretenues ou testées. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton permettant d'activer les pages de débogage, puis accédez de nouveau à cette page.</translation>
 <translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="691026815377248078">Chromium nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Utilisez l'appli Chromium pour profiter de la sécurité de Chromium en déplacement</translation>
 <translation id="7681937895330411637">Chromium est rendu possible grâce au projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Accédez au
           menu Chromium &gt;

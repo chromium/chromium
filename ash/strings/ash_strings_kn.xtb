@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">ಫೈಲ್‌ ಆಯ್ಕೆ ಮಾಡಿ, ನಂತರ <ph name="KEY" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ಫೈಲ್ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{ಇನ್ನೂ +1}one{ಇನ್ನೂ +#}other{ಇನ್ನೂ +#}}</translation>
 <translation id="1283126956823499975">ಸಾಧನವನ್ನು ಸೆಟಪ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="1285992161347843613">ಫೋನ್ ಅನ್ನು ಪತ್ತೆ ಹಚ್ಚಿ</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> ಹೆಸರಿನ ಸೇವ್ ಮಾಡಿದ ಡೆಸ್ಕ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
@@ -2191,6 +2192,7 @@
 <translation id="6249795363855770621">ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="625369703868467034">ನೆಟ್‌ವರ್ಕ್ ಹೆಲ್ತ್</translation>
 <translation id="6254629735336163724">ಪರದೆಯು ಅಡ್ಡಲಾಗಿ ತೋರುವಂತೆ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ ಇನ್ನೂ 1 ಲಿಂಕ್}one{+ ಇನ್ನೂ # ಲಿಂಕ್‌}other{+ ಇನ್ನೂ # ಲಿಂಕ್‌‌ಗಳು}}</translation>
 <translation id="6259776178973198997">WiFi Direct ಮಾಲೀಕರ ಮಾಹಿತಿಯನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>

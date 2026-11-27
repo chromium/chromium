@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Քաղաքականության քեշում սխալներ չեն գտնվել</translation>
 <translation id="1131264053432022307">Ձեր պատճենած պատկերը</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Լիաէկրան ռեժիմից դուրս գալու համար քաշեք էկրանի վերևից և հպեք «Հետ» կոճակին</translation>
+<translation id="1132789342529761192">Խորհուրդ չի տրվում վերբեռնել</translation>
 <translation id="11370190534773372">Քարտի տվյալները լրացված են</translation>
 <translation id="1138458427267715730">Ստացեք ծանուցում, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="1142713751288681188">Թղթի տեսակը</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">Վտանգավոր բովանդակություն</translation>
 <translation id="2027465737841872819">Պլաստիկ</translation>
 <translation id="2027707238798802149">Քարտն անհասանելի է</translation>
+<translation id="2028329426302356196">Խորհուրդ չի տրվում ներբեռնել</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի և հրապատի կազմաձևումը<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome-ի այս օրինակն աշխատում է հրամանատողի պարամետրերով, որոնք ձեռքով են սահմանվել։ Նկատի ունեցեք, որ հրամանատողի պարամետրերը կարող են ցանկացած պահի փոխվել և չեն աջակցվում։</translation>
 <translation id="2033900728810589426">Դյուրանցումը չի կարող լինել նույնը, ինչ կանխադրված որոնման մատակարարի հիմնաբառը՝ սահմանված <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-ի կողմից՝ <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">Օպտիկական սկավառակ (ատլաս)</translation>
 <translation id="3447661539832366887">Սարքի սեփականատերն անջատել է Dinosaur խաղը:</translation>
 <translation id="3447884698081792621">Ցուցադրել հավաստագիրը (թողարկող՝ <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Խորհուրդ չի տրվում տպել</translation>
 <translation id="3450323514459570273">Կարող է հայցել MIDI սարքերի վերահսկման և ծրագրավորման թույլտվություն</translation>
 <translation id="3452404311384756672">Քաշելու ժամանակամիջոցը`</translation>
 <translation id="345268527248907593">Այս կայքն անհասանելի է</translation>
@@ -2914,6 +2917,7 @@
 <translation id="5851548754964597211">Ներդիրների ցանկ</translation>
 <translation id="5851868085455377790">Թողարկող</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Խորհուրդ չի տրվում պատճենել</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5862579898803147654">Շեղջիչ 8</translation>
 <translation id="5863515189965725638">IBAN-ի փոփոխում</translation>

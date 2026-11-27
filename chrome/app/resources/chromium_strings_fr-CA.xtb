@@ -71,6 +71,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1792680680989393197">Vous pouvez les retirer à tout moment. Chromium peut les télécharger à nouveau automatiquement lorsqu'un site ou une fonctionnalité en a besoin.</translation>
 <translation id="1793486931176048546">Cliquez sur <ph name="BEGIN_BOLD" />Oui<ph name="END_BOLD" /> dans la notification Windows afin d'épingler Chromium à votre barre des tâches pour un accès rapide.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
+<translation id="1814482312667514397">Profitez des meilleures fonctionnalités de sécurité de Chromium en déplacement avec l'appli Chromium sur votre téléphone</translation>
 <translation id="1820835682567584003">Chromium essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également vos extensions et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'utiliser le gestionnaire de mots de passe Google.</translation>
@@ -134,6 +135,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chromium ont accédé à # appareil HID}other{Une ou plusieurs extensions Chromium ont accédé à # appareils HID}}</translation>
 <translation id="2401032172288869980">Chromium requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="2403703063067034158">Erreur de démarrage : une autre instance de configuration est actuellement en cours d'exécution, veuillez réessayer plus tard.</translation>
+<translation id="241044568699443215">Profitez de la sécurité de Chromium en déplacement avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Ouvrez des liens dans Chromium à partir de n'importe quelle appli et gardez le navigateur à portée de main dans votre barre des tâches</translation>
 <translation id="2425157128016763890">Cliquez sur le bouton Résumer pour partager ce document avec Gemini dans Chromium afin d'obtenir un aperçu rapide et de poser des questions de suivi</translation>
 <translation id="2440750600860946460">Grâce aux <ph name="BEGIN_LINK" />outils de Chromium<ph name="END_LINK" />, vous pouvez naviguer en toute sécurité et garder le contrôle</translation>
@@ -518,6 +520,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>
 <translation id="6600016381025017075">Recherchez n'importe quoi sur cette page</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
+<translation id="6637855549677695722">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'obtenir les meilleures fonctionnalités de sécurité de Chromium.</translation>
 <translation id="6637908313088374648">Chromium se lance désormais au démarrage de Windows afin que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
 <translation id="6644846457769259194">Mise à jour de votre appareil en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="665732753414869868">Chromium requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
@@ -751,6 +754,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8907580949721785412">Chromium essaie d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="8910309838319708610">Opération réussie! Vous pouvez désormais poser facilement des questions pendant que vous naviguez avec le mode IA de Recherche</translation>
 <translation id="8932992523185907506">Chromium n'est plus votre navigateur par défaut. Faire de Chromium le navigateur par défaut?</translation>
+<translation id="8940844567350264767">Profitez des meilleures fonctionnalités de sécurité de Chromium en déplacement grâce à Chromium</translation>
 <translation id="8941642502866065432">Impossible de mettre à jour Chromium</translation>
 <translation id="8944232836376404813">Cette action aura les effets suivants :
 <ph name="LINE_BREAKS" />

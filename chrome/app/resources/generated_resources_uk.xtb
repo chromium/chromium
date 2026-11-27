@@ -5339,7 +5339,7 @@
 <translation id="6863496016067551393">Усі розширення дозволено</translation>
 <translation id="686366188661646310">Видалити пароль?</translation>
 <translation id="6863925886424789941">Колізей</translation>
-<translation id="6865313869410766144">Дані автозаповнення форм</translation>
+<translation id="6865313869410766144">Дані для автозаповнення форм</translation>
 <translation id="6865708901122695652">Журнали подій WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="6867086642466184030">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> та ще <ph name="NUMBER_OF_OTHER_APPS" /> більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="686831807558000905">Не входити</translation>
@@ -5942,7 +5942,7 @@
 <translation id="7502528909759062987">Призупинити трансляцію вкладки на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="750275011730776314">Повернутися до Gemini</translation>
 <translation id="7502804472671406749">Ви можете прокручувати вкладки, які демонструються, і змінювати їх масштаб</translation>
-<translation id="750314150962284310">Фокусування на рядках</translation>
+<translation id="750314150962284310">Виділення рядка</translation>
 <translation id="7503191893372251637">Тип сертифіката Netscape</translation>
 <translation id="7503259455663961898">Змінити пароль</translation>
 <translation id="7503985202154027481">На ключі безпеки збережеться запис, що ви відвідували цей сайт.</translation>

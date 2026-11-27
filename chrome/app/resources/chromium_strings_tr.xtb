@@ -516,6 +516,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6598877126913850652">Chromium bildirim ayarlarına git</translation>
 <translation id="6600016381025017075">Bu sayfada istediğiniz şeyi arayın</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
+<translation id="6637855549677695722"><ph name="DEVICE_TYPE" /> cihazınızda Chromium'u bir sonraki açışınızda Chromium'un en iyi güvenlik özelliklerini kullanmanız için bir istem görürsünüz.</translation>
 <translation id="6637908313088374648">Chromium artık Windows başlatıldığında açılıyor. Böylece hemen göz atmaya başlayabilirsiniz. Bu özelliği ayarlardan kapatabilirsiniz.</translation>
 <translation id="6644846457769259194">Cihazınız güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Çevrenizin 3D haritasını oluşturmak için Chromium'un kamera iznine ihtiyacı var</translation>

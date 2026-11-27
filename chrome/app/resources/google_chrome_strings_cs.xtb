@@ -103,6 +103,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1896602904211344018">Stáhnout aplikaci Chrome</translation>
 <translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
 <translation id="1925069572871307609">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 verze 1809 nebo novější. Tento počítač používá starší verzi Windows 10.</translation>
+<translation id="1975069140856174874">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chrome, zobrazí se výzva k použití nejlepších bezpečnostních funkcí od Googlu.</translation>
 <translation id="1975400514743766362">Mějte zabezpečení od Googlu vždy po ruce s aplikací Chrome na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Buďte na cestách v bezpečí s Vylepšeným Bezpečným prohlížením v Chromu pro iOS</translation>
 <translation id="2001586581944147178">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. Chrome používá zabezpečené připojení k vyhledání IP adresy webu v DNS (Domain Name System).</translation>
@@ -458,6 +459,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="568656514202614970">Podařilo se! Teď můžete pomocí Vyhledávání Google na bočním panelu snadno pokládat otázky přímo při prohlížení</translation>
 <translation id="5686916850681061684">Přizpůsobte si Google Chrome a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">S Chromem můžete mít špičkové bezpečnostní funkce od Googlu i na cestách</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="5715427327524421317">Chrome tyto AI modely automaticky stahuje a aktualizuje</translation>
@@ -623,6 +625,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7099479769133613710">Znovu spustit a aktualizovat &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Správce úloh - Google Chrome</translation>
 <translation id="7121179479711575744">Přihlásit se do Chromu</translation>
+<translation id="7137056136322108339">Mějte ty nejlepší bezpečnostní funkce od Googlu k dispozici na cestách s aplikací Chrome na telefonu</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Je k dispozici nová aktualizace Chromu, která bude použita po restartování.}=1{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="7161904924553537242">Vítá vás Google Chrome</translation>
 <translation id="7193885263065350793">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>

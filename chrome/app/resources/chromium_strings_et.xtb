@@ -519,6 +519,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6598877126913850652">Ava Chromiumi märguandeseaded</translation>
 <translation id="6600016381025017075">Otsige sellelt lehelt mida tahes</translation>
 <translation id="6613594504749178791">Teie muudatused jõustuvad järgmine kord, kui Chromiumi taaskäivitate.</translation>
+<translation id="6637855549677695722">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile viip Chromiumi parimate ohutusfunktsioonide hankimiseks.</translation>
 <translation id="6637908313088374648">Chromium käivitub nüüd Windowsi käivitamisel, et saaksite kohe sirvimist alustada. Saate selle seadetes välja lülitada.</translation>
 <translation id="6644846457769259194">Seadme värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>

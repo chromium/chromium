@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">Puoi rimuoverli in qualsiasi momento. Chromium potrebbe scaricarli di nuovo automaticamente quando un sito o una funzionalità ne ha bisogno.</translation>
 <translation id="1793486931176048546">Fai clic su <ph name="BEGIN_BOLD" />Sì<ph name="END_BOLD" /> nella notifica di Windows per fissare Chromium alla barra delle app per un accesso rapido.</translation>
 <translation id="1808667845054772817">Reinstalla Chromium</translation>
+<translation id="1814482312667514397">Porta con te le migliori funzionalità di sicurezza di Chromium ovunque ti trovi, con l'app Chromium sul tuo smartphone</translation>
 <translation id="1820835682567584003">Chromium sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per mantenere separata la tua attività di navigazione, accedi a Chromium con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere alle estensioni e molto altro da <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La prossima volta che aprirai Chromium sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi utilizzare Gestore delle password di Google.</translation>
@@ -132,6 +133,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
 <translation id="2403703063067034158">Errore di avvio: è in esecuzione un'altra istanza di configurazione. Riprova più tardi.</translation>
+<translation id="241044568699443215">Porta con te la sicurezza di Chromium ovunque ti trovi con l'app Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Apri i link in Chromium da qualsiasi app e mantieni il browser accessibile sulla barra delle app</translation>
 <translation id="2425157128016763890">Fai clic sul pulsante Riassumi per condividere questo documento con Gemini in Chromium per ottenere una rapida panoramica e porre domande aggiuntive</translation>
 <translation id="2440750600860946460">Con gli <ph name="BEGIN_LINK" />strumenti di Chromium<ph name="END_LINK" />, puoi navigare in sicurezza e mantenere il controllo</translation>
@@ -516,6 +518,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6598877126913850652">Vai alle impostazioni di notifica di Chromium</translation>
 <translation id="6600016381025017075">Cerca qualsiasi cosa in questa pagina</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
+<translation id="6637855549677695722">La prossima volta che aprirai Chromium sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi attivare le migliori funzionalità di sicurezza di Chromium.</translation>
 <translation id="6637908313088374648">Ora Chromium si avvia all'avvio di Windows, così puoi iniziare a navigare all'istante. Puoi disattivare questo comportamento nelle impostazioni.</translation>
 <translation id="6644846457769259194">Aggiornamento del dispositivo in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
@@ -748,6 +751,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8910309838319708610">Operazione riuscita. Ora puoi fare domande in tutta semplicità mentre navighi con AI Mode nella Ricerca</translation>
 <translation id="8932992523185907506">Chromium non è più il browser predefinito. Impostare Chromium come browser predefinito?</translation>
+<translation id="8940844567350264767">Ottieni le migliori funzionalità di sicurezza di Chromium ovunque ti trovi con Chromium</translation>
 <translation id="8941642502866065432">Impossibile aggiornare Chromium</translation>
 <translation id="8944232836376404813">L'azione avrà l'effetto di:
           <ph name="LINE_BREAKS" />

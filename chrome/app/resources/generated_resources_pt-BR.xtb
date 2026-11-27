@@ -1308,6 +1308,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="244071666433939959">Apps abertos em uma janela</translation>
 <translation id="2442916515643169563">Sombra do texto</translation>
 <translation id="2443487764245141020">Talvez os sites também precisem reconhecer seu dispositivo com um identificador</translation>
+<translation id="2444282212665587861">atualização, atualizações, upgrade, versão, build, informações, verificar atualizações</translation>
 <translation id="244475495405467108">Fechar guias à esquerda</translation>
 <translation id="2444874983932528148">Continue de onde parou</translation>
 <translation id="2445081178310039857">O diretório raiz da extensão é obrigatório.</translation>
@@ -2144,6 +2145,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3321512411079201586">&amp;Isolado</translation>
 <translation id="3323288183237359315">Instalar no Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Para proteger sua privacidade, as permissões de um site foram removidas}one{Para proteger sua privacidade, as permissões de um site foram removidas}other{Para proteger sua privacidade, as permissões de alguns sites foram removidas}}</translation>
+<translation id="3325561120400598624">Os chats são analisados e usados para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros. Alguns conteúdos podem não ser adequados para todos. Você pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerenciar seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo <ph name="BEGIN_LINK_LOCATION_INFO" />informações sobre sua localização<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre suas opções<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3331974543021145906">Informações sobre o aplicativo</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Vídeo reproduzido em picture-in-picture</translation>
@@ -2270,6 +2272,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Faça upload de 1 arquivo .pdf para usar com sua pergunta}one{Faça upload de até # arquivos .pdf para usar com sua pergunta}other{Faça upload de até # arquivos .pdf para usar com sua pergunta}}</translation>
 <translation id="3456750372063895499">Abrir Link em uma Janela I&amp;solada</translation>
 <translation id="345693547134384690">Abrir &amp;imagem em uma nova guia</translation>
+<translation id="3456949031754827166">Reorganizar</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Manter grupo}one{Manter grupo}other{Manter grupos}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 favorito excluído}one{# favorito excluído}other{# favoritos excluídos}}</translation>
 <translation id="3471687177769494956">Editar atalho de navegação</translation>
@@ -3323,6 +3326,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4602776638371779614">Esta guia está procurando dispositivos Bluetooth no momento</translation>
 <translation id="4605026046465576953">Não é possível abrir este app porque você não tem permissão para executar Apps Isolados da Web</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera</translation>
+<translation id="4606965546067937011">velocidade, RAM, atraso, congelamento, falha, recurso, uso, bateria, otimizador, lento, memória, economia de memória</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Excluir grupo de guias?}one{Excluir grupo de guias?}other{Excluir grupos de guias?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Faça upload de 1 arquivo para usar com sua pergunta}one{Faça upload de até # arquivo para usar com sua pergunta}other{Faça upload de até # arquivos para usar com sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
@@ -4155,6 +4159,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="5535769176698670170">Trocar com a visualização de cima</translation>
 <translation id="5536642445914063887">Trocar de perfil</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="553876896781261711">excluir, remover, segurança, privacidade, limpeza, armazenamento, redefinir, cache, cookies, lento, velocidade, histórico</translation>
 <translation id="5541091577812545428">A senha não foi alterada</translation>
 <translation id="5542132724887566711">Perfil</translation>
 <translation id="5543983818738093899">Verificando status...</translation>
@@ -4747,6 +4752,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6214157047210274853">Editar na Carteira do Google</translation>
 <translation id="621470880408090483">Não permitir que os sites se conectem a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de 1 minuto de inatividade}one{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de # minuto de inatividade}other{Para proteger suas senhas, o <ph name="BRAND" /> é bloqueado depois de # minutos de inatividade}}</translation>
+<translation id="6215427500141060726">Os chats são analisados e usados para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros. Você pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerenciar seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo <ph name="BEGIN_LINK_LOCATION_INFO" />informações sobre sua localização<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre suas opções<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Sites e apps recusados</translation>
 <translation id="6216696360484424239">Fazer login automaticamente</translation>
 <translation id="6218961554829577610">Não gostei da voz</translation>
@@ -4898,6 +4904,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="639880411171387127">Sua seleção do Google Lens. Pressione Enter ou backspace para excluir a seleção do Google Lens.</translation>
 <translation id="6400360390396538896">Sempre no site <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Desfocar do grupo de guias</translation>
+<translation id="6401522392962817913">Ao continuar, você concorda com os Termos de Serviço do Google Payments. No Aviso de Privacidade, descrevemos como seus dados são tratados. Seu cartão é salvo na sua Conta do Google <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Para saber o motivo, entre em contato com o desenvolvedor do app.</translation>
 <translation id="6402921224457714577">Sites podem pedir para controlar e reprogramar seus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
@@ -4986,6 +4993,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6499143127267478107">Resolvendo host no script de proxy...</translation>
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6504601948739128893">Sem autorização para usar as fontes instaladas no dispositivo</translation>
+<translation id="6505525633061207363">credenciais, login, chave de acesso, bloqueio, cofre, chaves, entrar, fazer login</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> quer instalar o seguinte app neste dispositivo:}one{<ph name="APP_NAME" /> quer instalar o seguinte app neste dispositivo:}other{<ph name="APP_NAME" /> quer instalar os seguintes apps neste dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionado a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicativo: <ph name="APP_NAME" /></translation>

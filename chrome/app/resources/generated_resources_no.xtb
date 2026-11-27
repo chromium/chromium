@@ -1305,6 +1305,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="244071666433939959">Apper åpnes i et vindu</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
 <translation id="2443487764245141020">Nettsteder trenger kanskje også å gjenkjenne enheten din ved bruk av en identifikator</translation>
+<translation id="2444282212665587861">oppdater, oppdateringer, oppgrader, versjon, delversjon, info, se etter oppdateringer</translation>
 <translation id="244475495405467108">Lukk faner til venstre</translation>
 <translation id="2444874983932528148">Fortsett enkelt der du avsluttet</translation>
 <translation id="2445081178310039857">Det kreves en rotkatalog for utvidelsen</translation>
@@ -2142,6 +2143,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3321512411079201586">&amp;Isolert</translation>
 <translation id="3323288183237359315">Installer for Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{For å ivareta personvernet ditt har vi fjernet tillatelsene fra et nettsted}other{For å ivareta personvernet ditt har vi fjernet tillatelsene fra noen nettsteder}}</translation>
+<translation id="3325561120400598624">Chatter blir gjennomgått og brukt for å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert <ph name="BEGIN_LINK_LOCATION_INFO" />informasjon om posisjonen din<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3331974543021145906">Appinformasjon</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videoen spilles av i bilde-i-bilde-modus</translation>
@@ -2267,6 +2269,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Last opp 1 .pdf-fil som skal brukes med spørsmålet ditt}other{Last opp opptil # .pdf-filer som skal brukes med spørsmålet ditt}}</translation>
 <translation id="3456750372063895499">Åpne linken i et i&amp;solert vindu</translation>
 <translation id="345693547134384690">Åpne b&amp;ilde i ny fane</translation>
+<translation id="3456949031754827166">Endre rekkefølge</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Behold gruppen}other{Behold gruppene}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 bokmerke er slettet}other{# bokmerker er slettet}}</translation>
 <translation id="3471687177769494956">Endre navigasjonssnarveien</translation>
@@ -3318,6 +3321,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4602776638371779614">Denne fanen søker aktivt etter Bluetooth-enheter</translation>
 <translation id="4605026046465576953">Denne appen kan ikke åpnes fordi du ikke har tillatelse til å kjøre isolerte nettapper</translation>
 <translation id="4606551464649945562">Ikke la nettsteder lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
+<translation id="4606965546067937011">hastighet, RAM, forsinkelse, frys, krasj, ressurs, bruk, batteri, optimalisering, treg, minne, minnesparing</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}other{Vil du slette fanegruppene?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Last opp én fil som skal brukes med spørsmålet ditt}other{Last opp opptil # filer som skal brukes med spørsmålet ditt}}</translation>
 <translation id="4608500690299898628">&amp;Finn</translation>
@@ -4148,6 +4152,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5535769176698670170">Bytt med øverste visning</translation>
 <translation id="5536642445914063887">Bytt profil</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="553876896781261711">slett, fjern, sikkerhet, personvern, opprydding, lagring, tilbakestill, buffer, informasjonskapsler, treg, hastighet, logg</translation>
 <translation id="5541091577812545428">Passordet ble ikke endret</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Sjekker statusen …</translation>
@@ -4739,6 +4744,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6214157047210274853">Rediger i Google Wallet</translation>
 <translation id="621470880408090483">Ikke la nettsteder koble til Bluetooth-enheter</translation>
 <translation id="6215039389782910006">{1,plural, =1{For å beskytte passordene dine låses <ph name="BRAND" /> etter 1 minutt uten aktivitet}other{For å beskytte passordene dine låses <ph name="BRAND" /> etter # minutter uten aktivitet}}</translation>
+<translation id="6215427500141060726">Chatter blir gjennomgått og brukt for å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert <ph name="BEGIN_LINK_LOCATION_INFO" />informasjon om posisjonen din<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Avviste nettsteder og apper</translation>
 <translation id="6216696360484424239">Logg på automatisk</translation>
 <translation id="6218961554829577610">Jeg likte ikke stemmen</translation>
@@ -4890,6 +4896,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="639880411171387127">Google Lens-valget ditt. Trykk på Enter eller tilbaketasten for å slette Google Lens-valget ditt</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Avslutt fokusering på fanegruppen</translation>
+<translation id="6401522392962817913">Ved å fortsette godtar du vilkårene for bruk av Google Payments. Merknaden om personvern beskriver hvordan dataene dine håndteres. Kortet lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Kontakt apputvikleren for å finne ut hvorfor</translation>
 <translation id="6402921224457714577">Nettsteder kan be om å få kontrollere og omprogrammere MIDI-enhetene dine</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
@@ -4978,6 +4985,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6499143127267478107">Slår opp vertsnavn i proxy-skript …</translation>
 <translation id="6503077044568424649">Mest besøkt</translation>
 <translation id="6504601948739128893">Får ikke bruke skrifttyper som er installert på enheten</translation>
+<translation id="6505525633061207363">legitimasjon, pålogging, passnøkkel, lås, hvelv, nøkler, logg på, logg inn</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» vil installere den følgende appen på denne enheten:}other{«<ph name="APP_NAME" />» vil installere de følgende appene på denne enheten:}}</translation>
 <translation id="6508248480704296122">Knyttet til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>

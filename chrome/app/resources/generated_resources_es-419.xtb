@@ -1295,6 +1295,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="244071666433939959">Apps abiertas en una ventana</translation>
 <translation id="2442916515643169563">Sombra del texto</translation>
 <translation id="2443487764245141020">Es posible que los sitios también reconozcan tu dispositivo a través de un identificador.</translation>
+<translation id="2444282212665587861">actualizar, actualizaciones, actualización, versión, compilación, información, info, buscar actualizaciones</translation>
 <translation id="244475495405467108">Cerrar pestañas a la izquierda</translation>
 <translation id="2444874983932528148">Retoma fácilmente tu actividad desde donde la dejaste.</translation>
 <translation id="2445081178310039857">Se requiere un directorio de raíz de la extensión.</translation>
@@ -2132,6 +2133,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="3321512411079201586">&amp;Aislado</translation>
 <translation id="3323288183237359315">Instalar para Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
+<translation id="3325561120400598624">Los chats se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores. Es posible que parte del contenido no sea apto para todos los usuarios. Puedes <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrar tu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluida la <ph name="BEGIN_LINK_LOCATION_INFO" />información sobre tu ubicación<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Más información sobre tus opciones<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3331974543021145906">Info. de la aplicación</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: El video se reproduce en modo de pantalla en pantalla</translation>
@@ -2257,6 +2259,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Sube 1 archivo PDF para usarlo con tu pregunta}other{Sube hasta # archivos PDF para usarlos con tu pregunta}}</translation>
 <translation id="3456750372063895499">Abrir vínculo en una ventana a&amp;islada</translation>
 <translation id="345693547134384690">Abrir &amp;imagen en una pestaña nueva</translation>
+<translation id="3456949031754827166">Reorganizar</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Conservar grupo}other{Conservar grupos}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Se borró 1 favorito}other{Se borraron # favoritos}}</translation>
 <translation id="3471687177769494956">Editar la combinación de teclas de navegación</translation>
@@ -3310,6 +3313,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="4602776638371779614">Esta pestaña está buscando dispositivos Bluetooth de forma activa</translation>
 <translation id="4605026046465576953">No se puede abrir esta app porque no tienes permiso para ejecutar apps web aisladas</translation>
 <translation id="4606551464649945562">No permitir que los sitios creen un mapa 3D de tu entorno ni hagan un seguimiento de la posición de la cámara</translation>
+<translation id="4606965546067937011">velocidad, RAM, retraso, se congela, se traba, se cierra, falla, recurso, uso, consumo, batería, optimizador, lento, memoria, ahorro de memoria</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{¿Quieres borrar el grupo de pestañas?}other{¿Quieres borrar los grupos de pestañas?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Sube 1 archivo para usarlo con tu pregunta}other{Sube hasta # archivos para usarlos con tu pregunta}}</translation>
 <translation id="4608500690299898628">&amp;Buscar</translation>
@@ -4142,6 +4146,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="5535769176698670170">Intercambiar con la vista superior</translation>
 <translation id="5536642445914063887">Cambiar de perfil</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="553876896781261711">borrar, quitar, eliminar, seguridad, privacidad, limpieza, almacenamiento, restablecer, caché, cookies, lento, velocidad, historial</translation>
 <translation id="5541091577812545428">No se cambió la contraseña</translation>
 <translation id="5542132724887566711">Perfil</translation>
 <translation id="5543983818738093899">Comprobando estado…</translation>
@@ -4594,7 +4599,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="6076575605422709982">Se disminuyó el tamaño de la fuente</translation>
 <translation id="6076576896267434196">La extensión "<ph name="EXTENSION_NAME" />" quiere acceder a tu cuenta</translation>
 <translation id="6078199831684941650">Se actualizó a la versión <ph name="VERSION" /></translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Agregar acceso directo</translation>
 <translation id="6078752646384677957">Comprueba el micrófono y los niveles de audio.</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: Parte de un grupo sin nombre</translation>
 <translation id="6086350918562605938">Actualizador por sistema</translation>
@@ -4733,6 +4738,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="6214157047210274853">Editar en la Billetera de Google</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de 1 minuto de inactividad}other{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de # minutos de inactividad}}</translation>
+<translation id="6215427500141060726">Los chats se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores. Puedes <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrar tu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluida la <ph name="BEGIN_LINK_LOCATION_INFO" />información sobre tu ubicación<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Más información sobre tus opciones<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Apps y sitios rechazados</translation>
 <translation id="6216696360484424239">Acceder automáticamente</translation>
 <translation id="6218961554829577610">No me gustó la voz</translation>
@@ -4884,6 +4890,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="639880411171387127">Tu selección de Google Lens. Presiona Intro o Retroceso para borrar la selección de Google Lens</translation>
 <translation id="6400360390396538896">Siempre activada en <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Dejar de enfocar el grupo de pestañas</translation>
+<translation id="6401522392962817913">Si continúas, aceptas las Condiciones del Servicio de Google Payments. En el Aviso de Privacidad, se describe cómo se manejan tus datos. La tarjeta se guarda en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Para saber por qué, comunícate con el desarrollador de la app</translation>
 <translation id="6402921224457714577">Los sitios pueden solicitar permiso para controlar y reprogramar tus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -4972,6 +4979,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="6499143127267478107">Resolviendo host en secuencia de comandos de proxy...</translation>
 <translation id="6503077044568424649">Más visitados</translation>
 <translation id="6504601948739128893">No pueden usar las fuentes instaladas en el dispositivo</translation>
+<translation id="6505525633061207363">credenciales, contraseñas, acceso, llave de acceso, bloqueo, almacenamiento de contraseñas, claves, inicio de sesión, iniciar sesión, acceder, ingresar</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" quiere instalar la siguiente app en este dispositivo:}other{"<ph name="APP_NAME" />" quiere instalar las siguientes apps en este dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>

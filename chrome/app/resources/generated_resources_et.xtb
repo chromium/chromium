@@ -1299,6 +1299,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="244071666433939959">Rakendused avanevad aknas</translation>
 <translation id="2442916515643169563">Teksti vari</translation>
 <translation id="2443487764245141020">Samuti on saitidel võib-olla vaja teie seade identifikaatori abil ära tunda</translation>
+<translation id="2444282212665587861">värskendus, värskendused, täiendus, versioon, järk, teave, värskenduste otsimine</translation>
 <translation id="244475495405467108">Sule vasakul olevad vahelehed</translation>
 <translation id="2444874983932528148">Jätkake hõlpsasti sealt, kus pooleli jäi.</translation>
 <translation id="2445081178310039857">Laienduse juurkaust on nõutav.</translation>
@@ -2136,6 +2137,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3321512411079201586">&amp;Isoleeritud</translation>
 <translation id="3323288183237359315">Installi Edge'i jaoks</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Teie privaatsuse kaitsmiseks eemaldati ühelt saidilt load.}other{Teie privaatsuse kaitsmiseks eemaldati mõnelt saidilt load.}}</translation>
+<translation id="3325561120400598624">Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Gemini on AI ja võib teha vigu. Osa sisust ei pruugi kõigile sobida. Saate <ph name="BEGIN_LINK_MANAGE_HISTORY" />hallata oma ajalugu<ph name="END_LINK_MANAGE_HISTORY" />, sh <ph name="BEGIN_LINK_LOCATION_INFO" />teavet oma asukoha kohta<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave teie valikute kohta<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Stiil</translation>
 <translation id="3331974543021145906">Rakenduse teave</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videot esitatakse režiimis Pilt pildis</translation>
@@ -2261,6 +2263,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Laadige üles üks PDF-fail, mida oma küsimusega kasutada.}other{Laadige üles kuni # PDF-faili, mida oma küsimusega kasutada}}</translation>
 <translation id="3456750372063895499">Ava link i&amp;soleeritud aknas</translation>
 <translation id="345693547134384690">Ava pilt uuel &amp;vahelehel</translation>
+<translation id="3456949031754827166">Korralda ümber</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Säilita grupp}other{Säilita grupid}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 järjehoidja kustutati}other{# järjehoidjat kustutati}}</translation>
 <translation id="3471687177769494956">Muuda navigeerimise otseteed</translation>
@@ -3314,6 +3317,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4602776638371779614">See vaheleht otsib aktiivselt Bluetooth-seadmeid</translation>
 <translation id="4605026046465576953">Seda rakendust ei saa avada, kuna teil pole isoleeritud veebirakenduste käitamise luba</translation>
 <translation id="4606551464649945562">Ära luba saitidel luua mind ümbritsevast 3D-kaarti ega jälgida kaamera asendit</translation>
+<translation id="4606965546067937011">kiirus, RAM, viivitus, hangumine, kokkujooksmine, ressurss, kasutus, aku, optimeerija, aeglane, mälu, mälusäästja</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Kas kustutada vahelehegrupp?}other{Kas kustutada vahelehegrupid?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Laadige üles üks fail, mida oma küsimusega kasutada}other{Laadige üles kuni # faili, mida oma küsimusega kasutada}}</translation>
 <translation id="4608500690299898628">&amp;Otsi...</translation>
@@ -4146,6 +4150,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5535769176698670170">Vaheta ülemise vaatega</translation>
 <translation id="5536642445914063887">Profiili vahetamine</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
+<translation id="553876896781261711">kustuta, eemalda, turvalisus, privaatsus, puhastamine, salvestusruum, lähtesta, vahemälu, küpsisefailid, aeglane, kiirus, ajalugu</translation>
 <translation id="5541091577812545428">Parooli ei muudetud</translation>
 <translation id="5542132724887566711">Profiil</translation>
 <translation id="5543983818738093899">Oleku kontrollimine ...</translation>
@@ -4737,6 +4742,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6214157047210274853">Muuda Google Walletis</translation>
 <translation id="621470880408090483">Ära luba saitidel Bluetooth-seadmetega ühendust luua</translation>
 <translation id="6215039389782910006">{1,plural, =1{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast ühte minutit tegevusetust}other{Teie paroolide kaitsmiseks lukustub <ph name="BRAND" /> pärast # minutit tegevusetust}}</translation>
+<translation id="6215427500141060726">Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Gemini on AI ja võib teha vigu. Saate <ph name="BEGIN_LINK_MANAGE_HISTORY" />hallata oma ajalugu<ph name="END_LINK_MANAGE_HISTORY" />, sh <ph name="BEGIN_LINK_LOCATION_INFO" />teavet oma asukoha kohta<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave teie valikute kohta<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Tagasilükatud saidid ja rakendused</translation>
 <translation id="6216696360484424239">Automaatne sisselogimine</translation>
 <translation id="6218961554829577610">Mulle ei meeldinud hääl</translation>
@@ -4888,6 +4894,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="639880411171387127">Teie Google Lensi valik. Google Lensi valiku kustutamiseks vajutage sisestusklahvi või tagasilükkeklahvi</translation>
 <translation id="6400360390396538896">Alati saidil <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Tühista vahelehegrupi esile tõstmine</translation>
+<translation id="6401522392962817913">Jätkates nõustute Google Paymentsi teenusetingimustega. Teie teabe töötlemist kirjeldatakse privaatsusteatises. Teie kaart salvestatakse teie Google'i kontole <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Põhjuse teadasaamiseks võtke ühendust rakenduse arendajaga.</translation>
 <translation id="6402921224457714577">Sait saab küsida luba teie MIDI-seadmete juhtimiseks ja ümberprogrammeerimiseks</translation>
 <translation id="6404511346730675251">Muuda järjehoidjat</translation>
@@ -4976,6 +4983,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6499143127267478107">Hosti lahendamine puhverserveri skriptis ...</translation>
 <translation id="6503077044568424649">Populaarsed</translation>
 <translation id="6504601948739128893">Ei või kasutada teie seadmesse installitud fonte</translation>
+<translation id="6505525633061207363">mandaadid, sisselogimine, pääsuvõti, lukk, hoidla, võtmed, sisselogimine, sisse logima, sisse logida</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> soovib sellesse seadmesse järgmise rakenduse installida:}other{<ph name="APP_NAME" /> soovib sellesse seadmesse järgmised rakendused installida:}}</translation>
 <translation id="6508248480704296122">Seotud üksusega <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Rakendus: <ph name="APP_NAME" /></translation>

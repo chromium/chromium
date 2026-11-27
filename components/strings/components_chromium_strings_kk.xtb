@@ -21,6 +21,7 @@
 <translation id="48558539577516920">Брандмауэр немесе антивирус параметрлерінде Chromium жүйесіне
           желіге кіруге рұқсат беріңіз.</translation>
 <translation id="4949828774841497663">"Қолданбалар &gt; Жүйе параметрлері &gt; Желі" тармағына өтіп, белсенді желіні таңдаңыз да, "Мәліметтер..." түймесін басып, бұрын таңдалған прокси-серверлерді таңдаудан алыңыз.</translation>
+<translation id="5228339820845278804">Еске салғыш: Chromium-нің ең үздік қауіпсіздік функциялары жаныңыздан табылады</translation>
 <translation id="6480456350195404966">"Chromium мәзірі &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -34,6 +35,7 @@
 <translation id="6549378540556750549">Сонымен қатар Chromium басқа <ph name="BEGIN_LINK_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6613594504749178791">Өзгертулеріңіз Chromium келесі рет қайта іске қосылғанда күшіне енеді.</translation>
 <translation id="691026815377248078">Жұптауды жалғастыру үшін Chromium-ге Bluetooth-ты пайдалану рұқсаты керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Chromium қауіпсіздігін жол-жөнекей қамтамасыз ету үшін Chromium пайдаланыңыз.</translation>
 <translation id="7681937895330411637">Chromium браузері <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ашық кодты бағдарлама жобасы арқылы қолжетімді болады.</translation>
 <translation id="7861509383340276692">Chromium мәзірі &gt;
           <ph name="SETTINGS_TITLE" />

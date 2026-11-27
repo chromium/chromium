@@ -1295,6 +1295,7 @@
 <translation id="244071666433939959">应用会在窗口中打开</translation>
 <translation id="2442916515643169563">文字阴影</translation>
 <translation id="2443487764245141020">网站可能还需要使用标识符来识别您的设备</translation>
+<translation id="2444282212665587861">更新, 升级, 版本, 版本号, 信息, 检查更新, update, updates, upgrade, version, build, info, check for updates</translation>
 <translation id="244475495405467108">关闭左侧标签页</translation>
 <translation id="2444874983932528148">无缝延续浏览体验</translation>
 <translation id="2445081178310039857">必须指定扩展程序根目录。</translation>
@@ -2130,6 +2131,7 @@
 <translation id="3321512411079201586">隔离 (&amp;I)</translation>
 <translation id="3323288183237359315">安装 Edge 版扩展程序</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{为保护您的隐私，已撤销某个网站的权限}other{为保护您的隐私，已撤销某些网站的权限}}</translation>
+<translation id="3325561120400598624">对话内容会经过审核，并用于训练生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。部分内容可能并不适合所有人。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理历史记录<ph name="END_LINK_MANAGE_HISTORY" />，包括<ph name="BEGIN_LINK_LOCATION_INFO" />您的位置信息<ph name="END_LINK_LOCATION_INFO" />。<ph name="BEGIN_LINK_LEARN_MORE" />详细了解您有哪些选择<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">风格</translation>
 <translation id="3331974543021145906">应用信息</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 视频正在“画中画”模式中播放</translation>
@@ -2255,6 +2257,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{提问时可上传 1 个 pdf 文件}other{提问时最多可上传 # 个 pdf 文件}}</translation>
 <translation id="3456750372063895499">在隔离窗口中打开链接(&amp;S)</translation>
 <translation id="345693547134384690">在新标签页中打开图片(&amp;I)</translation>
+<translation id="3456949031754827166">重新排列</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{保留分组}other{保留分组}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{已删除 1 个书签}other{已删除 # 个书签}}</translation>
 <translation id="3471687177769494956">修改导航快捷键</translation>
@@ -3307,6 +3310,7 @@
 <translation id="4602776638371779614">此标签页正在主动搜寻蓝牙设备</translation>
 <translation id="4605026046465576953">无法打开此应用，因为您没有运行独立式 Web 应用 (IWA) 的权限</translation>
 <translation id="4606551464649945562">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
+<translation id="4606965546067937011">速度, RAM, 延迟, 冻结, 崩溃, 资源, 利用率, 电池, 优化工具, 缓慢, 内存, 省内存模式, speed, lag, freeze, crash, resource, usage, battery, optimizer, slow, memory, memory saver</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要删除标签页分组吗？}other{要删除标签页分组吗？}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提问时最多可上传 1 个文件}other{提问时最多可上传 # 个文件}}</translation>
 <translation id="4608500690299898628">查找(&amp;F)...</translation>
@@ -4137,6 +4141,7 @@
 <translation id="5535769176698670170">与顶部视图交换</translation>
 <translation id="5536642445914063887">切换个人资料</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="553876896781261711">删除, 移除, 安全, 隐私, 清理, 存储空间, 重置, 缓存, cookie, 缓慢, 速度, 历史记录, delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed, history</translation>
 <translation id="5541091577812545428">密码未更改</translation>
 <translation id="5542132724887566711">个人资料</translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
@@ -4725,6 +4730,7 @@
 <translation id="6214157047210274853">在 Google 钱包中修改</translation>
 <translation id="621470880408090483">不允许网站连接到蓝牙设备</translation>
 <translation id="6215039389782910006">{1,plural, =1{为确保您的密码安全，<ph name="BRAND" />会在闲置 1 分钟后锁定}other{为确保您的密码安全，<ph name="BRAND" />会在闲置 # 分钟后锁定}}</translation>
+<translation id="6215427500141060726">对话内容会经过审核，并用于训练生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理历史记录<ph name="END_LINK_MANAGE_HISTORY" />，包括<ph name="BEGIN_LINK_LOCATION_INFO" />您的位置信息<ph name="END_LINK_LOCATION_INFO" />。<ph name="BEGIN_LINK_LEARN_MORE" />详细了解您有哪些选择<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">已拒绝的网站和应用</translation>
 <translation id="6216696360484424239">自动登录</translation>
 <translation id="6218961554829577610">不喜欢这个声音</translation>
@@ -4876,6 +4882,7 @@
 <translation id="639880411171387127">Google 智能镜头选定的内容。按 Enter 键或退格键可删除 Google 智能镜头选定的内容</translation>
 <translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
 <translation id="6400714103322134861">取消聚焦标签页分组</translation>
+<translation id="6401522392962817913">继续操作即表示您同意遵守《Google Payments 服务条款》。《隐私权声明》说明了 Google 会如何处理您的数据。您的卡会保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="6402042774506839496">如需了解原因，请与应用开发者联系</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="6404511346730675251">修改书签</translation>
@@ -4964,6 +4971,7 @@
 <translation id="6499143127267478107">正在解析代理脚本中的主机...</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6504601948739128893">不得使用您设备上安装的字体</translation>
+<translation id="6505525633061207363">凭证, 登录, 通行密钥, 锁定, 密码库, 密钥, credentials, sign-in, passkey, lock, vault, keys, login, log in, sign in</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}other{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}}</translation>
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>

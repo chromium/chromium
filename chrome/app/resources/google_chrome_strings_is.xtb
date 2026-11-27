@@ -460,6 +460,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="568656514202614970">Þetta tókst! Nú getur þú spurt spurninga á auðveldan hátt á meðan þú vafrar með Google-leit í hliðarglugga</translation>
 <translation id="5686916850681061684">Sérsníða og stýra Google Chrome. Eitthvað krefst athygli þinnar – smelltu til að sjá nánar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Fáðu bestu öryggiseiginleika Google á ferðinni með Chrome</translation>
 <translation id="569897634095159764">Ekki er hægt að tengjast internetinu. Staðgengilsþjónninn krefst auðkenningar.</translation>
 <translation id="5709557627224531708">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="5715427327524421317">Chrome sækir og uppfærir þessi gervigreindarlíkön sjálfkrafa</translation>
@@ -625,6 +626,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7099479769133613710">Endurræstu til að uppfæra &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Verkstjórn – Google Chrome</translation>
 <translation id="7121179479711575744">Skráðu þig inn á Chrome</translation>
+<translation id="7137056136322108339">Fáðu bestu öryggiseiginleika Google á ferðinni með Chrome-forritinu í símanum þínum</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir.}=1{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. Huliðsglugginn enduropnast ekki.}one{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggi enduropnast ekki.}other{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="7161904924553537242">Velkomin(n) í Google Chrome</translation>
 <translation id="7193885263065350793">Fyrirtækið þitt lokar Chrome eftir aðgerðaleysi í <ph name="TIMEOUT_DURATION" />.</translation>

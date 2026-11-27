@@ -1295,6 +1295,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="244071666433939959">Aplikacije se otvaraju u prozoru</translation>
 <translation id="2442916515643169563">Senka teksta</translation>
 <translation id="2443487764245141020">Sajtovi će možda morati i da prepoznaju uređaj pomoću identifikatora</translation>
+<translation id="2444282212665587861">ažuriranje, ažuriranja, nadogradnja, verzija, informacije, proveri da li ima ažuriranja</translation>
 <translation id="244475495405467108">Zatvori kartice sa leve strane</translation>
 <translation id="2444874983932528148">Lako nastavite tamo gde ste stali</translation>
 <translation id="2445081178310039857">Osnovni direktorijum dodatka je obavezan.</translation>
@@ -2132,6 +2133,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3321512411079201586">&amp;Izolovano</translation>
 <translation id="3323288183237359315">Instaliraj za Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Da bismo zaštitili privatnost, dozvole su uklonjene za sajt}one{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}few{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}other{Da bismo zaštitili privatnost, dozvole su uklonjene za neke sajtove}}</translation>
+<translation id="3325561120400598624">Četovi se pregledaju i koriste za obučavanje modela generativne veštačke inteligencije. Gemini je veštačka inteligencija i može da pogreši. Neki sadržaj možda nije prikladan za svakoga. Možete da <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljate istorijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući <ph name="BEGIN_LINK_LOCATION_INFO" />informacije o lokaciji<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim opcijama<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se reprodukuje u režimu slike u slici</translation>
@@ -2257,6 +2259,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Otpremite 1 .pdf fajl koji ćete koristiti uz pitanje}one{Otpremite najviše # .pdf fajl koji ćete koristiti uz pitanje}few{Otpremite najviše # .pdf fajla koje ćete koristiti uz pitanje}other{Otpremite najviše # .pdf fajlova koje ćete koristiti uz pitanje}}</translation>
 <translation id="3456750372063895499">Otvori link u i&amp;zolovanom prozoru</translation>
 <translation id="345693547134384690">Otvori &amp;sliku na novoj kartici</translation>
+<translation id="3456949031754827166">Prerasporedi</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Zadrži grupu}one{Zadrži grupe}few{Zadrži grupe}other{Zadrži grupe}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 obeleživač je izbrisan}one{# obeleživač je izbrisan}few{# obeleživača su izbrisana}other{# obeleživača je izbrisano}}</translation>
 <translation id="3471687177769494956">Izmeni prečicu za navigaciju</translation>
@@ -3310,6 +3313,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="4602776638371779614">Ova kartica aktivno traži Bluetooth uređaje</translation>
 <translation id="4605026046465576953">Ne možete da otvorite ovu aplikaciju zato što nemate dozvolu da pokrećete izolovane veb-aplikacije</translation>
 <translation id="4606551464649945562">Ne dozvoljavajte sajtovima da prave 3D mapu okruženja ili da prate položaj kamere</translation>
+<translation id="4606965546067937011">brzina, RAM, kašnjenje, zamrzavanje, otkazivanje, resurs, korišćenje, baterija, optimizator, sporo, memorija, ušteda memorije</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite da izbrišete grupu kartica?}one{Želite da izbrišete grupe kartica?}few{Želite da izbrišete grupe kartica?}other{Želite da izbrišete grupe kartica?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Otpremite 1 fajl koji ćete koristiti uz pitanje}one{Otpremite najviše # fajl koji ćete koristiti uz pitanje}few{Otpremite najviše # fajla koje ćete koristiti uz pitanje}other{Otpremite najviše # fajlova koje ćete koristiti uz pitanje}}</translation>
 <translation id="4608500690299898628">&amp;Pronađi...</translation>
@@ -4141,6 +4145,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="5535769176698670170">Zameni gornjim prikazom</translation>
 <translation id="5536642445914063887">Promenite profil</translation>
 <translation id="5537725057119320332">Prebacuj</translation>
+<translation id="553876896781261711">izbriši, ukloni, bezbednost, privatnost, čišćenje, memorijski prostor, resetuj, keš, kolačići, sporo, brzina, istorija</translation>
 <translation id="5541091577812545428">Lozinka nije promenjena</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Provera statusa...</translation>
@@ -4733,6 +4738,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6214157047210274853">Izmeni u Google novčaniku</translation>
 <translation id="621470880408090483">Ne dozvoljavaj sajtovima da se povezuju sa Bluetooth uređajima</translation>
 <translation id="6215039389782910006">{1,plural, =1{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle 1 minuta neaktivnosti}one{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}few{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}other{Da bi lozinke bile bezbedne, <ph name="BRAND" /> se zaključava posle # minuta neaktivnosti}}</translation>
+<translation id="6215427500141060726">Četovi se pregledaju i koriste za obučavanje modela generativne veštačke inteligencije. Gemini je veštačka inteligencija i može da pogreši. Možete da <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljate istorijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući <ph name="BEGIN_LINK_LOCATION_INFO" />informacije o lokaciji<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim opcijama<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Odbijeni sajtovi i aplikacije</translation>
 <translation id="6216696360484424239">Prijavite se automatski</translation>
 <translation id="6218961554829577610">Ne sviđa mi se glas</translation>
@@ -4884,6 +4890,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="639880411171387127">Izbor Google objektiva. Pritisnite Enter ili backspace da biste izbrisali izbor Google objektiva</translation>
 <translation id="6400360390396538896">Uvek na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ukloni fokus sa grupe kartica</translation>
+<translation id="6401522392962817913">Ako nastavite, prihvatate uslove korišćenja usluge Google Payments. Obaveštenje o privatnosti opisuje kako se postupa sa podacima. Kartica se čuva na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Da biste saznali zašto, obratite se programeru aplikacije</translation>
 <translation id="6402921224457714577">Sajtovi mogu da traže da kontrolišu i reprogramiraju MIDI uređaje</translation>
 <translation id="6404511346730675251">Izmena obeleživača</translation>
@@ -4972,6 +4979,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6499143127267478107">Rešavanje hosta u skripti proksija...</translation>
 <translation id="6503077044568424649">Najposećeniji</translation>
 <translation id="6504601948739128893">Nemaju dozvolu da koriste fontove instalirane na uređaju</translation>
+<translation id="6505525633061207363">akreditivi, prijavljivanje, pristupni ključ, zaključavanje, trezor, ključevi, prijava, prijavi me, prijavljivanje</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> želi da instalira sledeću aplikaciju na ovom uređaju:}one{<ph name="APP_NAME" /> želi da instalira sledeće aplikacije na ovom uređaju:}few{<ph name="APP_NAME" /> želi da instalira sledeće aplikacije na ovom uređaju:}other{<ph name="APP_NAME" /> želi da instalira sledeće aplikacije na ovom uređaju:}}</translation>
 <translation id="6508248480704296122">Srodno sa stavkom <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Apl.: <ph name="APP_NAME" /></translation>

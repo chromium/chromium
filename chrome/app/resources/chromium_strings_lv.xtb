@@ -69,6 +69,7 @@
 <translation id="1792680680989393197">Varat jebkurā laikā tos noņemt. Pārlūks Chromium var tos automātiski lejupielādēt vēlreiz, kad tie būs nepieciešami kādai vietnei vai funkcijai.</translation>
 <translation id="1793486931176048546">Windows paziņojumā noklikšķiniet uz <ph name="BEGIN_BOLD" />Jā<ph name="END_BOLD" />, lai piespraustu pārlūku Chromium uzdevumu joslai, tādējādi nodrošinot ātru piekļuvi.</translation>
 <translation id="1808667845054772817">Pārinstalēt Chromium</translation>
+<translation id="1814482312667514397">Izmantojiet lietotni Chromium savā tālrunī, lai iegūtu Chromium labākās drošības funkcijas, atrodoties ceļā</translation>
 <translation id="1820835682567584003">Chromium mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt paplašinājumiem un citiem datiem no <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chromium, tiks parādīts aicinājums izmantot Google paroļu pārvaldnieku.</translation>
@@ -132,6 +133,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Vismaz viens Chromium paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chromium paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chromium paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="2401032172288869980">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
 <translation id="2403703063067034158">Palaišanas kļūda: pašlaik ir aktīvs cits iestatīšanas process. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
+<translation id="241044568699443215">Izmantojiet lietotni Chromium savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūtu Chromium drošības iespējām, atrodoties ceļā</translation>
 <translation id="2418322681019544463">Atveriet saites pārlūkā Chromium no jebkuras lietotnes un saglabājiet pārlūku pieejamu uzdevumu joslā.</translation>
 <translation id="2425157128016763890">Noklikšķiniet uz pogas Apkopot, lai kopīgotu šo dokumentu ar Gemini pārlūkā Chromium, iegūtu īsu kopsavilkumu un uzdotu papildu jautājumus.</translation>
 <translation id="2440750600860946460">Izmantojot <ph name="BEGIN_LINK" />Chromium rīkus<ph name="END_LINK" />, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
@@ -748,6 +750,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8910309838319708610">Gatavs! Tagad varat ērti uzdot jautājumus pārlūkošanas laikā, izmantojot meklēšanas MI režīmu.</translation>
 <translation id="8932992523185907506">Chromium vairs nav jūsu noklusējuma pārlūks. Vai iestatīt Chromium par noklusējuma pārlūku?</translation>
+<translation id="8940844567350264767">Izmantojiet lietotni Chromium, lai iegūtu Chromium labākās drošības funkcijas, atrodoties ceļā.</translation>
 <translation id="8941642502866065432">Nevar atjaunināt Chromium</translation>
 <translation id="8944232836376404813">Veicot šo darbību, tiks ieviestas tālāk norādītās izmaiņas.
           <ph name="LINE_BREAKS" />

@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Instalar la app de Chrome</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
 <translation id="1925069572871307609">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 versión 1809 o posterior. Esta computadora usa una versión anterior de Windows 10.</translation>
+<translation id="1975069140856174874">La próxima vez que abras Chrome en tu <ph name="DEVICE_TYPE" />, verás un mensaje para obtener las mejores funciones de seguridad de Google.</translation>
 <translation id="1975400514743766362">Aprovecha la seguridad de Google estés donde estés con la app de Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Aumenta la seguridad estés donde estés con la Navegación segura mejorada de Chrome para iOS</translation>
 <translation id="2001586581944147178">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. Chrome usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
@@ -451,6 +452,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="568656514202614970">Listo. Ahora puedes hacer preguntas fácilmente mientras navegas con el panel lateral de la Búsqueda de Google</translation>
 <translation id="5686916850681061684">Personalizar y controlar Google Chrome. Una alerta necesita tu atención: haz clic para ver los detalles.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Obtén las mejores funciones de seguridad de Google estés donde estés con Chrome</translation>
 <translation id="569897634095159764">No se puede conectar a Internet. El servidor proxy requiere autenticación.</translation>
 <translation id="5709557627224531708">Establece Chrome como tu navegador predeterminado</translation>
 <translation id="5715427327524421317">Chrome descarga y actualiza estos modelos de IA automáticamente.</translation>
@@ -616,6 +618,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7099479769133613710">Reiniciar para actualizar ChromeOS</translation>
 <translation id="7106741999175697885">Administrador de tareas - Google Chrome</translation>
 <translation id="7121179479711575744">Acceder a Chrome</translation>
+<translation id="7137056136322108339">Obtén las mejores funciones de seguridad de Google estés donde estés con la app de Chrome en tu teléfono</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies.}=1{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverá a abrir la ventana de incógnito.}other{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="7161904924553537242">Te damos la bienvenida a Google Chrome</translation>
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>

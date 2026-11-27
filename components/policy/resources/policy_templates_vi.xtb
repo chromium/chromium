@@ -8276,6 +8276,15 @@ Nếu bạn đặt chính sách này thành false (sai), thì người dùng s�
 <translation id="6075316301208933536">Nếu bạn đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> thành <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> sẽ tùy chỉnh thời điểm pin ngừng sạc, dựa vào phần trăm pin đã sạc. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> phải thấp hơn <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> tối thiểu là 5 điểm phần trăm.
 
       Nếu bạn không đặt chính sách này, chế độ sạc pin <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> sẽ được áp dụng.</translation>
+<translation id="6077759101739558312">Khi bạn đặt chính sách này thành Enabled (Bật), tính năng Duyệt web an toàn sẽ tin cậy các miền mà bạn chỉ định. Tính năng này sẽ không dò tìm tài nguyên nguy hiểm trong các miền đó, chẳng hạn như dò tìm hoạt động lừa đảo, phần mềm độc hại hoặc phần mềm không mong muốn. Dịch vụ bảo vệ khi tải xuống của tính năng Duyệt web an toàn (không được hỗ trợ trên iOS) sẽ không kiểm tra nội dung tải xuống được lưu trữ trên những miền đó. Dịch vụ bảo vệ mật khẩu của tính năng này sẽ không dò tìm mật khẩu trùng lặp.
+
+Nếu bạn không đặt chính sách này, dịch vụ bảo vệ mặc định của tính năng Duyệt web an toàn sẽ được áp dụng cho mọi tài nguyên.
+
+Chính sách này không hỗ trợ biểu thức chính quy. Tuy nhiên, các miền con của một miền nhất định sẽ được đưa vào danh sách cho phép. Không bắt buộc phải sử dụng tên miền đủ điều kiện (FQDN).
+
+Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Nếu bạn đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng thư mục bạn cung cấp để lưu trữ các tệp đã lưu vào bộ nhớ đệm trên ổ đĩa, cho dù người dùng có chỉ định cờ --disk-cache-dir hay không.
 
       Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng thư mục bộ nhớ đệm mặc định. Tuy nhiên, người dùng có thể thay đổi tùy chọn cài đặt đó bằng cờ dòng lệnh --disk-cache-dir.

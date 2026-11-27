@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Skaff deg Chrome-appen</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1925069572871307609">For å få fremtidige oppdateringer for Google Chrome må du ha Windows 10 versjon 1809 eller nyere. Denne datamaskinen bruker en eldre versjon av Windows 10.</translation>
+<translation id="1975069140856174874">Neste gang du åpner Chrome på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å få Googles beste sikkerhetsfunksjoner.</translation>
 <translation id="1975400514743766362">Ta med deg sikkerheten til Google på farten med Chrome-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Hold deg tryggere på farten med Safe Browsing med økt beskyttelse i Chrome for iOS</translation>
 <translation id="2001586581944147178">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chrome bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
@@ -451,6 +452,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="568656514202614970">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med Google Søk-sidepanelet</translation>
 <translation id="5686916850681061684">Tilpass og kontroller Google Chrome. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Få Googles beste sikkerhetsfunksjoner på farten med Chrome</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
 <translation id="5709557627224531708">Angi Chrome som standardnettleser</translation>
 <translation id="5715427327524421317">Chrome laster ned og oppdaterer disse AI-modellene automatisk</translation>
@@ -616,6 +618,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7099479769133613710">Start på nytt for å oppdatere &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Oppgavebehandling – Google Chrome</translation>
 <translation id="7121179479711575744">Logg på Chrome</translation>
+<translation id="7137056136322108339">Få Googles beste sikkerhetsfunksjoner uansett hvor du er, med Chrome-appen på telefonen</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt.}=1{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7193885263065350793">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>

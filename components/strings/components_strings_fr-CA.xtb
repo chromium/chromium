@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1131264053432022307">L'image que vous avez copiée</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le mode Plein écran, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
+<translation id="1132789342529761192">Téléversement non recommandé</translation>
 <translation id="11370190534773372">Détails de la carte remplis</translation>
 <translation id="1138458427267715730">Recevez des alertes lorsque le prix baisse sur n'importe quel site du Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">Contenu non sécurisé</translation>
 <translation id="2027465737841872819">Plastique</translation>
 <translation id="2027707238798802149">Carte non accessible</translation>
+<translation id="2028329426302356196">Téléchargement non recommandé</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire et du pare-feu<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Cette instance de Chrome s'exécute avec des indicateurs de ligne de commande définis manuellement. Notez que les indicateurs de ligne de commande peuvent changer à tout moment et ne sont pas pris en charge.</translation>
 <translation id="2033900728810589426">Le raccourci doit être différent du mot clé de fournisseur de recherche par défaut défini par <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> : <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Impression non recommandée</translation>
 <translation id="3450323514459570273">Le site peut demander de contrôler et de reprogrammer vos appareils MIDI</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
 <translation id="345268527248907593">Impossible d'accéder à ce site</translation>
@@ -2915,6 +2918,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5851868085455377790">Émetteur</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Copie non recommandée</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
 <translation id="5863515189965725638">Modifier l'IBAN</translation>

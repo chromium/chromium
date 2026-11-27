@@ -1308,6 +1308,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="244071666433939959">Ứng dụng sẽ mở trong một cửa sổ</translation>
 <translation id="2442916515643169563">Đổ bóng văn bản</translation>
 <translation id="2443487764245141020">Có thể các trang web cũng cần dùng giá trị nhận dạng để nhận ra thiết bị của bạn</translation>
+<translation id="2444282212665587861">cập nhật Chrome, bản cập nhật Chrome, nâng cấp Chrome, phiên bản Chrome hiện tại, bản dựng, thông tin, kiểm tra xem có bản cập nhật không</translation>
 <translation id="244475495405467108">Đóng các Thẻ ở bên Trái</translation>
 <translation id="2444874983932528148">Dễ dàng bắt đầu từ nơi bạn đã dừng lại</translation>
 <translation id="2445081178310039857">Thư mục gốc của tiện ích là bắt buộc.</translation>
@@ -2145,6 +2146,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3321512411079201586">&amp;Biệt lập</translation>
 <translation id="3323288183237359315">Cài đặt cho Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Để bảo vệ quyền riêng tư của bạn, chúng tôi đã xoá quyền của một trang web}other{Để bảo vệ quyền riêng tư của bạn, chúng tôi đã xoá quyền của một số trang web}}</translation>
+<translation id="3325561120400598624">Các cuộc trò chuyện sẽ được xem xét và dùng để huấn luyện các mô hình AI tạo sinh. Gemini là một AI và có thể mắc sai sót. Một số nội dung có thể không phù hợp với một số người. Bạn có thể <ph name="BEGIN_LINK_MANAGE_HISTORY" />quản lý nhật ký<ph name="END_LINK_MANAGE_HISTORY" />, bao gồm cả <ph name="BEGIN_LINK_LOCATION_INFO" />thông tin về vị trí của bạn<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm về những lựa chọn dành cho bạn<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Kiểu</translation>
 <translation id="3331974543021145906">Thông tin ứng dụng</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Đang phát video ở chế độ hình trong hình</translation>
@@ -2270,6 +2272,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Tải 1 tệp .pdf lên để dùng cho câu hỏi của bạn}other{Tải tối đa # tệp .pdf lên để dùng cho câu hỏi của bạn}}</translation>
 <translation id="3456750372063895499">Mở đường liên kết trong cửa sổ b&amp;iệt lập</translation>
 <translation id="345693547134384690">Mở &amp;hình ảnh trong thẻ mới</translation>
+<translation id="3456949031754827166">Sắp xếp lại</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Giữ lại nhóm}other{Giữ lại các nhóm này}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá # dấu trang}}</translation>
 <translation id="3471687177769494956">Chỉnh sửa phím tắt điều hướng</translation>
@@ -3323,6 +3326,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4602776638371779614">Thẻ này đang tích cực quét tìm thiết bị Bluetooth</translation>
 <translation id="4605026046465576953">Không thể mở ứng dụng này vì bạn không có quyền chạy các ứng dụng web tách biệt</translation>
 <translation id="4606551464649945562">Không cho các phép trang web tạo bản đồ 3D khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của camera</translation>
+<translation id="4606965546067937011">tốc độ, RAM, độ trễ, máy đơ, khắc phục sự cố, quản lý tài nguyên, quản lý mức sử dụng, quản lý hiệu suất, pin, trình tối ưu hoá tốc độ, chạy chậm, bộ nhớ, trình tiết kiệm bộ nhớ</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Bạn muốn xoá nhóm thẻ?}other{Bạn muốn xoá các nhóm thẻ?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Tải 1 tệp lên để dùng cho câu hỏi của bạn}other{Tải tối đa # tệp lên để dùng cho câu hỏi của bạn}}</translation>
 <translation id="4608500690299898628">&amp;Tìm...</translation>
@@ -4155,6 +4159,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5535769176698670170">Hoán đổi với dạng xem trên cùng</translation>
 <translation id="5536642445914063887">Chuyển đổi hồ sơ</translation>
 <translation id="5537725057119320332">Truyền</translation>
+<translation id="553876896781261711">xoá dữ liệu, loại bỏ dữ liệu, bảo mật dữ liệu, quyền riêng tư đối với dữ liệu, dọn dẹp dữ liệu, bộ nhớ duyệt web, đặt lại, xoá bộ nhớ đệm, xoá cache, xoá cookie, duyệt web chậm, tăng tốc độ duyệt web, nhật ký</translation>
 <translation id="5541091577812545428">Mật khẩu không thay đổi</translation>
 <translation id="5542132724887566711">Cấu hình</translation>
 <translation id="5543983818738093899">Đang kiểm tra trạng thái...</translation>
@@ -4746,6 +4751,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6214157047210274853">Chỉnh sửa trong Google Wallet</translation>
 <translation id="621470880408090483">Không cho phép trang web kết nối với thiết bị Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau 1 phút không hoạt động}other{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau # phút không hoạt động}}</translation>
+<translation id="6215427500141060726">Các cuộc trò chuyện sẽ được xem xét và dùng để huấn luyện các mô hình AI tạo sinh. Gemini là một AI và có thể mắc sai sót. Bạn có thể <ph name="BEGIN_LINK_MANAGE_HISTORY" />quản lý nhật ký<ph name="END_LINK_MANAGE_HISTORY" />, bao gồm cả <ph name="BEGIN_LINK_LOCATION_INFO" />thông tin về vị trí của bạn<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm về những lựa chọn dành cho bạn<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Trang web và ứng dụng bị từ chối</translation>
 <translation id="6216696360484424239">Đăng nhập tự động</translation>
 <translation id="6218961554829577610">Không thích giọng nói này</translation>
@@ -4897,6 +4903,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="639880411171387127">Nội dung bạn chọn để tìm kiếm bằng Google Ống kính. Nhấn phím Enter hoặc phím Backspace để xoá nội dung bạn chọn để tìm kiếm bằng Google Ống kính</translation>
 <translation id="6400360390396538896">Luôn cho phép trên <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Xoá tiêu điểm khỏi nhóm thẻ</translation>
+<translation id="6401522392962817913">Bằng việc tiếp tục, bạn đồng ý với Điều khoản dịch vụ của Google Payments. Thông báo về quyền riêng tư mô tả cách dữ liệu của bạn được xử lý. Thông tin thẻ sẽ được lưu vào Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
 <translation id="6402042774506839496">Để tìm hiểu lý do, hãy liên hệ với nhà phát triển ứng dụng</translation>
 <translation id="6402921224457714577">Các trang web có thể yêu cầu cấp quyền điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="6404511346730675251">Chỉnh sửa dấu trang</translation>
@@ -4985,6 +4992,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6499143127267478107">Đang khắc phục máy chủ trong tập lệnh proxy...</translation>
 <translation id="6503077044568424649">Truy cập nhiều nhất</translation>
 <translation id="6504601948739128893">Không cho phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
+<translation id="6505525633061207363">thông tin đăng nhập, mật khẩu đăng nhập, đăng nhập, quản lý mật khẩu, khoá truy cập, lưu mật khẩu, tự điền mật khẩu, xoá mật khẩu, cách đăng nhập, mã khoá đăng nhập, nơi lưu trữ mật khẩu</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" muốn cài đặt ứng dụng sau trên thiết bị này:}other{"<ph name="APP_NAME" />" muốn cài đặt các ứng dụng sau trên thiết bị này:}}</translation>
 <translation id="6508248480704296122">Liên quan tới <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Ứng dụng: <ph name="APP_NAME" /></translation>
@@ -5824,7 +5832,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7387107590792462040">Vui lòng đợi, quá trình cài đặt đang diễn ra</translation>
 <translation id="7387273928653486359">Chấp nhận được</translation>
 <translation id="7387951778417998929">Để dùng một công cụ tìm kiếm khác với công cụ mặc định, hãy nhập lối tắt của công cụ đó trong thanh địa chỉ rồi nhập phím tắt ưu tiên của bạn. Bạn cũng có thể thay đổi công cụ tìm kiếm mặc định tại đây.</translation>
-<translation id="7389615853658756494">Thay đổi mật khẩu trên trang web</translation>
+<translation id="7389615853658756494">Đổi mật khẩu trên trang web</translation>
 <translation id="7392118418926456391">Quét vi-rút không thành công</translation>
 <translation id="7392915005464253525">&amp;Mở lại cửa sổ đã đóng</translation>
 <translation id="739299645392306071">Tiêu điểm trung bình</translation>

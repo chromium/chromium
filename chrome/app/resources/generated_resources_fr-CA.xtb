@@ -1295,6 +1295,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="244071666433939959">Les applications s'ouvrent dans une fenêtre</translation>
 <translation id="2442916515643169563">Ombre du texte</translation>
 <translation id="2443487764245141020">Les sites peuvent également devoir reconnaître votre appareil à l'aide d'un identifiant</translation>
+<translation id="2444282212665587861">mise à jour, mises à jour, mise à niveau, version, compilation, info, rechercher des mises à jour</translation>
 <translation id="244475495405467108">Fermer les onglets à la gauche</translation>
 <translation id="2444874983932528148">Reprenez facilement là où vous en étiez</translation>
 <translation id="2445081178310039857">Le répertoire racine de l'extension doit être indiqué.</translation>
@@ -2134,6 +2135,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3321512411079201586">&amp;Isolé</translation>
 <translation id="3323288183237359315">Installer pour Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Pour protéger votre confidentialité, les autorisations ont été retirées d'un site}one{Pour protéger votre confidentialité, les autorisations ont été retirées d'un site}other{Pour protéger votre confidentialité, les autorisations ont été retirées de certains sites}}</translation>
+<translation id="3325561120400598624">Les discussions sont examinées et utilisées pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les <ph name="BEGIN_LINK_LOCATION_INFO" />informations sur votre position<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur vos choix<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3331974543021145906">Détails de l'appli</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Lecture de la vidéo en mode d'incrustation d'image en cours…</translation>
@@ -2259,6 +2261,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Téléversez 1 fichier PDF à utiliser avec votre question}one{Téléversez jusqu'à # fichier PDF à utiliser avec votre question}other{Téléversez jusqu'à # fichiers PDF à utiliser avec votre question}}</translation>
 <translation id="3456750372063895499">Ouvrir le lien dans une fenêtre i&amp;solée</translation>
 <translation id="345693547134384690">Ouvrir l'&amp;image dans un nouvel onglet</translation>
+<translation id="3456949031754827166">Réorganiser</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Un favori supprimé}one{# favori supprimé}other{# favoris supprimés}}</translation>
 <translation id="3471687177769494956">Modifier le raccourci de navigation</translation>
@@ -3004,7 +3007,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4256316378292851214">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4257175174234042421">Modification automatique du mot de passe</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
-<translation id="4262004481148703251">Ignorer l'avertissement</translation>
+<translation id="4262004481148703251">Fermer l'avertissement</translation>
 <translation id="4262060800239714974">Pour obtenir vos onglets à partir de votre <ph name="DEVICE" />, synchronisez votre historique et vos onglets avec l'adresse <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4263470758446311292">Obtenez des économies maximales de mémoire. Vos onglets deviennent inactifs après une plus courte période.</translation>
 <translation id="4263824086525632">Aurore boréale</translation>
@@ -3312,6 +3315,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4602776638371779614">Cet onglet analyse activement des appareils Bluetooth</translation>
 <translation id="4605026046465576953">Cette application ne peut pas être ouverte, car vous n'êtes pas autorisé à exécuter des applications Web isolées</translation>
 <translation id="4606551464649945562">Ne pas autoriser les sites à créer une carte 3D de votre environnement ni à faire le suivi de la position de l'appareil photo</translation>
+<translation id="4606965546067937011">vitesse, mémoire vive, décalage, figer, plantage, ressource, utilisation, pile, optimiseur, lent, mémoire, économiseur de mémoire</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets?}one{Supprimer le groupe d'onglets?}other{Supprimer les groupes d'onglets?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Téléversez 1 fichier à utiliser avec votre question}one{Téléversez jusqu'à # fichier à utiliser avec votre question}other{Téléversez jusqu'à # fichiers à utiliser avec votre question}}</translation>
 <translation id="4608500690299898628">Rec&amp;hercher...</translation>
@@ -4142,6 +4146,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="5535769176698670170">Échanger avec l'affichage du haut</translation>
 <translation id="5536642445914063887">Changer de profil</translation>
 <translation id="5537725057119320332">Diffuser</translation>
+<translation id="553876896781261711">supprimer, retirer, sécurité, confidentialité, nettoyage, espace de stockage, réinitialiser, cache, témoins, lent, vitesse, historique</translation>
 <translation id="5541091577812545428">Le mot de passe n'a pas été modifié</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Vérification de l'état en cours...</translation>
@@ -4733,6 +4738,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="6214157047210274853">Modifiez les informations dans Google Portefeuille</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après 1 minute d'inactivité}one{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minute d'inactivité}other{Pour protéger vos mots de passe, <ph name="BRAND" /> se verrouille après # minutes d'inactivité}}</translation>
+<translation id="6215427500141060726">Les discussions sont examinées et utilisées pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les <ph name="BEGIN_LINK_LOCATION_INFO" />informations sur votre position<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur vos choix<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Applis et sites refusés</translation>
 <translation id="6216696360484424239">Se connecter automatiquement</translation>
 <translation id="6218961554829577610">Je n'ai pas aimé la voix</translation>
@@ -4884,6 +4890,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="639880411171387127">Votre sélection Lentille Google. Appuyez sur Entrée ou Retour arrière pour supprimer votre sélection Lentille Google.</translation>
 <translation id="6400360390396538896">Toujours sur <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Annuler la mise en évidence du groupe d'onglets</translation>
+<translation id="6401522392962817913">En continuant, vous acceptez les conditions d'utilisation de Google Payments. L'avis de confidentialité décrit la façon dont vos données sont traitées. Votre carte est enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Pour en savoir plus, communiquez avec le développeur de l'appli</translation>
 <translation id="6402921224457714577">Les sites peuvent demander de contrôler et de reprogrammer vos appareils MIDI</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
@@ -4972,6 +4979,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="6499143127267478107">Résolution de l'hôte dans le script de mandataire en cours...</translation>
 <translation id="6503077044568424649">Les plus visités</translation>
 <translation id="6504601948739128893">Non autorisés à utiliser les polices installées sur votre appareil</translation>
+<translation id="6505525633061207363">authentifiants, connexion, clé d'accès, verrouillage, coffre-fort, clés, se connecter</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{« <ph name="APP_NAME" /> » souhaite installer l'application suivante sur cet appareil :}one{« <ph name="APP_NAME" /> » souhaite installer l'application suivante sur cet appareil :}other{« <ph name="APP_NAME" /> » souhaite installer les applications suivantes sur cet appareil :}}</translation>
 <translation id="6508248480704296122">En lien avec <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>

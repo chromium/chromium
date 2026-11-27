@@ -2592,6 +2592,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="3771721161825963003">Rodyti skirtukus vertikaliai</translation>
 <translation id="3771851622616482156">Būsite atjungti nuo šios svetainės, įskaitant atidarytus skirtukus</translation>
 <translation id="3772951945682043324">Nėra neseniai uždarytų skirtukų</translation>
+<translation id="3775389358290351377">Perjungti teikėją (tabuliavimo klavišas)</translation>
 <translation id="3775432569830822555">SSL serverio sertifikatas</translation>
 <translation id="3776508619697147021">Svetainėse gali būti prašoma automatiškai atsisiųsti kelis failus</translation>
 <translation id="3776796446459804932">Šis plėtinys pažeidžia „Chrome“ internetinės parduotuvės politiką.</translation>
@@ -3056,6 +3057,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="429530814437327574">Rodyti sudėtą</translation>
 <translation id="4296632172536745000">Pradinis šios svetainės slaptažodis aptiktas dėl viešo duomenų saugos pažeidimo. <ph name="DATE" /> paprašėte „<ph name="BRAND" />“ automatiškai pakeisti slaptažodį.</translation>
 <translation id="42981349822642051">Išskleisti</translation>
+<translation id="4298381759837744019">Ieškoti pagal užklausą „<ph name="QUERY" />“ nustatymuose</translation>
 <translation id="4298660926525614540">Pašalinamų saugyklų pavadinimai</translation>
 <translation id="4299022904780065004">Naujas &amp;inkognito langas</translation>
 <translation id="4301231341924904092">Pakeisti už mane</translation>
@@ -4291,6 +4293,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="568984110402742489">Nepavyko nusiųsti atsiliepimo</translation>
 <translation id="5691772641933328258">Piršto atspaudas neatpažintas</translation>
+<translation id="5693100627879528952">Sužinokite daugiau apie paieškos variklio ir svetainių paieškos nustatymus</translation>
 <translation id="5693255400847650006">Naudojamas mikrofonas</translation>
 <translation id="5693806089748511108">Jūsų įgūdžiai</translation>
 <translation id="5694689722959820210">Sukurti skirtukų grupę</translation>

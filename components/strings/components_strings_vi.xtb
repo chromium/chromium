@@ -77,6 +77,7 @@
 <translation id="112840717907525620">Bộ nhớ đệm chính sách OK</translation>
 <translation id="1131264053432022307">Hình ảnh bạn đã sao chép</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Để thoát khỏi chế độ toàn màn hình, hãy kéo từ trên xuống rồi nhấn vào nút quay lại</translation>
+<translation id="1132789342529761192">Không nên tải lên</translation>
 <translation id="11370190534773372">Điền chi tiết thẻ</translation>
 <translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1142713751288681188">Loại giấy</translation>
@@ -603,6 +604,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2025891858974379949">Nội dung không an toàn</translation>
 <translation id="2027465737841872819">Nhựa</translation>
 <translation id="2027707238798802149">Thẻ không dùng được</translation>
+<translation id="2028329426302356196">Không nên tải xuống</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kiểm tra proxy và tường lửa<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Phiên bản Chrome này đang chạy với các cờ hiệu dòng lệnh được thiết lập thủ công. Hãy lưu ý rằng cờ hiệu dòng lệnh có thể thay đổi bất cứ lúc nào và không được hỗ trợ.</translation>
 <translation id="2033900728810589426">Lối tắt không được giống với từ khoá của nhà cung cấp dịch vụ tìm kiếm mặc định do <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> xác định: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3443504041532578451">Đĩa quang (Satin)</translation>
 <translation id="3447661539832366887">Chủ sở hữu của thiết bị này đã tắt trò chơi khủng long.</translation>
 <translation id="3447884698081792621">Hiển thị chứng chỉ (do <ph name="ISSUER" /> cấp)</translation>
+<translation id="3449239216441121005">Không nên in</translation>
 <translation id="3450323514459570273">Có thể yêu cầu điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="3452404311384756672">Khoảng thời gian tìm nạp:</translation>
 <translation id="345268527248907593">Không truy cập được trang web này</translation>
@@ -2915,6 +2918,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5851868085455377790">Nhà cung cấp</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Không nên sao chép</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5862579898803147654">Khay xếp chồng 8</translation>
 <translation id="5863515189965725638">Chỉnh sửa số IBAN</translation>
