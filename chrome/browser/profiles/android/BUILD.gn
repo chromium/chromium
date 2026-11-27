@@ -22,6 +22,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/profiles/OtrProfileId.java",
+    "java/src/org/chromium/chrome/browser/profiles/PreNativeProfileKeyedMap.java",
     "java/src/org/chromium/chrome/browser/profiles/Profile.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesEntry.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesStorage.java",
@@ -53,6 +54,7 @@ generate_jni("jni_headers") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/profiles/OtrProfileIdUnitTest.java",
+    "java/src/org/chromium/chrome/browser/profiles/PreNativeProfileKeyedMapTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesStorageTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMapTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileManagerTest.java",
