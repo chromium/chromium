@@ -143,9 +143,11 @@ InitialWebUIWindowMetricsManager* InitialWebUIWindowMetricsManager::From(
 
 void InitialWebUIWindowMetricsManager::SetWindowCreationInfo(
     waap::NewWindowCreationSource source,
-    base::TimeTicks creation_time) {
+    base::TimeTicks creation_time,
+    base::TimeTicks trigger_time) {
   creation_source_ = source;
   new_window_start_time_ = creation_time;
+  new_window_trigger_time_ = trigger_time;
 }
 
 void InitialWebUIWindowMetricsManager::OnBrowserWindowShowRequested(
@@ -217,7 +219,7 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
     is_new_window_first_paint_recorded_ = true;
     waap_service_->OnNewWindowBrowserWindowFirstPresentation(
         creation_source_, was_created_with_existing_windows_,
-        *new_window_start_time_, timestamp);
+        *new_window_start_time_, timestamp, new_window_trigger_time_);
   }
 }
 

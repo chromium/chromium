@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/dragging_tabs_session.h"
@@ -203,8 +204,11 @@ class TabDragController : public views::WidgetObserver,
   // Returns true if restoring a fullscreen window during a drag is allowed.
   bool CanRestoreFullscreenWindowDuringDrag() const;
 
-  // Invoked to drag to the new location, in screen coordinates.
-  [[nodiscard]] Liveness Drag(const gfx::Point& point_in_screen);
+  // Invoked to drag to the new location, in screen coordinates. `event_time`
+  // is the originating input timestamp when available and is forwarded when
+  // detaching into a new browser window.
+  [[nodiscard]] Liveness Drag(const gfx::Point& point_in_screen,
+                              base::TimeTicks event_time = base::TimeTicks());
 
   // Complete the current drag session.
   void EndDrag(EndDragReason reason);
@@ -350,13 +354,15 @@ class TabDragController : public views::WidgetObserver,
 
   // Invoked once a drag has started to determine the appropriate context to
   // drag to (which may be the currently attached one).
-  [[nodiscard]] Liveness ContinueDragging(const gfx::Point& point_in_screen);
+  [[nodiscard]] Liveness ContinueDragging(const gfx::Point& point_in_screen,
+                                          base::TimeTicks event_time);
 
   // Transitions dragging from `attached_context_` to `target_context`.
   // `target_context` is nullptr if the mouse is not over a valid tab strip.
   [[nodiscard]] Liveness DragBrowserToNewTabStrip(
       TabDragContext* target_context,
-      const gfx::Point& point_in_screen);
+      const gfx::Point& point_in_screen,
+      base::TimeTicks event_time);
 
   // Returns true if we should use a system drag and drop session when dragging
   // tabs outside of a tabstrip.
@@ -440,7 +446,8 @@ class TabDragController : public views::WidgetObserver,
   // Detaches the tabs being dragged, creates a new Browser to contain them and
   // runs a nested move loop.
   [[nodiscard]] Liveness DetachIntoNewBrowserAndRunMoveLoop(
-      gfx::Point point_in_screen);
+      gfx::Point point_in_screen,
+      base::TimeTicks event_time);
 
   // Runs a nested run loop that handles moving the current Browser.
   // `drag_offset` is the desired offset between the cursor and the window
@@ -527,7 +534,8 @@ class TabDragController : public views::WidgetObserver,
   // includes the invisible frame insets (see
   // BrowserWidget::GetInvisibleFrameInsets()).
   BrowserWindowInterface* CreateBrowserForDrag(TabDragContext* source,
-                                               gfx::Size initial_widget_size);
+                                               gfx::Size initial_widget_size,
+                                               base::TimeTicks event_time);
 
   // Returns the location of the cursor. This is either the location of the
   // mouse or the location of the current touch point.

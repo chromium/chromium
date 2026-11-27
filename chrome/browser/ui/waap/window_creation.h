@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WAAP_WINDOW_CREATION_H_
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 
@@ -14,11 +15,13 @@ class BrowserWindowInterface;
 namespace waap {
 
 // Creates a new browser window via `CreateBrowserWindow()` and records
-// `creation_source` and the pre-creation timestamp on the window's
-// `InitialWebUIWindowMetricsManager` (if present).
+// `creation_source`, the pre-creation timestamp, and `trigger_time` on the
+// window's `InitialWebUIWindowMetricsManager` (if present). `trigger_time` is
+// the time of the input event that requested the window, or null if unknown.
 BrowserWindowInterface* CreateBrowserWindowAndRecordCreationSource(
     BrowserWindowCreateParams create_params,
-    NewWindowCreationSource creation_source);
+    NewWindowCreationSource creation_source,
+    base::TimeTicks trigger_time = base::TimeTicks());
 
 // Asynchronous overload of `CreateBrowserWindowAndRecordCreationSource()` that
 // forwards `create_params` to the callback-based `CreateBrowserWindow()`,

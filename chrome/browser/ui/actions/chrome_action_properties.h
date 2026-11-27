@@ -11,6 +11,10 @@
 #include "ui/base/class_property.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace chrome {
 
 enum class ActionInvocationSource {
@@ -30,6 +34,11 @@ extern const ui::ClassProperty<ui::mojom::WindowOpenDisposition>* const
 extern const ui::ClassProperty<ActionInvocationSource>* const
     kActionInvocationSourceKey;
 
+// The time of the input event that invoked the action, such as the key press
+// of a keyboard shortcut. Unset when the invocation has no input event time.
+extern const ui::ClassProperty<base::TimeTicks*>* const
+    kActionInvocationEventTimeKey;
+
 // Delta (in dp) applied to the default icon size when rendering an ActionItem's
 // icon in pinned toolbar buttons and the Customize Chrome toolbar list. Must be
 // non-positive: the Customize Chrome toolbar list scales every icon to fit the
@@ -46,5 +55,6 @@ extern const ui::ClassProperty<std::u16string*>* const kActionSecondaryTextKey;
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::mojom::WindowOpenDisposition)
 DECLARE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)
+DECLARE_UI_CLASS_PROPERTY_TYPE(base::TimeTicks*)
 
 #endif  // CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_

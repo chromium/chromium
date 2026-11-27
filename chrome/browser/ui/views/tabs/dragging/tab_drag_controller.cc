@@ -73,6 +73,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/types/event_type.h"
@@ -695,7 +696,8 @@ void TabDragController::OnSystemDnDUpdated(const ui::DropTargetEvent& event) {
   // Aura's clipping window. But we need the location relative to the browser
   // window, i.e. the root location.
   // ignore the Liveness; it's fine if `g_tab_drag_controller` dies here.
-  std::ignore = g_tab_drag_controller->Drag(event.root_location());
+  std::ignore =
+      g_tab_drag_controller->Drag(event.root_location(), event.time_stamp());
 }
 
 // static
@@ -704,9 +706,12 @@ void TabDragController::OnSystemDnDExited() {
   VLOG(1) << __func__;
   // Call Drag() with a location that is definitely out of the tab strip.
   // ignore the Liveness; it's fine if `g_tab_drag_controller` dies here.
+  // `EventTimeForNow()` matches the `ui::DropTargetEvent` time used by
+  // `OnSystemDnDUpdated()`, so a detach here keeps its trigger time.
   std::ignore = g_tab_drag_controller->Drag(
       {g_tab_drag_controller->last_point_in_screen_.x(),
-       g_tab_drag_controller->GetOutOfBoundsYCoordinate()});
+       g_tab_drag_controller->GetOutOfBoundsYCoordinate()},
+      ui::EventTimeForNow());
 }
 
 // static
@@ -785,7 +790,8 @@ bool TabDragController::CanRestoreFullscreenWindowDuringDrag() const {
 }
 
 TabDragController::Liveness TabDragController::Drag(
-    const gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen,
+    base::TimeTicks event_time) {
   TRACE_EVENT1("views", "TabDragController::Drag", "point_in_screen",
                point_in_screen.ToString());
 
@@ -861,7 +867,7 @@ TabDragController::Liveness TabDragController::Drag(
     StartDraggingTabsSession(true, point_in_screen);
   }
 
-  return ContinueDragging(point_in_screen);
+  return ContinueDragging(point_in_screen, event_time);
 }
 
 void TabDragController::EndDrag(EndDragReason reason) {
@@ -1088,7 +1094,8 @@ bool TabDragController::CanStartDrag(const gfx::Point& point_in_screen) const {
 }
 
 TabDragController::Liveness TabDragController::ContinueDragging(
-    const gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen,
+    base::TimeTicks event_time) {
   TRACE_EVENT1("views", "TabDragController::ContinueDragging",
                "point_in_screen", point_in_screen.ToString());
   if (presentation_time_recorder_) {
@@ -1120,7 +1127,8 @@ TabDragController::Liveness TabDragController::ContinueDragging(
     is_dragging_new_browser_ = false;
     did_restore_window_ = false;
 
-    return DragBrowserToNewTabStrip(target_context, point_in_screen);
+    return DragBrowserToNewTabStrip(target_context, point_in_screen,
+                                    event_time);
   }
 
   if (current_state_ == DragState::kDraggingWindow) {
@@ -1162,7 +1170,8 @@ TabDragController::Liveness TabDragController::ContinueDragging(
 
 TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     TabDragContext* target_context,
-    const gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen,
+    base::TimeTicks event_time) {
   TRACE_EVENT1("views", "TabDragController::DragBrowserToNewTabStrip",
                "point_in_screen", point_in_screen.ToString());
 
@@ -1171,7 +1180,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   dragging_tabs_session_ = nullptr;
 
   if (!target_context) {
-    return DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
+    return DetachIntoNewBrowserAndRunMoveLoop(point_in_screen, event_time);
   }
 
 #if defined(USE_AURA)
@@ -1833,7 +1842,8 @@ void TabDragController::DetachAndAttachToNewContext(
 
 TabDragController::Liveness
 TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
-    gfx::Point point_in_screen) {
+    gfx::Point point_in_screen,
+    base::TimeTicks event_time) {
   if (attached_context_->GetTabStripModel()->count() ==
       drag_data_.num_dragging_tabs()) {
     // All the tabs in a browser are being dragged but all the tabs weren't
@@ -1876,7 +1886,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   }
 
   BrowserWindowInterface* browser =
-      CreateBrowserForDrag(attached_context_, new_size);
+      CreateBrowserForDrag(attached_context_, new_size, event_time);
 
   BrowserView* const dragged_browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
@@ -2980,7 +2990,8 @@ std::optional<webapps::AppId> TabDragController::GetControllingAppForDrag(
 
 BrowserWindowInterface* TabDragController::CreateBrowserForDrag(
     TabDragContext* source,
-    gfx::Size initial_widget_size) {
+    gfx::Size initial_widget_size,
+    base::TimeTicks event_time) {
   source->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
@@ -3057,7 +3068,7 @@ BrowserWindowInterface* TabDragController::CreateBrowserForDrag(
   BrowserWindowInterface* browser =
       waap::CreateBrowserWindowAndRecordCreationSource(
           std::move(create_params),
-          waap::NewWindowCreationSource::kDragToNewWindow);
+          waap::NewWindowCreationSource::kDragToNewWindow, event_time);
   is_dragging_new_browser_ = true;
   BrowserView::GetBrowserViewForBrowser(browser)
       ->GetWidget()

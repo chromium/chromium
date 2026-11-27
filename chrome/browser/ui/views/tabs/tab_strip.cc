@@ -370,7 +370,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     // Note: `tab_strip_` can be destroyed during drag, also destroying `this`.
     const TabDragController::Liveness drag_controller_alive =
-        drag_controller_->Drag(screen_location);
+        drag_controller_->Drag(screen_location, event.time_stamp());
 
     return drag_controller_alive == TabDragController::Liveness::kAlive
                ? Liveness::kAlive

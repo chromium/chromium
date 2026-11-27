@@ -109,6 +109,36 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow.FirstPaint.FromConstructor3",
       kTestLatency, 1);
+  tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "FirstPaint.FromTrigger3",
+      0);
+}
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       OnBrowserWindowFirstPresentationForNewWindowWithTrigger) {
+  constexpr base::TimeDelta kTriggerLead = base::Milliseconds(25);
+  const base::TimeTicks start_time = base::TimeTicks::Now() + kTriggerLead;
+  InitialWebUIWindowMetricsManager manager(&browser_window_);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time, start_time - kTriggerLead);
+  manager.SkipStartupForTesting();
+
+  base::HistogramTester tester;
+  manager.OnBrowserWindowFirstPresentation(start_time + kTestLatency);
+
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "FirstPaint.FromConstructor3",
+      kTestLatency, 1);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "FirstPaint.FromTrigger3",
+      kTestLatency + kTriggerLead, 1);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
+      "BrowserWindow.FirstPaint.FromTrigger3",
+      kTestLatency + kTriggerLead, 1);
 }
 
 TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {

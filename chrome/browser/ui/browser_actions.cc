@@ -20,6 +20,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "base/types/to_address.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -414,6 +415,15 @@ bool ShouldShowSkillsAndExtensions(Profile* profile) {
   return profile && profile->IsRegularProfile() &&
          skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
+}
+
+// Returns the time of the input event that invoked the action, or a null time
+// if unknown.
+base::TimeTicks GetInvocationEventTime(
+    const actions::ActionInvocationContext& context) {
+  const base::TimeTicks* event_time =
+      context.GetProperty(chrome::kActionInvocationEventTimeKey);
+  return event_time ? *event_time : base::TimeTicks();
 }
 
 }  // namespace
@@ -1201,7 +1211,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                  actions::ActionInvocationContext context) {
                 CHECK(IncognitoModePrefs::IsIncognitoTypeAllowed(
                     profile, IncognitoModePrefs::IncognitoModeType::kStandard));
-                chrome::NewIncognitoWindow(profile);
+                chrome::NewIncognitoWindow(profile,
+                                           GetInvocationEventTime(context));
               },
               profile),
           kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
@@ -1225,7 +1236,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                  actions::ActionInvocationContext context) {
                 CHECK(enterprise_isolated_mode::IsolatedModeReplacesIncognito(
                     profile));
-                chrome::NewIncognitoWindow(profile);
+                chrome::NewIncognitoWindow(profile,
+                                           GetInvocationEventTime(context));
               },
               profile),
           kActionNewIsolatedWindow, IDS_NEW_ISOLATED_WINDOW,
@@ -2406,7 +2418,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::NewWindow(bwi);
+                chrome::NewWindow(bwi, GetInvocationEventTime(context));
               },
               bwi))
           .SetActionId(kActionNewWindow)

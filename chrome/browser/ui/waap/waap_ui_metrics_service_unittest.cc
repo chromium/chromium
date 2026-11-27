@@ -159,10 +159,11 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowBrowserWindowFirstPaint) {
   base::HistogramTester histogram_tester;
   const auto start_ticks = base::TimeTicks::Now();
 
-  // Test SessionRestore
+  // Test SessionRestore. Its trigger time is ignored.
   service->OnNewWindowBrowserWindowFirstPresentation(
       waap::NewWindowCreationSource::kSessionRestore,
-      /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency);
+      /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency,
+      start_ticks - base::Milliseconds(40));
 
   histogram_tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
@@ -172,6 +173,72 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowBrowserWindowFirstPaint) {
       "InitialWebUI.NewWindow.SessionRestore.WithoutExistingWindow."
       "BrowserWindow.FirstPaint.FromConstructor3",
       kTestLatency, 1);
+
+  // SessionRestoreFallback also ignores its trigger time.
+  service->OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource::kSessionRestoreFallback,
+      /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency,
+      start_ticks - base::Milliseconds(40));
+  for (std::string_view source :
+       {"AllSources", "SessionRestore", "SessionRestoreFallback"}) {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"InitialWebUI.NewWindow.", source,
+                      ".WithoutExistingWindow.BrowserWindow.FirstPaint."
+                      "FromTrigger3"}),
+        0);
+  }
+}
+
+TEST_F(WaapUIMetricsServiceTest,
+       OnNewWindowBrowserWindowFirstPaintWithTrigger) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histogram_tester;
+  constexpr base::TimeDelta kTriggerLead = base::Milliseconds(40);
+  const base::TimeTicks start_ticks =
+      base::TimeTicks::Now() + base::Milliseconds(200);
+  service->OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource::kNewEmptyWindow,
+      /*with_existing_window=*/true, start_ticks, start_ticks + kTestLatency,
+      start_ticks - kTriggerLead);
+
+  for (std::string_view source : {"AllSources", "NewEmptyWindow"}) {
+    const std::string prefix =
+        base::StrCat({"InitialWebUI.NewWindow.", source,
+                      ".WithExistingWindow.BrowserWindow.FirstPaint."});
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({prefix, "FromConstructor3"}), kTestLatency, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({prefix, "FromTrigger3"}), kTestLatency + kTriggerLead, 1);
+  }
+}
+
+TEST_F(WaapUIMetricsServiceTest,
+       OnNewWindowBrowserWindowFirstPaintSkipsTriggerAfterCreation) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histogram_tester;
+  const base::TimeTicks start_ticks = base::TimeTicks::Now();
+  service->OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource::kNewEmptyWindow,
+      /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency,
+      start_ticks + base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "FirstPaint.FromConstructor3",
+      kTestLatency, 1);
+  for (std::string_view source : {"AllSources", "NewEmptyWindow"}) {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"InitialWebUI.NewWindow.", source,
+                      ".WithoutExistingWindow.BrowserWindow.FirstPaint."
+                      "FromTrigger3"}),
+        0);
+  }
 }
 
 TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstPaint) {

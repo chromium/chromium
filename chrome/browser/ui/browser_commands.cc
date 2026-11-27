@@ -965,7 +965,9 @@ int GetContentRestrictions(const BrowserWindowInterface* browser) {
   return content_restrictions;
 }
 
-void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
+void NewEmptyWindow(Profile* profile,
+                    bool should_trigger_session_restore,
+                    base::TimeTicks trigger_time) {
   bool off_the_record = profile->IsOffTheRecord();
   if (off_the_record) {
     if (IncognitoModePrefs::GetAvailability(profile) ==
@@ -991,11 +993,11 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
     } else {
       base::RecordAction(UserMetricsAction("NewIncognitoWindow2"));
     }
-    OpenEmptyWindow(otr_profile, should_trigger_session_restore);
+    OpenEmptyWindow(otr_profile, should_trigger_session_restore, trigger_time);
   } else if (!should_trigger_session_restore) {
     base::RecordAction(UserMetricsAction("NewWindow"));
     OpenEmptyWindow(profile->GetOriginalProfile(),
-                    /*should_trigger_session_restore=*/false);
+                    /*should_trigger_session_restore=*/false, trigger_time);
   } else {
     base::RecordAction(UserMetricsAction("NewWindow"));
     SessionService* session_service =
@@ -1004,13 +1006,15 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
     if (!session_service ||
         !session_service->RestoreIfNecessary(StartupTabs(),
                                              /* restore_apps */ false)) {
-      OpenEmptyWindow(profile->GetOriginalProfile());
+      OpenEmptyWindow(profile->GetOriginalProfile(),
+                      /*should_trigger_session_restore=*/true, trigger_time);
     }
   }
 }
 
 BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
-                                        bool should_trigger_session_restore) {
+                                        bool should_trigger_session_restore,
+                                        base::TimeTicks trigger_time) {
   if (GetBrowserWindowCreationStatusForProfile(*profile) !=
       BrowserWindowInterface::CreationStatus::kOk) {
     return nullptr;
@@ -1027,7 +1031,8 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
 
   BrowserWindowInterface* browser =
       waap::CreateBrowserWindowAndRecordCreationSource(
-          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow,
+          trigger_time);
 
   // Startup tabs could be created during browser creation. Add an empty tab
   // only if no tabs are created.
@@ -1345,7 +1350,7 @@ void Stop(BrowserWindowInterface* browser) {
   browser->GetTabStripModel()->GetActiveWebContents()->Stop();
 }
 
-void NewWindow(BrowserWindowInterface* browser) {
+void NewWindow(BrowserWindowInterface* browser, base::TimeTicks trigger_time) {
   Profile* const profile = browser->GetProfile();
 #if BUILDFLAG(IS_MAC)
   // Web apps should open a window to their launch page.
@@ -1382,11 +1387,13 @@ void NewWindow(BrowserWindowInterface* browser) {
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(IS_MAC)
-  NewEmptyWindow(profile->GetOriginalProfile());
+  NewEmptyWindow(profile->GetOriginalProfile(),
+                 /*should_trigger_session_restore=*/true, trigger_time);
 }
 
-void NewIncognitoWindow(Profile* profile) {
-  NewEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+void NewIncognitoWindow(Profile* profile, base::TimeTicks trigger_time) {
+  NewEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+                 /*should_trigger_session_restore=*/true, trigger_time);
 }
 
 void CloseWindow(BrowserWindowInterface* browser) {

@@ -5179,6 +5179,10 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   actions::ActionInvocationContext context;
   context.SetProperty(chrome::kActionInvocationSourceKey,
                       chrome::ActionInvocationSource::kKeyboardShortcut);
+  if (!accelerator.time_stamp().is_null()) {
+    context.SetProperty(chrome::kActionInvocationEventTimeKey,
+                        accelerator.time_stamp());
+  }
 
   if (command_id == IDC_SHOW_READING_MODE) {
     context.SetProperty(

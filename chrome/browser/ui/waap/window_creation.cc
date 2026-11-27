@@ -16,12 +16,13 @@ namespace waap {
 
 BrowserWindowInterface* CreateBrowserWindowAndRecordCreationSource(
     BrowserWindowCreateParams create_params,
-    NewWindowCreationSource creation_source) {
+    NewWindowCreationSource creation_source,
+    base::TimeTicks trigger_time) {
   const base::TimeTicks now = base::TimeTicks::Now();
   BrowserWindowInterface* browser_window =
       CreateBrowserWindow(std::move(create_params));
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_window)) {
-    manager->SetWindowCreationInfo(creation_source, now);
+    manager->SetWindowCreationInfo(creation_source, now, trigger_time);
   }
   return browser_window;
 }

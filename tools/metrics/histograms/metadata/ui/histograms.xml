@@ -665,6 +665,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.FromTrigger3"
+    units="ms" expires_after="2027-05-23">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the time from the user input that opened a new browser window to the
+    window's first paint. It is recorded only when Chrome knows when that input
+    happened. Today that means the Ctrl+N and Ctrl+Shift+N shortcuts on Windows,
+    Linux, and ChromeOS, and dragging a tab out of the tab strip into a new
+    window, timed from the move that pulls the tab out rather than from the
+    start of the drag. Windows opened any other way, such as from the app menu,
+    with Cmd+N on macOS, or from a link, are not recorded yet, and
+    session-restore windows never are. Those windows still record
+    FromConstructor3, so comparing the two counts for one source shows how many
+    windows this histogram covers. On Windows and Linux Wayland, the input time
+    is when Chrome receives the event, so time the event waits in the OS is not
+    included. Other platforms take it at other points, so compare this histogram
+    within one platform. {CreationSource} {ExistingWindow}.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource" variants="CreationSource"/>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
+</histogram>
+
+<histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}{Version}"
     units="ms" expires_after="2027-05-23">
   <owner>mych@chromium.org</owner>

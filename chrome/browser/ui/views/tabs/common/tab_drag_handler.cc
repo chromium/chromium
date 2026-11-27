@@ -321,7 +321,7 @@ bool TabDragHandler::ContinueDrag(views::View& event_source_view,
 
   // Dragging may start a blocking loop, which may allow this to be destroyed.
   auto ref = weak_factory_.GetWeakPtr();
-  auto liveness = drag_controller_->Drag(screen_location);
+  auto liveness = drag_controller_->Drag(screen_location, event.time_stamp());
   if (!ref) {
     return false;
   }

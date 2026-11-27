@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -67,6 +68,9 @@
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -2760,6 +2764,54 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
       CheckResult([&]() { return browser()->GetWindow()->GetBounds(); },
                   initial_bounds, "Initial window bounds are unchanged"),
       CheckNoBrowserMaximized());
+}
+
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
+                       DetachToNewBrowserRecordsFromTriggerMetric) {
+  constexpr char kAllSourcesFromTrigger[] =
+      "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
+      "BrowserWindow.FirstPaint.FromTrigger3";
+  constexpr char kFromTrigger[] =
+      "InitialWebUI.NewWindow.DragToNewWindow.WithExistingWindow."
+      "BrowserWindow.FirstPaint.FromTrigger3";
+  constexpr char kFromConstructor[] =
+      "InitialWebUI.NewWindow.DragToNewWindow.WithExistingWindow."
+      "BrowserWindow.FirstPaint.FromConstructor3";
+
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  WaapUIMetricsService::SkipStartupForTesting();
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter trigger_waiter(kFromTrigger);
+
+  RunTestSequence(StartDragStatePollers(), PressTab(tab_strip, 1),
+                  MoveTabOutUntilDetached(tab_strip, 1),
+                  WaitForBrowserCount(2u), ReleaseDrag(), CheckDragEnded());
+
+  BrowserWindowInterface* new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+  auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(waap::NewWindowCreationSource::kDragToNewWindow,
+            manager->GetCreationSourceForTesting());
+  const base::TimeTicks trigger_time = manager->GetTriggerTimeForTesting();
+  ASSERT_FALSE(trigger_time.is_null());
+  EXPECT_LE(trigger_time, base::TimeTicks::Now());
+  trigger_waiter.Wait();
+
+  const auto trigger = histogram_tester.GetAllSamples(kFromTrigger);
+  const auto all_sources =
+      histogram_tester.GetAllSamples(kAllSourcesFromTrigger);
+  const auto constructor = histogram_tester.GetAllSamples(kFromConstructor);
+  ASSERT_EQ(1u, trigger.size());
+  ASSERT_EQ(1, trigger[0].count);
+  ASSERT_EQ(1u, all_sources.size());
+  EXPECT_EQ(1, all_sources[0].count);
+  EXPECT_EQ(trigger[0].min, all_sources[0].min);
+  ASSERT_EQ(1u, constructor.size());
+  ASSERT_EQ(1, constructor[0].count);
+  EXPECT_GE(trigger[0].min, constructor[0].min);
 }
 
 class ActiveTabTracker : public TabStripModelObserver {

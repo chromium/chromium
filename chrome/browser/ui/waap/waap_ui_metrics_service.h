@@ -36,9 +36,9 @@ class WaapUIMetricsService : public KeyedService {
   // Resets static markers tracking whether startup metrics have been emitted.
   static void ResetForTesting();
 
-  // Skips recording reload button startup metrics (first paint, first
-  // contentful paint and renderer process) for testing, marking them as
-  // already recorded. Browser window startup metrics are not affected.
+  // Skips recording startup metrics for testing, marking them as already
+  // recorded, so windows created afterwards record new-window metrics even if
+  // no window has painted yet.
   static void SkipStartupForTesting();
 
   static bool IsStartupBrowserWindowFirstPaintRecorded();
@@ -67,11 +67,14 @@ class WaapUIMetricsService : public KeyedService {
   void OnFirstContentfulPaint(base::TimeTicks time);
 
   // Called when a new browser window (not the initial one) is first painted.
+  // `trigger_time` is the originating input or trigger timestamp, or null if
+  // unknown.
   void OnNewWindowBrowserWindowFirstPresentation(
       waap::NewWindowCreationSource source,
       bool with_existing_window,
       base::TimeTicks start_time,
-      base::TimeTicks paint_time);
+      base::TimeTicks paint_time,
+      base::TimeTicks trigger_time = base::TimeTicks());
 
   // Called when the ReloadButton in a new browser window is first painted.
   void OnNewWindowReloadButtonFirstPaint(waap::NewWindowCreationSource source,

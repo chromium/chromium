@@ -262,6 +262,7 @@ void WaapUIMetricsService::ResetForTesting() {
 
 // static
 void WaapUIMetricsService::SkipStartupForTesting() {
+  g_is_browser_window_first_paint_recorded = true;
   g_is_first_paint_recorded = true;
   g_is_first_contentful_paint_recorded = true;
   g_is_startup_process_recorded = true;
@@ -341,10 +342,19 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowFirstPresentation(
     waap::NewWindowCreationSource source,
     bool with_existing_window,
     base::TimeTicks start_time,
-    base::TimeTicks paint_time) {
+    base::TimeTicks paint_time,
+    base::TimeTicks trigger_time) {
   RecordNewWindowPaintMetric("BrowserWindow.FirstPaint.FromConstructor3",
                              source, with_existing_window, start_time,
                              paint_time);
+
+  // Session restores have no single per-window trigger.
+  if (!trigger_time.is_null() && trigger_time <= start_time &&
+      source != waap::NewWindowCreationSource::kSessionRestore &&
+      source != waap::NewWindowCreationSource::kSessionRestoreFallback) {
+    RecordNewWindowPaintMetric("BrowserWindow.FirstPaint.FromTrigger3", source,
+                               with_existing_window, trigger_time, paint_time);
+  }
 }
 
 void WaapUIMetricsService::OnNewWindowReloadButtonFirstPaint(

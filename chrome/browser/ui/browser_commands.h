@@ -87,19 +87,23 @@ int GetContentRestrictions(const BrowserWindowInterface* browser);
 // Opens a new window. If the |should_trigger_session_restore| is true, a new
 // window opening should be treated like the start of a session (with potential
 // session restore, startup URLs, etc.). Otherwise, don't restore the session,
-// opens a new window with the default blank tab.
+// opens a new window with the default blank tab. `trigger_time` is the time of
+// the input event that requested the window, or null if unknown.
 void NewEmptyWindow(Profile* profile,
-                    bool should_trigger_session_restore = true);
+                    bool should_trigger_session_restore = true,
+                    base::TimeTicks trigger_time = base::TimeTicks());
 
 // Opens a new window. If the |should_trigger_session_restore| is true, a new
 // window opening should be treated like the start of a session (with potential
 // session restore, startup URLs, etc.). Otherwise, don't restore the session,
 // opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
-// Returns nullptr if browser creation is not possible.
+// Returns nullptr if browser creation is not possible. `trigger_time` is as in
+// NewEmptyWindow.
 BrowserWindowInterface* OpenEmptyWindow(
     Profile* profile,
-    bool should_trigger_session_restore = true);
+    bool should_trigger_session_restore = true,
+    base::TimeTicks trigger_time = base::TimeTicks());
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
 void OpenWindowWithRestoredTabs(Profile* profile);
@@ -135,8 +139,12 @@ void Home(BrowserWindowInterface* browser,
 base::WeakPtr<content::NavigationHandle> OpenCurrentURL(
     BrowserWindowInterface* browser);
 void Stop(BrowserWindowInterface* browser);
-void NewWindow(BrowserWindowInterface* browser);
-void NewIncognitoWindow(Profile* profile);
+// `trigger_time` is the time of the input event that requested the window, or
+// null if unknown.
+void NewWindow(BrowserWindowInterface* browser,
+               base::TimeTicks trigger_time = base::TimeTicks());
+void NewIncognitoWindow(Profile* profile,
+                        base::TimeTicks trigger_time = base::TimeTicks());
 void CloseWindow(BrowserWindowInterface* browser);
 content::WebContents& NewTab(BrowserWindowInterface* browser,
                              NewTabTypes context);

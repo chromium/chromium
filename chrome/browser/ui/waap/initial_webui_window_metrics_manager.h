@@ -57,9 +57,11 @@ class InitialWebUIWindowMetricsManager {
   // synchronously via `CreateBrowserWindow()`. If calling this directly, call
   // it immediately after the `Browser` object is created, with `creation_time`
   // sampled prior to calling `CreateBrowserWindow()` so synchronous window
-  // construction is included.
+  // construction is included. `trigger_time` is the timestamp of the
+  // originating input event or trigger, or null when unknown.
   void SetWindowCreationInfo(waap::NewWindowCreationSource source,
-                             base::TimeTicks creation_time);
+                             base::TimeTicks creation_time,
+                             base::TimeTicks trigger_time = base::TimeTicks());
 
   // Notifies the manager that a request to show the browser window has been
   // made.
@@ -114,6 +116,10 @@ class InitialWebUIWindowMetricsManager {
     return creation_source_;
   }
 
+  base::TimeTicks GetTriggerTimeForTesting() const {
+    return new_window_trigger_time_;
+  }
+
  private:
   enum class UnpaintedTerminationReason {
     kWindowClosed,
@@ -164,6 +170,10 @@ class InitialWebUIWindowMetricsManager {
   // Updated when `SetWindowCreationInfo` is called. Can still be null if the
   // window was created via uninterested paths.
   std::optional<base::TimeTicks> new_window_start_time_;
+
+  // The timestamp of the input event or trigger that initiated this window
+  // creation. Null if unknown.
+  base::TimeTicks new_window_trigger_time_;
 
   bool is_new_window_first_paint_recorded_ = false;
   bool is_new_window_reload_button_first_paint_recorded_ = false;

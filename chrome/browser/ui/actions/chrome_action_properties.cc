@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace chrome {
@@ -17,6 +18,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowOpenDisposition,
 DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
                              kActionInvocationSourceKey,
                              ActionInvocationSource::kUnknown)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::TimeTicks,
+                                   kActionInvocationEventTimeKey)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kActionItemIconSizeDeltaKey, 0)
 
@@ -30,3 +34,4 @@ const ui::ClassProperty<std::u16string*>* const kActionSecondaryTextKey =
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::mojom::WindowOpenDisposition)
 DEFINE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)
+DEFINE_UI_CLASS_PROPERTY_TYPE(base::TimeTicks*)
