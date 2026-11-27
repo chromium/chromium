@@ -26,6 +26,7 @@ import android.provider.Browser;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -153,11 +155,31 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
     }
 
+    /**
+     * Opts a network-bound Custom Tab out of the Android 15+ Activity Security Model check for
+     * activity starts from below, so that the app that opened it (e.g. CaptivePortalLogin) can show
+     * its own activities above the tab.
+     *
+     * <p>The opt-out is not limited to the opener: any activity below this one in the same task can
+     * start activities above it. This relies on the callers that can set a target network (holders
+     * of MAINLINE_NETWORK_STACK or NETWORK_SETTINGS, see {@link
+     * CustomTabsConnection#extractTargetNetwork}) only opening network-bound Custom Tabs in trusted
+     * tasks.
+     */
+    @VisibleForTesting
+    static void maybeAllowCrossUidActivitySwitchFromBelow(
+            Activity activity, BrowserServicesIntentDataProvider provider) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
+        if (!provider.hasTargetNetwork()) return;
+        activity.setAllowCrossUidActivitySwitchFromBelow(true);
+    }
+
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
         var savedInstanceState = getSavedInstanceState();
         var intentDataProvider = assertNonNull(getIntentDataProvider());
+        maybeAllowCrossUidActivitySwitchFromBelow(this, intentDataProvider);
         mTimeoutHandler =
                 new CustomTabActivityTimeoutHandler(this, this::finish, intentDataProvider);
 
