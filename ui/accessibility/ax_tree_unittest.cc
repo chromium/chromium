@@ -5382,6 +5382,171 @@ TEST(AXTreeTest, LinuxExtraAnnouncementNodeIndices) {
     EXPECT_EQ(1U, polite_node.GetUnignoredIndexInParent());
   }
 }
+
+namespace {
+
+class ExtraAnnouncementDeletionObserver final : public AXTreeObserver {
+ public:
+  ExtraAnnouncementDeletionObserver(AXTree* tree, AXNodeID expected_parent_id)
+      : expected_parent_id_(expected_parent_id) {
+    observation_.Observe(tree);
+  }
+  ~ExtraAnnouncementDeletionObserver() override = default;
+
+  void Reset(AXNodeID expected_parent_id) {
+    expected_parent_id_ = expected_parent_id;
+    will_be_deleted_generated_ids_.clear();
+    starting_deleting_ids_.clear();
+    deleted_generated_ids_.clear();
+    atomic_update_finished_count_ = 0;
+  }
+
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override {
+    if (node->IsGenerated()) {
+      will_be_deleted_generated_ids_.push_back(node->id());
+      // Extra announcement nodes must still have a valid parent while
+      // OnNodeWillBeDeleted runs.
+      ASSERT_NE(nullptr, node->GetUnignoredParent());
+      EXPECT_EQ(expected_parent_id_, node->GetUnignoredParent()->id());
+    }
+  }
+
+  void OnAtomicUpdateStarting(
+      AXTree* tree,
+      const absl::flat_hash_set<AXNodeID>& deleting_nodes,
+      const absl::flat_hash_set<AXNodeID>& reparenting_nodes) override {
+    starting_deleting_ids_.insert(deleting_nodes.begin(), deleting_nodes.end());
+  }
+
+  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override {
+    if (node_id < 0 && node_id > kInitialEmptyDocumentRootNodeID) {
+      deleted_generated_ids_.push_back(node_id);
+    }
+  }
+
+  void OnAtomicUpdateFinished(AXTree* tree,
+                              bool root_changed,
+                              const std::vector<Change>& changes) override {
+    ++atomic_update_finished_count_;
+    if (root_changed) {
+      EXPECT_EQ(nullptr, tree->extra_announcement_nodes());
+    }
+  }
+
+  const std::vector<AXNodeID>& will_be_deleted_generated_ids() const {
+    return will_be_deleted_generated_ids_;
+  }
+  const absl::flat_hash_set<AXNodeID>& starting_deleting_ids() const {
+    return starting_deleting_ids_;
+  }
+  const std::vector<AXNodeID>& deleted_generated_ids() const {
+    return deleted_generated_ids_;
+  }
+  int atomic_update_finished_count() const {
+    return atomic_update_finished_count_;
+  }
+
+ private:
+  AXNodeID expected_parent_id_ = kInvalidAXNodeID;
+  std::vector<AXNodeID> will_be_deleted_generated_ids_;
+  absl::flat_hash_set<AXNodeID> starting_deleting_ids_;
+  std::vector<AXNodeID> deleted_generated_ids_;
+  int atomic_update_finished_count_ = 0;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
+};
+
+}  // namespace
+
+TEST(AXTreeTest, ExtraAnnouncementNodesClearedDuringRootSwap) {
+  AXNodeData root1;
+  root1.id = 1;
+  root1.role = ax::mojom::Role::kRootWebArea;
+  AXNodeData child1;
+  child1.id = 2;
+  child1.role = ax::mojom::Role::kGenericContainer;
+  root1.child_ids = {child1.id};
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root1.id;
+  initial_state.nodes = {root1, child1};
+
+  AXTree tree(initial_state);
+  tree.CreateExtraAnnouncementNodes();
+  ASSERT_TRUE(tree.extra_announcement_nodes());
+  const AXNodeID first_assertive_id =
+      tree.extra_announcement_nodes()->AssertiveNode().id();
+  const AXNodeID first_polite_id =
+      tree.extra_announcement_nodes()->PoliteNode().id();
+
+  ExtraAnnouncementDeletionObserver observer(&tree, root1.id);
+
+  // Replace the root in-place without setting node_id_to_clear.
+  AXNodeData root2;
+  root2.id = 3;
+  root2.role = ax::mojom::Role::kRootWebArea;
+  AXNodeData child2;
+  child2.id = 4;
+  child2.role = ax::mojom::Role::kParagraph;
+  root2.child_ids = {child2.id};
+
+  AXTreeUpdate swap_update;
+  swap_update.root_id = root2.id;
+  swap_update.nodes = {root2, child2};
+
+  ASSERT_TRUE(tree.Unserialize(swap_update));
+  EXPECT_FALSE(tree.extra_announcement_nodes());
+  EXPECT_EQ(1, observer.atomic_update_finished_count());
+  EXPECT_THAT(
+      observer.will_be_deleted_generated_ids(),
+      ::testing::UnorderedElementsAre(first_assertive_id, first_polite_id));
+  EXPECT_TRUE(observer.starting_deleting_ids().contains(first_assertive_id));
+  EXPECT_TRUE(observer.starting_deleting_ids().contains(first_polite_id));
+  EXPECT_THAT(
+      observer.deleted_generated_ids(),
+      ::testing::UnorderedElementsAre(first_assertive_id, first_polite_id));
+
+  // Recreate announcement nodes via a child of the new root and confirm their
+  // parent pointers reference the new root.
+  AXNode* new_child = tree.GetFromId(child2.id);
+  ASSERT_NE(nullptr, new_child);
+  AXNode* new_assertive = new_child->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kHigh);
+  AXNode* new_polite = new_child->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kNormal);
+  ASSERT_NE(nullptr, new_assertive);
+  ASSERT_NE(nullptr, new_polite);
+  EXPECT_EQ(tree.root(), new_assertive->GetUnignoredParent());
+  EXPECT_EQ(tree.root(), new_polite->GetUnignoredParent());
+  EXPECT_EQ(1U, new_assertive->index_in_parent());
+
+  // Replace the root again, this time with node_id_to_clear set to root2.
+  observer.Reset(root2.id);
+  const AXNodeID second_assertive_id = new_assertive->id();
+  const AXNodeID second_polite_id = new_polite->id();
+
+  AXNodeData root3;
+  root3.id = 5;
+  root3.role = ax::mojom::Role::kRootWebArea;
+  AXTreeUpdate clear_and_swap_update;
+  clear_and_swap_update.node_id_to_clear = root2.id;
+  clear_and_swap_update.root_id = root3.id;
+  clear_and_swap_update.nodes = {root3};
+
+  ASSERT_TRUE(tree.Unserialize(clear_and_swap_update));
+  EXPECT_FALSE(tree.extra_announcement_nodes());
+  EXPECT_EQ(1, observer.atomic_update_finished_count());
+  EXPECT_THAT(
+      observer.will_be_deleted_generated_ids(),
+      ::testing::UnorderedElementsAre(second_assertive_id, second_polite_id));
+  EXPECT_THAT(
+      observer.deleted_generated_ids(),
+      ::testing::UnorderedElementsAre(second_assertive_id, second_polite_id));
+
+  AXNode* third_assertive = tree.root()->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kHigh);
+  ASSERT_NE(nullptr, third_assertive);
+  EXPECT_EQ(tree.root(), third_assertive->GetUnignoredParent());
+}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if AX_FAIL_FAST_BUILD()
