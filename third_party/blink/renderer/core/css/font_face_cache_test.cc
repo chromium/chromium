@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 
 namespace blink {
 
@@ -497,6 +498,65 @@ TEST_F(FontFaceCacheTest, ObliqueRangeMatching) {
   ASSERT_EQ(
       result_capabilities.slope,
       FontSelectionRange({FontSelectionValue(30), FontSelectionValue(35)}));
+}
+
+TEST_F(FontFaceCacheTest, CaseInsensitiveFamilySurrogateCollision) {
+  auto add_family = [&](const AtomicString& family) {
+    CSSFontFamilyValue* family_name = CSSFontFamilyValue::Create(family);
+    auto* src = CSSFontFaceSrcValue::CreateLocal(kFontNameForTesting);
+    CSSValueList* src_value_list = CSSValueList::CreateCommaSeparated();
+    src_value_list->Append(*src);
+    CSSPropertyValue properties[] = {
+        CSSPropertyValue(CSSPropertyName(CSSPropertyID::kFontFamily),
+                         *family_name),
+        CSSPropertyValue(CSSPropertyName(CSSPropertyID::kSrc),
+                         *src_value_list)};
+    auto* descriptor =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(properties);
+    auto* rule = MakeGarbageCollected<StyleRuleFontFace>(descriptor);
+    CascadeLayered<const StyleRuleFontFace> layered_rule(rule,
+                                                         /*layer=*/nullptr);
+    FontFace* face =
+        FontFace::Create(&GetDocument(), layered_rule, /*is_user_style=*/false);
+    ASSERT_NE(face, nullptr);
+    cache_->Add(rule, face);
+  };
+
+  auto lookup_family = [&](const AtomicString& family) {
+    FontDescription description;
+    description.SetFamily(FontFamily(family, FontFamily::Type::kFamilyName));
+    return cache_->Get(description, family);
+  };
+
+  constexpr UChar kFamilyA[] = {0xD801, 0xD801, 0xDC01, 0xD801,
+                                0xDC01, 0xDC02, 0xEFE1, 0xE001};
+  constexpr UChar kFamilyB[] = {0xD801, 0xDC01, 0xD801, 0xDC01,
+                                0xD801, 0xDC02, 0xE223, 0xE001};
+  const AtomicString family_a{base::span(kFamilyA)};
+  const AtomicString family_b{base::span(kFamilyB)};
+  ASSERT_EQ(DeprecatedCaseFoldingHash::GetHash(family_a.Impl()),
+            DeprecatedCaseFoldingHash::GetHash(family_b.Impl()));
+
+  add_family(family_a);
+  add_family(family_b);
+
+  CSSSegmentedFontFace* seg_a = lookup_family(family_a);
+  CSSSegmentedFontFace* seg_b = lookup_family(family_b);
+  ASSERT_NE(seg_a, nullptr);
+  ASSERT_NE(seg_b, nullptr);
+  EXPECT_NE(seg_a, seg_b);
+
+  // Valid 16-bit case-folded family names containing supplementary characters
+  // still resolve to the same entry.
+  constexpr UChar kSigmaUpper[] = {0x03A3, 0xD801, 0xDC29};
+  constexpr UChar kSigmaLower[] = {0x03C3, 0xD801, 0xDC29};
+  const AtomicString sigma_upper{base::span(kSigmaUpper)};
+  const AtomicString sigma_lower{base::span(kSigmaLower)};
+  add_family(sigma_upper);
+  CSSSegmentedFontFace* seg_upper = lookup_family(sigma_upper);
+  CSSSegmentedFontFace* seg_lower = lookup_family(sigma_lower);
+  ASSERT_NE(seg_upper, nullptr);
+  EXPECT_EQ(seg_upper, seg_lower);
 }
 
 namespace {

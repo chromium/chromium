@@ -636,6 +636,86 @@ TEST(StringViewTest, DeprecatedEqualIgnoringCase) {
   EXPECT_TRUE(
       DeprecatedEqualIgnoringCase(base::span_from_cstring(kLigatureFFIAndSSSS),
                                   base::span_from_cstring(kFFIAndSharpSs)));
+
+  // Valid supplementary case-folding pairs (Deseret U+10401 <-> U+10429).
+  constexpr UChar kDeseretUpper[] = {0xD801, 0xDC01, 0};
+  constexpr UChar kDeseretLower[] = {0xD801, 0xDC29, 0};
+  EXPECT_TRUE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kDeseretUpper),
+                                  base::span_from_cstring(kDeseretLower)));
+  EXPECT_TRUE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kDeseretLower),
+                                  base::span_from_cstring(kDeseretUpper)));
+
+  // Unpaired lead surrogate followed by case-folding units vs. valid
+  // case-folding supplementary pair sharing the same lead surrogate
+  // (crbug.com/590586874 / ICU-23485).
+  constexpr UChar kLeadAndAsciiA[] = {0xD801, 'A', 0};
+  constexpr UChar kLeadAndAsciiACopy[] = {0xD801, 'A', 0};
+  constexpr UChar kLeadAndFullwidthA[] = {0xD801, 0xFF21, 0};
+  constexpr UChar kLeadAndSharpS[] = {0xD801, 0x00DF, 0};
+  EXPECT_TRUE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kLeadAndAsciiA),
+                                  base::span_from_cstring(kLeadAndAsciiACopy)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kLeadAndAsciiA),
+                                  base::span_from_cstring(kDeseretUpper)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kDeseretUpper),
+                                  base::span_from_cstring(kLeadAndAsciiA)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kLeadAndFullwidthA),
+                                  base::span_from_cstring(kDeseretUpper)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kDeseretUpper),
+                                  base::span_from_cstring(kLeadAndFullwidthA)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kLeadAndSharpS),
+                                  base::span_from_cstring(kDeseretUpper)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kDeseretUpper),
+                                  base::span_from_cstring(kLeadAndSharpS)));
+
+  // Non-zero offset with a shared prefix.
+  constexpr UChar kPrefixedLeadAndA[] = {'x', 0xD801, 'A', 0};
+  constexpr UChar kPrefixedDeseretUpper[] = {'x', 0xD801, 0xDC01, 0};
+  EXPECT_FALSE(DeprecatedEqualIgnoringCase(
+      base::span_from_cstring(kPrefixedLeadAndA),
+      base::span_from_cstring(kPrefixedDeseretUpper)));
+  EXPECT_FALSE(DeprecatedEqualIgnoringCase(
+      base::span_from_cstring(kPrefixedDeseretUpper),
+      base::span_from_cstring(kPrefixedLeadAndA)));
+
+  // Both strings contain unpaired surrogates while still aligning a lone lead
+  // surrogate against a folding supplementary pair.
+  constexpr UChar kBothUnpairedA[] = {0xD801, 'A', 0xD800, 0};
+  constexpr UChar kBothUnpairedB[] = {0xD801, 0xDC01, 0xD800, 0};
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kBothUnpairedA),
+                                  base::span_from_cstring(kBothUnpairedB)));
+  EXPECT_FALSE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kBothUnpairedB),
+                                  base::span_from_cstring(kBothUnpairedA)));
+
+  // Leading unpaired trail surrogates at index 0.
+  constexpr UChar kTrail1[] = {0xDC01, 0};
+  constexpr UChar kTrail1Copy[] = {0xDC01, 0};
+  constexpr UChar kTrail2[] = {0xDC02, 0};
+  EXPECT_TRUE(DeprecatedEqualIgnoringCase(
+      base::span_from_cstring(kTrail1), base::span_from_cstring(kTrail1Copy)));
+  EXPECT_FALSE(DeprecatedEqualIgnoringCase(base::span_from_cstring(kTrail1),
+                                           base::span_from_cstring(kTrail2)));
+
+  constexpr UChar kSurrogateSequenceA[] = {
+      0xD801, 0xD801, 0xDC01, 0xD801, 0xDC01, 0xDC02, 0xEFE1, 0xE001, 0};
+  constexpr UChar kSurrogateSequenceB[] = {
+      0xD801, 0xDC01, 0xD801, 0xDC01, 0xD801, 0xDC02, 0xE223, 0xE001, 0};
+  EXPECT_FALSE(DeprecatedEqualIgnoringCase(
+      base::span_from_cstring(kSurrogateSequenceA),
+      base::span_from_cstring(kSurrogateSequenceB)));
+  EXPECT_FALSE(DeprecatedEqualIgnoringCase(
+      base::span_from_cstring(kSurrogateSequenceB),
+      base::span_from_cstring(kSurrogateSequenceA)));
 }
 
 TEST(StringViewTest, NextCodePointOffset) {

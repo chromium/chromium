@@ -26,11 +26,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #include <hwy/highway.h>
+#include <unicode/uvernum.h>
 
 #include <algorithm>
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/i18n/string_search.h"
 #include "base/no_destructor.h"
@@ -59,6 +61,38 @@ using std::numeric_limits;
 namespace blink {
 
 namespace {
+
+#if U_ICU_VERSION_MAJOR_NUM > 78 ||   \
+    (U_ICU_VERSION_MAJOR_NUM == 78 && \
+     (U_ICU_VERSION_MINOR_NUM > 2 ||  \
+      (U_ICU_VERSION_MINOR_NUM == 2 && U_ICU_VERSION_PATCHLEVEL_NUM > 0)))
+#error \
+    "ICU has been updated past 78.2.0. Check if ICU-23485 (_cmpFold " \
+    "surrogate rewind) is fixed; if so, remove the "                  \
+    "DeprecatedEqualIgnoringCase unpaired-surrogate workaround "      \
+    "(crbug.com/590586874), otherwise update this version check."
+#endif
+
+// Workaround for ICU-23485 (crbug.com/590586874): avoid calling ICU
+// `u_memcasecmp` (`_cmpFold`) when either string contains an unpaired
+// surrogate.
+BASE_FEATURE(kDeprecatedEqualIgnoringCaseAvoidUnpairedSurrogate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool HasUnpairedSurrogate(base::span<const UChar> chars) {
+  for (size_t i = 0; i < chars.size(); ++i) {
+    const UChar c = chars[i];
+    if (U16_IS_SURROGATE(c)) {
+      if (U16_IS_SURROGATE_LEAD(c) && i + 1 < chars.size() &&
+          U16_IS_TRAIL(chars[i + 1])) {
+        ++i;
+      } else {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 struct SameSizeAsStringImpl {
 #if DCHECK_IS_ON()
@@ -961,6 +995,11 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   DCHECK_GE(length, 0u);
   if (a.data() == b.data()) {
     return true;
+  }
+  if ((HasUnpairedSurrogate(a) || HasUnpairedSurrogate(b)) &&
+      base::FeatureList::IsEnabled(
+          kDeprecatedEqualIgnoringCaseAvoidUnpairedSurrogate)) {
+    return a == b;
   }
   return !unicode::Umemcasecmp(a.data(), b.data(),
                                base::checked_cast<int>(length));
