@@ -41,7 +41,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import leakcanary.AppWatcher;
-import leakcanary.LeakCanary;
 
 import org.junit.Assume;
 import org.junit.Before;
@@ -51,9 +50,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import shark.AndroidObjectInspectors;
-import shark.ObjectInspector;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -1512,28 +1508,10 @@ public class SingleWebsiteSettingsTest {
         mCtaTestRule.startOnBlankPage();
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        List<ObjectInspector> originalInspectors = LeakCanary.getConfig().getObjectInspectors();
         try {
             openAndResetSingleWebsiteSettings(settingsActivity);
-            // WideDisplayPadding still retains the popped SingleWebsiteSettings fragment while
-            // SettingsActivity stays open, so exclude fragment/lifecycle inspectors to check that
-            // the dismissed confirmation dialog's view hierarchy is not retained.
-            List<ObjectInspector> inspectors = new ArrayList<>();
-            for (ObjectInspector inspector : originalInspectors) {
-                if (inspector != AndroidObjectInspectors.ANDROIDX_FRAGMENT
-                        && inspector != AndroidObjectInspectors.LIFECYCLE_REGISTRY) {
-                    inspectors.add(inspector);
-                }
-            }
-            LeakCanary.setConfig(
-                    LeakCanary.getConfig().newBuilder().objectInspectors(inspectors).build());
             new LeakCheckHook().onAfterTestClass(SingleWebsiteSettingsTest.class);
         } finally {
-            LeakCanary.setConfig(
-                    LeakCanary.getConfig()
-                            .newBuilder()
-                            .objectInspectors(originalInspectors)
-                            .build());
             ApplicationTestUtils.finishActivity(settingsActivity);
         }
     }
@@ -1558,6 +1536,7 @@ public class SingleWebsiteSettingsTest {
                             singleWebsite.findPreference(SingleWebsiteSettings.PREF_RESET_SITE);
                     singleWebsite.onPreferenceClick(resetPref);
                 });
+        AppWatcher.INSTANCE.getObjectWatcher().clearWatchedObjects();
         View[] dialogRootView = new View[1];
         onView(withText(R.string.website_reset))
                 .inRoot(isDialog())
@@ -1573,7 +1552,6 @@ public class SingleWebsiteSettingsTest {
                 () -> !(settingsActivity.getMainFragment() instanceof SingleWebsiteSettings));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertNotNull("Confirmation dialog root view should be captured.", dialogRootView[0]);
-        AppWatcher.INSTANCE.getObjectWatcher().clearWatchedObjects();
         AppWatcher.INSTANCE
                 .getObjectWatcher()
                 .expectWeaklyReachable(

@@ -1474,11 +1474,8 @@ android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
   deps = [
     ":chrome_test_java_helper",
     "//base/test:leak_canary_java",
-    "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_core_java",
     "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
     "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_java",
-    "//third_party/android_deps:com_squareup_leakcanary_shark_android_java",
-    "//third_party/android_deps:com_squareup_leakcanary_shark_java",
   ]
 }
 
