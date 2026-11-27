@@ -21,6 +21,18 @@ source_set("custom_cursor_suppressor") {
   deps = [ "//chrome/browser/profiles:profile" ]
 }
 
+if (use_aura) {
+  source_set("html_form_popup_observer") {
+    public = [ "html_form_popup_observer.h" ]
+    sources = [ "html_form_popup_observer.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/aura",
+    ]
+    deps = [ "//content/public/browser" ]
+  }
+}
+
 source_set("popup_interactive_row_view") {
   public = [ "popup_interactive_row_view.h" ]
   sources = [ "popup_interactive_row_view.cc" ]
@@ -616,6 +628,16 @@ source_set("unit_tests") {
     "//ui/display:test_support",
     "//ui/events:test_support",
   ]
+
+  if (use_aura) {
+    sources += [ "html_form_popup_observer_unittest.cc" ]
+    deps += [
+      ":html_form_popup_observer",
+      "//content/public/browser",
+      "//ui/aura",
+      "//ui/compositor",
+    ]
+  }
 }
 
 source_set("popup_badge_constants") {
