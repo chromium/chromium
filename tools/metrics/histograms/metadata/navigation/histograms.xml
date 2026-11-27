@@ -275,27 +275,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="BackForwardCache.AllSites.HistoryNavigationOutcome.DisabledForRenderFrameHostReason2"
-    enum="BackForwardCacheDisabledForRenderFrameHostReason2"
-    expires_after="2024-07-07">
-  <owner>fergal@chromium.org</owner>
-  <owner>rakina@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    For history navigations, records the reason passed to
-    BackForwardCache::DisableForRenderFrameHost calls.
-
-    The metric is recorded when a history navigation commits and emits a sample
-    for each reason. Compare this with
-    BackForwardCache.HistoryNavigationOutcome, which contains the total number
-    of navigations which where not cached
-
-    This is recorded for all websites regardless whether back-forward cache is
-    enabled or not.
-  </summary>
-</histogram>
-
-<histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.NotRestoredReason"
     enum="BackForwardCacheNotRestoredReason" expires_after="2027-05-09">
   <owner>fergal@chromium.org</owner>
