@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -1147,7 +1148,9 @@ void CredentialManagerAvatarTest::WaitForAvatarCounter(size_t expected) {
   // The logic doesn't support increments by more than one.
   EXPECT_EQ(expected, avatar_request_counter_ + 1);
   base::RunLoop loop;
-  run_loop_ = &loop;
+  // To satisfy `-Wlifetime-safety`, ensure that frame-local `loop` doesn't
+  // get smuggled out of this scope.
+  base::AutoReset<decltype(run_loop_)> auto_reset(&run_loop_, &loop);
   loop.Run();
   EXPECT_EQ(expected, avatar_request_counter_);
 }
