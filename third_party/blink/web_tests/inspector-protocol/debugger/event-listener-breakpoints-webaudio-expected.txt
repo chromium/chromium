@@ -1,15 +1,38 @@
 Tests event listener breakpoints for WebAudio.
-
 Script execution paused.
+{
+    data : {
+        eventName : instrumentation:audioContextCreated
+    }
+    reason : EventListener
+}
 Successfully paused after AudioContext construction.
 Script execution resumed.
 Script execution paused.
+{
+    data : {
+        eventName : instrumentation:audioContextSuspended
+    }
+    reason : EventListener
+}
 Successfully paused after AudioContext suspension.
 Script execution resumed.
 Script execution paused.
+{
+    data : {
+        eventName : instrumentation:audioContextResumed
+    }
+    reason : EventListener
+}
 Successfully paused after AudioContext resumption.
 Script execution resumed.
 Script execution paused.
+{
+    data : {
+        eventName : instrumentation:audioContextClosed
+    }
+    reason : EventListener
+}
 Successfully paused after AudioContext closure.
 Script execution resumed.
 
