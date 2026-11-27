@@ -186,7 +186,7 @@ public class FullscreenTestUtils {
             return;
         }
         CriteriaHelper.pollUiThread(
-                () -> isFullscreenFlagSet(tab, state, activity),
+                () -> isFullscreenFlagSet(tab, state),
                 6000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
@@ -281,7 +281,7 @@ public class FullscreenTestUtils {
      * @param tab The {@link Tab} to verify.
      * @param expectStatusBarHidden Whether the status bar is expected to be hidden on screen.
      */
-    private static boolean verifyWindowInsets(final Tab tab, final boolean expectStatusBarHidden) {
+    public static boolean verifyWindowInsets(final Tab tab, final boolean expectStatusBarHidden) {
         Activity activity = tab.getWindowAndroid().getActivity().get();
         if (activity != null && MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
             // In multi-window/freeform mode, status bars are always invisible, so window insets
@@ -316,12 +316,15 @@ public class FullscreenTestUtils {
     }
 
     /** Whether fullscreen is driven by WindowInsetsController rather than system UI flags. */
-    private static boolean isFullscreenInsetsApiMigrationEnabled() {
+    public static boolean isFullscreenInsetsApiMigrationEnabled() {
         return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled();
     }
 
-    private static boolean isFullscreenFlagSet(
-            final Tab tab, final boolean state, Activity activity) {
+    /**
+     * Returns whether {@link View#SYSTEM_UI_FLAG_FULLSCREEN} matches {@code state} and no
+     * fullscreen transition is in progress. Used when fullscreen is driven by system UI flags.
+     */
+    public static boolean isFullscreenFlagSet(final Tab tab, final boolean state) {
         // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
         // UI flags are not set.
         // TODO(crbug.com/584422076): Verify fullscreen state on automotive instead of skipping.

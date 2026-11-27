@@ -38,7 +38,8 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -81,7 +82,12 @@ public class ContextMenuDragTest {
     private ContextMenuCoordinator mContextMenu;
     private String mTestUrl;
     private WebPageStation mPage;
+    private ContextMenuPageFacility mPageFacility;
     private Tab mTab;
+
+    private static class ContextMenuPageFacility extends WebPageFacility {
+        public final HtmlElement testImage = declareHtmlElement("#" + TEST_IMAGE_ID);
+    }
 
     @BeforeClass
     public static void setupBeforeClass() {
@@ -97,7 +103,10 @@ public class ContextMenuDragTest {
         mTestServer = mActivityTestRule.getTestServer();
         mTestUrl = mTestServer.getURL(TEST_PATH);
 
-        mPage = mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        mPageFacility = new ContextMenuPageFacility();
+        mPage =
+                mActivityTestRule.startOnPage(
+                        mTestUrl, WebPageStation.newBuilder().withFacility(mPageFacility));
         mTab = mPage.getTab();
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
     }
@@ -128,7 +137,7 @@ public class ContextMenuDragTest {
     public void testTriggerContextMenuWithDrag() throws TimeoutException {
         longPressOpenContextMenu(TEST_IMAGE_ID);
 
-        final Rect location = DOMUtils.getNodeBounds(mTab.getWebContents(), TEST_IMAGE_ID);
+        final Rect location = mPageFacility.testImage.value();
         final int jitterRange = 1;
 
         // Clank is not forwarding drag start event to blink; instead, browser only remembers the

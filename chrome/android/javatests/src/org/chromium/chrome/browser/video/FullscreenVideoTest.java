@@ -11,7 +11,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,10 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
@@ -33,9 +32,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.TabFullscreenCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.media.MediaSwitches;
@@ -56,6 +58,10 @@ public class FullscreenVideoTest {
 
     private ChromeActivity mActivity;
     private WebPageStation mPage;
+
+    private static class VideoPlayerPageFacility extends WebPageFacility {
+        public final HtmlElement fullscreenButton = declareHtmlElement("#fullscreen");
+    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -117,29 +123,32 @@ public class FullscreenVideoTest {
         String video = "video";
         Rect expectedSize = new Rect(0, 0, 320, 180);
 
-        mActivityTestRule.loadUrl(url);
-
-        final Tab tab = mActivityTestRule.getActivityTab();
+        VideoPlayerPageFacility videoPage = new VideoPlayerPageFacility();
+        mPage =
+                mPage.loadPageProgrammatically(
+                        url, WebPageStation.newBuilder().withFacility(videoPage));
 
         // Start playback to guarantee it's properly loaded.
-        WebContents webContents = mActivityTestRule.getWebContents();
+        WebContents webContents = mPage.webContentsElement.value();
         Assert.assertTrue(DOMUtils.isMediaPaused(webContents, video));
         DOMUtils.playMedia(webContents, video);
         DOMUtils.waitForMediaPlay(webContents, video);
 
         // Trigger requestFullscreen() via a click on a button.
-        Assert.assertTrue(DOMUtils.clickNode(webContents, "fullscreen"));
+        videoPage
+                .fullscreenButton
+                .clickTo()
+                .waitFor(
+                        new TabFullscreenCondition(mPage.loadedTabElement),
+                        SimpleConditions.uiThreadCondition(
+                                "Fullscreen video size is set",
+                                () ->
+                                        Condition.whether(
+                                                webContents.getFullscreenVideoSize() != null)));
 
-        waitForVideoToEnterFullscreen();
-
-        // It can take a while for the fullscreen video to register.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(
-                            tab.getWebContents().getFullscreenVideoSize(), Matchers.notNullValue());
-                });
-
-        Assert.assertEquals(expectedSize, tab.getWebContents().getFullscreenVideoSize());
+        Assert.assertEquals(
+                expectedSize,
+                ThreadUtils.runOnUiThreadBlocking(webContents::getFullscreenVideoSize));
     }
 
     private String launchOnFullscreenMode() {
