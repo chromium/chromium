@@ -5,7 +5,7 @@ Version: 12377.1.9 (from macOS 26.0)
 Revision: f6217f891ac0bb64f3d375211650a4c1ff8ca1ea
 Update Mechanism: Static (https://crbug.com/575200361)
 License: APSL-2.0
-License File: APPLE_LICENSE
+License File: xnu/APPLE_LICENSE
 Security Critical: no
 Shipped: yes
 
@@ -25,3 +25,8 @@ Local Modifications:
    <mach/machine/machine_types.defs>, and <mach/std_types.defs> are also
    included.
  - Anything not listed above is omitted.
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from
+this directory:
+crowbar build --no-dry-run ./

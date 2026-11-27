@@ -49,9 +49,9 @@
 // respectively.
 - (NSDictionary*)getAnnotations;
 
-// Return an NSDictionary with a dictionary representing all key value pairs of
-// ExtraMemory MemorySnapshots where the data can be converted to an NSString.
-- (NSDictionary*)getExtraMemory;
+// Returns an NSDictionary mapping each ExtraMemory MemorySnapshot address
+// (as a decimal NSString) to its raw bytes (NSData).
+- (NSDictionary<NSString*, NSData*>*)getExtraMemory;
 
 // Returns YES if a minidump contains the expected custom stream data.
 - (BOOL)hasExtensionStream;

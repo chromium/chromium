@@ -1,0 +1,22 @@
+Comment out the #includes of <mach/machine/thread_status.h> and
+<architecture/byte_order.h> as unnecessary; compat/non_mac does not
+provide them.
+
+Crashpad commit 8dbbaff2e1a5 (https://crrev.com/c/2154530); the roll
+to 12377.1.9 (1bb2acfa) kept it (README.crashpad Local Modifications).
+
+diff --git a/src/EXTERNAL_HEADERS/mach-o/loader.h b/src/EXTERNAL_HEADERS/mach-o/loader.h
+index 4d1b930c..577c424a 100644
+--- a/src/EXTERNAL_HEADERS/mach-o/loader.h
++++ b/src/EXTERNAL_HEADERS/mach-o/loader.h
+@@ -43,9 +43,9 @@
+ /*
+  * <machine/thread_status.h> is expected to define the flavors of the thread
+  * states and the structures of those flavors for each machine.
+- */
+ #include <mach/machine/thread_status.h>
+ #include <architecture/byte_order.h>
++ */
+ 
+ /*
+  * The 32-bit mach header appears at the very beginning of the object file for

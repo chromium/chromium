@@ -479,10 +479,11 @@ bool HasMacOSBrokeDYLDTaskInfo() {
   [rootObject_ crashKillAbort];
   [self verifyCrashReportException:EXC_SOFT_SIGNAL];
 
-  NSDictionary* dict = [rootObject_ getExtraMemory];
+  NSData* expected = [@"hello world" dataUsingEncoding:NSUTF8StringEncoding];
+  NSDictionary<NSString*, NSData*>* dict = [rootObject_ getExtraMemory];
   BOOL found = NO;
   for (NSString* key in dict) {
-    if ([dict[key] isEqualToString:@"hello world"]) {
+    if ([dict[key] isEqualToData:expected]) {
       found = YES;
       break;
     }

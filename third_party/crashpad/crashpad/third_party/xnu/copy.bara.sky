@@ -1,0 +1,18 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob([
+        "APPLE_LICENSE",
+        "EXTERNAL_HEADERS/mach-o/loader.h",
+        "osfmk/mach/exc.defs",
+        "osfmk/mach/mach_exc.defs",
+        "osfmk/mach/mach_types.defs",
+        "osfmk/mach/machine/machine_types.defs",
+        "osfmk/mach/std_types.defs",
+    ]),
+    transformations = [
+        patch.apply(patches = ["patches/0001-comment-out-unused-includes.patch"]),
+        # Crashpad names the directory of imported code after the project.
+        core.move("src", "xnu"),
+    ],
+)

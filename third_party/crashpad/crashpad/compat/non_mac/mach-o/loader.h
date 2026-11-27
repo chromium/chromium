@@ -15,6 +15,6 @@
 #ifndef CRASHPAD_COMPAT_NON_MAC_MACH_O_LOADER_H_
 #define CRASHPAD_COMPAT_NON_MAC_MACH_O_LOADER_H_
 
-#include "third_party/xnu/EXTERNAL_HEADERS/mach-o/loader.h"
+#include "third_party/xnu/xnu/EXTERNAL_HEADERS/mach-o/loader.h"
 
 #endif  // CRASHPAD_COMPAT_NON_MAC_MACH_O_LOADER_H_

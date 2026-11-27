@@ -13,5 +13,5 @@
 # limitations under the License.
 
 source_set("xnu") {
-  sources = [ "EXTERNAL_HEADERS/mach-o/loader.h" ]
+  sources = [ "xnu/EXTERNAL_HEADERS/mach-o/loader.h" ]
 }

@@ -1,0 +1,15 @@
+upstream {
+  commit: "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+  artifacts {
+    git {
+      repository: "https://github.com/apple-oss-distributions/xnu"
+      commit: "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

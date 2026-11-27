@@ -44,8 +44,8 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
       sources = [
         # The iOS SDK doesn’t have any .defs files. Get them directly from
         # xnu.
-        "../third_party/xnu/osfmk/mach/exc.defs",
-        "../third_party/xnu/osfmk/mach/mach_exc.defs",
+        "../third_party/xnu/xnu/osfmk/mach/exc.defs",
+        "../third_party/xnu/xnu/osfmk/mach/mach_exc.defs",
       ]
     }
 

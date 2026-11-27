@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 #include <thread>
@@ -32,7 +33,9 @@
 #import "Service/Sources/EDOHostNamingService.h"
 #import "Service/Sources/EDOHostService.h"
 #import "Service/Sources/NSObject+EDOValueObject.h"
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/sys_string_conversions.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -50,6 +53,7 @@
 #import "test/ios/host/handler_forbidden_allocators.h"
 #include "util/file/filesystem.h"
 #include "util/ios/raw_logging.h"
+#include "util/posix/scoped_mmap.h"
 #include "util/thread/thread.h"
 
 using OperationStatus = crashpad::CrashReportDatabase::OperationStatus;
@@ -195,7 +199,7 @@ UIWindow* GetAnyWindow() {
   crashpad::CrashpadClient client_;
   crashpad::ScopedFileHandle raw_logging_file_;
   crashpad::SimpleAddressRangeBag extra_ranges_;
-  std::unique_ptr<std::string> extra_memory_string_;
+  crashpad::ScopedMmap extra_memory_region_;
 }
 
 @synthesize window = _window;
@@ -242,8 +246,22 @@ UIWindow* GetAnyWindow() {
   if ([arguments containsObject:@"--test-extra_memory"]) {
     crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(
         &extra_ranges_);
-    extra_memory_string_ = std::make_unique<std::string>("hello world");
-    extra_ranges_.Insert((void*)extra_memory_string_->c_str(), 11);
+    // Place the bytes mid-page in a dedicated mapping so they cannot fall
+    // inside the 512-byte window CaptureMemoryPointedToByThreadState captures
+    // around register values, which CoalesceOwnedMemory would then merge.
+    static constexpr char kExtraMemoryData[] = "hello world";
+    const size_t extra_memory_length = strlen(kExtraMemoryData);
+    const size_t page_size = base::GetPageSize();
+    CHECK(extra_memory_region_.ResetMmap(nullptr,
+                                         page_size,
+                                         PROT_READ | PROT_WRITE,
+                                         MAP_PRIVATE | MAP_ANON,
+                                         -1,
+                                         0));
+    char* extra_memory_ptr =
+        extra_memory_region_.addr_as<char*>() + page_size / 2;
+    memcpy(extra_memory_ptr, kExtraMemoryData, extra_memory_length);
+    extra_ranges_.Insert(extra_memory_ptr, extra_memory_length);
   }
 
 
@@ -347,22 +365,23 @@ UIWindow* GetAnyWindow() {
   return [dict passByValue];
 }
 
-- (NSDictionary*)getExtraMemory {
+- (NSDictionary<NSString*, NSData*>*)getExtraMemory {
   auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
-  if (!process_snapshot)
+  if (!process_snapshot) {
     return @{};
+  }
 
-  NSDictionary* dict = [@{} mutableCopy];
+  NSMutableDictionary<NSString*, NSData*>* dict = [@{} mutableCopy];
 
-  for (auto memory : process_snapshot->ExtraMemory()) {
+  for (const crashpad::MemorySnapshot* memory :
+       process_snapshot->ExtraMemory()) {
     ReadToString delegate;
     if (memory->Size() > 0 && memory->Read(&delegate) &&
         !delegate.result.empty()) {
       NSString* key = [@(memory->Address()) stringValue];
-      NSString* value = @(delegate.result.c_str());
-      if (value.length) {
-        [dict setValue:value forKey:key];
-      }
+      NSData* value = [NSData dataWithBytes:delegate.result.data()
+                                     length:delegate.result.size()];
+      dict[key] = value;
     }
   }
   return [dict passByValue];

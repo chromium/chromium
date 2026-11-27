@@ -15,6 +15,6 @@
 #ifndef CRASHPAD_COMPAT_IOS_MACH_MACHINE_MACHINE_TYPES_DEFS_
 #define CRASHPAD_COMPAT_IOS_MACH_MACHINE_MACHINE_TYPES_DEFS_
 
-#include "third_party/xnu/osfmk/mach/machine/machine_types.defs"
+#include "third_party/xnu/xnu/osfmk/mach/machine/machine_types.defs"
 
 #endif  // CRASHPAD_COMPAT_IOS_MACH_MACHINE_MACHINE_TYPES_DEFS_
