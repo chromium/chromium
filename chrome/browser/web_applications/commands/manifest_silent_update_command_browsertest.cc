@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -366,8 +367,14 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   ASSERT_FALSE(web_app->pending_update_info().has_value());
 }
 
+// TODO(crbug.com/590634390): Re-enable once Mac RunLoop/AppShim flake is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MenuButtonClearedDynamically DISABLED_MenuButtonClearedDynamically
+#else
+#define MAYBE_MenuButtonClearedDynamically MenuButtonClearedDynamically
+#endif
 IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
-                       MenuButtonClearedDynamically) {
+                       MAYBE_MenuButtonClearedDynamically) {
   // First, install a web app.
   clock_->SetNow(base::Time::Now());
   const GURL app_url =
