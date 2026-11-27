@@ -16,6 +16,8 @@ specific_include_rules = {
         "+services/metrics/public/cpp/ukm_builders.h",
     ],
     "offscreen_canvas_test\\.cc": [
+        "+components/viz/test/test_context_provider.h",
+        "+components/viz/test/test_raster_interface.h",
         "+gpu/command_buffer/client/client_shared_image.h",
         "+gpu/command_buffer/client/shared_image_interface.h",
     ],

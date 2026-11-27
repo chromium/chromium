@@ -6,6 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,8 +34,7 @@
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
@@ -112,7 +113,9 @@ class OffscreenCanvasTest : public ::testing::Test,
 
   HTMLCanvasElement* GetCanvasElement() const { return canvas_element_; }
 
-  FakeGLES2Interface* GetGLInterface() { return &gl_; }
+  viz::TestRasterInterface* GetRasterInterface() {
+    return test_context_provider_->GetTestRasterInterface();
+  }
 
   static uint32_t FrameGenerationOf(const UniqueFontSelector& selector) {
     return selector.frame_generation_;
@@ -124,7 +127,7 @@ class OffscreenCanvasTest : public ::testing::Test,
   Persistent<OffscreenCanvas> offscreen_canvas_;
   Persistent<OffscreenCanvasRenderingContext2D> context_;
   Persistent<HTMLCanvasElement> canvas_element_;
-  FakeGLES2Interface gl_;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
       accelerated_compositing_scope_;
@@ -135,13 +138,9 @@ class OffscreenCanvasTest : public ::testing::Test,
 OffscreenCanvasTest::OffscreenCanvasTest() = default;
 
 void OffscreenCanvasTest::SetUp() {
-  auto factory = [](FakeGLES2Interface* gl)
-      -> std::unique_ptr<WebGraphicsContext3DProvider> {
-    gl->SetIsContextLost(false);
-    return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
-  };
-  SharedGpuContext::SetContextProviderFactoryForTesting(
-      BindRepeating(factory, Unretained(&gl_)));
+  test_context_provider_ = viz::TestContextProvider::CreateRaster();
+  InitializeSharedGpuContext(test_context_provider_.get(),
+                             /*cache=*/nullptr, SetIsContextLost::kSetToFalse);
 
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
   web_view_helper_->Initialize();
@@ -177,6 +176,7 @@ void OffscreenCanvasTest::SetUp() {
 
 void OffscreenCanvasTest::TearDown() {
   SharedGpuContext::Reset();
+  test_context_provider_.reset();
   // destruction order matters due to nested TestPlatformSupport instance.
   accelerated_compositing_scope_ = nullptr;
   web_view_helper_ = nullptr;
@@ -316,7 +316,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
 TEST_P(OffscreenCanvasTest, GetRasterModeAutoRecovery) {
   // Verifies that after a context loss, getting the raster mode from the
   // canvas will restore the context and succeed.
-  GetGLInterface()->SetIsContextLost(true);
+  GetRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoringForTesting());
   offscreen_canvas().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   EXPECT_EQ(offscreen_canvas().GetRasterModeForCanvas2D(), RasterMode::kGPU);

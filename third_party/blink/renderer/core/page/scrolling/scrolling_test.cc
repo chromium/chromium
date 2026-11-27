@@ -41,6 +41,7 @@
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "components/viz/test/test_context_provider.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
@@ -72,8 +73,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -4028,23 +4028,21 @@ TEST_F(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
 class ScrollingTestWithAcceleratedContext : public ScrollingTest {
  protected:
   void SetUp() override {
-    auto factory = [](FakeGLES2Interface* gl)
-        -> std::unique_ptr<WebGraphicsContext3DProvider> {
-      gl->SetIsContextLost(false);
-      return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
-    };
-    SharedGpuContext::SetContextProviderFactoryForTesting(
-        BindRepeating(factory, Unretained(&gl_)));
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               /*cache=*/nullptr,
+                               SetIsContextLost::kSetToFalse);
     ScrollingTest::SetUp();
   }
 
   void TearDown() override {
     SharedGpuContext::Reset();
+    test_context_provider_.reset();
     ScrollingTest::TearDown();
   }
 
  private:
-  FakeGLES2Interface gl_;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollingTestWithAcceleratedContext);

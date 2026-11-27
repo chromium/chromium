@@ -8,6 +8,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
+#include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -18,8 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
-#include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -75,20 +74,21 @@ class BadSharedGpuContextTest : public Test {
 class SoftwareCompositingTest : public Test {
  public:
   void SetUp() override {
-    auto factory = [](FakeGLES2Interface* gl)
-        -> std::unique_ptr<WebGraphicsContext3DProvider> {
-      // Return a context anyway, to ensure that's not what the class checks
-      // to determine compositing mode.
-      gl->SetIsContextLost(false);
-      return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
-    };
-    SharedGpuContext::SetContextProviderFactoryForTesting(
-        BindRepeating(factory, Unretained(&gl_)));
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    // Return a context anyway, to ensure that's not what the class checks
+    // to determine compositing mode.
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               /*cache=*/nullptr,
+                               SetIsContextLost::kSetToFalse);
   }
 
-  void TearDown() override { SharedGpuContext::Reset(); }
+  void TearDown() override {
+    SharedGpuContext::Reset();
+    test_context_provider_.reset();
+  }
 
-  FakeGLES2Interface gl_;
+ private:
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
 class SharedGpuContextTest : public Test {
