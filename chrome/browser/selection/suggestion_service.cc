@@ -31,6 +31,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -468,7 +470,8 @@ void SuggestionService::RequestSuggestions(
     SuggestionsCallback callback) {
   const auto request_start_time = base::TimeTicks::Now();
   if (tools_.empty() || !remote_model_executor_ ||
-      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
+      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions) ||
+      !IsPageContextEligible()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<std::unique_ptr<Suggestion>>(),
@@ -498,12 +501,24 @@ bool SuggestionService::IsFeatureGroupEnabled(
              : base::FeatureList::IsEnabled(feature);
 }
 
+bool SuggestionService::IsPageContextEligible() const {
+  const tabs::PageContextEligibilityHelper* helper =
+      tabs::PageContextEligibilityHelper::From(&tab_.get());
+  return helper &&
+         helper->IsPageContextEligible() ==
+             optimization_guide::PageContextEligibilityStatus::kEligible;
+}
+
 void SuggestionService::SendServerSuggestionsRequest(
     PageContextWithSelection context,
     SuggestionsCallback callback,
     base::TimeTicks request_start_time,
     proto::SmartSelectionSuggestionsRequest request,
     std::optional<EncodedImage> image) {
+  if (!IsPageContextEligible()) {
+    std::move(callback).Run({}, FeedbackZipBuilder());
+    return;
+  }
   if (image.has_value()) {
     CHECK_EQ(request.areas_of_interest_size(), 1);
     proto::AreaOfInterest& proto_aoi = *request.mutable_areas_of_interest(0);
@@ -557,6 +572,10 @@ void SuggestionService::OnServerSuggestions(
     size_t num_apc_bytes,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!IsPageContextEligible()) {
+    std::move(callback).Run({}, FeedbackZipBuilder());
+    return;
+  }
   std::optional<proto::SmartSelectionSuggestionsResponse> response;
   if (result.response.has_value()) {
     response = optimization_guide::ParsedAnyMetadata<
@@ -586,7 +605,8 @@ void SuggestionService::MaybePrewarmServerRequest() {
   }
   if (tools_.empty() || !remote_model_executor_ ||
       !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions) ||
-      !kSmartSelectionServerPrewarmAuthToken.Get()) {
+      !kSmartSelectionServerPrewarmAuthToken.Get() ||
+      !IsPageContextEligible()) {
     return;
   }
   last_auth_prewarm_time_ = now;

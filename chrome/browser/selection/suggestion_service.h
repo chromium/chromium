@@ -105,6 +105,11 @@ class SuggestionService {
   // `base::FeatureList::IsEnabled` if `google_groups_manager_` is null.
   bool IsFeatureGroupEnabled(const base::Feature& feature) const;
 
+  // Returns whether `tab_` is currently eligible for page context sharing.
+  // Fails closed if `PageContextEligibilityHelper` is missing or its status is
+  // not `kEligible`.
+  bool IsPageContextEligible() const;
+
   // Attaches `image` (if any) to `request` and sends it to MES.
   void SendServerSuggestionsRequest(
       PageContextWithSelection context,

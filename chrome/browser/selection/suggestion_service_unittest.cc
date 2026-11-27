@@ -38,8 +38,10 @@
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -200,6 +202,22 @@ class CustomTestTool : public SuggestionTool {
   const std::vector<std::string> capabilities_;
 };
 
+class FakePageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  explicit FakePageContextEligibilityHelper(
+      tabs::TabInterface& tab,
+      optimization_guide::PageContextEligibilityStatus initial_status =
+          optimization_guide::PageContextEligibilityStatus::kEligible)
+      : tabs::PageContextEligibilityHelper(tab) {
+    SetStatus(initial_status);
+  }
+
+  void SetStatus(optimization_guide::PageContextEligibilityStatus status) {
+    NotifyEligibilityChanged(status);
+  }
+};
+
 class SuggestionServiceUnitTest : public testing::Test {
  public:
   SuggestionServiceUnitTest() {
@@ -207,6 +225,7 @@ class SuggestionServiceUnitTest : public testing::Test {
         variations::prefs::kVariationsGoogleGroups);
     GoogleGroupsManager::RegisterProfilePrefs(source_prefs_.registry());
     google_groups_manager_.emplace(target_prefs_, "Default", source_prefs_);
+    eligibility_helper_.emplace(mock_tab_);
     service_.emplace(&mock_tab_, &mock_model_executor_,
                      &google_groups_manager_.value());
   }
@@ -214,6 +233,9 @@ class SuggestionServiceUnitTest : public testing::Test {
 
  protected:
   tabs::MockTabInterface& mock_tab() { return mock_tab_; }
+  FakePageContextEligibilityHelper& eligibility_helper() {
+    return *eligibility_helper_;
+  }
   optimization_guide::MockRemoteModelExecutor& mock_model_executor() {
     return mock_model_executor_;
   }
@@ -229,6 +251,7 @@ class SuggestionServiceUnitTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable source_prefs_;
   std::optional<GoogleGroupsManager> google_groups_manager_;
   tabs::MockTabInterface mock_tab_;
+  std::optional<FakePageContextEligibilityHelper> eligibility_helper_;
   optimization_guide::MockRemoteModelExecutor mock_model_executor_;
   std::optional<SuggestionService> service_;
 };
@@ -318,6 +341,7 @@ TEST_F(SuggestionServiceUnitTest,
   base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
 
   tabs::MockTabInterface tab_without_groups;
+  FakePageContextEligibilityHelper eligibility_helper(tab_without_groups);
   SuggestionService service_without_groups(&tab_without_groups,
                                            &mock_model_executor(),
                                            /*google_groups_manager=*/nullptr);
@@ -901,6 +925,7 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
         variations::prefs::kVariationsGoogleGroups);
     GoogleGroupsManager::RegisterProfilePrefs(source_prefs_.registry());
     google_groups_manager_.emplace(target_prefs_, "Default", source_prefs_);
+    eligibility_helper_.emplace(mock_tab_);
     service_.emplace(&mock_tab_, &mock_model_executor_,
                      &google_groups_manager_.value());
     service_->RegisterTool(&gemini_tool_);
@@ -909,6 +934,7 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     service_->UnregisterTool(&gemini_tool_);
     service_.reset();
+    eligibility_helper_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -974,6 +1000,7 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
   sync_preferences::TestingPrefServiceSyncable source_prefs_;
   std::optional<GoogleGroupsManager> google_groups_manager_;
   tabs::MockTabInterface mock_tab_;
+  std::optional<FakePageContextEligibilityHelper> eligibility_helper_;
   optimization_guide::MockRemoteModelExecutor mock_model_executor_;
   std::optional<SuggestionService> service_;
   CustomTestTool gemini_tool_{
@@ -1728,6 +1755,182 @@ TEST_F(SuggestionServiceUnitTest,
       .Times(0);
 
   service().MaybePrewarmServerRequest();
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that server suggestions are not requested when the page is ineligible.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsNotRequestedWhenPageNotEligible) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), PrewarmModelExecution).Times(0);
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  PageContextWithSelection context;
+  SuggestionsFuture future;
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
+
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that server suggestions are not requested when page eligibility is
+// unknown.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsNotRequestedWhenPageEligibilityUnknown) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), PrewarmModelExecution).Times(0);
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  PageContextWithSelection context;
+  SuggestionsFuture future;
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
+
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that server suggestions fail closed when no eligibility helper is
+// attached to the tab.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsNotRequestedWhenEligibilityHelperMissing) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  tabs::MockTabInterface tab_without_helper;
+  SuggestionService service_without_helper(&tab_without_helper,
+                                           &mock_model_executor(),
+                                           /*google_groups_manager=*/nullptr);
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service_without_helper.RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), PrewarmModelExecution).Times(0);
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  PageContextWithSelection context;
+  SuggestionsFuture future;
+  service_without_helper.RequestSuggestions(
+      context, /*active_endpoint_id=*/std::nullopt, future.GetCallback());
+
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
+
+  service_without_helper.UnregisterTool(&gemini_tool);
+}
+
+// Tests that prewarming is skipped when the page is ineligible without
+// consuming the prewarm cooldown.
+TEST_F(SuggestionServiceUnitTest,
+       MaybePrewarmServerRequestSkippedWhenPageNotEligible) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), PrewarmModelExecution).Times(0);
+  service().MaybePrewarmServerRequest();
+
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions));
+  service().MaybePrewarmServerRequest();
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that a request aborted by an eligibility transition during screenshot
+// encoding does not call ExecuteModel.
+TEST_F(SuggestionServiceUnitTest,
+       RequestSuggestionsAbortedBeforeExecuteModelWhenIneligibleDuringEncode) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(20, 20);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+
+  SuggestionsFuture future;
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that a server response is discarded without recording latency metrics
+// if the page becomes ineligible while the RPC is in flight.
+TEST_F(SuggestionServiceUnitTest,
+       RequestSuggestionsDiscardsResponseWhenIneligibleDuringRpc) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      mes_callback;
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(MoveArg<3>(&mes_callback));
+
+  base::HistogramTester histogram_tester;
+  PageContextWithSelection context;
+  SuggestionsFuture future;
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback.is_null(); }));
+
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* const suggestion =
+      response.add_suggestions();
+  suggestion->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  suggestion->set_label("Stale Action");
+  std::move(mes_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               base::ok(optimization_guide::AnyWrapProto(response)),
+               /*execution_info=*/nullptr),
+           /*log_entry=*/nullptr);
+
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.EndToEnd", 0);
 
   service().UnregisterTool(&gemini_tool);
 }
