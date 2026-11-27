@@ -378,7 +378,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 
   if (slot_span->CanStoreRawSize()) {
     uint32_t utilized_slot_size =
-        static_cast<uint32_t>(RoundUpToSystemPage(slot_span->GetRawSize()));
+        static_cast<uint32_t>(RoundUpToSystemPage(slot_span->GetRawSize(root)));
     discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && !accounting_only) {
       SlotSpanStart slot_span_start =
@@ -528,7 +528,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         if (num_new_freelist_entries) {
           back->SetNext(entry);
         } else {
-          slot_span->SetFreelistHead(entry);
+          slot_span->SetFreelistHead(entry, root);
         }
         back = entry;
         num_new_freelist_entries++;
@@ -553,7 +553,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
           if (num_new_freelist_entries) {
             back->SetNext(entry);
           } else {
-            slot_span->SetFreelistHead(entry);
+            slot_span->SetFreelistHead(entry, root);
           }
           skipped = false;
         }
@@ -576,7 +576,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
       } else {
         PA_DCHECK(!back);
-        slot_span->SetFreelistHead(nullptr);
+        slot_span->SetFreelistHead(nullptr, root);
       }
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
@@ -705,7 +705,8 @@ static void PartitionDumpSlotSpanStats(PartitionBucketMemoryStats* stats_out,
   }
 
   if (slot_span->CanStoreRawSize()) {
-    stats_out->active_bytes += static_cast<uint32_t>(slot_span->GetRawSize());
+    stats_out->active_bytes +=
+        static_cast<uint32_t>(slot_span->GetRawSize(root));
   } else {
     stats_out->active_bytes +=
         (slot_span->num_allocated_slots * stats_out->bucket_slot_size);
@@ -1355,7 +1356,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
 
   DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size);
-  slot_span->SetRawSize(raw_size);
+  slot_span->SetRawSize(raw_size, this);
   slot_span->bucket->slot_size = new_slot_size;
   IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size, raw_size);
@@ -1441,7 +1442,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
       ::partition_alloc::internal::ScopedGuard guard{
           internal::PartitionRootLock(this)};
       current_usable_size = GetSlotUsableSize(slot_span);
-      slot_span->SetRawSize(new_raw_size);
+      slot_span->SetRawSize(new_raw_size, this);
       new_usable_size = GetSlotUsableSize(slot_span);
     }
 #if PARTITION_ALLOC_HAS_DCHECKED_BRP
@@ -1642,10 +1643,10 @@ PurgeResult PartitionRoot::PurgeMemory(int flags, PurgeState& purge_state) {
 
       // Do it at the end, as the actions above change the status of slot
       // spans (e.g. empty -> decommitted).
-      bucket.MaintainActiveList();
+      bucket.MaintainActiveList(this);
 
       if (sort_active_slot_spans_) {
-        bucket.SortActiveSlotSpans();
+        bucket.SortActiveSlotSpans(this);
       }
       // Checking at the end to make sure we make progress by processing at
       // least one bucket.

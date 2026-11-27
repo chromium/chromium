@@ -190,7 +190,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
             std::has_single_bit(slot_span_alignment));
 
   // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
-  // scoped unlocking.
+  // scoped unlocking on early-return paths.
   PartitionRootLock(root).AssertAcquired();
 
   const bool return_null = ContainsFlags(flags, AllocFlags::kReturnNull);
@@ -232,6 +232,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 
   PartitionDirectMapExtent* map_extent = nullptr;
   PartitionPageMetadata* page_metadata = nullptr;
+  FreelistEntry* next_entry = nullptr;
 
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
@@ -375,8 +376,6 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!page_metadata->slot_span_metadata.num_unprovisioned_slots);
     PA_DCHECK(!page_metadata->slot_span_metadata.in_empty_cache());
 
-    PA_DCHECK(!direct_map_metadata->second_page_metadata
-                   .subsequent_page_metadata.raw_size);
     // Raw size is set later, by the caller.
     direct_map_metadata->second_page_metadata.slot_span_metadata_offset = 1;
 
@@ -391,6 +390,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 
     new (&page_metadata->slot_span_metadata)
         SlotSpanMetadata(&direct_map_metadata->bucket);
+    PA_DCHECK(!page_metadata->slot_span_metadata.GetRawSizeUnsynchronized());
 
     // It is typically possible to map a large range of inaccessible pages, and
     // this is leveraged in multiple places, including the pools. However,
@@ -431,9 +431,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
       return nullptr;
     }
 
-    auto* next_entry = FreelistEntry::EmplaceAndInitNull(slot_start);
-
-    page_metadata->slot_span_metadata.SetFreelistHead(next_entry);
+    next_entry = FreelistEntry::EmplaceAndInitNull(slot_start);
 
     map_extent = &direct_map_metadata->direct_map_extent;
     map_extent->reservation_size = reservation_size;
@@ -442,6 +440,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
   }
 
   PartitionRootLock(root).AssertAcquired();
+  page_metadata->slot_span_metadata.SetFreelistHead(next_entry, root);
 
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list_;
@@ -657,7 +656,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
 
   uintptr_t slot_span_start = adjusted_next_partition_page;
   auto* slot_span = &gap_end_page->slot_span_metadata;
-  InitializeSlotSpan(slot_span);
+  InitializeSlotSpan(slot_span, root);
   // Now that slot span is initialized, it's safe to call FromSlotStart.
   PA_DCHECK(slot_span ==
             SlotSpanMetadata::FromSlotStart(
@@ -876,10 +875,11 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
 }
 
 PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
-    SlotSpanMetadata* slot_span) {
+    SlotSpanMetadata* slot_span,
+    PartitionRoot* root) {
   new (slot_span) SlotSpanMetadata(this);
 
-  slot_span->Reset();
+  slot_span->Reset(root);
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
   auto* page_metadata = reinterpret_cast<PartitionPageMetadata*>(slot_span);
@@ -1008,7 +1008,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
-      slot_span->SetFreelistHead(entry);
+      slot_span->SetFreelistHead(entry, root);
     } else {
       PA_DCHECK(free_list_entries_added);
       prev_entry->SetNext(entry);
@@ -1034,12 +1034,13 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
 #endif
 
   // We had no free slots, and created some (potentially 0) in sorted order.
-  slot_span->set_freelist_sorted();
+  slot_span->set_freelist_sorted(root);
 
   return return_slot;
 }
 
-bool PartitionBucket::SetNewActiveSlotSpan() {
+bool PartitionBucket::SetNewActiveSlotSpan(PartitionRoot* root) {
+  PartitionRootLock(root).AssertAcquired();
   SlotSpanMetadata* slot_span = active_slot_spans_head;
   if (slot_span == SlotSpanMetadata::get_sentinel_slot_span()) {
     return false;
@@ -1149,7 +1150,8 @@ bool PartitionBucket::SetNewActiveSlotSpan() {
   return usable_active_list_head;
 }
 
-void PartitionBucket::MaintainActiveList() {
+void PartitionBucket::MaintainActiveList(PartitionRoot* root) {
+  PartitionRootLock(root).AssertAcquired();
   SlotSpanMetadata* slot_span = active_slot_spans_head;
   if (slot_span == SlotSpanMetadata::get_sentinel_slot_span()) {
     return;
@@ -1198,8 +1200,8 @@ void PartitionBucket::MaintainActiveList() {
   active_slot_spans_head = new_active_slot_spans_head;
 }
 
-void PartitionBucket::SortSmallerSlotSpanFreeLists(
-    [[maybe_unused]] const PartitionRoot* root) {
+void PartitionBucket::SortSmallerSlotSpanFreeLists(PartitionRoot* root) {
+  PartitionRootLock(root).AssertAcquired();
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
     // No need to sort the freelist if it's already sorted. Note that if the
@@ -1245,7 +1247,8 @@ bool CompareSlotSpans(const SlotSpanMetadata* a, const SlotSpanMetadata* b) {
   return criteria_tuple(a) < criteria_tuple(b);
 }
 
-void PartitionBucket::SortActiveSlotSpans() {
+void PartitionBucket::SortActiveSlotSpans(PartitionRoot* root) {
+  PartitionRootLock(root).AssertAcquired();
   // Sorting up to |kMaxSlotSpansToSort| slot spans. This is capped for two
   // reasons:
   // - Limiting execution time
@@ -1355,7 +1358,8 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
     }
     // Memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
-  } else if (!allocate_aligned_slot_span && SetNewActiveSlotSpan()) [[likely]] {
+  } else if (!allocate_aligned_slot_span && SetNewActiveSlotSpan(root))
+      [[likely]] {
     // First, did we find an active slot span in the active list?
     new_slot_span = active_slot_spans_head;
     PA_DCHECK(new_slot_span->is_active());
@@ -1423,7 +1427,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
         }
 
         decommitted_slot_spans_head = new_slot_span->next_slot_span;
-        new_slot_span->Reset();
+        new_slot_span->Reset(root);
         *is_already_zeroed = DecommittedMemoryIsAlwaysZeroed();
       }
       PA_DCHECK(new_slot_span);
@@ -1459,14 +1463,15 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   PA_DCHECK(new_bucket != &root->SentinelBucket());
   new_bucket->active_slot_spans_head = new_slot_span;
   if (new_slot_span->CanStoreRawSize()) {
-    new_slot_span->SetRawSize(raw_size);
+    new_slot_span->SetRawSize(raw_size, root);
     *stored_raw_size = true;
   }
 
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
   if (new_slot_span->get_freelist_head() != nullptr) [[likely]] {
-    FreelistEntry* entry = new_slot_span->PopForAlloc(new_bucket->slot_size);
+    FreelistEntry* entry =
+        new_slot_span->PopForAlloc(new_bucket->slot_size, root);
 
     // We may have set *is_already_zeroed to true above, make sure that the
     // freelist entry doesn't contain data. Either way, it wouldn't be a good
@@ -1488,9 +1493,9 @@ uintptr_t PartitionBucket::AllocNewSuperPageSpanForGwpAsan(
   return AllocNewSuperPageSpan(root, super_page_count, flags);
 }
 
-void PartitionBucket::InitializeSlotSpanForGwpAsan(
-    SlotSpanMetadata* slot_span) {
-  InitializeSlotSpan(slot_span);
+void PartitionBucket::InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span,
+                                                   PartitionRoot* root) {
+  InitializeSlotSpan(slot_span, root);
 }
 
 size_t PartitionBucket::SlotSpanCommittedSize(PartitionRoot* root) const {

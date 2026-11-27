@@ -6,6 +6,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_PAGE_H_
 #define PARTITION_ALLOC_PARTITION_PAGE_H_
 
+#include <atomic>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -13,6 +14,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal_forward.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page_constants.h"
 #include "partition_alloc/partition_superpage_extent_entry.h"
@@ -77,17 +79,20 @@ struct SlotSpanMetadata {
   uint32_t marked_full : 1;
 
  private:
-  const uint32_t can_store_raw_size_ : 1;
   uint16_t freelist_is_sorted_ : 1;
   // If |in_empty_cache_|==1, |empty_cache_index| is undefined and mustn't be
   // used.
   uint16_t in_empty_cache_ : 1;
   // Index of the page in the empty cache. This is in the range
-  // [0, `kMaxEmptySlotSpanRingSize - 1`] so it fits in
+  // [0, `kMaxEmptySlotSpanRingSize - 1`] so it fits in
   // `std::bit_width(kMaxEmptySlotSpanRingSize - 1)`.
   uint16_t empty_cache_index_ : std::bit_width(kMaxEmptySlotSpanRingSize - 1);
-  // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
-  // in PartitionPage which has 2B worth of fields and must fit in 32B.
+  // Stored as a standalone byte rather than a bitfield so unlocked readers of
+  // `CanStoreRawSize()` cannot race with locked mutations of adjacent bitfields
+  // such as `marked_full` (crbug.com/437026570). Together with the 48 bits (6B)
+  // of bitfields above, these fields use 7B, fitting within the 31B union
+  // inside 32B `PartitionPageMetadata`.
+  const bool can_store_raw_size_ = false;
 
  public:
   // Checks if it is feasible to store raw_size.
@@ -164,7 +169,16 @@ struct SlotSpanMetadata {
 
   PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* ToSuperPageExtent() const;
 
-  PA_ALWAYS_INLINE size_t GetRawSize() const;
+  // Returns the raw size under the partition lock. Background walkers that do
+  // not own the live allocation (such as `PartitionPurgeSlotSpan()` and
+  // `PartitionDumpSlotSpanStats()`) must use this overload so `raw_size` stays
+  // stable across their operation.
+  PA_ALWAYS_INLINE size_t GetRawSize(PartitionRoot* root) const
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+  // Returns the raw size with a relaxed atomic load without requiring
+  // `PartitionRootLock()`. Only safe when the caller owns or inspects a
+  // known-live allocation (e.g. `GetUtilizedSlotSize()`).
+  PA_ALWAYS_INLINE size_t GetRawSizeUnsynchronized() const;
 
   PA_ALWAYS_INLINE FreelistEntry* get_freelist_head() const;
 
@@ -207,8 +221,10 @@ struct SlotSpanMetadata {
  public:
   // Note the matching Alloc() functions are in PartitionPage.
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
-      size_t number_of_freed);
-  PA_ALWAYS_INLINE FreelistEntry* PopForAlloc(size_t size);
+      size_t number_of_freed,
+      PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+  PA_ALWAYS_INLINE FreelistEntry* PopForAlloc(size_t size, PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Appends the passed freelist to the slot-span's freelist. Please note that
@@ -220,25 +236,33 @@ struct SlotSpanMetadata {
                                        PartitionRoot* root)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
-  void Decommit(PartitionRoot* root);
-  void DecommitIfPossible(PartitionRoot* root);
+  void Decommit(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
+  void DecommitIfPossible(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   // Sorts the freelist in ascending addresses order.
-  void SortFreelist(const PartitionRoot* root);
+  void SortFreelist(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Inserts the slot span into the empty ring, making space for the new slot
   // span, and potentially shrinking the ring.
-  void RegisterEmpty();
+  void RegisterEmpty(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   // The caller is responsible for ensuring that raw_size can be stored before
-  // calling Set/GetRawSize, and that the PartitionRoot lock is held before
-  // calling SetRawSize.
-  PA_ALWAYS_INLINE void SetRawSize(size_t raw_size);
+  // calling Set/GetRawSize.
+  PA_ALWAYS_INLINE void SetRawSize(size_t raw_size, PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
-  PA_ALWAYS_INLINE void SetFreelistHead(FreelistEntry* new_head);
+  PA_ALWAYS_INLINE void SetFreelistHead(FreelistEntry* new_head,
+                                        PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
-  PA_ALWAYS_INLINE void Reset();
+  PA_ALWAYS_INLINE void Reset(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
-  PA_ALWAYS_INLINE void set_freelist_sorted();
+  PA_ALWAYS_INLINE void set_freelist_sorted(PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 };
 #pragma pack(pop)
 static_assert(sizeof(SlotSpanMetadata) <= kPageMetadataSize,
@@ -247,6 +271,9 @@ static_assert(sizeof(SlotSpanMetadata) <= kPageMetadataSize,
 
 // Metadata of a non-first partition page in a slot span.
 struct SubsequentPageMetadata {
+ private:
+  friend struct SlotSpanMetadata;
+
   // Raw size is the size needed to satisfy the allocation (requested size +
   // extras). If available, it can be used to report better statistics or to
   // bring protective cookie closer to the allocated memory.
@@ -257,8 +284,14 @@ struct SubsequentPageMetadata {
   // - there is more than one partition page in the slot span (the metadata of
   //   the first one is used to store slot information, but the second one is
   //   available for extra information)
-  size_t raw_size;
+  //
+  // Stored atomically because live-slot queries (`GetRawSizeUnsynchronized()`)
+  // read `raw_size` without `PartitionRootLock()`, whereas writers and
+  // background heap walkers access it under `PartitionRootLock()`.
+  std::atomic<size_t> raw_size;
 };
+static_assert(sizeof(SubsequentPageMetadata) == sizeof(size_t));
+static_assert(std::atomic<size_t>::is_always_lock_free);
 
 // Each partition page has metadata associated with it. The metadata of the
 // first page of a slot span, describes that slot span. If a slot span spans
@@ -278,7 +311,7 @@ struct PartitionPageMetadata {
     // - below kPageMetadataSize
     //
     // This makes sure that this is respected no matter the architecture.
-    char optional_padding[kPageMetadataSize - sizeof(uint8_t) - sizeof(bool)];
+    char optional_padding[kPageMetadataSize - sizeof(uint8_t)];
   };
 
   // The first PartitionPage of the slot span holds its metadata. This offset
@@ -302,7 +335,6 @@ struct PartitionPageMetadata {
   //   |!slot_span_metadata_offset && slot_span_metadata->bucket|.
   bool is_valid : 1;
   bool has_valid_span_after_this : 1;
-  uint8_t unused;
 
   PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(
       uintptr_t address,

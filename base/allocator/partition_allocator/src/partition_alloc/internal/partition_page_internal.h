@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_INTERNAL_PARTITION_PAGE_INTERNAL_H_
 #define PARTITION_ALLOC_INTERNAL_PARTITION_PAGE_INTERNAL_H_
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 
@@ -35,23 +36,7 @@
 namespace partition_alloc::internal {
 
 PA_ALWAYS_INLINE bool SlotSpanMetadata::CanStoreRawSize() const {
-#if defined(THREAD_SANITIZER)
-  // `can_store_raw_size_` is a cache of the value in the bucket, stored there
-  // to avoid touching `bucket`. It causes issues with TSAN, since it is part
-  // of a bitfield along with non-constant values.
-  //
-  // The warning is correct, though it is extremely unlikely to cause issues
-  // in practice, as the element in the bitfield is constant, so the only case
-  // where it would cause issue is when a non-atomic read to a variable can
-  // give garbage results, where the bits are neither from the old nor the new
-  // value.
-  //
-  // TODO(crbug.com/437026570): Fix that properly, rather than relying on
-  // effectively a suppression.
-  return bucket->CanStoreRawSize();
-#else
   return can_store_raw_size_;
-#endif
 }
 // Returns the total size of the slots that are currently provisioned.
 PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetProvisionedSize() const {
@@ -87,7 +72,13 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetUtilizedSlotSize() const {
   if (!CanStoreRawSize()) [[likely]] {
     return bucket->slot_size;
   }
-  return GetRawSize();
+  // Called on a known-live allocation (e.g. `GetSlotUsableSize()`, `Free()`, or
+  // BRP bounds checks), where the caller owns or inspects the live slot without
+  // holding `PartitionRootLock()`. Background heap walkers that do not own the
+  // slot (such as `PartitionPurgeSlotSpan()` and
+  // `PartitionDumpSlotSpanStats()`) must call `GetRawSize(root)` under
+  // `PartitionRootLock(root)` instead.
+  return GetRawSizeUnsynchronized();
 }
 
 // This includes padding due to rounding done at allocation; we don't know the
@@ -102,7 +93,10 @@ PA_ALWAYS_INLINE bool SlotSpanMetadata::freelist_is_sorted() const {
   return freelist_is_sorted_;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadata::set_freelist_sorted() {
+PA_ALWAYS_INLINE void SlotSpanMetadata::set_freelist_sorted(PartitionRoot* root)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
   freelist_is_sorted_ = true;
 }
 
@@ -110,7 +104,6 @@ inline constexpr SlotSpanMetadata::SlotSpanMetadata() noexcept
     : num_allocated_slots(0u),
       num_unprovisioned_slots(0u),
       marked_full(0u),
-      can_store_raw_size_(0u),
       freelist_is_sorted_(1u),
       in_empty_cache_(0u),
       empty_cache_index_(0u) {}
@@ -427,30 +420,43 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
   return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr), offset);
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
+PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size,
+                                                   PartitionRoot* root)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
   PA_DCHECK(CanStoreRawSize());
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  DCheckRootLockIsAcquired(ToSuperPageExtent()->root);
-#endif
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
   auto* subsequent_page_metadata =
       GetSubsequentPageMetadata(reinterpret_cast<PartitionPageMetadata*>(this));
-  subsequent_page_metadata->raw_size = raw_size;
+  subsequent_page_metadata->raw_size.store(raw_size, std::memory_order_relaxed);
 }
 
-PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
+PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize(PartitionRoot* root) const
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+  PA_DCHECK(CanStoreRawSize());
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
+  const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
+      reinterpret_cast<const PartitionPageMetadata*>(this));
+  return subsequent_page_metadata->raw_size.load(std::memory_order_relaxed);
+}
+
+PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSizeUnsynchronized() const {
   PA_DCHECK(CanStoreRawSize());
   const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
       reinterpret_cast<const PartitionPageMetadata*>(this));
-  return subsequent_page_metadata->raw_size;
+  return subsequent_page_metadata->raw_size.load(std::memory_order_relaxed);
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
-    FreelistEntry* new_head) {
+PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(FreelistEntry* new_head,
+                                                        PartitionRoot* root)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
   // |this| is in the metadata region, hence isn't MTE-tagged. Untag |new_head|
   // as well.
   uintptr_t new_head_untagged = UntagPtr(new_head);
-  const PartitionRoot* root = ToSuperPageExtent()->root;
   PA_DCHECK(!new_head ||
             (PartitionMetadataPageToSuperPage(reinterpret_cast<uintptr_t>(this),
                                               GetMetadataOffset(root)) &
@@ -462,7 +468,11 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
   freelist_is_sorted_ = false;
 }
 
-PA_ALWAYS_INLINE FreelistEntry* SlotSpanMetadata::PopForAlloc(size_t size) {
+PA_ALWAYS_INLINE FreelistEntry* SlotSpanMetadata::PopForAlloc(
+    size_t size,
+    PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
   // Not using bucket->slot_size directly as the compiler doesn't know that
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
@@ -490,14 +500,14 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
   PA_DCHECK(!freelist_head ||
             entry != freelist_head->GetNext(bucket->slot_size));
   entry->SetNext(freelist_head);
-  SetFreelistHead(entry);
+  SetFreelistHead(entry, root);
   // A best effort double-free check. Works only on empty slot spans.
   PA_CHECK(num_allocated_slots);
   --num_allocated_slots;
   // If the span is marked full, or became empty, take the slow path to update
   // internal state.
   if (marked_full || num_allocated_slots == 0) [[unlikely]] {
-    FreeSlowPath(1);
+    FreeSlowPath(1, root);
   } else {
     // All single-slot allocations must go through the slow path to
     // correctly update the raw size.
@@ -533,13 +543,13 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(FreelistEntry* head,
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   tail->SetNext(freelist_head);
-  SetFreelistHead(head);
+  SetFreelistHead(head, root);
   PA_DCHECK(num_allocated_slots >= number_of_freed);
   num_allocated_slots -= number_of_freed;
   // If the span is marked full, or became empty, take the slow path to update
   // internal state.
   if (marked_full || num_allocated_slots == 0) [[unlikely]] {
-    FreeSlowPath(number_of_freed);
+    FreeSlowPath(number_of_freed, root);
   } else {
     // All single-slot allocations must go through the slow path to
     // correctly update the raw size.
@@ -589,7 +599,10 @@ PA_ALWAYS_INLINE bool SlotSpanMetadata::is_decommitted() const {
   return ret;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
+PA_ALWAYS_INLINE void SlotSpanMetadata::Reset(PartitionRoot* root)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+  DCheckRootLockIsAcquired(root);
+  PA_DCHECK(ToSuperPageExtent()->root == root);
   PA_DCHECK(is_decommitted());
 
   size_t num_slots_per_span = bucket->get_slots_per_span();

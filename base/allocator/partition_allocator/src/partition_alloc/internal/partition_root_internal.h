@@ -410,7 +410,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 
-    void* entry = slot_span->PopForAlloc(bucket->slot_size);
+    void* entry = slot_span->PopForAlloc(bucket->slot_size, this);
 
     PA_DCHECK(SlotStart::Unchecked(entry).Untag() == slot_start);
 

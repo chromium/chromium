@@ -105,7 +105,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
         auto* slot_span_metadata =
             &PA_UNSAFE_TODO(page_metadata[partition_page_idx])
                  .slot_span_metadata;
-        bucket->InitializeSlotSpanForGwpAsan(slot_span_metadata);
+        bucket->InitializeSlotSpanForGwpAsan(slot_span_metadata, root);
         auto slot_span_start = internal::SlotSpanMetadata::ToSlotSpanStart(
             slot_span_metadata, root);
 

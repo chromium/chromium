@@ -4327,7 +4327,10 @@ TEST_P(PartitionAllocTest, ActiveListMaintenance) {
 
   // The active list now is:
   // Partial -> Empty -> Full -> Full -> ... -> Full
-  bucket->MaintainActiveList();
+  {
+    ScopedGuard locker{PartitionRootLock(allocator.root())};
+    bucket->MaintainActiveList(allocator.root());
+  }
 
   // Only one entry in the active list.
   ASSERT_NE(bucket->active_slot_spans_head, SlotSpan::get_sentinel_slot_span());
@@ -4725,6 +4728,166 @@ TEST_P(PartitionAllocTest, InPlaceReallocAndPurgeForSingleSlotNormalBuckets) {
   }
 
   EXPECT_FALSE(mismatch_detected.load(std::memory_order_relaxed));
+}
+
+namespace {
+
+class ConcurrentExternalUsableSizeReaderDelegate
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  ConcurrentExternalUsableSizeReaderDelegate(const void* ptr,
+                                             const SlotSpan* slot_span,
+                                             size_t min_size,
+                                             size_t max_size,
+                                             std::atomic<int>& started_threads,
+                                             std::atomic<bool>& stop,
+                                             std::atomic<bool>& invalid_read)
+      : ptr_(ptr),
+        slot_span_(slot_span),
+        min_size_(min_size),
+        max_size_(max_size),
+        started_threads_(started_threads),
+        stop_(stop),
+        invalid_read_(invalid_read) {}
+
+  void ThreadMain() override {
+    started_threads_.fetch_add(1, std::memory_order_release);
+    while (!stop_.load(std::memory_order_relaxed) &&
+           !invalid_read_.load(std::memory_order_relaxed)) {
+      if (!slot_span_->CanStoreRawSize()) {
+        invalid_read_.store(true, std::memory_order_relaxed);
+        break;
+      }
+      const size_t usable_size = PartitionRoot::GetExternalUsableSize(ptr_);
+      if (usable_size != min_size_ && usable_size != max_size_) {
+        invalid_read_.store(true, std::memory_order_relaxed);
+        break;
+      }
+    }
+  }
+
+ private:
+  const void* const ptr_;
+  const SlotSpan* const slot_span_;
+  const size_t min_size_;
+  const size_t max_size_;
+  std::atomic<int>& started_threads_;
+  std::atomic<bool>& stop_;
+  std::atomic<bool>& invalid_read_;
+};
+
+}  // namespace
+
+TEST_P(PartitionAllocTest, SlotSpanRawSizeThreadSafety) {
+  size_t target_slot_size = 0;
+  size_t min_pages = 0;
+  size_t max_pages = 0;
+  size_t prev_slot_size = 0;
+  for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
+    const auto& bucket = allocator.root()->buckets_[i];
+    if (!bucket.is_valid() || bucket.is_direct_mapped() ||
+        SizeToIndex(bucket.slot_size) != i) {
+      continue;
+    }
+    if (bucket.CanStoreRawSize() && prev_slot_size > 0 &&
+        bucket.slot_size - prev_slot_size >= 2 * SystemPageSize()) {
+      const size_t candidate_min = (prev_slot_size / SystemPageSize()) + 1;
+      const size_t candidate_max = bucket.slot_size / SystemPageSize();
+      if (candidate_min < candidate_max &&
+          SizeToIndex(candidate_min * SystemPageSize()) == i &&
+          SizeToIndex(candidate_max * SystemPageSize()) == i) {
+        target_slot_size = bucket.slot_size;
+        min_pages = candidate_min;
+        max_pages = candidate_max;
+        break;
+      }
+    }
+    prev_slot_size = bucket.slot_size;
+  }
+  if (!target_slot_size && SystemPageSize() >= 65536 &&
+      GetBucketDistribution() == BucketDistribution::kDenser) {
+    GTEST_SKIP();
+  }
+  ASSERT_GT(target_slot_size, 0u);
+
+  const size_t min_size = allocator.root()->AdjustSizeForExtrasSubtract(
+      min_pages * SystemPageSize());
+  const size_t max_size = allocator.root()->AdjustSizeForExtrasSubtract(
+      max_pages * SystemPageSize());
+
+  ScopedReallocatableBuffer alloc(allocator.root(), min_size);
+  ASSERT_TRUE(alloc.get());
+  const SlotSpan* slot_span = SlotSpan::FromSlotStart(
+      SlotStart::Unchecked(alloc.get()).Untag(), allocator.root());
+  ASSERT_TRUE(slot_span->CanStoreRawSize());
+
+  {
+    ScopedGuard locker{PartitionRootLock(allocator.root())};
+    EXPECT_EQ(allocator.root()->AdjustSizeForExtrasAdd(min_size),
+              slot_span->GetRawSize(allocator.root()));
+    EXPECT_EQ(slot_span->GetRawSize(allocator.root()),
+              slot_span->GetRawSizeUnsynchronized());
+  }
+
+  if (UseThreadIsolatedPool()) {
+    return;
+  }
+
+  // Concurrent unlocked readers query `CanStoreRawSize()` and
+  // `GetExternalUsableSize()` while the owning thread toggles in-place
+  // `Realloc()` (`SetRawSize()`) and `PurgeMemory()` (`MaintainActiveList()`,
+  // which flips `marked_full` on single-slot spans).
+  std::atomic<int> started_threads{0};
+  std::atomic<bool> stop{false};
+  std::atomic<bool> invalid_read{false};
+
+  constexpr size_t kNumReaders = 2;
+  std::vector<std::unique_ptr<ConcurrentExternalUsableSizeReaderDelegate>>
+      delegates;
+  delegates.reserve(kNumReaders);
+  for (size_t i = 0; i < kNumReaders; ++i) {
+    delegates.push_back(
+        std::make_unique<ConcurrentExternalUsableSizeReaderDelegate>(
+            alloc.get(), slot_span, min_size, max_size, started_threads, stop,
+            invalid_read));
+  }
+
+  std::array<base::PlatformThreadHandle, kNumReaders> handles{};
+  size_t created_threads = 0;
+  for (size_t i = 0; i < kNumReaders; ++i) {
+    if (!base::PlatformThreadForTesting::Create(0, delegates[i].get(),
+                                                &handles[i])) {
+      break;
+    }
+    ++created_threads;
+  }
+  if (created_threads < kNumReaders) {
+    stop.store(true, std::memory_order_relaxed);
+    for (size_t i = 0; i < created_threads; ++i) {
+      base::PlatformThreadForTesting::Join(handles[i]);
+    }
+    FAIL() << "Failed to create reader threads";
+  }
+  while (started_threads.load(std::memory_order_acquire) <
+         static_cast<int>(kNumReaders)) {
+    base::PlatformThreadForTesting::YieldCurrentThread();
+  }
+
+  unsigned char* const initial_ptr = alloc.get();
+  for (size_t i = 0; i < 500 && !invalid_read.load(std::memory_order_relaxed);
+       ++i) {
+    const size_t target_size = (i % 2 == 0) ? max_size : min_size;
+    ASSERT_EQ(UntagPtr(initial_ptr), UntagPtr(alloc.Realloc(target_size)));
+    if (i % 16 == 0) {
+      allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+    }
+  }
+
+  stop.store(true, std::memory_order_relaxed);
+  for (auto& handle : handles) {
+    base::PlatformThreadForTesting::Join(handle);
+  }
+  EXPECT_FALSE(invalid_read.load(std::memory_order_relaxed));
 }
 
 TEST_P(PartitionAllocTest, ZeroFill) {
@@ -7611,7 +7774,7 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
 }
 
 TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
-  auto run_test = [](size_t count) {
+  auto run_test = [this](size_t count) {
     PartitionBucket bucket;
     bucket.Init(16);
     bucket.active_slot_spans_head = nullptr;
@@ -7633,7 +7796,10 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
       bucket.active_slot_spans_head = &slot_span;
     }
 
-    bucket.SortActiveSlotSpans();
+    {
+      ScopedGuard locker{PartitionRootLock(allocator.root())};
+      bucket.SortActiveSlotSpans(allocator.root());
+    }
 
     std::set<const SlotSpan*> seen_slot_spans;
     std::vector<const SlotSpan*> sorted_slot_spans;
