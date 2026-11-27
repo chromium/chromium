@@ -14,7 +14,7 @@ import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 /**
  * Test rule which installs a test OsAdditionalSecurityProvider. The provider needs to be installed
  * prior to the Profile being created. The logic is a test rule so that it can be used in
- * combination with test rules which launch an activity such as {@link BlankCTATabInitialStateRule}.
+ * combination with test rules which launch an activity such as AutoResetCtaTransitTestRule.
  */
 public class AdvancedProtectionTestRule extends ExternalResource {
 

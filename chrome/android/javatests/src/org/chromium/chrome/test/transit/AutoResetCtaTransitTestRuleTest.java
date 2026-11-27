@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.batch;
+package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -25,9 +25,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -43,8 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
@@ -54,19 +50,19 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/** Tests for {@link BlankCTATabInitialStateRule}. */
+/** Tests for {@link AutoResetCtaTransitTestRule}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @NullMarked
-public class BlankCTATabInitialStateRuleTest {
+public class AutoResetCtaTransitTestRuleTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Test
     @MediumTest
-    public void testResetTabStateFast_dismissesLingeringModalDialog() throws Throwable {
+    public void testResetTabStateFast_dismissesLingeringModalDialog() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs and leave NewTabGroupDialogFacility open as if a prior batched test failed
@@ -84,9 +80,9 @@ public class BlankCTATabInitialStateRuleTest {
                 editor.openAppMenuWithEditor().groupTabs();
         dialog.pickColor(TabGroupColorId.BLUE);
 
-        // Run the batched initial-state rule between tests and verify the next test can start on a
-        // blank page without being blocked by the lingering modal dialog.
-        runInitialStateRule();
+        // Run the between-test state reset and verify the next test can start on a blank page
+        // without being blocked by the lingering modal dialog.
+        mCtaTestRule.ensureActivityInInitialState();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -100,7 +96,7 @@ public class BlankCTATabInitialStateRuleTest {
 
     @Test
     @MediumTest
-    public void testResetState_restoresWindowFocus() throws Throwable {
+    public void testResetState_restoresWindowFocus() {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
@@ -125,7 +121,7 @@ public class BlankCTATabInitialStateRuleTest {
                                         () -> ApplicationStatus.getStateForActivity(cta)));
             }
 
-            runInitialStateRule();
+            mCtaTestRule.ensureActivityInInitialState();
 
             assertTrue(
                     "Chrome activity should have window focus after batched state reset",
@@ -181,7 +177,7 @@ public class BlankCTATabInitialStateRuleTest {
 
     @Test
     @MediumTest
-    public void testResetState_dismissesLingeringPopups() throws Throwable {
+    public void testResetState_dismissesLingeringPopups() {
         // Leave an AnchoredPopupWindow menu open across a batched state reset.
         View actionMenuView =
                 mCtaTestRule
@@ -189,7 +185,7 @@ public class BlankCTATabInitialStateRuleTest {
                         .openTabSwitcherActionMenu()
                         .appMenuListElement
                         .value();
-        runInitialStateRule();
+        mCtaTestRule.ensureActivityInInitialState();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertFalse(
@@ -200,7 +196,7 @@ public class BlankCTATabInitialStateRuleTest {
         // transitions work cleanly.
         var appMenu = mCtaTestRule.startOnBlankPage().openRegularTabAppMenu();
         View appMenuView = appMenu.menuListElement.value();
-        runInitialStateRule();
+        mCtaTestRule.ensureActivityInInitialState();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(
@@ -211,19 +207,5 @@ public class BlankCTATabInitialStateRuleTest {
                             appMenuView.isAttachedToWindow());
                 });
         mCtaTestRule.startOnBlankPage().openRegularTabSwitcher();
-    }
-
-    private void runInitialStateRule() throws Throwable {
-        BlankCTATabInitialStateRule initialStateRule =
-                new BlankCTATabInitialStateRule(
-                        mCtaTestRule.getActivityTestRule(), /* clearAllTabState= */ false);
-        initialStateRule
-                .apply(
-                        new Statement() {
-                            @Override
-                            public void evaluate() {}
-                        },
-                        Description.EMPTY)
-                .evaluate();
     }
 }

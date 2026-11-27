@@ -43,7 +43,7 @@ Activity-restarted Public Transit tests use the `FreshCtaTransitRule`.
 A batched test is **Activity-reused** if either:
   * The `ActivityTestRule` is a static `@ClassRule`
   * `setFinishActivity(false)` is called on the non-static `ActivityTestRule`.
-    `BlankCTATabInitialStateRule` does this.
+    `AutoResetCtaTransitTestRule` does this.
 
 In either batched test type, `@ClassRule`s are applied only once per batch,
 while `@Rule`s are applied once per test case. `@BeforeClass` and `@AfterClass`
@@ -124,7 +124,7 @@ batch instead of once per test suite. To put multiple test suites into the same
 batch, you will have to use a shared custom batch name
 ([example](https://chromium-review.googlesource.com/c/chromium/src/+/2307650)).
 When batching across suites you’ll want to use something like
-[BlankCTATabInitialStateRule](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/android/javatests/src/org/chromium/chrome/test/batch/BlankCTATabInitialStateRule.java?q=BlankCTATabInitialStateRule&ss=chromium&originalUrl=https:%2F%2Fcs.chromium.org%2F)
+[AutoResetCtaTransitTestRule](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/android/javatests/src/org/chromium/chrome/test/transit/AutoResetCtaTransitTestRule.java)
 to persist static state (like the Activity) between test suites and perform any
 necessary state cleanup between tests.
 

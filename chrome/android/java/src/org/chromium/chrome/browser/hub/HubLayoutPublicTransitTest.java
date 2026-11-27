@@ -117,7 +117,7 @@ public class HubLayoutPublicTransitTest {
         RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
         incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
 
-        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+        // Go back to a PageStation for AutoResetCtaTransitTestRule to reset state.
         incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
     }
 
@@ -143,7 +143,7 @@ public class HubLayoutPublicTransitTest {
                         .selectTabGroupsPane()
                         .createNewTabGroup()
                         .pressDoneAsPartOfFlow()
-                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        // Go back to a PageStation for AutoResetCtaTransitTestRule to reset state.
                         .openNewRegularTab();
         assertFinalDestination(finalStation);
     }
@@ -159,7 +159,7 @@ public class HubLayoutPublicTransitTest {
                         .openAppMenu()
                         .openNewTabGroup()
                         .pressDoneAsPartOfFlow()
-                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        // Go back to a PageStation for AutoResetCtaTransitTestRule to reset state.
                         .openNewRegularTab();
 
         assertFinalDestination(finalPage);
@@ -180,7 +180,7 @@ public class HubLayoutPublicTransitTest {
                         .pressDoneAsPartOfFlow()
                         .openNewIncognitoTab();
 
-        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+        // Go back to a PageStation for AutoResetCtaTransitTestRule to reset state.
         // Reset not needed for incognito window.
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RegularNewTabPageStation secondPage =
