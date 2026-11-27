@@ -5749,6 +5749,13 @@
       status: "stable",
     },
     {
+      // Prevents PositionLeadingFloats from positioning floats inside ruby
+      // columns, and verifies leading float item indices match in
+      // LineBreaker::HandleFloat. https://crbug.com/589800513
+      name: "RubySkipLeadingFloats",
+      status: "stable",
+    },
+    {
       // Places ruby annotations clear of the base's underline or overline.
       // https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration
       name: "RubyTextDecorationSpacing",
