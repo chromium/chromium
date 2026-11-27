@@ -2224,22 +2224,9 @@ namespace {
 
 // Returns the decoration of the text-decoration properties of `style`.
 AppliedTextDecoration TextDecorationOf(const ComputedStyle& style) {
-  const Longhand& color_property = GetCSSPropertyTextDecorationColor();
-  Color unvisited_color = color_property.ColorIncludingFallback(false, style);
-  Color visited_color = unvisited_color;
-  if (style.InsideLink() != EInsideLink::kNotInsideLink) {
-    const CSSProperty* visited_property = color_property.GetVisitedProperty();
-    DCHECK(visited_property);
-    Color raw_visited =
-        To<Longhand>(*visited_property).ColorIncludingFallback(true, style);
-    visited_color = Color::FromColorSpace(
-        raw_visited.GetColorSpace(), raw_visited.Param0(), raw_visited.Param1(),
-        raw_visited.Param2(), unvisited_color.Alpha());
-  }
   return AppliedTextDecoration(
       style.GetTextDecorationLine(), style.TextDecorationStyle(),
-      unvisited_color, visited_color,
-      style.InsideLink() == EInsideLink::kInsideVisitedLink,
+      style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
       style.GetTextDecorationThickness(), style.TextUnderlineOffset(),
       style.GetTextDecorationInset(), style.BoxDecorationBreak());
 }
@@ -2266,19 +2253,8 @@ bool ComputedStyle::PrecomputedHoverChangesTextDecoration(
     return true;
   }
   const Longhand& color = GetCSSPropertyTextDecorationColor();
-  if (color.ColorIncludingFallback(false, *this) !=
-      color.ColorIncludingFallback(false, hover_style)) {
-    return true;
-  }
-  if (InsideLink() != EInsideLink::kNotInsideLink) {
-    const Longhand& visited_color =
-        To<Longhand>(*color.GetVisitedProperty());
-    if (visited_color.ColorIncludingFallback(true, *this) !=
-        visited_color.ColorIncludingFallback(true, hover_style)) {
-      return true;
-    }
-  }
-  return false;
+  return VisitedDependentColor(color) !=
+         hover_style.VisitedDependentColor(color);
 }
 
 void ComputedStyle::CachePrecomputedHoverTextDecoration(
