@@ -1282,6 +1282,13 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
+    # Exclude checked-in paths ("../*") to detect generated proguard_configs
+    # under root_build_dir.
+    _has_generated_proguard_configs =
+        _other_deps != [] && defined(invoker.proguard_configs) &&
+        filter_exclude(rebase_path(invoker.proguard_configs, root_build_dir),
+                       [ "../*" ]) != []
+
     group(target_name) {
       forward_variables_from(invoker,
                              "*",
@@ -1297,6 +1304,9 @@ if (!is_robolectric && enable_java_templates) {
 
         # Consumed by jni_zero to skip resource and non-Java deps.
         java_walk_keys = _lib_walk_deps
+        if (_has_generated_proguard_configs) {
+          proguard_config_deps = _other_deps
+        }
         if (_is_resource_group) {
           # Consumed by generate_r_java() and resource, manifest, lint,
           # asset, and size-info walks when this resource-named java_group()
@@ -1980,7 +1990,19 @@ if (!is_robolectric && enable_java_templates) {
       build_config = _build_config
       output = invoker.output
       if (defined(proguard_enabled) && proguard_enabled) {
-        deps += _deps
+        foreach(_dep, _deps) {
+          _dep_label = get_label_info(_dep, "label_no_toolchain")
+          if (filter_include([ _dep_label ], java_resource_patterns) == [] &&
+              filter_include([ _dep_label ], java_library_patterns) != []) {
+            deps += [ "${_dep_label}__host" ]
+          } else {
+            deps += [ _dep ]
+          }
+        }
+
+        # Walk deps to depend only on generated proguard configs and SDK API
+        # databases (avoiding library __dex and asset deps).
+        proguard_walk_deps = _deps
 
         # The individual dependencies would have caught real missing deps in
         # their respective dex steps. False positives that were suppressed at
@@ -2057,7 +2079,50 @@ if (!is_robolectric && enable_java_templates) {
       build_config = _build_config
     }
 
-    _deps += [ ":$_build_config_target_name" ]
+    _action_deps = [ ":$_build_config_target_name" ]
+    _lib_walk_deps = []
+    _res_walk_deps = []
+    foreach(_dep, _deps) {
+      _dep_label = get_label_info(_dep, "label_no_toolchain")
+      if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+        _res_walk_deps += [ _dep ]
+        _lib_walk_deps += [ _dep ]
+      } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
+        _action_deps += [ "${_dep_label}__host" ]
+        _lib_walk_deps += [ _dep ]
+        _res_walk_deps += [ "${_dep_label}__assetres" ]
+      } else {
+        _action_deps += [ _dep ]
+      }
+    }
+
+    if (_lib_walk_deps != []) {
+      # Walk resource deps without depending on full __assetres groups so
+      # dist_aar only waits on prepare_resources() actions.
+      _res_deps_target = "${target_name}__res_deps"
+
+      walk_deps_group(_res_deps_target) {
+        walk_deps = _res_walk_deps
+        dep_keys = [ "android_resources_rtxt_deps" ]
+        walk_keys = [ "android_assetres_walk_keys" ]
+      }
+
+      # Walk java targets without depending on them so dist_aar only waits on
+      # generated proguard config deps (e.g. unpacked AAR proguard.txt).
+      _proguard_deps_target = "${target_name}__proguard_deps"
+
+      walk_deps_group(_proguard_deps_target) {
+        walk_deps = _lib_walk_deps
+        dep_keys = [ "proguard_config_deps" ]
+        walk_keys = [ "android_java_walk_keys" ]
+      }
+      _action_deps += [
+        ":$_proguard_deps_target",
+        ":$_res_deps_target",
+      ]
+    } else {
+      not_needed([ "_res_walk_deps" ])
+    }
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
@@ -2069,7 +2134,7 @@ if (!is_robolectric && enable_java_templates) {
                                "assert_no_deps",
                              ])
       depfile = "$target_gen_dir/$target_name.d"
-      deps = _deps
+      deps = _action_deps
       python_binary = "//build/android:dist_aar"
 
       inputs = [
@@ -2288,15 +2353,8 @@ if (!is_robolectric && enable_java_templates) {
   template("android_system_java_prebuilt") {
     _generate_api_database = defined(invoker.api_versions_xml_path)
 
-    _deps = []
-    if (defined(invoker.deps)) {
-      _deps += invoker.deps
-    }
-
     if (_generate_api_database) {
-      # String replace to prevent dep from being treated as a java library.
-      _api_database_target =
-          string_replace(target_name, "_java", "_J") + "__api_database"
+      _api_database_target = "${target_name}__api_database"
       _api_database_path = "$target_gen_dir/$target_name.api_database.ser"
       _r8_path = "//third_party/r8/cipd/lib/r8.jar"
 
@@ -2321,22 +2379,19 @@ if (!is_robolectric && enable_java_templates) {
           rebase_path(_api_database_path, root_build_dir),
         ]
       }
-      _deps += [ ":$_api_database_target" ]
     }
 
     java_library_impl(target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             TESTONLY_AND_VISIBILITY + [
-                                   "api_versions_xml_path",
-                                   "deps",
-                                 ])
+      forward_variables_from(
+          invoker,
+          "*",
+          TESTONLY_AND_VISIBILITY + [ "api_versions_xml_path" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      deps = _deps
       supports_android = true
       type = "system_java_library"
       if (_generate_api_database) {
         api_database_path = _api_database_path
+        api_database_dep = ":$_api_database_target"
       }
     }
   }
@@ -2752,7 +2807,14 @@ if (!is_robolectric && enable_java_templates) {
       _java_host_deps += [ "${invoker.apk_under_test}__java__host" ]
     }
 
-    _final_deps = [ ":$_java_target_name" ]
+    if (_proguard_enabled && !is_cronet_for_aosp_build) {
+      # _java_host_deps is already in group(target_name)'s deps below.
+      _final_deps = []
+    } else {
+      # Keep top-level __java for non-proguard builds and for gn2bp, which
+      # unwraps resource groups via __apk__java / __test_apk__java deps.
+      _final_deps = [ ":$_java_target_name" ]
+    }
 
     _compile_resources_target = "${_template_name}__compile_resources"
     _compile_resources_rtxt_out =
@@ -3119,10 +3181,14 @@ if (!is_robolectric && enable_java_templates) {
           deps = [ ":$_build_config_target" ]
           if (_proguard_enabled) {
             forward_variables_from(invoker, [ "app_as_shared_lib" ])
-            deps += [
-              ":$_compile_resources_target",
-              ":$_java_target_name",
-            ]
+            deps += [ ":$_compile_resources_target" ] + _java_host_deps
+
+            # Walk __java to depend only on generated proguard configs and SDK
+            # API databases.
+            proguard_walk_deps = [ ":$_java_target_name" ]
+            if (defined(invoker.apk_under_test)) {
+              proguard_walk_deps += [ "${invoker.apk_under_test}__java" ]
+            }
             proguard_mapping_path = _proguard_mapping_path
             resources_input = _proto_resources_path
             resources_output = _shrunk_proto_resources_path
@@ -3241,6 +3307,13 @@ if (!is_robolectric && enable_java_templates) {
                        ":$_compile_resources_target",
                        ":$_merge_manifest_target",
                      ] + _all_native_libs_deps
+      if (_proguard_enabled && !is_cronet_for_aosp_build) {
+        # Preserve asset, non-Java loadable_modules, and sanitizer deps that
+        # were previously pulled in via :$_java_target_name without pulling in
+        # unused library __dex targets.
+        _final_deps += [ ":${_java_target_name}__assetres" ] + _non_java_deps +
+                       _sanitizer_deps
+      }
       if (defined(invoker.asset_deps)) {
         _final_deps += invoker.asset_deps
       }
@@ -4990,7 +5063,7 @@ if (!is_robolectric && enable_java_templates) {
             "--output-jars",
             "@FileArg($_rebased_build_config:trace_event_rewritten_classpath)",
           ]
-          deps = [ _build_config_target ] + _module_java_targets
+          deps = [ _build_config_target ] + _module_java_host_targets
         }
       }
 
@@ -5006,6 +5079,7 @@ if (!is_robolectric && enable_java_templates) {
                                  "repackage_classes",
                                ])
         if (defined(expected_proguard_config)) {
+          build_config_dep = _build_config_target
           top_target_name = _target_name
         }
         min_sdk_version = _min_sdk_version
@@ -5014,7 +5088,11 @@ if (!is_robolectric && enable_java_templates) {
         proguard_mapping_path = _proguard_mapping_path
         build_config = _build_config
 
-        deps = _module_java_targets + [ _build_config_target ]
+        deps = _module_java_host_targets + [ _build_config_target ]
+
+        # Walk module __java targets to depend only on generated proguard
+        # configs, embedded-config jars, and SDK API databases.
+        proguard_walk_deps = _module_java_targets
         if (_add_view_trace_events) {
           deps += [ ":${_rewritten_jar_target_name}" ]
         }

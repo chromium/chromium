@@ -114,12 +114,9 @@ def _ParseOptions():
     args = build_utils.ExpandFileArgs(sys.argv[1:])
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
-    parser.add_argument(
-        '--r8-path', required=True, help='Path to the R8.jar to use.'
-    )
+    parser.add_argument('--r8-path', help='Path to the R8.jar to use.')
     parser.add_argument(
         '--custom-r8-path',
-        required=True,
         help='Path to our custom R8 wrapper to use.',
     )
     parser.add_argument(
@@ -143,7 +140,6 @@ def _ParseOptions():
     )
     parser.add_argument(
         '--mapping-output',
-        required=True,
         help='Path for ProGuard to output mapping file to.',
     )
     parser.add_argument(
@@ -305,10 +301,28 @@ def _ParseOptions():
     diff_utils.AddCommandLineFlags(parser)
     options = parser.parse_args(args)
 
-    if options.feature_names and options.output_path:
-        parser.error('Feature splits cannot specify an output in GN.')
-    elif not options.feature_names and not options.output_path:
-        parser.error('Output path required when feature splits aren\'t used')
+    if options.only_verify_expectations:
+        if not options.expected_file:
+            parser.error('--only-verify-expectations requires --expected-file.')
+        if options.depfile and not options.actual_file:
+            parser.error(
+                '--only-verify-expectations with --depfile requires '
+                '--actual-file.'
+            )
+    else:
+        for flag, val in (
+            ('--r8-path', options.r8_path),
+            ('--custom-r8-path', options.custom_r8_path),
+            ('--mapping-output', options.mapping_output),
+        ):
+            if not val:
+                parser.error(f'{flag} is required.')
+        if options.feature_names and options.output_path:
+            parser.error('Feature splits cannot specify an output in GN.')
+        elif not options.feature_names and not options.output_path:
+            parser.error(
+                'Output path required when feature splits aren\'t used'
+            )
 
     if bool(options.keep_rules_targets_regex) != bool(
         options.keep_rules_output_path
@@ -729,10 +743,6 @@ def _CombineConfigs(configs, dynamic_config_data, embedded_configs):
 
     ret = []
     for config in sorted(configs, key=sort_key):
-        # Exclude some confs from expectations.
-        if any(entry in config for entry in _BLOCKLISTED_EXPECTATION_PATHS):
-            continue
-
         with open(config, encoding='utf-8') as config_file:
             contents = config_file.read().rstrip()
 
@@ -845,32 +855,34 @@ def _Run(options):
     logging.debug('Preparing configs')
     dynamic_config_data = _CreateDynamicConfig(options)
 
-    logging.debug('Looking for embedded configs')
-    libraries = options.sdk_jars + options.sdk_extension_jars
-
-    embedded_configs = {}
-    for jar_path in options.input_paths:
-        _ExtractEmbeddedConfigs(jar_path, embedded_configs)
-
-    # ProGuard configs that are derived from flags.
-    merged_configs = _CombineConfigs(
-        options.proguard_configs,
-        dynamic_config_data,
-        embedded_configs,
-    )
-
-    depfile_inputs = options.proguard_configs + options.input_paths + libraries
-    depfile_inputs += options.sdk_api_databases
-    if options.feature_resources:
-        for proto_in, _ in options.feature_resources.values():
-            depfile_inputs.append(proto_in)
     if options.expected_file:
+        logging.debug('Looking for embedded configs')
+        embedded_configs = {}
+        for jar_path in options.input_paths:
+            _ExtractEmbeddedConfigs(jar_path, embedded_configs)
+
+        expectation_configs = [
+            c
+            for c in options.proguard_configs
+            if not any(e in c for e in _BLOCKLISTED_EXPECTATION_PATHS)
+        ]
+
+        merged_configs = _CombineConfigs(
+            expectation_configs,
+            dynamic_config_data,
+            embedded_configs,
+        )
         diff_utils.CheckExpectations(merged_configs, options)
         if options.only_verify_expectations:
-            action_helpers.write_depfile(
-                options.depfile, options.actual_file, inputs=depfile_inputs
-            )
+            if options.depfile:
+                action_helpers.write_depfile(
+                    options.depfile,
+                    options.actual_file,
+                    inputs=expectation_configs + options.input_paths,
+                )
             return
+
+    libraries = options.sdk_jars + options.sdk_extension_jars
 
     if options.keep_rules_output_path:
         _OutputKeepRules(
@@ -893,10 +905,18 @@ def _Run(options):
     for output in options.extra_mapping_output_paths:
         shutil.copy(options.mapping_output, output)
 
-    if options.apply_mapping:
-        depfile_inputs.append(options.apply_mapping)
-
     if options.depfile:
+        depfile_inputs = (
+            options.proguard_configs
+            + options.input_paths
+            + libraries
+            + options.sdk_api_databases
+        )
+        if options.feature_resources:
+            for proto_in, _ in options.feature_resources.values():
+                depfile_inputs.append(proto_in)
+        if options.apply_mapping:
+            depfile_inputs.append(options.apply_mapping)
         first_gn_output = options.output_path or options.mapping_output
         action_helpers.write_depfile(
             options.depfile, first_gn_output, inputs=depfile_inputs

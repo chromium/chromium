@@ -1540,7 +1540,21 @@ if (enable_java_templates) {
   template("proguard") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _python_binary = "//build/android:proguard"
-    _deps = invoker.deps
+
+    # Walk java targets without depending on them and depend only on targets
+    # producing generated proguard configs (e.g. unpacked AAR proguard.txt)
+    # and SDK API databases, avoiding library __dex and asset deps.
+    _proguard_deps_target = "${target_name}__proguard_deps"
+
+    walk_deps_group(_proguard_deps_target) {
+      walk_deps = invoker.proguard_walk_deps
+      dep_keys = [
+        "proguard_config_deps",
+        "sdk_api_database_deps",
+      ]
+      walk_keys = [ "android_java_walk_keys" ]
+    }
+    _deps = invoker.deps + [ ":$_proguard_deps_target" ]
 
     _inputs = java_paths_for_inputs + [
                 invoker.build_config,
@@ -1585,53 +1599,60 @@ if (enable_java_templates) {
     _source_file_template =
         "chromium-$_mapping_basename-$android_channel-$_version_code"
 
-    _args = [
-      "--min-api=${invoker.min_sdk_version}",
-      "--mapping-output",
-      rebase_path(_mapping_path, root_build_dir),
-      "--keep-radius-output",
-      rebase_path(_keep_radius_path, root_build_dir),
-      "--sdk-jars",
-      "@FileArg($_rebased_build_config:sdk_jars)",
-      "--sdk-api-databases",
-      "@FileArg($_rebased_build_config:sdk_api_databases)",
-      "--sdk-extension-jars",
-      "@FileArg($_rebased_build_config:proguard_classpath_jars)",
-      "--r8-path",
-      rebase_path(_r8_path, root_build_dir),
-      "--custom-r8-path",
-      rebase_path(_custom_r8_path, root_build_dir),
+    # Config inputs and flags shared between R8 optimization and the
+    # expectations verification target.
+    _config_inputs = []
+    _config_args = [
       "--package-name=$_package_name",
-      "--source-file",
-      _source_file_template,
       "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
     ]
-    if (treat_warnings_as_errors) {
-      _args += [ "--warnings-as-errors" ]
-    }
-
     if ((!defined(invoker.proguard_enable_obfuscation) ||
          invoker.proguard_enable_obfuscation) && enable_proguard_obfuscation) {
-      _args += [ "--enable-obfuscation" ]
+      _config_args += [ "--enable-obfuscation" ]
     }
     if (defined(invoker.repackage_classes)) {
-      _args += [ "--repackage-classes=" + invoker.repackage_classes ]
+      _config_args += [ "--repackage-classes=" + invoker.repackage_classes ]
     }
     if (defined(invoker.app_as_shared_lib) && invoker.app_as_shared_lib) {
-      _args += [ "--app-as-shared-lib" ]
+      _config_args += [ "--app-as-shared-lib" ]
     }
     if (defined(invoker.apply_mapping)) {
+      # Only the main R8 action reads the mapping file; _expectations_target
+      # only formats the path into -applymapping without opening it.
       _inputs += [ invoker.apply_mapping ]
       _rebased_apply_mapping_path =
           rebase_path(invoker.apply_mapping, root_build_dir)
-      args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
+      _config_args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
     }
-
     if (defined(invoker.proguard_configs)) {
-      _inputs += invoker.proguard_configs
+      _config_inputs += invoker.proguard_configs
       _rebased_proguard_configs =
           rebase_path(invoker.proguard_configs, root_build_dir)
-      _args += [ "--proguard-configs=$_rebased_proguard_configs" ]
+      _config_args += [ "--proguard-configs=$_rebased_proguard_configs" ]
+    }
+
+    _inputs += _config_inputs
+    _args = [
+              "--min-api=${invoker.min_sdk_version}",
+              "--mapping-output",
+              rebase_path(_mapping_path, root_build_dir),
+              "--keep-radius-output",
+              rebase_path(_keep_radius_path, root_build_dir),
+              "--sdk-jars",
+              "@FileArg($_rebased_build_config:sdk_jars)",
+              "--sdk-api-databases",
+              "@FileArg($_rebased_build_config:sdk_api_databases)",
+              "--sdk-extension-jars",
+              "@FileArg($_rebased_build_config:proguard_classpath_jars)",
+              "--r8-path",
+              rebase_path(_r8_path, root_build_dir),
+              "--custom-r8-path",
+              rebase_path(_custom_r8_path, root_build_dir),
+              "--source-file",
+              _source_file_template,
+            ] + _config_args
+    if (treat_warnings_as_errors) {
+      _args += [ "--warnings-as-errors" ]
     }
 
     if (defined(invoker.resources_input)) {
@@ -1704,16 +1725,9 @@ if (enable_java_templates) {
         _deps += [ "${_feature_module.module_target}__compile_resources" ]
         _deps += [ _feature_module.build_config_target ]
       }
-      _output_args = []
     } else {
       _args += [
         "--input-paths=@FileArg($_rebased_build_config:processed_classpath)",
-      ]
-
-      # We don't directly set the output arg on the _args variable since it is
-      # shared with the expectation target that uses its own stamp file and
-      # does not take an --output-path.
-      _output_args = [
         "--output-path",
         rebase_path(invoker.output, root_build_dir),
       ]
@@ -1751,17 +1765,37 @@ if (enable_java_templates) {
       _expectations_target =
           "${invoker.top_target_name}_validate_proguard_config"
 
+      # Collect only jars that can carry embedded proguard configs (prebuilts
+      # and jars with additional_jar_files) plus generated proguard_configs
+      # (AAR proguard.txt), so expectation checks do not wait on Java/native
+      # compilation or resource linking.
+      _expectations_jars_target =
+          "${invoker.top_target_name}__proguard_expected_jars"
+      _expectations_jars_file =
+          "$target_gen_dir/${_expectations_jars_target}.json"
+
+      generated_file(_expectations_jars_target) {
+        visibility = []
+        visibility = [ ":*" ]
+        walk_deps = invoker.proguard_walk_deps
+        outputs = [ _expectations_jars_file ]
+        output_conversion = "json"
+        data_keys = [ "proguard_embedded_config_jars" ]
+        dep_keys = [
+          "proguard_config_deps",
+          "proguard_embedded_config_jar_deps",
+        ]
+        walk_keys = [ "android_java_walk_keys" ]
+      }
+
       python_action(_expectations_target) {
         python_binary = _python_binary
-
-        # Need to depend on all deps so that proguard.txt within .aar files get
-        # extracted.
-        deps = _deps
         depfile = "${target_gen_dir}/${target_name}.d"
         inputs = [
-          invoker.build_config,
-          invoker.expected_proguard_config,
-        ]
+                   invoker.build_config,
+                   invoker.expected_proguard_config,
+                   _expectations_jars_file,
+                 ] + _config_inputs
         _actual_file = "$target_gen_dir/$target_name.proguard_configs"
         _failure_file =
             "$expectations_failure_dir/" +
@@ -1770,7 +1804,14 @@ if (enable_java_templates) {
           _actual_file,
           _failure_file,
         ]
-        args = _args + [
+        deps = [
+          ":$_expectations_jars_target",
+          invoker.build_config_dep,
+        ]
+        _rebased_expectations_jars_file =
+            rebase_path(_expectations_jars_file, root_build_dir)
+        args = _config_args + [
+                 "--input-paths=@FileArg($_rebased_expectations_jars_file)",
                  "--depfile",
                  rebase_path(depfile, root_build_dir),
                  "--failure-file",
@@ -1824,7 +1865,7 @@ if (enable_java_templates) {
       inputs = _inputs
       outputs = _outputs
       depfile = "${target_gen_dir}/${target_name}.d"
-      args = _args + _output_args + [
+      args = _args + [
                "--depfile",
                rebase_path(depfile, root_build_dir),
              ]
@@ -1962,6 +2003,7 @@ if (enable_java_templates) {
                                      "app_as_shared_lib",
                                      "apply_mapping",
                                      "build_config",
+                                     "build_config_dep",
                                      "custom_assertion_handler",
                                      "data",
                                      "data_deps",
@@ -1981,6 +2023,7 @@ if (enable_java_templates) {
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
+                                     "proguard_walk_deps",
                                      "repackage_classes",
                                      "resources_input",
                                      "resources_output",
@@ -4214,7 +4257,7 @@ if (enable_java_templates) {
         }
 
         _header_classpath_deps += [ "${_android_sdk_dep}__header" ]
-        _javac_classpath_deps += [ "${_android_sdk_dep}" ]
+        _javac_classpath_deps += [ "${_android_sdk_dep}__host" ]
       }
     }
 
@@ -5089,6 +5132,15 @@ if (enable_java_templates) {
     # 1) To allow building the target explicitly via ninja,
     # 2) To trigger all analysis deps,
     # 3) By custom action() targets that want to use artifacts as inputs.
+    # Exclude checked-in paths ("../*") to detect generated proguard configs
+    # under root_build_dir (e.g. unpacked AAR proguard.txt).
+    _has_generated_proguard_configs =
+        _non_java_deps != [] && defined(invoker.proguard_configs) &&
+        filter_exclude(rebase_path(invoker.proguard_configs, root_build_dir),
+                       [ "../*" ]) != []
+    _has_embedded_proguard_configs =
+        _is_library && _build_host_jar &&
+        (_is_prebuilt || defined(invoker.additional_jar_files))
     _emit_dex_metadata = defined(_dex_target_name) &&
                          !(defined(invoker.omit_dex_path_from_build_config) &&
                            invoker.omit_dex_path_from_build_config)
@@ -5196,16 +5248,25 @@ if (enable_java_templates) {
       }
       if (defined(invoker.proguard_enabled) && invoker.proguard_enabled &&
           defined(_android_sdk_dep)) {
-        # ProGuard reads the SDK API database from _android_sdk_dep; depend on
-        # it here so pruning _non_java_deps from prebuilt __header targets does
-        # not drop the API database dependency from ProGuard builds.
+        # Allow proguard()'s walk_deps to discover sdk_api_database_deps for
+        # default_android_sdk_dep or alternative_android_sdk_dep without
+        # making debug or library builds depend on generate_api_database.
         deps += [ _android_sdk_dep ]
+        _java_walk_deps += [ _android_sdk_dep ]
       }
       if (defined(_jacoco_instrument) && _jacoco_instrument) {
         deps += [ _jacoco_dep ]
       }
       if (defined(invoker.apk_under_test)) {
         deps += [ invoker.apk_under_test ]
+      }
+      if (defined(invoker.api_database_dep)) {
+        deps += [ invoker.api_database_dep ]
+      }
+      if (_has_embedded_proguard_configs &&
+          !defined(_process_jar_target_name) && _has_sources) {
+        # Needed so dep_keys can reference :$_compile_java_target directly.
+        deps += [ ":$_compile_java_target" ]
       }
       if (defined(_process_jar_target_name)) {
         public_deps += [ ":$_process_jar_target_name" ]
@@ -5234,6 +5295,17 @@ if (enable_java_templates) {
       # Consumed by jni_zero to walk only Java deps (avoiding __dex,
       # __assetres, and non-Java deps).
       metadata.java_walk_keys = [ ":${target_name}__host" ]
+      if (defined(invoker.api_database_dep)) {
+        metadata.sdk_api_database_deps = [ invoker.api_database_dep ]
+      }
+      if (_has_generated_proguard_configs) {
+        metadata.proguard_config_deps = _non_java_deps
+      }
+      if (_has_embedded_proguard_configs) {
+        metadata.proguard_embedded_config_jars =
+            [ rebase_path(_processed_jar_path, root_build_dir) ]
+        metadata.proguard_embedded_config_jar_deps = _processed_jar_deps
+      }
       if (_emit_dex_metadata) {
         metadata.android_dex_deps = [ ":$_dex_target_name" ]
         if (tiered_dex_assembly) {
