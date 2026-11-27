@@ -918,10 +918,8 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     protected void clickWordNode(String nodeId) throws TimeoutException {
-        int previousPeekSequence =
-                ThreadUtils.runOnUiThreadBlocking(() -> mPanel.getLastPeekSequence());
         clickNode(nodeId);
-        waitForPanelToFreshlyPeek(previousPeekSequence);
+        waitForPanelToFreshlyPeek();
     }
 
     /**
@@ -1098,17 +1096,16 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for the Search Panel (the Search Bar) to peek up from the bottom, and asserts that it
      * did peek. Ignores an existing Search Panel that peeked.
-     *
-     * @param previousPeekSequence The peek sequence recorded before triggering the peek.
      */
-    private void waitForPanelToFreshlyPeek(final int previousPeekSequence) {
+    protected void waitForPanelToFreshlyPeek() {
+        int lastPeekSequence = mPanel.getLastPeekSequence();
         final @PanelState int state = PanelState.PEEKED;
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(mPanel, Matchers.notNullValue());
                     Criteria.checkThat(mPanel.getPanelState(), Matchers.is(state));
                     Criteria.checkThat(
-                            mPanel.getLastPeekSequence(), Matchers.not(previousPeekSequence));
+                            mPanel.getLastPeekSequence(), Matchers.not(lastPeekSequence));
                     Criteria.checkThat(mPanel.isHeightAnimationRunning(), Matchers.is(false));
                 },
                 TEST_TIMEOUT,
