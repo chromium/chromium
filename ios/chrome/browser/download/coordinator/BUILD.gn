@@ -25,12 +25,17 @@ source_set("coordinator") {
     "pass_kit_mediator.mm",
     "safari_download_coordinator.h",
     "safari_download_coordinator.mm",
+    "safari_download_mediator.h",
+    "safari_download_mediator.mm",
+    "safari_download_mediator_delegate.h",
     "vcard_coordinator.h",
     "vcard_coordinator.mm",
     "vcard_mediator.h",
     "vcard_mediator.mm",
     "vcard_mediator_delegate.h",
   ]
+
+  public_deps = [ "//ios/chrome/browser/tabs/model:dependency_installer" ]
 
   deps = [
     "//base",
@@ -56,7 +61,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/confirmation",
     "//ios/chrome/browser/presenters/ui_bundled",
-    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/application_context",
@@ -72,7 +76,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/store_kit/model",
-    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
@@ -95,6 +98,7 @@ source_set("unit_tests") {
     "pass_kit_coordinator_unittest.mm",
     "pass_kit_mediator_unittest.mm",
     "safari_download_coordinator_unittest.mm",
+    "safari_download_mediator_unittest.mm",
     "vcard_coordinator_unittest.mm",
     "vcard_mediator_unittest.mm",
   ]
@@ -134,6 +138,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/fakes",

@@ -157,6 +157,26 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that a calendar alert is dismissed when its tab closes.
+- (void)testCalendarAlertDismissedOnTabClose {
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Calendar"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"calendar"];
+
+  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
+                 IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE)),
+             @"The warning alert did not show up");
+
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE))]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests that the correct warning alert is shown and when tapping 'Continue' a
 // SFSafariViewController is presented.
 - (void)testCalendarDownloadAndContinue {

@@ -77,7 +77,6 @@ void SafariDownloadTabHelper::DidStartNavigation(
   CHECK_EQ(web_state_, web_state);
   if (!navigation_context->IsSameDocument()) {
     pending_download_.reset();
-    [delegate_ dismissDownloadAlert];
   }
 }
 
@@ -88,6 +87,5 @@ void SafariDownloadTabHelper::DidFinishNavigation(
   if (navigation_context->HasCommitted() &&
       !navigation_context->IsSameDocument()) {
     pending_download_.reset();
-    [delegate_ dismissDownloadAlert];
   }
 }
