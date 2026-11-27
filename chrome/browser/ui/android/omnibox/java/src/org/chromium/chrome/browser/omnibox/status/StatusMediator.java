@@ -591,7 +591,6 @@ public class StatusMediator
         @StringRes int descRes = Resources.ID_NULL;
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
         OnClickListener clickListener = null;
-        Bitmap bitmap = null;
         Drawable customDrawable = null;
 
         boolean isHubOrTabSearch = isHubOrTabSearch();
@@ -684,8 +683,6 @@ public class StatusMediator
         StatusIconResource statusIcon = null;
         if (customDrawable != null) {
             statusIcon = new StatusIconResource(customDrawable);
-        } else if (bitmap != null) {
-            statusIcon = new StatusIconResource(/* iconIdentifier= */ null, bitmap, tintRes);
         } else if (iconRes != Resources.ID_NULL) {
             statusIcon = new StatusIconResource(iconRes, tintRes);
         }
