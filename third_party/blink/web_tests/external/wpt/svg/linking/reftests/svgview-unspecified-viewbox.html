@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG fragment identifier: an svgView() without viewBox() keeps the root viewBox</title>
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/linking.html#LinksIntoSVG">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/linking.html#SVGFragmentIdentifiersDefinitions">
+<link rel="match" href="../../struct/reftests/reference/green-100x100.html">
+<meta name="assert" content="Unspecified parameters of the svgView specification don't reset the values defined on the root svg element. A fragment that gives only preserveAspectRatio() or only transform() keeps the root viewBox, including a zero-size one that disables rendering.">
+
+<!--
+  support/green-viewbox-25x25.svg has viewBox="0 0 25 25" and a green 25x25 rect.
+  Drawn in a 50x50 box on red, the root viewBox scales the rect to fill the box.
+  If the fragment drops the root viewBox, the rect is drawn unscaled and red shows
+  on three quarters of the box. transform(scale(1)) is the identity, so the cell
+  does not depend on where the transform is applied.
+
+  support/red-viewbox-zero.svg has viewBox="0 0 0 0" and a red rect. The zero-size
+  root viewBox disables rendering, and a fragment that does not mention viewBox()
+  must keep it, so the green background stays visible.
+-->
+
+<style>
+  div { display: flex; flex-wrap: wrap; width: 100px; }
+  img { display: block; width: 50px; height: 50px; background: red; }
+  img.no-paint { background: green; }
+</style>
+<div>
+  <!-- Control: no fragment. -->
+  <img src="support/green-viewbox-25x25.svg">
+  <img src="support/green-viewbox-25x25.svg#svgView(preserveAspectRatio(none))">
+  <img src="support/green-viewbox-25x25.svg#svgView(transform(scale(1)))">
+  <img class="no-paint" src="support/red-viewbox-zero.svg#svgView(transform(scale(1)))">
+</div>

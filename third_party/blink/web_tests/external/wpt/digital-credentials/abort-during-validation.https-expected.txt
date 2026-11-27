@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Aborting the signal and then throwing while the request data is serialized rejects with the thrown error.
+  promise_test: Unhandled rejection with value: "error: Action set_virtual_wallet_behavior not implemented"
+[FAIL] Throwing null while the request data is serialized rejects with null.
+  promise_test: Unhandled rejection with value: "error: Action set_virtual_wallet_behavior not implemented"
+[FAIL] Aborting the signal while the request data is serialized rejects with the abort reason.
+  promise_test: Unhandled rejection with value: "error: Action set_virtual_wallet_behavior not implemented"
+Harness: the test ran to completion.
+

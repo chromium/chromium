@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Masking: clipPath child with a CSS transform and transform-origin</title>
+<link rel="author" title="Nikolas Zimmermann" href="mailto:nzimmermann@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-masking-1/#ClipPathElement">
+<link rel="help" href="https://drafts.csswg.org/css-transforms-1/#transform-origin-property">
+<link rel="match" href="clip-path-svg-child-transform-origin-ref.html">
+<meta name="assert" content="A CSS transform on a clipPath child is applied about its transform-origin, exactly like the equivalent transform attribute.">
+<style>#r { transform: rotate(30deg); transform-origin: 100px 100px; }</style>
+<svg width="300" height="300">
+  <clipPath id="c"><rect id="r" x="50" y="50" width="100" height="100"/></clipPath>
+  <rect width="300" height="300" fill="green" clip-path="url(#c)"/>
+</svg>

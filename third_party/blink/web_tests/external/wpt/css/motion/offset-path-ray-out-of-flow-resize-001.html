@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>CSS Motion Path test: resizing an absolutely positioned box with a ray() offset-path</title>
+<link rel="help" href="https://drafts.csswg.org/motion/#offset-path-property">
+<link rel="match" href="offset-path-ray-out-of-flow-ref.html">
+<meta name="assert" content="Resizing an absolutely positioned box updates its offset-path transform.">
+<style>
+#container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: red;
+}
+#target {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 200px;
+  background: green;
+  offset-path: ray(90deg closest-side);
+  offset-position: 50% 50%;
+  offset-distance: 0;
+}
+</style>
+<p>Test passes if there is a green square and no red.</p>
+<div id="container"><div id="target"></div></div>
+<script>
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    document.getElementById("target").style.width = "200px";
+    document.documentElement.removeAttribute("class");
+  });
+});
+</script>
+</html>

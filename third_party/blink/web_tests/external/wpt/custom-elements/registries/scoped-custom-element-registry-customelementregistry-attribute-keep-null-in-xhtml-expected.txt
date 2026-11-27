@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] XHTML parser should use null registry for a non-empty customelementregistry value
+  assert_equals: expected (string) "named" but got (undefined) undefined
+[FAIL] XHTML parser should ignore customelementregistry on non-HTML elements
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

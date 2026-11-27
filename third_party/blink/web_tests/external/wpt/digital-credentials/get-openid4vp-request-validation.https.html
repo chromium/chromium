@@ -1,0 +1,332 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="timeout" content="long" />
+<title>Digital Credential API: Protocol Validation (openid4vp)</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type="module">
+  import { makeCanonicalGetRequest, checkRequest } from "./support/helper.js";
+
+  function encodePayload(obj) {
+    return new TextEncoder()
+      .encode(JSON.stringify(obj))
+      .toBase64({ alphabet: "base64url", omitPadding: true });
+  }
+
+  const canonUnsigned = makeCanonicalGetRequest("openid4vp-v1-unsigned").data;
+  const canonSigned = makeCanonicalGetRequest("openid4vp-v1-signed").data;
+  const canonMultisigned = makeCanonicalGetRequest(
+    "openid4vp-v1-multisigned",
+  ).data;
+
+  const [signedHeader, signedPayload, signedSignature] =
+    canonSigned.request.split(".");
+  if (!signedHeader || !signedPayload || !signedSignature) {
+    throw new Error("Canonical signed request is not a 3-part JWS");
+  }
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "openid4vp-v1-unsigned",
+      { ...canonUnsigned },
+      "AbortError",
+    );
+  }, "unsigned: the sample unchanged");
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "openid4vp-v1-unsigned",
+      { ...canonUnsigned, extra: "value" },
+      "AbortError",
+    );
+  }, "unsigned: the sample with an extra unknown member");
+
+  promise_test(async (t) => {
+    const data = { ...canonUnsigned };
+    delete data.response_mode;
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: response_mode missing");
+
+  promise_test(async (t) => {
+    const data = { ...canonUnsigned, response_mode: "dc_api" };
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: response_mode 'dc_api'");
+
+  promise_test(async (t) => {
+    const data = { ...canonUnsigned, response_mode: 123 };
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: response_mode that is a number");
+
+  promise_test(async (t) => {
+    const data = { ...canonUnsigned, response_mode: "DC_API.JWT" };
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: response_mode 'DC_API.JWT'");
+
+  promise_test(async (t) => {
+    const data = Object.assign(
+      Object.create({ response_mode: "dc_api.jwt" }),
+      canonUnsigned,
+    );
+    delete data.response_mode;
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: response_mode inherited from the prototype, not an own property");
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "openid4vp-v1-signed",
+      { ...canonSigned },
+      "AbortError",
+    );
+  }, "signed: the sample unchanged");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${signedPayload}.abcde12345-_`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, "AbortError");
+  }, "signed: a compact JWS with a signature that does not verify");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({
+      response_mode: "dc_api.jwt",
+      extra: "value",
+    });
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, "AbortError");
+  }, "signed: a payload with extra, unknown claims alongside response_mode 'dc_api.jwt'");
+
+  promise_test(async (t) => {
+    const data = { ...canonSigned };
+    delete data.request;
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: request missing");
+
+  promise_test(async (t) => {
+    const data = { ...canonSigned, request: 123 };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: request not a string");
+
+  promise_test(async (t) => {
+    const notJson = new TextEncoder()
+      .encode("not json")
+      .toBase64({ alphabet: "base64url", omitPadding: true });
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${notJson}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload part that is valid base64url but not JSON");
+
+  promise_test(async (t) => {
+    const payload = encodePayload(["dc_api.jwt"]);
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload JSON that is an array");
+
+  promise_test(async (t) => {
+    const payload = encodePayload(null);
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload JSON that is null");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ other: "value" });
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload JSON object without response_mode");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: "dc_api" });
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload response_mode 'dc_api'");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}..${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: an empty payload part");
+
+  promise_test(async (t) => {
+    const data = { ...canonSigned, request: "not-a-jws" };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: request with no '.' separators");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: 123 });
+    const data = {
+      ...canonSigned,
+      request: `${signedHeader}.${payload}.${signedSignature}`,
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: payload response_mode that is a number");
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "openid4vp-v1-multisigned",
+      { ...canonMultisigned },
+      "AbortError",
+    );
+  }, "multisigned: the sample unchanged");
+
+  promise_test(async (t) => {
+    const data = { ...canonMultisigned };
+    delete data.payload;
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload missing");
+
+  promise_test(async (t) => {
+    const data = { ...canonMultisigned, payload: 123 };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload not a string");
+
+  promise_test(async (t) => {
+    const payload = encodePayload(["dc_api.jwt"]);
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload JSON that is an array");
+
+  promise_test(async (t) => {
+    const payload = encodePayload(null);
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload JSON that is null");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ other: "value" });
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload JSON object without response_mode");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: "dc_api" });
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload response_mode 'dc_api'");
+
+  promise_test(async (t) => {
+    const payload = new TextEncoder()
+      .encode("not json")
+      .toBase64({ alphabet: "base64url", omitPadding: true });
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload that is valid base64url but not JSON");
+
+  promise_test(async (t) => {
+    const data = { ...canonMultisigned, payload: "" };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: an empty payload");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: 123 });
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload response_mode that is a number");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({
+      response_mode: "dc_api.jwt",
+      extra: "value",
+    });
+    const data = { ...canonMultisigned, payload };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, "AbortError");
+  }, "multisigned: a payload with extra, unknown claims alongside response_mode 'dc_api.jwt'");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonUnsigned,
+      response_mode: "dc_api.jwt",
+      toJSON() {
+        return { ...canonUnsigned, response_mode: "dc_api" };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-unsigned", data, TypeError);
+  }, "unsigned: own response_mode is valid but toJSON returns invalid response_mode");
+
+  promise_test(async (t) => {
+    const data = {
+      ...canonUnsigned,
+      toJSON() {
+        return { ...canonUnsigned, response_mode: "dc_api.jwt" };
+      },
+    };
+    delete data.response_mode;
+    await checkRequest(t, "openid4vp-v1-unsigned", data, "AbortError");
+  }, "unsigned: no own response_mode but toJSON returns valid response_mode");
+
+  promise_test(async (t) => {
+    const data = Object.create({ request: canonSigned.request });
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: request inherited from the prototype, not an own property");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: "dc_api" });
+    const data = {
+      ...canonSigned,
+      toJSON() {
+        return { request: `${signedHeader}.${payload}.${signedSignature}` };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, TypeError);
+  }, "signed: own request is valid but toJSON returns an invalid request");
+
+  promise_test(async (t) => {
+    const data = {
+      toJSON() {
+        return { ...canonSigned };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-signed", data, "AbortError");
+  }, "signed: no own request but toJSON returns a valid request");
+
+  promise_test(async (t) => {
+    const data = Object.create(canonMultisigned);
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: payload inherited from the prototype, not an own property");
+
+  promise_test(async (t) => {
+    const payload = encodePayload({ response_mode: "dc_api" });
+    const data = {
+      ...canonMultisigned,
+      toJSON() {
+        return { ...canonMultisigned, payload };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, TypeError);
+  }, "multisigned: own payload is valid but toJSON returns an invalid payload");
+
+  promise_test(async (t) => {
+    const data = {
+      toJSON() {
+        return { ...canonMultisigned };
+      },
+    };
+    await checkRequest(t, "openid4vp-v1-multisigned", data, "AbortError");
+  }, "multisigned: no own payload but toJSON returns a valid payload");
+</script>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Named pages propagate through column spanners</title>
+<link rel="author" title="Andrew Martinez" href="mailto:amartinez55@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-page-3/#using-named-pages">
+<link rel="help" href="https://drafts.csswg.org/css-multicol-1/#column-span">
+<link rel="match" href="page-name-multicol-002-print-ref.html">
+<style>
+.multicol { columns: 2; }
+.spanner { column-span: all; }
+</style>
+<div style="page: a">1st page</div>
+<div class="multicol">
+  <div class="spanner" style="page: a">Also 1st page</div>
+  <div style="page: a">Still 1st page</div>
+  <div class="spanner" style="page: a">1st page too</div>
+</div>
+<div style="page: a">Last line of 1st page</div>
+<div style="page: b">2nd page</div>

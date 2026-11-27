@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference: SVG viewBox synthesis per axis when SVG is used as an image: percentage lengths</title>
+<style>
+  .img {
+    display: inline-block;
+    position: relative;
+    border: 1px solid black;
+    margin: 2px;
+    vertical-align: top;
+  }
+  .img > div {
+    position: absolute;
+    background: blue;
+  }
+</style>
+<body>
+<div class="img" style="width: 20px; height: 30px"><div style="left: 0; top: 0; width: 10px; height: 5px"></div><div style="left: 0; top: 10px; width: 10px; height: 5px"></div></div><div class="img" style="width: 30px; height: 20px"><div style="left: 0; top: 0; width: 5px; height: 10px"></div><div style="left: 10px; top: 0; width: 5px; height: 10px"></div></div><div class="img" style="width: 20px; height: 30px"><div style="left: 4px; top: 4px; width: 6px; height: 6px"></div></div>
+</body>

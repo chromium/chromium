@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing a form resets the form owner of controls left in a different tree</title>
+<link rel=author href="mailto:lwarlow@igalia.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#association-of-controls-and-forms">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<!-- In each fixture below, the parser places the form as an empty child of the table and
+     associates the elements in the cell with it, even though the form is not their ancestor.
+     The </form> after </table> clears the form element pointer so the fixtures don't affect
+     each other. -->
+<div id="remove"><table><form id="remove-form"><tr><td><input id="remove-input"><button id="remove-button"></button><select id="remove-select"></select><textarea id="remove-textarea"></textarea><output id="remove-output"></output><fieldset id="remove-fieldset"></fieldset><object id="remove-object"></object></td></tr></table></form></div>
+<div id="reinsert"><table><form id="reinsert-form"><tr><td><input id="reinsert-input"></td></tr></table></form></div>
+<div id="append"><table><form id="append-form"><tr><td><input id="append-input"></td></tr></table></form></div>
+<div id="ancestor"><table id="ancestor-table"><form id="ancestor-form"><tr><td><input id="ancestor-input"></td></tr></table></form></div>
+<div id="detached"><table id="detached-table"><form id="detached-form"><tr><td><input id="detached-input"></td></tr></table></form></div>
+<div id="fallback"><table id="fallback-table"><form id="fallback-form"><tr><td><input id="fallback-input"></td></tr></table></form></div>
+<div id="fallback-append"><table id="fallback-append-table"><form id="fallback-append-form"><tr><td><input id="fallback-append-input"></td></tr></table></form></div>
+<div id="img-remove"><table><form id="img-remove-form"><tr><td><img id="img-remove-img" name="pic"></td></tr></table></form></div>
+<div id="img-fallback"><table id="img-fallback-table"><form id="img-fallback-form"><tr><td><img id="img-fallback-img" name="pic"></td></tr></table></form></div>
+<div id="image-input-remove"><table><form id="image-input-remove-form"><tr><td><input type="image" id="image-input-remove-input"></td></tr></table></form></div>
+<div id="image-input-fallback"><table id="image-input-fallback-table"><form id="image-input-fallback-form"><tr><td><input type="image" id="image-input-fallback-input"></td></tr></table></form></div>
+<form id="descendant-form"><input id="descendant-input"></form>
+<div id="destination"></div>
+<script>
+test(() => {
+  const form = document.getElementById("remove-form");
+  const ids = ["input", "button", "select", "textarea", "output", "fieldset", "object"];
+  for (const id of ids) {
+    assert_equals(document.getElementById(`remove-${id}`).form, form, `${id} is associated with the form by the parser`);
+  }
+  form.remove();
+  for (const id of ids) {
+    assert_equals(document.getElementById(`remove-${id}`).form, null, `${id} no longer has a form owner`);
+  }
+  assert_equals(form.elements.length, 0, "the form no longer lists any elements");
+}, "Removing a form resets the form owner of parser-associated controls that stay in the document");
+
+test(() => {
+  const form = document.getElementById("reinsert-form");
+  const input = document.getElementById("reinsert-input");
+  assert_equals(input.form, form);
+  form.remove();
+  assert_equals(input.form, null, "after removing the form");
+  document.getElementById("destination").append(form);
+  assert_equals(input.form, null, "after inserting the form back into the document");
+}, "Reinserting a removed form does not restore the association");
+
+test(() => {
+  const form = document.getElementById("append-form");
+  const input = document.getElementById("append-input");
+  assert_equals(input.form, form);
+  document.getElementById("destination").appendChild(form);
+  assert_equals(input.form, null);
+}, "Moving a form elsewhere with appendChild() resets the form owner of controls it leaves behind");
+
+test(() => {
+  const form = document.getElementById("ancestor-form");
+  const input = document.getElementById("ancestor-input");
+  assert_equals(input.form, form);
+  document.getElementById("ancestor-table").remove();
+  assert_equals(input.form, form, "the form and the control are still in the same tree");
+}, "Removing an ancestor of both the form and the control keeps the form owner");
+
+test(() => {
+  const form = document.getElementById("detached-form");
+  const input = document.getElementById("detached-input");
+  assert_equals(input.form, form);
+  document.getElementById("detached-table").remove();
+  assert_equals(input.form, form, "after removing the table");
+  form.remove();
+  assert_equals(input.form, null, "after removing the form from the detached table");
+}, "Removing a form from a detached subtree resets the form owner of controls left in that subtree");
+
+test(() => {
+  const form = document.getElementById("fallback-form");
+  const input = document.getElementById("fallback-input");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  outerForm.append(document.getElementById("fallback-table"));
+  assert_equals(input.form, form, "moving the table into another form keeps the parser association");
+  form.remove();
+  assert_equals(input.form, outerForm);
+}, "Removing a form resets the form owner to the control's nearest ancestor form");
+
+test(() => {
+  const form = document.getElementById("fallback-append-form");
+  const input = document.getElementById("fallback-append-input");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  outerForm.append(document.getElementById("fallback-append-table"));
+  assert_equals(input.form, form, "moving the table into another form keeps the parser association");
+  document.getElementById("destination").appendChild(form);
+  assert_equals(input.form, outerForm);
+}, "Moving a form elsewhere with appendChild() resets the form owner to the control's nearest ancestor form");
+
+test(() => {
+  const form = document.getElementById("img-remove-form");
+  const img = document.getElementById("img-remove-img");
+  assert_equals(form.pic, img, "the img is associated with the form by the parser");
+  form.remove();
+  assert_equals(form.pic, undefined);
+}, "Removing a form resets the form owner of a parser-associated img that stays in the document");
+
+test(() => {
+  const form = document.getElementById("img-fallback-form");
+  const img = document.getElementById("img-fallback-img");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  outerForm.append(document.getElementById("img-fallback-table"));
+  assert_equals(form.pic, img, "moving the table into another form keeps the parser association");
+  assert_equals(outerForm.pic, undefined, "the img is not associated with the other form yet");
+  form.remove();
+  assert_equals(form.pic, undefined, "the img is no longer associated with the removed form");
+  assert_equals(outerForm.pic, img, "the img is now associated with its nearest ancestor form");
+}, "Removing a form resets the form owner of a parser-associated img to its nearest ancestor form");
+
+test(() => {
+  const form = document.getElementById("image-input-remove-form");
+  const input = document.getElementById("image-input-remove-input");
+  assert_equals(input.form, form, "the image button is associated with the form by the parser");
+  form.remove();
+  assert_equals(input.form, null);
+}, "Removing a form resets the form owner of a parser-associated input type=image that stays in the document");
+
+test(() => {
+  const form = document.getElementById("image-input-fallback-form");
+  const input = document.getElementById("image-input-fallback-input");
+  const outerForm = document.createElement("form");
+  document.body.append(outerForm);
+  outerForm.append(document.getElementById("image-input-fallback-table"));
+  assert_equals(input.form, form, "moving the table into another form keeps the parser association");
+  form.remove();
+  assert_equals(input.form, outerForm);
+}, "Removing a form resets the form owner of a parser-associated input type=image to its nearest ancestor form");
+
+test(() => {
+  const form = document.getElementById("descendant-form");
+  const input = document.getElementById("descendant-input");
+  assert_equals(input.form, form);
+  form.remove();
+  assert_equals(input.form, form);
+}, "Removing a form keeps the form owner of its descendants");
+</script>
+</body>

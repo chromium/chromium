@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Digital Credential: a late response to an abandoned request doesn't settle the next request</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+
+  promise_test(async (t) => {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const iframe = document.createElement("iframe");
+    document.body.append(iframe);
+    await test_driver.bless("user activation for the iframe's request");
+    iframe.contentWindow.navigator.credentials.get(makeGetOptions()).catch(() => {});
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+
+    // Removing the iframe abandons its request at once, but the wallet
+    // responds to it only after the next request has started.
+    const abortController = new AbortController();
+    const reason = new Error("The second request was aborted.");
+    let secondRequest;
+    await test_driver.bless("user activation for the second request", () => {
+      iframe.remove();
+      secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
+    });
+
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+    abortController.abort(reason);
+    await promise_rejects_exactly(
+      t,
+      reason,
+      secondRequest,
+      "The second request should settle only when it is aborted",
+    );
+  }, "The wallet's late response to an abandoned request doesn't settle the next request.");
+</script>

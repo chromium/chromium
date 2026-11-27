@@ -1,0 +1,61 @@
+This is a testharness.js-based test.
+[FAIL] unsigned: response_mode missing
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] unsigned: response_mode 'dc_api'
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] unsigned: response_mode that is a number
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] unsigned: response_mode 'DC_API.JWT'
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] unsigned: response_mode inherited from the prototype, not an own property
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: request missing
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: request not a string
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload part that is valid base64url but not JSON
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload JSON that is an array
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload JSON that is null
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload JSON object without response_mode
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload response_mode 'dc_api'
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: an empty payload part
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: request with no '.' separators
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: payload response_mode that is a number
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload missing
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload not a string
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload JSON that is an array
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload JSON that is null
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload JSON object without response_mode
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload response_mode 'dc_api'
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload that is valid base64url but not JSON
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: an empty payload
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload response_mode that is a number
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] unsigned: own response_mode is valid but toJSON returns invalid response_mode
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: request inherited from the prototype, not an own property
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] signed: own request is valid but toJSON returns an invalid request
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: payload inherited from the prototype, not an own property
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] multisigned: own payload is valid but toJSON returns an invalid payload
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

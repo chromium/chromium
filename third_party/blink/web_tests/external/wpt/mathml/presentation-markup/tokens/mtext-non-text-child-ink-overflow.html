@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Ink overflow of non-text children of token elements doesn't affect layout</title>
+<link rel="help" href="https://w3c.github.io/mathml-core/#box-model">
+<link rel="help" href="https://w3c.github.io/mathml-core/#text-mtext">
+<meta name="assert" content="The ink extents of a non-text child of a token element are its box, so ink overflow does not affect the token's metrics.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  .box { display: inline-block; width: 10px; height: 10px }
+</style>
+<div id="container">
+  <p><math><mrow><mtext id="reference"><span class="box"></span></mtext></mrow></math></p>
+  <p><math><mrow><mtext><svg class="box" overflow="visible">
+    <rect x="100" y="-100" width="20" height="200"/>
+  </svg></mtext></mrow></math></p>
+  <p><math><mrow><mtext><svg class="box" overflow="visible">
+    <rect width="10" height="10" style="translate: 100px -100px"/>
+  </svg></mtext></mrow></math></p>
+  <p><math><mrow><mtext><span class="box" style="outline: 50px solid"></span></mtext></mrow></math></p>
+  <p><math><mrow><mtext><span class="box" style="box-shadow: 100px 100px 0 50px"></span></mtext></mrow></math></p>
+  <p><math><mrow><mtext><span class="box" style="background: green; box-shadow: 100px 100px 0 50px"></span></mtext></mrow></math></p>
+</div>
+<script>
+const reference = document.getElementById("reference").getBoundingClientRect();
+for (const mtext of document.querySelectorAll("mtext:not(#reference)")) {
+  test(() => {
+    const rect = mtext.getBoundingClientRect();
+    assert_approx_equals(rect.width, reference.width, 1, "width");
+    assert_approx_equals(rect.height, reference.height, 1, "height");
+    const mrow = mtext.parentNode.getBoundingClientRect();
+    assert_approx_equals(mrow.width, rect.width, 1, "mrow width");
+  }, mtext.innerHTML.trim());
+}
+document.getElementById("container").remove();
+</script>

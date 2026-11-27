@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#attr-customelementregistry">
+<link rel="help" href="https://dom.spec.whatwg.org/#element-keep-custom-element-registry-null">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="builtin-with-named-attr" customelementregistry="named"></div>
+<script>
+
+function iframeFromSrcdoc(test, srcdoc) {
+    return new Promise((resolve) => {
+        const iframe = document.createElement('iframe');
+        iframe.srcdoc = srcdoc;
+        iframe.onload = () => resolve([iframe.contentDocument, iframe.contentWindow]);
+        document.body.appendChild(iframe);
+        test.add_cleanup(() => iframe.remove());
+    });
+}
+
+test(() => {
+    const element = document.createElement('div');
+    assert_false(element.hasAttribute('customelementregistry'));
+    assert_equals(element.htmlCustomElementRegistry, '');
+    assert_equals(element.customElementRegistry, customElements);
+
+    element.htmlCustomElementRegistry = 'named';
+    assert_equals(element.getAttribute('customelementregistry'), 'named');
+    assert_equals(element.htmlCustomElementRegistry, 'named');
+    assert_equals(element.customElementRegistry, customElements);
+}, 'htmlCustomElementRegistry reflects as a string');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div customelementregistry="named"><span></span></div>');
+    const element = container.firstElementChild;
+    assert_equals(element.htmlCustomElementRegistry, 'named');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+}, 'A non-empty customelementregistry value has boolean attribute semantics');
+
+test(() => {
+    const container = document.createElement('div');
+    container.innerHTML = '<div customelementregistry><span></span></div>';
+    const element = container.firstElementChild;
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+}, 'innerHTML gives an element with customelementregistry and its descendants a null registry');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe('<div customelementregistry></div>');
+    const element = container.firstElementChild;
+
+    element.innerHTML = '<div></div>';
+    assert_equals(element.lastElementChild.customElementRegistry, null, 'innerHTML');
+    element.setHTMLUnsafe('<div></div>');
+    assert_equals(element.lastElementChild.customElementRegistry, null, 'setHTMLUnsafe()');
+    element.lastElementChild.insertAdjacentHTML('afterend', '<p></p>');
+    assert_equals(element.lastElementChild.customElementRegistry, null, 'insertAdjacentHTML()');
+    element.lastElementChild.outerHTML = '<span></span>';
+    assert_equals(element.lastElementChild.customElementRegistry, null, 'outerHTML');
+}, 'Markup parsed into an element with customelementregistry gets a null registry');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe('<div customelementregistry></div>');
+    const element = container.firstElementChild;
+    customElements.initialize(element);
+    assert_equals(element.customElementRegistry, customElements);
+
+    document.implementation.createHTMLDocument().adoptNode(element);
+    assert_equals(element.customElementRegistry, null);
+    document.adoptNode(element);
+    assert_equals(element.customElementRegistry, customElements);
+}, 'An element initialized after parsing no longer keeps a null registry');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(`
+      <svg customelementregistry><g></g></svg>
+      <math customelementregistry><mi></mi></math>`);
+    const [svg, math] = container.children;
+
+    assert_equals(svg.customElementRegistry, customElements);
+    assert_equals(svg.firstElementChild.customElementRegistry, customElements);
+    assert_equals(math.customElementRegistry, customElements);
+    assert_equals(math.firstElementChild.customElementRegistry, customElements);
+}, 'customelementregistry has no parser effect on non-HTML elements');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div customelementregistry><span></span></div>');
+    const element = container.firstElementChild;
+    const registry = new CustomElementRegistry();
+
+    registry.initialize(element);
+    assert_equals(element.customElementRegistry, registry);
+    assert_equals(element.firstElementChild.customElementRegistry, registry);
+
+    const clone = element.cloneNode(true);
+    assert_equals(clone.customElementRegistry, registry);
+    assert_equals(clone.firstElementChild.customElementRegistry, registry);
+}, 'A scoped registry can initialize and clone an intentionally null registry subtree');
+
+promise_test(async (test) => {
+    const [doc] = await iframeFromSrcdoc(test,
+        '<!DOCTYPE html><div id="target" customelementregistry="named"><span></span></div>');
+    const element = doc.querySelector('#target');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+
+    document.adoptNode(element);
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+    assert_equals(element.htmlCustomElementRegistry, 'named');
+}, 'Adoption preserves a parser-created intentionally null registry subtree');
+
+promise_test(async (test) => {
+    const [doc] = await iframeFromSrcdoc(test, '<!DOCTYPE html>');
+    const element = doc.createElement('div', {customElementRegistry: null});
+    assert_equals(element.customElementRegistry, null);
+
+    document.adoptNode(element);
+    assert_equals(element.customElementRegistry, customElements);
+}, 'Adoption resolves an unflagged null registry from the destination document');
+
+promise_test(async (test) => {
+    const [doc] = await iframeFromSrcdoc(test,
+        '<!DOCTYPE html><div id="target" customelementregistry><span></span></div>');
+    const clone = doc.querySelector('#target').cloneNode(true);
+    assert_equals(clone.customElementRegistry, null);
+    assert_equals(clone.firstElementChild.customElementRegistry, null);
+
+    document.adoptNode(clone);
+    assert_equals(clone.customElementRegistry, null);
+    assert_equals(clone.firstElementChild.customElementRegistry, null);
+}, 'Cloning and adopting preserves a parser-created intentionally null registry subtree');
+
+promise_test(async (test) => {
+    const [doc] = await iframeFromSrcdoc(test,
+        '<!DOCTYPE html><div id="target" customelementregistry><span></span></div>');
+    const imported = document.importNode(doc.querySelector('#target'), true);
+    assert_equals(imported.customElementRegistry, null);
+    assert_equals(imported.firstElementChild.customElementRegistry, null);
+}, 'Importing does not apply a fallback registry to an intentionally null registry subtree');
+
+test(() => {
+    const registry = new CustomElementRegistry();
+    class ScopedElement extends HTMLElement { };
+    registry.define('scoped-element', ScopedElement);
+    const template = document.createElement('template');
+    template.innerHTML = '<div customelementregistry><scoped-element></scoped-element></div>';
+
+    const imported = document.importNode(template.content, {customElementRegistry: registry});
+    const element = imported.firstElementChild;
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+    assert_false(element.firstElementChild instanceof ScopedElement);
+
+    registry.initialize(element);
+    assert_equals(element.customElementRegistry, registry);
+    assert_equals(element.firstElementChild.customElementRegistry, registry);
+    assert_true(element.firstElementChild instanceof ScopedElement);
+}, 'Importing with an explicit registry leaves an intentionally null registry subtree to initialize()');
+
+promise_test(async (test) => {
+    const [doc] = await iframeFromSrcdoc(test, '<!DOCTYPE html>');
+    const element = doc.createElement('div', {customElementRegistry: null});
+    const imported = document.importNode(element);
+    assert_equals(imported.customElementRegistry, customElements);
+}, 'Importing applies the destination fallback registry to an unflagged null registry element');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(`
+      <div customelementregistry>
+        <template shadowrootmode="open"><span></span></template>
+      </div>`);
+    const host = container.firstElementChild;
+    assert_equals(host.customElementRegistry, null);
+    assert_equals(host.shadowRoot.customElementRegistry, customElements);
+    assert_equals(host.shadowRoot.firstElementChild.customElementRegistry, customElements);
+}, 'customelementregistry does not set a declarative shadow root registry to null');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(`
+      <div customelementregistry>
+        <template shadowrootmode="open" shadowrootcustomelementregistry><span></span></template>
+      </div>`);
+    const host = container.firstElementChild;
+    assert_equals(host.customElementRegistry, null);
+    assert_equals(host.shadowRoot.customElementRegistry, null);
+    assert_equals(host.shadowRoot.firstElementChild.customElementRegistry, null);
+}, 'Element and shadow root null registry attributes compose');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div customelementregistry><span></span></div>');
+    const element = container.firstElementChild;
+    element.removeAttribute('customelementregistry');
+
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.firstElementChild.customElementRegistry, null);
+    assert_equals(
+        container.innerHTML,
+        '<div customelementregistry=""><span></span></div>');
+
+    element.setAttribute('customelementregistry', 'named');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.htmlCustomElementRegistry, 'named');
+}, 'Changing the attribute after parsing does not change the established registry boundary');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div customelementregistry><template shadowrootmode="open" ' +
+        'shadowrootserializable></template></div>');
+    assert_equals(
+        container.getHTML({serializableShadowRoots: true}),
+        '<div customelementregistry=""><template shadowrootmode="open" ' +
+        'shadowrootserializable=""></template></div>');
+}, 'Element and global shadow root registry boundaries serialize independently');
+
+test(() => {
+    const container = document.createElement('div');
+    container.setHTMLUnsafe(
+        '<div customelementregistry><template shadowrootmode="open" ' +
+        'shadowrootserializable shadowrootcustomelementregistry></template></div>');
+    assert_equals(
+        container.getHTML({serializableShadowRoots: true}),
+        '<div customelementregistry=""><template shadowrootmode="open" ' +
+        'shadowrootserializable="" shadowrootcustomelementregistry=""></template></div>');
+}, 'Element and null shadow root registry boundaries serialize independently');
+
+test(() => {
+  const element = document.getElementById('builtin-with-named-attr');
+  assert_equals(element.customElementRegistry, null);
+  assert_equals(element.htmlCustomElementRegistry, 'named');
+}, 'Initial parse: a non-empty customelementregistry value has boolean semantics');
+
+</script>
+</body>
+</html>

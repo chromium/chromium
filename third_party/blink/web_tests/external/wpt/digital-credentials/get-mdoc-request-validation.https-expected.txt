@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] request with toJSON returning null
+  promise_rejects_js: Invalid request should reject with the expected error function "function() { throw e; }" threw object "AbortError: signal is aborted without reason" ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

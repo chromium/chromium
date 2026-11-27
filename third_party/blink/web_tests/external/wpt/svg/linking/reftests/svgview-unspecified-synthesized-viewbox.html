@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG fragment identifier: an svgView() without viewBox() keeps the viewBox synthesized for an image</title>
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/linking.html#LinksIntoSVG">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/coords.html#SynthesizedViewBox">
+<link rel="match" href="../../struct/reftests/reference/green-100x100.html">
+<meta name="assert" content="An SVG used as an image with no viewBox and with a width and a height gets a viewBox synthesized from them. A fragment that does not give viewBox() keeps that viewBox, so the image still scales to its box.">
+
+<!--
+  support/green-25x25-no-viewbox.svg has width="25" height="25", no viewBox, and a
+  green 25x25 rect. Drawn in a 50x50 box on red, the synthesized viewBox 0 0 25 25
+  scales the rect to fill the box. If the fragment drops it, the rect is drawn
+  unscaled and red shows on three quarters of the box. The boxes are square, so
+  the cells do not depend on which preserveAspectRatio is used.
+-->
+
+<style>
+  div { display: flex; flex-wrap: wrap; width: 100px; }
+  img { display: block; width: 50px; height: 50px; background: red; }
+</style>
+<div>
+  <!-- Control: no fragment. -->
+  <img src="support/green-25x25-no-viewbox.svg">
+  <img src="support/green-25x25-no-viewbox.svg#svgView(transform(scale(1)))">
+  <img src="support/green-25x25-no-viewbox.svg#svgView(preserveAspectRatio(none))">
+  <img src="support/green-25x25-no-viewbox.svg#svgView(preserveAspectRatio(xMinYMin))">
+</div>

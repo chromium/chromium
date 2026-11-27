@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text {
+      font-size: 100px;
+      fill: none;
+      stroke: black;
+      stroke-width: 20px;
+      text-decoration: underline;
+    }
+  </style>
+  <text x="20" y="120">X</text>
+</svg>

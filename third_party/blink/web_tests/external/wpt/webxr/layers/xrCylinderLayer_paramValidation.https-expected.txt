@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] Ensure XRCylinderLayer init and setter parameters are validated - webgl
-  Failed to execute 'createCylinderLayer' on 'XRWebGLBinding': radius must be greater than or equal to zero.
+  assert_greater_than: radius must be a positive value expected a number greater than 0 but got 0
 [FAIL] Ensure XRCylinderLayer init and setter parameters are validated - webgl2
-  Failed to execute 'createCylinderLayer' on 'XRWebGLBinding': radius must be greater than or equal to zero.
+  assert_greater_than: radius must be a positive value expected a number greater than 0 but got 0
 Harness: the test ran to completion.
 

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: Intrinsic row fit-tolerance percentage basis with block size constraints reference</title>
+  <style>
+    .grid {
+      background: gray;
+      display: grid;
+      float: left;
+      grid-template-rows: repeat(2, 100px);
+      margin-inline-end: 10px;
+    }
+
+    .definite-parent {
+      block-size: 400px;
+      float: left;
+    }
+
+    .lane {
+      display: flex;
+    }
+
+    .item-one {
+      background: lightcoral;
+      inline-size: 26px;
+    }
+
+    .item-two,
+    .item-three {
+      inline-size: 10px;
+    }
+
+    .item-two {
+      background: lightgreen;
+    }
+
+    .item-three {
+      background: lightskyblue;
+    }
+
+    .tall {
+      block-size: 300px;
+    }
+
+    .tall .item-one {
+      inline-size: 36px;
+    }
+
+    .short {
+      block-size: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="grid tall">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="grid tall">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="grid short">
+    <div class="lane">
+      <div class="item-one"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="definite-parent">
+    <div class="grid short">
+      <div class="lane">
+        <div class="item-one"></div>
+      </div>
+      <div class="lane">
+        <div class="item-two"></div>
+        <div class="item-three"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

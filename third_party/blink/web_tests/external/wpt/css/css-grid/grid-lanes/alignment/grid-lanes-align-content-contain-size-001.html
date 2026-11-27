@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: align-content in the stacking axis of a size contained container</title>
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#stacking-content-alignment">
+  <link rel="help" href="https://drafts.csswg.org/css-contain-2/#containment-size">
+  <link rel="match" href="grid-lanes-align-content-contain-size-001-ref.html">
+  <meta name="assert" content="Test passes if align-content aligns the stacking range within the content box of a size contained container, whether its block size is definite or comes from contain-intrinsic-height.">
+  <style>
+    .grid-lanes {
+      align-content: end;
+      background: lightgray;
+      contain: size;
+      display: grid-lanes;
+      float: left;
+      grid-template-columns: repeat(2, 20px);
+      inline-size: 40px;
+      margin-inline-end: 10px;
+    }
+
+    .definite {
+      block-size: 200px;
+      contain-intrinsic-height: 50px;
+    }
+
+    .intrinsic {
+      contain-intrinsic-height: 100px;
+    }
+
+    .item {
+      background: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-lanes definite">
+    <div class="item" style="block-size: 40px"></div>
+    <div class="item" style="block-size: 60px"></div>
+  </div>
+  <div class="grid-lanes intrinsic">
+    <div class="item" style="block-size: 40px"></div>
+    <div class="item" style="block-size: 60px"></div>
+  </div>
+</body>
+</html>

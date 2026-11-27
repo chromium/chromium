@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Space glyph in upright vertical text</title>
+<style>
+  /* U+0041 and U+0020 map to the same square outline. */
+  @font-face {
+    font-family: Box;
+    src: url(data:font/woff2;base64,d09GMgABAAAAAAFMAAoAAAAAAvQAAAEEAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAPAosQQE2AiQDBgsGAAQgBYFGByobTAIAHgnZmcztDBdeUUTEw9d+v3N39wumkXkJvJFEI5FEE7OQKonEmw6Vn/SQPMUAvO74+w5+O50PnoWYSJC2yNvi0Ju3NAkSCdMbNjUcDuFzPPKjnOtYQ+ESgPUBKpvhH/FLn7MVSMgYlQVGFdNoKkJS2ex0qK93vjsFABIoSGijB1AAqZTUGmp+DrUGf2vhpfvNU7QVCCZ2Z772Bvpr51zDz+TwF0z9y3VAlkCwVs41YQN4J3INAklbAgkAAG2nAoSMAElLFqDo0S1AU48xWZQuoanqNek3qcW4RWiW7a2794tTQauKtLBiy513O06ceXHtwLxdmWuhI0kxeRw3Hd69AwA=) format("woff2");
+  }
+  main { display: flex; gap: 3em; }
+  .sample {
+    font: 48px/1 Box;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  }
+</style>
+<p>All three columns should show three identical, vertically aligned squares.</p>
+<main>
+  <section><p><code>AAA</code> (control)</p><div class="sample">AAA</div></section>
+  <section><p><code>A A</code> (using U+0020)</p><div class="sample">AAA</div></section>
+  <section><p><code>A&nbsp;A</code> (using &amp;nbsp;)</p><div class="sample">AAA</div></section>
+</main>
+</html>

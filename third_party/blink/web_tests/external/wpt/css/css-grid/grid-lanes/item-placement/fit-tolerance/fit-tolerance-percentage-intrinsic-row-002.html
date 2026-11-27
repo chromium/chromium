@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: Intrinsic row fit-tolerance percentage basis with block size constraints</title>
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#propdef-fit-tolerance">
+  <link rel="help" href="https://drafts.csswg.org/css-sizing-3/#intrinsic-sizes">
+  <link rel="match" href="fit-tolerance-percentage-intrinsic-row-002-ref.html">
+  <meta name="assert" content="The max-content inline size of a row grid lanes container resolves fit-tolerance percentages against its block size, which its own block size, min block size and max block size determine.">
+  <style>
+    .grid-lanes {
+      background: gray;
+      display: grid-lanes;
+      fit-tolerance: 10%;
+      float: left;
+      grid-template-rows: repeat(2, 100px);
+      margin-inline-end: 10px;
+    }
+
+    .definite-parent {
+      block-size: 400px;
+      float: left;
+    }
+
+    .item-one {
+      background: lightcoral;
+      inline-size: 26px;
+    }
+
+    .item-two,
+    .item-three {
+      inline-size: 10px;
+    }
+
+    .item-two {
+      background: lightgreen;
+    }
+
+    .item-three {
+      background: lightskyblue;
+    }
+
+    /* The rows give a 300px block size, so fit-tolerance resolves to 30px. */
+    .min-block-size {
+      min-block-size: 300px;
+    }
+
+    .min-block-size .item-one,
+    .block-size .item-one {
+      inline-size: 36px;
+    }
+
+    .block-size {
+      block-size: 300px;
+    }
+
+    /* 100px block size, so fit-tolerance resolves to 10px. */
+    .max-block-size {
+      max-block-size: 100px;
+    }
+
+    /* Against the indefinite block size of the body both percentages behave as
+       auto and none, so fit-tolerance resolves to 10% of the 200px rows. */
+    .percentages {
+      block-size: 50%;
+      max-block-size: 25%;
+    }
+
+    /* 25% of 400px is 100px, so fit-tolerance resolves to 10px. */
+    .percentage-max-block-size {
+      max-block-size: 25%;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-lanes">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="grid-lanes min-block-size">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="grid-lanes block-size">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="grid-lanes max-block-size">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="grid-lanes percentages">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="definite-parent">
+    <div class="grid-lanes percentage-max-block-size">
+      <div class="item-one"></div>
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+</body>
+</html>

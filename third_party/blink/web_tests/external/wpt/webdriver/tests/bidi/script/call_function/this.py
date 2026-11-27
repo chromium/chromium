@@ -1,4 +1,5 @@
 import pytest
+import webdriver.bidi.error as error
 
 from webdriver.bidi.modules.script import ContextTarget
 
@@ -36,6 +37,54 @@ async def test_default_this(bidi_session, top_context):
     recursive_compare({
         "type": 'window',
     }, result)
+
+
+async def test_this_node(bidi_session, top_context, inline):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=inline("<div id='foo'>"), wait="complete"
+    )
+
+    node = await bidi_session.script.evaluate(
+        expression="document.querySelector('#foo')",
+        await_promise=False,
+        target=ContextTarget(top_context["context"]))
+
+    result = await bidi_session.script.call_function(
+        function_declaration="function() { return this === document.querySelector('#foo'); }",
+        this=node,
+        await_promise=False,
+        target=ContextTarget(top_context["context"]))
+
+    assert result == {"type": "boolean", "value": True}
+
+
+async def test_arguments_deserialized_before_this(bidi_session, top_context):
+    # The arguments are deserialized before "this", so an invalid argument
+    # fails the command even when "this" references an unknown node.
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.script.call_function(
+            function_declaration="function() {}",
+            arguments=[{"type": "date", "value": "foo"}],
+            this={"sharedId": "foo"},
+            await_promise=False,
+            target=ContextTarget(top_context["context"]))
+
+
+@pytest.mark.parametrize(
+    "parameters",
+    [{"arguments": [{"sharedId": "foo"}]}, {"this": {"sharedId": "foo"}}],
+    ids=["arguments", "this"],
+)
+async def test_deserialized_before_function_declaration(bidi_session, top_context, parameters):
+    # The arguments and "this" are deserialized before the function declaration
+    # is evaluated, so an unknown node fails the command even when the
+    # declaration doesn't evaluate to a function.
+    with pytest.raises(error.NoSuchNodeException):
+        await bidi_session.script.call_function(
+            function_declaration="42",
+            await_promise=False,
+            target=ContextTarget(top_context["context"]),
+            **parameters)
 
 
 @pytest.mark.parametrize(

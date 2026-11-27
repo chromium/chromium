@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] htmlCustomElementRegistry reflects as a string
+  assert_equals: expected (string) "" but got (undefined) undefined
+[FAIL] A non-empty customelementregistry value has boolean attribute semantics
+  assert_equals: expected (string) "named" but got (undefined) undefined
+[FAIL] innerHTML gives an element with customelementregistry and its descendants a null registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] customelementregistry has no parser effect on non-HTML elements
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] Adoption preserves a parser-created intentionally null registry subtree
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Cloning and adopting preserves a parser-created intentionally null registry subtree
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Importing does not apply a fallback registry to an intentionally null registry subtree
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Importing with an explicit registry leaves an intentionally null registry subtree to initialize()
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] Changing the attribute after parsing does not change the established registry boundary
+  assert_equals: expected "<div customelementregistry=\\"\\"><span></span></div>" but got "<div><span></span></div>"
+[FAIL] Initial parse: a non-empty customelementregistry value has boolean semantics
+  assert_equals: expected (string) "named" but got (undefined) undefined
+Harness: the test ran to completion.
+

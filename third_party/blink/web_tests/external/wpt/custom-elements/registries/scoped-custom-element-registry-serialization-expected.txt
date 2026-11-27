@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] A null registry child of a global registry parent serializes the attribute
+  assert_equals: expected "<span customelementregistry=\\"\\"></span>" but got "<span></span>"
+[FAIL] Serialization entry points agree for a scoped registry boundary
+  assert_equals: expected "<span customelementregistry=\\"\\"></span>" but got "<span></span>"
+[FAIL] A different scoped registry child serializes the attribute
+  assert_equals: expected "<span customelementregistry=\\"\\"></span>" but got "<span></span>"
+[FAIL] A detached null registry element serializes the attribute
+  assert_equals: expected "<div customelementregistry=\\"\\"></div>" but got "<div></div>"
+[FAIL] A detached scoped registry element serializes the attribute
+  assert_equals: expected "<div customelementregistry=\\"\\"></div>" but got "<div></div>"
+[FAIL] A null registry element in a DocumentFragment serializes the attribute like a detached one
+  assert_equals: expected "<div customelementregistry=\\"\\"></div>" but got "<div></div>"
+[FAIL] A null registry shadow tree child serializes a boundary from a global registry ShadowRoot
+  assert_equals: expected "<span customelementregistry=\\"\\"></span>" but got "<span></span>"
+[FAIL] A synthesized registry attribute precedes content attributes
+  assert_equals: expected "<span customelementregistry=\\"\\" id=\\"target\\"></span>" but got "<span id=\\"target\\"></span>"
+[FAIL] A serialized null registry boundary survives reparsing without redundant markers
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] A serialized scoped registry boundary reparses as null and can be initialized
+  assert_equals: expected "<section customelementregistry=\\"\\"></section>" but got "<section></section>"
+[FAIL] A literal attribute on a non-HTML element serializes without registry semantics
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

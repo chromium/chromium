@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>CSS Grid Layout Test: Overflowing grid item with an auto margin in the inline axis</title>
+<link rel="author" title="Yulun Wu" href="mailto:yulun_wu@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#auto-margins">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#justify-self-property">
+<link rel="match" href="grid-item-auto-margins-overflow-001-ref.html">
+<meta name="assert" content="Checks that a grid item overflowing its grid area in the inline axis resolves its auto margin to zero and ignores justify-self.">
+<style>
+.grid {
+  display: grid;
+  grid-template-columns: 50px 50px;
+}
+.filler {
+  background-color: red;
+}
+.item {
+  grid-area: 1 / 1;
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  justify-self: unsafe end;
+  background-color: green;
+}
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div class="grid">
+  <div class="filler"></div>
+  <div class="item"></div>
+</div>

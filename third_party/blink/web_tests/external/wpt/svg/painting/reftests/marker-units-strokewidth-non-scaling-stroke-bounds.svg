@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>Markers: markerUnits=strokeWidth with vector-effect=non-scaling-stroke under a scale-down transform is not culled</title>
+  <h:link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/painting.html#MarkerUnitsAttribute"/>
+  <h:link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/coords.html#VectorEffects"/>
+  <h:link rel="match" href="marker-units-strokewidth-non-scaling-stroke-bounds-ref.svg"/>
+  <h:meta name="assert" content="The bounds of a marker with markerUnits=strokeWidth on a non-scaling-stroke shape use the same adjusted stroke width as painting, so the marker is not culled when only its painted area is visible."/>
+
+  <marker id="m" orient="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20">
+    <rect width="20" height="20" fill="green"/>
+  </marker>
+  <svg width="100" height="100">
+    <rect width="100" height="100" fill="red"/>
+    <line x1="-600" y1="-600" x2="-700" y2="-600" vector-effect="non-scaling-stroke"
+          stroke="red" stroke-width="10" marker-start="url(#m)"
+          transform="scale(0.1)"/>
+  </svg>
+</svg>

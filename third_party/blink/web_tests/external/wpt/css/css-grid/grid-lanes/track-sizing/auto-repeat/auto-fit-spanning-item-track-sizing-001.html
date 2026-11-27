@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<title>CSS Grid Lanes Test: spanning auto-placed items don't size tracks from positions that span a collapsed track</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#repeat-auto-fit">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#track-sizing">
+<meta name="assert" content="Test passes if a spanning auto-placed item only contributes to track sizes from start positions whose tracks repeat(auto-fit) does not collapse.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.grid-lanes {
+    display: grid-lanes;
+    fit-tolerance: 0;
+}
+.content {
+    width: 300px;
+    height: 300px;
+}
+</style>
+<div class="grid-lanes" id="repetition" style="grid-template-columns: repeat(auto-fit, minmax(100px, max-content)); width: 500px">
+  <div style="grid-column: span 2"><div class="content"></div></div>
+</div>
+<div class="grid-lanes" id="after-repetition" style="grid-template-columns: repeat(auto-fit, 100px) minmax(50px, max-content); width: 500px">
+  <div style="grid-column: span 2"><div class="content"></div></div>
+</div>
+<div class="grid-lanes" id="rows" style="grid-template-rows: repeat(auto-fit, minmax(100px, max-content)); height: 500px">
+  <div style="grid-row: span 2"><div class="content"></div></div>
+</div>
+<div style="float: left">
+  <div class="grid-lanes" id="flexible" style="grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); max-width: 2000px">
+    <div style="grid-column: span 2"><div class="content"></div></div>
+  </div>
+</div>
+<script>
+function checkTracks(id, property, expected, description) {
+    test(() => {
+        assert_equals(getComputedStyle(document.getElementById(id)).getPropertyValue(property), expected);
+    }, description);
+}
+checkTracks("repetition", "grid-template-columns", "150px 150px 0px 0px 0px", "A spanning item doesn't size a track from a position that spans a collapsed track of the repetition");
+checkTracks("after-repetition", "grid-template-columns", "100px 100px 0px 0px 50px", "A spanning item doesn't size a track after the repetition from a position that spans a collapsed track");
+checkTracks("rows", "grid-template-rows", "150px 150px 0px 0px 0px", "A spanning item doesn't size a row from a position that spans a collapsed row");
+checkTracks("flexible", "grid-template-columns", "150px 150px 0px 0px 0px 0px", "A spanning item doesn't size flexible tracks from a position that spans a collapsed track");
+test(() => {
+    assert_equals(document.getElementById("flexible").offsetWidth, 300);
+}, "The max-content width of a container with flexible tracks comes from positions that don't span a collapsed track");
+</script>
+</html>

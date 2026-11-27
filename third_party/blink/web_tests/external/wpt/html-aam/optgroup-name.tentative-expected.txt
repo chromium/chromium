@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] first element child legend takes precedence over the label attribute
-  assert_equals: <optgroup label="attribute" class="ex" data-testname="first element child legend takes precedence over the label attribute" data-expectedlabel="legend">\n    <legend>legend</legend>\n    <option>c</option>\n  </optgroup> expected "legend" but got "attribute"
-Harness: the test ran to completion.
-

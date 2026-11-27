@@ -1,7 +1,7 @@
 import pytest
 import pytest_asyncio
 
-from webdriver.bidi.modules.input import Actions
+from webdriver.bidi.modules.input import Actions, get_element_origin
 from webdriver.bidi.modules.script import ContextTarget
 
 from .. import wait_for_events
@@ -197,3 +197,48 @@ async def test_pointer_moves_in_one_tick_are_dispatched_concurrently(
     for row in (100, 300):
         row_events = [event for event in events if round(event["clientY"]) == row]
         assert row_events[-1]["clientX"] == pytest.approx(350, abs=1.0)
+
+
+async def test_scroll_and_pointer_move_in_one_tick_are_interspersed(
+    bidi_session, configuration, top_context, inline, get_element
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=inline(
+            "<div id='target' style='width: 200px; height: 200px; overflow: scroll'>"
+            "<div style='height: 1000px'></div>"
+            "</div>"
+            "<script>"
+            "window.allEvents = { events: [] };"
+            "window.addEventListener('wheel', event => window.allEvents.events.push({ type: event.type }));"
+            "window.addEventListener('mousemove', event => window.allEvents.events.push({ type: event.type }));"
+            "</script>"
+        ),
+        wait="complete",
+    )
+
+    target = await get_element("#target")
+
+    duration = DURATION * configuration["timeout_multiplier"]
+    actions = Actions()
+    actions.add_wheel().scroll(
+        x=0, y=0, delta_x=0, delta_y=150, duration=duration,
+        origin=get_element_origin(target),
+    )
+    actions.add_pointer().pointer_move(
+        x=80, y=80, duration=duration, origin=get_element_origin(target)
+    )
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    events = await wait_for_events(bidi_session, top_context["context"], min_count=2)
+    types = [event["type"] for event in events]
+    assert "wheel" in types
+    assert "mousemove" in types
+
+    # The scroll and the pointer move are both timed from the start of the
+    # tick and run in parallel, so a move comes before the last wheel event.
+    first_move = types.index("mousemove")
+    last_wheel = len(types) - 1 - types[::-1].index("wheel")
+    assert first_move < last_wheel, f"Events were not interspersed: {types}"

@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Masking: clipPath use child with a CSS transform and transform-origin (reference)</title>
+<svg width="300" height="300">
+  <clipPath id="c"><rect transform="rotate(30 100 100)" x="70" y="60" width="100" height="100"/></clipPath>
+  <rect width="300" height="300" fill="green" clip-path="url(#c)"/>
+</svg>

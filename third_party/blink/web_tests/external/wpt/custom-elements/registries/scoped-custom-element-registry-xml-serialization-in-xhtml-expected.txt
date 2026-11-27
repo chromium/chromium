@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] XMLSerializer uses the document context for a detached null registry element
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer uses the document context for a detached scoped registry element
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer handles a null registry child of a global registry parent
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer handles a scoped registry child of a global registry parent
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer handles a other registry child of a scoped registry parent
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer handles a scoped registry child of a null registry parent
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer handles a null registry child of a scoped registry parent
+  assert_equals: expected true but got false
+[FAIL] XMLSerializer compares an element with its parent registry, like outerHTML
+  assert_true: expected true got false
+[FAIL] XML serialization keeps each sibling registry context independent
+  assert_array_equals: expected property 0 to be true but got false (expected array [true, false, true, true] got [false, false, false, false])
+[FAIL] A namespaced attribute does not suppress the generated XML registry attribute
+  assert_equals: expected (string) "" but got (object) null
+[FAIL] XML serialization detects an HTML registry boundary inside a foreign element
+  assert_true: expected true got false
+[FAIL] XML document serialization propagates registry context from the document root
+  assert_true: expected true got false
+[FAIL] XMLSerializer uses the document context for top-level fragment children
+  assert_array_equals: expected property 0 to be true but got false (expected array [true, true, false] got [false, false, false])
+[FAIL] XMLSerializer uses the shadow root registry context for shadow root children
+  assert_array_equals: expected property 1 to be true but got false (expected array [false, true] got [false, false])
+[FAIL] An XML-serialized scoped registry boundary reparses as null and can be initialized
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] XML-document innerHTML serializes its children with the parent registry context
+  assert_true: expected true got false
+[FAIL] XML-document outerHTML treats an exclusive DocumentFragment parent like no parent
+  assert_true: expected true got false
+[FAIL] XML registry attribute matching is case-sensitive
+  assert_equals: expected (string) "" but got (object) null
+Harness: the test ran to completion.
+

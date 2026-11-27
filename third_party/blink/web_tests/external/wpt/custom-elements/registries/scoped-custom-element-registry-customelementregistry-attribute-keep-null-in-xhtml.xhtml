@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#attr-customelementregistry"/>
+<link rel="help" href="https://dom.spec.whatwg.org/#element-keep-custom-element-registry-null"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<a-b id="non-empty" customelementregistry="named"></a-b>
+<div id="parent" customelementregistry=""><span id="child"></span><svg xmlns="http://www.w3.org/2000/svg" id="svg-child"><g id="svg-grandchild"/></svg></div>
+<svg xmlns="http://www.w3.org/2000/svg" id="svg-with-attribute" customelementregistry=""><g id="svg-with-attribute-child"/></svg>
+<script>
+<![CDATA[
+
+test(() => {
+    const element = document.getElementById('non-empty');
+    assert_equals(element.customElementRegistry, null);
+    assert_equals(element.htmlCustomElementRegistry, 'named');
+}, `XHTML parser should use null registry for a non-empty customelementregistry value`);
+
+test(() => {
+    assert_equals(document.getElementById('parent').customElementRegistry, null);
+    assert_equals(document.getElementById('child').customElementRegistry, null);
+    assert_equals(document.getElementById('svg-child').customElementRegistry, null);
+    assert_equals(document.getElementById('svg-grandchild').customElementRegistry, null);
+}, `XHTML parser should give descendants of an element with customelementregistry a null registry`);
+
+test(() => {
+    assert_equals(document.getElementById('svg-with-attribute').customElementRegistry, window.customElements);
+    assert_equals(document.getElementById('svg-with-attribute-child').customElementRegistry, window.customElements);
+}, `XHTML parser should ignore customelementregistry on non-HTML elements`);
+
+]]>
+</script>
+</body>
+</html>

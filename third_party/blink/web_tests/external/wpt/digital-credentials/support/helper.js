@@ -385,3 +385,42 @@ export function makeGetOptionsWithArbitraryProtocol(protocol, data = {}, signal)
 
   return options;
 }
+
+/**
+ * Calls get() with the given request, aborts it immediately, and checks that
+ * the promise rejects with expectedError: a TypeError constructor, or "AbortError".
+ *
+ * @param {object} t - The testharness Test object.
+ * @param {GetProtocol} protocol - The protocol of the request.
+ * @param {object} data - The request data.
+ * @param {typeof TypeError | "AbortError"} expectedError
+ * @returns {Promise<void>}
+ */
+export async function checkRequest(t, protocol, data, expectedError) {
+  const abortController = new AbortController();
+  const options = makeGetOptions({
+    protocol,
+    data,
+    signal: abortController.signal,
+  });
+
+  await test_driver.bless("user activation");
+  const promise = navigator.credentials.get(options);
+  abortController.abort();
+
+  if (expectedError === "AbortError") {
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      promise,
+      "Valid request should pass validation and reject with AbortError",
+    );
+  } else {
+    await promise_rejects_js(
+      t,
+      expectedError,
+      promise,
+      "Invalid request should reject with the expected error",
+    );
+  }
+}

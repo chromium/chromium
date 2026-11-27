@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Serialization of scoped custom element registry boundaries</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/custom-elements.html#attr-customelementregistry">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+function elementWithRegistry(localName, registry) {
+  return document.createElement(localName, {customElementRegistry: registry});
+}
+
+test(() => {
+  const parent = document.createElement('div');
+  const child = document.createElement('span');
+  parent.append(child);
+  assert_equals(child.customElementRegistry, customElements);
+  assert_equals(parent.innerHTML, '<span></span>');
+}, 'A global registry child of a global registry parent does not serialize the attribute');
+
+test(() => {
+  const parent = document.createElement('div');
+  const child = elementWithRegistry('span', null);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, null);
+  assert_equals(parent.innerHTML, '<span customelementregistry=""></span>');
+}, 'A null registry child of a global registry parent serializes the attribute');
+
+test(() => {
+  const parent = document.createElement('div');
+  const registry = new CustomElementRegistry();
+  const child = elementWithRegistry('span', registry);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, registry);
+  const expected = '<span customelementregistry=""></span>';
+  assert_equals(parent.innerHTML, expected);
+  assert_equals(parent.getHTML(), expected);
+  assert_equals(child.outerHTML, expected);
+}, 'Serialization entry points agree for a scoped registry boundary');
+
+test(() => {
+  const parent = elementWithRegistry('div', null);
+  const child = elementWithRegistry('span', null);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, null);
+  assert_equals(parent.innerHTML, '<span></span>');
+}, 'A null registry child of a null registry parent does not redundantly serialize the attribute');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const parent = elementWithRegistry('div', registry);
+  const child = elementWithRegistry('span', registry);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, registry);
+  assert_equals(parent.innerHTML, '<span></span>');
+  assert_equals(parent.getHTML(), '<span></span>');
+  assert_equals(child.outerHTML, '<span></span>');
+}, 'Serialization entry points omit a child using the same scoped registry as its parent');
+
+test(() => {
+  const parent = elementWithRegistry('div', null);
+  const child = elementWithRegistry('span', null);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, null);
+  assert_equals(child.outerHTML, '<span></span>');
+}, 'outerHTML omits the attribute when a null registry matches its parent');
+
+test(() => {
+  const parent = elementWithRegistry('div', new CustomElementRegistry());
+  const childRegistry = new CustomElementRegistry();
+  const child = elementWithRegistry('span', childRegistry);
+  parent.append(child);
+  assert_equals(child.customElementRegistry, childRegistry);
+  assert_equals(parent.innerHTML, '<span customelementregistry=""></span>');
+}, 'A different scoped registry child serializes the attribute');
+
+test(() => {
+  const parent = elementWithRegistry('div', null);
+  const child = document.createElement('span');
+  parent.append(child);
+  assert_equals(child.customElementRegistry, customElements);
+  assert_equals(parent.innerHTML, '<span></span>');
+}, 'A global registry child of a null registry parent does not serialize an inverse marker');
+
+test(() => {
+  const parent = elementWithRegistry('div', new CustomElementRegistry());
+  const child = document.createElement('span');
+  parent.append(child);
+  assert_equals(child.customElementRegistry, customElements);
+  assert_equals(parent.innerHTML, '<span></span>');
+}, 'A global registry child of a scoped registry parent does not serialize an inverse marker');
+
+test(() => {
+  const element = document.createElement('div');
+  assert_equals(element.outerHTML, '<div></div>');
+}, 'A detached global registry element does not serialize the attribute');
+
+test(() => {
+  const element = elementWithRegistry('div', null);
+  assert_equals(element.customElementRegistry, null);
+  assert_equals(element.outerHTML, '<div customelementregistry=""></div>');
+}, 'A detached null registry element serializes the attribute');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const element = elementWithRegistry('div', registry);
+  assert_equals(element.customElementRegistry, registry);
+  assert_equals(element.outerHTML, '<div customelementregistry=""></div>');
+}, 'A detached scoped registry element serializes the attribute');
+
+test(() => {
+  const fragment = document.createDocumentFragment();
+  const element = elementWithRegistry('div', null);
+  fragment.append(element);
+  assert_equals(element.outerHTML, '<div customelementregistry=""></div>');
+}, 'A null registry element in a DocumentFragment serializes the attribute like a detached one');
+
+test(() => {
+  const host = document.createElement('div');
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry: null});
+  const child = elementWithRegistry('span', null);
+  shadow.append(child);
+  assert_equals(child.customElementRegistry, null);
+  assert_equals(shadow.innerHTML, '<span></span>');
+  assert_equals(shadow.getHTML(), '<span></span>');
+}, 'A shadow tree child compares against its null registry ShadowRoot');
+
+test(() => {
+  const host = document.createElement('div');
+  const shadow = host.attachShadow({mode: 'open'});
+  const child = elementWithRegistry('span', null);
+  shadow.append(child);
+  assert_equals(child.customElementRegistry, null);
+  const expected = '<span customelementregistry=""></span>';
+  assert_equals(shadow.innerHTML, expected);
+  assert_equals(shadow.getHTML(), expected);
+}, 'A null registry shadow tree child serializes a boundary from a global registry ShadowRoot');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const host = elementWithRegistry('div', registry);
+  const shadow = host.attachShadow({mode: 'open', customElementRegistry: registry});
+  const child = elementWithRegistry('span', registry);
+  shadow.append(child);
+  assert_equals(child.customElementRegistry, registry);
+  assert_equals(shadow.innerHTML, '<span></span>');
+  assert_equals(shadow.getHTML(), '<span></span>');
+}, 'ShadowRoot serialization omits a child using the same scoped registry');
+
+test(() => {
+  const template = document.createElement('template');
+  template.innerHTML = '<span></span>';
+  assert_equals(template.content.firstElementChild.customElementRegistry, null);
+  assert_equals(template.innerHTML, '<span></span>');
+  assert_equals(template.getHTML(), '<span></span>');
+}, 'Template serialization uses the template contents registry');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.innerHTML = '<template><span></span></template>';
+  assert_equals(
+      parent.innerHTML, '<template><span></span></template>');
+  assert_equals(
+      parent.getHTML(), '<template><span></span></template>');
+}, 'Nested template serialization uses the template contents registry');
+
+test(() => {
+  const parent = document.createElement('div');
+  const child = elementWithRegistry('span', null);
+  child.id = 'target';
+  parent.append(child);
+  assert_equals(
+      parent.innerHTML,
+      '<span customelementregistry="" id="target"></span>');
+}, 'A synthesized registry attribute precedes content attributes');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.setHTMLUnsafe('<span customelementregistry="named"></span>');
+  assert_equals(
+      parent.innerHTML, '<span customelementregistry="named"></span>');
+}, 'Serialization preserves an existing non-empty attribute value');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.setHTMLUnsafe(
+      '<section customelementregistry><span></span></section>');
+  assert_equals(
+      parent.innerHTML,
+      '<section customelementregistry=""><span></span></section>');
+}, 'Serialization does not repeat the attribute through a null registry subtree');
+
+test(() => {
+  const source = document.createElement('div');
+  const nullRoot = elementWithRegistry('section', null);
+  nullRoot.append(elementWithRegistry('span', null));
+  source.append(nullRoot, document.createElement('aside'));
+
+  const target = document.createElement('div');
+  target.setHTMLUnsafe(source.innerHTML);
+  assert_equals(target.firstElementChild.customElementRegistry, null);
+  assert_equals(
+      target.firstElementChild.firstElementChild.customElementRegistry, null);
+  assert_equals(target.lastElementChild.customElementRegistry, customElements);
+}, 'A serialized null registry boundary survives reparsing without redundant markers');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const source = document.createElement('div');
+  const element = elementWithRegistry('section', registry);
+  source.append(element);
+
+  assert_false(element.hasAttribute('customelementregistry'));
+  const serialized = source.innerHTML;
+  assert_equals(
+      serialized, '<section customelementregistry=""></section>');
+
+  const target = document.createElement('div');
+  target.setHTMLUnsafe(serialized);
+  const parsedElement = target.firstElementChild;
+  assert_equals(parsedElement.customElementRegistry, null);
+
+  registry.initialize(parsedElement);
+  assert_equals(parsedElement.customElementRegistry, registry);
+}, 'A serialized scoped registry boundary reparses as null and can be initialized');
+
+test(() => {
+  const nullParent = elementWithRegistry('div', null);
+  nullParent.setHTMLUnsafe('<svg><g></g></svg>');
+  const svg = nullParent.firstElementChild;
+  assert_equals(svg.customElementRegistry, null);
+
+  const globalParent = document.createElement('div');
+  globalParent.append(svg);
+  assert_equals(svg.customElementRegistry, null);
+  assert_equals(globalParent.innerHTML, '<svg><g></g></svg>');
+}, 'A registry boundary on a non-HTML element does not synthesize the attribute');
+
+test(() => {
+  const parent = document.createElement('div');
+  parent.setHTMLUnsafe('<svg customelementregistry></svg>');
+  const svg = parent.firstElementChild;
+  assert_equals(svg.customElementRegistry, customElements);
+  assert_equals(
+      parent.innerHTML, '<svg customelementregistry=""></svg>');
+}, 'A literal attribute on a non-HTML element serializes without registry semantics');
+</script>

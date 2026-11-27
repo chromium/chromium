@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<title>Geometry and hit-testing of SVG text in a transformed group</title>
+<link rel="author" title="Nikolas Zimmermann" href="mailto:nzimmermann@igalia.com">
+<link rel="help" href="https://w3c.github.io/csswg-drafts/cssom-view-1/#dom-element-getclientrects">
+<link rel="help" href="https://w3c.github.io/csswg-drafts/cssom-view-1/#dom-range-getboundingclientrect">
+<link rel="help" href="https://w3c.github.io/csswg-drafts/cssom-view-1/#dom-document-caretpositionfrompoint">
+<link rel="help" href="https://w3c.github.io/csswg-drafts/cssom-view-1/#dom-element-scrollintoview">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/text.html#TextElement">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+body { margin: 0; }
+svg { display: block; }
+text { font: 20px Ahem; }
+</style>
+<svg width="500" height="300">
+  <g transform="translate(50, 100)">
+    <text id="text" x="50" y="150">Hel<tspan id="tspan" x="200" y="170">lo World</tspan></text>
+  </g>
+  <text id="fractionalText" x="10.3" y="40.7">ab<tspan id="fractionalTspan">cd</tspan></text>
+</svg>
+<div id="scroller" style="width: 300px; height: 100px; overflow: scroll">
+  <svg width="500" height="1000">
+    <g transform="translate(50, 300)">
+      <rect id="scrollRect" x="50" y="200" width="20" height="20"/>
+      <text id="scrollText" x="50" y="350">Hel<tspan id="scrollTspan" x="200" y="370">lo World</tspan></text>
+    </g>
+  </svg>
+</div>
+<script>
+setup({ explicit_done: true });
+
+function assert_rect(rect, expected) {
+  assert_array_equals([rect.x, rect.y, rect.width, rect.height], expected);
+}
+
+function rangeRect(node, start, end) {
+  const range = document.createRange();
+  range.setStart(node, start);
+  range.setEnd(node, end);
+  return range.getBoundingClientRect();
+}
+
+document.fonts.ready.then(() => {
+  const textNode = text.firstChild;
+  const tspanNode = tspan.firstChild;
+
+  test(() => assert_rect(text.getBoundingClientRect(), [100, 234, 310, 40]), "<text> bounding client rect");
+  test(() => {
+    assert_rect(tspan.getBoundingClientRect(), [250, 254, 160, 20]);
+    assert_equals(tspan.getClientRects().length, 1);
+    assert_rect(tspan.getClientRects()[0], [250, 254, 160, 20]);
+  }, "<tspan> client rects");
+  test(() => assert_rect(rangeRect(textNode, 0, 3), [100, 234, 60, 20]), "Range around text node");
+  test(() => assert_rect(rangeRect(textNode, 1, 2), [120, 234, 20, 20]), "Range around single character");
+  test(() => assert_rect(rangeRect(tspanNode, 0, 8), [250, 254, 160, 20]), "Range around <tspan> text node");
+
+  test(() => {
+    const position = document.caretPositionFromPoint(125, 244);
+    assert_equals(position.offsetNode, textNode);
+    assert_equals(position.offset, 1);
+  }, "caretPositionFromPoint() in <text>");
+  test(() => {
+    const position = document.caretPositionFromPoint(275, 264);
+    assert_equals(position.offsetNode, tspanNode);
+    assert_equals(position.offset, 1);
+  }, "caretPositionFromPoint() in <tspan>");
+
+  test(() => {
+    const tspanRect = fractionalTspan.getBoundingClientRect();
+    const textRect = rangeRect(fractionalTspan.firstChild, 0, 2);
+    assert_approx_equals(tspanRect.x, 50.3, 0.01, "x");
+    assert_approx_equals(tspanRect.y, 24.7, 0.01, "y");
+    assert_array_equals([tspanRect.x, tspanRect.y, tspanRect.width, tspanRect.height], [textRect.x, textRect.y, textRect.width, textRect.height]);
+  }, "<tspan> and its text node agree at a fractional position");
+
+  // The scroller content starts at y=0 and the group adds 300. Ahem's ascent at 20px is 16px,
+  // so the top of a text is its y + 300 - 16.
+  for (const [element, expectedScrollTop] of [[scrollRect, 500], [scrollText, 634], [scrollTspan, 654]]) {
+    test(() => {
+      scroller.scrollTop = 0;
+      element.scrollIntoView();
+      assert_equals(scroller.scrollTop, expectedScrollTop);
+    }, `scrollIntoView() of <${element.localName}>`);
+  }
+
+  done();
+});
+</script>

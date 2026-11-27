@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>timeline-scope applies to the element declaring it, not only its descendants</title>
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#timeline-scope">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+
+<main id=main></main>
+<script>
+  async function inflate(t, template) {
+    t.add_cleanup(() => main.replaceChildren());
+    return runAndWaitForFrameUpdate(() => {
+       main.append(template.content.cloneNode(true));
+    });
+  }
+</script>
+<style>
+  @keyframes anim {
+    from { width: 100px; }
+    to { width: 200px; }
+  }
+  .scroller {
+    overflow: auto;
+    height: 100px;
+    width: 100px;
+  }
+  .content {
+    height: 200px;
+  }
+  .target {
+    width: 10px;
+    animation: anim linear;
+  }
+</style>
+
+<template id=scope_on_animated_element>
+  <div class=target style="timeline-scope: --t; animation-timeline: --t">
+    <div class=scroller style="scroll-timeline: --t">
+      <div class=content></div>
+    </div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    await inflate(t, scope_on_animated_element);
+    const target = main.querySelector('.target');
+    const scroller = main.querySelector('.scroller');
+
+    const anim = target.getAnimations()[0];
+    assert_equals(anim.timeline.source, scroller, 'timeline source is the descendant scroller');
+    scroller.scrollTop = 50;
+    await waitForNextFrame();
+    assert_equals(getComputedStyle(target).width, '150px');
+  }, 'An element can reference a descendant timeline through its own timeline-scope');
+</script>
+
+<template id=scope_on_timeline_element>
+  <div style="timeline-scope: --t">
+    <div class=scroller style="scroll-timeline: --t; timeline-scope: --t">
+      <div class=content></div>
+    </div>
+    <div class=target style="animation-timeline: --t"></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    await inflate(t, scope_on_timeline_element);
+    const target = main.querySelector('.target');
+    const scroller = main.querySelector('.scroller');
+
+    scroller.scrollTop = 50;
+    await waitForNextFrame();
+    const anim = target.getAnimations()[0];
+    assert_equals(anim.timeline, null, 'animation is not associated with a timeline');
+    assert_equals(getComputedStyle(target).width, '10px');
+  }, 'A timeline-scope on the timeline-declaring element keeps the timeline from ' +
+     'being hoisted to an outer timeline-scope');
+</script>

@@ -7,7 +7,7 @@
 <script>
 function run_checks(element) {
   assert_equals(element.onclick, null);
-  let ran = false;
+  window.ran = false;
   // attribute change steps
   element.setAttribute('onclick', 'window.ran = true;');
   assert_equals(element.onclick, null);
@@ -16,10 +16,10 @@ function run_checks(element) {
   // IDL attribute setter; determining the target of an event handler only
   // returns null for a body or frameset element, see
   // event-handler-attributes-windowless-body.html
-  element.onclick = () => ran = true;
+  element.onclick = () => window.ran = true;
   assert_equals(typeof element.onclick, 'function');
   element.dispatchEvent(new Event('click'));
-  assert_true(ran);
+  assert_true(window.ran);
 }
 
 test(() => {

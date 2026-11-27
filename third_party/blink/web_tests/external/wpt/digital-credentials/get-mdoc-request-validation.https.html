@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Digital Credential API: Protocol Validation (org-iso-mdoc)</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script type="module">
+  import { makeCanonicalGetRequest, checkRequest } from "./support/helper.js";
+
+  const {
+    deviceRequest: CANONICAL_DEVICE_REQUEST_STR,
+    encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+  } = makeCanonicalGetRequest("org-iso-mdoc").data;
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: CANONICAL_DEVICE_REQUEST_STR,
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+      },
+      "AbortError",
+    );
+  }, "the canonical request");
+
+  promise_test(async (t) => {
+    await checkRequest(
+      t,
+      "org-iso-mdoc",
+      {
+        deviceRequest: CANONICAL_DEVICE_REQUEST_STR,
+        encryptionInfo: CANONICAL_ENCRYPTION_INFO,
+        toJSON() {
+          return null;
+        },
+      },
+      TypeError,
+    );
+  }, "request with toJSON returning null");
+</script>

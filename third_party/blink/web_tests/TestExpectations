@@ -2547,6 +2547,15 @@ crbug.com/579037499 [ Mac14 ] external/wpt/html/document-isolation-policy/naviga
 crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/navigate-across-policies.tentative.https.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-grid/grid-lanes/alignment/grid-lanes-align-content-contain-size-001.html [ Failure ]
+external/wpt/css/css-page/page-name-multicol-001-print.html [ Failure ]
+external/wpt/css/motion/offset-path-ray-out-of-flow-move-001.html [ Failure ]
+[ Linux ] external/wpt/digital-credentials/abort-during-validation.https.html [ Crash ]
+[ Win ] external/wpt/digital-credentials/abort-during-validation.https.html [ Crash Pass ]
+[ Mac ] external/wpt/digital-credentials/abort-during-validation.https.html [ Pass Timeout ]
+external/wpt/svg/text/reftests/text-path-transformed-fill-box-path-after-text.html [ Failure ]
+external/wpt/webdriver/tests/bidi/script/call_function/this.py [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-page/page-name-multicol-001-print.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-atomic-inline-001.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-inline-box-001.html [ Failure ]
 crbug.com/590399623 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-inline-box-002.html [ Failure ]

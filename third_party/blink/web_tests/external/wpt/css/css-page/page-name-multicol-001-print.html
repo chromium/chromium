@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>Named pages propagate through multicol containers</title>
+<link rel="author" title="Andrew Martinez" href="mailto:amartinez55@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-page-3/#using-named-pages">
+<link rel="match" href="page-name-multicol-001-print-ref.html">
+<style>
+.multicol { columns: 2; }
+</style>
+<div class="multicol"><div style="page: b">1st page</div></div>
+<div style="page: b">Also 1st page</div>
+<div class="multicol"><div style="page: b">Still 1st page</div></div>
+<div class="multicol"><div style="page: c">2nd page</div></div>
+<div style="page: d">3rd page</div>

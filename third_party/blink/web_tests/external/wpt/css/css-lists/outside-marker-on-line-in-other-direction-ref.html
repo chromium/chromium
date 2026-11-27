@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Lists: an outside marker stays on its list item's inline start side when its first line runs the other way (reference)</title>
+<style>
+  ul { width: 200px; margin: 0 60px; padding: 0 40px; font: 20px/20px monospace; }
+  .square { list-style-type: square; }
+  .string { list-style-type: "X"; }
+  .image { list-style-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='14'><rect width='10' height='14' fill='green'/></svg>"); }
+  .boxed { margin: 0 4px 0 6px; border-style: solid; border-color: transparent; border-width: 0 3px 0 5px; padding: 0 7px 0 9px; }
+</style>
+
+<p>The test passes if the bullets of the left to right list items are on the left, and those of the right to left list items are on the right.</p>
+
+<ul><li dir="ltr"><div style="text-align: right">XX</div></li></ul>
+<ul class="square"><li dir="ltr"><div style="text-align: right">XX</div></li></ul>
+<ul class="string"><li dir="ltr"><div style="text-align: right">XX</div></li></ul>
+<ul class="image"><li dir="ltr"><div style="text-align: right">XX</div></li></ul>
+<ul><li dir="ltr"><div style="text-align: right" class="boxed">XX</div></li></ul>
+<ul><li dir="rtl"><div style="text-align: left">XX</div></li></ul>
+<ul class="square"><li dir="rtl"><div style="text-align: left">XX</div></li></ul>
+<ul class="string"><li dir="rtl"><div style="text-align: left">XX</div></li></ul>
+<ul class="image"><li dir="rtl"><div style="text-align: left">XX</div></li></ul>
+<ul><li dir="rtl"><div style="text-align: left" class="boxed">XX</div></li></ul>

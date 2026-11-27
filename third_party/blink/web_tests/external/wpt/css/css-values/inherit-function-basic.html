@@ -169,3 +169,91 @@
     assert_equals(getComputedStyle(inheritCss).backgroundImage, `image-set(url("${url}") 1dppx)`);
   }, 'inherit() of an attr()-tainted value stays tainted');
 </script>
+
+<template id=inherit_root_registered_properties>
+  <style>
+    @property --ident-inherited {
+      syntax: "<custom-ident>";
+      inherits: true;
+      initial-value: initial-inherited;
+    }
+    @property --ident-non-inherited {
+      syntax: "<custom-ident>";
+      inherits: false;
+      initial-value: initial-non-inherited;
+    }
+    :root {
+      --ident-inherited: inherit(--ident-inherited, fallback);
+      --ident-non-inherited: inherit(--ident-non-inherited, fallback);
+      --ident-unregistered: inherit(--ident-unregistered, fallback);
+    }
+  </style>
+</template>
+<script>
+  test((t) => {
+    main.append(inherit_root_registered_properties.content.cloneNode(true));
+    t.add_cleanup(() => { main.replaceChildren(); });
+    const style = getComputedStyle(document.documentElement);
+    assert_equals(
+      style.getPropertyValue('--ident-inherited'),
+      'initial-inherited',
+      'Expected initial value for registered property with `inherits: true`',
+    );
+    assert_equals(
+      style.getPropertyValue('--ident-non-inherited'),
+      'initial-non-inherited',
+      'Expected initial value for registered property with `inherits: false`',
+    );
+    assert_equals(
+      style.getPropertyValue('--ident-unregistered'),
+      'fallback',
+      'Expected fallback due to guaranteed-invalid initial value for unregistered property',
+    );
+  }, 'inherit() on root element for registered properties uses initial values');
+</script>
+
+<template id=inherit_non_root_registered_properties>
+  <style>
+    @property --ident-inherited {
+      syntax: "<custom-ident>";
+      inherits: true;
+      initial-value: initial-inherited;
+    }
+    @property --ident-non-inherited {
+      syntax: "<custom-ident>";
+      inherits: false;
+      initial-value: initial-non-inherited;
+    }
+    #target {
+      --ident-inherited: inherit(--ident-inherited, fallback);
+      --ident-non-inherited: inherit(--ident-non-inherited, fallback);
+      --ident-unregistered: inherit(--ident-unregistered, fallback);
+    }
+  </style>
+  <div id=parent>
+    <div id=target>
+    </div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    main.append(inherit_non_root_registered_properties.content.cloneNode(true));
+    t.add_cleanup(() => { main.replaceChildren(); });
+    const style = getComputedStyle(target);
+    assert_equals(
+      style.getPropertyValue('--ident-inherited'),
+      'initial-inherited',
+      'Expected initial value for registered property with `inherits: true`',
+    );
+    assert_equals(
+      style.getPropertyValue('--ident-non-inherited'),
+      'initial-non-inherited',
+      'Expected initial value for registered property with `inherits: false`',
+    );
+    assert_equals(
+      style.getPropertyValue('--ident-unregistered'),
+      'fallback',
+      'Expected fallback due to guaranteed-invalid initial value for unregistered property',
+    );
+  }, 'inherit() on non-root element for registered properties uses initial values');
+</script>

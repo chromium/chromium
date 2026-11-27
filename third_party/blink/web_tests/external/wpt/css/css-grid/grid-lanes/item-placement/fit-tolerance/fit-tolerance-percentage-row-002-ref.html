@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: Row fit-tolerance percentage basis with a stretched or aspect-ratio block size reference</title>
+  <style>
+    .case {
+      background: gray;
+      display: grid;
+      float: left;
+      grid-template-rows: repeat(2, 100px);
+      inline-size: 100px;
+      block-size: 300px;
+      margin-inline-end: 10px;
+    }
+
+    .wide-ratio {
+      block-size: 200px;
+      inline-size: 200px;
+    }
+
+    .tall-ratio {
+      block-size: 400px;
+      inline-size: 200px;
+    }
+
+    .lane {
+      display: flex;
+    }
+
+    .item-one {
+      background: lightcoral;
+      inline-size: 36px;
+    }
+
+    .item-two,
+    .item-three {
+      inline-size: 10px;
+    }
+
+    .item-two {
+      background: lightgreen;
+    }
+
+    .item-three {
+      background: lightskyblue;
+    }
+
+    .wide .item-one {
+      inline-size: 46px;
+    }
+
+    .wide-ratio .item-one {
+      inline-size: 26px;
+    }
+  </style>
+</head>
+<body>
+  <div class="case">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="case wide">
+    <div class="lane">
+      <div class="item-one"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+  <div class="case">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="case wide-ratio">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+  <div class="case tall-ratio wide">
+    <div class="lane">
+      <div class="item-one"></div>
+      <div class="item-three"></div>
+    </div>
+    <div class="lane">
+      <div class="item-two"></div>
+    </div>
+  </div>
+</body>
+</html>

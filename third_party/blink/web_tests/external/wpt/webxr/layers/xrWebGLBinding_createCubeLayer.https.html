@@ -19,6 +19,14 @@
                 viewPixelHeight: 1024
             };
 
+            if (!(gl instanceof WebGL2RenderingContext)) {
+                t.step(() => {
+                    assert_throws_dom("InvalidStateError", () => xrBinding.createCubeLayer(valid_init), "WebGL1 contexts are not supported");
+                });
+                resolve();
+                return;
+            }
+
             t.step(() => {
                 // Width and height must be equal.
                 let invalid_size = Object.assign({}, valid_init, { viewPixelHeight: valid_init.viewPixelWidth + 1 });

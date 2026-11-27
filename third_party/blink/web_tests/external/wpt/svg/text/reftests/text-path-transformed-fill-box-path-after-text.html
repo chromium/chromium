@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>textPath referencing a later path with a CSS transform and transform-box: fill-box</title>
+<link rel="author" title="Nikolas Zimmermann" href="mailto:nzimmermann@igalia.com">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/text.html#TextPathElement">
+<link rel="help" href="https://drafts.csswg.org/css-transforms-1/#transform-origin-property">
+<link rel="help" href="https://drafts.csswg.org/css-transforms-1/#transform-box">
+<link rel="match" href="text-path-transformed-fill-box-path-after-text-ref.html">
+<meta name="assert" content="The text follows the referenced path rotated about the center of its bounding box, even when the path comes after the text in document order.">
+<style>#p { transform: rotate(20deg); transform-box: fill-box; transform-origin: center; }</style>
+<svg width="400" height="300">
+  <text font-size="30"><textPath href="#p">XXXXXX</textPath></text>
+  <path id="p" d="M 50 150 H 350" fill="none" stroke="black"/>
+</svg>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="author" title="Andrew Martinez" href="mailto:amartinez55@apple.com">
+<style>
+.multicol { columns: 2; }
+.spanner { column-span: all; }
+</style>
+<div>1st page</div>
+<div class="multicol">
+  <div class="spanner">Also 1st page</div>
+  <div>Still 1st page</div>
+  <div class="spanner">1st page too</div>
+</div>
+<div>Last line of 1st page</div>
+<div style="break-before: page">2nd page</div>

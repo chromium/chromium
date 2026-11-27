@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG viewBox synthesis per axis when SVG is used as an image: percentage lengths</title>
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/coords.html#ViewBoxAttribute">
+<link rel="help" href="https://github.com/w3c/svgwg/issues/249">
+<link rel="match" href="viewBox-synthesized-in-img-002-ref.html">
+<meta name="assert" content="When an SVG image has no viewBox, a viewBox is synthesized per axis: a percentage width or height resolves against the image size, and percentage lengths in the content resolve against the synthesized viewBox.">
+<style>
+  img {
+    border: 1px solid black;
+    margin: 2px;
+    vertical-align: top;
+  }
+</style>
+<body>
+<!-- Only width is a length: the content is stretched 2x horizontally, and
+     the 50% wide rect resolves against the synthesized viewBox width (10). -->
+<img width="20" height="30" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10'><rect fill='blue' width='50%25' height='5'/><rect fill='blue' y='10' width='5' height='5'/></svg>"><!--
+  Only height is a length: the same, vertically.
+--><img width="30" height="20" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='10'><rect fill='blue' width='5' height='50%25'/><rect fill='blue' x='10' width='5' height='5'/></svg>"><!--
+  Both are 50%: the synthesized viewBox is half the image size, so the content is stretched 2x.
+--><img width="20" height="30" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='50%25' height='50%25'><rect fill='blue' x='2' y='2' width='3' height='3'/></svg>">
+</body>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+  <title>drawElementImage reflects CSS transforms on sibling elements</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <link rel="match" href="css-transform-on-siblings-ref.html">
+  <meta name="assert" value="Elements painted after a transformed sibling are not affected by its transform.">
+  <script src="/common/reftest-wait.js"></script>
+  <script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
+  <style>
+    canvas {
+      width: 200px;
+      height: 100px;
+    }
+    #content {
+      width: 200px;
+      height: 100px;
+      background: #ccc;
+    }
+    .box {
+      width: 40px;
+      height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" content=drawable>
+    <div id="content" drawable>
+      <div class="box" style="background: green; transform: translate(20px, 30px);"></div>
+      <div class="box" style="background: blue; transform: translate(120px, -30px);"></div>
+    </div>
+  </canvas>
+
+  <script>
+    window.onload = async () => {
+      canvas.width = 200 * devicePixelRatio;
+      canvas.height = 100 * devicePixelRatio;
+      await waitForCanvasPaint(canvas);
+      canvas.getContext('2d').drawElementImage(content, 0, 0, canvas.width, canvas.height);
+      takeScreenshot();
+    };
+  </script>
+</body>
+</html>

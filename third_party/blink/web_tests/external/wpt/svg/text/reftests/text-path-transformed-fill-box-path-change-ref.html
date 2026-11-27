@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>textPath referencing a path with a CSS transform and transform-box: fill-box, after the path data changes (reference)</title>
+<svg width="400" height="300">
+  <path id="p" d="M 50 150 H 350" transform="rotate(20 200 150)" fill="none" stroke="black"/>
+  <text font-size="30"><textPath href="#p">XXXXXX</textPath></text>
+</svg>

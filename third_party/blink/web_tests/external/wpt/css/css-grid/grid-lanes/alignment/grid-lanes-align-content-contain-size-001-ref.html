@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: align-content in the stacking axis of a size contained container reference</title>
+  <style>
+    .container {
+      background: lightgray;
+      float: left;
+      inline-size: 40px;
+      margin-inline-end: 10px;
+      position: relative;
+    }
+
+    .container > div {
+      background: green;
+      inline-size: 20px;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="block-size: 200px">
+    <div style="block-size: 40px; left: 0; top: 140px"></div>
+    <div style="block-size: 60px; left: 20px; top: 140px"></div>
+  </div>
+  <div class="container" style="block-size: 100px">
+    <div style="block-size: 40px; left: 0; top: 40px"></div>
+    <div style="block-size: 60px; left: 20px; top: 40px"></div>
+  </div>
+</body>
+</html>

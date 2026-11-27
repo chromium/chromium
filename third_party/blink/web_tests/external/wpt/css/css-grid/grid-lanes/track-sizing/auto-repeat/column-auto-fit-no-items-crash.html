@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<title>CSS Grid Lanes Test: repeat(auto-fit) with fixed and flexible tracks and no in-flow items</title>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#repeat-auto-fit">
+<style>
+.grid-lanes {
+    display: grid-lanes;
+    grid-template-columns: repeat(auto-fit, 100px);
+    width: 500px;
+}
+</style>
+<div class="grid-lanes"></div>
+<div class="grid-lanes" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr))"></div>
+<div class="grid-lanes" style="grid-template-columns: 50px repeat(auto-fit, 100px) 20px"></div>
+<div class="grid-lanes" style="position: relative"><div style="position: absolute"></div></div>
+<div style="float: left"><div class="grid-lanes" style="width: auto"></div></div>
+<div class="grid-lanes" id="last-item"><div></div></div>
+<script>
+document.body.offsetHeight;
+document.getElementById("last-item").firstElementChild.remove();
+document.body.offsetHeight;
+</script>
+</html>

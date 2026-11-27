@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Grid Lanes: Row fit-tolerance percentage basis with a stretched or aspect-ratio block size</title>
+  <link rel="help" href="https://drafts.csswg.org/css-grid-3/#propdef-fit-tolerance">
+  <link rel="match" href="fit-tolerance-percentage-row-002-ref.html">
+  <meta name="assert" content="Fit-tolerance percentages resolve against the used block size of a row grid lanes container, including a block size from stretching or from its aspect ratio.">
+  <style>
+    .case {
+      float: left;
+      margin-inline-end: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 100px;
+      grid-template-rows: 300px;
+    }
+
+    .flex {
+      block-size: 300px;
+      display: flex;
+    }
+
+    .grid-lanes {
+      background: gray;
+      display: grid-lanes;
+      fit-tolerance: 10%;
+      grid-template-rows: repeat(2, 100px);
+    }
+
+    .flex > .grid-lanes {
+      inline-size: 100px;
+    }
+
+    /* The automatic minimum size makes the block size 200px, so fit-tolerance
+       resolves to 20px. */
+    .wide-ratio {
+      aspect-ratio: 2 / 1;
+      inline-size: 200px;
+    }
+
+    /* 400px block size, so fit-tolerance resolves to 40px. */
+    .tall-ratio {
+      aspect-ratio: 1 / 2;
+      inline-size: 200px;
+    }
+
+    .item-one {
+      background: lightcoral;
+      inline-size: 36px;
+    }
+
+    .item-two,
+    .item-three {
+      inline-size: 10px;
+    }
+
+    .item-two {
+      background: lightgreen;
+    }
+
+    .item-three {
+      background: lightskyblue;
+    }
+
+    .wide .item-one {
+      inline-size: 46px;
+    }
+
+    .wide-ratio .item-one {
+      inline-size: 26px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Stretched to 300px, so fit-tolerance resolves to 30px. -->
+  <div class="case grid">
+    <div class="grid-lanes">
+      <div class="item-one"></div>
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+  <div class="case grid">
+    <div class="grid-lanes wide">
+      <div class="item-one"></div>
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+  <div class="case flex">
+    <div class="grid-lanes">
+      <div class="item-one"></div>
+      <div class="item-two"></div>
+      <div class="item-three"></div>
+    </div>
+  </div>
+  <div class="case grid-lanes wide-ratio">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+  <div class="case grid-lanes tall-ratio wide">
+    <div class="item-one"></div>
+    <div class="item-two"></div>
+    <div class="item-three"></div>
+  </div>
+</body>
+</html>

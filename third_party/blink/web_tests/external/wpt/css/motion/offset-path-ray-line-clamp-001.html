@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>CSS Motion Path test: ray() offset-path on the only child of a -webkit-line-clamp container</title>
+<link rel="help" href="https://drafts.csswg.org/motion/#offset-path-property">
+<link rel="match" href="offset-path-ray-line-clamp-001-ref.html">
+<meta name="assert" content="A ray() offset-path on the child of a -webkit-line-clamp container is resolved against the container.">
+<style>
+#container {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  width: 200px;
+  background: linear-gradient(red, red) no-repeat center / 100px 100%;
+  font: 50px/50px monospace;
+}
+#target {
+  width: 100px;
+  color: transparent;
+  background: green;
+  offset-path: ray(90deg closest-side);
+  offset-position: 50% 50%;
+  offset-distance: 0;
+}
+</style>
+<p>Test passes if there is a green rectangle and no red.</p>
+<div id="container"><div id="target">X</div></div>
+</html>

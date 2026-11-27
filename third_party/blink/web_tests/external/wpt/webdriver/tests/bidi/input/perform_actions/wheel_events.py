@@ -38,6 +38,69 @@ async def test_scroll_on_not_scrollable_element(
     assert events[0]["target"] == "not-scrollable-content"
 
 
+async def test_scroll_twice_on_not_scrollable_element(
+    bidi_session, top_context, test_actions_wheel_page, get_element
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_actions_wheel_page(events=["wheel"]),
+        wait="complete",
+    )
+
+    target = await get_element("#not-scrollable")
+
+    actions = Actions()
+    actions.add_wheel().scroll(
+        x=0, y=0, delta_x=55, delta_y=70, origin=get_element_origin(target)
+    ).scroll(
+        x=0, y=0, delta_x=55, delta_y=70, origin=get_element_origin(target)
+    )
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    # Each scroll dispatches its own delta, so the second identical scroll
+    # dispatches a second wheel event.
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == 2
+    for event in events:
+        assert event["type"] == "wheel"
+        assert event["deltaX"] == 55
+        assert event["deltaY"] == 70
+        assert event["deltaZ"] == 0
+        assert event["target"] == "not-scrollable-content"
+
+
+async def test_scroll_and_pause_on_not_scrollable_element(
+    bidi_session, top_context, test_actions_wheel_page, get_element
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=test_actions_wheel_page(events=["wheel"]),
+        wait="complete",
+    )
+
+    target = await get_element("#not-scrollable")
+
+    actions = Actions()
+    actions.add_wheel().scroll(
+        x=0, y=0, delta_x=55, delta_y=70, origin=get_element_origin(target)
+    ).pause(0)
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    # A pause doesn't scroll, so only the scroll dispatches a wheel event.
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["deltaX"] == 55
+    assert events[0]["deltaY"] == 70
+    assert events[0]["target"] == "not-scrollable-content"
+
+
 async def test_scroll_on_element_with_overflow_scroll(
     bidi_session, top_context, test_actions_wheel_page, get_element
 ):

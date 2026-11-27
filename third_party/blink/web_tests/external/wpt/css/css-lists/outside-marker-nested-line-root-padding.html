@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Border and padding on the box holding the first line of a nested list item do not move the outer list item's marker</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#list-style-position-property">
+<link rel="match" href="outside-marker-nested-line-root-padding-ref.html">
+<meta name="assert" content="The outside marker of the outer list item stays on the start side of the outer list item when the box holding the first line of the nested list item has border or padding, as it does when that box has a margin instead.">
+<style>
+body { margin: 0; font: 20px/1 monospace; }
+ul { margin: 0; }
+.padding { padding-left: 5px; }
+.border { border-left: 5px solid transparent; }
+</style>
+<ul><li><ul><li><div class="padding">text</div></li></ul></li></ul>
+<ul><li><ul><li><div class="border">text</div></li></ul></li></ul>
+<ul dir="rtl"><li><ul><li><div class="padding">text</div></li></ul></li></ul>

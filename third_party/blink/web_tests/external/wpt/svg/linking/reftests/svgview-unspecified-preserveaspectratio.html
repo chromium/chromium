@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SVG fragment identifier: an svgView() without preserveAspectRatio() keeps the root preserveAspectRatio</title>
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/linking.html#LinksIntoSVG">
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/linking.html#SVGFragmentIdentifiersDefinitions">
+<link rel="match" href="../../struct/reftests/reference/green-100x100.html">
+<meta name="assert" content="Unspecified parameters of the svgView specification don't reset the values defined on the root svg element. A fragment that gives viewBox() or transform() but not preserveAspectRatio() keeps the root preserveAspectRatio, here none.">
+
+<!--
+  support/green-viewbox-25x25-par-none.svg has viewBox="0 0 25 25",
+  preserveAspectRatio="none" and a green 25x25 rect. Each 100x25 box is on red.
+  With the root preserveAspectRatio="none" the square rect is stretched to fill the
+  box. If the fragment resets preserveAspectRatio to xMidYMid meet, the rect is a
+  centred 25x25 square with red on both sides. transform(scale(1)) is the identity.
+-->
+
+<style>
+  img { display: block; width: 100px; height: 25px; background: red; }
+</style>
+<!-- Control: no fragment. -->
+<img src="support/green-viewbox-25x25-par-none.svg">
+<img src="support/green-viewbox-25x25-par-none.svg#svgView(viewBox(0,0,25,25))">
+<img src="support/green-viewbox-25x25-par-none.svg#svgView(transform(scale(1)))">
+<img src="support/green-viewbox-25x25-par-none.svg#svgView(viewBox(0,0,25,25);transform(scale(1)))">

@@ -43,6 +43,22 @@
                 assert_throws_js(TypeError, () => xrBinding.createCylinderLayer(invalid_central_angle), "centralAngle is greater than 2pi");
             });
 
+            t.step(() => {
+                // Cylinder parameters must be finite.
+                let infinite_radius = Object.assign({}, valid_init, { radius: Infinity });
+                assert_throws_js(TypeError, () => xrBinding.createCylinderLayer(infinite_radius), "radius is infinite");
+            });
+
+            t.step(() => {
+                let infinite_aspect_ratio = Object.assign({}, valid_init, { aspectRatio: Infinity });
+                assert_throws_js(TypeError, () => xrBinding.createCylinderLayer(infinite_aspect_ratio), "aspectRatio is infinite");
+            });
+
+            t.step(() => {
+                let infinite_central_angle = Object.assign({}, valid_init, { centralAngle: Infinity });
+                assert_throws_js(TypeError, () => xrBinding.createCylinderLayer(infinite_central_angle), "centralAngle is infinite");
+            });
+
             // Test that a valid init works.
             t.step(() => {
                 const layer = xrBinding.createCylinderLayer(valid_init);

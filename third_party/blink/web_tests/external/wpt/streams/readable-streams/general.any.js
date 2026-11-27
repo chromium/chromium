@@ -164,6 +164,39 @@ promise_test(() => {
 
 }, 'ReadableStream start should be able to return a promise and reject it');
 
+promise_test(async () => {
+
+  const log = [];
+  const thenable = {
+    then(resolve) {
+      log.push('original then');
+      resolve();
+    }
+  };
+
+  let pullCalled;
+  const pulled = new Promise(resolve => {
+    pullCalled = resolve;
+  });
+  new ReadableStream({
+    start() {
+      return thenable;
+    },
+    pull() {
+      pullCalled();
+      return new Promise(() => {});
+    }
+  });
+  thenable.then = resolve => {
+    log.push('replacement then');
+    resolve();
+  };
+
+  await pulled;
+  assert_array_equals(log, ['original then'], 'then should be read when the start promise is resolved');
+
+}, 'ReadableStream start returning a thenable should use the then method present when start returns');
+
 promise_test(() => {
 
   const objects = [

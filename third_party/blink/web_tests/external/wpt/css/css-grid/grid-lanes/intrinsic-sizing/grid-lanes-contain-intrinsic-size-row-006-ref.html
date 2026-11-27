@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf8">
+
+<style>
+.grid {
+  border: 3px solid black;
+  display: grid;
+  grid-template-rows: 55px 66px;
+  grid-template-columns: repeat(2, 50px);
+  width: 0;
+  background: lightblue;
+  grid-gap: 5px;
+  margin-bottom: 10px;
+}
+.intrinsic-size {
+  width: 70px;
+}
+.item {
+  background: lightgreen;
+  opacity: 0.5;
+  width: 50px;
+  height: 50px;
+}
+</style>
+
+<div class="grid intrinsic-size">
+  <div class=item></div>
+  <div class=item></div>
+  <div class=item></div>
+  <div class=item></div>
+</div>
+<div class=grid>
+  <div class=item></div>
+  <div class=item></div>
+  <div class=item></div>
+  <div class=item></div>
+</div>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Lists: an outside marker stays on its list item's inline start side when its first line runs the other way</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#list-style-position-outside">
+<link rel="help" href="https://drafts.csswg.org/css-lists-3/#marker-side">
+<link rel="match" href="outside-marker-on-line-in-other-direction-ref.html">
+<meta name="assert" content="An outside marker is placed on the inline-start side of its list item, in the list item's writing mode (marker-side: match-self), also when the line it is aligned with runs in the other direction, and it hangs off the list item's content edge past the border, padding and margin of the block holding that line.">
+<style>
+  ul { width: 200px; margin: 0 60px; padding: 0 40px; font: 20px/20px monospace; }
+  .square { list-style-type: square; }
+  .string { list-style-type: "X"; }
+  .image { list-style-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='14'><rect width='10' height='14' fill='green'/></svg>"); }
+  .boxed { margin: 0 4px 0 6px; border-style: solid; border-color: transparent; border-width: 0 3px 0 5px; padding: 0 7px 0 9px; }
+  /* A list item's text-align is match-parent, so the line would otherwise align to the list's left. */
+  div { text-align: start; }
+</style>
+
+<p>The test passes if the bullets of the left to right list items are on the left, and those of the right to left list items are on the right.</p>
+
+<ul><li dir="ltr"><div dir="rtl">XX</div></li></ul>
+<ul class="square"><li dir="ltr"><div dir="rtl">XX</div></li></ul>
+<ul class="string"><li dir="ltr"><div dir="rtl">XX</div></li></ul>
+<ul class="image"><li dir="ltr"><div dir="rtl">XX</div></li></ul>
+<ul><li dir="ltr"><div dir="rtl" class="boxed">XX</div></li></ul>
+<ul><li dir="rtl"><div dir="ltr">XX</div></li></ul>
+<ul class="square"><li dir="rtl"><div dir="ltr">XX</div></li></ul>
+<ul class="string"><li dir="rtl"><div dir="ltr">XX</div></li></ul>
+<ul class="image"><li dir="rtl"><div dir="ltr">XX</div></li></ul>
+<ul><li dir="rtl"><div dir="ltr" class="boxed">XX</div></li></ul>

@@ -212,6 +212,51 @@ async def test_remote_reference_node_argument(
     assert result == {"type": "number", "value": expected_node_type}
 
 
+@pytest.mark.parametrize(
+    "value_fn, function_declaration",
+    [
+        (
+            lambda value: {"type": "array", "value": [value]},
+            "(arg) => arg[0] === document.querySelector('img')",
+        ),
+        (
+            lambda value: {"type": "object", "value": [["nested", value]]},
+            "(arg) => arg.nested === document.querySelector('img')",
+        ),
+        (
+            lambda value: {"type": "map", "value": [["foobar", value]]},
+            "(arg) => arg.get('foobar') === document.querySelector('img')",
+        ),
+        (
+            lambda value: {"type": "set", "value": [value]},
+            "(arg) => arg.has(document.querySelector('img'))",
+        ),
+    ],
+    ids=["array", "object", "map", "set"],
+)
+async def test_remote_reference_node_nested(
+    bidi_session, get_test_page, top_context, value_fn, function_declaration
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context['context'], url=get_test_page(), wait="complete"
+    )
+
+    remote_reference = await bidi_session.script.evaluate(
+        expression="document.querySelector('img')",
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    result = await bidi_session.script.call_function(
+        function_declaration=function_declaration,
+        arguments=[value_fn(remote_reference)],
+        await_promise=False,
+        target=ContextTarget(top_context["context"]),
+    )
+
+    assert result == {"type": "boolean", "value": True}
+
+
 async def test_remote_reference_node_cdata(bidi_session, inline, top_context):
     xml_page = inline("""<foo>CDATA section: <![CDATA[ < > & ]]>.</foo>""", doctype="xml")
 
@@ -257,6 +302,16 @@ async def test_remote_reference_sharedId_precedence_over_handle(
         await bidi_session.script.call_function(
             function_declaration="(node) => node.nodeType",
             arguments=[remote_reference],
+            await_promise=False,
+            target=ContextTarget(top_context["context"]),
+        )
+
+
+async def test_remote_reference_unknown_shared_id(bidi_session, top_context):
+    with pytest.raises(error.NoSuchNodeException):
+        await bidi_session.script.call_function(
+            function_declaration="(node) => node",
+            arguments=[{"sharedId": "foo"}],
             await_promise=False,
             target=ContextTarget(top_context["context"]),
         )

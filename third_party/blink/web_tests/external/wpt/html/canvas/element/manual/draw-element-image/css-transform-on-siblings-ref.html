@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+  <title>drawElementImage reflects CSS transforms on sibling elements - ref</title>
+  <style>
+    #content {
+      width: 200px;
+      height: 100px;
+      background: #ccc;
+    }
+    .box {
+      width: 40px;
+      height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <div class="box" style="background: green; transform: translate(20px, 30px);"></div>
+    <div class="box" style="background: blue; transform: translate(120px, -30px);"></div>
+  </div>
+</body>

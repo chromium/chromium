@@ -34,12 +34,6 @@
             reject("XRSession should support a single projection layer even when layers feature is not enabled: " + err);
           }
         });
-
-        t.step(() => {
-          assert_throws_dom('NotSupportedError', () => {
-            xrSession.updateRenderState({ layers: [baseLayer] });
-          }, "XRSession should throw NotSupportedError when setting non-projection layer without layers feature enabled");
-        });
       }
 
       t.step(() => {
@@ -69,6 +63,7 @@
       navigator.xr.requestSession('inline', {}).then((otherSession) => {
         const otherSessionLayer = [ new XRWebGLLayer(otherSession, gl) ];
         assert_throws_js(TypeError, () => xrSession.updateRenderState({ layers: otherSessionLayer }), "XRSession should throw a TypeError when updating render state with a layer created for a different session.");
+        assert_throws_js(TypeError, () => otherSession.updateRenderState({ layers: [projLayer] }), "XRSession should throw a TypeError when updating render state with a composition layer created for a different session.");
         resolve();
       });
      });

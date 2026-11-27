@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Switching input type with children in a subdocument before printing</title>
+<link rel="author" title="Emilio Cobos Álvarez" href="mailto:emilio@crisal.io">
+<link rel="author" title="Mozilla" href="https://mozilla.org">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=2096558">
+<!-- Really a crashtest but since we can't really have print crashtests, we assert that we print something -->
+<link rel="mismatch" href="/css/reference/blank.html">
+<style>
+.contents {
+  display: contents;
+}
+</style>
+<div id="target"></div>
+<iframe srcdoc='
+<style>
+input {
+  appearance: none;
+  display: block;
+  width: 245px;
+  height: auto;
+}
+.contents {
+  display: contents;
+}
+</style>
+<input id="input" type="image">
+<div id="wrapper" class="contents"><div>Some text</div></div>
+<script>
+input.append(wrapper);
+document.body.offsetHeight;
+addEventListener("beforeprint", () => {
+  input.type = "text";
+});
+addEventListener("afterprint", () => {
+  parent.target.append(wrapper);
+  parent.document.body.offsetHeight;
+});
+</script>
+'></iframe>

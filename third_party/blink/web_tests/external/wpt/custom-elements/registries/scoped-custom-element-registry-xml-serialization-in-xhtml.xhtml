@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>XML serialization of custom element registry boundaries in an XHTML document</title>
+<link rel="help" href="https://w3c.github.io/DOM-Parsing/#dfn-xml-serialization"/>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#fragment-serializing-algorithm-steps"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/xml-registry-serialization.js"></script>
+</head>
+<body>
+<script><![CDATA[
+'use strict';
+
+test(() => {
+  const parent = xmlRegistryElement('section');
+  parent.append(xmlRegistryElement('span', null));
+  const parsed = xmlRegistryParse(parent.innerHTML);
+  assert_equals(parsed.localName, 'span');
+  assert_equals(parsed.namespaceURI, xmlRegistryHTMLNamespace);
+  assert_true(parsed.hasAttribute('customelementregistry'));
+}, 'XML-document innerHTML serializes its children with the parent registry context');
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  const parent = xmlRegistryElement('section', registry);
+  const child = xmlRegistryElement('span', registry);
+  parent.append(child);
+  assert_false(parent.innerHTML.includes('customelementregistry'));
+  assert_false(child.outerHTML.includes('customelementregistry'));
+  assert_false(xmlRegistrySerialize(child).includes('customelementregistry'));
+}, 'XML fragment getters and XMLSerializer use the parent registry context');
+
+test(() => {
+  const parent = xmlRegistryElement('section', null);
+  const child = xmlRegistryElement('span', null);
+  parent.append(child);
+  assert_false(parent.innerHTML.includes('customelementregistry'));
+  assert_false(child.outerHTML.includes('customelementregistry'));
+}, 'XML fragment getters honor an explicitly null registry context');
+
+test(() => {
+  const fragment = document.createDocumentFragment();
+  const child = xmlRegistryElement('span', null);
+  fragment.append(child);
+  const parsed = xmlRegistryParse(child.outerHTML);
+  assert_equals(parsed.localName, 'span');
+  assert_true(parsed.hasAttribute('customelementregistry'));
+}, 'XML-document outerHTML treats an exclusive DocumentFragment parent like no parent');
+
+test(() => {
+  const template = xmlRegistryElement('template');
+  template.innerHTML = `<span xmlns="${xmlRegistryHTMLNamespace}"></span>`;
+  const parsed = xmlRegistryParse(template.innerHTML);
+  assert_equals(parsed.localName, 'span');
+  assert_false(parsed.hasAttribute('customelementregistry'));
+}, 'XML-document template innerHTML serializes the contents with their null registry');
+
+test(() => {
+  const element = xmlRegistryElement('section', new CustomElementRegistry());
+  element.setAttribute('CustomElementRegistry', 'named');
+  const parsed = xmlRegistryParse(xmlRegistrySerialize(element));
+  assert_equals(parsed.getAttribute('CustomElementRegistry'), 'named');
+  assert_equals(parsed.getAttribute('customelementregistry'), '');
+}, 'XML registry attribute matching is case-sensitive');
+]]></script>
+</body>
+</html>
