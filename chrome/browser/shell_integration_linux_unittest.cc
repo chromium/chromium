@@ -1283,4 +1283,53 @@ TEST(ShellIntegrationLinuxTest, GetDirectLaunchUrlSchemeUnbranded) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+TEST(ShellIntegrationLinuxTest, DefaultWebClientIgnoresBrowserEnvVar) {
+  base::nix::ScopedAppSandboxOverrideForTesting no_sandbox(
+      base::nix::AppSandbox::kNone);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath applications_dir =
+      temp_dir.GetPath().Append("applications");
+  ASSERT_TRUE(base::CreateDirectory(applications_dir));
+  ASSERT_TRUE(base::WriteFile(applications_dir.Append("firefox.desktop"),
+                              "[Desktop Entry]\nName=Firefox\n"));
+
+  // Fake xdg-settings that fails like xdg-utils's generic backend whenever
+  // BROWSER is present in its environment.
+  const base::FilePath xdg_settings = temp_dir.GetPath().Append("xdg-settings");
+  ASSERT_TRUE(base::WriteFile(xdg_settings, R"sh(#!/bin/sh
+if [ -n "${BROWSER+x}" ]; then
+  exit 4
+fi
+case "$1" in
+  set) exit 0 ;;
+  check) echo yes ;;
+  get) echo firefox.desktop ;;
+  *) exit 1 ;;
+esac
+)sh"));
+  ASSERT_TRUE(base::SetPosixFilePermissions(xdg_settings, 0700));
+
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  base::ScopedEnvironmentVariableOverride path_override(
+      "PATH", base::StrCat({temp_dir.GetPath().value(), ":",
+                            env->GetVar("PATH").value_or("")}));
+  base::ScopedEnvironmentVariableOverride data_home_override(
+      "XDG_DATA_HOME", temp_dir.GetPath().value());
+  base::ScopedEnvironmentVariableOverride data_dirs_override(
+      "XDG_DATA_DIRS", temp_dir.GetPath().Append("nonexistent").value());
+  base::ScopedEnvironmentVariableOverride browser_override("BROWSER",
+                                                           "firefox");
+
+  EXPECT_TRUE(SetAsDefaultBrowser());
+  EXPECT_TRUE(SetAsDefaultClientForScheme("https"));
+  EXPECT_EQ(IS_DEFAULT, GetDefaultBrowser());
+  EXPECT_EQ(IS_DEFAULT, IsDefaultClientForScheme("https"));
+  EXPECT_TRUE(IsFirefoxDefaultBrowser());
+  EXPECT_EQ(u"Firefox",
+            GetApplicationNameForScheme(GURL("https://example.com")));
+  EXPECT_EQ("firefox", env->GetVar("BROWSER"));
+}
+
 }  // namespace shell_integration

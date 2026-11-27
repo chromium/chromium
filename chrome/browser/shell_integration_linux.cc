@@ -143,8 +143,28 @@ std::string GetFileContents(GKeyFile* key_file) {
 }
 #endif
 
-// We delegate the difficulty of setting the default browser and default url
-// scheme handler in Linux desktop environments to an xdg utility, xdg-settings.
+// Delegates setting and querying the default browser and default url scheme
+// handler in Linux desktop environments to an xdg utility, xdg-settings.
+//
+// Runs `xdg-settings` with `args`, with `BROWSER` removed from its
+// environment via `env -u`. In xdg-settings's generic backend, a non-empty
+// `BROWSER` overrides `mimeapps.list` on `get`/`check` and makes `set` fail,
+// even though graphical URL openers (`xdg-open` when `$DISPLAY` or
+// `$WAYLAND_DISPLAY` is set, GIO, Qt, and `xdg-desktop-portal`) resolve
+// `x-scheme-handler/http(s)` from `mimeapps.list` before falling back to
+// `BROWSER`.
+//
+// Returns true if xdg-settings launched and exited with `EXIT_SUCCESS`. If
+// `output` is non-null, stdout is captured into `*output` (even on failure).
+bool RunXdgSettings(std::vector<std::string> args,
+                    std::string* output = nullptr) {
+  args.insert(args.begin(), {"env", "-u", "BROWSER", kXdgSettings});
+  if (output) {
+    return base::GetAppOutput(args, output);
+  }
+  int exit_code;
+  return LaunchXdgUtility(args, &exit_code) && exit_code == EXIT_SUCCESS;
+}
 
 // If |scheme| is empty this function sets Chrome as the default browser,
 // otherwise it sets Chrome as the default handler application for |scheme|.
@@ -155,7 +175,6 @@ bool SetDefaultWebClient(const std::string& scheme) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
   std::vector<std::string> argv;
-  argv.push_back(kXdgSettings);
   argv.push_back("set");
   if (scheme.empty()) {
     argv.push_back(kXdgSettingsDefaultBrowser);
@@ -165,10 +184,7 @@ bool SetDefaultWebClient(const std::string& scheme) {
   }
   argv.push_back(chrome::GetDesktopName(env.get()));
 
-  int exit_code;
-  bool ran_ok = LaunchXdgUtility(argv, &exit_code);
-
-  return ran_ok && exit_code == EXIT_SUCCESS;
+  return RunXdgSettings(argv);
 #endif
 }
 
@@ -186,7 +202,6 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
   std::vector<std::string> argv;
-  argv.push_back(kXdgSettings);
   argv.push_back("check");
   if (scheme.empty()) {
     argv.push_back(kXdgSettingsDefaultBrowser);
@@ -197,12 +212,8 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
   argv.push_back(chrome::GetDesktopName(env.get()));
 
   std::string reply;
-  int success_code;
-  bool ran_ok = base::GetAppOutputWithExitCode(base::CommandLine(argv), &reply,
-                                               &success_code);
-
-  if (!ran_ok || success_code != EXIT_SUCCESS) {
-    // xdg-settings failed: we can't determine or set the default browser.
+  if (!RunXdgSettings(argv, &reply)) {
+    // xdg-settings failed: can't determine or set the default browser.
     return shell_integration::UNKNOWN_DEFAULT;
   }
 
@@ -324,15 +335,11 @@ base::FilePath GetDesktopFileForDefaultSchemeHandler(base::Environment* env,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  std::vector<std::string> argv;
-  argv.push_back(shell_integration_linux::kXdgSettings);
-  argv.push_back("get");
-  argv.push_back(shell_integration_linux::kXdgSettingsDefaultSchemeHandler);
-  argv.push_back(url.GetScheme());
-  argv.push_back(chrome::GetDesktopName(env));
-
   std::string desktop_file_name;
-  if (base::GetAppOutput(base::CommandLine(argv), &desktop_file_name) &&
+  if (RunXdgSettings(
+          {"get", shell_integration_linux::kXdgSettingsDefaultSchemeHandler,
+           url.GetScheme(), chrome::GetDesktopName(env)},
+          &desktop_file_name) &&
       desktop_file_name.find(".desktop") != std::string::npos) {
     // Remove trailing newline
     desktop_file_name.erase(desktop_file_name.length() - 1, 1);
@@ -400,18 +407,13 @@ bool LaunchXdgUtility(const std::vector<std::string>& argv, int* exit_code) {
   // the original files are owned by another user (e.g. root, which can happen
   // if they are updated within sudo), mv will prompt the user to confirm if
   // standard input is a terminal (otherwise it just does it). So make sure it's
-  // not, to avoid locking everything up waiting for mv.
+  // not, to avoid locking everything up waiting for mv. `base::LaunchProcess()`
+  // redirects stdin to /dev/null.
   *exit_code = EXIT_FAILURE;
-  int devnull = open("/dev/null", O_RDONLY);
-  if (devnull < 0)
+  base::Process process = base::LaunchProcess(argv, base::LaunchOptions());
+  if (!process.IsValid()) {
     return false;
-
-  base::LaunchOptions options;
-  options.fds_to_remap.push_back(std::make_pair(devnull, STDIN_FILENO));
-  base::Process process = base::LaunchProcess(argv, options);
-  close(devnull);
-  if (!process.IsValid())
-    return false;
+  }
   LaunchXdgUtilityScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
   return process.WaitForExit(exit_code);
 }
@@ -1129,14 +1131,10 @@ DefaultWebClientState GetDefaultBrowser() {
 }
 
 bool IsFirefoxDefaultBrowser() {
-  std::vector<std::string> argv;
-  argv.push_back(shell_integration_linux::kXdgSettings);
-  argv.push_back("get");
-  argv.push_back(shell_integration_linux::kXdgSettingsDefaultBrowser);
-
   std::string browser;
-  // We don't care about the return value here.
-  base::GetAppOutput(base::CommandLine(argv), &browser);
+  // Return value is ignored here.
+  shell_integration_linux::RunXdgSettings(
+      {"get", shell_integration_linux::kXdgSettingsDefaultBrowser}, &browser);
   return browser.find("irefox") != std::string::npos;
 }
 
