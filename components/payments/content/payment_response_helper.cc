@@ -192,8 +192,7 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
               autofill::PHONE_HOME_WHOLE_NUMBER, app_locale_));
 
       const std::string default_region_code =
-          autofill::AutofillCountry::CountryCodeForLocale(
-              app_locale_.tag_string());
+          autofill::AutofillCountry::CountryCodeForLocale(app_locale_);
       payer->phone = autofill::i18n::FormatPhoneForResponse(
           original_number, default_region_code);
     }

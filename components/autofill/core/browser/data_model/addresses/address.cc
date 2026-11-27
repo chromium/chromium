@@ -213,7 +213,7 @@ std::u16string Address::GetInfo(FieldType type,
                                 const base::i18n::LanguageTag& locale) const {
   if (type == ADDRESS_HOME_COUNTRY) {
     return AutofillCountry(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY),
-                           locale.tag_string())
+                           locale)
         .name();
   }
 

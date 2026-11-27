@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -329,8 +331,10 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
                                  NotNull());
 
                      editor_view->SelectCountryForTesting(
-                         AutofillCountry(
-                             "AE", g_browser_process->GetApplicationLocale())
+                         AutofillCountry("AE",
+                                         g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->GetTag())
                              .name());
                      EXPECT_THAT(editor_view->GetViewByID(
                                      static_cast<int>(ADDRESS_HOME_STATE)),

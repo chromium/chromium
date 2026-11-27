@@ -2083,7 +2083,7 @@ const std::string& PaymentsDataManager::GetCountryCodeForExperimentGroup()
   // guess.
   if (experiment_country_code_.empty()) {
     experiment_country_code_ =
-        AutofillCountry::CountryCodeForLocale(app_locale_.tag_string());
+        AutofillCountry::CountryCodeForLocale(app_locale_);
   }
 
   return experiment_country_code_;

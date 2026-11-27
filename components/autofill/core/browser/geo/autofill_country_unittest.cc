@@ -30,29 +30,31 @@ using ::i18n::addressinput::AddressField;
 
 // Test the constructor and accessors
 TEST(AutofillCountryTest, AutofillCountry) {
-  AutofillCountry united_states_en("US", "en_US");
+  AutofillCountry united_states_en("US",
+                                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(united_states_en.country_code(), "US");
   EXPECT_EQ(united_states_en.name(), u"United States");
 
-  AutofillCountry united_states_es("US", "es");
+  AutofillCountry united_states_es("US", base::i18n::GetKnownLanguageTag("es"));
   EXPECT_EQ(united_states_es.country_code(), "US");
   EXPECT_EQ(united_states_es.name(), u"Estados Unidos");
 
-  AutofillCountry great_britain_uk_alias("UK", "en_GB");
+  AutofillCountry great_britain_uk_alias(
+      "UK", base::i18n::GetKnownLanguageTag("en-GB"));
   EXPECT_EQ(great_britain_uk_alias.country_code(), "GB");
   EXPECT_EQ(great_britain_uk_alias.country_code(), "GB");
   EXPECT_EQ(great_britain_uk_alias.name(), u"United Kingdom");
 
-  AutofillCountry canada_en("CA", "en_US");
+  AutofillCountry canada_en("CA", base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(canada_en.country_code(), "CA");
   EXPECT_EQ(canada_en.name(), u"Canada");
 
-  AutofillCountry canada_hu("CA", "hu");
+  AutofillCountry canada_hu("CA", base::i18n::GetKnownLanguageTag("hu"));
   EXPECT_EQ(canada_hu.country_code(), "CA");
   EXPECT_EQ(canada_hu.name(), u"Kanada");
 
   // Unrecognizable country codes remain that way.
-  AutofillCountry unknown("Unknown", "en_US");
+  AutofillCountry unknown("Unknown", base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(unknown.country_code(), "Unknown");
 
   // If no locale is provided, no `name()` is returned.
@@ -63,13 +65,23 @@ TEST(AutofillCountryTest, AutofillCountry) {
 
 // Test locale to country code mapping.
 TEST(AutofillCountryTest, CountryCodeForLocale) {
-  EXPECT_EQ(AutofillCountry::CountryCodeForLocale("en_US"), "US");
-  EXPECT_EQ(AutofillCountry::CountryCodeForLocale("fr_CA"), "CA");
-  EXPECT_EQ(AutofillCountry::CountryCodeForLocale("fr"), "FR");
-  EXPECT_EQ(AutofillCountry::CountryCodeForLocale("Unknown"), "US");
+  EXPECT_EQ(AutofillCountry::CountryCodeForLocale(
+                base::i18n::GetKnownLanguageTag("en-US")),
+            "US");
+  EXPECT_EQ(AutofillCountry::CountryCodeForLocale(
+                base::i18n::GetKnownLanguageTag("fr-CA")),
+            "CA");
+  EXPECT_EQ(AutofillCountry::CountryCodeForLocale(
+                base::i18n::GetKnownLanguageTag("fr")),
+            "FR");
+  EXPECT_EQ(AutofillCountry::CountryCodeForLocale(
+                base::i18n::GetKnownLanguageTag("und")),
+            "US");
   // "es-419" isn't associated with a country. See base/l10n/l10n_util.cc
   // for details about this locale. Default to US.
-  EXPECT_EQ(AutofillCountry::CountryCodeForLocale("es-419"), "US");
+  EXPECT_EQ(AutofillCountry::CountryCodeForLocale(
+                base::i18n::GetKnownLanguageTag("es-419")),
+            "US");
 }
 
 // Test that the correct country code is retrieved from the app locale if no
@@ -94,7 +106,7 @@ TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromGeoIp) {
 // Test the address requirement methods for the US.
 TEST(AutofillCountryTest, UsaAddressRequirements) {
   // The US requires a zip, state, city and line1 entry.
-  AutofillCountry country("US", "en_US");
+  AutofillCountry country("US", base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_FALSE(country.requires_zip_or_state());
   EXPECT_TRUE(country.requires_zip());
@@ -112,8 +124,10 @@ TEST(AutofillCountryTest, UsaAddressRequirements) {
 
 // Test that unknown country codes have US requirements.
 TEST(AutofillCountryTest, UnknownAddressRequirements) {
-  AutofillCountry us_autofill_country("US", "en_US");
-  AutofillCountry unknown_autofill_country("Unknown", "en_US");
+  AutofillCountry us_autofill_country("US",
+                                      base::i18n::GetKnownLanguageTag("en-US"));
+  AutofillCountry unknown_autofill_country(
+      "Unknown", base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_EQ(us_autofill_country.requires_zip_or_state(),
             unknown_autofill_country.requires_zip_or_state());
@@ -130,7 +144,7 @@ TEST(AutofillCountryTest, UnknownAddressRequirements) {
 // Test the address requirement method for Brazil.
 TEST(AutofillCountryTest, BrAddressRequirements) {
   // Brazil only requires a zip entry.
-  AutofillCountry country("BR", "en_US");
+  AutofillCountry country("BR", base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_FALSE(country.requires_zip_or_state());
   EXPECT_TRUE(country.requires_zip());
@@ -149,7 +163,7 @@ TEST(AutofillCountryTest, BrAddressRequirements) {
 // Test the address requirement method for Turkey.
 TEST(AutofillCountryTest, TrAddressRequirements) {
   // Brazil only requires a zip entry.
-  AutofillCountry country("TR", "en_US");
+  AutofillCountry country("TR", base::i18n::GetKnownLanguageTag("en-US"));
 
   // Although ZIP codes are existing in Turkey, they are commonly used.
   EXPECT_FALSE(country.requires_zip());
@@ -187,8 +201,10 @@ TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
     }
     SCOPED_TRACE(base::StrCat(
         {"Country code '", country_code_sv, "' should have a name."}));
-    EXPECT_NE(AutofillCountry(country_code_sv, "en").name(),
-              ASCIIToUTF16(country_code_sv));
+    EXPECT_NE(
+        AutofillCountry(country_code_sv, base::i18n::GetKnownLanguageTag("en"))
+            .name(),
+        ASCIIToUTF16(country_code_sv));
   }
 }
 
@@ -249,7 +265,7 @@ TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
 
 // Test the address requirement method for Poland.
 TEST(AutofillCountryTest, PLAddressRequirements) {
-  AutofillCountry country("PL", "pl_PL");
+  AutofillCountry country("PL", base::i18n::GetKnownLanguageTag("pl-PL"));
 
   EXPECT_FALSE(country.requires_state());
   EXPECT_TRUE(

@@ -95,7 +95,7 @@ bool PhoneNumbersMatch(const ::i18n::phonenumbers::PhoneNumber& number_a,
 bool PhoneNumbersMatch(std::u16string_view number_a,
                        std::u16string_view number_b,
                        std::string_view region,
-                       std::string_view app_locale,
+                       const base::i18n::LanguageTag& app_locale,
                        bool support_short_nsn_match = false);
 
 // Returns the phone number from the given `profile` formatted for display.

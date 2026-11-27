@@ -323,8 +323,8 @@ TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
   helper.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
   helper.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
 
-  const std::optional<std::u16string> parsed_phone = helper.ParseNumber(
-      AutofillCountry::CountryCodeForLocale(kLocale.tag_string()));
+  const std::optional<std::u16string> parsed_phone =
+      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
   EXPECT_EQ(parsed_phone, u"(650) 234-5682");
 }
 
@@ -342,8 +342,8 @@ TEST(PhoneCombineHelperTest, FromObservedValues) {
   const PhoneNumber::PhoneCombineHelper helper =
       PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
 
-  const std::optional<std::u16string> parsed_phone = helper.ParseNumber(
-      AutofillCountry::CountryCodeForLocale(kLocale.tag_string()));
+  const std::optional<std::u16string> parsed_phone =
+      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
   EXPECT_EQ(parsed_phone, u"(650) 234-5682");
 }
 

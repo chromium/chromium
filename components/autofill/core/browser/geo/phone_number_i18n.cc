@@ -76,7 +76,7 @@ std::string FormatPhoneNumber(std::string_view phone_number,
 }
 
 std::string SanitizeRegion(std::string_view region,
-                           std::string_view app_locale) {
+                           const base::i18n::LanguageTag& app_locale) {
   if (region.length() == 2)
     return std::string(region);
 
@@ -306,7 +306,7 @@ bool PhoneNumbersMatch(const ::i18n::phonenumbers::PhoneNumber& number_a,
 bool PhoneNumbersMatch(std::u16string_view number_a,
                        std::u16string_view number_b,
                        std::string_view raw_region,
-                       std::string_view app_locale,
+                       const base::i18n::LanguageTag& app_locale,
                        bool support_short_nsn_match) {
   if (number_a.empty() && number_b.empty()) {
     return true;

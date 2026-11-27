@@ -193,7 +193,7 @@ ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
     std::u16string_view text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
-      autofill::AutofillCountry::CountryCodeForLocale(locale_.tag_string())));
+      autofill::AutofillCountry::CountryCodeForLocale(locale_)));
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
@@ -244,8 +244,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     switch (field_.type) {
       case autofill::PHONE_HOME_WHOLE_NUMBER: {
         const std::string default_region_code =
-            autofill::AutofillCountry::CountryCodeForLocale(
-                locale_.tag_string());
+            autofill::AutofillCountry::CountryCodeForLocale(locale_);
         if (!autofill::IsPossiblePhoneNumber(textfield->GetText(),
                                              default_region_code)) {
           is_valid = false;

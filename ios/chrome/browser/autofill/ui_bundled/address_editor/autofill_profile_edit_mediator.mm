@@ -422,7 +422,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
 
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(_selectedCountryCode),
-      _personalDataManager->address_data_manager().app_locale().tag_string());
+      _personalDataManager->address_data_manager().app_locale());
   _line1Required = country.requires_line1();
   _cityRequired = country.requires_city();
   _stateRequired = country.requires_state();

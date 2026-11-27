@@ -135,7 +135,7 @@ class PhoneNumber : public FormGroup {
   FieldTypeSet GetSupportedTypes() const override;
 
   // Updates the cached parsed number if the number has changed substantially.
-  void UpdateCacheIfNeeded(std::string_view app_locale) const;
+  void UpdateCacheIfNeeded(const base::i18n::LanguageTag& app_locale) const;
 
   // The phone number.
   std::u16string number_;

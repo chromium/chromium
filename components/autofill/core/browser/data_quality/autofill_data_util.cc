@@ -526,8 +526,7 @@ std::string GetCountryCodeWithFallback(
   std::string country_code =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   if (!IsValidCountryCode(country_code)) {
-    country_code =
-        AutofillCountry::CountryCodeForLocale(app_locale.tag_string());
+    country_code = AutofillCountry::CountryCodeForLocale(app_locale);
   }
   return country_code;
 }

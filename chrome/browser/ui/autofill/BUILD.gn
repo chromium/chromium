@@ -520,6 +520,7 @@ if (!is_android && !is_chromeos_device) {
         "one_time_tokens/gmail_otp_opt_in_bubble_interactive_uitest.cc",
       ]
       deps += [
+        "//chrome/browser:global_features",
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:chrome_pages",
         "//chrome/browser/ui/tabs:tab_enums",
@@ -531,6 +532,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/autofill/one_time_tokens",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/browser/ui/views/location_bar",
+        "//components/application_locale_storage",
         "//components/strings",
         "//components/tabs:public",
         "//ui/strings",

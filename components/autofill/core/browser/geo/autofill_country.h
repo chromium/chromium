@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -32,10 +33,10 @@ class AutofillCountry {
   // if the name is not queried.
   explicit AutofillCountry(
       std::u16string_view country_code,
-      std::optional<std::string_view> locale = std::nullopt);
+      base::optional_ref<const base::i18n::LanguageTag> locale = std::nullopt);
   explicit AutofillCountry(
       std::string_view country_code,
-      std::optional<std::string_view> locale = std::nullopt);
+      base::optional_ref<const base::i18n::LanguageTag> locale = std::nullopt);
 
   AutofillCountry(const AutofillCountry&) = delete;
   AutofillCountry& operator=(const AutofillCountry&) = delete;
@@ -63,7 +64,8 @@ class AutofillCountry {
 
   // Returns the likely country code for `locale`, or "US" as a fallback if no
   // mapping from the locale is available.
-  static std::string CountryCodeForLocale(std::string_view locale);
+  static std::string CountryCodeForLocale(
+      const base::i18n::LanguageTag& locale);
 
   // Returns an uppercase ISO 3166-1 alpha-2 country code, which represents our
   // best guess for the country a user is likely to use when inputting a new

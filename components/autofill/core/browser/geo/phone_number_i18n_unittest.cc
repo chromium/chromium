@@ -207,39 +207,39 @@ TEST(PhoneNumberI18NTest, ConstructPhoneNumber) {
 }
 
 TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
+  constexpr base::i18n::LanguageTag kEnUs =
+      base::i18n::GetKnownLanguageTag("en-US");
   // Same numbers, defined country code.
-  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"4158889999", "US", "en-US"));
+  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"4158889999", "US", kEnUs));
   // Same numbers, undefined country code.
   EXPECT_TRUE(
-      PhoneNumbersMatch(u"4158889999", u"4158889999", std::string(), "en-US"));
+      PhoneNumbersMatch(u"4158889999", u"4158889999", std::string(), kEnUs));
 
   // Numbers differ by country code only.
-  EXPECT_TRUE(PhoneNumbersMatch(u"14158889999", u"4158889999", "US", "en-US"));
+  EXPECT_TRUE(PhoneNumbersMatch(u"14158889999", u"4158889999", "US", kEnUs));
 
   // Same numbers, different formats.
-  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415-888-9999", "US", "en-US"));
+  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415-888-9999", "US", kEnUs));
+  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"(415)888-9999", "US", kEnUs));
+  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415 888 9999", "US", kEnUs));
+  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415 TUV WXYZ", "US", kEnUs));
   EXPECT_TRUE(
-      PhoneNumbersMatch(u"4158889999", u"(415)888-9999", "US", "en-US"));
-  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415 888 9999", "US", "en-US"));
-  EXPECT_TRUE(PhoneNumbersMatch(u"4158889999", u"415 TUV WXYZ", "US", "en-US"));
-  EXPECT_TRUE(
-      PhoneNumbersMatch(u"1(415)888-99-99", u"+14158889999", "US", "en-US"));
+      PhoneNumbersMatch(u"1(415)888-99-99", u"+14158889999", "US", kEnUs));
 
   // Partial matches don't count by default.
-  EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", "en-US"));
-  EXPECT_TRUE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", "en-US",
+  EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", kEnUs));
+  EXPECT_TRUE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", kEnUs,
                                 /*support_short_nsn_match=*/true));
 
   // Different numbers don't match.
-  EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"1415888", "US", "en-US"));
+  EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"1415888", "US", kEnUs));
 
   // Two empty numbers match.
   EXPECT_TRUE(
-      PhoneNumbersMatch(std::u16string(), std::u16string(), "US", "en-US"));
+      PhoneNumbersMatch(std::u16string(), std::u16string(), "US", kEnUs));
 
   // An empty and a non-empty number do not match.
-  EXPECT_FALSE(
-      PhoneNumbersMatch(std::u16string(), u"5088585123", "US", "en-US"));
+  EXPECT_FALSE(PhoneNumbersMatch(std::u16string(), u"5088585123", "US", kEnUs));
 }
 
 // Tests that PhoneNumbersMatch correctly matches PhoneNumber protos including

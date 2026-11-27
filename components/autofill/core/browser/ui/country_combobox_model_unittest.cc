@@ -34,7 +34,8 @@ TEST_F(CountryComboboxModelTest, DefaultCountryCode) {
   std::string default_country = model()->GetDefaultCountryCode();
   EXPECT_EQ("DE", default_country);
 
-  AutofillCountry country(default_country, "en-US");
+  AutofillCountry country(default_country,
+                          base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(country.name(), model()->GetItemAt(0));
 }
 

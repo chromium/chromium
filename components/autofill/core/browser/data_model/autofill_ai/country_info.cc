@@ -30,7 +30,7 @@ CountryInfo::~CountryInfo() = default;
 
 std::u16string CountryInfo::GetCountryName(
     const base::i18n::LanguageTag& app_locale) const {
-  return AutofillCountry(country_code_, app_locale.tag_string()).name();
+  return AutofillCountry(country_code_, app_locale).name();
 }
 
 std::string CountryInfo::GetCountryCode() const {

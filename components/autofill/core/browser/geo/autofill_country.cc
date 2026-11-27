@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <array>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,9 +17,9 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -60,12 +59,14 @@ constexpr auto kRequiredFieldMapping =
 
 }  // namespace
 
-AutofillCountry::AutofillCountry(std::u16string_view country_code,
-                                 std::optional<std::string_view> locale)
-    : AutofillCountry(base::UTF16ToUTF8(country_code), std::move(locale)) {}
+AutofillCountry::AutofillCountry(
+    std::u16string_view country_code,
+    base::optional_ref<const base::i18n::LanguageTag> locale)
+    : AutofillCountry(base::UTF16ToUTF8(country_code), locale) {}
 
-AutofillCountry::AutofillCountry(std::string_view country_code,
-                                 std::optional<std::string_view> locale) {
+AutofillCountry::AutofillCountry(
+    std::string_view country_code,
+    base::optional_ref<const base::i18n::LanguageTag> locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // If the country code is an alias (e.g. "GB" for "UK") expand the country
@@ -79,23 +80,22 @@ AutofillCountry::AutofillCountry(std::string_view country_code,
 
   // Translate the country name by the supplied local.
   if (locale) {
-    name_ = l10n_util::GetDisplayNameForCountry(
-        country_code_, base::i18n::GetLanguageTagFromString(*locale).value_or(
-                           base::i18n::GetKnownLanguageTag("und")));
+    name_ = l10n_util::GetDisplayNameForCountry(country_code_, *locale);
   }
 }
 
 AutofillCountry::~AutofillCountry() = default;
 
 // static
-std::string AutofillCountry::CountryCodeForLocale(std::string_view locale) {
+std::string AutofillCountry::CountryCodeForLocale(
+    const base::i18n::LanguageTag& locale) {
   // Add likely subtags to the locale. In particular, add any likely country
   // subtags -- e.g. for locales like "ru" that only include the language.
   // std::string likely_locale;
   UErrorCode error_ignored = U_ZERO_ERROR;
   std::array<char, kLocaleCapacity> likely_locale = {};
-  uloc_addLikelySubtags(std::string(locale).c_str(), likely_locale.data(),
-                        kLocaleCapacity, &error_ignored);
+  uloc_addLikelySubtags(std::string(locale.tag_string()).c_str(),
+                        likely_locale.data(), kLocaleCapacity, &error_ignored);
 
   // Extract the country code.
   std::string country_code = icu::Locale(likely_locale.data()).getCountry();
@@ -114,10 +114,10 @@ AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
     const base::i18n::LanguageTag& locale) {
   // Capitalize the country code, because some APIs might not allow the usage of
   // lowercase country codes.
-  return AddressCountryCode(base::ToUpperASCII(
-      geo_ip_country_code.value().empty()
-          ? AutofillCountry::CountryCodeForLocale(locale.tag_string())
-          : geo_ip_country_code.value()));
+  return AddressCountryCode(
+      base::ToUpperASCII(geo_ip_country_code.value().empty()
+                             ? AutofillCountry::CountryCodeForLocale(locale)
+                             : geo_ip_country_code.value()));
 }
 
 // Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.

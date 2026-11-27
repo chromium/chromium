@@ -4,6 +4,8 @@
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
@@ -41,8 +43,9 @@ std::string FormatPhoneNumber(
     ::i18n::phonenumbers::PhoneNumberUtil::PhoneNumberFormat format) {
   return FormatPhoneNumberWithCountryCode(
       phone_number,
-      AutofillCountry::CountryCodeForLocale(
-          g_browser_process->GetApplicationLocale()),
+      AutofillCountry::CountryCodeForLocale(g_browser_process->GetFeatures()
+                                                ->application_locale_storage()
+                                                ->GetTag()),
       format);
 }
 
@@ -82,10 +85,12 @@ static std::string JNI_PhoneNumberUtil_FormatForResponse(
 static bool JNI_PhoneNumberUtil_IsPossibleNumber(
     const std::string& phone_number,
     const std::string& country_code) {
-  const std::string region_code =
-      country_code.empty() ? AutofillCountry::CountryCodeForLocale(
-                                 g_browser_process->GetApplicationLocale())
-                           : country_code;
+  const std::string region_code = country_code.empty()
+                                      ? AutofillCountry::CountryCodeForLocale(
+                                            g_browser_process->GetFeatures()
+                                                ->application_locale_storage()
+                                                ->GetTag())
+                                      : country_code;
 
   return ::i18n::phonenumbers::PhoneNumberUtil::GetInstance()
       ->IsPossibleNumberForString(phone_number, region_code);

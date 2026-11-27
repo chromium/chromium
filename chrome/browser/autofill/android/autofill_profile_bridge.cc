@@ -68,7 +68,7 @@ std::vector<DropdownKeyValueAndroid> BuildSupportedCountries(
 
 static std::string JNI_AutofillProfileBridge_GetDefaultCountryCode() {
   return AutofillCountry::CountryCodeForLocale(
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 static std::vector<DropdownKeyValueAndroid>

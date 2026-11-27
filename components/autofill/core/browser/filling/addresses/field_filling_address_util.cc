@@ -202,7 +202,7 @@ std::u16string GetValueForProfileForInput(
             features::kAutofillDisallowCountryCodeFilling)) {
       return country_code;
     }
-    return AutofillCountry(country_code, app_locale.tag_string()).name();
+    return AutofillCountry(country_code, app_locale).name();
   }
   const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (value.empty()) {

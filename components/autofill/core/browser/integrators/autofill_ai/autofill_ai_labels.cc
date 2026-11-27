@@ -148,8 +148,8 @@ GetOrderedAttributeTypesForDisambiguation(
                                        obfuscate_sensitive_types, app_locale)
                   .first,
               normalization::WhitespaceSpec::kRetain,
-              AddressCountryCode(AutofillCountry::CountryCodeForLocale(
-                  app_locale.tag_string())));
+              AddressCountryCode(
+                  AutofillCountry::CountryCodeForLocale(app_locale)));
         });
     return values.size() == 1
                ? !values.back().empty()

@@ -245,7 +245,7 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   // TODO(crbug.com/503704299): Remove this validation once profiles with
   // invalid country codes are cleaned up.
   if (region.empty() || !data_util::IsValidCountryCode(region)) {
-    region = AutofillCountry::CountryCodeForLocale(app_locale_.tag_string());
+    region = AutofillCountry::CountryCodeForLocale(app_locale_);
   }
 
   // Parse the phone numbers.

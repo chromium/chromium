@@ -620,7 +620,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       if (!i18n::PhoneNumbersMatch(
               value, other_value,
               base::UTF16ToASCII(GetRawInfo(ADDRESS_HOME_COUNTRY)),
-              app_locale.tag_string())) {
+              app_locale)) {
         return false;
       }
     } else if (type == EMAIL_ADDRESS) {

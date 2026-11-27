@@ -35,7 +35,7 @@ namespace {
 // code. If the `profile` does not have a country code associated with it, falls
 // back to the country code corresponding to the `app_locale`.
 std::string GetRegion(const AutofillProfile& profile,
-                      std::string_view app_locale) {
+                      const base::i18n::LanguageTag& app_locale) {
   std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!country_code.empty())
     return base::UTF16ToASCII(country_code);
@@ -138,8 +138,8 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
   if (!matching_types->contains(PHONE_HOME_WHOLE_NUMBER)) {
     std::u16string whole_number = GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale);
     if (!whole_number.empty()) {
-      std::u16string normalized_number = i18n::NormalizePhoneNumber(
-          text, GetRegion(*profile_, app_locale.tag_string()));
+      std::u16string normalized_number =
+          i18n::NormalizePhoneNumber(text, GetRegion(*profile_, app_locale));
       if (normalized_number == whole_number)
         matching_types->insert(PHONE_HOME_WHOLE_NUMBER);
     }
@@ -183,7 +183,7 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
 std::u16string PhoneNumber::GetInfo(
     FieldType type,
     const base::i18n::LanguageTag& app_locale) const {
-  UpdateCacheIfNeeded(app_locale.tag_string());
+  UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
   // responds to queries for complete numbers with whatever the raw stored value
@@ -306,7 +306,7 @@ bool PhoneNumber::SetInfoWithVerificationStatus(
 
   // `SetRawInfoWithVerificationStatus()` invalidated `cached_parsed_phone_` and
   // calling `UpdateCacheIfNeeded()` will thus try parsing the `number_` here.
-  UpdateCacheIfNeeded(app_locale.tag_string());
+  UpdateCacheIfNeeded(app_locale);
   // If the number invalid, setting fails and `GetRawInfo()` and `GetInfo()`
   // should return an empty string. Clear both representations of the number.
   if (!cached_parsed_phone_.IsValidNumber()) {
@@ -322,7 +322,8 @@ VerificationStatus PhoneNumber::GetVerificationStatus(FieldType type) const {
   return VerificationStatus::kNoStatus;
 }
 
-void PhoneNumber::UpdateCacheIfNeeded(std::string_view app_locale) const {
+void PhoneNumber::UpdateCacheIfNeeded(
+    const base::i18n::LanguageTag& app_locale) const {
   std::string region = GetRegion(*profile_, app_locale);
   // To enable filling of country calling codes for nationally formatted
   // numbers, infer it from the `profile_`'s country information while parsing
@@ -453,8 +454,7 @@ bool PhoneNumber::ImportPhoneNumberToProfile(
   // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
   // in this case.
   if (std::optional<std::u16string> constructed_number =
-          combined_phone.ParseNumber(
-              GetRegion(profile, app_locale.tag_string()))) {
+          combined_phone.ParseNumber(GetRegion(profile, app_locale))) {
     return profile.SetInfoWithVerificationStatus(
         PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale,
         VerificationStatus::kObserved);

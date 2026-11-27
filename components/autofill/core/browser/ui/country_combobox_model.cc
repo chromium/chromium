@@ -39,8 +39,8 @@ void CountryComboboxModel::SetCountries(
           .value();
   DCHECK(!default_country_code.empty());
 
-  countries_.push_back(std::make_unique<AutofillCountry>(
-      default_country_code, app_locale.tag_string()));
+  countries_.push_back(
+      std::make_unique<AutofillCountry>(default_country_code, app_locale));
 #if !BUILDFLAG(IS_ANDROID)
   // The separator item. On Android, there are separators after all items, so
   // this is unnecessary.
@@ -54,8 +54,8 @@ void CountryComboboxModel::SetCountries(
   for (const std::string& country_code :
        ::i18n::addressinput::GetRegionCodes()) {
     if (country_data_map->HasCountryCode(country_code)) {
-      sorted_countries.push_back(std::make_unique<AutofillCountry>(
-          country_code, app_locale.tag_string()));
+      sorted_countries.push_back(
+          std::make_unique<AutofillCountry>(country_code, app_locale));
     }
   }
 
