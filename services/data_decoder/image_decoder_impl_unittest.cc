@@ -135,8 +135,20 @@ class ImageDecoderImplTest : public testing::Test {
 
 }  // namespace
 
+// TODO(crbug.com/585642950): On Android, Blink/V8 setup here conflicts with
+// ProxyResolverV8Test's V8 setup when batched in one process, crashing either.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DecodeImageSizeLimit DISABLED_DecodeImageSizeLimit
+#define MAYBE_DecodeImageFailed DISABLED_DecodeImageFailed
+#define MAYBE_DecodeAnimationFailed DISABLED_DecodeAnimationFailed
+#else
+#define MAYBE_DecodeImageSizeLimit DecodeImageSizeLimit
+#define MAYBE_DecodeImageFailed DecodeImageFailed
+#define MAYBE_DecodeAnimationFailed DecodeAnimationFailed
+#endif
+
 // Test that DecodeImage() doesn't return image message > (max message size)
-TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
+TEST_F(ImageDecoderImplTest, MAYBE_DecodeImageSizeLimit) {
   // Approx max height for 3:2 image that will fit in the allotted space.
   // 1.5 for width/height ratio, 4 for bytes/pixel.
   int max_height_for_msg = sqrt(kTestMaxImageSize / (1.5 * 4));
@@ -182,7 +194,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
   }
 }
 
-TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
+TEST_F(ImageDecoderImplTest, MAYBE_DecodeImageFailed) {
   // The "jpeg" is just some "random" data;
   auto jpg = base::ToVector<unsigned char>("u gycfy7xdjkhfgui bdui ");
   Request request(decoder());
@@ -190,7 +202,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
   EXPECT_TRUE(request.bitmap().isNull());
 }
 
-TEST_F(ImageDecoderImplTest, DecodeAnimationFailed) {
+TEST_F(ImageDecoderImplTest, MAYBE_DecodeAnimationFailed) {
   auto data = base::as_byte_span("this ASCII text is *defintely* an animation");
 
   std::vector<mojom::AnimationFramePtr> frames;
