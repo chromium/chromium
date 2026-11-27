@@ -626,6 +626,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".DurableMessages.CollectorCount"
       summary="Reports the number of DevToolsDurableMessageCollector
                instances."/>
+  <variant name=".Malloc.MaxBRPRefCount"
+      summary="Highest power-of-two reference count (&gt;= 2^12) observed in
+               InSlotMetadata since process start, recorded when
+               USE_BACKUP_REF_PTR build flag is enabled."/>
   <variant name=".ServiceDiscardableManager"
       summary="Only counting memory used by the gpu discardable cache."/>
   <variant name=".ServiceDiscardableManager.AvgImageSize"
@@ -705,10 +709,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Malloc.ExtremeLUD.SmallObjects.SizeInBytes"
       summary="Size of quarantined allocations in the ELUD quarantine at dump
                time."/>
-  <variant name=".Malloc.MaxBRPRefCount"
-      summary="Highest power-of-two reference count (&gt;= 2^12) observed in
-               InSlotMetadata since process start, recorded when
-               USE_BACKUP_REF_PTR build flag is enabled."/>
   <variant name=".Malloc.SchedulerLoopQuarantine.CumulativeSizeInBytes"
       summary="Total size of quarantined allocations in Scheduler-Loop
                Quarantine since process start, including already
