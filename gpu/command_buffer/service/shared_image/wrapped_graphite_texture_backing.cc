@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -278,6 +279,11 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
     return false;
   }
 
+  if (!BeginAccess(/*readonly=*/false)) {
+    return false;
+  }
+  absl::Cleanup end_access = [this]() { EndAccess(/*readonly=*/false); };
+
   skgpu::graphite::Recorder* graphite_recorder =
       context_state->gpu_main_graphite_recorder();
   bool updated = true;
@@ -302,6 +308,11 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
   if (!context_state || context_state->context_lost()) {
     return false;
   }
+
+  if (!BeginAccess(/*readonly=*/true)) {
+    return false;
+  }
+  absl::Cleanup end_access = [this]() { EndAccess(/*readonly=*/true); };
 
   std::vector<ReadPixelsContext> contexts(format().NumberOfPlanes());
   std::vector<sk_sp<SkImage>> sk_images(format().NumberOfPlanes());

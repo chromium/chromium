@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -415,6 +416,11 @@ bool WrappedSkImageBacking::UploadFromMemory(
   }
   context_state->set_need_context_state_reset(true);
 
+  if (!BeginAccess(/*readonly=*/false)) {
+    return false;
+  }
+  absl::Cleanup end_access = [this]() { EndAccess(/*readonly=*/false); };
+
   bool updated = true;
   for (size_t i = 0; i < textures_.size(); ++i) {
     updated = updated && context_state->gr_context()->updateBackendTexture(
@@ -448,6 +454,10 @@ bool WrappedSkImageBacking::ReadbackToMemory(
   }
   context_state->set_need_context_state_reset(true);
 
+  if (!BeginAccess(/*readonly=*/true)) {
+    return false;
+  }
+
   bool read = true;
   for (size_t i = 0; i < textures_.size(); ++i) {
     auto sk_image = SkImages::BorrowTextureFrom(
@@ -464,6 +474,7 @@ bool WrappedSkImageBacking::ReadbackToMemory(
     }
   }
 
+  EndAccess(/*readonly=*/true);
   return read;
 }
 
