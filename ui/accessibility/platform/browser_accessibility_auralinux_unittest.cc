@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -1557,6 +1558,83 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, PlatformGetSiblings) {
   EXPECT_EQ(assertive_node, polite_node->PlatformGetPreviousSibling());
 
   EXPECT_EQ(nullptr, polite_node->PlatformGetNextSibling());
+}
+
+TEST_F(BrowserAccessibilityAuraLinuxTest,
+       ExtraAnnouncementNodesClearedOnRootSwap) {
+  AXNodeData root1;
+  root1.id = 1;
+  root1.role = ax::mojom::Role::kRootWebArea;
+  root1.child_ids = {2};
+
+  AXNodeData child1;
+  child1.id = 2;
+  child1.role = ax::mojom::Role::kButton;
+
+  auto manager = std::make_unique<TestBrowserAccessibilityManagerAuraLinux>(
+      MakeAXTreeUpdateForTesting(root1, child1), node_id_delegate_,
+      test_browser_accessibility_delegate_.get());
+
+  BrowserAccessibility* initial_root = manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, initial_root);
+
+  manager->FireAriaNotificationEvent(
+      initial_root, "initial_notice",
+      ax::mojom::AriaNotificationPriority::kHigh,
+      ax::mojom::AriaNotificationInterrupt::kNone, "");
+  ASSERT_TRUE(manager->TreeHasExtraAnnouncementNodes());
+  const AXNodeID initial_assertive_id =
+      initial_root
+          ->GetExtraAnnouncementNode(ax::mojom::AriaNotificationPriority::kHigh)
+          ->GetId();
+
+  // Replace the tree root in-place via OnAccessibilityEvents without
+  // node_id_to_clear.
+  AXNodeData root2;
+  root2.id = 3;
+  root2.role = ax::mojom::Role::kRootWebArea;
+  root2.child_ids = {4};
+
+  AXNodeData child2;
+  child2.id = 4;
+  child2.role = ax::mojom::Role::kParagraph;
+
+  AXTreeUpdate root_swap_update;
+  root_swap_update.root_id = root2.id;
+  root_swap_update.nodes = {root2, child2};
+
+  AXUpdatesAndEvents root_swap_events;
+  root_swap_events.updates = {root_swap_update};
+  ASSERT_TRUE(manager->OnAccessibilityEvents(root_swap_events));
+  EXPECT_FALSE(manager->TreeHasExtraAnnouncementNodes());
+  EXPECT_EQ(nullptr, manager->GetFromID(initial_assertive_id));
+
+  BrowserAccessibility* new_root = manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, new_root);
+  EXPECT_EQ(root2.id, new_root->GetId());
+  EXPECT_EQ(1U, new_root->PlatformChildCount());
+
+  // Fire an ARIA notification on the child element in the new document and
+  // exercise OnSubtreeCreated() directly so the ATK < 2.50 path is tested
+  // regardless of the host ATK version.
+  BrowserAccessibility* child2_wrapper = manager->GetFromID(child2.id);
+  ASSERT_NE(nullptr, child2_wrapper);
+  manager->FireAriaNotificationEvent(
+      child2_wrapper, "updated_notice",
+      ax::mojom::AriaNotificationPriority::kHigh,
+      ax::mojom::AriaNotificationInterrupt::kNone, "");
+  ASSERT_TRUE(manager->TreeHasExtraAnnouncementNodes());
+
+  BrowserAccessibility* new_assertive =
+      child2_wrapper->GetExtraAnnouncementNode(
+          ax::mojom::AriaNotificationPriority::kHigh);
+  ASSERT_NE(nullptr, new_assertive);
+  EXPECT_EQ(new_root, new_assertive->PlatformGetParent());
+
+  ToBrowserAccessibilityAuraLinux(new_assertive)->GetNode()->OnSubtreeCreated();
+  EXPECT_NE(
+      nullptr,
+      ToBrowserAccessibilityAuraLinux(new_assertive)->GetNode()->GetParent());
 }
 
 }  // namespace ui
