@@ -4001,6 +4001,7 @@ source_set("browser") {
     ]
     deps += [
       "//chrome/browser/ui/views/autofill:address_sign_in_promo_view",
+      "//chrome/browser/ui/views/profiles:account_switching_bubble_views",
       "//chrome/browser/ui/views/profiles:cross_device_signin_qr_bubble_views",
       "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
       "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",

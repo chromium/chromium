@@ -8,9 +8,12 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -39,6 +42,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -116,10 +120,13 @@ class AccountSwitchingManagerTest : public testing::Test {
                                u"primary@gmail.com",
                                /*is_consented_primary_account=*/false);
 
+    SetUpMockPromoBubble();
     SetCandidate(secondary_account_.GetGaiaId());
   }
 
   void TearDown() override {
+    last_promo_result_callback_.Reset();
+    show_bubble_callback_override_.reset();
     manager_ = nullptr;
     preview_service_ = nullptr;
     identity_test_env_adaptor_.reset();
@@ -183,10 +190,35 @@ class AccountSwitchingManagerTest : public testing::Test {
     }
   }
 
+  void SetUpMockPromoBubble() {
+    ON_CALL(mock_show_bubble_callback_, Run)
+        .WillByDefault(
+            [this](BrowserWindowInterface*, const AccountInfo& primary_account,
+                   const AccountInfo& target_account,
+                   base::OnceCallback<void(AccountSwitchingPromoResult)>
+                       callback) {
+              ++promo_show_count_;
+              last_promo_primary_account_ = primary_account;
+              last_promo_target_account_ = target_account;
+              last_promo_result_callback_ = std::move(callback);
+              return base::ScopedClosureRunner(base::BindLambdaForTesting(
+                  [this]() { ++promo_close_handle_count_; }));
+            });
+    show_bubble_callback_ = mock_show_bubble_callback_.Get();
+    show_bubble_callback_override_.emplace(
+        AccountSwitchingManager::SetShowBubbleCallbackForTesting(
+            &show_bubble_callback_));
+  }
+
+  void ResolvePendingPromo(AccountSwitchingPromoResult result) {
+    ASSERT_TRUE(last_promo_result_callback_);
+    std::move(last_promo_result_callback_).Run(result);
+  }
+
   void ShowAndResolvePromo(AccountSwitchingPromoResult result) {
     ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
     ASSERT_TRUE(manager_->IsPromoActiveForTesting());
-    manager_->ResolvePromoForTesting(result);
+    ResolvePendingPromo(result);
     ASSERT_FALSE(manager_->IsPromoActiveForTesting());
   }
 
@@ -221,6 +253,19 @@ class AccountSwitchingManagerTest : public testing::Test {
   AccountInfo secondary_account_;
   AccountInfo third_account_;
   AccountInfo fourth_account_;
+
+  testing::NiceMock<
+      base::MockCallback<AccountSwitchingManager::ShowBubbleCallback>>
+      mock_show_bubble_callback_;
+  AccountSwitchingManager::ShowBubbleCallback show_bubble_callback_;
+  std::optional<base::AutoReset<AccountSwitchingManager::ShowBubbleCallback*>>
+      show_bubble_callback_override_;
+  int promo_show_count_ = 0;
+  int promo_close_handle_count_ = 0;
+  AccountInfo last_promo_primary_account_;
+  AccountInfo last_promo_target_account_;
+  base::OnceCallback<void(AccountSwitchingPromoResult)>
+      last_promo_result_callback_;
 };
 
 TEST_F(AccountSwitchingManagerTest, InitiallyEligibleAndShowPromo) {
@@ -234,12 +279,35 @@ TEST_F(AccountSwitchingManagerTest, InitiallyEligibleAndShowPromo) {
   EXPECT_TRUE(manager_->ShowPromo(&browser_window_));
   EXPECT_TRUE(manager_->IsPromoActiveForTesting());
   EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_EQ(promo_show_count_, 1);
+  EXPECT_EQ(last_promo_primary_account_.GetEmail(),
+            primary_account_.GetEmail());
+  EXPECT_EQ(last_promo_target_account_.GetEmail(),
+            secondary_account_.GetEmail());
 }
 
 TEST_F(AccountSwitchingManagerTest, PromoNotDisplayedDoesNotThrottle) {
   ShowAndResolvePromo(AccountSwitchingPromoResult::kNotDisplayed);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Synchronous `kNotDisplayed` / `kNotDisplayedNoAvatarButton` results return
+  // false from `ShowPromo()` and leave the promo eligible.
+  for (AccountSwitchingPromoResult result :
+       {AccountSwitchingPromoResult::kNotDisplayed,
+        AccountSwitchingPromoResult::kNotDisplayedNoAvatarButton}) {
+    EXPECT_CALL(mock_show_bubble_callback_, Run)
+        .WillOnce([result](BrowserWindowInterface*, const AccountInfo&,
+                           const AccountInfo&,
+                           base::OnceCallback<void(AccountSwitchingPromoResult)>
+                               callback) {
+          std::move(callback).Run(result);
+          return base::ScopedClosureRunner();
+        });
+    EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+    EXPECT_FALSE(manager_->IsPromoActiveForTesting());
+    EXPECT_TRUE(manager_->CanShowPromo());
+  }
 }
 
 TEST_F(AccountSwitchingManagerTest, PrimaryAccountSigninGracePeriod) {
@@ -279,10 +347,12 @@ TEST_F(AccountSwitchingManagerTest, PrimaryAccountSigninGracePeriod) {
 }
 
 TEST_F(AccountSwitchingManagerTest, GlobalIgnoreCooldownAndCap) {
-  // Dismissals 1 through 4 enforce a 7-day global cooldown and then recover.
+  // Dismissals and ignores 1 through 4 enforce a 7-day global cooldown and
+  // then recover.
   for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores - 1; ++i) {
     ASSERT_TRUE(manager_->CanShowPromo());
-    ShowAndResolvePromo(AccountSwitchingPromoResult::kDismissed);
+    ShowAndResolvePromo(i % 2 == 0 ? AccountSwitchingPromoResult::kDismissed
+                                   : AccountSwitchingPromoResult::kIgnored);
 
     // Immediately blocked globally across all candidates.
     EXPECT_FALSE(manager_->CanShowPromo());
@@ -405,7 +475,7 @@ TEST_F(AccountSwitchingManagerTest,
   EXPECT_FALSE(manager_->CanShowPromo());
   EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsPromoActiveForTesting());
   EXPECT_TRUE(manager_->IsSwitchInProgressForTesting());
 
@@ -497,8 +567,7 @@ TEST_F(AccountSwitchingManagerTest,
           started_second_switch = true;
           SetCandidate(third_account_.GetGaiaId());
           ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
-          manager_->ResolvePromoForTesting(
-              AccountSwitchingPromoResult::kAccepted);
+          ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
         }
       }));
 
@@ -522,18 +591,23 @@ TEST_F(AccountSwitchingManagerTest,
 
 TEST_F(AccountSwitchingManagerTest,
        ShutdownAndDestructionSafeAcrossActivePromoOrSwitch) {
-  // Verify `Shutdown()` cancels an active promo without recording ignores,
-  // dismissals, or suppression.
+  // Verify `Shutdown()` closes an active promo bubble and drops any late
+  // callback without recording ignores, dismissals, or suppression.
   {
     auto standalone_manager = std::make_unique<AccountSwitchingManager>(
         profile_->GetPrefs(),
         ChromeSigninClientFactory::GetForProfile(profile_),
         IdentityManagerFactory::GetForProfile(profile_),
         AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    const int initial_close_count = promo_close_handle_count_;
     ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
     ASSERT_TRUE(standalone_manager->IsPromoActiveForTesting());
+    auto late_callback = std::move(last_promo_result_callback_);
+    ASSERT_TRUE(late_callback);
     standalone_manager->Shutdown();
+    EXPECT_EQ(promo_close_handle_count_, initial_close_count + 1);
     EXPECT_FALSE(standalone_manager->IsPromoActiveForTesting());
+    std::move(late_callback).Run(AccountSwitchingPromoResult::kDeclined);
     EXPECT_TRUE(manager_->CanShowPromo());
   }
 
@@ -546,8 +620,7 @@ TEST_F(AccountSwitchingManagerTest,
         IdentityManagerFactory::GetForProfile(profile_),
         AccountPreviewDataServiceFactory::GetForProfile(profile_));
     ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
-    standalone_manager->ResolvePromoForTesting(
-        AccountSwitchingPromoResult::kAccepted);
+    ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
     ASSERT_TRUE(standalone_manager->IsSwitchInProgressForTesting());
     standalone_manager->Shutdown();
     EXPECT_FALSE(standalone_manager->IsSwitchInProgressForTesting());
@@ -566,8 +639,7 @@ TEST_F(AccountSwitchingManagerTest,
         IdentityManagerFactory::GetForProfile(profile_),
         AccountPreviewDataServiceFactory::GetForProfile(profile_));
     ASSERT_TRUE(standalone_manager->ShowPromo(&browser_window_));
-    standalone_manager->ResolvePromoForTesting(
-        AccountSwitchingPromoResult::kAccepted);
+    ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
     ASSERT_TRUE(standalone_manager->IsSwitchInProgressForTesting());
     standalone_manager.reset();
     EXPECT_FALSE(
@@ -598,7 +670,7 @@ TEST_F(AccountSwitchingManagerTest,
                                 prefs::kAccountSwitchingPromoState);
     update->Set("last_ignored_time", base::TimeToValue(base::Time::Now()));
   }
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_TRUE(manager_->IsSwitchInProgressForTesting());
   manager_->CompleteSwitchForTesting(/*success=*/true);
 
@@ -614,7 +686,7 @@ TEST_F(AccountSwitchingManagerTest,
   SetCandidate(third_account_.GetGaiaId());
   ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   SetCandidate(fourth_account_.GetGaiaId());
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
       primary_account_.GetGaiaId(), third_account_.GetGaiaId()));
@@ -626,7 +698,7 @@ TEST_F(AccountSwitchingManagerTest,
   ASSERT_NE(other_entry, nullptr);
   other_entry->SetAuthInfo(third_account_.GetGaiaId(), u"third@gmail.com",
                            /*is_consented_primary_account=*/false);
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   other_entry->SetAuthInfo(GaiaId(), std::u16string(),
                            /*is_consented_primary_account=*/false);
@@ -638,7 +710,7 @@ TEST_F(AccountSwitchingManagerTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       third_account_.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
@@ -649,7 +721,7 @@ TEST_F(AccountSwitchingManagerTest,
       AccountInfo::Builder(third_account_)
           .SetIsChildAccount(Tribool::kTrue)
           .Build());
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   identity_test_env()->UpdateAccountInfoForAccount(
       AccountInfo::Builder(third_account_)
@@ -660,7 +732,7 @@ TEST_F(AccountSwitchingManagerTest,
   ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   identity_test_env()->RemoveRefreshTokenForAccount(
       third_account_.GetAccountId());
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   third_account_ = identity_test_env()->MakeAccountAvailable("third@gmail.com");
 
@@ -670,7 +742,7 @@ TEST_F(AccountSwitchingManagerTest,
       AccountInfo::Builder(third_account_)
           .SetHostedDomain("example.com")
           .Build());
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 
   // Switch candidate to `fourth_account_` for primary-account and pref guards.
@@ -683,7 +755,7 @@ TEST_F(AccountSwitchingManagerTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account_.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
@@ -691,14 +763,14 @@ TEST_F(AccountSwitchingManagerTest,
   // Primary account changed while promo is open.
   ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   SwitchPrimaryAccountInProfile(fourth_account_);
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
   SwitchPrimaryAccountInProfile(primary_account_);
 
   // Primary account cleared (signed out) while promo is open.
   ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   identity_test_env()->ClearPrimaryAccount();
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 
   // Restore signed-in state and verify `prefs::kSigninAllowed = false` blocks
@@ -711,7 +783,7 @@ TEST_F(AccountSwitchingManagerTest,
       AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
   ASSERT_TRUE(manager_->ShowPromo(&browser_window_));
   profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 }
 
@@ -890,7 +962,7 @@ TEST_F(AccountSwitchingManagerTest,
   other_entry->SetAuthInfo(secondary_account_.GetGaiaId(),
                            u"secondary@gmail.com",
                            /*is_consented_primary_account=*/false);
-  manager_->ResolvePromoForTesting(AccountSwitchingPromoResult::kAccepted);
+  ResolvePendingPromo(AccountSwitchingPromoResult::kAccepted);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 }
 
@@ -906,6 +978,29 @@ TEST_F(AccountSwitchingManagerTest, FiltersMissingEmptyAndSelfCandidates) {
   // Candidate matching the primary account is rejected.
   SetCandidate(primary_account_.GetGaiaId());
   EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Incomplete candidate without an email is rejected rather than crashing
+  // `ShowPromo()`.
+  const GaiaId incomplete_gaia_id("incomplete-gaia-id");
+  const CoreAccountId incomplete_account_id =
+      identity_test_env()
+          ->identity_manager()
+          ->GetAccountsMutator()
+          ->AddOrUpdateAccount(
+              incomplete_gaia_id, /*email=*/"", "refresh_token",
+              /*is_under_advanced_protection=*/false, std::nullopt,
+              signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+  ASSERT_TRUE(
+      identity_test_env()->identity_manager()->HasAccountWithRefreshToken(
+          incomplete_account_id));
+  const AccountInfo incomplete_account =
+      identity_test_env()->identity_manager()->FindExtendedAccountInfoByGaiaId(
+          incomplete_gaia_id);
+  ASSERT_FALSE(incomplete_account.IsEmpty());
+  ASSERT_TRUE(incomplete_account.GetEmail().empty());
+  SetCandidate(incomplete_gaia_id);
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
 
   // Valid secondary candidate restores eligibility.
   SetCandidate(secondary_account_.GetGaiaId());
@@ -1152,6 +1247,18 @@ TEST_F(AccountSwitchingManagerTest,
 
   // Make an eligible non-suppressed account (`fourth_account_`) preferred.
   SetCandidate(fourth_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       ShowPromoReturnsFalseWithoutSigninViewController) {
+  base::AutoReset<AccountSwitchingManager::ShowBubbleCallback*> reset =
+      AccountSwitchingManager::SetShowBubbleCallbackForTesting(nullptr);
+
+  // `MockBrowserWindowInterface` does not attach a `SigninViewController`.
+  EXPECT_TRUE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+  EXPECT_FALSE(manager_->IsPromoActiveForTesting());
   EXPECT_TRUE(manager_->CanShowPromo());
 }
 

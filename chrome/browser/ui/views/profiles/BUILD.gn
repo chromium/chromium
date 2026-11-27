@@ -702,6 +702,22 @@ if (toolkit_views) {
 }
 
 if (enable_dice_support) {
+  source_set("account_switching_bubble_views") {
+    sources = [ "account_switching_bubble_views.cc" ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/signin",
+      "//components/signin/public/base",
+      "//components/signin/public/base:signin_switches",
+      "//components/signin/public/identity_manager",
+      "//google_apis",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+
   source_set("cross_device_signin_qr_bubble_views") {
     sources = [ "cross_device_signin_qr_bubble_views.cc" ]
     deps = [
@@ -1442,12 +1458,16 @@ source_set("browser_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "cross_device_signin_qr_bubble_ui_browsertest.cc" ]
+    sources += [
+      "account_switching_bubble_browsertest.cc",
+      "cross_device_signin_qr_bubble_ui_browsertest.cc",
+    ]
     deps += [
       ":dice_web_signin_interception_bubble_view",
       ":profile_management_step_controller",
       ":profile_picker_glic_flow_controller",
       ":profile_picker_reauth_provider",
+      "//ui/events:test_support",
     ]
     if (is_win || is_linux) {
       sources += [

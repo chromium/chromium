@@ -7,8 +7,12 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -33,13 +37,19 @@ enum class AccountSwitchingPromoResult {
   kAccepted,
   // The user explicitly declined the promo ("Not now").
   kDeclined,
-  // The promo was dismissed or closed without an explicit accept/decline choice
-  // (e.g. close button, Escape key, window close, or account invalidation while
-  // visible).
+  // The user closed the promo without an explicit accept/decline choice (e.g.
+  // close button or Escape key).
   kDismissed,
+  // The promo was closed or destroyed without any user interaction (e.g.
+  // browser window close, preemption by another bubble, or account
+  // invalidation while visible).
+  kIgnored,
   // The promo bubble was never displayed (e.g. controller unavailable, or
   // aborted before display while waiting for the avatar anchor).
   kNotDisplayed,
+  // The promo bubble was not displayed because the browser window has no
+  // visible profile avatar button to anchor to.
+  kNotDisplayedNoAvatarButton,
 };
 
 // Manages Desktop Smart Account Switching promo eligibility, presentation,
@@ -48,6 +58,12 @@ enum class AccountSwitchingPromoResult {
 // covers both in-profile switching and creating a new profile).
 class AccountSwitchingManager : public KeyedService {
  public:
+  using ShowBubbleCallback = base::RepeatingCallback<base::ScopedClosureRunner(
+      BrowserWindowInterface*,
+      const AccountInfo&,
+      const AccountInfo&,
+      base::OnceCallback<void(AccountSwitchingPromoResult)>)>;
+
   static constexpr base::TimeDelta kPrimaryAccountSigninGracePeriod =
       base::Days(28);
   static constexpr int kMaxGlobalIgnores = 5;
@@ -59,6 +75,8 @@ class AccountSwitchingManager : public KeyedService {
 
   static bool IsFeatureEnabled();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static base::AutoReset<ShowBubbleCallback*> SetShowBubbleCallbackForTesting(
+      ShowBubbleCallback* callback);
 
   // `prefs`, `signin_client`, and `identity_manager` must be non-null and
   // outlive `this`. `account_preview_data_service` may be null (e.g. in tests
@@ -87,7 +105,6 @@ class AccountSwitchingManager : public KeyedService {
   bool CanShowPromo() const;
   bool ShowPromo(BrowserWindowInterface* browser_window);
 
-  void ResolvePromoForTesting(AccountSwitchingPromoResult result);
   void CompleteSwitchForTesting(bool success);
   bool IsPromoActiveForTesting() const;
   bool IsSwitchInProgressForTesting() const;
@@ -127,6 +144,11 @@ class AccountSwitchingManager : public KeyedService {
 
   std::optional<AccountPair> active_promo_;
   std::optional<AccountPair> active_switch_;
+  base::ScopedClosureRunner close_promo_bubble_;
+
+  // Declared last so pending promo callbacks are invalidated before
+  // `close_promo_bubble_` closes any open bubble on destruction.
+  base::WeakPtrFactory<AccountSwitchingManager> weak_ptr_factory_{this};
 };
 
 }  // namespace signin

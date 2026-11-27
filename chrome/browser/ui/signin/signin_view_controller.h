@@ -65,6 +65,9 @@ enum class SourceForRefreshTokenOperation;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceWebSigninInterceptionBubbleView;
+namespace signin {
+enum class AccountSwitchingPromoResult;
+}  // namespace signin
 namespace {
 class NewTabWebContentsObserver;
 }
@@ -190,6 +193,17 @@ class SigninViewController {
       base::OnceClosure closing_callback,
       CrossDeviceSigninPromoEntryPoint entry_point,
       base::OnceClosure explicit_dismissal_callback = base::NullCallback());
+
+  // Shows the Smart Account Switching prompt bubble offering to switch from
+  // `primary_account` to `target_account`, anchored to the profile avatar
+  // button. Invokes `callback` once with the outcome (including
+  // `kNotDisplayedNoAvatarButton` if no visible avatar button is available, or
+  // `kNotDisplayed` if aborted before display). Returns a scoped handle that
+  // closes or cancels this bubble session when run or destroyed.
+  [[nodiscard]] base::ScopedClosureRunner ShowAccountSwitchingBubble(
+      const AccountInfo& primary_account,
+      const AccountInfo& target_account,
+      base::OnceCallback<void(signin::AccountSwitchingPromoResult)> callback);
 
   // Shows the Dice web sign-in interception bubble and returns a handle that
   // closes the bubble when destroyed. Replaces any existing interception
@@ -342,6 +356,14 @@ class SigninViewController {
       base::OnceClosure flush_anchor_state,
       views::Widget::ClosedReason reason);
 
+  void OnAccountSwitchingBubbleAnchorResolved(
+      const AccountInfo& primary_account,
+      const AccountInfo& target_account,
+      views::BubbleAnchor anchor,
+      base::ScopedClosureRunner keep_visible);
+
+  void OnAccountSwitchingBubbleClosed(views::Widget::ClosedReason reason);
+
   // Resolves the avatar button anchor and shows the Dice web sign-in
   // interception bubble once the button is visible. `CloseInterceptBubble()`
   // must be called before calling this method.
@@ -360,6 +382,7 @@ class SigninViewController {
                                   SigninInterceptionResult result);
 
   void CloseInterceptBubble();
+  void CloseActiveBubbles();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Helper to create an on close callback for `SigninModalDialog`.
@@ -404,6 +427,11 @@ class SigninViewController {
   // no-op) once the widget has been destroyed.
   base::OnceClosure flush_closing_qr_bubble_anchor_state_;
 
+  // Pending callback while waiting for the avatar anchor of the Smart Account
+  // Switching prompt bubble.
+  base::OnceCallback<void(signin::AccountSwitchingPromoResult)>
+      pending_account_switching_bubble_callback_;
+
   // State for the active or pending Dice web sign-in interception bubble.
   std::unique_ptr<PendingInterceptBubble> pending_intercept_bubble_;
   base::WeakPtr<DiceWebSigninInterceptionBubbleView> intercept_bubble_;
@@ -417,6 +445,11 @@ class SigninViewController {
   // interception bubble.
   base::WeakPtrFactory<SigninViewController> intercept_bubble_weak_factory_{
       this};
+  // Invalidated when closing or preempting the Smart Account Switching prompt
+  // bubble to cancel pending anchor resolution, late widget-close
+  // notifications, and scoped close handles.
+  base::WeakPtrFactory<SigninViewController>
+      account_switching_bubble_weak_factory_{this};
 #endif
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };

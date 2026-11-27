@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_switching_manager.h"
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
@@ -2772,6 +2773,313 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
   EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
   // Destroying the handle after browser destruction is a safe no-op.
   intercept_handle.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowAccountSwitchingBubble_PopupWithoutAvatarButton) {
+  AccountInfo primary_account = SetPrimaryAccount();
+  AccountInfo target_account =
+      identity_test_env()->MakeAccountAvailable("target@gmail.com");
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  ASSERT_TRUE(popup_browser);
+
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+  bool bubble_shown = false;
+  widget_observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == "AccountSwitchingBubbleViews") {
+          bubble_shown = true;
+        }
+      }));
+
+  base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
+  base::ScopedClosureRunner close_handle =
+      SigninViewController::From(popup_browser)
+          ->ShowAccountSwitchingBubble(primary_account, target_account,
+                                       result_future.GetCallback());
+  EXPECT_TRUE(result_future.IsReady());
+  EXPECT_EQ(result_future.Get(),
+            signin::AccountSwitchingPromoResult::kNotDisplayedNoAvatarButton);
+  EXPECT_FALSE(bubble_shown);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowAccountSwitchingBubble_OverflowedWebUIAvatar) {
+  AccountInfo primary_account = SetPrimaryAccount();
+  AccountInfo target_account =
+      identity_test_env()->MakeAccountAvailable("target@gmail.com");
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  // Closing the bubble while RunWhenVisible is pending reports kNotDisplayed
+  // immediately and prevents the bubble from showing.
+  {
+    base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
+    base::ScopedClosureRunner close_handle =
+        SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+            primary_account, target_account, result_future.GetCallback());
+    EXPECT_FALSE(result_future.IsReady());
+    SigninViewController::From(browser())->CloseBubbleSignin();
+    EXPECT_TRUE(result_future.IsReady());
+    EXPECT_EQ(result_future.Get(),
+              signin::AccountSwitchingPromoResult::kNotDisplayed);
+    ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+        "AccountSwitchingBubbleViews"));
+  }
+
+  // Showing the bubble pops out the overflowed WebUI avatar button, anchors to
+  // its screen bounds with TOP_RIGHT arrow, and keeps it visible until closed.
+  {
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{}, "AccountSwitchingBubbleViews");
+    base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
+    base::ScopedClosureRunner close_handle =
+        SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+            primary_account, target_account, result_future.GetCallback());
+
+    views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(bubble_widget);
+    ASSERT_TRUE(WaitForAvatarElementVisible(true));
+    ui::TrackedElement* avatar_el =
+        BrowserElements::From(browser())->GetElement(
+            kToolbarAvatarButtonElementId);
+    ASSERT_TRUE(avatar_el);
+    auto* bubble_delegate =
+        bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+    ASSERT_TRUE(bubble_delegate);
+    EXPECT_EQ(bubble_delegate->arrow(), views::BubbleBorder::TOP_RIGHT);
+    EXPECT_EQ(bubble_delegate->GetAnchorRect(), avatar_el->GetScreenBounds());
+
+    views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+    close_handle.RunAndReset();
+    destroyed_waiter.Wait();
+    EXPECT_EQ(result_future.Get(),
+              signin::AccountSwitchingPromoResult::kIgnored);
+    EXPECT_TRUE(WaitForAvatarElementVisible(false));
+  }
+
+  // Preempting a pending ShowAccountSwitchingBubble with
+  // ShowSigninInterceptionBubble cancels the pending switch bubble with
+  // kNotDisplayed and shows only the interception bubble.
+  {
+    bool switch_bubble_created = false;
+    views::AnyWidgetObserver widget_observer(
+        views::test::AnyWidgetTestPasskey{});
+    widget_observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == "AccountSwitchingBubbleViews") {
+            switch_bubble_created = true;
+          }
+        }));
+    views::NamedWidgetShownWaiter intercept_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "DiceWebSigninInterceptionBubbleView");
+    base::test::TestFuture<signin::AccountSwitchingPromoResult> switch_future;
+    base::ScopedClosureRunner switch_handle =
+        SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+            primary_account, target_account, switch_future.GetCallback());
+    EXPECT_FALSE(switch_future.IsReady());
+
+    WebSigninInterceptor::Delegate::BubbleParameters intercept_params(
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        /*intercepted_account=*/target_account,
+        /*primary_account=*/primary_account,
+        /*profile_highlight_color=*/SK_ColorBLUE);
+    base::test::TestFuture<SigninInterceptionResult> intercept_future;
+    std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle =
+        SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+            intercept_params, intercept_future.GetCallback());
+    EXPECT_TRUE(switch_future.IsReady());
+    EXPECT_EQ(switch_future.Get(),
+              signin::AccountSwitchingPromoResult::kNotDisplayed);
+
+    views::Widget* intercept_widget = intercept_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(intercept_widget);
+    EXPECT_TRUE(WaitForAvatarElementVisible(true));
+    EXPECT_FALSE(switch_bubble_created);
+
+    views::test::WidgetDestroyedWaiter intercept_destroyed(intercept_widget);
+    intercept_handle.reset();
+    intercept_destroyed.Wait();
+    EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
+    EXPECT_TRUE(WaitForAvatarElementVisible(false));
+  }
+
+  // Closing a browser while RunWhenVisible is pending reports kNotDisplayed.
+  {
+    BrowserWindowInterface* other_browser =
+        CreateBrowser(browser()->GetProfile());
+    ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar(other_browser));
+    base::test::TestFuture<signin::AccountSwitchingPromoResult> result_future;
+    base::ScopedClosureRunner close_handle =
+        SigninViewController::From(other_browser)
+            ->ShowAccountSwitchingBubble(primary_account, target_account,
+                                         result_future.GetCallback());
+    EXPECT_FALSE(result_future.IsReady());
+    CloseBrowserSynchronously(other_browser);
+    EXPECT_TRUE(result_future.IsReady());
+    EXPECT_EQ(result_future.Get(),
+              signin::AccountSwitchingPromoResult::kNotDisplayed);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerWebUIAvatarOverflowBrowserTest,
+    ShowAccountSwitchingBubble_AccountIneligibleWhilePending) {
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  auto expect_aborted_when_mutated =
+      [&](base::OnceCallback<void(const AccountInfo&, const AccountInfo&)>
+              mutate_accounts) {
+        AccountInfo primary_account = SetPrimaryAccount();
+        AccountInfo target_account =
+            identity_test_env()->MakeAccountAvailable("target@gmail.com");
+        ASSERT_TRUE(WaitForAvatarElementVisible(false));
+        base::test::TestFuture<signin::AccountSwitchingPromoResult>
+            result_future;
+        base::ScopedClosureRunner close_handle =
+            SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+                primary_account, target_account, result_future.GetCallback());
+        EXPECT_FALSE(result_future.IsReady());
+
+        std::move(mutate_accounts).Run(primary_account, target_account);
+        EXPECT_FALSE(result_future.IsReady());
+        ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+            "AccountSwitchingBubbleViews"));
+        EXPECT_TRUE(result_future.IsReady());
+        EXPECT_EQ(result_future.Get(),
+                  signin::AccountSwitchingPromoResult::kNotDisplayed);
+
+        identity_test_env()->ClearPrimaryAccount();
+        identity_test_env()->RemoveRefreshTokenForAccount(
+            target_account.GetAccountId());
+      };
+
+  // Sign-out while RunWhenVisible is pending.
+  expect_aborted_when_mutated(
+      base::BindLambdaForTesting([&](const AccountInfo&, const AccountInfo&) {
+        identity_test_env()->ClearPrimaryAccount();
+      }));
+
+  // Primary account refresh token removed while RunWhenVisible is pending.
+  expect_aborted_when_mutated(base::BindLambdaForTesting(
+      [&](const AccountInfo& primary_account, const AccountInfo&) {
+        identity_test_env()->RemoveRefreshTokenForAccount(
+            primary_account.GetAccountId());
+      }));
+
+  // Primary account persistent auth error while RunWhenVisible is pending.
+  expect_aborted_when_mutated(base::BindLambdaForTesting(
+      [&](const AccountInfo& primary_account, const AccountInfo&) {
+        identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+            primary_account.GetAccountId(),
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+      }));
+
+  // Target account refresh token removed while RunWhenVisible is pending.
+  expect_aborted_when_mutated(base::BindLambdaForTesting(
+      [&](const AccountInfo&, const AccountInfo& target_account) {
+        identity_test_env()->RemoveRefreshTokenForAccount(
+            target_account.GetAccountId());
+      }));
+
+  // Target account persistent auth error while RunWhenVisible is pending.
+  expect_aborted_when_mutated(base::BindLambdaForTesting(
+      [&](const AccountInfo&, const AccountInfo& target_account) {
+        identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+            target_account.GetAccountId(),
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+      }));
+
+  // Switching to a different primary account while RunWhenVisible is pending.
+  expect_aborted_when_mutated(
+      base::BindLambdaForTesting([&](const AccountInfo&, const AccountInfo&) {
+        identity_test_env()->ClearPrimaryAccount();
+        identity_test_env()->MakePrimaryAccountAvailable(
+            "other@gmail.com", signin::ConsentLevel::kSignin);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    ShowAccountSwitchingBubble_PreemptsAndPreemptedByInterceptionBubble) {
+  AccountInfo primary_account =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@gmail.com", signin::ConsentLevel::kSignin);
+  AccountInfo target_account =
+      identity_test_env()->MakeAccountAvailable("target@gmail.com");
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+
+  WebSigninInterceptor::Delegate::BubbleParameters intercept_params(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+      /*intercepted_account=*/target_account,
+      /*primary_account=*/primary_account,
+      /*profile_highlight_color=*/SK_ColorBLUE);
+
+  // Opening the account switching bubble closes any active interception bubble
+  // and clears the interception bubble's avatar pill state immediately.
+  views::NamedWidgetShownWaiter intercept_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> intercept_future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          intercept_params, intercept_future.GetCallback());
+  views::Widget* intercept_widget = intercept_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intercept_widget);
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+
+  views::test::WidgetDestroyedWaiter intercept_destroyed(intercept_widget);
+  views::NamedWidgetShownWaiter switch_waiter(
+      views::test::AnyWidgetTestPasskey{}, "AccountSwitchingBubbleViews");
+  base::test::TestFuture<signin::AccountSwitchingPromoResult> switch_future;
+  base::ScopedClosureRunner switch_handle =
+      SigninViewController::From(browser())->ShowAccountSwitchingBubble(
+          primary_account, target_account, switch_future.GetCallback());
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+  intercept_destroyed.Wait();
+  EXPECT_TRUE(intercept_future.IsReady());
+  EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
+  intercept_handle.reset();
+
+  views::Widget* switch_widget = switch_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(switch_widget);
+  EXPECT_TRUE(switch_widget->IsVisible());
+  EXPECT_FALSE(switch_future.IsReady());
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+
+  // Opening an interception bubble synchronously closes the active account
+  // switching bubble with kIgnored and applies only the interception pill.
+  views::test::WidgetDestroyedWaiter switch_destroyed(switch_widget);
+  views::NamedWidgetShownWaiter intercept_waiter2(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> intercept_future2;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle2 =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          intercept_params, intercept_future2.GetCallback());
+  EXPECT_TRUE(switch_future.IsReady());
+  EXPECT_EQ(switch_future.Get(), signin::AccountSwitchingPromoResult::kIgnored);
+  switch_destroyed.Wait();
+  switch_handle.RunAndReset();
+
+  views::Widget* intercept_widget2 = intercept_waiter2.WaitIfNeededAndGet();
+  ASSERT_TRUE(intercept_widget2);
+  EXPECT_TRUE(intercept_widget2->IsVisible());
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+
+  views::test::WidgetDestroyedWaiter intercept_destroyed2(intercept_widget2);
+  intercept_handle2.reset();
+  intercept_destroyed2.Wait();
+  EXPECT_EQ(intercept_future2.Get(), SigninInterceptionResult::kIgnored);
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 }
 
 // Tests the profile customization dialog for the existing (signed-in or

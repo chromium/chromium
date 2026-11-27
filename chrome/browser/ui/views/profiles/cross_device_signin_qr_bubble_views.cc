@@ -132,6 +132,10 @@ class AvatarQrBubbleAnchor : public CrossDeviceSigninQrBubbleAnchor {
 
   bool OnBeforeShow() override { return true; }
 
+  void OnWidgetClosing(views::Widget::ClosedReason reason) override {
+    ReleaseState();
+  }
+
   void ReleaseState() override {
     resolve_callback_.Cancel();
     clear_avatar_button_effects_.RunAndReset();

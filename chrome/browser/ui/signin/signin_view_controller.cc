@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_switching_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -75,11 +77,13 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/signin/account_switching_bubble.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/common/webui_url_constants.h"
@@ -98,6 +102,7 @@
 #include "google_apis/google_api_keys.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/view_utils.h"
 #include "url/url_constants.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -396,6 +401,14 @@ ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
   return ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks;
 }
 
+bool HasValidRefreshToken(const signin::IdentityManager* identity_manager,
+                          const CoreAccountId& account_id) {
+  return identity_manager && !account_id.empty() &&
+         identity_manager->HasAccountWithRefreshToken(account_id) &&
+         !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+             account_id);
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -515,9 +528,10 @@ SigninViewController::~SigninViewController() = default;
 
 void SigninViewController::TearDownPreBrowserWindowDestruction() {
   CloseModalSignin();
-  CloseBubbleSignin();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CloseInterceptBubble();
+  CloseActiveBubbles();
+#else
+  CloseBubbleSignin();
 #endif
 }
 
@@ -728,7 +742,7 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
     base::OnceClosure closing_callback,
     CrossDeviceSigninPromoEntryPoint entry_point,
     base::OnceClosure explicit_dismissal_callback) {
-  CloseBubbleSignin();
+  CloseActiveBubbles();
   pending_qr_bubble_closing_callback_ = std::move(closing_callback);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
@@ -764,9 +778,7 @@ void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
           : CoreAccountId();
   if (expected_account_id.empty() ||
       primary_account_id != expected_account_id ||
-      !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_id)) {
+      !HasValidRefreshToken(identity_manager, primary_account_id)) {
     anchor.reset();
     is_showing_qr_bubble_ = false;
     base::OnceClosure closing_callback =
@@ -818,11 +830,110 @@ void SigninViewController::OnCrossDeviceSigninQrBubbleClosing(
   controller->OnBubbleClosed(reason);
 }
 
+base::ScopedClosureRunner SigninViewController::ShowAccountSwitchingBubble(
+    const AccountInfo& primary_account,
+    const AccountInfo& target_account,
+    base::OnceCallback<void(signin::AccountSwitchingPromoResult)> callback) {
+  CHECK(!primary_account.IsEmpty());
+  CHECK(!target_account.IsEmpty());
+  CHECK(!primary_account.GetEmail().empty());
+  CHECK(!target_account.GetEmail().empty());
+  CHECK_NE(primary_account.GetAccountId(), target_account.GetAccountId());
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view ? browser_view->toolbar_button_provider()
+                         ->GetAvatarToolbarButtonInterface()
+                   : nullptr;
+  if (!avatar_button ||
+      !AvatarToolbarButtonInterface::CanShowForProfile(GetProfile())) {
+    DVLOG(1) << "Not showing account switching bubble: no avatar button.";
+    if (callback) {
+      std::move(callback).Run(
+          signin::AccountSwitchingPromoResult::kNotDisplayedNoAvatarButton);
+    }
+    return base::ScopedClosureRunner();
+  }
+
+  CloseActiveBubbles();
+  pending_account_switching_bubble_callback_ = std::move(callback);
+  base::ScopedClosureRunner close_handle(
+      base::BindOnce(&SigninViewController::CloseBubbleSignin,
+                     account_switching_bubble_weak_factory_.GetWeakPtr()));
+
+  avatar_button->RunWhenVisible(base::BindOnce(
+      &SigninViewController::OnAccountSwitchingBubbleAnchorResolved,
+      account_switching_bubble_weak_factory_.GetWeakPtr(), primary_account,
+      target_account));
+  return close_handle;
+}
+
+void SigninViewController::OnAccountSwitchingBubbleAnchorResolved(
+    const AccountInfo& primary_account,
+    const AccountInfo& target_account,
+    views::BubbleAnchor anchor,
+    base::ScopedClosureRunner keep_visible) {
+  auto abort_with_result = [&](signin::AccountSwitchingPromoResult result) {
+    keep_visible.RunAndReset();
+    account_switching_bubble_weak_factory_.InvalidateWeakPtrs();
+    base::OnceCallback<void(signin::AccountSwitchingPromoResult)> callback =
+        std::move(pending_account_switching_bubble_callback_);
+    if (callback) {
+      std::move(callback).Run(result);
+    }
+  };
+
+  // Bail out if `RunWhenVisible()` fell back to a non-avatar container view
+  // because the avatar button stayed hidden (e.g., single-profile macOS web
+  // apps).
+  if (anchor.IsNull() ||
+      (anchor.GetIfView() &&
+       !views::IsViewClass<AvatarToolbarButton>(anchor.GetIfView()))) {
+    DVLOG(1) << "Not showing account switching bubble: anchor resolved without "
+                "a visible avatar button.";
+    abort_with_result(
+        signin::AccountSwitchingPromoResult::kNotDisplayedNoAvatarButton);
+    return;
+  }
+
+  // `RunWhenVisible()` can resolve asynchronously while an overflowed avatar
+  // button pops out. Re-verify `IdentityManager` state (matching
+  // `AccountSwitchingBubbleDelegate`'s `IdentityManager::Observer` checks)
+  // before creating the bubble so stale promos are not shown after an account
+  // signs out, loses its refresh token, or enters a persistent auth error.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  if (!identity_manager ||
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) !=
+          primary_account.GetAccountId() ||
+      !HasValidRefreshToken(identity_manager, primary_account.GetAccountId()) ||
+      !HasValidRefreshToken(identity_manager, target_account.GetAccountId())) {
+    DVLOG(1) << "Not showing account switching bubble: account state changed "
+                "while anchor was resolving.";
+    abort_with_result(signin::AccountSwitchingPromoResult::kNotDisplayed);
+    return;
+  }
+
+  bubble_widget_ = ::CreateAccountSwitchingBubble(
+      *identity_manager, anchor, std::move(keep_visible), primary_account,
+      target_account, std::move(pending_account_switching_bubble_callback_),
+      base::BindOnce(&SigninViewController::OnAccountSwitchingBubbleClosed,
+                     account_switching_bubble_weak_factory_.GetWeakPtr()));
+  bubble_widget_->Show();
+}
+
+void SigninViewController::OnAccountSwitchingBubbleClosed(
+    views::Widget::ClosedReason reason) {
+  account_switching_bubble_weak_factory_.InvalidateWeakPtrs();
+  OnBubbleClosed(reason);
+}
+
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 SigninViewController::ShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
-  CloseInterceptBubble();
+  CloseActiveBubbles();
   RequestInterceptionBubble(bubble_parameters, std::move(callback));
   return std::make_unique<ScopedInterceptBubbleHandle>(
       base::BindOnce(&SigninViewController::CloseInterceptBubble,
@@ -832,7 +943,7 @@ SigninViewController::ShowSigninInterceptionBubble(
 void SigninViewController::ShowChromeSigninBubble(
     const AccountInfo& account,
     signin_metrics::AccessPoint access_point) {
-  CloseInterceptBubble();
+  CloseActiveBubbles();
 
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       account_preview_preference;
@@ -945,6 +1056,11 @@ void SigninViewController::CloseInterceptBubble() {
   }
 }
 
+void SigninViewController::CloseActiveBubbles() {
+  CloseBubbleSignin();
+  CloseInterceptBubble();
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SigninViewController::OnBubbleClosed(views::Widget::ClosedReason reason) {
@@ -1023,6 +1139,10 @@ void SigninViewController::CloseBubbleSignin() {
   if (flush_closing_qr_bubble_anchor_state_) {
     std::move(flush_closing_qr_bubble_anchor_state_).Run();
   }
+  account_switching_bubble_weak_factory_.InvalidateWeakPtrs();
+  base::OnceCallback<void(signin::AccountSwitchingPromoResult)>
+      account_switching_callback =
+          std::move(pending_account_switching_bubble_callback_);
 #endif
   if (bubble_widget_) {
     // Extract the pointer so bubble_widget_ is nullified immediately.
@@ -1034,6 +1154,10 @@ void SigninViewController::CloseBubbleSignin() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (closing_callback) {
     std::move(closing_callback).Run();
+  }
+  if (account_switching_callback) {
+    std::move(account_switching_callback)
+        .Run(signin::AccountSwitchingPromoResult::kNotDisplayed);
   }
 #endif
 }

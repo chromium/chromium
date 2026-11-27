@@ -243,6 +243,7 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
 }
 
 void DiceWebSigninInterceptionBubbleView::Close() {
+  clear_avatar_button_effects_callback_.RunAndReset();
   views::Widget* widget = GetWidget();
   if (!widget) {
     return;

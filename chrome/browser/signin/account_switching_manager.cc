@@ -11,11 +11,14 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -33,6 +36,9 @@
 namespace signin {
 
 namespace {
+
+AccountSwitchingManager::ShowBubbleCallback*
+    g_show_bubble_callback_for_testing = nullptr;
 
 // Schema of the profile dictionary preference
 // `prefs::kAccountSwitchingPromoState`:
@@ -74,6 +80,14 @@ bool AccountSwitchingManager::IsFeatureEnabled() {
 }
 
 // static
+base::AutoReset<AccountSwitchingManager::ShowBubbleCallback*>
+AccountSwitchingManager::SetShowBubbleCallbackForTesting(
+    ShowBubbleCallback* callback) {
+  return base::AutoReset<ShowBubbleCallback*>(
+      &g_show_bubble_callback_for_testing, callback);
+}
+
+// static
 void AccountSwitchingManager::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAccountSwitchingPromoState);
@@ -92,8 +106,10 @@ AccountSwitchingManager::AccountSwitchingManager(
 AccountSwitchingManager::~AccountSwitchingManager() = default;
 
 void AccountSwitchingManager::Shutdown() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   active_promo_.reset();
   active_switch_.reset();
+  close_promo_bubble_.RunAndReset();
 }
 
 bool AccountSwitchingManager::CanShowPromo() const {
@@ -111,13 +127,39 @@ bool AccountSwitchingManager::ShowPromo(
     return false;
   }
 
-  active_promo_ = std::move(*promo_pair);
+  const AccountInfo primary_account =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(
+          promo_pair->primary_gaia_id);
+  const AccountInfo target_account =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(
+          promo_pair->target_gaia_id);
+  CHECK(!primary_account.IsEmpty());
+  CHECK(!target_account.IsEmpty());
+  CHECK(!primary_account.GetEmail().empty());
+  CHECK(!target_account.GetEmail().empty());
 
-  // TODO(crbug.com/585131565): Trigger the Smart Account Switching prompt
-  // bubble via `SigninViewController::From(browser_window)` using a `WeakPtr`
-  // invalidated in `Shutdown()` bound to `OnPromoResult()`, and ensure
-  // never-shown bubble aborts report
-  // `AccountSwitchingPromoResult::kNotDisplayed`.
+  if (!g_show_bubble_callback_for_testing &&
+      !SigninViewController::From(browser_window)) {
+    return false;
+  }
+
+  active_promo_ = std::move(*promo_pair);
+  base::OnceCallback<void(AccountSwitchingPromoResult)> result_callback =
+      base::BindOnce(&AccountSwitchingManager::OnPromoResult,
+                     weak_ptr_factory_.GetWeakPtr());
+  base::ScopedClosureRunner close_bubble =
+      g_show_bubble_callback_for_testing
+          ? g_show_bubble_callback_for_testing->Run(
+                browser_window, primary_account, target_account,
+                std::move(result_callback))
+          : SigninViewController::From(browser_window)
+                ->ShowAccountSwitchingBubble(primary_account, target_account,
+                                             std::move(result_callback));
+  if (!active_promo_.has_value()) {
+    // The promo resolved synchronously before returning (e.g. `kNotDisplayed`).
+    return false;
+  }
+  close_promo_bubble_ = std::move(close_bubble);
   return true;
 }
 
@@ -126,6 +168,7 @@ void AccountSwitchingManager::OnPromoResult(
   CHECK(active_promo_.has_value());
   AccountPair promo = std::move(*active_promo_);
   active_promo_.reset();
+  close_promo_bubble_.ReplaceClosure(base::NullCallback());
 
   switch (result) {
     case AccountSwitchingPromoResult::kAccepted:
@@ -135,16 +178,13 @@ void AccountSwitchingManager::OnPromoResult(
       RecordPromoExplicitlyDismissed(promo);
       break;
     case AccountSwitchingPromoResult::kDismissed:
+    case AccountSwitchingPromoResult::kIgnored:
       RecordPromoIgnored();
       break;
     case AccountSwitchingPromoResult::kNotDisplayed:
+    case AccountSwitchingPromoResult::kNotDisplayedNoAvatarButton:
       break;
   }
-}
-
-void AccountSwitchingManager::ResolvePromoForTesting(
-    AccountSwitchingPromoResult result) {
-  OnPromoResult(result);
 }
 
 void AccountSwitchingManager::CompleteSwitchForTesting(bool success) {
@@ -226,7 +266,7 @@ AccountSwitchingManager::GetEligibleAccountForSwitching() const {
 
 bool AccountSwitchingManager::IsAccountEligible(
     const AccountInfo& account_info) const {
-  return !account_info.IsEmpty() &&
+  return !account_info.IsEmpty() && !account_info.GetEmail().empty() &&
          identity_manager_->HasAccountWithRefreshToken(
              account_info.GetAccountId()) &&
          !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
