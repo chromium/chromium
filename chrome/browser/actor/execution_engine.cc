@@ -1639,9 +1639,10 @@ void ExecutionEngine::StartExecutingNewRequest() {
   // TODO(b/555808355): Consider how observation deferral should work with
   // followup/composite tools.
   if (tool_controller_->HasPendingObservation() &&
-      (GetNextToolRequest().IsFollowup() || IsExecutingNestedDispatcher() ||
+      (GetInProgressToolRequest().IsFollowup() ||
+       IsExecutingNestedDispatcher() ||
        tool_controller_->ShouldSettlePendingObservationBefore(
-           GetNextToolRequest()))) {
+           GetInProgressToolRequest()))) {
     tool_controller_->SettlePendingObservation(base::BindOnce(
         &ExecutionEngine::StartExecutingNewRequest, GetActSequenceWeakPtr()));
     return;
@@ -1652,26 +1653,27 @@ void ExecutionEngine::StartExecutingNewRequest() {
       tool_controller_->HasPendingStabilization();
 
   SetState(State::kStartAction);
-  if (!GetNextToolRequest().IsFollowup()) {
+  if (!GetInProgressToolRequest().IsFollowup()) {
     current_request_start_time_ = base::TimeTicks::Now();
   }
 
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
   if (ActorSurface* actor_surface =
-          GetSurfaceForValidation(GetNextToolRequest());
+          GetSurfaceForValidation(GetInProgressToolRequest());
       actor_surface &&
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
     CHECK(contents);
-    if (contents->IsCrashed() && GetNextToolRequest().ActsOnWebContents()) {
+    if (contents->IsCrashed() &&
+        GetInProgressToolRequest().ActsOnWebContents()) {
       GetJournal().Log(
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::StartExecutingNewRequest",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      if (GetNextToolRequest().GetActorSurfaceHandle().is_null()) {
+      if (GetInProgressToolRequest().GetActorSurfaceHandle().is_null()) {
         task_->ObserveActorSurfaceOnce(
-            GetNextToolRequest().GetActorSurfaceForValidation());
+            GetInProgressToolRequest().GetActorSurfaceForValidation());
       } else {
         CHECK(task_->IsActingOnActorSurface(actor_surface->GetHandle()));
       }
@@ -1683,7 +1685,7 @@ void ExecutionEngine::StartExecutingNewRequest() {
     }
   }
 
-  if (GetNextToolRequest().RequiresUrlCheckInCurrentTab()) {
+  if (GetInProgressToolRequest().RequiresUrlCheckInCurrentTab()) {
     SafetyChecksForExecutingTool();
   } else {
     InvokeCurrentToolRequest();
@@ -1714,7 +1716,8 @@ void ExecutionEngine::ReportResultAndStartNext(
 
 void ExecutionEngine::SafetyChecksForExecutingTool() {
   TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForExecutingTool");
-  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextToolRequest());
+  ActorSurface* actor_surface =
+      GetSurfaceForValidation(GetInProgressToolRequest());
 
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
@@ -1737,7 +1740,7 @@ void ExecutionEngine::SafetyChecksForExecutingTool() {
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
       GateableEvent(origin_gating::PageActionEvent{
           .destination = url,
-          .tool = GetClientToolForRequest(GetNextToolRequest())}),
+          .tool = GetClientToolForRequest(GetInProgressToolRequest())}),
       base::BindOnce(&ResolveGatingDecision,
                      journal_->CreatePendingAsyncEntry(
                          url, task_->id(), MakeBrowserTrackUUID(task_->id()),
@@ -1759,7 +1762,8 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(executing_request_);
 
-  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextToolRequest());
+  ActorSurface* actor_surface =
+      GetSurfaceForValidation(GetInProgressToolRequest());
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
@@ -1774,7 +1778,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   auto ensure_surface_observed = [&]() {
-    const ToolRequest& action = GetNextToolRequest();
+    const ToolRequest& action = GetInProgressToolRequest();
     if (action.GetActorSurfaceHandle().is_null()) {
       task_->ObserveActorSurfaceOnce(action.GetActorSurfaceForValidation());
     } else {
@@ -1789,7 +1793,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    journal_->Log(GetNextToolRequest().GetURLForJournal(), task_id,
+    journal_->Log(GetInProgressToolRequest().GetURLForJournal(), task_id,
                   "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
@@ -1804,7 +1808,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
   if (!IsOk(result_code)) {
     journal_->Log(
-        GetNextToolRequest().GetURLForJournal(), task_id, "Act Failed",
+        GetInProgressToolRequest().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     ensure_surface_observed();
     ReportResultAndStartNext(ToolResult::FromDeprecatedActionResult(MakeResult(
@@ -2475,16 +2479,7 @@ void ExecutionEngine::SetActorLoginService(
   actor_login_service_ = std::move(actor_login_service);
 }
 
-// TODO(b/555808355): Merge with GetInProgressToolRequest below.
-const ToolRequest& ExecutionEngine::GetNextToolRequest() const {
-  CHECK(executing_request_);
-  return *executing_request_;
-}
-
 const ToolRequest& ExecutionEngine::GetInProgressToolRequest() const {
-  CHECK(state_ == State::kUiPreInvoke || state_ == State::kToolInvoke ||
-        state_ == State::kUiPostInvoke || state_ == State::kToolCreateAndVerify)
-      << "Current state is " << StateToString(state_);
   CHECK(executing_request_);
   return *executing_request_;
 }

@@ -435,8 +435,6 @@ class ExecutionEngine : public ToolDelegate,
   void CompleteActCall(std::vector<ToolResultWithLatencyInfo> results);
   void RetryCompleteActCallWhenObservationSettled();
 
-  const ToolRequest& GetNextToolRequest() const;
-
   // Processes the affiliation service results for the given `source_origin`.
   // and saves it into `affiliated_origin_map_`.
   void OnAffiliationsReceived(const url::Origin& source_origin,
