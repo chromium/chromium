@@ -1,0 +1,5 @@
+Tests fetch network resource type and content.
+http://127.0.0.1:8000/inspector-protocol/network/resources/get-response-body-valid-text.php
+resource.type: fetch
+resource.content after requesting content: Hello, World!
+
