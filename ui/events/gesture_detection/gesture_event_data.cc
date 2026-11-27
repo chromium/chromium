@@ -54,7 +54,9 @@ GestureEventData::GestureEventData(const GestureEventDetails& details,
       raw_y(raw_y),
       flags(flags),
       unique_touch_event_id(unique_touch_event_id) {
-  CHECK_GE(motion_event_id, 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/587444272): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(motion_event_id, 0);
   CHECK_NE(0U, touch_point_count, base::NotFatalUntil::M163);
   this->details.set_primary_pointer_type(ToEventPointerType(primary_tool_type));
   this->details.set_primary_unique_touch_event_id(
