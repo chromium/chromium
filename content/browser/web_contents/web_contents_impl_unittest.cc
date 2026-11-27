@@ -81,6 +81,7 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -4855,6 +4856,120 @@ TEST_F(WebContentsImplTest,
   SetBrowserClientForTesting(old_client);
   gfx::SetFontRenderParamsDeviceScaleFactor(original_dsf);
 #endif
+}
+
+namespace {
+
+// Like `WebContentsImplTest`, but uses mock time so tests can advance past
+// `WebContentsImpl`'s load-progress update throttling delay. Also makes
+// `isolated_cross_site_url()` require a dedicated process (when needed on this
+// platform) so that navigating to it creates a speculative RenderFrameHost.
+class WebContentsImplMockTimeTest : public RenderViewHostTestHarness {
+ public:
+  WebContentsImplMockTimeTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+
+    if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+      ChildProcessSecurityPolicyImpl::GetInstance()->AddFutureIsolatedOrigins(
+          {url::Origin::Create(isolated_cross_site_url())},
+          ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
+          browser_context());
+      SetContents(CreateTestWebContents());
+    }
+  }
+
+  TestWebContents* contents() {
+    return static_cast<TestWebContents*>(web_contents());
+  }
+
+  GURL isolated_cross_site_url() const {
+    return GURL("http://isolated-cross-site.com");
+  }
+};
+
+class LoadProgressRecordingObserver : public WebContentsObserver {
+ public:
+  explicit LoadProgressRecordingObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void LoadProgressChanged(double progress) override {
+    progress_updates_.push_back(progress);
+  }
+
+  const std::vector<double>& progress_updates() const {
+    return progress_updates_;
+  }
+
+ private:
+  std::vector<double> progress_updates_;
+};
+
+}  // namespace
+
+// Regression test ensuring that aborting an in-flight navigation with a
+// speculative RenderFrameHost before any navigation has committed (after the
+// 100ms load-progress throttling window elapses) discards the speculative
+// RenderFrameHost before computing final load progress, so
+// `LoadProgressChanged(1.0)` is dispatched rather than getting stuck at initial
+// progress (0.1).
+TEST_F(
+    WebContentsImplMockTimeTest,
+    AbortingInitialDocSpeculativeRFHNavigationAfterDelayReportsFinalLoadProgress) {
+  std::unique_ptr<TestWebContents> initial_doc_contents(TestWebContents::Create(
+      browser_context(),
+      SiteInstanceImpl::CreateForTesting(browser_context(),
+                                         GURL("https://a.example.com/"))));
+  initial_doc_contents->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
+  ASSERT_FALSE(initial_doc_contents->GetPrimaryMainFrame()
+                   ->has_committed_any_navigation());
+  LoadProgressRecordingObserver observer(initial_doc_contents.get());
+
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      isolated_cross_site_url(), initial_doc_contents.get());
+  navigation->Start();
+  ASSERT_TRUE(initial_doc_contents->GetPrimaryFrameTree()
+                  .root()
+                  ->render_manager()
+                  ->speculative_frame_host());
+  ASSERT_FALSE(observer.progress_updates().empty());
+  EXPECT_LT(observer.progress_updates().back(), 1.0);
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  navigation->Fail(net::ERR_ABORTED);
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_DOUBLE_EQ(1.0, observer.progress_updates().back());
+}
+
+// Same as above, after an initial page has already committed.
+TEST_F(WebContentsImplMockTimeTest,
+       AbortingSpeculativeRFHNavigationAfterDelayReportsFinalLoadProgress) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      contents(), GURL("https://a.example.com/"));
+  LoadProgressRecordingObserver observer(contents());
+
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      isolated_cross_site_url(), contents());
+  navigation->Start();
+  ASSERT_TRUE(contents()
+                  ->GetPrimaryFrameTree()
+                  .root()
+                  ->render_manager()
+                  ->speculative_frame_host());
+  ASSERT_FALSE(observer.progress_updates().empty());
+  EXPECT_LT(observer.progress_updates().back(), 1.0);
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  navigation->Fail(net::ERR_ABORTED);
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_DOUBLE_EQ(1.0, observer.progress_updates().back());
 }
 
 }  // namespace content

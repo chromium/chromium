@@ -623,8 +623,17 @@ void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
 
   // The RenderFrameHostManager should clean up any speculative RenderFrameHost
   // it created for the navigation. Also register that the load stopped.
-  DidStopLoading();
+  //
+  // Discarding the speculative RenderFrameHost must happen before
+  // `DidStopLoading()`: `DidStopLoading()` reports the final load progress via
+  // `DidChangeLoadProgress()` -> `RenderFrameHostImpl::DidChangeLoadProgress()`
+  // -> `WebContentsImpl::DidChangeLoadProgressForMainFrame()`, which reads
+  // `FrameTree::GetLoadProgress()`. That returns `blink::kInitialLoadProgress`
+  // while `HasNavigation()` is true, and `HasNavigation()` is also true while a
+  // speculative RenderFrameHost exists, so the final 1.0 progress would never
+  // be reported.
   render_manager_.DiscardSpeculativeRFHIfUnused(reason);
+  DidStopLoading();
 }
 
 void FrameTreeNode::ResetNavigationRequestButKeepState(
