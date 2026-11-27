@@ -152,7 +152,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
 // Test that using the primary button logs the correct exit reason when a
 // virtual card is used
-TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
+// TODO(crbug.com/591068599): Flaky on M159 iOS (fixed on main by
+// crrev.com/c/8778415).
+TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest,
+       DISABLED_PrimaryButtonVirtualCard) {
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
