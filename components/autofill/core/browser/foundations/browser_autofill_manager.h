@@ -446,6 +446,12 @@ class BrowserAutofillManager : public AutofillManager {
   // loggers require a form of interest, and `form` specifies that.
   void UpdateLoggersReadinessData(const FormStructure* form);
 
+  // Clones the cached `FormStructure` matching `form.global_id()` and updates
+  // it with `form`'s latest field data, preserving query-time form signatures.
+  // Returns `nullptr` if `form` is not in the cache.
+  std::unique_ptr<FormStructure> CloneAndUpdateCachedForm(
+      const FormData& form) const;
+
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.

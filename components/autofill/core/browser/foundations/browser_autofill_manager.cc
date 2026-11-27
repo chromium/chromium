@@ -1136,9 +1136,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       form, submitted_form.get());
 
   if (!submitted_form) {
-    // We always give Autocomplete a chance to save the data.
+    // We always give Autocomplete a chance to save the data. Pass an updated
+    // clone of the cached `FormStructure` if available so Autocomplete can
+    // respect cached field type predictions even when `ShouldUploadForm()` is
+    // false.
     if (!client().IsOffTheRecord()) {
-      client().GetSingleFieldFillRouter().OnWillSubmitForm(form, nullptr);
+      std::unique_ptr<FormStructure> cached_updated_form =
+          CloneAndUpdateCachedForm(form);
+      client().GetSingleFieldFillRouter().OnWillSubmitForm(
+          form, cached_updated_form.get());
     }
     return;
   }
@@ -3220,21 +3226,18 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
       client().GetLastCommittedPrimaryMainFrameURL());
 }
 
-std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
-    const FormData& form) {
-  // Ignore forms not present in our cache.  These are typically forms with
-  // wonky JavaScript that also makes them not auto-fillable.
-  const FormStructure* cached_submitted_form =
-      FindCachedFormById(form.global_id());
-  if (!cached_submitted_form || !ShouldUploadForm(*cached_submitted_form)) {
+std::unique_ptr<FormStructure> BrowserAutofillManager::CloneAndUpdateCachedForm(
+    const FormData& form) const {
+  const FormStructure* cached_form = FindCachedFormById(form.global_id());
+  if (!cached_form) {
     return nullptr;
   }
 
   // TODO(crbug.com/40232021): Optimize this after improving the relationship
   // between `FormStructure` and `FormData`.
-  std::unique_ptr<FormStructure> submitted_form =
-      FormStructure::Clone(*cached_submitted_form, /*pass_key=*/{});
-  submitted_form->UpdateFormData(form, base::PassKey<BrowserAutofillManager>());
+  std::unique_ptr<FormStructure> updated_form =
+      FormStructure::Clone(*cached_form, /*pass_key=*/{});
+  updated_form->UpdateFormData(form, base::PassKey<BrowserAutofillManager>());
 
   // The form signatures should match between query and upload requests to the
   // server, because the server stores votes and serves predictions keyed by
@@ -3244,11 +3247,23 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
   // submitted form. Therefore, copy over the signatures that were used in the
   // query request: the `form_signature()` and the
   // `structural_form_signature()`.
-  submitted_form->set_form_signature(cached_submitted_form->form_signature());
-  submitted_form->set_structural_form_signature(
-      cached_submitted_form->structural_form_signature());
+  updated_form->set_form_signature(cached_form->form_signature());
+  updated_form->set_structural_form_signature(
+      cached_form->structural_form_signature());
 
-  return submitted_form;
+  return updated_form;
+}
+
+std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
+    const FormData& form) {
+  // Ignore forms not present in our cache.  These are typically forms with
+  // wonky JavaScript that also makes them not auto-fillable.
+  const FormStructure* cached_submitted_form =
+      FindCachedFormById(form.global_id());
+  if (!cached_submitted_form || !ShouldUploadForm(*cached_submitted_form)) {
+    return nullptr;
+  }
+  return CloneAndUpdateCachedForm(form);
 }
 
 AutofillManager::MutableFormAndField

@@ -3831,6 +3831,147 @@ TEST_F(BrowserAutofillManagerTest, SingleFieldFormFillerOffTheRecord) {
   FormSubmitted(form);
 }
 
+// Tests that submitting an uncached form notifies `SingleFieldFillRouter` with
+// a null `FormStructure` and skips vote upload.
+TEST_F(BrowserAutofillManagerTest,
+       OnWillSubmitForm_UncachedFormPassesNullFormStructure) {
+  FormData form = CreateTestAddressFormData();
+  ASSERT_EQ(autofill_manager().FindCachedFormById(form.global_id()), nullptr);
+
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
+  EXPECT_CALL(single_field_fill_router(),
+              OnWillSubmitForm(SameGlobalId(form), testing::IsNull()));
+  FormSubmitted(form);
+}
+
+// Tests that when a cached form fails `ShouldUploadForm()` (e.g. Autofill is
+// disabled while Password Manager still parsed and cached the form),
+// `OnWillSubmitForm()` receives an updated clone of the cached `FormStructure`
+// preserving field predictions, while import and vote upload are skipped.
+TEST_F(BrowserAutofillManagerTest,
+       OnWillSubmitForm_CachedFormFailingShouldUploadPreservesPredictions) {
+  autofill_client().SetAutofillProfileEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"Promo Code", .name = u"promo"},
+                  {.label = u"OTP", .name = u"otp"},
+                  {.label = u"First Name", .name = u"fname"}}});
+  FormsSeen({form});
+
+  FormStructure* cached_form =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_NE(cached_form, nullptr);
+  test_api(*cached_form)
+      .SetFieldTypes(
+          /*heuristic_types=*/{UNKNOWN_TYPE, UNKNOWN_TYPE, NAME_FIRST},
+          /*server_types=*/{MERCHANT_PROMO_CODE, ONE_TIME_CODE, NAME_FIRST});
+  ASSERT_FALSE(autofill_manager().ShouldUploadForm(*cached_form));
+
+  personal_data().test_address_data_manager().ClearProfiles();
+  test_api(form).field(0).set_value(u"SAVE20");
+  test_api(form).field(1).set_value(u"123456");
+  test_api(form).field(2).set_value(u"Elvis");
+
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
+  EXPECT_CALL(single_field_fill_router(),
+              OnWillSubmitForm(SameGlobalId(form), testing::NotNull()))
+      .WillOnce([&](const FormData& submitted_form,
+                    const FormStructure* form_structure) {
+        EXPECT_NE(form_structure, cached_form);
+        ASSERT_EQ(form_structure->field_count(), 3u);
+        EXPECT_THAT(form_structure->field(0)->Type().GetTypes(),
+                    Contains(MERCHANT_PROMO_CODE));
+        EXPECT_EQ(form_structure->field(0)->value(), u"SAVE20");
+        EXPECT_THAT(form_structure->field(1)->Type().GetTypes(),
+                    Contains(ONE_TIME_CODE));
+        EXPECT_EQ(form_structure->field(1)->value(), u"123456");
+        EXPECT_THAT(form_structure->field(2)->Type().GetTypes(),
+                    Contains(NAME_FIRST));
+        EXPECT_EQ(form_structure->field(2)->value(), u"Elvis");
+
+        single_field_fill_router().SingleFieldFillRouter::OnWillSubmitForm(
+            submitted_form, form_structure);
+      });
+
+  FormSubmitted(form);
+  EXPECT_THAT(personal_data().address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that when fields are dynamically added and removed before submitting a
+// cached form that fails `ShouldUploadForm()`, the cloned `FormStructure` is
+// updated via `UpdateFormData()` so its field count and fields match the
+// submitted `FormData` (satisfying `SingleFieldFillRouter::OnWillSubmitForm`'s
+// `CHECK`) while preserving predictions on surviving fields.
+TEST_F(BrowserAutofillManagerTest,
+       OnWillSubmitForm_CachedFormFailingShouldUploadWithDynamicFieldChanges) {
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"Promo Code", .name = u"promo"},
+                  {.label = u"Removed OTP", .name = u"otp"},
+                  {.label = u"Username", .name = u"username"}}});
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  test_api(*form_structure)
+      .SetFieldTypes(
+          /*heuristic_types=*/{UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE},
+          /*server_types=*/{MERCHANT_PROMO_CODE, ONE_TIME_CODE, USERNAME});
+  const FormSignature query_signature = form_structure->form_signature();
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+
+  autofill_client().SetAutofillProfileEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
+  const FormStructure* cached_form =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_NE(cached_form, nullptr);
+  ASSERT_FALSE(autofill_manager().ShouldUploadForm(*cached_form));
+
+  // Dynamically remove field 1 ("otp") and append two new fields without
+  // calling `FormsSeen()`, changing the field count from 3 to 4.
+  test_api(form).Remove(1);
+  test_api(form).Append(CreateTestFormField("City", "city", "Memphis",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Notes", "notes", "Hello",
+                                            FormControlType::kInputText));
+  test_api(form).field(0).set_value(u"SAVE20");
+  test_api(form).field(1).set_value(u"elvis");
+  ASSERT_EQ(form.fields().size(), 4u);
+  ASSERT_EQ(cached_form->field_count(), 3u);
+
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
+  EXPECT_CALL(single_field_fill_router(),
+              OnWillSubmitForm(SameGlobalId(form), testing::NotNull()))
+      .WillOnce([&](const FormData& submitted_form,
+                    const FormStructure* updated_structure) {
+        ASSERT_EQ(updated_structure->field_count(), 4u);
+        EXPECT_EQ(updated_structure->form_signature(), query_signature);
+
+        EXPECT_THAT(updated_structure->field(0)->Type().GetTypes(),
+                    Contains(MERCHANT_PROMO_CODE));
+        EXPECT_EQ(updated_structure->field(0)->value(), u"SAVE20");
+
+        EXPECT_THAT(updated_structure->field(1)->Type().GetTypes(),
+                    Contains(USERNAME));
+        EXPECT_EQ(updated_structure->field(1)->value(), u"elvis");
+
+        EXPECT_THAT(updated_structure->field(2)->Type().GetTypes(),
+                    ElementsAre(UNKNOWN_TYPE));
+        EXPECT_EQ(updated_structure->field(2)->value(), u"Memphis");
+
+        EXPECT_THAT(updated_structure->field(3)->Type().GetTypes(),
+                    ElementsAre(UNKNOWN_TYPE));
+        EXPECT_EQ(updated_structure->field(3)->value(), u"Hello");
+
+        // Delegate to the real router to verify its field-count `CHECK` holds.
+        single_field_fill_router().SingleFieldFillRouter::OnWillSubmitForm(
+            submitted_form, updated_structure);
+      });
+
+  FormSubmitted(form);
+  EXPECT_EQ(
+      autofill_manager().FindCachedFormById(form.global_id())->field_count(),
+      3u);
+}
+
 // Tests that form import (saving to Autofill) is suppressed when there is an
 // active actor task.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedActorActive) {
