@@ -142,6 +142,7 @@ OAuth2UpgradeTokenFlow::GetNetworkTrafficAnnotationTag() {
         data:
           "User's refresh token, device id and binding key registration token."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "oauthaccountmanager.googleapis.com"
         user_data {
           type: ACCESS_TOKEN
           type: DEVICE_ID

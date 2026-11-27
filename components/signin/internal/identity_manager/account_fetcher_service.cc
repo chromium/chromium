@@ -356,6 +356,7 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
           trigger: "At startup."
           data: "Account picture URL of signed-in GAIA accounts."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
         }
         policy {
           cookies_allowed: YES
