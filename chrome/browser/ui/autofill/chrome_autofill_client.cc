@@ -1031,37 +1031,6 @@ void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
       /*product_specific_string_data=*/field_filling_stats_data);
 }
 
-void ChromeAutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey(
-    bool is_dismissed,
-    const HatsSurveyStringData& product_specific_data) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-
-  if (is_dismissed) {
-    // The delay is already handled by the caller and the survey should be
-    // triggered immediately. Launch without binding to `web_contents()`
-    // to allow the survey to display even if the user has switched tabs.
-    hats_service->LaunchSurvey(
-        kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed,
-        /*success_callback=*/base::DoNothing(),
-        /*failure_callback=*/base::DoNothing(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/product_specific_data);
-  } else {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled,
-        web_contents(),
-        /*timeout_ms=*/5000,
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/product_specific_data);
-  }
-}
-
 void ChromeAutofillClient::
     TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
         const HatsSurveyStringData& product_specific_data) {

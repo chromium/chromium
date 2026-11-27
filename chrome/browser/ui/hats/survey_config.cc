@@ -928,27 +928,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Filling assistance"});
-  survey_configs.emplace_back(
-      &::autofill::features::kAutofillPersonalizationAndTrustAtMemorySurvey,
-      kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      with_client_context_psd_fields({}));
-  survey_configs.emplace_back(
-      &::autofill::features::kAutofillPersonalizationAndTrustAtMemorySurvey,
-      kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      with_client_context_psd_fields({
-          // Description of how the AtMemory popup was dismissed.
-          "Type of dismissal",
-          // Number of queries during AtMemory session.
-          "Query count",
-          // Number of results that were found for the last query.
-          "Query results count",
-      }));
   const std::vector<std::string>
       autofill_personalization_and_trust_fedcm_product_specific_data{
           // Whether the FedCM request was triggered using active or

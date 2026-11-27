@@ -210,12 +210,6 @@ inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled[] =
         "autofill-personalization-and-trust-password-filled";
 inline constexpr char
-    kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled[] =
-        "autofill-personalization-and-trust-at-memory-filled";
-inline constexpr char
-    kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed[] =
-        "autofill-personalization-and-trust-at-memory-dismissed";
-inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted[] =
         "autofill-personalization-and-trust-fedcm-accepted";
 inline constexpr char
