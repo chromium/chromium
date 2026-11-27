@@ -2236,12 +2236,19 @@ void GpuImageDecodeCache::UploadImageIfNecessary(
     } else {
       image_data->upload.SetTransferCacheId(image_entry.Id());
     }
-  } else {
+  } else if (!image_data->HasUploadedData()) {
     // Transfer cache entry can fail due to a lost gpu context or failure
     // to allocate shared memory.  Handle this gracefully.  Mark this
     // image as "decode failed" so that we do not try to handle it again.
     // If this was a lost context, we'll recreate this image decode cache.
+    // If another thread uploaded the image while `lock_` was released, do not
+    // mark it as failed.
     image_data->decode.decode_failure = true;
+  } else {
+    // Another thread succeeded while `lock_` was released, and our upload
+    // never allocated a transfer cache entry (`!uploaded`). Because we hold a
+    // ref on `image_data->upload`, the entry must still be locked.
+    CHECK(image_data->upload.is_locked());
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <limits>
 #include <map>
 #include <memory>
@@ -18,9 +19,13 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "cc/paint/color_filter.h"
@@ -4705,6 +4710,125 @@ TEST_P(GpuImageDecodeCacheTest, GainmapImageFailsDecode) {
     }
 
     cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+    cache->UnrefImage(draw_image);
+  }
+}
+
+// Lets a test make two uploads of the same image race. The first
+// MapTransferCacheEntry() call blocks until AllowFirstUploadToFail() is called,
+// and then fails by returning an empty span. All other calls succeed right
+// away.
+class FirstUploadFailsRasterInterface
+    : public FakeGPUImageDecodeTestRasterInterface {
+ public:
+  explicit FirstUploadFailsRasterInterface(
+      TransferCacheTestHelper* transfer_cache_helper)
+      : FakeGPUImageDecodeTestRasterInterface(transfer_cache_helper) {}
+
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
+    if (num_uploads_.fetch_add(1) == 0) {
+      base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
+      first_upload_started_.Signal();
+      allow_first_upload_to_fail_.Wait();
+      return {};
+    }
+    return FakeGPUImageDecodeTestRasterInterface::MapTransferCacheEntry(
+        serialized_size);
+  }
+
+  void WaitUntilFirstUploadStarted() {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
+    first_upload_started_.Wait();
+  }
+  void AllowFirstUploadToFail() { allow_first_upload_to_fail_.Signal(); }
+
+ private:
+  std::atomic<int> num_uploads_{0};
+  base::WaitableEvent first_upload_started_;
+  base::WaitableEvent allow_first_upload_to_fail_;
+};
+
+// UploadImageIfNecessary() unlocks `lock_` while uploading when
+// kUnlockDuringGpuImageOperations is enabled, so two threads can upload the
+// same image concurrently. If one thread succeeds and populates the entry's
+// uploaded data while the other thread's upload fails, the failing thread must
+// not mark the entry as decode_failure = true.
+TEST_P(GpuImageDecodeCacheTest, FailedUploadAfterConcurrentSuccessfulUpload) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kUnlockDuringGpuImageOperations);
+
+  std::unique_ptr<viz::TestContextSupport> support =
+      std::make_unique<FirstUploadFailsRasterInterface>(
+          &transfer_cache_helper_);
+  FirstUploadFailsRasterInterface* support_ptr =
+      static_cast<FirstUploadFailsRasterInterface*>(support.get());
+  scoped_refptr<viz::TestContextProvider> context_provider =
+      viz::TestContextProvider::CreateRaster(std::move(support));
+  ASSERT_EQ(context_provider->BindToCurrentSequence(),
+            gpu::ContextResult::kSuccess);
+
+  auto cache = std::make_unique<GpuImageDecodeCache>(
+      context_provider.get(), color_type_, kGpuMemoryLimitBytes,
+      max_texture_size_, nullptr);
+  const uint32_t client_id = cache->GenerateClientId();
+
+  PaintImage paint_image = CreatePaintImageInternal(GetNormalImageSize());
+  DrawImageWithTarget draw_image = CreateDrawImageInternal(paint_image);
+
+  ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
+      client_id, draw_image, ImageDecodeCache::TracingInfo());
+  ASSERT_TRUE(result.need_unref);
+  ASSERT_TRUE(result.task);
+  ASSERT_EQ(result.task->dependencies().size(), 1u);
+
+  // Decode the image on this thread first so both threads enter
+  // UploadImageIfNecessary().
+  TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+
+  // Thread B runs the upload task and blocks in MapTransferCacheEntry().
+  base::Thread thread_b("ThreadB");
+  ASSERT_TRUE(thread_b.Start());
+  thread_b.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        TestTileTaskRunner::ProcessTask(result.task.get());
+      }));
+  support_ptr->WaitUntilFirstUploadStarted();
+
+  // Thread A (this thread) concurrently uploads the same image and succeeds.
+  DecodedDrawImage decoded_draw_image =
+      cache->GetDecodedImageForDraw(draw_image);
+  ASSERT_TRUE(decoded_draw_image.transfer_cache_entry_id().has_value());
+  EXPECT_NE(transfer_cache_helper_.GetEntryInternal(
+                TransferCacheEntryType::kImage,
+                *decoded_draw_image.transfer_cache_entry_id()),
+            nullptr);
+
+  // Now let Thread B's upload fail. That must not mark the image as
+  // decode_failure = true.
+  support_ptr->AllowFirstUploadToFail();
+  thread_b.Stop();
+
+  // Verify the concurrently uploaded image is usable.
+  EXPECT_NE(transfer_cache_helper_.GetEntryInternal(
+                TransferCacheEntryType::kImage,
+                *decoded_draw_image.transfer_cache_entry_id()),
+            nullptr);
+  cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+  cache->UnrefImage(draw_image);
+
+  // If decode_failure were wrongly set to true by Thread B's failed upload,
+  // GetTaskForImageAndRef() would return need_unref=false.
+  ImageDecodeCache::TaskResult post_race_result = cache->GetTaskForImageAndRef(
+      client_id, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(post_race_result.need_unref);
+  if (post_race_result.task) {
+    if (!post_race_result.task->dependencies().empty()) {
+      TestTileTaskRunner::ProcessTask(
+          post_race_result.task->dependencies()[0].get());
+    }
+    TestTileTaskRunner::ProcessTask(post_race_result.task.get());
+  }
+  if (post_race_result.need_unref) {
     cache->UnrefImage(draw_image);
   }
 }
