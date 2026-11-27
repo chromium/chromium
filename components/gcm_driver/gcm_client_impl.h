@@ -32,7 +32,6 @@
 #include "google_apis/gcm/engine/gcm_store.h"
 #include "google_apis/gcm/engine/gservices_settings.h"
 #include "google_apis/gcm/engine/mcs_client.h"
-#include "google_apis/gcm/engine/unregistration_request.h"
 #include "google_apis/gcm/protocol/android_checkin.pb.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -155,14 +154,6 @@ class GCMClientImpl : public GCMClient,
                           MCSClient::MessageSendStatus status) override;
 
  private:
-  // Collection of pending unregistration requests. Keys are RegistrationInfo
-  // instance, while values are pending unregistration requests to disable the
-  // registration ID currently assigned to the application.
-  using PendingUnregistrationRequests =
-      std::map<scoped_refptr<RegistrationInfo>,
-               std::unique_ptr<UnregistrationRequest>,
-               RegistrationInfoComparer>;
-
   friend class GCMClientImplTest;
   friend class GCMClientInstanceIDTest;
 
@@ -209,9 +200,6 @@ class GCMClientImpl : public GCMClient,
   // Callback for persisting device credentials in the |gcm_store_|.
   void SetDeviceCredentialsCallback(bool success);
 
-  // Callback for persisting registration info in the |gcm_store_|.
-  void UpdateRegistrationCallback(bool success);
-
   // Callback for destroying the GCM store.
   void DestroyStoreCallback(bool success);
 
@@ -223,33 +211,6 @@ class GCMClientImpl : public GCMClient,
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
       const std::string& registration_id,
       Result result);
-
-  // Removes a single matching registration or token from the cache and
-  // persistent store, returning true if found.
-  bool RemoveCachedRegistration(
-      const scoped_refptr<RegistrationInfo>& registration_info);
-
-  // Removes all cached Instance ID tokens for `app_id` from the cache and
-  // persistent store, returning true if at least one token was removed.
-  bool RemoveAllCachedInstanceIDTokens(const std::string& app_id);
-
-  // Starts an unregistration request for `registration_info` and tracks it as
-  // pending, invoking `callback` upon completion.
-  void StartUnregistrationRequest(
-      scoped_refptr<RegistrationInfo> registration_info,
-      const std::string& category,
-      const std::string& subtype,
-      std::unique_ptr<UnregistrationRequest::CustomRequestHandler>
-          request_handler,
-      const std::string& source_to_record,
-      base::OnceCallback<void(Result result)> callback);
-
-  // Completes a pending `UnregistrationRequest`, invoking `callback` with the
-  // mapped result.
-  void OnUnregistrationRequestCompleted(
-      scoped_refptr<RegistrationInfo> registration_info,
-      base::OnceCallback<void(Result result)> callback,
-      UnregistrationRequest::Status status);
 
   // Notifies observers that an `Unregister()` call has finished.
   void NotifyUnregisterFinished(
@@ -347,10 +308,6 @@ class GCMClientImpl : public GCMClient,
   std::unique_ptr<MCSClient> mcs_client_;
 
   std::unique_ptr<CheckinRequest> checkin_request_;
-
-  // Currently pending unregistration requests. GCMClientImpl owns the
-  // UnregistrationRequests.
-  PendingUnregistrationRequests pending_unregistration_requests_;
 
   // G-services settings that were provided by MCS.
   GServicesSettings gservices_settings_;

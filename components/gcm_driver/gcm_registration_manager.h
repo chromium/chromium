@@ -21,6 +21,8 @@ class GCMRegistrationManager {
  public:
   using GetTokenCallback = base::OnceCallback<void(const std::string& token,
                                                    GCMClient::Result result)>;
+  using DeleteTokenCallback =
+      base::OnceCallback<void(GCMClient::Result result)>;
 
   virtual ~GCMRegistrationManager() = default;
 
@@ -28,6 +30,12 @@ class GCMRegistrationManager {
   // synchronously (on a cache hit) or asynchronously.
   virtual void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                         GetTokenCallback callback) = 0;
+
+  // Deletes the Instance ID token(s) matching `token_info` (or all tokens for
+  // `token_info->app_id` if `authorized_entity` and `scope` are `"*"`),
+  // invoking `callback` upon completion.
+  virtual void DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                           DeleteTokenCallback callback) = 0;
 
   // Validates that cached registration info matches `registration_info` and
   // `registration_id`.

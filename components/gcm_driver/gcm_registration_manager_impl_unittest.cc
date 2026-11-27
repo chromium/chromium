@@ -104,6 +104,17 @@ class GCMRegistrationManagerImplTest : public testing::Test {
     return registration_manager_;
   }
 
+  void RegisterToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                     const std::string& token) {
+    base::test::TestFuture<const std::string&, GCMClient::Result> future;
+    registration_manager_.GetToken(std::move(token_info), future.GetCallback());
+    ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kRegisterUrl, base::StrCat({"token=", token})));
+    const auto& [returned_token, result] = future.Get();
+    ASSERT_EQ(result, GCMClient::SUCCESS);
+    ASSERT_EQ(returned_token, token);
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   FakeGCMStore gcm_store_;
@@ -525,5 +536,257 @@ TEST_F(GCMRegistrationManagerImplTest,
   EXPECT_EQ(result, GCMClient::SUCCESS);
 }
 
+TEST_F(GCMRegistrationManagerImplTest, DeleteSingleToken) {
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info_1 =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+  scoped_refptr<InstanceIDTokenInfo> token_info_2 =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId2, kScope);
+
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info_1, "token_1"));
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info_2, "token_2"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info_2, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body, HasSubstr("delete=true"));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=foo"));
+
+  EXPECT_EQ(delete_future.Get(), GCMClient::SUCCESS);
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(token_info_1, "token_1"));
+  EXPECT_FALSE(
+      registration_manager().ValidateRegistration(token_info_2, "token_2"));
+  EXPECT_THAT(
+      gcm_store().registrations(),
+      UnorderedElementsAre(Pair(token_info_1->GetSerializedKey(),
+                                token_info_1->GetSerializedValue("token_1"))));
+
+  // Deleting the already-removed token returns INVALID_PARAMETER without
+  // issuing a network request.
+  base::test::TestFuture<GCMClient::Result> repeat_delete_future;
+  registration_manager().DeleteToken(token_info_2,
+                                     repeat_delete_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_EQ(repeat_delete_future.Get(), GCMClient::INVALID_PARAMETER);
+}
+
+TEST_F(GCMRegistrationManagerImplTest,
+       DeleteTokenUsesSubtypeForNonExtensionApp) {
+  registration_manager().AddInstanceIDData(kTestAppId, kInstanceId, kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_subtype"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body, HasSubstr("delete=true"));
+  EXPECT_THAT(upload_body,
+              HasSubstr(base::StrCat({"app=", kProductCategoryForSubtypes})));
+  EXPECT_THAT(upload_body, HasSubstr(base::StrCat({"X-subtype=", kTestAppId})));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=foo"));
+
+  EXPECT_EQ(delete_future.Get(), GCMClient::SUCCESS);
+  EXPECT_FALSE(
+      registration_manager().ValidateRegistration(token_info, "token_subtype"));
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteTokenOmitsSubtypeForExtensionApp) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_ext"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body, HasSubstr("delete=true"));
+  EXPECT_THAT(upload_body, HasSubstr(base::StrCat({"app=", kExtensionAppId})));
+  EXPECT_THAT(upload_body, Not(HasSubstr("X-subtype=")));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=foo"));
+
+  EXPECT_EQ(delete_future.Get(), GCMClient::SUCCESS);
+  EXPECT_FALSE(
+      registration_manager().ValidateRegistration(token_info, "token_ext"));
+  EXPECT_THAT(gcm_store().registrations(), IsEmpty());
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteNonExistingToken) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_EQ(delete_future.Get(), GCMClient::INVALID_PARAMETER);
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteTokenWithPartialWildcard) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_1"));
+
+  // Partial wildcards fall through to single-token deletion and fail without
+  // issuing a network request or removing the existing token.
+  base::test::TestFuture<GCMClient::Result> wildcard_entity_future;
+  registration_manager().DeleteToken(
+      CreateInstanceIDTokenInfo(kExtensionAppId, /*authorized_entity=*/"*",
+                                kScope),
+      wildcard_entity_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_EQ(wildcard_entity_future.Get(), GCMClient::INVALID_PARAMETER);
+
+  base::test::TestFuture<GCMClient::Result> wildcard_scope_future;
+  registration_manager().DeleteToken(
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, /*scope=*/"*"),
+      wildcard_scope_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_EQ(wildcard_scope_future.Get(), GCMClient::INVALID_PARAMETER);
+
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(token_info, "token_1"));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteAllTokens) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  registration_manager().AddInstanceIDData(kTestAppId, "iid_2", kExtraData);
+
+  // Seed a non-InstanceID GCM registration for the same app to verify wildcard
+  // token deletion leaves non-InstanceID registrations untouched.
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kExtensionAppId, {kSenderId});
+  registration_manager().AddPendingRegistrationRequest(gcm_info,
+                                                       /*request=*/nullptr);
+  base::test::TestFuture<const std::string&, GCMClient::Result> reg_future;
+  registration_manager().OnRegisterCompleted(gcm_info, reg_future.GetCallback(),
+                                             RegistrationRequest::SUCCESS,
+                                             kRegistrationId);
+  const auto& [reg_id, reg_result] = reg_future.Get();
+  ASSERT_EQ(reg_result, GCMClient::SUCCESS);
+
+  // Register multiple tokens for the target app and one for a separate app.
+  scoped_refptr<InstanceIDTokenInfo> token_info_1 =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  scoped_refptr<InstanceIDTokenInfo> token_info_2 =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId2, kScope);
+  scoped_refptr<InstanceIDTokenInfo> other_app_token_info =
+      CreateInstanceIDTokenInfo(kTestAppId, kSenderId, kScope);
+
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info_1, "tok"));
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info_2, "tok"));
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(other_app_token_info, "tok"));
+
+  // Delete all tokens for `kExtensionAppId` using wildcard entity and scope.
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(
+      CreateInstanceIDTokenInfo(kExtensionAppId, /*authorized_entity=*/"*",
+                                /*scope=*/"*"),
+      delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  std::string upload_body = network::GetUploadData(
+      url_loader_factory().GetPendingRequest(0)->request);
+  EXPECT_THAT(upload_body, HasSubstr("delete=true"));
+  EXPECT_THAT(upload_body, HasSubstr("sender=*"));
+  EXPECT_THAT(upload_body, HasSubstr("scope=*"));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "token=foo"));
+
+  // Only `kExtensionAppId`'s Instance ID tokens should be removed; its GCM
+  // registration and the other app's token should remain intact.
+  EXPECT_EQ(delete_future.Get(), GCMClient::SUCCESS);
+  EXPECT_FALSE(
+      registration_manager().ValidateRegistration(token_info_1, "tok"));
+  EXPECT_FALSE(
+      registration_manager().ValidateRegistration(token_info_2, "tok"));
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(gcm_info, kRegistrationId));
+  EXPECT_TRUE(
+      registration_manager().ValidateRegistration(other_app_token_info, "tok"));
+  EXPECT_THAT(gcm_store().registrations(),
+              UnorderedElementsAre(
+                  Pair(gcm_info->GetSerializedKey(),
+                       gcm_info->GetSerializedValue(kRegistrationId)),
+                  Pair(other_app_token_info->GetSerializedKey(),
+                       other_app_token_info->GetSerializedValue("tok"))));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteAllTokensWhenNoneExist) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(
+      CreateInstanceIDTokenInfo(kExtensionAppId, /*authorized_entity=*/"*",
+                                /*scope=*/"*"),
+      delete_future.GetCallback());
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_EQ(delete_future.Get(), GCMClient::SUCCESS);
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteTokenInvalidParametersError) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_1"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "Error=INVALID_PARAMETERS"));
+
+  EXPECT_EQ(delete_future.Get(), GCMClient::INVALID_PARAMETER);
+}
+
+TEST_F(GCMRegistrationManagerImplTest, DeleteTokenServerError) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_1"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kRegisterUrl, "Error=PHONE_REGISTRATION_ERROR"));
+
+  EXPECT_EQ(delete_future.Get(), GCMClient::SERVER_ERROR);
+}
+
+TEST_F(GCMRegistrationManagerImplTest,
+       CancelPendingRequestsCancelsUnregistration) {
+  registration_manager().AddInstanceIDData(kExtensionAppId, kInstanceId,
+                                           kExtraData);
+  scoped_refptr<InstanceIDTokenInfo> token_info =
+      CreateInstanceIDTokenInfo(kExtensionAppId, kSenderId, kScope);
+  ASSERT_NO_FATAL_FAILURE(RegisterToken(token_info, "token_1"));
+
+  base::test::TestFuture<GCMClient::Result> delete_future;
+  registration_manager().DeleteToken(token_info, delete_future.GetCallback());
+  ASSERT_EQ(1, url_loader_factory().NumPending());
+
+  registration_manager().CancelPendingRequests();
+  EXPECT_EQ(0, url_loader_factory().NumPending());
+  EXPECT_FALSE(delete_future.IsReady());
+}
 }  // namespace
 }  // namespace gcm

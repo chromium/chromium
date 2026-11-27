@@ -24,6 +24,7 @@
 #include "google_apis/gcm/engine/gcm_store.h"
 #include "google_apis/gcm/engine/gservices_settings.h"
 #include "google_apis/gcm/engine/registration_request.h"
+#include "google_apis/gcm/engine/unregistration_request.h"
 
 namespace base {
 class Clock;
@@ -42,11 +43,12 @@ class GCMStatsRecorder;
 // and Instance ID data in `GCMStore`.
 class GCMRegistrationManagerImpl : public GCMRegistrationManager {
  public:
-  using InstanceIDDataMap =
-      std::map<std::string, std::pair<std::string, std::string>>;
   using RegisterCallback =
       base::OnceCallback<void(const std::string& registration_id,
                               GCMClient::Result result)>;
+  // TODO(b/545115204): Make private once `Unregister()` is migrated from
+  // `GCMClientImpl`.
+  using UnregisterCallback = base::OnceCallback<void(GCMClient::Result result)>;
 
   // `gcm_store`, `clock`, and `recorder` must outlive this instance.
   GCMRegistrationManagerImpl(
@@ -75,7 +77,7 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // Returns true if at least one standalone app is registered for GCM.
   bool HasStandaloneRegisteredApp() const;
 
-  // Cancels all pending registration requests.
+  // Cancels all pending registration and unregistration requests.
   void CancelPendingRequests();
 
   // Returns the cached registration ID if a matching, non-stale registration
@@ -108,10 +110,25 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
                            RegistrationRequest::Status status,
                            const std::string& registration_id);
 
-  // TODO(b/545115204): Move to the anonymous namespace once `DeleteToken()` is
-  // migrated from `GCMClientImpl`.
-  static int ConstructGCMVersion(const std::string& chrome_version);
-  static bool InstanceIDUsesSubtypeForAppId(const std::string& app_id);
+  // TODO(b/545115204): Make private once `Unregister()` is migrated from
+  // `GCMClientImpl`.
+  // Removes a single matching registration or token from the cache and
+  // persistent store, returning true if found.
+  bool RemoveCachedRegistration(
+      const scoped_refptr<RegistrationInfo>& registration_info);
+
+  // TODO(b/545115204): Make private once `Unregister()` is migrated from
+  // `GCMClientImpl`.
+  // Starts an unregistration request for `registration_info` and tracks it as
+  // pending, invoking `callback` upon completion.
+  void StartUnregistrationRequest(
+      scoped_refptr<RegistrationInfo> registration_info,
+      const std::string& category,
+      const std::string& subtype,
+      std::unique_ptr<UnregistrationRequest::CustomRequestHandler>
+          request_handler,
+      const std::string& source_to_record,
+      UnregisterCallback callback);
 
   // Returns a `WeakPtr` invalidated by `CancelPendingRequests()`.
   base::WeakPtr<GCMRegistrationManagerImpl> GetPendingRequestWeakPtr() {
@@ -121,6 +138,8 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // GCMRegistrationManager implementation:
   void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                 GetTokenCallback callback) override;
+  void DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                   DeleteTokenCallback callback) override;
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                             const std::string& registration_id) override;
   std::vector<std::string> GetRegisteredAppIds() const override;
@@ -135,11 +154,11 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // Instance ID methods and tests are migrated from `GCMClientImpl`.
   const RegistrationInfoMap& registrations() const { return registrations_; }
   RegistrationInfoMap& mutable_registrations() { return registrations_; }
-  const InstanceIDDataMap& instance_id_data() const {
-    return instance_id_data_;
-  }
 
  private:
+  using InstanceIDDataMap =
+      std::map<std::string, std::pair<std::string, std::string>>;
+
   // Collection of pending registration requests. Keys are registration info
   // instances, while values are pending registration requests to obtain a
   // registration ID for requesting application, or for InstanceID tokens, the
@@ -148,6 +167,25 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
       std::map<scoped_refptr<RegistrationInfo>,
                std::unique_ptr<RegistrationRequest>,
                RegistrationInfoComparer>;
+
+  // Collection of pending unregistration requests. Keys are RegistrationInfo
+  // instances, while values are pending unregistration requests to disable the
+  // registration ID currently assigned to the application.
+  using PendingUnregistrationRequests =
+      std::map<scoped_refptr<RegistrationInfo>,
+               std::unique_ptr<UnregistrationRequest>,
+               RegistrationInfoComparer>;
+
+  // Removes all cached Instance ID tokens for `app_id` from the cache and
+  // persistent store, returning true if at least one token was removed.
+  bool RemoveAllCachedInstanceIDTokens(const std::string& app_id);
+
+  // Completes a pending `UnregistrationRequest`, invoking `callback` with the
+  // mapped result.
+  void OnUnregistrationRequestCompleted(
+      scoped_refptr<RegistrationInfo> registration_info,
+      UnregisterCallback callback,
+      UnregistrationRequest::Status status);
 
   // Removes deprecated data (such as obsolete registrations) from the cache and
   // persistent store.
@@ -176,6 +214,10 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // Currently pending registration requests. GCMRegistrationManagerImpl owns
   // the RegistrationRequests.
   PendingRegistrationRequests pending_registration_requests_;
+
+  // Currently pending unregistration requests. GCMRegistrationManagerImpl owns
+  // the UnregistrationRequests.
+  PendingUnregistrationRequests pending_unregistration_requests_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
