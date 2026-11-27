@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:helmut@januschka.com">
+<link rel="help" href="https://drafts.csswg.org/web-animations-1/#the-ready-promise">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/gesture-util.js"></script>
+<style>
+.target {
+  width: 100px;
+  height: 100px;
+  background-color: dodgerblue;
+}
+</style>
+<script>
+function jank() {
+  const start = performance.now();
+  let x = 0;
+  while(performance.now() - start < 100) {
+    x++;
+  }
+}
+
+function target1() { return document.querySelector('#target1'); }
+function target2() { return document.querySelector('#target2'); }
+function spinner() { return document.querySelector('#spinner'); }
+
+function firstFrame() {
+  target1().animate([{transform: 'translateX(400%)'}], {id: "target1", duration: 10000});
+  target2().animate([{transform: 'translateX(400%)'}], {id: "target2", duration: 10000});
+  requestAnimationFrame(secondFrame);
+
+  // Simulate some jank so that, if the above animations are started
+  // asynchronously, the next rendering opportunity is likely to start
+  // immediately after this one and without the animations having started yet.
+  jank();
+}
+
+function secondFrame() {
+  // Resize the first target so its percentage-based keyframes must be
+  // re-resolved before the animation has a start time.
+  target1().style.width = '200px';
+
+  // The spinner is used to avoid a specific Chrome behavior (bug?). It ensures
+  // a new animation is pushed to the compositor in this frame and prevents the
+  // #target1 animation being started from the main thread in
+  // PendingAnimations::Update when `started_synchronized_on_compositor` is
+  // false.
+  spinner().animate([{transform: 'rotateZ(90deg)'}], {id: 'spinner', duration: 1000});
+
+  requestAnimationFrame(finishTestCb);
+}
+
+let finishTestCb = null;
+const finishTest = new Promise(resolve => { finishTestCb = resolve; });
+
+promise_test(async (t) => {
+  await new Promise(resolve => { onload = resolve; });
+  // Paint holding can delay the first commit well past load.
+  await waitForCompositorReady();
+  requestAnimationFrame(firstFrame);
+  await finishTest;
+
+  anim1 = target1().getAnimations()[0];
+  anim2 = target2().getAnimations()[0];
+
+  await Promise.all([anim1.ready, anim2.ready]);
+  assert_equals(anim1.startTime, anim2.startTime);
+}, "Animation target resized before startTime is set doesn't affect startTime");
+</script>
+The blue boxes below should stay aligned in the x-axis.
+<div id="target1" class="target"></div>
+<div id="target2" class="target"></div>
+<div id="spinner" class="target" style="background:limegreen"></div>

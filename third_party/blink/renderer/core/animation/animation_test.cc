@@ -37,6 +37,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
+#include "cc/animation/animation.h"
+#include "cc/animation/keyframe_effect.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/trees/target_property.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,6 +99,9 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 namespace {
@@ -1843,9 +1849,9 @@ TEST_P(AnimationAnimationTestCompositing,
       gfx::SizeF(200, 200));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  // Cancel is deferred to PreCommit.
-  EXPECT_TRUE(animation->CompositorPendingCancel());
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  // The restart is handled as an effect change, preserving the cc::Animation.
+  EXPECT_FALSE(animation->CompositorPendingCancel());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
@@ -1855,11 +1861,78 @@ TEST_P(AnimationAnimationTestCompositing,
       gfx::SizeF(200, 300));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(animation->CompositorPendingCancel());
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
+}
+
+// crbug.com/40805185
+// Regression test to ensure a composited animation with size-dependent
+// transform keyframes is restarted when the box size changes before the
+// animation has a start time. Its compositor keyframes were already resolved
+// against the old box size, so skipping the restart for a not-yet-started
+// animation leaves it rendered with the stale values.
+TEST_P(AnimationAnimationTestCompositing,
+       RestartCompositedAnimationOnSizeChangeBeforeStart) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 200px; background: blue;
+                            will-change: transform">
+    </div>
+  )HTML");
+
+  Animation* animation = CreateAnimation(
+      CSSPropertyID::kTransform, "translate(100%, 100%)", "translate(0%, 0%)");
+  animation->play();
+
+  UpdateAllLifecyclePhasesForTest();
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  // The animation is still play pending and has no start time yet.
+  ASSERT_FALSE(animation->StartTimeInternal());
+
+  auto start_translation = [&]() {
+    const cc::KeyframeModel* keyframe_model =
+        cc::KeyframeModel::ToCcKeyframeModel(
+            animation->GetCompositorAnimation()
+                ->CcAnimation()
+                ->keyframe_effect()
+                ->GetKeyframeModel(cc::TargetProperty::TRANSFORM));
+    return gfx::TransformAnimationCurve::ToTransformAnimationCurve(
+               keyframe_model->curve())
+        ->GetTransformedValue(base::Seconds(0),
+                              gfx::TimingFunction::LimitDirection::RIGHT)
+        .Apply()
+        .To2dTranslation();
+  };
+
+  const int compositor_group = animation->CompositorGroup();
+  const int cc_animation_id =
+      animation->GetCompositorAnimation()->CcAnimationId();
+  EXPECT_EQ(gfx::Vector2dF(100, 200), start_translation());
+
+  Element* target = GetElementById("target");
+  target->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
+  UpdateAllLifecyclePhasesForTest();
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+
+  // The restart preserves the cc::Animation and the compositor group so that
+  // an in-flight start event still applies.
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(compositor_group, animation->CompositorGroup());
+  EXPECT_EQ(cc_animation_id,
+            animation->GetCompositorAnimation()->CcAnimationId());
+  EXPECT_EQ(gfx::Vector2dF(200, 200), start_translation());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kWidth, "300px");
+  UpdateAllLifecyclePhasesForTest();
+  GetDocument().GetPendingAnimations().Update(nullptr, true);
+  EXPECT_EQ(gfx::Vector2dF(300, 200), start_translation());
+
+  GetDocument().GetPendingAnimations().NotifyCompositorAnimationStarted(
+      0, compositor_group);
+  EXPECT_TRUE(animation->StartTimeInternal());
 }
 
 // crbug.com/1149012
@@ -1902,8 +1975,8 @@ TEST_P(AnimationAnimationTestCompositing,
       gfx::SizeF(200, 300));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(animation->CompositorPendingCancel());
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation->CompositorPendingCancel());
@@ -1950,9 +2023,9 @@ TEST_P(AnimationAnimationTestCompositing,
       gfx::SizeF(300, 400));
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation->CompositorPending());
-  EXPECT_TRUE(animation->CompositorPendingCancel());
+  EXPECT_FALSE(animation->CompositorPendingCancel());
 
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());

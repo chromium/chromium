@@ -2837,9 +2837,11 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
   // composited via a native paint worklet. If reset, it forces Paint to
   // re-evaluate whether to paint with a native paint worklet.
   if (reason == CompositorPendingReason::kPaintWorkletImageCreated ||
-      reason == CompositorPendingReason::kPendingDowngrade ||
-      reason == CompositorPendingReason::kPendingSafeRestart) {
+      reason == CompositorPendingReason::kPendingDowngrade) {
     reason = CompositorPendingReason::kPendingRestart;
+    // Composited paint status has already be set so we can skip the update.
+  } else if (reason == CompositorPendingReason::kPendingSafeRestart) {
+    reason = CompositorPendingReason::kPendingEffectChange;
     // Composited paint status has already be set so we can skip the update.
   } else {
     UpdateCompositedPaintStatus(reason);

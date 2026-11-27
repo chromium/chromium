@@ -177,7 +177,6 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   std::optional<AnimationTimeDelta> TimelineDuration() const override;
   bool HasIncompatibleStyle() const;
   bool AffectsImportantProperty() const;
-  void RestartRunningAnimationOnCompositor();
 
   Member<Element> effect_target_;
   Member<Element> target_element_;

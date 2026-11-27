@@ -3836,6 +3836,7 @@
       "input-dev@chromium.org"
     ],
     "bases": [
+      "animations/resizing-animation-before-start-time-synced.html",
       "animations/stability",
       "compositing/visibility",
       "compositing/webgl",

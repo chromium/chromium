@@ -665,34 +665,21 @@ bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
   if (!has_transform)
     return true;
 
-  if (HasAnimation()) {
-    if (effect_target_size_) {
-      if ((size_dependencies & TransformOperation::kDependsWidth) &&
-          (effect_target_size_->width() != box_size.width()))
-        RestartRunningAnimationOnCompositor();
-      else if ((size_dependencies & TransformOperation::kDependsHeight) &&
-               (effect_target_size_->height() != box_size.height()))
-        RestartRunningAnimationOnCompositor();
+  if (Animation* animation = GetAnimation(); animation && effect_target_size_) {
+    bool restart_required =
+        ((size_dependencies & TransformOperation::kDependsWidth) &&
+         (effect_target_size_->width() != box_size.width())) ||
+        ((size_dependencies & TransformOperation::kDependsHeight) &&
+         (effect_target_size_->height() != box_size.height()));
+    if (restart_required) {
+      animation->RestartAnimationOnCompositor(
+          Animation::CompositorPendingReason::kPendingSafeRestart);
     }
   }
 
   effect_target_size_ = box_size;
 
   return preserves_axis_alignment;
-}
-
-void KeyframeEffect::RestartRunningAnimationOnCompositor() {
-  Animation* animation = GetAnimation();
-  if (!animation)
-    return;
-
-  // No need to to restart an animation that is in the process of starting up,
-  // paused or idle.
-  if (!animation->StartTimeInternal())
-    return;
-
-  animation->RestartAnimationOnCompositor(
-      Animation::CompositorPendingReason::kPendingSafeRestart);
 }
 
 bool KeyframeEffect::IsIdentityOrTranslation() const {
