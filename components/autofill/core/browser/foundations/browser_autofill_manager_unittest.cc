@@ -5483,10 +5483,25 @@ class BrowserAutofillManagerTestPageLanguageDetection
 };
 
 TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
+  // The frame under test is the root frame or, if `has_parent()`, a child frame
+  // of the root frame.
+  autofill_driver(0).SetIsEmbedded(is_embedded());
+  if (has_parent()) {
+    CreateAutofillDriver();
+    autofill_driver(1).SetIsEmbedded(is_embedded());
+    autofill_driver(1).SetParent(&autofill_driver(0));
+    if (is_active()) {
+      ActivateAutofillDriver(autofill_driver(1));
+    }
+  }
+  const size_t index = has_parent() ? 1 : 0;
+  autofill_driver(index).SetIsActive(is_active());
+  auto& manager = autofill_manager(index);
+
   MockAutofillManagerObserver observer;
   base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
       observation{&observer};
-  observation.Observe(&autofill_manager());
+  observation.Observe(&manager);
 
   MockFunction<void()> check;
   {
@@ -5498,8 +5513,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   }
 
   FormData form = CreateTestAddressFormData();
-  autofill_manager().OnFormsSeen({form}, {},
-                                 AutofillManagerTestApi::pass_key());
+  manager.OnFormsSeen({form}, {}, AutofillManagerTestApi::pass_key());
 
   check.Call();
 
@@ -5507,11 +5521,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   language_detection_details.adopted_language = "hu";
   autofill_client().GetLanguageState()->SetCurrentLanguage("hu");
 
-  autofill_driver().SetIsActive(is_active());
-  autofill_driver().SetParent(has_parent() ? &autofill_driver() : nullptr);
-  autofill_driver().SetIsEmbedded(is_embedded());
-  autofill_manager().OnLanguageDetermined(language_detection_details);
-  autofill_driver().SetParent(nullptr);
+  manager.OnLanguageDetermined(language_detection_details);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
