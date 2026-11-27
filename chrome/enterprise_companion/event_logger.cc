@@ -88,6 +88,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           trigger: "Periodic tasks."
           data: "Metrics about the Chrome Enterprise Companion App."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "play.googleapis.com"
           internal {
             contacts {
               email: "noahrose@google.com"
