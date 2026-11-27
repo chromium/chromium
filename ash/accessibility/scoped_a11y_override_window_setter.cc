@@ -26,7 +26,13 @@ void ScopedA11yOverrideWindowSetter::MaybeUpdateA11yOverrideWindow(
   if (current_a11y_override_window_ != a11y_override_window) {
     Shell::Get()->accessibility_controller()->SetA11yOverrideWindow(
         a11y_override_window);
+    if (current_a11y_override_window_) {
+      current_a11y_override_window_->RemoveObserver(this);
+    }
     current_a11y_override_window_ = a11y_override_window;
+    if (current_a11y_override_window_) {
+      current_a11y_override_window_->AddObserver(this);
+    }
   }
 }
 

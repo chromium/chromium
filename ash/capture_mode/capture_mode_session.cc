@@ -3968,6 +3968,7 @@ void CaptureModeSession::ShutdownInternal() {
   recording_type_menu_view_ = nullptr;
   action_container_view_ = nullptr;
 
+  focus_cycler_.reset();
   // Close all widgets immediately to avoid having them show up in the captured
   // screenshots or video.
   for (auto* widget : GetAvailableWidgets()) {
