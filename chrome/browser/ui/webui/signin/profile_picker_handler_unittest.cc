@@ -831,3 +831,36 @@ TEST_F(ProfilePickerHandlerTest,
   EXPECT_EQ(web_ui()->call_data()[0]->arg1()->GetString(),
             "profiles-list-changed");
 }
+
+TEST_F(ProfilePickerHandlerTest, ResetPickerButtons) {
+  // Before JavaScript is allowed, `ResetPickerButtons()` is a no-op and does
+  // not enable JavaScript prematurely.
+  ASSERT_FALSE(handler()->IsJavascriptAllowed());
+  handler()->ResetPickerButtons();
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+
+  ProfileAttributesEntry* entry = CreateTestingProfile("ResetButtonsProfile");
+  InitializeMainViewAndVerifyProfileList({entry});
+  web_ui()->ClearTrackedCalls();
+
+  handler()->ResetPickerButtons();
+  ASSERT_EQ(web_ui()->call_data().size(), 2u);
+  EXPECT_EQ(web_ui()->call_data()[0]->function_name(),
+            "cr.webUIListenerCallback");
+  EXPECT_EQ(web_ui()->call_data()[0]->arg1()->GetString(),
+            "load-signin-finished");
+  EXPECT_FALSE(web_ui()->call_data()[0]->arg2()->GetBool());
+  EXPECT_EQ(web_ui()->call_data()[1]->function_name(),
+            "cr.webUIListenerCallback");
+  EXPECT_EQ(web_ui()->call_data()[1]->arg1()->GetString(),
+            "reset-picker-buttons");
+  EXPECT_FALSE(web_ui()->call_data()[1]->arg2()->GetBool());
+
+  // After JavaScript is disallowed, `ResetPickerButtons()` is again a no-op.
+  handler()->DisallowJavascript();
+  web_ui()->ClearTrackedCalls();
+  handler()->ResetPickerButtons();
+  EXPECT_FALSE(handler()->IsJavascriptAllowed());
+  EXPECT_TRUE(web_ui()->call_data().empty());
+}

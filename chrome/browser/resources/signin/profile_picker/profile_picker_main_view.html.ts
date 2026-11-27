@@ -81,6 +81,8 @@ ${isGlicVersion() ? html`
   `}
 </div>
 
-<signin-error-dialog id="signinErrorDialog"></signin-error-dialog>
+<signin-error-dialog id="signinErrorDialog"
+    @disable-all-picker-buttons="${this.onDisableAllPickerButtons_}">
+</signin-error-dialog>
 <!--_html_template_end_-->`;
 }

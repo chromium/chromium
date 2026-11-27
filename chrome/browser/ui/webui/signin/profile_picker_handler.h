@@ -86,6 +86,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void TryLaunchLockedProfileWhenInitialized(
       const base::FilePath& profile_path);
 
+  // Re-enables picker WebUI buttons when returning to the picker screen.
+  void ResetPickerButtons();
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;

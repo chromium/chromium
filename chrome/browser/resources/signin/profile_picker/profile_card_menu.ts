@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -54,7 +55,7 @@ enum ProfileStatistics {
 export interface ProfileCardMenuElement {
   $: {
     actionMenu: CrActionMenuElement,
-    moreActionsButton: HTMLElement,
+    moreActionsButton: CrIconButtonElement,
     removeConfirmationDialog: CrDialogElement,
   };
 }
@@ -78,6 +79,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static override get properties() {
     return {
       profileState: {type: Object},
+      disabled: {type: Boolean},
       profileIndex: {type: Number},
       profilesCount: {type: Number},
 
@@ -99,6 +101,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 
   accessor profileState: ProfileState = createDummyProfileState();
+  accessor disabled: boolean = false;
   accessor profileIndex: number = -1;
   accessor profilesCount: number = 0;
   private accessor statistics_: Statistics = {
@@ -237,6 +240,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 
   protected onCustomizeButtonClick_() {
+    this.fire('disable-all-picker-buttons');
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();

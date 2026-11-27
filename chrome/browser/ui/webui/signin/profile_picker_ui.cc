@@ -376,4 +376,8 @@ void ProfilePickerUI::TryLaunchLockedProfileWhenInitialized(
   profile_picker_handler_->TryLaunchLockedProfileWhenInitialized(profile_path);
 }
 
+void ProfilePickerUI::ResetPickerButtons() {
+  profile_picker_handler_->ResetPickerButtons();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)

@@ -582,6 +582,14 @@ void ProfilePickerHandler::DisplayForceSigninErrorDialog(
                     base::Value(profile_path.AsUTF16Unsafe()));
 }
 
+void ProfilePickerHandler::ResetPickerButtons() {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+  FireWebUIListener("load-signin-finished", base::Value(false));
+  FireWebUIListener("reset-picker-buttons", base::Value(false));
+}
+
 void ProfilePickerHandler::HandleLaunchGuestProfile(
     const base::ListValue& args) {
   // TODO(crbug.com/40123459): Add check |IsGuestModeEnabled| once policy

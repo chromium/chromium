@@ -276,6 +276,18 @@ suite('ProfilePickerMainViewTest', function() {
     assertFalse(navigationElement.changeCalled);
   });
 
+  function assertPickerButtonsDisabled(
+      profileCards: NodeListOf<ProfileCardElement>, expectedDisabled: boolean) {
+    assertEquals(expectedDisabled, mainViewElement.$.addProfile.disabled);
+    assertEquals(
+        expectedDisabled, mainViewElement.$.browseAsGuestButton.disabled);
+    profileCards.forEach(profileCard => {
+      assertEquals(expectedDisabled, profileCard.$.profileCardButton.disabled);
+      const menu = profileCard.shadowRoot.querySelector('profile-card-menu')!;
+      assertEquals(expectedDisabled, menu.$.moreActionsButton.disabled);
+    });
+  }
+
   test('ProfileCreationDisableButtons', async function() {
     resetTest();
     const addProfileButton = mainViewElement.$.addProfile;
@@ -284,23 +296,17 @@ suite('ProfilePickerMainViewTest', function() {
     await simulateProfilesListChanged(generateProfilesList(2));
     navigationElement.reset();
     assertTrue(isVisible(addProfileButton));
-    assertFalse(addProfileButton.disabled);
     const profileCards =
         mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
             'profile-card');
-    profileCards.forEach(profileCard => {
-      assertFalse(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, false);
 
     // Clicking on the add profile button should disable all buttons.
     addProfileButton.click();
     await microtasksFinished();
     assertTrue(navigationElement.changeCalled);
     assertEquals(navigationElement.route, Routes.NEW_PROFILE);
-    assertTrue(addProfileButton.disabled);
-    profileCards.forEach(profileCard => {
-      assertTrue(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, true);
 
     // Navigating back to the main route should re-enable the buttons.
     navigationElement.reset();
@@ -308,10 +314,7 @@ suite('ProfilePickerMainViewTest', function() {
     await microtasksFinished();
     assertTrue(navigationElement.changeCalled);
     assertEquals(navigationElement.route, Routes.MAIN);
-    assertFalse(addProfileButton.disabled);
-    profileCards.forEach(profileCard => {
-      assertFalse(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, false);
   });
 
   test('ProfileCardClickDisableButtons', async function() {
@@ -321,32 +324,97 @@ suite('ProfilePickerMainViewTest', function() {
     await browserProxy.whenCalled('initializeMainView');
     await simulateProfilesListChanged(generateProfilesList(2));
     assertTrue(isVisible(addProfileButton));
-    assertFalse(addProfileButton.disabled);
     const profileCards =
         mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
             'profile-card');
-    profileCards.forEach(profileCard => {
-      assertFalse(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, false);
 
     // Clicking on a profile button should disable all buttons.
     assertGE(profileCards.length, 1);
     const firstProfileCard = profileCards[0]!;
     firstProfileCard.$.profileCardButton.click();
     await microtasksFinished();
-    assertTrue(addProfileButton.disabled);
-    profileCards.forEach(profileCard => {
-      assertTrue(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, true);
 
     // Receiving the signal that the step was completed should re-enable the
     // buttons.
     webUIListenerCallback('reset-picker-buttons');
     await microtasksFinished();
-    assertFalse(addProfileButton.disabled);
-    profileCards.forEach(profileCard => {
-      assertFalse(profileCard.$.profileCardButton.disabled);
-    });
+    assertPickerButtonsDisabled(profileCards, false);
+  });
+
+  test('ProfileCardMenuCustomizeDisableButtons', async function() {
+    resetTest();
+    await browserProxy.whenCalled('initializeMainView');
+    await simulateProfilesListChanged(generateProfilesList(2));
+    const profileCards =
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card');
+    assertGE(profileCards.length, 1);
+    assertPickerButtonsDisabled(profileCards, false);
+
+    const firstCardMenu =
+        profileCards[0]!.shadowRoot.querySelector('profile-card-menu')!;
+    firstCardMenu.$.moreActionsButton.click();
+    firstCardMenu.$.actionMenu
+        .querySelector<HTMLButtonElement>('.dropdown-item')!.click();
+    const profilePath =
+        await browserProxy.whenCalled('openManageProfileSettingsSubPage');
+    assertEquals('profilePath0', profilePath);
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, true);
+
+    webUIListenerCallback('reset-picker-buttons');
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, false);
+  });
+
+  test('SigninErrorDialogReauthDisableButtons', async function() {
+    resetTest();
+    await browserProxy.whenCalled('initializeMainView');
+    await simulateProfilesListChanged(generateProfilesList(2));
+    const profileCards =
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card');
+    assertGE(profileCards.length, 1);
+    assertPickerButtonsDisabled(profileCards, false);
+
+    webUIListenerCallback(
+        'display-signin-error-dialog', 'title', 'body', 'profilePath0');
+    await microtasksFinished();
+    const signinErrorDialog = mainViewElement.$.signinErrorDialog;
+    assertTrue(signinErrorDialog.$.dialog.open);
+    signinErrorDialog.shadowRoot.querySelector<HTMLElement>(
+                                    '#button-sign-in')!.click();
+    const profilePath = await browserProxy.whenCalled('launchSelectedProfile');
+    assertEquals('profilePath0', profilePath);
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, true);
+
+    webUIListenerCallback('reset-picker-buttons');
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, false);
+  });
+
+  test('BrowseAsGuestDisableButtons', async function() {
+    resetTest();
+    await browserProxy.whenCalled('initializeMainView');
+    await simulateProfilesListChanged(generateProfilesList(2));
+    const profileCards =
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card');
+    assertGE(profileCards.length, 1);
+    assertTrue(isVisible(mainViewElement.$.browseAsGuestButton));
+    assertPickerButtonsDisabled(profileCards, false);
+
+    mainViewElement.$.browseAsGuestButton.click();
+    await browserProxy.whenCalled('launchGuestProfile');
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, true);
+
+    webUIListenerCallback('reset-picker-buttons');
+    await microtasksFinished();
+    assertPickerButtonsDisabled(profileCards, false);
   });
 
   [true, false].forEach(isRefreshedUI => {

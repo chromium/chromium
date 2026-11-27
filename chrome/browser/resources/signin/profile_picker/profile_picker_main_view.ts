@@ -28,7 +28,7 @@ import type {DraggableTileListInterface} from './drag_drop_reorder_tile_list_del
 import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_delegate.js';
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl, ProfileOrderUpdateType} from './manage_profiles_browser_proxy.js';
-import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
+import {navigateTo, NavigationMixin, ProfileCreationSteps, Routes} from './navigation_mixin.js';
 import type {ProfileCardElement} from './profile_card.js';
 import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed, isProfilesReorderingEnabled, isUseRefreshedUI} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
@@ -44,7 +44,7 @@ export interface ProfilePickerMainViewElement {
   $: {
     addProfile: CrButtonElement,
     pickerLogo: HTMLElement,
-    browseAsGuestButton: HTMLElement,
+    browseAsGuestButton: CrButtonElement,
     profilesContainer: HTMLElement,
     profilesWrapper: HTMLElement,
     signinErrorDialog: SigninErrorDialogElement,
@@ -172,12 +172,15 @@ export class ProfilePickerMainViewElement extends
     }
   }
 
-  override onRouteChange(route: Routes) {
+  override onRouteChange(route: Routes, step: string) {
     if (route === Routes.MAIN) {
       // Every time we go back to the main route, we re-enable all the profile
       // card buttons.
       this.enableAllPickerButtons_();
       return;
+    }
+    if (step === ProfileCreationSteps.LOAD_FORCE_SIGNIN) {
+      this.disableAllPickerButtons_();
     }
     this.previousRoute_ = route;
   }
@@ -281,6 +284,7 @@ export class ProfilePickerMainViewElement extends
     if (!this.guestModeEnabled_) {
       return;
     }
+    this.disableAllPickerButtons_();
     this.manageProfilesBrowserProxy_.launchGuestProfile();
   }
 

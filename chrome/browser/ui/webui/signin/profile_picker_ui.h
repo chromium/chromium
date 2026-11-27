@@ -55,6 +55,9 @@ class ProfilePickerUI : public TopChromeWebUIController,
   void TryLaunchLockedProfileWhenInitialized(
       const base::FilePath& profile_path);
 
+  // Re-enables picker WebUI buttons when returning to the picker screen.
+  void ResetPickerButtons();
+
   // Get the minimum size for the picker UI.
   static gfx::Size GetMinimumSize();
 

@@ -76,6 +76,7 @@ export class SigninErrorDialogElement extends SigninErrorDialogElementBase {
 
   protected onReauthClick_() {
     this.$.dialog.close();
+    this.fire('disable-all-picker-buttons');
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.forceSigninErrorProfilePath_);
     this.clearErrorDialogInfo_();

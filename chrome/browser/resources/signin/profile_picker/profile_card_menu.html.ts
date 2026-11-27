@@ -10,7 +10,8 @@ export function getHtml(this: ProfileCardMenuElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button iron-icon="cr:more-vert" id="moreActionsButton"
     @click="${this.onMoreActionsButtonClick_}" title="$i18n{profileMenuName}"
-    aria-label="${this.moreActionsButtonAriaLabel_}">
+    aria-label="${this.moreActionsButtonAriaLabel_}"
+    ?disabled="${this.disabled}">
 </cr-icon-button>
 
 <cr-action-menu id="actionMenu" role-description="$i18n{menu}">

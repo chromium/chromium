@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
@@ -38,6 +39,8 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 
 namespace {
 class ProfilePickerAppStepController : public ProfileManagementStepController {
@@ -62,6 +65,14 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
     if (reset_state) {
       // Don't do a full reset, just go back to the beginning of the history:
       host().GetPickerContents()->GetController().GoToIndex(0);
+    }
+    if (content::WebContents* picker_contents = host().GetPickerContents();
+        picker_contents && picker_contents->GetWebUI()) {
+      if (auto* picker_ui = picker_contents->GetWebUI()
+                                ->GetController()
+                                ->GetAs<ProfilePickerUI>()) {
+        picker_ui->ResetPickerButtons();
+      }
     }
     host().ShowScreenInPickerContents(GURL(), std::move(step_shown_success));
   }

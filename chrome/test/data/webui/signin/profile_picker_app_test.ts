@@ -129,6 +129,21 @@ suite('ProfilePickerAppTest', function() {
         testElement.shadowRoot.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('selectNewAccount');
+    webUIListenerCallback(
+        'profiles-list-changed', [browserProxy.profileSample]);
+    await microtasksFinished();
+    const profileCard = mainView.shadowRoot.querySelector('profile-card')!;
+    const profileCardMenu =
+        profileCard.shadowRoot.querySelector('profile-card-menu')!;
+    assertTrue(mainView.$.addProfile.disabled);
+    assertTrue(profileCard.$.profileCardButton.disabled);
+    assertTrue(profileCardMenu.$.moreActionsButton.disabled);
+
+    webUIListenerCallback('reset-picker-buttons', true);
+    await microtasksFinished();
+    assertFalse(mainView.$.addProfile.disabled);
+    assertFalse(profileCard.$.profileCardButton.disabled);
+    assertFalse(profileCardMenu.$.moreActionsButton.disabled);
   });
 
   test('CreateLocalProfile', async function() {
