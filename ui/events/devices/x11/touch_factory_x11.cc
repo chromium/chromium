@@ -136,7 +136,7 @@ void TouchFactory::UpdateDeviceListFromXI2(
         if (devinfo.type != x11::Input::DeviceType::MasterPointer)
           CacheTouchscreenIds(devinfo.deviceid);
 
-        if (devinfo.type == x11::Input::DeviceType::MasterPointer) {
+        if (devinfo.type == x11::Input::DeviceType::SlavePointer) {
           device_master_id_list_[devinfo.deviceid] = master_id;
           touch_device_lookup_.insert(devinfo.deviceid);
           touch_device_list_[devinfo.deviceid] = {false,

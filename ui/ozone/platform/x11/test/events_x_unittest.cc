@@ -397,6 +397,67 @@ TEST_F(EventsXTest, TouchEventBasic) {
   EXPECT_FLOAT_EQ(pointer_details.force, 0.f);
 }
 
+// A touchscreen attached to a master pointer is a slave pointer device. Touch
+// events for it are delivered with the master as deviceid and the touchscreen
+// as sourceid, so both must be known as touch devices
+// (https://crbug.com/40770176).
+TEST_F(EventsXTest, SlavePointerTouchscreen) {
+  constexpr auto kMasterPointer = static_cast<x11::Input::DeviceId>(2);
+  constexpr auto kMasterKeyboard = static_cast<x11::Input::DeviceId>(3);
+  constexpr auto kMouse = static_cast<x11::Input::DeviceId>(9);
+  constexpr auto kTouchscreen = static_cast<x11::Input::DeviceId>(10);
+
+  x11::Input::DeviceClass touch_class;
+  touch_class.sourceid = kTouchscreen;
+  touch_class.touch = x11::Input::DeviceClass::Touch{
+      .mode = x11::Input::TouchMode::Direct, .num_touches = 10};
+
+  TouchFactory* factory = TouchFactory::GetInstance();
+  factory->SetXI2DeviceListForTest({
+      {.deviceid = kMasterPointer,
+       .type = x11::Input::DeviceType::MasterPointer,
+       .attachment = kMasterKeyboard},
+      {.deviceid = kMasterKeyboard,
+       .type = x11::Input::DeviceType::MasterKeyboard,
+       .attachment = kMasterPointer},
+      {.deviceid = kMouse,
+       .type = x11::Input::DeviceType::SlavePointer,
+       .attachment = kMasterPointer},
+      {.deviceid = kTouchscreen,
+       .type = x11::Input::DeviceType::SlavePointer,
+       .attachment = kMasterPointer,
+       .classes = {touch_class}},
+  });
+
+  EXPECT_TRUE(factory->IsTouchDevice(kMasterPointer));
+  EXPECT_TRUE(factory->IsMultiTouchDevice(kMasterPointer));
+  EXPECT_TRUE(factory->IsTouchDevice(kTouchscreen));
+  EXPECT_FALSE(factory->IsMultiTouchDevice(kTouchscreen));
+  EXPECT_FALSE(factory->IsTouchDevice(kMouse));
+  EXPECT_EQ(EventPointerType::kTouch,
+            factory->GetTouchDevicePointerType(kTouchscreen));
+
+  // Only the copy of the touch event that comes from the master is processed.
+  x11::Input::DeviceEvent from_master;
+  from_master.opcode = x11::Input::DeviceEvent::TouchBegin;
+  from_master.deviceid = kMasterPointer;
+  from_master.sourceid = kTouchscreen;
+  EXPECT_TRUE(factory->ShouldProcessDeviceEvent(from_master));
+
+  x11::Input::DeviceEvent from_slave = from_master;
+  from_slave.deviceid = kTouchscreen;
+  EXPECT_FALSE(factory->ShouldProcessDeviceEvent(from_slave));
+
+  // Pointer events emulated from the touchscreen are touch events.
+  ui::ScopedXI2Event scoped_xevent;
+  scoped_xevent.InitGenericButtonEvent(
+      static_cast<int>(kMasterPointer), EventType::kMousePressed,
+      gfx::Point(10, 10), EF_LEFT_MOUSE_BUTTON);
+  x11::Event* xev = scoped_xevent;
+  xev->As<x11::Input::DeviceEvent>()->sourceid = kTouchscreen;
+  EXPECT_EQ(EventType::kTouchPressed, EventTypeFromXEvent(*xev));
+}
+
 int GetTouchIdForTrackingId(uint32_t tracking_id) {
   int slot = 0;
   bool success =
