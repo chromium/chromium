@@ -175,6 +175,10 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                            TwoCallsWithAudioDebugRecordings);
   FRIEND_TEST_ALL_PREFIXES(WebRtcInternalsTest,
                            AudioDebugRecordingsFileSelectionCanceled);
+  FRIEND_TEST_ALL_PREFIXES(WebRtcInternalsTest,
+                           AudioDebugRecordingsReenabledWithNewFileRestarts);
+  FRIEND_TEST_ALL_PREFIXES(WebRtcInternalsTest,
+                           AudioDebugRecordingsReenabledDirectlyRestarts);
 
   static WebRTCInternals* g_webrtc_internals;
 

@@ -864,9 +864,12 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
 
 void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  // TODO(crbug.com/583556053): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(!audio_debug_recording_session_);
+  // Enabling again while recording, e.g. from a stale second
+  // chrome://webrtc-internals page, or on Android where there is no file
+  // dialog, restarts the recording with |audio_debug_recordings_file_path_|.
+  // The new session replaces the old one in the audio service (see
+  // audio::Service::BindDebugRecording()), and render process hosts start
+  // new AEC dumps that replace the running ones.
   mojo::PendingRemote<audio::mojom::DebugRecording> debug_recording;
   content::GetAudioService().BindDebugRecording(
       debug_recording.InitWithNewPipeAndPassReceiver());

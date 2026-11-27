@@ -10,6 +10,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
@@ -17,6 +19,7 @@
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,9 +27,11 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 
@@ -117,6 +122,35 @@ class TestWebRtcConnectionsObserver
   }
 
   uint32_t latest_connections_count_ = 0u;
+};
+
+// Audio service that only counts BindDebugRecording() calls. The receivers
+// are dropped, so recordings never start.
+class DebugRecordingCountingAudioService : public audio::mojom::AudioService {
+ public:
+  int debug_recording_binds() const { return debug_recording_binds_; }
+
+  // audio::mojom::AudioService implementation.
+  void BindSystemInfo(
+      mojo::PendingReceiver<audio::mojom::SystemInfo> receiver) override {}
+  void BindDebugRecording(
+      mojo::PendingReceiver<audio::mojom::DebugRecording> receiver) override {
+    ++debug_recording_binds_;
+  }
+  void BindStreamFactory(mojo::PendingReceiver<media::mojom::AudioStreamFactory>
+                             receiver) override {}
+  void BindDeviceNotifier(
+      mojo::PendingReceiver<audio::mojom::DeviceNotifier> receiver) override {}
+  void BindLogFactoryManager(
+      mojo::PendingReceiver<audio::mojom::LogFactoryManager> receiver)
+      override {}
+  void BindTestingApi(
+      mojo::PendingReceiver<audio::mojom::TestingApi> receiver) override {}
+  void BindMlModelManager(
+      mojo::PendingReceiver<audio::mojom::MlModelManager> receiver) override {}
+
+ private:
+  int debug_recording_binds_ = 0;
 };
 
 }  // namespace
@@ -725,6 +759,53 @@ TEST_F(WebRtcInternalsTest, AudioDebugRecordingsFileSelectionCanceled) {
   EXPECT_TRUE(observer.event_data()->is_none());
 
   base::RunLoop().RunUntilIdle();
+}
+
+// crbug.com/583556053: enabling again while recording, e.g. from a stale
+// second chrome://webrtc-internals page, restarts the recording with the newly
+// selected file.
+TEST_F(WebRtcInternalsTest, AudioDebugRecordingsReenabledWithNewFileRestarts) {
+  DebugRecordingCountingAudioService audio_service;
+  base::AutoReset<audio::mojom::AudioService*> audio_service_override =
+      OverrideAudioServiceForTesting(&audio_service);
+  WebRTCInternalsForTest webrtc_internals;
+  const base::FilePath first_path(FILE_PATH_LITERAL("audio_debug_1"));
+  const base::FilePath second_path(FILE_PATH_LITERAL("audio_debug_2"));
+
+  webrtc_internals.selection_type_ =
+      WebRTCInternals::SelectionType::kAudioDebugRecordings;
+  webrtc_internals.FileSelected(ui::SelectedFileInfo(first_path), 0);
+  ASSERT_TRUE(webrtc_internals.IsAudioDebugRecordingsEnabled());
+  EXPECT_EQ(audio_service.debug_recording_binds(), 1);
+  EXPECT_EQ(webrtc_internals.GetAudioDebugRecordingsFilePath(), first_path);
+
+  webrtc_internals.selection_type_ =
+      WebRTCInternals::SelectionType::kAudioDebugRecordings;
+  webrtc_internals.FileSelected(ui::SelectedFileInfo(second_path), 0);
+  EXPECT_TRUE(webrtc_internals.IsAudioDebugRecordingsEnabled());
+  EXPECT_EQ(audio_service.debug_recording_binds(), 2);
+  EXPECT_EQ(webrtc_internals.GetAudioDebugRecordingsFilePath(), second_path);
+
+  webrtc_internals.DisableAudioDebugRecordings();
+  EXPECT_FALSE(webrtc_internals.IsAudioDebugRecordingsEnabled());
+}
+
+// As on Android, where enabling calls this function directly without a file
+// dialog: a second call restarts the recording with the same path.
+TEST_F(WebRtcInternalsTest, AudioDebugRecordingsReenabledDirectlyRestarts) {
+  DebugRecordingCountingAudioService audio_service;
+  base::AutoReset<audio::mojom::AudioService*> audio_service_override =
+      OverrideAudioServiceForTesting(&audio_service);
+  WebRTCInternalsForTest webrtc_internals;
+  const base::FilePath path(FILE_PATH_LITERAL("audio_debug"));
+  webrtc_internals.audio_debug_recordings_file_path_ = path;
+
+  webrtc_internals.EnableAudioDebugRecordingsOnAllRenderProcessHosts();
+  ASSERT_TRUE(webrtc_internals.IsAudioDebugRecordingsEnabled());
+  webrtc_internals.EnableAudioDebugRecordingsOnAllRenderProcessHosts();
+  EXPECT_TRUE(webrtc_internals.IsAudioDebugRecordingsEnabled());
+  EXPECT_EQ(audio_service.debug_recording_binds(), 2);
+  EXPECT_EQ(webrtc_internals.GetAudioDebugRecordingsFilePath(), path);
 }
 
 TEST_F(WebRtcInternalsTest, WakeLockCreateRemove) {
