@@ -21,6 +21,7 @@ net::NetworkTrafficAnnotationTag GetCreateNotebookTrafficAnnotation() {
           "The OAuth token for the signed in account and the user-defined "
           "display name for the notebook."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "labsnotebooklm.pa.googleapis.com"
         user_data {
           type: ACCESS_TOKEN
           type: USER_CONTENT
@@ -78,6 +79,7 @@ net::NetworkTrafficAnnotationTag GetCreateNotebookSourceTrafficAnnotation() {
           "string, and the string identifier for the notebook to which the "
           "source is being added."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "labsnotebooklm.pa.googleapis.com"
         user_data {
           type: ACCESS_TOKEN
           type: SENSITIVE_URL
@@ -137,6 +139,7 @@ net::NetworkTrafficAnnotationTag GetListNotebooksForUserTrafficAnnotation() {
         data:
           "The OAuth token for the signed in account."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "labsnotebooklm.pa.googleapis.com"
         user_data {
           type: ACCESS_TOKEN
         }
