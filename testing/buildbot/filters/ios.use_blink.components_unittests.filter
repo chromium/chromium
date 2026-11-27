@@ -191,7 +191,8 @@
 -All/FormContentEditableTest.FocusContentEditableChildElement/1
 -All/FormContentEditableTest.FocusContentEditableSiblingElement/0
 -All/FormContentEditableTest.FocusContentEditableSiblingElement/1
--FillJsTest.SanitizeValueForInputElement
+-All/FillJsDateInputTest.SanitizeValueForInputElement/0
+-All/FillJsDateInputTest.SanitizeValueForInputElement/1
 
 # TODO(crbug.com/514423252): SqliteVfs multiprocess tests crash on iOS Blink.
 -SqliteVfsMultiprocessTest.AbandonAndReconnect/Rollback
