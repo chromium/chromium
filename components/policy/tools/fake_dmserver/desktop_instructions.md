@@ -1,8 +1,8 @@
 # Local Policy Testing on the Desktop
 
 This workflow is for users who want to run `fake_dmserver` for desktop Chrome on
-Linux. You will use the generator script to create a policy blob, and then
-manually start `fake_dmserver`.
+Linux or macOS. You will use the generator script to create a policy blob, and
+then manually start `fake_dmserver`.
 
 ### Step 1: Define Your Policies
 
@@ -60,6 +60,9 @@ out/Default/fake_dmserver --policy-path=$HOME/dmserver_data/policies.json
 This will create a `state.json` file in the same directory as `policies.json`,
 for `fake_dmserver` to save/load its internal state.
 
+On macOS, the `fake_dmserver` target exists only when `target_cpu` is the same
+as the CPU of the build machine.
+
 Optional arguments:
 - `--help`, `-h`: Show help message.
 - `--port=...`: Set the server port (defaults to 6112; 0 for random port).
@@ -77,10 +80,14 @@ FCM push endpoints, and automatically enable cloud management:
 ./out/Default/chrome --use-fake-dmserver
 ```
 
+On macOS, the browser binary is in the app bundle. Use
+`./out/Default/Chromium.app/Contents/MacOS/Chromium` instead of
+`./out/Default/chrome` in each command of this step.
+
 The `--use-fake-dmserver` switch is available only when the
 `allow_fake_dmserver` GN arg is true. The arg is true by default in Chromium
-builds on Linux, and false in Google Chrome builds. To use the switch in a local
-Google Chrome build, add this line to `args.gn`:
+builds on Linux and macOS, and false in Google Chrome builds. To use the switch
+in a local Google Chrome build, add this line to `args.gn`:
 
 ```
 allow_fake_dmserver = true
@@ -95,6 +102,20 @@ configuring an OS-level `CloudManagementEnrollmentToken`, use:
 
 This supplies a dummy enrollment token when no token is provided by the
 operating system, allowing machine-level enrollment to proceed immediately.
+
+> **Warning (macOS)**: With `--use-fake-dmserver`, the browser keeps the DM
+> token in `Policy/Enrollment/` in the user data directory, as on Linux, so
+> `--user-data-dir` isolates it. `--user-data-dir` does not isolate these items:
+> - The enrollment token. It comes from the `com.google.Chrome` managed
+>   preference or from `/Library/Google/Chrome/CloudManagementEnrollmentToken`.
+>   On a Mac that has one of these, the browser sends the real enrollment token
+>   to `fake_dmserver`.
+> - The DM token, if you use the manual parameters below instead of
+>   `--use-fake-dmserver`. The DM token is then in
+>   `~/Library/Application Support/Google/Chrome Cloud Enrollment/`. All Chrome
+>   and Chromium browsers of the same OS user share this directory. The browser
+>   sends the DM token of the installed browser to `fake_dmserver`, and it can
+>   overwrite that token.
 
 Alternatively, or for builds where `allow_fake_dmserver` is false, specify the
 parameters manually:

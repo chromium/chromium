@@ -7,6 +7,6 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # Allows command-line switches that point the browser at a local
   # fake_dmserver. See //components/policy/tools/fake_dmserver.
-  # fake_dmserver supports only desktop Linux.
-  allow_fake_dmserver = is_linux && !is_chrome_branded
+  # fake_dmserver supports only desktop Linux and macOS.
+  allow_fake_dmserver = (is_linux || is_mac) && !is_chrome_branded
 }
