@@ -7,12 +7,10 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,12 +18,10 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chromecast/cast_core/grpc/grpc_server.h"
-#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_invalidator.h"
-#include "components/policy/test_support/remote_commands_service.castcore.pb.h"
+#include "components/policy/test_support/remote_commands_grpc_server.h"
 #include "components/policy/test_support/request_handler_for_admin.h"
 #include "net/test/embedded_test_server/http_request.h"
 
@@ -129,9 +125,6 @@ struct FakeServerConfig {
 
 ParseFlagsResult ParseFlags(const base::CommandLine& command_line,
                             FakeServerConfig& config);
-
-// TODO(b/293451778): Move this to its own file.
-class RemoteCommandsWaitOperation;
 
 // Cloud policy test server for device management, FCM push invalidations, and
 // gRPC remote commands.
@@ -266,58 +259,11 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer,
   static std::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
       const base::Value& v);
 
-  // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
-  void StartGrpcServer();
-
-  // Shuts down the the gRPC server.
-  void ShutdownGrpcServer(base::OnceClosure);
-
   // Resets the gRPC server and shuts down the fake_dmserver_main.
   void OnShutdownGrpcServerDone(base::OnceClosure);
 
   // Triggers Shutting down the fake_dmserver_main and the grpc server.
   void TriggerShutdown();
-
-  // Writes the remote command result to the reactor, it will be triggered
-  // from RemoteCommandsWaitOperation::OnRemoteCommandResultAvailable.
-  void OnWaitRemoteCommandResultDone(
-      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
-          Reactor*,
-      int64_t,
-      RemoteCommandsWaitOperation*,
-      bool);
-  // Writes the ack to the reactor, it will be triggered
-  // from RemoteCommandsWaitOperation::OnRemoteCommandAcked.
-  void OnWaitRemoteCommandAckDone(
-      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
-          Reactor*,
-      int64_t,
-      RemoteCommandsWaitOperation*,
-      bool);
-
-  // Handles the RemoteCommandsService gRPC request SendRemoteCommand.
-  void HandleSendRemoteCommand(
-      remote_commands::SendRemoteCommandRequest request,
-      remote_commands::RemoteCommandsServiceHandler::SendRemoteCommand::Reactor*
-          reactor);
-
-  // Handles the RemoteCommandsService gRPC request WaitRemoteCommandResult. If
-  // the result isn't available withing 10 seconds, the grpc call will be
-  // cancelled.
-  void HandleWaitRemoteCommandResult(
-      remote_commands::WaitRemoteCommandResultRequest request,
-      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
-          Reactor* reactor);
-  // Handles the RemoteCommandsService gRPC request WaitRemoteCommandAcked. If
-  // the result isn't available withing 10 seconds, the grpc call will be
-  // cancelled.
-  void HandleWaitRemoteCommandAcked(
-      remote_commands::WaitRemoteCommandAckedRequest request,
-      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
-          Reactor* reactor);
-
-  // Erase the wait operation from the waiters_ set.
-  void EraseWaitOperation(RemoteCommandsWaitOperation*);
 
   const base::FilePath policy_blob_path_;
   const base::FilePath client_state_path_;
@@ -328,15 +274,9 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer,
   // Sequence checker for fake_dmserver main IO thread.
   SEQUENCE_CHECKER(fake_dmserver_main_sequence_checker_);
 
-  std::optional<cast::utils::GrpcServer> grpc_server_;
+  std::unique_ptr<RemoteCommandsGrpcServer> grpc_server_;
   // Callback to reset the grpc server then shut down the fake_dmserver main.
   base::OnceClosure shut_down_server_;
-
-  // Stores the wait operations to be erased later when the remote command
-  // result is available.
-  std::set<std::unique_ptr<RemoteCommandsWaitOperation>,
-           base::UniquePtrComparator>
-      waiters_;
 
   PolicyInvalidator policy_invalidator_;
 

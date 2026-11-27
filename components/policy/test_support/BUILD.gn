@@ -73,6 +73,8 @@ static_library("test_support") {
       "fake_fcm_server.h",
       "policy_invalidator.cc",
       "policy_invalidator.h",
+      "remote_commands_grpc_server.cc",
+      "remote_commands_grpc_server.h",
       "request_handler_for_admin.cc",
       "request_handler_for_admin.h",
     ]
