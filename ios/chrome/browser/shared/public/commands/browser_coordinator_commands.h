@@ -93,14 +93,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the spotlight debugger.
 - (void)showSpotlightDebugger;
 
-// Dismiss the card unmask authentication prompt.
-// Deprecated: use AutofillCommands instead.
-- (void)legacyDismissCardUnmaskAuthentication;
-
-// Dismiss the virtual card enrollment bottom sheet.
-// Deprecated: use AutofillCommands instead.
-- (void)legacyDismissVirtualCardEnrollmentBottomSheet;
-
 // Shows the omnibox position choice screen.
 - (void)showOmniboxPositionChoice;
 

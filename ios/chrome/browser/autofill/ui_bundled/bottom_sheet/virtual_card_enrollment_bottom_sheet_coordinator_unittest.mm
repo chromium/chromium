@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -91,8 +91,8 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(SceneCommands)];
 
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:browser_coordinator_commands_
-                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+        startDispatchingToTarget:mock_autofill_handler_
+                     forProtocol:@protocol(AutofillCommands)];
 
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
            initWithUIModel:std::move(model)
@@ -101,7 +101,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   }
 
   ~VirtualCardEnrollmentBottomSheetCoordinatorTest() override {
-    EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_);
+    EXPECT_OCMOCK_VERIFY((id)mock_autofill_handler_);
     EXPECT_OCMOCK_VERIFY((id)application_handler_);
   }
 
@@ -118,8 +118,8 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   id<SceneCommands> application_handler_;
   UIWindow* window_;
-  id<BrowserCoordinatorCommands> browser_coordinator_commands_ =
-      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  id<AutofillCommands> mock_autofill_handler_ =
+      OCMProtocolMock(@protocol(AutofillCommands));
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
   base::WeakPtrFactory<VirtualCardEnrollmentBottomSheetCoordinatorTest>
       weak_factory_{this};

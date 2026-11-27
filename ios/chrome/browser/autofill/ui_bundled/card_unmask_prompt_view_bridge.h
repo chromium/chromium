@@ -8,8 +8,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
+@protocol AutofillCommands;
 @class CardUnmaskPromptViewController;
 @class UIViewController;
 @class UINavigationController;
@@ -24,11 +24,10 @@ class PersonalDataManager;
 // iOS implementation of the unmask prompt UI.
 class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
-  CardUnmaskPromptViewBridge(
-      CardUnmaskPromptController* controller,
-      UINavigationController* navigation_controller,
-      PersonalDataManager* personal_data_manager,
-      id<BrowserCoordinatorCommands> browser_coordinator_commands_handler);
+  CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
+                             UINavigationController* navigation_controller,
+                             PersonalDataManager* personal_data_manager,
+                             id<AutofillCommands> autofill_handler);
   CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
   CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
       delete;
@@ -66,7 +65,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 
   CreditCardData* credit_card_data_;
 
-  __weak id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
+  __weak id<AutofillCommands> autofill_handler_;
 
   base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
 };

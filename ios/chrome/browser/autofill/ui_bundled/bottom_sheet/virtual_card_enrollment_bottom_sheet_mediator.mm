@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_data.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image_skia_util_ios.h"
@@ -58,19 +58,17 @@ class UiModelObserverBridge
   std::unique_ptr<UiModelObserverBridge> _uiModelObserverBridge;
 
   std::optional<autofill::VirtualCardEnrollmentCallbacks> _callbacks;
-  __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
+  __weak id<AutofillCommands> _autofillHandler;
 }
 
 @end
 
 @implementation VirtualCardEnrollmentBottomSheetMediator
 
-- (instancetype)initWithUIModel:
-                    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
-                      callbacks:
-                          (autofill::VirtualCardEnrollmentCallbacks)callbacks
-      browserCoordinatorHandler:
-          (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
+- (instancetype)
+    initWithUIModel:(std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+          callbacks:(autofill::VirtualCardEnrollmentCallbacks)callbacks
+    autofillHandler:(id<AutofillCommands>)autofillHandler {
   self = [super init];
   if (self) {
     UIImage* icon = nil;
@@ -103,7 +101,7 @@ class UiModelObserverBridge
                                                     .issuer_legal_message]];
     _model = std::move(model);
     _callbacks = std::move(callbacks);
-    _browserCoordinatorHandler = browserCoordinatorHandler;
+    _autofillHandler = autofillHandler;
     _uiModelObserverBridge =
         std::make_unique<UiModelObserverBridge>(_model.get(), self);
   }
@@ -138,7 +136,7 @@ class UiModelObserverBridge
   _callbacks.reset();
   [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
                             VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED];
-  [_browserCoordinatorHandler legacyDismissVirtualCardEnrollmentBottomSheet];
+  [_autofillHandler dismissVirtualCardEnrollmentBottomSheet];
 }
 
 #pragma mark - VirtualCardEnrollUiModel Observer
@@ -159,8 +157,7 @@ class UiModelObserverBridge
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed:
       // Dismiss the virtual card enrollment bottom sheet. Failure messages are
       // expected to be initiated by the IOSChromePaymentsAutofillClient.
-      [_browserCoordinatorHandler
-          legacyDismissVirtualCardEnrollmentBottomSheet];
+      [_autofillHandler dismissVirtualCardEnrollmentBottomSheet];
       break;
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to
@@ -180,7 +177,7 @@ class UiModelObserverBridge
 
 // Handles dismissal after confirmation was shown with a delay.
 - (void)onFinishedConfirmationDelay {
-  [_browserCoordinatorHandler legacyDismissVirtualCardEnrollmentBottomSheet];
+  [_autofillHandler dismissVirtualCardEnrollmentBottomSheet];
 }
 
 @end

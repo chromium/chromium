@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_mutator.h"
 
-@protocol BrowserCoordinatorCommands;
+@protocol AutofillCommands;
 @protocol VirtualCardEnrollmentBottomSheetConsumer;
 
 // This mediator adapts the VirtualCardEnrollUiModel to the consumer interface.
@@ -22,12 +22,10 @@
     consumer;
 
 // Initialize this mediator with the ui model and callbacks from autofill.
-- (instancetype)initWithUIModel:
-                    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
-                      callbacks:
-                          (autofill::VirtualCardEnrollmentCallbacks)callbacks
-      browserCoordinatorHandler:
-          (id<BrowserCoordinatorCommands>)browserCoordinatorHandler;
+- (instancetype)
+    initWithUIModel:(std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+          callbacks:(autofill::VirtualCardEnrollmentCallbacks)callbacks
+    autofillHandler:(id<AutofillCommands>)autofillHandler;
 
 #pragma mark - VirtualCardEnrollUiModel Observer methods
 

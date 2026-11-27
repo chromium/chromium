@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -61,11 +61,10 @@
 
 - (void)start {
   self.mediator = [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                initWithUIModel:std::move(_model)
-                      callbacks:std::move(_callbacks.value())
-      browserCoordinatorHandler:HandlerForProtocol(
-                                    self.browser->GetCommandDispatcher(),
-                                    BrowserCoordinatorCommands)];
+      initWithUIModel:std::move(_model)
+            callbacks:std::move(_callbacks.value())
+      autofillHandler:HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                         AutofillCommands)];
   self.viewController =
       [[VirtualCardEnrollmentBottomSheetViewController alloc] init];
   self.viewController.delegate = self;

@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/web/public/web_state.h"
 
@@ -36,7 +36,7 @@
   // the card verification purpose.
   std::unique_ptr<autofill::CardUnmaskPromptViewBridge> _cvcInputViewBridge;
 
-  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
+  __weak id<AutofillCommands> _autofillHandler;
 
   std::unique_ptr<web::WebState::ScopedWebContentCoverer> _webContentCoverer;
 }
@@ -45,8 +45,8 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _browserCoordinatorCommands = HandlerForProtocol(
-        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    _autofillHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), AutofillCommands);
   }
   return self;
 }
@@ -67,15 +67,11 @@
   auto* paymentsClient = client->GetPaymentsAutofillClient();
   CHECK(paymentsClient);
 
-  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         BrowserCoordinatorCommands);
-
   autofill::CardUnmaskPromptController* cvcInputModelController =
       paymentsClient->GetCardUnmaskPromptModel();
   _cvcInputViewBridge = std::make_unique<autofill::CardUnmaskPromptViewBridge>(
       cvcInputModelController, _navigationController,
-      &client->GetPersonalDataManager(), browserCoordinatorCommandsHandler);
+      &client->GetPersonalDataManager(), _autofillHandler);
 
   __weak __typeof__(self) weakSelf = self;
   cvcInputModelController->ShowPrompt(
@@ -131,7 +127,7 @@
   // Explicitly reset the coverer to reveal the web content immediately.
   _webContentCoverer.reset();
 
-  [_browserCoordinatorCommands legacyDismissCardUnmaskAuthentication];
+  [_autofillHandler dismissCardUnmaskAuthentication];
 }
 
 #pragma mark - Private

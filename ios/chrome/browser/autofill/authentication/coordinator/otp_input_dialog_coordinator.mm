@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface OtpInputDialogCoordinator () <OtpInputDialogMediatorDelegate>
@@ -82,10 +82,9 @@
 #pragma mark - OtpInputDialogMediatorDelegate
 
 - (void)dismissDialog {
-  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         BrowserCoordinatorCommands);
-  [browserCoordinatorCommandsHandler legacyDismissCardUnmaskAuthentication];
+  id<AutofillCommands> autofillHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AutofillCommands);
+  [autofillHandler dismissCardUnmaskAuthentication];
 }
 
 #pragma mark - Private

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface CardUnmaskAuthenticationSelectionCoordinator () <
@@ -35,7 +35,7 @@
 
   std::unique_ptr<CardUnmaskAuthenticationSelectionMediator> _mediator;
 
-  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
+  __weak id<AutofillCommands> _autofillHandler;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -49,8 +49,8 @@
             browser->GetWebStateList()->GetActiveWebState());
     _modelController =
         tabHelper->GetCardUnmaskAuthenticationSelectionDialogController();
-    _browserCoordinatorCommands = HandlerForProtocol(
-        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    _autofillHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), AutofillCommands);
     CHECK(_modelController);
   }
   return self;
@@ -80,7 +80,7 @@
 #pragma mark - CardUnmaskAuthenticationSelectionMediatorDelegate
 
 - (void)dismissAuthenticationSelection {
-  [_browserCoordinatorCommands legacyDismissCardUnmaskAuthentication];
+  [_autofillHandler dismissCardUnmaskAuthentication];
 }
 
 @end

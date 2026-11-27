@@ -179,7 +179,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -1748,18 +1747,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.spotlightDebuggerCoordinator start];
-}
-
-- (void)legacyDismissCardUnmaskAuthentication {
-  // TODO(crbug.com/543382844): Remove this.
-  [HandlerForProtocol(self.dispatcher, AutofillCommands)
-      dismissCardUnmaskAuthentication];
-}
-
-- (void)legacyDismissVirtualCardEnrollmentBottomSheet {
-  // TODO(crbug.com/543382844): Remove this.
-  [HandlerForProtocol(self.dispatcher, AutofillCommands)
-      dismissVirtualCardEnrollmentBottomSheet];
 }
 
 - (void)showOmniboxPositionChoice {

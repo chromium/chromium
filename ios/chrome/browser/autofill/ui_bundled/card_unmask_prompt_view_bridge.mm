@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
@@ -25,12 +25,11 @@ CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
     CardUnmaskPromptController* controller,
     UINavigationController* navigation_controller,
     PersonalDataManager* personal_data_manager,
-    id<BrowserCoordinatorCommands> browser_coordinator_commands_handler)
+    id<AutofillCommands> autofill_handler)
     : controller_(controller),
       navigation_controller_(navigation_controller),
       personal_data_manager_(personal_data_manager),
-      browser_coordinator_commands_handler_(
-          browser_coordinator_commands_handler),
+      autofill_handler_(autofill_handler),
       weak_ptr_factory_(this) {
   CHECK(controller_);
   CHECK(personal_data_manager_);
@@ -96,7 +95,7 @@ void CardUnmaskPromptViewBridge::PerformClose() {
   // Disconnect the vc from the bridge, and dismiss it.
   [prompt_view_controller_ disconnectFromBridge];
 
-  [browser_coordinator_commands_handler_ legacyDismissCardUnmaskAuthentication];
+  [autofill_handler_ dismissCardUnmaskAuthentication];
 }
 
 UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
