@@ -76,11 +76,12 @@ GREYElementInteraction* GetInteractionForSearchEngineSettingButton() {
 }
 
 + (void)verifySearchEngineChoiceScreenIsDisplayed {
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kSearchEngineChoiceTitleAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  return;
+  // Waits instead of asserting immediately: right after the app is launched or
+  // brought back to the foreground, the window may not be rendered yet, which
+  // makes the title report a visibility of 0.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(
+                          kSearchEngineChoiceTitleAccessibilityIdentifier)];
 }
 
 + (void)openSearchEngineSettings {

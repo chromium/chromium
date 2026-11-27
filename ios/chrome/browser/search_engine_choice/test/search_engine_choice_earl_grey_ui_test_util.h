@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // selected before.
 + (void)confirmSearchEngineChoiceScreen;
 
-// Checks that the search engine choice screen is being displayed.
+// Waits until the search engine choice screen is displayed.
 + (void)verifySearchEngineChoiceScreenIsDisplayed;
 
 // Opens the search engine settings.
