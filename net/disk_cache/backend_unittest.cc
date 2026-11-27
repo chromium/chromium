@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -6262,3 +6264,108 @@ TEST_F(DiskCacheTest, TimeToInitDiskCache) {
   histogram_tester.ExpectTotalCount("HttpCache.TimeToInitDiskCache", 1);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+TEST_F(DiskCacheBackendTest, RestartCacheStaysDisabledOnCleanupFailure) {
+  DisableIntegrityCheck();
+  ASSERT_TRUE(CopyTestCache("bad_rankings"));
+  DisableFirstCleanup();
+  InitCache();
+
+  disk_cache::Entry* entry1 = nullptr;
+  disk_cache::Entry* entry2 = nullptr;
+  std::unique_ptr<TestIterator> iter = CreateIterator();
+  ASSERT_THAT(iter->OpenNextEntry(&entry1), IsOk());
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+  const base::FilePath sample_file =
+      external_dir.GetPath().AppendASCII("sample_data.txt");
+  ASSERT_TRUE(base::WriteFile(sample_file, "sample_data"));
+
+  const base::FilePath parent_dir = cache_path_.DirName();
+  const base::FilePath moved_cache = parent_dir.AppendASCII("moved_cache");
+  ASSERT_TRUE(base::ReplaceFile(cache_path_, moved_cache, /*error=*/nullptr));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir.GetPath(), cache_path_));
+
+  // Trigger a restart after closing the last open entry.
+  EXPECT_NE(net::OK, iter->OpenNextEntry(&entry2));
+  entry1->Close();
+  FlushQueueForTest();
+  FlushQueueForTest();
+  RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(parent_dir.AppendASCII("old_cache_000")));
+  int external_entry_count = 0;
+  base::FileEnumerator ext_enum(external_dir.GetPath(), /*recursive=*/false,
+                                base::FileEnumerator::FILES |
+                                    base::FileEnumerator::DIRECTORIES |
+                                    base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath p = ext_enum.Next(); !p.empty(); p = ext_enum.Next()) {
+    EXPECT_EQ(p, sample_file);
+    ++external_entry_count;
+  }
+  EXPECT_EQ(1, external_entry_count);
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(sample_file, &contents));
+  EXPECT_EQ("sample_data", contents);
+
+  // Subsequent operations should fail cleanly without crashing.
+  disk_cache::Entry* third_entry = nullptr;
+  EXPECT_NE(net::OK, CreateEntry("third_entry", &third_entry));
+  if (third_entry) {
+    third_entry->Close();
+  }
+  EXPECT_NE(net::OK, DoomAllEntries());
+  FlushQueueForTest();
+  RunUntilIdle();
+
+  ResetCaches();
+  RunUntilIdle();
+  ASSERT_TRUE(base::DeletePathRecursively(cache_path_));
+  ASSERT_TRUE(base::CreateDirectory(cache_path_));
+}
+
+TEST_F(DiskCacheBackendTest, DoomAllEntriesStaysDisabledOnCleanupFailure) {
+  DisableIntegrityCheck();
+  InitCache();
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("first_entry", &entry), IsOk());
+  entry->Close();
+  FlushQueueForTest();
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+  const base::FilePath sample_file =
+      external_dir.GetPath().AppendASCII("sample_data.txt");
+  ASSERT_TRUE(base::WriteFile(sample_file, "sample_data"));
+
+  const base::FilePath moved_cache =
+      cache_path_.DirName().AppendASCII("moved_cache");
+  ASSERT_TRUE(base::ReplaceFile(cache_path_, moved_cache, /*error=*/nullptr));
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir.GetPath(), cache_path_));
+
+  EXPECT_NE(net::OK, DoomAllEntries());
+  FlushQueueForTest();
+  RunUntilIdle();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(sample_file, &contents));
+  EXPECT_EQ("sample_data", contents);
+  EXPECT_FALSE(base::PathExists(external_dir.GetPath().AppendASCII("index")));
+  EXPECT_FALSE(base::PathExists(external_dir.GetPath().AppendASCII("data_0")));
+
+  EXPECT_NE(net::OK, CreateEntry("after_doom", &entry));
+  if (entry) {
+    entry->Close();
+  }
+
+  ResetCaches();
+  RunUntilIdle();
+  ASSERT_TRUE(base::DeletePathRecursively(cache_path_));
+  ASSERT_TRUE(base::CreateDirectory(cache_path_));
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_FUCHSIA)
