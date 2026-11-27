@@ -4,6 +4,13 @@
 
 import("//third_party/cast_core/public/src/proto/proto.gni")
 
+# Whether to build fake_dmserver. It runs the host protoc binary at runtime, and
+# looks for it next to its own binary. On macOS, this only works when the host
+# and target CPUs match: a cross-compiled build puts protoc in a host toolchain
+# subdirectory, and the test machine can't always run it.
+_build_fake_dmserver = is_chromeos || (is_linux && target_cpu != "arm64") ||
+                       (is_mac && target_cpu == host_cpu)
+
 static_library("test_support") {
   testonly = true
 
@@ -65,7 +72,7 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
-  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
+  if (_build_fake_dmserver) {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
@@ -106,7 +113,7 @@ static_library("test_support") {
     "//third_party/re2",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
+  if (_build_fake_dmserver) {
     deps += [
       "//components/policy:generated_testonly",
 
@@ -173,7 +180,7 @@ if (is_chromeos) {
   }
 }
 
-if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
+if (_build_fake_dmserver) {
   executable("fake_dmserver") {
     testonly = true
     output_name = "fake_dmserver"
@@ -220,7 +227,7 @@ source_set("unittests") {
     "simple_request_handler_unittest.cc",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
+  if (_build_fake_dmserver) {
     sources += [
       "fake_dmserver_unittest.cc",
       "fake_fcm_server_unittest.cc",

@@ -76,7 +76,7 @@ chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
 constants_header_path = "$target_gen_dir/policy_constants.h"
 constants_source_path = "$target_gen_dir/policy_constants.cc"
-if (is_chromeos || is_linux) {
+if (is_chromeos || is_linux || is_mac) {
   constants_mutable_header_path = "$target_gen_dir/policy_constants_mutable.h"
   constants_mutable_source_path = "$target_gen_dir/policy_constants_mutable.cc"
 }
@@ -301,7 +301,7 @@ static_library("generated") {
   deps = [ "//build:branding_buildflags" ]
 }
 
-if (is_chromeos || is_linux) {
+if (is_chromeos || is_linux || is_mac) {
   static_library("generated_testonly") {
     testonly = true
     sources = [

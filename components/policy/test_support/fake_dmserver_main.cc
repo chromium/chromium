@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,6 +16,10 @@
 
 int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+  // The policy file watcher needs this on macOS, where it watches file
+  // descriptors on the current thread.
+  base::FileDescriptorWatcher file_descriptor_watcher(
+      io_task_executor.task_runner());
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("fake_dmserver");
   base::CommandLine::Init(argc, argv);
 
