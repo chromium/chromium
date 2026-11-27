@@ -654,10 +654,7 @@ MaybeFetchAddressOnTypingSuggestionData(
   if constexpr (BUILDFLAG(IS_IOS)) {
     return {};
   }
-  if ((!trigger_field.should_autocomplete() &&
-       !base::FeatureList::IsEnabled(
-           features::kAutofillOnTypingIgnoresAutocompleteOff)) ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillAddressSuggestionsOnTyping)) {
     return {};
   }
@@ -725,20 +722,25 @@ MaybeFetchAddressOnTypingSuggestionData(
   std::vector<AddressOnTypingSuggestionData> suggestion_data;
   const AddressOnTypingSuggestionStrikeDatabase* strike_database =
       address_data_manager.GetAddressOnTypingSuggestionStrikeDatabase();
+  // TODO(crbug.com/585485879): Simplify once
+  // `kAutofillOnTypingIgnoresAutocompleteOff` is launched — remove
+  // `has_matching_profile_data` and the post-loop flag check.
+  bool has_matching_profile_data = false;
   auto maybe_add_suggestion =
       [&](const AutofillProfile& profile, FieldType type,
           const std::u16string& normalized_field_contents,
           std::u16string suggestion_text, const std::u16string& profile_data) {
-        if (strike_database &&
-            strike_database->ShouldBlockFeature(base::NumberToString(type))) {
-          return;
-        }
         if (!IsValidAddressSuggestionForFieldContents(
                 profile_data, normalized_field_contents, type)) {
           return;
         }
         if (profile_data.size() - normalized_field_contents.size() <
             min_missing_characters_number) {
+          return;
+        }
+        has_matching_profile_data = true;
+        if (strike_database &&
+            strike_database->ShouldBlockFeature(base::NumberToString(type))) {
           return;
         }
         // Do not allow duplicated suggestions, for example if
@@ -781,37 +783,54 @@ MaybeFetchAddressOnTypingSuggestionData(
                              std::move(suggestion_text), profile_data);
       }
     }
-    return suggestion_data;
+  } else {
+    // The number of profiles that data will be derived from when generating
+    // suggestions.
+    static constexpr size_t kMaxNumberProfilesToUse = 2;
+    size_t profiles_used_count = 0;
+    for (const AutofillProfile* profile : profiles) {
+      if (profiles_used_count == kMaxNumberProfilesToUse) {
+        break;
+      }
+      profiles_used_count++;
+
+      for (FieldType type : field_types) {
+        const std::optional<std::u16string> normalized_field_contents =
+            get_normalized_field_contents(type);
+        if (!normalized_field_contents) {
+          continue;
+        }
+
+        std::u16string suggestion_text =
+            profile->GetInfo(type, address_data_manager.app_locale());
+        const std::u16string profile_data =
+            NormalizeForComparisonForType(suggestion_text, type);
+        if (profile_data.empty()) {
+          continue;
+        }
+
+        maybe_add_suggestion(*profile, type, *normalized_field_contents,
+                             std::move(suggestion_text), profile_data);
+      }
+    }
   }
 
-  // The number of profiles that data will be derived from when generating
-  // suggestions.
-  static constexpr size_t kMaxNumberProfilesToUse = 2;
-  size_t profiles_used_count = 0;
-  for (const AutofillProfile* profile : profiles) {
-    if (profiles_used_count == kMaxNumberProfilesToUse) {
-      break;
-    }
-    profiles_used_count++;
+  if (!has_matching_profile_data) {
+    return {};
+  }
 
-    for (FieldType type : field_types) {
-      const std::optional<std::u16string> normalized_field_contents =
-          get_normalized_field_contents(type);
-      if (!normalized_field_contents) {
-        continue;
-      }
-
-      std::u16string suggestion_text =
-          profile->GetInfo(type, address_data_manager.app_locale());
-      const std::u16string profile_data =
-          NormalizeForComparisonForType(suggestion_text, type);
-      if (profile_data.empty()) {
-        continue;
-      }
-
-      maybe_add_suggestion(*profile, type, *normalized_field_contents,
-                           std::move(suggestion_text), profile_data);
-    }
+  // Evaluate `kAutofillOnTypingIgnoresAutocompleteOff` unconditionally (for
+  // both `trigger_field.should_autocomplete()` == true and false) once the
+  // input matches stored profile data, and independently of
+  // `AddressOnTypingSuggestionStrikeDatabase` suppression. Deferring until
+  // after prefix matching avoids diluting the study on non-matching inputs
+  // (e.g., focus or `< 3` characters), while checking independently of strikes
+  // prevents Enabled clients (which accrue more persisted strikes across
+  // restarts) from dropping out of the study (SRM).
+  const bool ignore_autocomplete_off = base::FeatureList::IsEnabled(
+      features::kAutofillOnTypingIgnoresAutocompleteOff);
+  if (!trigger_field.should_autocomplete() && !ignore_autocomplete_off) {
+    return {};
   }
 
   return suggestion_data;

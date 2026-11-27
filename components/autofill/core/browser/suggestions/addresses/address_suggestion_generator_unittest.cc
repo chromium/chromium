@@ -11,8 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,6 +35,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -89,6 +93,43 @@ MATCHER(ContainsAddressFooterSuggestions, "") {
   EXPECT_THAT(arg.back(), EqualsManageAddressesSuggestion());
   return true;
 }
+
+#if !BUILDFLAG(IS_IOS)
+// Scopes an inactive Finch `base::FieldTrial` controlling
+// `kAutofillOnTypingIgnoresAutocompleteOff` so tests can verify when
+// `base::FeatureList::IsEnabled()` activates the trial.
+class ScopedAutocompleteOffFieldTrial {
+ public:
+  static constexpr char kTrialName[] = "AutofillOnTypingIgnoresAutocompleteOff";
+
+  explicit ScopedAutocompleteOffFieldTrial(bool enable_feature) {
+    // `Init()` backs up the global `FieldTrialList` (which
+    // `InitWithFeatureList()` alone does not) so the trial does not leak across
+    // test cases.
+    isolated_trial_scope_.Init();
+    base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
+        kTrialName, enable_feature ? "Enabled" : "Control");
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->InitFromCommandLine(
+        features::kAutofillAddressSuggestionsOnTyping.name,
+        /*disable_features=*/"");
+    feature_list->RegisterFieldTrialOverride(
+        features::kAutofillOnTypingIgnoresAutocompleteOff.name,
+        enable_feature ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
+                       : base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+        trial);
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+
+  bool IsActive() const {
+    return base::FieldTrialList::IsTrialActive(kTrialName);
+  }
+
+ private:
+  base::test::ScopedFeatureList isolated_trial_scope_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+#endif  // !BUILDFLAG(IS_IOS)
 
 // TODO(crbug.com/40100455): Add tests for generating icons for suggestions.
 class AddressSuggestionGeneratorTest : public testing::Test {
@@ -268,6 +309,121 @@ TEST_F(AddressSuggestionGeneratorTest,
                                      u"Sundar pichai"),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageAddress)));
+  }
+}
+
+// Tests that `kAutofillOnTypingIgnoresAutocompleteOff` activates symmetrically
+// across both `should_autocomplete() == true` and `false` fields (and both
+// Control and Enabled arms) when the typed text matches stored profile data.
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_IgnoresAutocompleteOff_ActivatesTrialSymmetrically) {
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+
+  for (const bool enable_feature : {false, true}) {
+    for (const bool should_autocomplete : {false, true}) {
+      ScopedAutocompleteOffFieldTrial trial(enable_feature);
+      ASSERT_FALSE(trial.IsActive());
+
+      FormFieldData field;
+      field.set_value(u"Sund");
+      field.set_should_autocomplete(should_autocomplete);
+      FormData form;
+      test_api(form).Append(field);
+
+      const std::vector<Suggestion> suggestions =
+          GetSuggestionsOnTypingForProfile(*autofill_client(), form, field);
+      EXPECT_TRUE(trial.IsActive());
+      if (should_autocomplete || enable_feature) {
+        EXPECT_THAT(
+            suggestions,
+            ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                         u"Sundar pichai"),
+                        EqualsSuggestion(SuggestionType::kSeparator),
+                        EqualsSuggestion(SuggestionType::kManageAddress)));
+      } else {
+        EXPECT_THAT(suggestions, IsEmpty());
+      }
+    }
+  }
+}
+
+// Tests that `kAutofillOnTypingIgnoresAutocompleteOff` does not activate when
+// there are no stored profiles or when the typed input does not match any
+// stored profile data (avoiding study dilution).
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_IgnoresAutocompleteOff_DoesNotActivateOnNonMatchingInput) {
+  // No stored profiles.
+  for (const bool should_autocomplete : {false, true}) {
+    ScopedAutocompleteOffFieldTrial trial(/*enable_feature=*/true);
+    ASSERT_FALSE(trial.IsActive());
+
+    FormFieldData field;
+    field.set_value(u"Sund");
+    field.set_should_autocomplete(should_autocomplete);
+    FormData form;
+    test_api(form).Append(field);
+
+    EXPECT_THAT(
+        GetSuggestionsOnTypingForProfile(*autofill_client(), form, field),
+        IsEmpty());
+    EXPECT_FALSE(trial.IsActive());
+  }
+
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+
+  // Empty focus, `< 3` characters, non-matching text, and matching prefix with
+  // fewer than `min_missing_characters_number` remaining characters.
+  for (const std::u16string& value : {u"", u"Su", u"weather", u"Sundar pic"}) {
+    for (const bool should_autocomplete : {false, true}) {
+      ScopedAutocompleteOffFieldTrial trial(/*enable_feature=*/true);
+      ASSERT_FALSE(trial.IsActive());
+
+      FormFieldData field;
+      field.set_value(value);
+      field.set_should_autocomplete(should_autocomplete);
+      FormData form;
+      test_api(form).Append(field);
+
+      EXPECT_THAT(
+          GetSuggestionsOnTypingForProfile(*autofill_client(), form, field),
+          IsEmpty());
+      EXPECT_FALSE(trial.IsActive());
+    }
+  }
+}
+
+// Tests that `kAutofillOnTypingIgnoresAutocompleteOff` still activates even
+// when the matched `FieldType` is blocked by
+// `AddressOnTypingSuggestionStrikeDatabase`, preventing cross-session SRM.
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_IgnoresAutocompleteOff_ActivatesTrialBeforeStrikeSuppression) {
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+
+  AddressOnTypingSuggestionStrikeDatabase* strike_database =
+      address_data().GetAddressOnTypingSuggestionStrikeDatabase();
+  ASSERT_NE(strike_database, nullptr);
+  strike_database->AddStrikes(strike_database->GetMaxStrikesLimit(),
+                              base::NumberToString(NAME_FULL));
+
+  for (const bool enable_feature : {false, true}) {
+    for (const bool should_autocomplete : {false, true}) {
+      ScopedAutocompleteOffFieldTrial trial(enable_feature);
+      ASSERT_FALSE(trial.IsActive());
+
+      FormFieldData field;
+      field.set_value(u"Sund");
+      field.set_should_autocomplete(should_autocomplete);
+      FormData form;
+      test_api(form).Append(field);
+
+      EXPECT_THAT(
+          GetSuggestionsOnTypingForProfile(*autofill_client(), form, field),
+          IsEmpty());
+      EXPECT_TRUE(trial.IsActive());
+    }
   }
 }
 
