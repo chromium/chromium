@@ -4,11 +4,18 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/ui/expanded_manual_fill_view_controller.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/expanded_manual_fill_view_controller+Testing.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/fallback_view_controller.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_action_cell.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using manual_fill::ManualFillDataType;
 
@@ -43,6 +50,7 @@ class ExpandedManualFillViewControllerTest : public PlatformTest {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   id delegate_;
   ExpandedManualFillViewController* view_controller_;
 };
@@ -91,5 +99,48 @@ TEST_F(ExpandedManualFillViewControllerTest, TestDataTypeSelection) {
                 didSelectSegmentOfType:ManualFillDataType::kCredential]);
   segmented_control.selectedSegmentIndex = 0;
   [segmented_control sendActionsForControlEvents:UIControlEventValueChanged];
+  EXPECT_OCMOCK_VERIFY(delegate());
+}
+
+// Tests embedding and replacing `childViewController` (including syncing cell
+// horizontal insets during layout) and forwarding close button taps to the
+// delegate.
+TEST_F(ExpandedManualFillViewControllerTest,
+       EmbedsAndReplacesChildViewControllerAndForwardsCloseButton) {
+  view_controller().view.frame = CGRectMake(0, 0, 390, 500);
+
+  FallbackViewController* first_child = [[FallbackViewController alloc] init];
+  [first_child loadViewIfNeeded];
+  [first_child presentActionItems:@[ [[ManualFillActionItem alloc]
+                                      initWithTitle:@"Manage..."
+                                             action:^{
+                                             }] ]];
+  view_controller().childViewController = first_child;
+  // Re-assigning the same child view controller is a no-op.
+  view_controller().childViewController = first_child;
+  [first_child.tableView layoutIfNeeded];
+  [view_controller().view setNeedsLayout];
+  [view_controller().view layoutIfNeeded];
+  EXPECT_EQ(first_child.parentViewController, view_controller());
+  EXPECT_EQ(first_child.view.superview, view_controller().view);
+
+  FallbackViewController* second_child = [[FallbackViewController alloc] init];
+  view_controller().childViewController = second_child;
+  EXPECT_EQ(first_child.parentViewController, nil);
+  EXPECT_EQ(first_child.view.superview, nil);
+  EXPECT_EQ(second_child.parentViewController, view_controller());
+
+  NSString* close_label = l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
+  UIButton* close_button = chrome_test_util::FindViewWithPredicate<UIButton>(
+      view_controller().view, ^BOOL(UIView* candidate) {
+        return [candidate isKindOfClass:[UIButton class]] &&
+               [candidate.accessibilityLabel isEqualToString:close_label];
+      });
+  ASSERT_NE(close_button, nil);
+
+  OCMExpect([delegate() expandedManualFillViewController:view_controller()
+                                     didPressCloseButton:close_button]);
+  [close_button sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_OCMOCK_VERIFY(delegate());
 }
