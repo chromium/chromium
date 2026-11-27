@@ -41,8 +41,7 @@ std::unique_ptr<DiscardableMemory>
 DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
     ByteSize size,
     OnceClosure on_no_memory) {
-  auto* allocator = GetInstance();
-  auto memory = allocator->AllocateLockedDiscardableMemory(size);
+  auto memory = AllocateLockedDiscardableMemory(size);
   if (memory) {
     return memory;
   }
@@ -53,7 +52,7 @@ DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
   // as well.
   ReleaseFreeMemory();
 
-  memory = allocator->AllocateLockedDiscardableMemory(size);
+  memory = AllocateLockedDiscardableMemory(size);
   if (!memory) {
     TerminateBecauseOutOfMemory(checked_cast<size_t>(size.InBytes()));
   }

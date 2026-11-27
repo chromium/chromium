@@ -4009,6 +4009,7 @@ test("base_unittests") {
     "macros/is_empty_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/available_memory_monitor_unittest.cc",
+    "memory/discardable_memory_allocator_unittest.cc",
     "memory/discardable_shared_memory_unittest.cc",
     "memory/platform_shared_memory_region_unittest.cc",
     "memory/protected_memory_unittest.cc",
