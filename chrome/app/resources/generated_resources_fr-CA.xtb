@@ -3815,7 +3815,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4256316378292851214">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4257175174234042421">Modification automatique du mot de passe</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
-<translation id="4262004481148703251">Ignorer l'avertissement</translation>
+<translation id="4262004481148703251">Fermer l'avertissement</translation>
 <translation id="4262060800239714974">Pour obtenir vos onglets à partir de votre <ph name="DEVICE" />, synchronisez votre historique et vos onglets avec l'adresse <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4263470758446311292">Obtenez des économies maximales de mémoire. Vos onglets deviennent inactifs après une plus courte période.</translation>
 <translation id="4263824086525632">Aurore boréale</translation>
