@@ -34,6 +34,7 @@
 #import "components/lens/lens_overlay_mime_type.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
+#import "components/omnibox/browser/searchbox_utils.h"
 #import "components/omnibox/common/composebox_features.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/testing_pref_service.h"
@@ -58,6 +59,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
@@ -1519,6 +1521,47 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   histogram_tester.ExpectTotalCount(kActionOnHomeHistogram, 0);
   histogram_tester.ExpectTotalCount(kActionOnNTPHistogram, 0);
   histogram_tester.ExpectTotalCount(kActionOnStartHistogram, 0);
+}
+
+// Tests that disconnecting a non-Cobrowse mediator without navigating records
+// the focus as abandoned.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DisconnectWithoutNavigationRecordsAbandonedFocus) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(ComposeboxEntrypoint::kOther, ComposeboxMode::kAIM);
+  mediator.metricsRecorder = [[ComposeboxMetricsRecorder alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kOther];
+  base::HistogramTester histogram_tester;
+
+  [mediator disconnect];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.FocusResultedInNavigation",
+      searchbox::FocusResultedInNavigationType::kNoNavigationNoAttachments, 1);
+  histogram_tester.ExpectTotalCount("ContextualSearch.Entrypoint.Abandoned", 1);
+}
+
+// Tests that disconnecting a Cobrowse mediator records no focus or navigation
+// outcome metrics, since the Cobrowse input plate lives as long as the bottom
+// sheet and its follow-ups never navigate.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DisconnectInCobrowseRecordsNoFocusOutcomeMetrics) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(ComposeboxEntrypoint::kCobrowse, ComposeboxMode::kAIM);
+  mediator.metricsRecorder = [[ComposeboxMetricsRecorder alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kCobrowse];
+  base::HistogramTester histogram_tester;
+
+  [mediator disconnect];
+
+  histogram_tester.ExpectTotalCount("Omnibox.FocusResultedInNavigation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusResultedInNavigation.Cobrowse", 0);
+  histogram_tester.ExpectTotalCount("ContextualSearch.Entrypoint.Abandoned", 0);
 }
 
 // Tests that a query sent by Voice Search marks the navigation as a Voice

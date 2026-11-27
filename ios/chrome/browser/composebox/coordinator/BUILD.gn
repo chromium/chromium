@@ -356,6 +356,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public",
+    "//ios/chrome/browser/composebox/shared/metrics",
     "//ios/chrome/browser/composebox/shared/metrics:unit_tests",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui:state",

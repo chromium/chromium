@@ -2276,7 +2276,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Records whether the session resulted in navigation.
 - (void)recordSessionEndMetrics {
-  if (_sessionEndMetricsRecorded) {
+  // Cobrowse submissions are AIM follow-ups that never navigate, so its session
+  // would always be recorded as abandoned.
+  if (_sessionEndMetricsRecorded ||
+      _entrypoint == ComposeboxEntrypoint::kCobrowse) {
     return;
   }
   _sessionEndMetricsRecorded = YES;
