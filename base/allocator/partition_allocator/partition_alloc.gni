@@ -415,6 +415,34 @@ declare_args() {
   use_full_mte = false
 }
 
+declare_args() {
+  # Enables the zero segment in user-space in PartitionAlloc. This segment is
+  # similar to Mach-O's __PAGEZERO segment in that it ensures that a certain
+  # range of virtual address space can never be allocated as writable.
+  #
+  # This is a feature required by the V8 Sandbox.
+  #
+  # We can only enable this on 64-bit builds when either:
+  # - PA is used as malloc (to get hooks early enough to reserve the segment),
+  #   or
+  # - ASan is enabled on Linux-kernel platforms (where an early constructor
+  #   reserves LowMem and write-protects LowShadow).
+  #
+  # On Android, reserving the segment only succeeds in processes spawned from
+  # the Native Zygote (Android 17+); in other processes the first 4GB are
+  # occupied by ART and reservation fails gracefully.
+  enable_user_space_zero_segment =
+      has_64_bit_pointers && use_partition_alloc &&
+      ((use_partition_alloc_as_malloc &&
+        (is_mac || is_win || is_chromeos || is_linux || is_android)) ||
+       (is_asan && (is_chromeos || is_linux || is_android)))
+
+  # Size of the zero segment in MB. The total size will be at least this value.
+  # This is 4GB + 1MB. The 1MB protects from using certain kinds of objects
+  # at the 4G boundary.
+  user_space_zero_segment_size_mb = 4097
+}
+
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
@@ -453,12 +481,19 @@ if (!use_partition_alloc ||
   use_full_mte = false
   shim_supports_alloc_token = false
   enable_auto_partitioning = false
+  enable_user_space_zero_segment = false
 }
 
 # Disable |use_full_mte| if memory tagging is not available. This is for targets
 # that run as part the build process.
 if (!has_memory_tagging) {
   use_full_mte = false
+}
+
+# Disable |enable_user_space_zero_segment| on 32-bit toolchains (e.g., secondary
+# toolchains in multi-arch builds).
+if (!has_64_bit_pointers) {
+  enable_user_space_zero_segment = false
 }
 
 # use_raw_ptr_backup_ref_impl can only be used if
@@ -600,29 +635,6 @@ declare_args() {
   # https://cs.android.com/android/platform/superproject/+/android14-qpr3-release:bionic/libc/bionic/pthread_mutex.cpp;drc=9108f258adad329a537e10461fbd526d5b9ad8bf;l=242
   enable_partition_lock_priority_inheritance =
       is_android && (current_cpu == "x64" || current_cpu == "arm64")
-}
-
-declare_args() {
-  # Enables the zero segment in user-space in PartitionAlloc. This segment is
-  # similar to Mach-O's __PAGEZERO segment in that it ensures that a certain
-  # range of virtual address space can never be allocated as writable.
-  #
-  # This is a feature required by the V8 Sandbox.
-  #
-  # We can only enable this on 64-bit builds and when PA is used as malloc to
-  # get hooks early enough to reserve the segment.
-  #
-  # On Android, reserving the segment only succeeds in processes spawned from
-  # the Native Zygote (Android 17+); in other processes the first 4GB are
-  # occupied by ART and reservation fails gracefully.
-  enable_user_space_zero_segment =
-      has_64_bit_pointers && use_partition_alloc_as_malloc &&
-      (is_mac || is_win || is_chromeos || is_linux || is_android)
-
-  # Size of the zero segment in MB. The total size will be at least this value.
-  # This is 4GB + 1MB. The 1MB protects from using certain kinds of objects
-  # at the 4G boundary.
-  user_space_zero_segment_size_mb = 4097
 }
 
 # Activates bounds checks for two-arg constructor of `base::span`.

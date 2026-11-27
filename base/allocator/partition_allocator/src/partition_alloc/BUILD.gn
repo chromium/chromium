@@ -199,6 +199,7 @@ pa_buildflag_header("buildflags") {
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
     "IS_ANDROID=$is_android",
+    "IS_ASAN=$is_asan",
     "IS_CHROMEOS=$is_chromeos",
     "IS_COMPONENT_BUILD=$is_component_build",
     "IS_DEBUG=$partition_alloc_is_debug",
@@ -559,6 +560,8 @@ if (is_clang_or_gcc) {
       "thread_isolation/thread_isolation.cc",
       "thread_isolation/thread_isolation.h",
       "yield_processor.h",
+      "zero_segment.cc",
+      "zero_segment.h",
     ]
 
     defines = []
@@ -582,6 +585,13 @@ if (is_clang_or_gcc) {
     if (is_android) {
       # The Android NDK supports PR_MTE_* macros as of NDK r23.
       defines += [ "HAS_PR_MTE_MACROS" ]
+    }
+    if (has_64_bit_pointers && enable_user_space_zero_segment && is_asan &&
+        (is_linux || is_chromeos || is_android)) {
+      sources += [
+        "proc_self_maps_verifier_linux.cc",
+        "proc_self_maps_verifier_linux.h",
+      ]
     }
 
     # Stack scanning support. First implemented for StarScan and later

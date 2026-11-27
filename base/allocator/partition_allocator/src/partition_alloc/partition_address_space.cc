@@ -18,7 +18,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/compressed_pointer.h"
 #include "partition_alloc/debug_data_on_stack.h"
-#include "partition_alloc/internal/page_allocator_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -29,6 +28,7 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
+#include "partition_alloc/zero_segment.h"
 
 #if PA_BUILDFLAG(IS_IOS)
 #include <mach-o/dyld.h>
@@ -100,10 +100,6 @@ MetadataInnerOffset(pool_handle pool) {
 
 constinit PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-size_t PartitionAddressSpace::zero_segment_size_ = 0;
-#endif
-
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #if !PA_BUILDFLAG(IS_IOS)
 #error Dynamic pool size is only supported on iOS.
@@ -150,7 +146,7 @@ void PartitionAddressSpace::Init() {
   }
 
 #if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-  InitZeroSegment();
+  ZeroSegment::Init();
 #endif
 
   size_t core_pool_size = CorePoolSize();
@@ -256,84 +252,6 @@ void PartitionAddressSpace::Init() {
   InitMetadataRegionAndOffsets();
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
-
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-void PartitionAddressSpace::InitZeroSegment() {
-  if (zero_segment_size_) {
-    return;
-  }
-
-  const size_t min_zero_segment_size =
-      static_cast<size_t>(PA_CONFIG(USER_SPACE_ZERO_SEGMENT_SIZE_MB)) * 1024 *
-      1024;
-
-  const WellKnownReadOnlyRegions well_known =
-      GetWellKnownReadOnlyRegions(min_zero_segment_size);
-  PA_CHECK(well_known.count <= WellKnownReadOnlyRegions::kMaxRegions);
-  // `well_known` covers 0-XGB as well if supported.
-  if (well_known.count == 0 || well_known.regions[0].address != 0) {
-    return;
-  }
-
-  // Reserves a region given by `address` and `size`. Returns false in case of
-  // failure. Previously reserved regions are intentionally leaked allowing for
-  // partial user space segment.
-  const auto reserve_region = [](uintptr_t address, size_t size) -> bool {
-    PA_DCHECK(address != 0);
-    const uintptr_t allocated_base =
-        SystemAllocPages(address, size,
-                         PageAccessibilityConfiguration(
-                             PageAccessibilityConfiguration::kInaccessible),
-                         PageTag::kPartitionAlloc);
-    if (allocated_base == address) {
-      return true;
-    }
-    if (allocated_base) {
-      FreePages(allocated_base, size);
-    }
-    return false;
-  };
-
-  uintptr_t current_addr = 0;
-
-  // Attempts to fill any gap in `[current_addr, target_addr)`. Returns true if
-  // the entire gap was filled (or no gap existed), or false if reservation
-  // failed (in which case `zero_segment_size_` is set to the contiguous prefix
-  // acquired so far).
-  const auto fill_gap_up_to = [&](uintptr_t target_addr) -> bool {
-    if (target_addr <= current_addr) {
-      return true;
-    }
-    const size_t granularity = PageAllocationGranularity();
-    PA_DCHECK(current_addr % granularity == 0);
-    PA_DCHECK(target_addr % granularity == 0);
-    if (current_addr % granularity != 0 || target_addr % granularity != 0 ||
-        !reserve_region(current_addr, target_addr - current_addr)) {
-      zero_segment_size_ = current_addr;
-      return false;
-    }
-    return true;
-  };
-
-  for (size_t i = 0; i < well_known.count; ++i) {
-    const auto& region = well_known.regions[i];
-    if (region.address >= min_zero_segment_size) {
-      break;
-    }
-    if (!fill_gap_up_to(region.address)) {
-      return;
-    }
-    current_addr = region.address + region.size;
-  }
-
-  // Reserve the trailing gap if applicable.
-  if (!fill_gap_up_to(min_zero_segment_size)) {
-    return;
-  }
-
-  zero_segment_size_ = std::max(current_addr, min_zero_segment_size);
-}
-#endif  // PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
 
 void PartitionAddressSpace::InitConfigurablePool(
     const ConfigurablePoolConfig& config) {

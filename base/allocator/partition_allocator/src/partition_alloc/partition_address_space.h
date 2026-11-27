@@ -19,6 +19,7 @@
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 #include "partition_alloc/thread_isolation/pkey.h"
+#include "partition_alloc/zero_segment.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -173,11 +174,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   PA_ALWAYS_INLINE static bool IsInitialized();
 
   PA_ALWAYS_INLINE static size_t GetZeroSegmentSize() {
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-    return zero_segment_size_;
-#else
-    return 0;
-#endif
+    return ZeroSegment::GetSize();
   }
 
   PA_ALWAYS_INLINE static bool IsConfigurablePoolInitialized();
@@ -339,10 +336,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
 
  private:
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-  static void InitZeroSegment();
-#endif
-
   // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
   // pools. The BRP pool is where all allocations have a BRP ref-count, thus
   // pointers pointing there can use a BRP protection against UaF. Allocations
@@ -463,10 +456,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // don't share a cacheline with other, potentially writable data, through
   // alignment and padding.
   constinit static PoolSetup setup_;
-
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-  static size_t zero_segment_size_;
-#endif
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // If we use thread isolation, we need to write-protect its metadata.
