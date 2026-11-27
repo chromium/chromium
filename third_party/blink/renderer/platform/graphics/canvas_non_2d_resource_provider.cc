@@ -214,7 +214,9 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     base::OnceClosure context_lost_callback) {
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+  if (SharedGpuContext::IsGpuCompositingEnabled() ||
+      !shared_image_interface_provider ||
+      !shared_image_interface_provider->SharedImageInterface()) {
     return nullptr;
   }
 
@@ -300,22 +302,18 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       is_software_(true),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       shared_image_interface_provider_(
-          shared_image_interface_provider
-              ? shared_image_interface_provider->GetWeakPtr()
-              : nullptr) {
+          shared_image_interface_provider->GetWeakPtr()) {
+  CHECK(shared_image_interface_provider_);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
-      gpu::ImageInfo image_info(
-          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
-          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          /*is_software=*/true);
-      image_pool_ = gpu::SharedImagePool<Resource>::Create(
-          image_info, sii, "CanvasResourceSharedImage",
-          kMaxRecycledCanvasResources);
-    }
-  }
+  shared_image_interface_provider_->AddGpuChannelLostObserver(this);
+  gpu::ImageInfo image_info(size, format,
+                            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
+                            kTopLeft_GrSurfaceOrigin, alpha_type,
+                            /*buffer_usage=*/std::nullopt,
+                            /*is_software=*/true);
+  image_pool_ = gpu::SharedImagePool<Resource>::Create(
+      image_info, shared_image_interface_provider_->SharedImageInterface(),
+      "CanvasResourceSharedImage", kMaxRecycledCanvasResources);
 }
 
 CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
