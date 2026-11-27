@@ -48,6 +48,7 @@
 #include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -56,6 +57,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
@@ -1117,6 +1119,78 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Indigo.Transformation.Result",
       IndigoTransformationResult::kPrimaryImageDisconnected, 1);
+}
+
+class IndigoImageReplacementManagerCrossSiteBrowserTest
+    : public IndigoImageReplacementManagerBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IndigoImageReplacementManagerBrowserTest::SetUpCommandLine(command_line);
+    content::IsolateAllSitesForTesting(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    IndigoImageReplacementManagerBrowserTest::SetUpOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerCrossSiteBrowserTest,
+                       NonPrimaryPageDisconnectDoesNotResetPrimaryPage) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper rfh_a(web_contents->GetPrimaryMainFrame());
+  IndigoImageReplacementManager* manager_a =
+      IndigoImageReplacementManager::GetOrCreateForPage(rfh_a->GetPage());
+  MockImageReplacement mock_a(web_contents);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver_a(&mock_a);
+  manager_a->RegisterImageReplacement(
+      receiver_a.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
+  mock_a.WaitForStartReplacement();
+  mock_a.WaitForRenderReplacement();
+  fake_api_.WaitForGenerateRequest();
+
+  // Keep page A alive, but no longer primary, after navigating to B.
+  content::DisableBackForwardCacheForTesting(
+      web_contents, content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  content::LeaveInPendingDeletionState(rfh_a.get());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  ASSERT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPendingDeletion);
+  ASSERT_FALSE(rfh_a->GetPage().IsPrimary());
+  ASSERT_NE(rfh_a->GetProcess(),
+            web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  IndigoImageReplacementManager* manager_b =
+      IndigoImageReplacementManager::GetOrCreateForPage(
+          web_contents->GetPrimaryPage());
+  MockImageReplacement mock_b(web_contents);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> receiver_b(&mock_b);
+  manager_b->RegisterImageReplacement(
+      receiver_b.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
+  mock_b.WaitForStartReplacement();
+  mock_b.WaitForRenderReplacement();
+
+  mock_a.Disconnect();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return histogram_tester.GetBucketCount(
+               "Indigo.Transformation.Result",
+               IndigoTransformationResult::kPrimaryImageDisconnected) == 1;
+  }));
+
+  EXPECT_FALSE(manager_a->active_invocation_id());
+  EXPECT_TRUE(manager_b->active_invocation_id());
+  ToastController* const toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  EXPECT_FALSE(toast_controller && toast_controller->IsShowingToast());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,

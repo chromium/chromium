@@ -178,6 +178,10 @@ void IndigoImageReplacementManager::OnPhotoChanged() {
 
 void IndigoImageReplacementManager::ResetAllReplacements(
     base::PassKey<IndigoPageActionController>) {
+  ResetState();
+}
+
+void IndigoImageReplacementManager::ResetState() {
   receivers_.Clear();
   primary_receiver_id_ = std::nullopt;
   primary_original_image_webp_bytes_.clear();
@@ -314,7 +318,7 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   params.should_replace_current_entry = true;
   web_contents->GetController().LoadURLWithParams(std::move(params));
 
-  if (replacement_data->tracked_element_id) {
+  if (replacement_data->tracked_element_id && page().IsPrimary()) {
     if (auto* controller = GetIndigoPageActionController()) {
       controller->RefreshTrackedBounds();
     }
@@ -326,7 +330,8 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
-  if (auto* controller = GetIndigoPageActionController()) {
+  if (auto* controller = GetIndigoPageActionController();
+      controller && page().IsPrimary()) {
     if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(
             controller->tab().GetBrowserWindowInterface())) {
       browser_view->GetViewAccessibility().AnnouncePolitely(
@@ -430,6 +435,11 @@ void IndigoImageReplacementManager::NotifyReplacementsReady(bool is_cache_hit) {
 
   RecordImageDisplayed();
 
+  // The toolbar and announcement would show over another page.
+  if (!page().IsPrimary()) {
+    return;
+  }
+
   if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowToolbar();
 
@@ -463,6 +473,11 @@ void IndigoImageReplacementManager::OnReceiverDisconnected() {
 
 void IndigoImageReplacementManager::Reset(ResetType reset_type) {
   generate_start_time_ = base::TimeTicks();
+  // The controller only resets the primary page, so reset this one here.
+  if (!page().IsPrimary()) {
+    ResetState();
+    return;
+  }
   if (auto* controller = GetIndigoPageActionController()) {
     controller->Reset(reset_type);
   }
@@ -470,6 +485,11 @@ void IndigoImageReplacementManager::Reset(ResetType reset_type) {
 
 void IndigoImageReplacementManager::ShowErrorToast(
     IndigoTransformationResult result) {
+  // The toast would show over another page, so only record the result.
+  if (!page().IsPrimary()) {
+    RecordTransformationResult(result);
+    return;
+  }
   if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowInvocationErrorToast(result);
   }

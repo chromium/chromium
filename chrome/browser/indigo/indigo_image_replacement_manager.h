@@ -128,6 +128,7 @@ class IndigoImageReplacementManager
   void NotifyReplacementsReady(bool is_cache_hit);
   void CancelActiveRequest();
   void OnReceiverDisconnected();
+  void ResetState();
   void Reset(ResetType reset_type);
   void ShowErrorToast(IndigoTransformationResult result);
 
