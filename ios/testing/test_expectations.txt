@@ -456,7 +456,6 @@ crbug.com/41489568 SafeBrowsingTestCase/testRestoreToWarningPagePreservesHistory
 crbug.com/522400526 [ Device iOS18 ] SafeBrowsingTestCase/testEnterpriseWarningPageBypass [ Pass Failure ]
 crbug.com/454267702 SnapshotTestCase/testTwoColorsSnapshot [ Failure ]
 crbug.com/419771136 UnitConversionTestCase/testUnitConversionViewController [ Pass Failure ]
-crbug.com/419771136 UnitConversionTestCase/testUnitConversionUnitTypeChange [ Pass Failure ]
 crbug.com/419771136 UnitConversionTestCase/testSourceUnitValueChange [ Pass Failure ]
 crbug.com/419771136 UnitConversionTestCase/testSourceUnitChange [ Pass Failure ]
 crbug.com/419771136 UnitConversionTestCase/testTargetUnitChange [ Pass Failure ]
