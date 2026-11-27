@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/sync/base/passphrase_enums.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -120,6 +121,25 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
       // Passphrase required should be extremely rare.
       return !service->GetUserSettings()->IsPassphraseRequired();
   }
+}
+
+bool IsSyncingUserSelectableTypesAllowedByPolicy(
+    const SyncService* sync_service,
+    UserSelectableTypeSet types) {
+  if (!sync_service || sync_service->HasDisableReason(
+                           SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    return false;
+  }
+
+  const SyncUserSettings* user_settings = sync_service->GetUserSettings();
+  for (UserSelectableType type : types) {
+    if (user_settings->IsTypeManagedByPolicy(type) ||
+        user_settings->IsTypeManagedByCustodian(type)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 #if BUILDFLAG(IS_IOS)

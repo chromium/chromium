@@ -12,7 +12,6 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,9 +22,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_prefs.h"
-#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,6 +65,10 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/signin/accounts_policy_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_prefs.h"
+#include "components/sync/test/test_sync_service.h"
 #endif
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -420,6 +420,8 @@ TEST_F(SigninUtilTest,
         << local_policy;
   }
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
  public:
   syncer::TestSyncService* test_sync_service() {
@@ -463,44 +465,6 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
 
 };
 
-TEST_F(SigninUtilHistorySyncOptinTest, HistorySyncOptinDisallowedByPolicy) {
-  SignInAndSetUpSyncService();
-
-  syncer::UserSelectableTypeSet types({syncer::UserSelectableType::kTabs,
-                                       syncer::UserSelectableType::kHistory});
-
-  DisableAllSyncedDataTypes();
-  ASSERT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), types));
-
-  test_sync_service()->SetAllowedByEnterprisePolicy(false);
-  EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), types));
-}
-
-TEST_F(SigninUtilHistorySyncOptinTest,
-       HistorySyncOptinDisallowedByPolicyPerType) {
-  SignInAndSetUpSyncService();
-
-  syncer::UserSelectableTypeSet types({syncer::UserSelectableType::kTabs,
-                                       syncer::UserSelectableType::kHistory});
-
-  DisableAllSyncedDataTypes();
-  ASSERT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), types));
-
-  test_sync_service()->GetUserSettings()->SetTypeIsManagedByPolicy(
-      syncer::UserSelectableType::kHistory, /*managed=*/true);
-
-  EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), types));
-  EXPECT_FALSE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), {syncer::UserSelectableType::kHistory}));
-  EXPECT_TRUE(signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-      test_sync_service(), {syncer::UserSelectableType::kTabs}));
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(SigninUtilHistorySyncOptinTest, HasExplicitlyDisabledHistorySync) {
   SignInAndSetUpSyncService();
   EXPECT_FALSE(signin_util::HasExplicitlyDisabledHistorySync(

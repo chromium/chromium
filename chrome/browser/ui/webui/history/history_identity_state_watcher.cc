@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 
 HistoryIdentityStateWatcher::HistoryIdentityStateWatcher(
@@ -97,7 +98,7 @@ HistoryIdentityStateWatcher::GetSyncStateForType(
     syncer::UserSelectableType type) const {
   // If the type is disabled by policy, we consider the corresponding sync
   // state as disabled.
-  if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+  if (!syncer::IsSyncingUserSelectableTypesAllowedByPolicy(
           sync_service_, syncer::UserSelectableTypeSet({type}))) {
     return HistoryIdentityState::SyncState::kDisabled;
   }

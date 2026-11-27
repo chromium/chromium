@@ -27,6 +27,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -70,7 +71,7 @@ bool ShouldShowTabsFromOtherDevices(Profile* profile) {
     return false;
   }
 
-  if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+  if (!syncer::IsSyncingUserSelectableTypesAllowedByPolicy(
           sync_service, {syncer::UserSelectableType::kTabs})) {
     // Tabs from other devices should not be offered if syncing tabs is
     // disabled by policy.
@@ -126,7 +127,7 @@ bool ShouldShowOtherDeviceTabsMenuItem(Profile* profile) {
   }
 
   // Respect enterprise policies disabling sync or tabs/history sync.
-  if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+  if (!syncer::IsSyncingUserSelectableTypesAllowedByPolicy(
           SyncServiceFactory::GetForProfile(profile),
           {syncer::UserSelectableType::kTabs,
            syncer::UserSelectableType::kHistory})) {

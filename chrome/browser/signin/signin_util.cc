@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
@@ -33,17 +32,19 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
@@ -314,28 +315,6 @@ std::string SignedInStateToString(SignedInState state) {
   }
 }
 
-bool IsSyncingUserSelectableTypesAllowedByPolicy(
-    const syncer::SyncService* sync_service,
-    const syncer::UserSelectableTypeSet& types) {
-  if (!sync_service) {
-    return false;
-  }
-
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return false;
-  }
-
-  for (auto type : types) {
-    if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(type) ||
-        sync_service->GetUserSettings()->IsTypeManagedByCustodian(type)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool HasExplicitlyDisabledHistorySync(
     const syncer::SyncService* sync_service,
@@ -381,8 +360,8 @@ ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(
        syncer::UserSelectableType::kTabs});
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
-  if (!IsSyncingUserSelectableTypesAllowedByPolicy(sync_service,
-                                                   required_types)) {
+  if (!syncer::IsSyncingUserSelectableTypesAllowedByPolicy(sync_service,
+                                                           required_types)) {
     return ShouldShowHistorySyncOptinResult::kSkipSyncForbidden;
   }
 

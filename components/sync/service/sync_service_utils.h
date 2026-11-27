@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
@@ -50,6 +51,15 @@ void RecordRecoverabilityDegradedFixTrigger(
 
 // Whether the user should be offered to opt in to trusted vault encryption.
 bool ShouldOfferTrustedVaultOptIn(const SyncService* service);
+
+// Checks whether syncing all specified `types` is allowed by policy and
+// custodian settings (returns false if `sync_service` is null, Sync is
+// disabled by enterprise policy, or any type in `types` is managed by policy
+// or a custodian). May need to be called again after sign-in to pick up
+// account-scoped policies.
+bool IsSyncingUserSelectableTypesAllowedByPolicy(
+    const SyncService* sync_service,
+    UserSelectableTypeSet types);
 
 #if BUILDFLAG(IS_IOS)
 // Indicates the UI surface where an identity error is displayed to the user.

@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -261,5 +262,78 @@ TEST(SyncServiceUtilsTest, MaybeRecordIdentityErrorShown) {
       "Signin.IdentityErrorDisplayed.DeviceManagementError", 2);
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+// Verifies that `IsSyncingUserSelectableTypesAllowedByPolicy()` fails closed
+// when `SyncService` is null, even for an empty `UserSelectableTypeSet`.
+TEST(SyncServiceUtilsTest,
+     IsSyncingUserSelectableTypesAllowedByPolicyNullService) {
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      /*sync_service=*/nullptr, {UserSelectableType::kTabs}));
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      /*sync_service=*/nullptr, UserSelectableTypeSet()));
+}
+
+// Verifies that enterprise-level Sync disablement blocks policy eligibility
+// while user-level deselection alone keeps types allowed by policy.
+TEST(SyncServiceUtilsTest,
+     IsSyncingUserSelectableTypesAllowedByPolicyEnterpriseDisabled) {
+  TestSyncService service;
+  const UserSelectableTypeSet kTypes = {UserSelectableType::kTabs,
+                                        UserSelectableType::kHistory};
+
+  // User-level deselection does not count as a policy restriction.
+  service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                              UserSelectableTypeSet());
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(&service, kTypes));
+
+  // Enterprise-disabled Sync blocks both non-empty and empty type sets.
+  service.SetAllowedByEnterprisePolicy(false);
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(&service, kTypes));
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, UserSelectableTypeSet()));
+
+  service.SetAllowedByEnterprisePolicy(true);
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(&service, kTypes));
+}
+
+// Verifies per-type policy and custodian restrictions across single-type,
+// multi-type, and empty `UserSelectableTypeSet` queries.
+TEST(SyncServiceUtilsTest,
+     IsSyncingUserSelectableTypesAllowedByPolicyPerTypePolicyAndCustodian) {
+  TestSyncService service;
+  const UserSelectableTypeSet kBothTypes = {UserSelectableType::kTabs,
+                                            UserSelectableType::kHistory};
+
+  ASSERT_TRUE(
+      IsSyncingUserSelectableTypesAllowedByPolicy(&service, kBothTypes));
+
+  // Policy restriction on `kHistory` blocks `{kTabs, kHistory}` and
+  // `{kHistory}`, while `{kTabs}` and the empty set remain allowed.
+  service.GetUserSettings()->SetTypeIsManagedByPolicy(
+      UserSelectableType::kHistory, /*managed=*/true);
+  EXPECT_FALSE(
+      IsSyncingUserSelectableTypesAllowedByPolicy(&service, kBothTypes));
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, {UserSelectableType::kHistory}));
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, {UserSelectableType::kTabs}));
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, UserSelectableTypeSet()));
+
+  // Custodian restriction on `kTabs` blocks `{kTabs, kHistory}` and `{kTabs}`,
+  // while `{kHistory}` remains allowed once its policy restriction is cleared.
+  service.GetUserSettings()->SetTypeIsManagedByPolicy(
+      UserSelectableType::kHistory, /*managed=*/false);
+  service.GetUserSettings()->SetTypeIsManagedByCustodian(
+      UserSelectableType::kTabs, /*managed=*/true);
+  EXPECT_FALSE(
+      IsSyncingUserSelectableTypesAllowedByPolicy(&service, kBothTypes));
+  EXPECT_FALSE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, {UserSelectableType::kTabs}));
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, {UserSelectableType::kHistory}));
+  EXPECT_TRUE(IsSyncingUserSelectableTypesAllowedByPolicy(
+      &service, UserSelectableTypeSet()));
+}
 
 }  // namespace syncer

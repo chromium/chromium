@@ -18,7 +18,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "net/base/schemeful_site.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -166,13 +165,6 @@ SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 
 // Returns a string representation of `SignedInState`.
 std::string SignedInStateToString(SignedInState state);
-
-// Checks whether syncing the specified `types` is allowed by policy. May need
-// to called again after a sign in to see if policies are set for the account
-// rather than the device.
-bool IsSyncingUserSelectableTypesAllowedByPolicy(
-    const syncer::SyncService* sync_service,
-    const syncer::UserSelectableTypeSet& types);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // True if the user has explicitly disabled syncing history, tabs or saved tab

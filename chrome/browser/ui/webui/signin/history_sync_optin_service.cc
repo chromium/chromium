@@ -26,6 +26,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 
 HistorySyncOptinServiceDefaultDelegate::
@@ -322,7 +323,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
         signin_util::EnableHistorySync(sync_service);
 
         // If the required data types cannot be enabled, show an error.
-        if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+        if (!syncer::IsSyncingUserSelectableTypesAllowedByPolicy(
                 sync_service, required_types)) {
           HistorySyncOptinService* history_sync_optin_service =
               HistorySyncOptinServiceFactory::GetForProfile(profile);
