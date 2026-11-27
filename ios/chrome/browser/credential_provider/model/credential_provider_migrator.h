@@ -65,6 +65,11 @@ using CredentialMigrationCompletion =
     base::OnceCallback<void(CredentialMigrationResult)>;
 
 @interface CredentialProviderMigrator : NSObject
+
+// The GAIA ID associated with the profile undergoing migration, or `nil` for
+// local signed-out password migration.
+@property(nonatomic, copy, readonly) NSString* gaiaID;
+
 - (instancetype)
     initWithUserDefaults:(NSUserDefaults*)userDefaults
                      key:(NSString*)key
@@ -76,8 +81,25 @@ using CredentialMigrationCompletion =
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts migration from the temporal store to the password and passkey stores
-// and invokes `completion` with `CredentialMigrationResult`.
+// and invokes `completion` with `CredentialMigrationResult`. If `passkeyStore`
+// is not yet ready and matching passkeys are pending, passwords migrate
+// immediately while passkey import waits until `passkeyStore` finishes
+// initialization or shuts down.
 - (void)startMigrationWithCompletion:(CredentialMigrationCompletion)completion;
+
+// Schedules a follow-up temporal-store pass on an in-progress migration so
+// credentials written while temporal-store persistence is in flight or while
+// waiting for `passkeyStore` readiness are picked up without starting a second
+// concurrent migrator. No-op if no migration is currently running.
+- (void)checkForNewCredentials;
+
+// Cancels any queued temporal-store pass or deferred `passkeyStore` wait,
+// leaving unmigrated credentials in the temporal store. If a temporal-store
+// write has already started, allows that write to finish before invoking
+// `completion`. No-op if no migration is currently running. Once cancelled, the
+// migrator cannot be restarted: later `-startMigrationWithCompletion:` calls
+// complete immediately without migrating.
+- (void)cancelPendingMigration;
 
 @end
 

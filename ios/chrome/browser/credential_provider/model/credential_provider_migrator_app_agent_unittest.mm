@@ -15,12 +15,15 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/run_until.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -36,6 +39,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/credential_provider/model/fake_credential_provider_settings_handler.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -65,6 +69,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -147,6 +152,12 @@ class CredentialProviderMigratorAppAgentTest : public PlatformTest {
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
                        password_manager::TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeAccountPasswordStoreFactory::GetInstance(),
+        base::BindOnce(&password_manager::BuildPasswordStoreWithArgs<
+                           password_manager::TestPasswordStore,
+                           password_manager::IsAccountStore>,
+                       password_manager::IsAccountStore(true)));
     builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
         base::BindOnce(&std::make_unique<webauthn::TestPasskeyModel>));
@@ -457,8 +468,7 @@ TEST_F(CredentialProviderMigratorAppAgentTest,
 }
 
 // Tests that migrating an update to an already-existing passkey does not show
-// the passkey creation infobar, while advancing the migration queue to
-// subsequent profiles.
+// the passkey creation infobar.
 TEST_F(CredentialProviderMigratorAppAgentTest,
        PasskeyUpdateDoesNotShowInfobar) {
   FakeSceneState* scene =
@@ -492,11 +502,15 @@ TEST_F(CredentialProviderMigratorAppAgentTest,
   SaveCredentialsToTemporalStore(
       @[ updated_credential, managed_new_credential ]);
 
-  // Hold `passkey_model_` unready while activating `scene` so `profile_` is
-  // enqueued at the head of `_pendingMigrationProfileNames` before the second
-  // profile is loaded.
-  passkey_model_->SetReady(false);
   scene.activationLevel = SceneActivationLevelForegroundActive;
+
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+        initWithUserDefaults:app_group::GetGroupUserDefaults()
+                         key:key];
+    return store.credentials.count == 1u;
+  }));
 
   TestProfileIOS* managed_profile =
       profile_manager_.AddManagedProfileForGaiaIDWithBuilder(
@@ -519,12 +533,7 @@ TEST_F(CredentialProviderMigratorAppAgentTest,
       InfoBarManagerImpl::FromWebState(managed_web_state);
   managed_scene.activationLevel = SceneActivationLevelForegroundInactive;
 
-  // Enqueue `managed_profile` behind `profile_` and release `passkey_model_`.
-  // Because `managed_profile` only starts after `profile_`'s
-  // `-migrationCompleteForProfile:profileName:result:` finishes, observing the
-  // infobar on `managed_scene` proves `profile_`'s completion ran in full.
   [app_agent_ appDidEnterForeground];
-  passkey_model_->SetReady(true);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return managed_infobar_manager->infobars().size() == 1u; }));
@@ -642,8 +651,9 @@ TEST_F(CredentialProviderMigratorAppAgentTest,
 
   // Start `profile_` migration synchronously (`passkey_model_` receives the
   // passkey and `saveDataWithCompletion:` runs asynchronously), then sign out
-  // `profile_` before the main-queue completion executes and enqueue a second
-  // profile to observe queue completion deterministically.
+  // `profile_` before the main-queue completion executes. Then add a second
+  // profile whose store pass is serialized behind `profile_`'s save, so its
+  // infobar signals that `profile_`'s migration has finished.
   scene.activationLevel = SceneActivationLevelForegroundActive;
   AuthenticationServiceFactory::GetForProfile(profile_)->SignOut(
       signin_metrics::ProfileSignout::kTest);
@@ -754,6 +764,219 @@ TEST_F(CredentialProviderMigratorAppAgentTest,
                         webauthn::PasskeyModel::ShadowedCredentials::kInclude)
                     .size());
   EXPECT_TRUE(infobar_manager->infobars().empty());
+}
+
+// Tests that when `PasskeyModel` is unready and then fails initialization on
+// one profile, its passwords (including new passwords added during the wait)
+// still migrate immediately, other profiles migrate without head-of-line
+// blocking, and initialization failure unwinds cleanly.
+TEST_F(CredentialProviderMigratorAppAgentTest,
+       PasskeyModelInitializationFailureMigratesPasswordsWithoutBlocking) {
+  passkey_model_->SetReady(false);
+
+  FakeSceneState* scene =
+      CreateConnectedScene(/*register_settings_commands=*/true);
+  web::FakeWebState* web_state = InsertActiveWebState(
+      scene.browserProviderInterface.mainBrowser, /*visible=*/true);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+
+  FakeSystemIdentity* managed_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentity(managed_identity);
+  system_identity_manager->WaitForServiceCallbacksToComplete();
+
+  TestProfileIOS* managed_profile =
+      profile_manager_.AddManagedProfileForGaiaIDWithBuilder(
+          managed_identity.gaiaId, CreateProfileBuilder());
+  AuthenticationServiceFactory::GetForProfile(managed_profile)
+      ->SignIn(managed_identity, signin_metrics::AccessPoint::kStartPage);
+
+  ProfileState* managed_profile_state =
+      [[ProfileState alloc] initWithAppState:app_state_];
+  managed_profile_state.profile = managed_profile;
+  [app_state_ profileStateCreated:managed_profile_state];
+  extra_profile_states_.push_back(managed_profile_state);
+
+  FakeSceneState* managed_scene =
+      CreateConnectedSceneForProfile(managed_profile, managed_profile_state,
+                                     /*register_settings_commands=*/true);
+  web::FakeWebState* managed_web_state = InsertActiveWebState(
+      managed_scene.browserProviderInterface.mainBrowser, /*visible=*/true);
+  InfoBarManagerImpl* managed_infobar_manager =
+      InfoBarManagerImpl::FromWebState(managed_web_state);
+
+  ArchivableCredential* personal_password = [[ArchivableCredential alloc]
+               initWithFavicon:nil
+                          gaia:identity_.gaiaId.ToNSString()
+                      password:@"secret_password"
+                          rank:1
+              recordIdentifier:@"personal_password_record"
+             serviceIdentifier:@"https://example.com/login"
+                   serviceName:nil
+      registryControlledDomain:nil
+                      username:@"alice_pw"
+                          note:nil
+                  lastUsedTime:0];
+  ArchivableCredential* personal_passkey = FreshPasskeyCredential({
+      .gaia = identity_.gaiaId.ToNSString(),
+      .record_identifier = @"personal_passkey_record",
+  });
+  ArchivableCredential* managed_passkey = FreshPasskeyCredential({
+      .gaia = managed_identity.gaiaId.ToNSString(),
+      .record_identifier = @"managed_passkey_record",
+      .sync_id = TestDataFromString("syncIdManaged016"),
+      .username = @"managed_user",
+      .credential_id = TestDataFromString("credIdManaged016"),
+  });
+  SaveCredentialsToTemporalStore(
+      @[ personal_password, personal_passkey, managed_passkey ]);
+
+  [app_state_ updateInitStage:AppInitStage::kStart];
+  scene.activationLevel = SceneActivationLevelForegroundActive;
+  managed_scene.activationLevel = SceneActivationLevelForegroundInactive;
+  [app_state_ updateInitStage:AppInitStage::kFinal];
+  [app_agent_ appDidEnterForeground];
+
+  // Even while `profile_`'s `passkey_model_` is unready, `managed_profile`
+  // completes migration without head-of-line blocking and `personal_password`
+  // is migrated immediately to the account password store. Wait for both
+  // profiles' serialized `NSUserDefaults` saves to finish regardless of random
+  // profile UUID iteration order.
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+        initWithUserDefaults:app_group::GetGroupUserDefaults()
+                         key:key];
+    return managed_infobar_manager->infobars().size() == 1u &&
+           store.credentials.count == 1u;
+  }));
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      personal_account_store =
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  ASSERT_TRUE(personal_account_store);
+  password_manager::TestPasswordStore::PasswordMap stored_logins =
+      password_manager::GetAllLoginsSync(personal_account_store.get());
+  ASSERT_EQ(1u, stored_logins.size());
+  const std::vector<password_manager::PasswordForm>& realm_forms =
+      stored_logins.begin()->second;
+  ASSERT_EQ(1u, realm_forms.size());
+  EXPECT_EQ(u"alice_pw", realm_forms[0].username_value);
+  EXPECT_EQ(u"secret_password", realm_forms[0].password_value);
+
+  // Add a second password while `profile_` is still awaiting `passkey_model_`
+  // readiness and verify re-foregrounding migrates it via
+  // `-checkForNewCredentials`.
+  UserDefaultsCredentialStore* cpe_store = [[UserDefaultsCredentialStore alloc]
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+                       key:key];
+  ArchivableCredential* followup_password = [[ArchivableCredential alloc]
+               initWithFavicon:nil
+                          gaia:identity_.gaiaId.ToNSString()
+                      password:@"followup_secret"
+                          rank:1
+              recordIdentifier:@"followup_password_record"
+             serviceIdentifier:@"https://example.com/login"
+                   serviceName:nil
+      registryControlledDomain:nil
+                      username:@"alice_pw_2"
+                          note:nil
+                  lastUsedTime:0];
+  [cpe_store addCredential:followup_password];
+  base::test::TestFuture<NSError*> cpe_save_future;
+  [cpe_store saveDataWithCompletion:base::CallbackToBlock(
+                                        cpe_save_future.GetCallback())];
+  ASSERT_FALSE(cpe_save_future.Get());
+
+  [app_agent_ appDidEnterForeground];
+
+  // Wait for the follow-up password removal to finish persisting to
+  // `NSUserDefaults` across both profiles' serialized store passes before
+  // inspecting logins or signalling `PasskeyModel` initialization failure.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+        initWithUserDefaults:app_group::GetGroupUserDefaults()
+                         key:key];
+    return store.credentials.count == 1u;
+  }));
+
+  stored_logins =
+      password_manager::GetAllLoginsSync(personal_account_store.get());
+  ASSERT_EQ(1u, stored_logins.size());
+  ASSERT_EQ(2u, stored_logins.begin()->second.size());
+
+  // Signal `PasskeyModel` initialization failure on `profile_`; `profile_`
+  // unwinds cleanly while preserving `personal_passkey` in `NSUserDefaults`, so
+  // a subsequent foreground pass after `passkey_model_` becomes ready imports
+  // `personal_passkey` and displays the infobar.
+  passkey_model_->SetReady(false);
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+
+  UserDefaultsCredentialStore* remaining_store =
+      [[UserDefaultsCredentialStore alloc]
+          initWithUserDefaults:app_group::GetGroupUserDefaults()
+                           key:key];
+  ASSERT_EQ(1u, remaining_store.credentials.count);
+  EXPECT_NSEQ(@"personal_passkey_record",
+              remaining_store.credentials[0].recordIdentifier);
+
+  passkey_model_->SetReady(true);
+  [app_agent_ appDidEnterForeground];
+  // If `profile_`'s main-queue GCD save completion from the previous pass had
+  // not yet run when `appDidEnterForeground` fired, retry at a spaced interval
+  // rather than on every RunLoop spin so `saveDataWithCompletion:` is not
+  // continuously re-triggered.
+  base::RepeatingTimer retry_timer;
+  retry_timer.Start(FROM_HERE, base::Milliseconds(20),
+                    base::BindRepeating(
+                        [](CredentialProviderMigratorAppAgent* agent) {
+                          [agent appDidEnterForeground];
+                        },
+                        app_agent_));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return infobar_manager->infobars().size() == 1u; }));
+}
+
+// Tests that entering the background cancels any deferred `PasskeyModel` wait
+// so passkeys are not imported while backgrounded (avoiding cross-process
+// `NSUserDefaults` races and preserving the foreground infobar for the next
+// foreground entry).
+TEST_F(CredentialProviderMigratorAppAgentTest,
+       BackgroundingCancelsDeferredPasskeyWaitUntilNextForeground) {
+  passkey_model_->SetReady(false);
+
+  FakeSceneState* scene =
+      CreateConnectedScene(/*register_settings_commands=*/true);
+  web::FakeWebState* web_state = InsertActiveWebState(
+      scene.browserProviderInterface.mainBrowser, /*visible=*/true);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+
+  SaveCredentialsToTemporalStore(
+      @[ FreshPasskeyCredential({.gaia = identity_.gaiaId.ToNSString()}) ]);
+
+  scene.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+
+  scene.activationLevel = SceneActivationLevelBackground;
+  passkey_model_->SetReady(true);
+
+  EXPECT_TRUE(
+      passkey_model_
+          ->GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                        webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+          .empty());
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+
+  scene.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return infobar_manager->infobars().size() == 1u; }));
 }
 
 }  // namespace

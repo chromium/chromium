@@ -5,21 +5,17 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator_app_agent.h"
 
 #import <algorithm>
-#import <deque>
 #import <map>
-#import <memory>
 #import <string>
 #import <utility>
 #import <vector>
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/location.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -54,7 +50,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
-#import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
 namespace {
 
@@ -88,31 +83,34 @@ bool TryShowPasskeyCreationInfobarInScene(
 
 }  // namespace
 
-@interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
-@end
-
 @implementation CredentialProviderMigratorAppAgent {
   CredentialProviderMigrationNotifier* _credentialProviderMigrationNotifier;
-
-  // Maps of PasskeyModel to the registered observer.
-  std::map<webauthn::PasskeyModel*,
-           std::unique_ptr<webauthn::PasskeyModel::Observer>>
-      _passkeyModelObservers;
 
   // Maps profile name to the CredentialProviderMigrator responsible for the
   // profile's migration.
   std::map<std::string, CredentialProviderMigrator*, std::less<>> _migratorMap;
-
-  // Queue of profile names waiting for migration.
-  std::deque<std::string> _pendingMigrationProfileNames;
 }
 
 #pragma mark - SceneObservingAppAgent
 
 - (void)appDidEnterForeground {
   // Migrate credentials when Chrome enters foreground.
-  [self migrateCredentialForAllPasskeyModels];
+  [self migrateCredentialsForAllProfiles];
   [self createCredentialProviderMigrationNotifierIfNeeded];
+}
+
+- (void)appDidEnterBackground {
+  // Stop any queued passes or deferred `PasskeyModel` waits while Chrome is in
+  // the background so Chrome neither races with the Credential Provider
+  // Extension on App Group `NSUserDefaults` nor drops the foreground infobar.
+  std::vector<CredentialProviderMigrator*> activeMigrators;
+  activeMigrators.reserve(_migratorMap.size());
+  for (const auto& [profileName, migrator] : _migratorMap) {
+    activeMigrators.push_back(migrator);
+  }
+  for (CredentialProviderMigrator* migrator : activeMigrators) {
+    [migrator cancelPendingMigration];
+  }
 }
 
 - (void)appState:(AppState*)appState
@@ -121,7 +119,7 @@ bool TryShowPasskeyCreationInfobarInScene(
 
   // Check if the app is now fully initialized.
   if (appState.initStage == AppInitStage::kFinal) {
-    [self migrateCredentialForAllPasskeyModels];
+    [self migrateCredentialsForAllProfiles];
     [self createCredentialProviderMigrationNotifierIfNeeded];
   }
 }
@@ -140,39 +138,6 @@ bool TryShowPasskeyCreationInfobarInScene(
   [self updateMultiProfileSetting];
 }
 
-#pragma mark - PasskeyModelObserverDelegate
-
-- (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel {
-  [self removeObserverForPasskeyModel:passkeyModel];
-}
-
-- (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel {
-  const std::vector<ProfileIOS*> loadedProfiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  const auto iter =
-      std::ranges::find_if(loadedProfiles, [passkeyModel](ProfileIOS* profile) {
-        return IOSPasskeyModelFactory::GetForProfile(profile) == passkeyModel;
-      });
-
-  if (iter == loadedProfiles.end()) {
-    return;
-  }
-
-  // The migration writes back into `passkeyModel`, which would re-enter the
-  // observer list that is currently being iterated to deliver this very
-  // notification. Post the work instead so that it runs once the notification
-  // loop has unwound.
-  __weak __typeof__(self) weakSelf = self;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf migrateNextProfile];
-      }));
-}
-
-- (void)passkeyModelDidChange {
-}
-
 #pragma mark - Private
 
 // Returns whether the app is foregrounded and fully initialized.
@@ -187,7 +152,7 @@ bool TryShowPasskeyCreationInfobarInScene(
     __weak __typeof__(self) weakSelf = self;
     _credentialProviderMigrationNotifier =
         [[CredentialProviderMigrationNotifier alloc] initWithBlock:^() {
-          [weakSelf migrateCredentialForAllPasskeyModels];
+          [weakSelf migrateCredentialsForAllProfiles];
         }];
   }
 }
@@ -255,9 +220,20 @@ bool TryShowPasskeyCreationInfobarInScene(
   }
 }
 
-// Migrates the credential for all passkey models.
-- (void)migrateCredentialForAllPasskeyModels {
-  // Only attempt to start migrations while the app is foregrounded or fully
+// Returns the primary identity's GAIA ID for `profile`, or `nil` if signed out.
+- (NSString*)primaryGaiaIDForProfile:(ProfileIOS*)profile {
+  // `ProfileManagerIOS::GetLoadedProfiles()` only returns regular profiles, so
+  // `AuthenticationServiceFactory` always has an instance.
+  CHECK(!profile->IsOffTheRecord());
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
+  return identity ? identity.gaiaId.ToNSString() : nil;
+}
+
+// Migrates credentials for all loaded profiles.
+- (void)migrateCredentialsForAllProfiles {
+  // Only attempt to start migrations while the app is foregrounded and fully
   // initialized.
   if (![self canMigrate]) {
     return;
@@ -267,66 +243,30 @@ bool TryShowPasskeyCreationInfobarInScene(
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   for (ProfileIOS* profile : loadedProfiles) {
-    std::string profileName = profile->GetProfileName();
-    if (_migratorMap.contains(profileName)) {
-      continue;
+    auto iter = _migratorMap.find(profile->GetProfileName());
+    if (iter != _migratorMap.end()) {
+      NSString* activeGaiaID = iter->second.gaiaID;
+      NSString* currentGaiaID = [self primaryGaiaIDForProfile:profile];
+      BOOL sameGaia =
+          (!activeGaiaID && !currentGaiaID) ||
+          (activeGaiaID && [activeGaiaID isEqualToString:currentGaiaID]);
+      if (sameGaia) {
+        [iter->second checkForNewCredentials];
+        continue;
+      }
+      [iter->second cancelPendingMigration];
+      if (_migratorMap.contains(profile->GetProfileName())) {
+        // An in-flight temporal-store write is still finishing; skip this
+        // trigger rather than run two migrators for the same profile.
+        continue;
+      }
     }
-    if (std::ranges::find(_pendingMigrationProfileNames, profileName) !=
-        _pendingMigrationProfileNames.end()) {
-      continue;
-    }
-    _pendingMigrationProfileNames.push_back(profileName);
+    [self migrateProfile:profile];
   }
-  [self migrateNextProfile];
-}
-
-// Starts the next pending migration if possible.
-- (void)migrateNextProfile {
-  // Only attempt to start migrations while the app is foregrounded or fully
-  // initialized.
-  if (![self canMigrate]) {
-    return;
-  }
-
-  // If a migration is already running, wait for it to finish.
-  if (!_migratorMap.empty()) {
-    return;
-  }
-
-  if (_pendingMigrationProfileNames.empty()) {
-    return;
-  }
-
-  std::string profileName = _pendingMigrationProfileNames.front();
-  ProfileIOS* profile =
-      GetApplicationContext()->GetProfileManager()->GetProfileWithName(
-          profileName);
-
-  if (!profile) {
-    _pendingMigrationProfileNames.pop_front();
-    [self migrateNextProfile];
-    return;
-  }
-
-  webauthn::PasskeyModel* passkeyModel =
-      IOSPasskeyModelFactory::GetForProfile(profile);
-
-  // If the passkey model isn't ready, delay the migration until it is ready.
-  // The profile remains at the head of the queue.
-  if (passkeyModel && !passkeyModel->IsReady()) {
-    if (![self isObservingPasskeyModel:passkeyModel]) {
-      [self addObserverForPasskeyModel:passkeyModel];
-    }
-    return;
-  }
-
-  _pendingMigrationProfileNames.pop_front();
-  [self migrateProfile:profile passkeyModel:passkeyModel];
 }
 
 // Migrates a specific profile.
-- (void)migrateProfile:(ProfileIOS*)profile
-          passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
+- (void)migrateProfile:(ProfileIOS*)profile {
   CHECK(profile);
 
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
@@ -344,10 +284,9 @@ bool TryShowPasskeyCreationInfobarInScene(
           : IOSChromeProfilePasswordStoreFactory::GetForProfile(
                 profile, ServiceAccessType::IMPLICIT_ACCESS);
 
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
-  NSString* gaiaID = identity ? identity.gaiaId.ToNSString() : nil;
+  NSString* gaiaID = [self primaryGaiaIDForProfile:profile];
+  webauthn::PasskeyModel* passkeyModel =
+      IOSPasskeyModelFactory::GetForProfile(profile);
 
   CredentialProviderMigrator* migrator =
       [[CredentialProviderMigrator alloc] initWithUserDefaults:userDefaults
@@ -382,17 +321,8 @@ bool TryShowPasskeyCreationInfobarInScene(
   auto iter = _migratorMap.find(profileName);
   CHECK(iter != _migratorMap.end());
   _migratorMap.erase(iter);
-  // `profile` may have been unloaded while `saveDataWithCompletion:` was in
-  // flight on the background queue; advance the queue for remaining profiles.
   if (!profile) {
-    [self migrateNextProfile];
     return;
-  }
-
-  webauthn::PasskeyModel* passkeyModel =
-      IOSPasskeyModelFactory::GetForProfile(profile);
-  if ([self isObservingPasskeyModel:passkeyModel]) {
-    [self removeObserverForPasskeyModel:passkeyModel];
   }
 
   if (result.has_value() && !result->empty()) {
@@ -406,27 +336,6 @@ bool TryShowPasskeyCreationInfobarInScene(
                                          passkey:*newestPasskeyIter];
     }
   }
-
-  [self migrateNextProfile];
-}
-
-// Returns whether we already own an observer for the provided passkey model.
-- (BOOL)isObservingPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  return _passkeyModelObservers.contains(passkeyModel);
-}
-
-// Adds an observer for the provided passkey model.
-- (void)addObserverForPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  CHECK(![self isObservingPasskeyModel:passkeyModel]);
-  _passkeyModelObservers.insert(std::make_pair(
-      passkeyModel,
-      std::make_unique<PasskeyModelObserverBridge>(self, passkeyModel)));
-}
-
-// Removes an observer for the provided passkey model.
-- (void)removeObserverForPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  CHECK([self isObservingPasskeyModel:passkeyModel]);
-  _passkeyModelObservers.erase(passkeyModel);
 }
 
 @end

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import <memory>
+
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -707,6 +709,613 @@ TEST_F(CredentialProviderMigratorTest,
   ASSERT_THAT(*result, SizeIs(2));
   EXPECT_EQ("created_user_1", (*result)[0].user_name());
   EXPECT_EQ("created_user_2", (*result)[1].user_name());
+}
+
+// Tests that when `PasskeyModel` is not yet ready, passwords migrate
+// immediately while passkeys wait until `PasskeyModel` becomes ready.
+TEST_F(CredentialProviderMigratorTest,
+       DefersPasskeysWhileMigratingPasswordsImmediately) {
+  test_passkey_model_.SetReady(false);
+
+  ArchivableCredential* password_credential =
+      TestPasswordCredential(kDefaultGaia);
+  ArchivableCredential* passkey_credential = TestPasskeyCredential({
+      .record_identifier = @"passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:password_credential];
+  [store addCredential:passkey_credential];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(password_credential);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  testing::Mock::VerifyAndClearExpectations(mock_store_.get());
+  EXPECT_FALSE(migration_future.IsReady());
+  EXPECT_THAT(
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude),
+      IsEmpty());
+  histogram_tester_.ExpectTotalCount("Passkeys.IOSMigration", 0);
+
+  test_passkey_model_.SetReady(true);
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  ASSERT_THAT(*result, SizeIs(1));
+  EXPECT_EQ(PasskeyFromCredential(passkey_credential).sync_id(),
+            (*result)[0].sync_id());
+  EXPECT_THAT(
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude),
+      SizeIs(1));
+  histogram_tester_.ExpectUniqueSample(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 1);
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(0u, store.credentials.count);
+}
+
+// Tests that when no passkeys match the profile's GAIA ID, migration finishes
+// without waiting for an unready `PasskeyModel`.
+TEST_F(CredentialProviderMigratorTest,
+       PasswordOnlyBatchDoesNotWaitForUnreadyPasskeyModel) {
+  test_passkey_model_.SetReady(false);
+
+  ArchivableCredential* password_credential =
+      TestPasswordCredential(kDefaultGaia);
+  ArchivableCredential* other_account_passkey = TestPasskeyCredential({
+      .gaia = kMismatchingGaia,
+      .record_identifier = @"other_passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:password_credential];
+  [store addCredential:other_account_passkey];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(password_credential);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_NSEQ(kMismatchingGaia, store.credentials[0].gaia);
+}
+
+// Tests that when `PasskeyModel` fails initialization while passkeys are
+// deferred, completed password removals are persisted while unmigrated passkeys
+// remain in the temporal store.
+TEST_F(CredentialProviderMigratorTest,
+       PasskeyModelFailedInitializationPersistsPasswordsAndPreservesPasskeys) {
+  test_passkey_model_.SetReady(false);
+
+  ArchivableCredential* password_credential =
+      TestPasswordCredential(kDefaultGaia);
+  ArchivableCredential* passkey_credential = TestPasskeyCredential({
+      .record_identifier = @"passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:password_credential];
+  [store addCredential:passkey_credential];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(password_credential);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  testing::Mock::VerifyAndClearExpectations(mock_store_.get());
+  EXPECT_FALSE(migration_future.IsReady());
+
+  test_passkey_model_.SetReady(false);
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+  EXPECT_THAT(
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude),
+      IsEmpty());
+  histogram_tester_.ExpectTotalCount("Passkeys.IOSMigration", 0);
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_TRUE([store.credentials[0] isPasskey]);
+  EXPECT_NSEQ(@"passkey_record", store.credentials[0].recordIdentifier);
+}
+
+// Tests that `PasskeyModel` shutting down while passkey migration is deferred
+// persists password removals, preserves unmigrated passkeys, and runs
+// completion once.
+TEST_F(CredentialProviderMigratorTest,
+       PasskeyModelShutdownDuringDeferredMigrationCompletesCleanly) {
+  auto passkey_model = std::make_unique<webauthn::TestPasskeyModel>();
+  passkey_model->SetReady(false);
+
+  ArchivableCredential* password_credential =
+      TestPasswordCredential(kDefaultGaia);
+  ArchivableCredential* passkey_credential = TestPasskeyCredential({
+      .record_identifier = @"passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:password_credential];
+  [store addCredential:passkey_credential];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(password_credential);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:passkey_model.get()];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  testing::Mock::VerifyAndClearExpectations(mock_store_.get());
+  EXPECT_FALSE(migration_future.IsReady());
+
+  passkey_model.reset();
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_TRUE([store.credentials[0] isPasskey]);
+}
+
+// Tests that if `PasskeyModel` shuts down after signalling readiness but before
+// the posted passkey import task executes, migration unwinds safely without
+// dereferencing the destroyed `PasskeyModel`.
+TEST_F(CredentialProviderMigratorTest,
+       PasskeyModelShutdownBeforePostedReadyTaskRunsUnwindsWithoutUAF) {
+  auto passkey_model = std::make_unique<webauthn::TestPasskeyModel>();
+  passkey_model->SetReady(false);
+
+  ArchivableCredential* passkey_credential = TestPasskeyCredential({
+      .record_identifier = @"passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:passkey_credential];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:passkey_model.get()];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  passkey_model->SetReady(true);
+  passkey_model.reset();
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_NSEQ(@"passkey_record", store.credentials[0].recordIdentifier);
+}
+
+// Tests that a migrator keeps observing `PasskeyModel` after a migration
+// completes, so restarting it after `PasskeyModel` shuts down completes without
+// touching the destroyed `PasskeyModel`.
+TEST_F(CredentialProviderMigratorTest,
+       RestartAfterPasskeyModelShutdownBetweenMigrationsCompletesCleanly) {
+  auto passkey_model = std::make_unique<webauthn::TestPasskeyModel>();
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:passkey_model.get()];
+  base::test::TestFuture<CredentialMigrationResult> first_future;
+  [migrator startMigrationWithCompletion:first_future.GetCallback()];
+  ASSERT_TRUE(first_future.Take().has_value());
+
+  passkey_model.reset();
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:TestPasskeyCredential({
+                           .record_identifier = @"passkey_record",
+                       })];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  base::test::TestFuture<CredentialMigrationResult> second_future;
+  [migrator startMigrationWithCompletion:second_future.GetCallback()];
+  CredentialMigrationResult result = second_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_NSEQ(@"passkey_record", store.credentials[0].recordIdentifier);
+}
+
+// Tests that credentials written to `NSUserDefaults` while passkeys are waiting
+// on `PasskeyModel` readiness are not clobbered by a stale snapshot, and that
+// `-checkForNewCredentials` migrates newly added passwords immediately during
+// the wait.
+TEST_F(CredentialProviderMigratorTest,
+       DeferredPasskeyWaitPreservesConcurrentWritesAndMigratesNewPasswords) {
+  test_passkey_model_.SetReady(false);
+
+  ArchivableCredential* initial_passkey = TestPasskeyCredential({
+      .record_identifier = @"initial_passkey_record",
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:initial_passkey];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+  ASSERT_FALSE(migration_future.IsReady());
+
+  // Simulate the CPE writing both a password for this account and a passkey for
+  // another account while `test_passkey_model_` is still initializing.
+  ArchivableCredential* concurrent_password =
+      TestPasswordCredential(kDefaultGaia);
+  ArchivableCredential* other_account_passkey = TestPasskeyCredential({
+      .gaia = kMismatchingGaia,
+      .record_identifier = @"other_account_passkey_record",
+  });
+  UserDefaultsCredentialStore* cpe_store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [cpe_store addCredential:concurrent_password];
+  [cpe_store addCredential:other_account_passkey];
+  base::test::TestFuture<NSError*> cpe_save_future;
+  [cpe_store saveDataWithCompletion:base::CallbackToBlock(
+                                        cpe_save_future.GetCallback())];
+  ASSERT_FALSE(cpe_save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(concurrent_password);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  [migrator checkForNewCredentials];
+  testing::Mock::VerifyAndClearExpectations(mock_store_.get());
+  EXPECT_FALSE(migration_future.IsReady());
+
+  // Fail initialization: neither `initial_passkey` nor `other_account_passkey`
+  // should be lost, while `concurrent_password` was already migrated and
+  // removed.
+  test_passkey_model_.SetReady(false);
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(2u, store.credentials.count);
+  EXPECT_TRUE([store credentialWithRecordIdentifier:@"initial_passkey_record"]);
+  EXPECT_TRUE(
+      [store credentialWithRecordIdentifier:@"other_account_passkey_record"]);
+}
+
+// Tests that `TemporalStoreSerializer` serializes concurrent
+// `CredentialProviderMigrator` instances sharing `(user_defaults_, store_key_)`
+// without clobbering updates, and that `PasskeyModel` shutdown or
+// initialization failure while a second or third migrator is queued behind the
+// first unwinds safely without losing passwords or hanging completion.
+TEST_F(CredentialProviderMigratorTest,
+       ConcurrentMigratorsSerializeStorePassesAndHandleQueuedShutdownAndFail) {
+  NSString* const gaia_1 = @"gaia_account_1";
+  NSString* const gaia_2 = @"gaia_account_2";
+  NSString* const gaia_3 = @"gaia_account_3";
+
+  ArchivableCredential* passkey_1 = TestPasskeyCredential({
+      .gaia = gaia_1,
+      .record_identifier = @"passkey_1",
+      .sync_id = TestDataFromString("syncIdAccount116"),
+      .credential_id = TestDataFromString("credIdAccount116"),
+  });
+  ArchivableCredential* password_2 =
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:gaia_2
+                                           password:@"pw_2"
+                                               rank:1
+                                   recordIdentifier:@"password_2"
+                                  serviceIdentifier:@"https://two.example.com"
+                                        serviceName:nil
+                           registryControlledDomain:nil
+                                           username:@"user_2"
+                                               note:nil
+                                       lastUsedTime:0];
+  ArchivableCredential* passkey_2 = TestPasskeyCredential({
+      .gaia = gaia_2,
+      .record_identifier = @"passkey_2",
+      .sync_id = TestDataFromString("syncIdAccount216"),
+      .credential_id = TestDataFromString("credIdAccount216"),
+  });
+  ArchivableCredential* password_3 =
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:gaia_3
+                                           password:@"pw_3"
+                                               rank:1
+                                   recordIdentifier:@"password_3"
+                                  serviceIdentifier:@"https://three.example.com"
+                                        serviceName:nil
+                           registryControlledDomain:nil
+                                           username:@"user_3"
+                                               note:nil
+                                       lastUsedTime:0];
+  ArchivableCredential* passkey_3 = TestPasskeyCredential({
+      .gaia = gaia_3,
+      .record_identifier = @"passkey_3",
+      .sync_id = TestDataFromString("syncIdAccount316"),
+      .credential_id = TestDataFromString("credIdAccount316"),
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:passkey_1];
+  [store addCredential:password_2];
+  [store addCredential:passkey_2];
+  [store addCredential:password_3];
+  [store addCredential:passkey_3];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  webauthn::TestPasskeyModel passkey_model_1;
+  auto passkey_model_2 = std::make_unique<webauthn::TestPasskeyModel>();
+  passkey_model_2->SetReady(false);
+  webauthn::TestPasskeyModel passkey_model_3;
+  passkey_model_3.SetReady(false);
+
+  auto mock_store_2 =
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
+  auto mock_store_3 =
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
+
+  EXPECT_CALL(*mock_store_2, AddLogin).Times(0);
+  PasswordForm expected_password_3 = PasswordFormFromCredential(password_3);
+  EXPECT_CALL(*mock_store_3,
+              AddLogin(EqStoredCredential(expected_password_3), _));
+
+  CredentialProviderMigrator* migrator_1 = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:gaia_1
+             passwordStore:mock_store_
+              passkeyStore:&passkey_model_1];
+  CredentialProviderMigrator* migrator_2 = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:gaia_2
+             passwordStore:mock_store_2
+              passkeyStore:passkey_model_2.get()];
+  CredentialProviderMigrator* migrator_3 = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:gaia_3
+             passwordStore:mock_store_3
+              passkeyStore:&passkey_model_3];
+
+  base::test::TestFuture<CredentialMigrationResult> future_1;
+  base::test::TestFuture<CredentialMigrationResult> future_2;
+  base::test::TestFuture<CredentialMigrationResult> future_3;
+
+  // `migrator_1` begins saving immediately, leaving `migrator_2` and
+  // `migrator_3` queued in `TemporalStoreSerializer`.
+  [migrator_1 startMigrationWithCompletion:future_1.GetCallback()];
+  [migrator_2 startMigrationWithCompletion:future_2.GetCallback()];
+  [migrator_3 startMigrationWithCompletion:future_3.GetCallback()];
+
+  // Shut down `passkey_model_2` and fail `passkey_model_3` while both are still
+  // queued behind `migrator_1`'s in-flight save.
+  passkey_model_2.reset();
+  passkey_model_3.SetReady(false);
+
+  CredentialMigrationResult result_1 = future_1.Take();
+  CredentialMigrationResult result_2 = future_2.Take();
+  CredentialMigrationResult result_3 = future_3.Take();
+  ASSERT_TRUE(result_1.has_value());
+  ASSERT_THAT(*result_1, SizeIs(1));
+  EXPECT_EQ(PasskeyFromCredential(passkey_1).sync_id(),
+            (*result_1)[0].sync_id());
+  ASSERT_TRUE(result_2.has_value());
+  EXPECT_THAT(*result_2, IsEmpty());
+  ASSERT_TRUE(result_3.has_value());
+  EXPECT_THAT(*result_3, IsEmpty());
+
+  // `passkey_1` and `password_3` were migrated and removed, while `password_2`,
+  // `passkey_2`, and `passkey_3` remain preserved in `NSUserDefaults`.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(3u, store.credentials.count);
+  EXPECT_TRUE([store credentialWithRecordIdentifier:@"password_2"]);
+  EXPECT_TRUE([store credentialWithRecordIdentifier:@"passkey_2"]);
+  EXPECT_TRUE([store credentialWithRecordIdentifier:@"passkey_3"]);
+}
+
+// Tests that calling `-checkForNewCredentials` while a temporal-store save is
+// in flight schedules a follow-up pass without losing passkeys created in the
+// earlier pass, and that `-cancelPendingMigration` cancels a deferred passkey
+// wait cleanly.
+TEST_F(CredentialProviderMigratorTest,
+       FollowUpPassPreservesCreatedPasskeysAndCancelStopsDeferredWait) {
+  ArchivableCredential* passkey_1 = TestPasskeyCredential({
+      .record_identifier = @"passkey_1",
+      .sync_id = TestDataFromString("syncIdCreated116"),
+      .credential_id = TestDataFromString("credIdCreated116"),
+  });
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:passkey_1];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+
+  // Trigger a follow-up pass while Pass 1's `saveDataWithCompletion:` is still
+  // in flight (`_passState == kSaving`).
+  ASSERT_FALSE(migration_future.IsReady());
+  [migrator checkForNewCredentials];
+
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_THAT(*result, SizeIs(1));
+  EXPECT_EQ(PasskeyFromCredential(passkey_1).sync_id(), (*result)[0].sync_id());
+
+  // Now verify `-cancelPendingMigration` unwinds a deferred `PasskeyModel` wait
+  // while leaving unmigrated passkeys in `NSUserDefaults`.
+  test_passkey_model_.SetReady(false);
+  ArchivableCredential* deferred_passkey = TestPasskeyCredential({
+      .record_identifier = @"deferred_passkey",
+      .sync_id = TestDataFromString("syncIdDeferred16"),
+      .credential_id = TestDataFromString("credIdDeferred16"),
+  });
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:deferred_passkey];
+  base::test::TestFuture<NSError*> deferred_save_future;
+  [store saveDataWithCompletion:base::CallbackToBlock(
+                                    deferred_save_future.GetCallback())];
+  ASSERT_FALSE(deferred_save_future.Get());
+
+  CredentialProviderMigrator* deferred_migrator =
+      [[CredentialProviderMigrator alloc]
+          initWithUserDefaults:user_defaults_
+                           key:store_key_
+                          gaia:kDefaultGaia
+                 passwordStore:mock_store_
+                  passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> deferred_future;
+  [deferred_migrator
+      startMigrationWithCompletion:deferred_future.GetCallback()];
+  ASSERT_FALSE(deferred_future.IsReady());
+
+  [deferred_migrator cancelPendingMigration];
+  CredentialMigrationResult cancelled_result = deferred_future.Take();
+  ASSERT_TRUE(cancelled_result.has_value());
+  EXPECT_THAT(*cancelled_result, IsEmpty());
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  ASSERT_EQ(1u, store.credentials.count);
+  EXPECT_NSEQ(@"deferred_passkey", store.credentials[0].recordIdentifier);
 }
 
 }  // namespace

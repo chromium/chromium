@@ -128,6 +128,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/autofill/core/common",
       "//components/favicon/core",
       "//components/infobars/core",
+      "//components/keyed_service/core",
       "//components/password_manager/core/browser:test_support",
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/browser/ui:credential_ui_entry",
