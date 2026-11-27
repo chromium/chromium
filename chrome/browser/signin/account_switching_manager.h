@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -27,6 +26,21 @@ class SigninClient;
 namespace signin {
 
 class IdentityManager;
+
+// Outcome of presenting the Desktop Smart Account Switching prompt bubble.
+enum class AccountSwitchingPromoResult {
+  // The user clicked the accept button to proceed with account switching.
+  kAccepted,
+  // The user explicitly declined the promo ("Not now").
+  kDeclined,
+  // The promo was dismissed or closed without an explicit accept/decline choice
+  // (e.g. close button, Escape key, window close, or account invalidation while
+  // visible).
+  kDismissed,
+  // The promo bubble was never displayed (e.g. controller unavailable, or
+  // aborted before display while waiting for the avatar anchor).
+  kNotDisplayed,
+};
 
 // Manages Desktop Smart Account Switching promo eligibility, presentation,
 // throttling, and account-switching execution for a single regular profile
@@ -73,7 +87,7 @@ class AccountSwitchingManager : public KeyedService {
   bool CanShowPromo() const;
   bool ShowPromo(BrowserWindowInterface* browser_window);
 
-  void ResolvePromoForTesting(SigninInterceptionResult result);
+  void ResolvePromoForTesting(AccountSwitchingPromoResult result);
   void CompleteSwitchForTesting(bool success);
   bool IsPromoActiveForTesting() const;
   bool IsSwitchInProgressForTesting() const;
@@ -96,7 +110,7 @@ class AccountSwitchingManager : public KeyedService {
   bool CanShowPromoForPair(const AccountPair& pair) const;
 
   // Promo result handling and throttling state updates.
-  void OnPromoResult(SigninInterceptionResult result);
+  void OnPromoResult(AccountSwitchingPromoResult result);
   void RecordPromoIgnored();
   void RecordPromoExplicitlyDismissed(const AccountPair& pair);
 

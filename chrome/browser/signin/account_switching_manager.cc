@@ -12,7 +12,6 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
-#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -117,35 +116,34 @@ bool AccountSwitchingManager::ShowPromo(
   // TODO(crbug.com/585131565): Trigger the Smart Account Switching prompt
   // bubble via `SigninViewController::From(browser_window)` using a `WeakPtr`
   // invalidated in `Shutdown()` bound to `OnPromoResult()`, and ensure
-  // never-shown bubble aborts report `SigninInterceptionResult::kNotDisplayed`.
+  // never-shown bubble aborts report
+  // `AccountSwitchingPromoResult::kNotDisplayed`.
   return true;
 }
 
-void AccountSwitchingManager::OnPromoResult(SigninInterceptionResult result) {
+void AccountSwitchingManager::OnPromoResult(
+    AccountSwitchingPromoResult result) {
   CHECK(active_promo_.has_value());
   AccountPair promo = std::move(*active_promo_);
   active_promo_.reset();
 
   switch (result) {
-    case SigninInterceptionResult::kAccepted:
+    case AccountSwitchingPromoResult::kAccepted:
       StartSwitching(std::move(promo));
       break;
-    case SigninInterceptionResult::kDeclined:
+    case AccountSwitchingPromoResult::kDeclined:
       RecordPromoExplicitlyDismissed(promo);
       break;
-    case SigninInterceptionResult::kIgnored:
-    case SigninInterceptionResult::kDismissed:
+    case AccountSwitchingPromoResult::kDismissed:
       RecordPromoIgnored();
       break;
-    case SigninInterceptionResult::kNotDisplayed:
+    case AccountSwitchingPromoResult::kNotDisplayed:
       break;
-    case SigninInterceptionResult::kAcceptedWithExistingProfile:
-      NOTREACHED();
   }
 }
 
 void AccountSwitchingManager::ResolvePromoForTesting(
-    SigninInterceptionResult result) {
+    AccountSwitchingPromoResult result) {
   OnPromoResult(result);
 }
 
