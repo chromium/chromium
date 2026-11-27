@@ -1216,6 +1216,9 @@ void AXObject::SetCachedValuesNeedUpdate(
     bool cached_values_need_update,
     std::optional<TreeUpdateReason> reason) {
   cached_values_need_update_ = cached_values_need_update;
+  if (cached_values_need_update) {
+    is_cached_local_bounding_box_valid_ = false;
+  }
   cached_values_dirty_reason_ =
       cached_values_need_update ? reason : std::nullopt;
 #if AX_FAIL_FAST_BUILD()
@@ -4087,6 +4090,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   if (GetLayoutObject() && GetLayoutObject()->IsText()) {
     cached_local_bounding_box_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
+    is_cached_local_bounding_box_valid_ = true;
   }
 
   if (is_changing_inherited_values) {
@@ -4744,7 +4748,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
 
   // Always pass through Line Breaking objects, this is necessary to
   // detect paragraph edges, which are defined as hard-line breaks.
-  if (IsLineBreakingObject() && IsVisible()) {
+  if (IsVisible() && IsLineBreakingObject()) {
     return true;
   }
 
@@ -8059,22 +8063,16 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   } else {
     while (container) {
       container_layout_object = container->GetLayoutObject();
+      // If it's absolutely positioned, the container must be the nearest
+      // positioned container, or the root.
       if (container_layout_object && container_layout_object->IsBox() &&
+          (container_layout_object->HasLayer() ||
+           container->IsScrollableContainer()) &&
+          (!layout_object->IsAbsolutePositioned() ||
+           IsA<LayoutView>(layout_object) ||
+           container_layout_object->IsPositioned()) &&
           layout_object->IsDescendantOf(container_layout_object)) {
-        if (container->IsScrollableContainer() ||
-            container_layout_object->HasLayer()) {
-          if (layout_object->IsAbsolutePositioned()) {
-            // If it's absolutely positioned, the container must be the
-            // nearest positioned container, or the root.
-            if (IsA<LayoutView>(layout_object)) {
-              break;
-            }
-            if (container_layout_object->IsPositioned())
-              break;
-          } else {
-            break;
-          }
-        }
+        break;
       }
 
       container = container->ParentObjectUnignored();
@@ -8084,8 +8082,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (!container)
     return;
   *out_container = container;
-  out_bounds_in_container =
-      layout_object->LocalBoundingBoxRectForAccessibility();
+  out_bounds_in_container = LocalBoundingBoxRectForAccessibility();
 
   // Frames need to take their border and padding into account so the
   // child element's computed position will be correct.
@@ -8121,13 +8118,20 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   }
 }
 
-gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() {
-  if (!GetLayoutObject())
+gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() const {
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return gfx::RectF();
-  DCHECK(GetLayoutObject()->IsText());
-  CHECK(!cached_values_need_update_ || !AXObjectCache().IsFrozen());
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_local_bounding_box_;
+  }
+  if (layout_object->IsText()) {
+    if (!is_cached_local_bounding_box_valid_) {
+      cached_local_bounding_box_ =
+          layout_object->LocalBoundingBoxRectForAccessibility();
+      is_cached_local_bounding_box_valid_ = true;
+    }
+    return cached_local_bounding_box_;
+  }
+  return layout_object->LocalBoundingBoxRectForAccessibility();
 }
 
 PhysicalRect AXObject::GetBoundsInFrameCoordinates() const {

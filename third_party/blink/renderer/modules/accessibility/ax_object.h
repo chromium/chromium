@@ -1107,7 +1107,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                  gfx::Transform& out_container_transform,
                                  bool* clips_children = nullptr) const;
 
-  gfx::RectF LocalBoundingBoxRectForAccessibility();
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const;
+  void InvalidateCachedBoundingBox() {
+    is_cached_local_bounding_box_valid_ = false;
+  }
 
   bool IsInCanvasSubtreeWithoutCanvasTransform() const;
   // Returns the parent node in the flat tree, crossing frame boundaries
@@ -1791,10 +1794,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // ::scroll-marker in tabs mode (non-::column case).
   bool cached_is_ignored_as_inside_inactive_scroll_marker_tab_ : 1 = false;
   bool always_load_inline_text_boxes_ : 1 = false;  // Used for Android only.
+  mutable bool is_cached_local_bounding_box_valid_ : 1 = false;
   std::optional<bool> cached_is_on_screen_;
 
   Member<AXObject> cached_live_region_root_;
-  gfx::RectF cached_local_bounding_box_;
+  mutable gfx::RectF cached_local_bounding_box_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 

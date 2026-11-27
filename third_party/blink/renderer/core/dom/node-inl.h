@@ -25,9 +25,12 @@ ALWAYS_INLINE void RareDataUpdate<void>::RefreshNode(Node& node) && {
   node.SetRareData(base::PassKey<RareDataUpdate<void>>(), rare_data_);
 }
 
-DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
+DOMNodeId Node::ExistingDomNodeId() const {
   return data_ ? const_cast<const NodeRareData*>(data_.Get())->NodeId()
                : kInvalidDOMNodeId;
+}
+DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
+  return ExistingDomNodeId();
 }
 DOMNodeId& Node::EnsureNodeID(base::PassKey<DOMNodeIds>) {
   return EnsureRareData().NodeId().RefreshNodeAndUnwrap(*this);

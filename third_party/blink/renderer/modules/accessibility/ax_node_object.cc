@@ -3086,26 +3086,31 @@ bool AXNodeObject::IsLineBreakingObject() const {
   // According to Blink Editing, objects without an associated DOM node such as
   // pseudo-elements and list bullets, are never considered as paragraph
   // boundaries.
-  if (IsDetached() || !GetNode())
+  const Node* node = GetNode();
+  if (!node) {
     return false;
+  }
 
   // Presentational objects should not contribute any of their semantic meaning
   // to the accessibility tree, including to its text representation.
   if (IsPresentational())
     return false;
 
-  // `IsEnclosingBlock` includes all elements with display block, inline block,
-  // table related, flex, grid, list item, flow-root, webkit-box, and display
-  // contents. This is the same function used by Blink > Editing for determining
-  // paragraph boundaries, i.e. line breaking objects.
-  if (IsEnclosingBlock(GetNode()))
+  // Mirrors `IsEnclosingBlock()` that core/editing uses for paragraph-boundary
+  // testing, inlined here for speed. Keep in sync. False for inline-level
+  // objects, including inline-block and other atomic inlines, and for
+  // `display: contents`.
+  if (const LayoutObject* node_layout_object = node->GetLayoutObject();
+      node_layout_object && !node_layout_object->IsInline()) {
     return true;
+  }
 
   // Not all <br> elements have an associated layout object. They might be
   // "visibility: hidden" or within a display locked region. We need to check
   // their DOM node first.
-  if (IsA<HTMLBRElement>(GetNode()))
+  if (IsA<HTMLBRElement>(node)) {
     return true;
+  }
 
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
@@ -3125,10 +3130,8 @@ bool AXNodeObject::IsLineBreakingObject() const {
   // Line 2</pre>
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
     const ComputedStyle& style = layout_object->Style();
-    if (layout_text->HasNonCollapsedText() && style.ShouldPreserveBreaks() &&
-        layout_text->PlainText().contains('\n')) {
-      return true;
-    }
+    return style.ShouldPreserveBreaks() && layout_text->HasNonCollapsedText() &&
+           layout_text->PlainText().contains('\n');
   }
 
   // Rely on the ARIA role to figure out if this object is line breaking.
@@ -6902,10 +6905,6 @@ Document* AXNodeObject::GetDocument() const {
     return &GetLayoutObject()->GetDocument();
   }
   return nullptr;
-}
-
-LayoutObject* AXNodeObject::GetLayoutObject() const {
-  return layout_object_;
 }
 
 bool AXNodeObject::OnNativeBlurAction() {

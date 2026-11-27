@@ -310,7 +310,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // ax_object-inl.h.
   ALWAYS_INLINE Node* GetNode() const;
 
-  LayoutObject* GetLayoutObject() const final;
+  LayoutObject* GetLayoutObject() const final { return layout_object_; }
 
   // Modify or take an action on an object.
   bool OnNativeBlurAction() final;

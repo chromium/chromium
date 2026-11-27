@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -4451,6 +4453,96 @@ TEST_F(AccessibilityTest, AriaAttributeLookupsAndElementInternals) {
   AXObject* ax_with_before = GetAXObjectCache().Get(with_before);
   ASSERT_NE(nullptr, ax_with_before);
   EXPECT_TRUE(ax_with_before->IsIncludedInTree());
+}
+
+TEST_F(AccessibilityTest, TextLocalBoundingBoxAndLineBreakingAndDOMNodeIds) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="block">
+      <div id="spacer" style="display: inline-block; width: 20px; height: 10px;"></div><span id="inline">Hello</span>
+      <br id="br">
+      <pre id="pre">Line 1
+Line 2</pre>
+    </div>
+  )HTML");
+
+  // Verify `DOMNodeIds::ExistingIdForNode` fast-path on null and nodes without
+  // an assigned `DOMNodeId`.
+  EXPECT_EQ(kInvalidDOMNodeId,
+            DOMNodeIds::ExistingIdForNode(static_cast<Node*>(nullptr)));
+  Element* fresh_element = GetDocument().CreateRawElement(html_names::kDivTag);
+  EXPECT_EQ(kInvalidDOMNodeId, fresh_element->ExistingDomNodeId());
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(fresh_element));
+  const Node* const_fresh = fresh_element;
+  EXPECT_EQ(kInvalidDOMNodeId, const_fresh->ExistingDomNodeId());
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(const_fresh));
+  DOMNodeId assigned_id = DOMNodeIds::IdForNode(fresh_element);
+  EXPECT_NE(kInvalidDOMNodeId, assigned_id);
+  EXPECT_EQ(assigned_id, fresh_element->ExistingDomNodeId());
+  EXPECT_EQ(assigned_id, DOMNodeIds::ExistingIdForNode(fresh_element));
+  EXPECT_EQ(assigned_id, const_fresh->ExistingDomNodeId());
+  EXPECT_EQ(assigned_id, DOMNodeIds::ExistingIdForNode(const_fresh));
+
+  // Verify `IsLineBreakingObject` for block, inline, `<br>`, and `<pre>` text.
+  AXObject* ax_block = GetAXObjectByElementId("block");
+  AXObject* ax_inline = GetAXObjectByElementId("inline");
+  AXObject* ax_br = GetAXObjectByElementId("br");
+  AXObject* ax_pre = GetAXObjectByElementId("pre");
+  ASSERT_NE(nullptr, ax_block);
+  ASSERT_NE(nullptr, ax_inline);
+  ASSERT_NE(nullptr, ax_br);
+  ASSERT_NE(nullptr, ax_pre);
+  EXPECT_TRUE(ax_block->IsLineBreakingObject());
+  EXPECT_FALSE(ax_inline->IsLineBreakingObject());
+  EXPECT_TRUE(ax_br->IsLineBreakingObject());
+
+  AXObject* ax_inline_text = ax_inline->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_inline_text);
+  EXPECT_EQ(ax::mojom::blink::Role::kStaticText, ax_inline_text->RoleValue());
+  EXPECT_FALSE(ax_inline_text->IsLineBreakingObject());
+
+  AXObject* ax_pre_text = ax_pre->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_pre_text);
+  EXPECT_EQ(ax::mojom::blink::Role::kStaticText, ax_pre_text->RoleValue());
+  EXPECT_TRUE(ax_pre_text->IsLineBreakingObject());
+
+  // Verify `LocalBoundingBoxRectForAccessibility` caches text bounds and
+  // invalidates them when a sibling layout change shifts the text horizontally.
+  gfx::RectF initial_text_bounds =
+      ax_inline_text->LocalBoundingBoxRectForAccessibility();
+  PhysicalRect initial_frame_bounds =
+      ax_inline_text->GetBoundsInFrameCoordinates();
+
+  Element* spacer = GetElementById("spacer");
+  ASSERT_NE(nullptr, spacer);
+  spacer->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("display: inline-block; width: 120px; height: 10px;"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  gfx::RectF updated_text_bounds =
+      ax_inline_text->LocalBoundingBoxRectForAccessibility();
+  PhysicalRect updated_frame_bounds =
+      ax_inline_text->GetBoundsInFrameCoordinates();
+  EXPECT_NEAR(initial_text_bounds.x() + 100.0f, updated_text_bounds.x(), 1.0f);
+  EXPECT_NEAR(initial_frame_bounds.X().ToFloat() + 100.0f,
+              updated_frame_bounds.X().ToFloat(), 1.0f);
+
+  // Querying bounds on a dirty `LayoutText`/`LayoutBR` while tree updates are
+  // deferred (or while the cache is frozen) must read layout bounds directly
+  // without calling `UpdateCachedAttributeValuesIfNeeded()`.
+  PhysicalRect br_frame_bounds = ax_br->GetBoundsInFrameCoordinates();
+  GetElementById("br")->setAttribute(html_names::kTitleAttr,
+                                     AtomicString("dirty"));
+  ax_inline_text->InvalidateCachedValues(
+      TreeUpdateReason::kTextChangedOnLayoutObject);
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_TRUE(ax_br->NeedsToUpdateCachedValues());
+  ASSERT_TRUE(ax_inline_text->NeedsToUpdateCachedValues());
+  EXPECT_EQ(updated_frame_bounds,
+            ax_inline_text->GetBoundsInFrameCoordinates());
+  EXPECT_EQ(br_frame_bounds, ax_br->GetBoundsInFrameCoordinates());
 }
 
 }  // namespace test

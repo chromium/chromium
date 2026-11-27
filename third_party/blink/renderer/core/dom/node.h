@@ -213,6 +213,11 @@ class CORE_EXPORT Node : public EventTarget {
   // assigned, otherwise, assigns a new DOMNodeID and return that.
   DOMNodeId GetDomNodeId();
 
+  // Returns the existing DOMNodeID for the node if it has already been
+  // assigned, or kInvalidDOMNodeId if one hasn't been assigned. Defined in
+  // node-inl.h.
+  ALWAYS_INLINE DOMNodeId ExistingDomNodeId() const;
+
   // DOM methods & attributes for Node
 
   bool HasTagName(const HTMLQualifiedName&) const;

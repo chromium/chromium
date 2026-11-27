@@ -647,7 +647,12 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
     return UNSAFE_BUFFERS(ArrayBase()[GetFieldIndex(field_id)]);
   }
 
-  NodeRareDataField* GetField(FieldId field_id) const;
+  NodeRareDataField* GetField(FieldId field_id) const {
+    if (HasField(field_id)) {
+      return ArraySlot(field_id);
+    }
+    return nullptr;
+  }
   [[nodiscard]] NodeRareData* SetField(FieldId field_id,
                                        NodeRareDataField* field);
   void SetFieldToNullIfExists(FieldId field_id);

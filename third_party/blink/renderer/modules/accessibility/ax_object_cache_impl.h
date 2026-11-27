@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -1396,13 +1397,51 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXID current_menu_list_axid_ = 0;
 
   // Known locations and sizes of bounding boxes that are known to have been
-  // serialized as well as their scroll offsets.
+  // serialized as well as their scroll offsets. Unpacks `ui::AXRelativeBounds`
+  // fields inline so that `cached_bounding_boxes_` can zero-initialize empty
+  // buckets with `kEmptyValueIsZero = true` instead of invoking out-of-line
+  // `ui::AXRelativeBounds` constructors for every empty bucket, and can update
+  // existing entries in-place.
   struct CachedLocationChange {
-    ui::AXRelativeBounds bounds;
-    int scroll_x;
-    int scroll_y;
+    AXID offset_container_id = ui::AXNodeData::kInvalidAXID;
+    gfx::RectF bounds;
+    std::unique_ptr<gfx::Transform> transform;
+    int scroll_x = 0;
+    int scroll_y = 0;
+
+    void Set(const ui::AXRelativeBounds& new_bounds,
+             int new_scroll_x,
+             int new_scroll_y) {
+      offset_container_id = new_bounds.offset_container_id;
+      bounds = new_bounds.bounds;
+      if (new_bounds.transform) [[unlikely]] {
+        if (transform) {
+          *transform = *new_bounds.transform;
+        } else {
+          transform = std::make_unique<gfx::Transform>(*new_bounds.transform);
+        }
+      } else {
+        transform.reset();
+      }
+      scroll_x = new_scroll_x;
+      scroll_y = new_scroll_y;
+    }
+
+    bool BoundsEquals(const ui::AXRelativeBounds& other) const {
+      return offset_container_id == other.offset_container_id &&
+             bounds == other.bounds &&
+             base::ValuesEquivalent(transform, other.transform);
+    }
   };
-  HashMap<AXID, CachedLocationChange> cached_bounding_boxes_;
+  struct CachedLocationChangeHashTraits
+      : GenericHashTraits<CachedLocationChange> {
+    static constexpr bool kEmptyValueIsZero = true;
+  };
+  HashMap<AXID,
+          CachedLocationChange,
+          HashTraits<AXID>,
+          CachedLocationChangeHashTraits>
+      cached_bounding_boxes_;
 
   // The list of node IDs whose position is fixed or sticky.
   HashSet<AXID> fixed_or_sticky_node_ids_;

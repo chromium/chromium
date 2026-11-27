@@ -62,13 +62,6 @@ NodeRareData::~NodeRareData() {
   DCHECK(!GetField(FieldId::kPseudoElementData));
 }
 
-NodeRareDataField* NodeRareData::GetField(FieldId field_id) const {
-  if (HasField(field_id)) {
-    return ArraySlot(field_id);
-  }
-  return nullptr;
-}
-
 NodeRareData* NodeRareData::SetField(FieldId field_id,
                                      NodeRareDataField* field) {
   NodeRareData* vec = this;
