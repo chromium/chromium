@@ -59,6 +59,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -115,6 +116,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_commit_deferring_condition.h"
 #include "media/media_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
@@ -5633,6 +5635,113 @@ IN_PROC_BROWSER_TEST_F(
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(rfh_1, current_frame_host());
+}
+
+// Regression test for https://crbug.com/590071818: verifies that if
+// EvictBackForwardCachedControllee() synchronously cancels an in-flight
+// back/forward cache restore whose teardown re-entrantly calls
+// EvictBackForwardCachedControllees() on the same ServiceWorkerVersion and
+// drops all external references to it, `this` stays alive until
+// EvictBackForwardCachedControllee() returns and the controllee is not removed
+// from `bfcached_controllee_map_` twice.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest,
+    EvictBackForwardCachedControlleeReentrancy) {
+  StartServerAndNavigateToSetup();
+
+  GURL url_1(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  GURL url_2(std::string(kChromeUIScheme) + "://" +
+             std::string(kChromeUIGpuHost));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int64_t version_id = blink::mojom::kInvalidServiceWorkerVersionId;
+  {
+    WorkerRunningStatusObserver observer(public_context());
+    EXPECT_EQ("DONE", EvalJs(current_frame_host(), "register('hello.js');"));
+    observer.WaitUntilRunning();
+    version_id = observer.version_id();
+  }
+
+  // Keep `pending_update_hint_count_` positive so the reload's post-load
+  // `HintToUpdateServiceWorker()` does not call `ScheduleUpdate()` (which would
+  // hold an extra reference in
+  // `ServiceWorkerContextCore::protected_versions_`).
+  RenderFrameHostImplWrapper rfh_0(current_frame_host());
+  wrapper()->GetLiveVersion(version_id)->IncrementPendingUpdateHintCount();
+
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  if (rfh_0.get() != current_frame_host()) {
+    ASSERT_TRUE(rfh_0.WaitUntilRenderFrameDeleted());
+  }
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(version_id);
+  ASSERT_TRUE(version);
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      wrapper()->GetLiveRegistration(version->registration_id());
+  ASSERT_TRUE(registration);
+  ASSERT_EQ(1u, version->controllee_map().size());
+  base::WeakPtr<ServiceWorkerClient> controllee =
+      version->controllee_map().begin()->second;
+  ASSERT_TRUE(controllee);
+  const std::string client_uuid = controllee->client_uuid();
+
+  // Navigate cross-site so `rfh_1` enters the back/forward cache, and stop the
+  // worker so `worker_host_` does not hold an extra reference to `version`.
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  ASSERT_TRUE(rfh_1->IsInBackForwardCache());
+  ASSERT_TRUE(version->BFCacheContainsControllee(client_uuid));
+  StopServiceWorker(version.get());
+  controllee->HintToUpdateServiceWorker();
+
+  // Start restoring `rfh_1` from the back/forward cache and defer commit.
+  auto installer = std::make_unique<MockCommitDeferringConditionInstaller>(
+      url_1, CommitDeferringCondition::Result::kDefer);
+  web_contents()->GetController().GoBack();
+  installer->WaitUntilInstalled();
+  installer->condition().WaitUntilInvoked();
+
+  // When cancelling the in-flight restore runs `DidFinishNavigation`
+  // synchronously inside `EvictBackForwardCachedControllee()`, re-entrantly
+  // invoke `EvictBackForwardCachedControllees()` (as `ActivateWaitingVersion()`
+  // does) and drop all external references to `version` so only the stack
+  // `protect` in `EvictBackForwardCachedControllee()` keeps it alive.
+  ServiceWorkerVersion* raw_version = version.get();
+  bool did_reenter = false;
+  DidFinishNavigationObserver navigation_observer(
+      web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* navigation_handle) {
+        if (did_reenter) {
+          return;
+        }
+        did_reenter = true;
+        EXPECT_FALSE(navigation_handle->HasCommitted());
+        installer.reset();
+        version->EvictBackForwardCachedControllees(
+            BackForwardCacheMetrics::NotRestoredReason::
+                kServiceWorkerVersionActivation);
+        registration->UnsetVersion(version.get());
+        controllee->SetControllerRegistration(
+            nullptr, /*notify_controllerchange=*/false);
+        controllee->container_host()->version_object_manager().RemoveHost(
+            version_id);
+        EXPECT_FALSE(version->HasOneRef());
+        version.reset();
+        EXPECT_TRUE(raw_version->HasOneRef());
+      }));
+  raw_version->EvictBackForwardCachedControllee(
+      controllee.get(),
+      BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerPostMessage);
+
+  EXPECT_TRUE(did_reenter);
+  EXPECT_FALSE(wrapper()->GetLiveVersion(version_id));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return web_contents()->GetLastCommittedURL() == url_1 &&
+           !web_contents()->IsLoading();
+  }));
+  EXPECT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 }
 
 // Tests with BackForwardCache enabled.

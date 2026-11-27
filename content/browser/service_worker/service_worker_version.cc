@@ -1204,6 +1204,9 @@ void ServiceWorkerVersion::Uncontrol(const std::string& client_uuid) {
 void ServiceWorkerVersion::EvictBackForwardCachedControllees(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   DCHECK(IsBackForwardCacheEnabled());
+  // Evicting a controllee can drop the last reference to `this`. See
+  // EvictBackForwardCachedControllee().
+  scoped_refptr<ServiceWorkerVersion> protect(this);
   while (!bfcached_controllee_map_.empty()) {
     auto controllee = bfcached_controllee_map_.begin();
     EvictBackForwardCachedControllee(controllee->second.get(), reason);
@@ -1213,11 +1216,20 @@ void ServiceWorkerVersion::EvictBackForwardCachedControllees(
 void ServiceWorkerVersion::EvictBackForwardCachedControllee(
     ServiceWorkerClient* controllee,
     BackForwardCacheMetrics::NotRestoredReason reason) {
-  controllee->EvictFromBackForwardCache(reason);
-  controllees_to_be_evicted_[controllee->client_uuid()] = reason;
+  // Evicting the controllee can synchronously run arbitrary code (e.g. restart
+  // a navigation that was restoring the evicted page, destroy processes and
+  // start a prerender that activates another version, which re-entrantly calls
+  // EvictBackForwardCachedControllees() on `this` and drops the last reference
+  // to `this`). Keep `this` alive and update the back/forward cache controllee
+  // maps before evicting so re-entrant eviction or controllee destruction sees
+  // consistent state. See https://crbug.com/590071818.
+  scoped_refptr<ServiceWorkerVersion> protect(this);
+  const std::string client_uuid = controllee->client_uuid();
+  controllees_to_be_evicted_[client_uuid] = reason;
   if (controllee->was_controlled_when_entered_back_forward_cache()) {
-    RemoveControlleeFromBackForwardCacheMap(controllee->client_uuid());
+    RemoveControlleeFromBackForwardCacheMap(client_uuid);
   }
+  controllee->EvictFromBackForwardCache(reason);
 }
 
 void ServiceWorkerVersion::AddObserver(Observer* observer) {
