@@ -136,6 +136,13 @@ void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
                                    CrossDeviceSigninPromoEntryPoint entry_point,
                                    base::OnceClosure closing_callback);
 
+// Closes any cross-device sign-in QR code bubble (avatar- or omnibox-anchored)
+// in `browser_window` and synchronously flushes any deferred omnibox anchor
+// cleanup from a focus-loss close, without affecting unrelated sign-in bubbles
+// or QR bubbles in other windows. Safe to call when `browser_window` is null
+// or no such bubble is open. Must be called on the UI thread.
+void CloseCrossDeviceSigninQrBubble(BrowserWindowInterface* browser_window);
+
 // Returns whether the QR code bubble is currently open for `profile`. Must be
 // called on the UI thread. Unlike
 // `RegisterCrossDeviceSigninPromoBubbleStateCallback()`, this does not create

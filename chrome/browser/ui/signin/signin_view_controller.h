@@ -253,6 +253,14 @@ class SigninViewController {
   // SigninViewController, if one exists. Does nothing otherwise.
   void CloseBubbleSignin();
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Closes any cross-device sign-in QR code bubble (or pending avatar anchor
+  // resolution) owned by this controller and synchronously flushes any deferred
+  // omnibox anchor cleanup from a `kLostFocus` close, without affecting
+  // unrelated sign-in bubbles.
+  void CloseCrossDeviceSigninQrBubble();
+#endif
+
   // Returns whether `widget` is the currently open sign-in bubble widget.
   bool IsShowingBubbleWidget(const views::Widget* widget) const;
 
@@ -323,6 +331,17 @@ class SigninViewController {
       const CoreAccountId& expected_account_id,
       base::OnceClosure explicit_dismissal_callback);
 
+  // Runs synchronously when the cross-device sign-in QR code bubble widget
+  // closes. Static so `explicit_dismissal_callback` and `on_widget_closing` run
+  // even after `controller` is destroyed. On `kLostFocus`, retains
+  // `flush_anchor_state` until the widget is destroyed by `DeleteSoon()`.
+  static void OnCrossDeviceSigninQrBubbleClosing(
+      base::WeakPtr<SigninViewController> controller,
+      base::OnceClosure explicit_dismissal_callback,
+      base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing,
+      base::OnceClosure flush_anchor_state,
+      views::Widget::ClosedReason reason);
+
   // Resolves the avatar button anchor and shows the Dice web sign-in
   // interception bubble once the button is visible. `CloseInterceptBubble()`
   // must be called before calling this method.
@@ -370,9 +389,20 @@ class SigninViewController {
 
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
 
+  // TODO(crbug.com/564793759): Encapsulate QR bubble state and lifetime into a
+  // dedicated helper.
   // Pending state while waiting for the QR bubble anchor to resolve.
   base::OnceClosure pending_qr_bubble_closing_callback_;
   std::unique_ptr<CrossDeviceSigninQrBubbleAnchor> pending_qr_bubble_anchor_;
+  // Whether a cross-device sign-in QR code bubble owned by this controller is
+  // open or resolving its anchor.
+  bool is_showing_qr_bubble_ = false;
+  // Weak-bound callback retained when a `kLostFocus` close defers widget
+  // destruction to `DeleteSoon()`, so `CloseBubbleSignin()` /
+  // `CloseCrossDeviceSigninQrBubble()` can flush its omnibox anchor state
+  // synchronously before a replacement bubble claims it. May be stale (a
+  // no-op) once the widget has been destroyed.
+  base::OnceClosure flush_closing_qr_bubble_anchor_state_;
 
   // State for the active or pending Dice web sign-in interception bubble.
   std::unique_ptr<PendingInterceptBubble> pending_intercept_bubble_;

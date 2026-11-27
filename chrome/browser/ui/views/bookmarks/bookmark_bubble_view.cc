@@ -86,7 +86,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
-#include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif
 
 using base::UserMetricsAction;
@@ -518,12 +517,7 @@ void BookmarkBubbleView::ShowBubble(
   CHECK(web_contents);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (IsCrossDeviceSigninPromoBubbleOpen(profile)) {
-    if (SigninViewController* signin_view_controller =
-            SigninViewController::From(browser)) {
-      signin_view_controller->CloseBubbleSignin();
-    }
-  }
+  CloseCrossDeviceSigninQrBubble(browser);
 #endif
 
   bookmarks::BookmarkModel* bookmark_model =

@@ -11,11 +11,13 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/escape.h"
@@ -721,6 +723,17 @@ void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
       /*promo_will_show_callback=*/base::OnceClosure(),
       std::move(closing_callback),
       /*explicit_dismissal_callback=*/base::OnceClosure());
+}
+
+void CloseCrossDeviceSigninQrBubble(BrowserWindowInterface* browser_window) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!browser_window) {
+    return;
+  }
+  if (SigninViewController* controller =
+          SigninViewController::From(browser_window)) {
+    controller->CloseCrossDeviceSigninQrBubble();
+  }
 }
 
 bool IsCrossDeviceSigninPromoBubbleOpen(Profile* profile) {

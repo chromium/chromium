@@ -738,6 +738,7 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
           : CoreAccountId();
   pending_qr_bubble_anchor_ =
       ::CreateCrossDeviceSigninQrBubbleAnchor(&*browser_, entry_point);
+  is_showing_qr_bubble_ = true;
   pending_qr_bubble_anchor_->ResolveAnchor(base::BindOnce(
       &SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved,
       weak_ptr_factory_.GetWeakPtr(), std::move(qr_code_url), entry_point,
@@ -767,6 +768,7 @@ void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id)) {
     anchor.reset();
+    is_showing_qr_bubble_ = false;
     base::OnceClosure closing_callback =
         std::move(pending_qr_bubble_closing_callback_);
     if (closing_callback) {
@@ -777,28 +779,43 @@ void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
   CrossDeviceSigninQrBubble qr_bubble = ::CreateCrossDeviceSigninQrBubble(
       &*browser_, std::move(anchor), std::move(qr_code_url),
       std::move(pending_qr_bubble_closing_callback_), entry_point);
+  is_showing_qr_bubble_ = true;
   bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
       qr_bubble.delegate.release(),
-      base::BindOnce(
-          [](base::WeakPtr<SigninViewController> controller,
-             base::OnceClosure explicit_dismissal_callback,
-             base::OnceCallback<void(views::Widget::ClosedReason)>
-                 on_widget_closing,
-             views::Widget::ClosedReason reason) {
-            if (explicit_dismissal_callback &&
-                (reason == views::Widget::ClosedReason::kCloseButtonClicked ||
-                 reason == views::Widget::ClosedReason::kEscKeyPressed)) {
-              std::move(explicit_dismissal_callback).Run();
-            }
-            if (on_widget_closing) {
-              std::move(on_widget_closing).Run(reason);
-            }
-            if (controller) {
-              controller->OnBubbleClosed(reason);
-            }
-          },
-          AsWeakPtr(), std::move(explicit_dismissal_callback),
-          std::move(qr_bubble.on_widget_closing)));
+      base::BindOnce(&SigninViewController::OnCrossDeviceSigninQrBubbleClosing,
+                     AsWeakPtr(), std::move(explicit_dismissal_callback),
+                     std::move(qr_bubble.on_widget_closing),
+                     std::move(qr_bubble.flush_anchor_state)));
+}
+
+// static
+void SigninViewController::OnCrossDeviceSigninQrBubbleClosing(
+    base::WeakPtr<SigninViewController> controller,
+    base::OnceClosure explicit_dismissal_callback,
+    base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing,
+    base::OnceClosure flush_anchor_state,
+    views::Widget::ClosedReason reason) {
+  if (explicit_dismissal_callback &&
+      (reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+       reason == views::Widget::ClosedReason::kEscKeyPressed)) {
+    std::move(explicit_dismissal_callback).Run();
+  }
+  if (on_widget_closing) {
+    std::move(on_widget_closing).Run(reason);
+  }
+  if (!controller) {
+    return;
+  }
+  if (reason == views::Widget::ClosedReason::kLostFocus) {
+    // Keep the deferred anchor cleanup so a replacement bubble opening before
+    // `DeleteSoon()` runs can flush it synchronously.
+    if (controller->flush_closing_qr_bubble_anchor_state_) {
+      std::move(controller->flush_closing_qr_bubble_anchor_state_).Run();
+    }
+    controller->flush_closing_qr_bubble_anchor_state_ =
+        std::move(flush_anchor_state);
+  }
+  controller->OnBubbleClosed(reason);
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -931,6 +948,9 @@ void SigninViewController::CloseInterceptBubble() {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SigninViewController::OnBubbleClosed(views::Widget::ClosedReason reason) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  is_showing_qr_bubble_ = false;
+#endif
   if (bubble_widget_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(bubble_widget_));
@@ -997,8 +1017,12 @@ void SigninViewController::CloseModalSignin() {
 void SigninViewController::CloseBubbleSignin() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   pending_qr_bubble_anchor_.reset();
+  is_showing_qr_bubble_ = false;
   base::OnceClosure closing_callback =
       std::move(pending_qr_bubble_closing_callback_);
+  if (flush_closing_qr_bubble_anchor_state_) {
+    std::move(flush_closing_qr_bubble_anchor_state_).Run();
+  }
 #endif
   if (bubble_widget_) {
     // Extract the pointer so bubble_widget_ is nullified immediately.
@@ -1013,6 +1037,17 @@ void SigninViewController::CloseBubbleSignin() {
   }
 #endif
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void SigninViewController::CloseCrossDeviceSigninQrBubble() {
+  if (flush_closing_qr_bubble_anchor_state_) {
+    std::move(flush_closing_qr_bubble_anchor_state_).Run();
+  }
+  if (is_showing_qr_bubble_) {
+    CloseBubbleSignin();
+  }
+}
+#endif
 
 bool SigninViewController::IsShowingBubbleWidget(
     const views::Widget* widget) const {

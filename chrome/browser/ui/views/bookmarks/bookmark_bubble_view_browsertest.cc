@@ -870,9 +870,10 @@ IN_PROC_BROWSER_TEST_F(
   std::move(close_callback).Run();
 }
 
-// Reopening `BookmarkBubbleView` while the post-save QR bubble is either still
-// loading or already visible closes the QR bubble passively (without recording
-// a dismissal or starting the cooldown) and keeps `kActionBookmarkThisTab`'s
+// Reopening `BookmarkBubbleView` while the post-save QR bubble is loading,
+// visible, or closing after `ClosedReason::kLostFocus` (with deferred anchor
+// cleanup pending) closes/flushes the QR bubble passively (without recording a
+// dismissal or starting the cooldown) and keeps `kActionBookmarkThisTab`'s
 // showing-bubble state set after `DeleteSoon()` drains.
 IN_PROC_BROWSER_TEST_F(
     BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
@@ -978,7 +979,111 @@ IN_PROC_BROWSER_TEST_F(
         "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.BookmarkSave", 0);
     EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
         CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile));
+
+    views::test::WidgetDestroyedWaiter bookmark_closed_waiter(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget());
+    BookmarkBubbleView::Hide();
+    bookmark_closed_waiter.Wait();
+    ASSERT_FALSE(bookmark_action_item->GetIsShowingBubble());
   }
+
+  // 3. Reopening `BookmarkBubbleView` right after `ClosedReason::kLostFocus` on
+  // the post-save QR bubble (before `DeleteSoon()` destroys its widget) flushes
+  // the deferred anchor cleanup synchronously without clobbering the bookmark
+  // star's showing-bubble state.
+  {
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::AnyWidgetObserver init_observer(views::test::AnyWidgetTestPasskey{});
+    init_observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kQrBubbleWidgetName) {
+            pin = widget->widget_delegate()
+                      ->AsBubbleDialogDelegate()
+                      ->PreventCloseOnDeactivate();
+          }
+        }));
+    views::NamedWidgetShownWaiter qr_shown_waiter(
+        views::test::AnyWidgetTestPasskey{}, kQrBubbleWidgetName);
+
+    CreateBubbleView(/*already_bookmarked=*/false);
+    ASSERT_NO_FATAL_FAILURE(AcceptBubble());
+
+    views::Widget* visible_qr_widget = qr_shown_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(visible_qr_widget);
+    ASSERT_TRUE(pin);
+    ASSERT_TRUE(bookmark_action_item->GetIsShowingBubble());
+
+    views::test::WidgetDestroyedWaiter qr_destroyed_waiter(visible_qr_widget);
+    visible_qr_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    // Still true synchronously after `kLostFocus` before `DeleteSoon()` runs.
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+
+    CreateBubbleView(/*already_bookmarked=*/true);
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    auto bookmark_pin =
+        BookmarkBubbleView::bookmark_bubble()->PreventCloseOnDeactivate();
+    qr_destroyed_waiter.Wait();
+
+    ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+    EXPECT_TRUE(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget()->IsVisible());
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+
+    views::test::WidgetDestroyedWaiter bookmark_closed_waiter(
+        BookmarkBubbleView::bookmark_bubble()->GetWidget());
+    BookmarkBubbleView::Hide();
+    bookmark_closed_waiter.Wait();
+    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+  }
+}
+
+// Verifies that opening `BookmarkBubbleView` closes an avatar-anchored QR
+// bubble (`kProfileMenu`) in the same browser window so the two `TOP_RIGHT`
+// bubbles do not overlap.
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewCrossDeviceSigninPromoBrowserTest,
+                       OpeningBookmarkBubbleClosesAvatarQrBubbleInSameWindow) {
+  static constexpr char kQrBubbleWidgetName[] =
+      "CrossDeviceSigninQrBubbleViews";
+  UseRealSigninUiDelegate();
+  Profile* const profile = browser()->GetProfile();
+
+  std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+  views::AnyWidgetObserver init_observer(views::test::AnyWidgetTestPasskey{});
+  init_observer.set_initialized_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == kQrBubbleWidgetName) {
+          pin = widget->widget_delegate()
+                    ->AsBubbleDialogDelegate()
+                    ->PreventCloseOnDeactivate();
+        }
+      }));
+  views::NamedWidgetShownWaiter avatar_qr_waiter(
+      views::test::AnyWidgetTestPasskey{}, kQrBubbleWidgetName);
+  OpenSigninToPhoneQrCodeBubble(browser(),
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                base::DoNothing());
+  views::Widget* avatar_qr_widget = avatar_qr_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(avatar_qr_widget);
+  ASSERT_TRUE(pin);
+  ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+  views::test::WidgetDestroyedWaiter avatar_qr_destroyed(avatar_qr_widget);
+  CreateBubbleView(/*already_bookmarked=*/true);
+  ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+  auto bookmark_pin =
+      BookmarkBubbleView::bookmark_bubble()->PreventCloseOnDeactivate();
+  avatar_qr_destroyed.Wait();
+
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile));
+  ASSERT_NE(BookmarkBubbleView::bookmark_bubble(), nullptr);
+  EXPECT_TRUE(BookmarkBubbleView::bookmark_bubble()->GetWidget()->IsVisible());
+
+  views::test::WidgetDestroyedWaiter bookmark_closed_waiter(
+      BookmarkBubbleView::bookmark_bubble()->GetWidget());
+  BookmarkBubbleView::Hide();
+  bookmark_closed_waiter.Wait();
 }
 
 class BookmarkBubbleViewCrossDeviceSigninPromoDisabledBrowserTest

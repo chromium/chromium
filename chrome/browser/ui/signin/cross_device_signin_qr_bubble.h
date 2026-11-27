@@ -68,7 +68,8 @@ class CrossDeviceSigninQrBubbleAnchor {
 struct CrossDeviceSigninQrBubble {
   CrossDeviceSigninQrBubble(
       std::unique_ptr<views::BubbleDialogDelegate> delegate,
-      base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing);
+      base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing,
+      base::OnceClosure flush_anchor_state);
   CrossDeviceSigninQrBubble(CrossDeviceSigninQrBubble&&) noexcept;
   CrossDeviceSigninQrBubble& operator=(CrossDeviceSigninQrBubble&&) noexcept;
   ~CrossDeviceSigninQrBubble();
@@ -78,6 +79,11 @@ struct CrossDeviceSigninQrBubble {
   // before deferred widget destruction (`DeleteSoon()`), so anchor state is
   // released before a replacement bubble can claim it in the same task.
   base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing;
+  // Synchronously flushes any omnibox anchor state whose cleanup was deferred
+  // after `ClosedReason::kLostFocus`, so a replacement bubble opening before
+  // `DeleteSoon()` runs does not have its anchor state clobbered on widget
+  // destruction. Safe to run after widget destruction (no-op).
+  base::OnceClosure flush_anchor_state;
 };
 
 // Creates the anchor delegate for `entry_point` (the avatar button for standard
@@ -89,9 +95,10 @@ CreateCrossDeviceSigninQrBubbleAnchor(
     BrowserWindowInterface* browser,
     CrossDeviceSigninPromoEntryPoint entry_point);
 
-// Creates the delegate and synchronous widget-closing hook for the cross-device
-// sign-in QR code bubble using a resolved `anchor`. If `anchor` resolves to a
-// null `views::BubbleAnchor`, the bubble floats centered on `browser`'s window.
+// Creates the delegate, synchronous widget-closing hook, and deferred
+// anchor-cleanup flush hook for the cross-device sign-in QR code bubble using
+// a resolved `anchor`. If `anchor` resolves to a null `views::BubbleAnchor`,
+// the bubble floats centered on `browser`'s window.
 // Implemented in
 // chrome/browser/ui/views/profiles/cross_device_signin_qr_bubble_views.cc
 CrossDeviceSigninQrBubble CreateCrossDeviceSigninQrBubble(

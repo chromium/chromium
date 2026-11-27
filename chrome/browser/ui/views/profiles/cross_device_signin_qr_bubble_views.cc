@@ -448,9 +448,11 @@ class CrossDeviceSigninQrWebView : public views::WebView,
 
 CrossDeviceSigninQrBubble::CrossDeviceSigninQrBubble(
     std::unique_ptr<views::BubbleDialogDelegate> delegate,
-    base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing)
+    base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing,
+    base::OnceClosure flush_anchor_state)
     : delegate(std::move(delegate)),
-      on_widget_closing(std::move(on_widget_closing)) {}
+      on_widget_closing(std::move(on_widget_closing)),
+      flush_anchor_state(std::move(flush_anchor_state)) {}
 
 CrossDeviceSigninQrBubble::CrossDeviceSigninQrBubble(
     CrossDeviceSigninQrBubble&&) noexcept = default;
@@ -491,6 +493,8 @@ CrossDeviceSigninQrBubble CreateCrossDeviceSigninQrBubble(
   base::OnceCallback<void(views::Widget::ClosedReason)> on_widget_closing =
       base::BindOnce(&CrossDeviceSigninQrWebView::OnWidgetClosingSynchronously,
                      weak_web_view);
+  base::OnceClosure flush_anchor_state = base::BindOnce(
+      &CrossDeviceSigninQrWebView::ReleaseAnchorState, weak_web_view);
 
   base::OnceClosure cleanup_closure = base::BindOnce(
       [](base::WeakPtr<CrossDeviceSigninQrWebView> web_view,
@@ -551,5 +555,6 @@ CrossDeviceSigninQrBubble CreateCrossDeviceSigninQrBubble(
   bubble->set_fixed_width(kDialogWidth);
 
   return CrossDeviceSigninQrBubble(std::move(bubble),
-                                   std::move(on_widget_closing));
+                                   std::move(on_widget_closing),
+                                   std::move(flush_anchor_state));
 }
