@@ -23,8 +23,6 @@ BASE_FEATURE(kTrimOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrimArcOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimArcVmOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrimImperceptibleProcess, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableTrimmingWhileSuspended, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -53,29 +51,27 @@ const base::FeatureParam<int> kArcMaxProcessesPerTrim = {
 const base::FeatureParam<int> kArcProcessInactivityTimeSec = {
     &kTrimArcOnMemoryPressure, "ArcProcessInactivityTimeSec", 600};
 
-const base::FeatureParam<base::TimeDelta> kArcVmInactivityTimeMs = {
-    &kTrimArcVmOnMemoryPressure, "ArcVmInactivityTimeMs", base::Seconds(1200)};
+// The minimum amount of time an ARCVM must have been inactive before it's
+// eligible for reclaim.
+constexpr base::TimeDelta kArcVmInactivityTimeMs = base::Seconds(1200);
 
-const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs = {
-    &kTrimArcVmOnMemoryPressure, "ArcVmTrimBackoffTimeMs", base::Seconds(1800)};
+// Specifies the frequency at which ARCVM's crosvm process can be trimmed.
+constexpr base::TimeDelta kArcVmTrimBackoffTimeMs = base::Seconds(1800);
 
-const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure = {
-    &kTrimArcVmOnMemoryPressure, "TrimArcVmOnCriticalPressure", false};
+// Limits the number of pages to reclaim on each iteration.
+// Zero means "no ceiling limit" - though reclaim is still possibly limited by
+// kTrimArcVmPagesPerMinute, if that is set.
+// When both limits are set, the lesser (stricter, lower limit) is used.
+// This limits jank caused by reclaim, by making each reclaim operation short.
+constexpr int kTrimArcVmMaxPagesPerIteration = 300000;
 
-const base::FeatureParam<bool> kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot = {
-    &kTrimArcVmOnMemoryPressure, "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot",
-    true};
-
-const base::FeatureParam<bool>
-    kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot = {
-        &kTrimArcVmOnMemoryPressure,
-        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot", true};
-
-const base::FeatureParam<int> kTrimArcVmMaxPagesPerIteration = {
-    &kTrimArcVmOnMemoryPressure, "MaxPageLimit", 300000};
-
-const base::FeatureParam<int> kTrimArcVmPagesPerMinute = {
-    &kTrimArcVmOnMemoryPressure, "PagesPerMinute", 15000};
+// Works in combination with kTrimArcVmMaxPagesPerIteration. The intent
+// is to limit the rate of pages reclaimed over time, so we specify that
+// explicitly.
+// Zero means "no per-minute page limit", though reclaim is still possibly
+// limited by kTrimArcVmMaxPagesPerIteration.
+// When both limits are set, the lesser (stricter, lower limit) is used.
+constexpr int kTrimArcVmPagesPerMinute = 15000;
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
@@ -131,17 +127,10 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
     params.arc_process_inactivity_time = base::TimeDelta::Min();
   }
 
-  params.arcvm_inactivity_time = kArcVmInactivityTimeMs.Get();
-  params.arcvm_trim_backoff_time = kArcVmTrimBackoffTimeMs.Get();
-  params.trim_arcvm_on_critical_pressure = kTrimArcVmOnCriticalPressure.Get();
-  params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot =
-      kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot.Get();
-  params.only_drop_caches_on_first_memory_pressure_after_arcvm_boot =
-      kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot.Get();
-
-  params.trim_arcvm_max_pages_per_iteration =
-      kTrimArcVmMaxPagesPerIteration.Get();
-  params.trim_arcvm_pages_per_minute = kTrimArcVmPagesPerMinute.Get();
+  params.arcvm_inactivity_time = kArcVmInactivityTimeMs;
+  params.arcvm_trim_backoff_time = kArcVmTrimBackoffTimeMs;
+  params.trim_arcvm_max_pages_per_iteration = kTrimArcVmMaxPagesPerIteration;
+  params.trim_arcvm_pages_per_minute = kTrimArcVmPagesPerMinute;
 
   return params;
 }

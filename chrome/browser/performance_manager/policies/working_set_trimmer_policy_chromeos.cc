@@ -91,8 +91,6 @@ bool IsPagePerceptible(const PageNode* page_node) {
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
   trim_arc_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
-  trim_arcvm_on_memory_pressure_ =
-      base::FeatureList::IsEnabled(features::kTrimArcVmOnMemoryPressure);
   trim_imperceptible_process_ =
       base::FeatureList::IsEnabled(features::kTrimImperceptibleProcess);
   disable_trim_while_suspended_ =
@@ -116,11 +114,10 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
     }
   }
 
-  if (trim_arcvm_on_memory_pressure_) {
-    if (!arc::IsArcAvailable() || !arc::IsArcVmEnabled()) {
-      DLOG(ERROR) << "ARCVM is not available";
-      trim_arcvm_on_memory_pressure_ = false;
-    }
+  trim_arcvm_on_memory_pressure_ =
+      arc::IsArcAvailable() && arc::IsArcVmEnabled();
+  if (!trim_arcvm_on_memory_pressure_) {
+    DLOG(ERROR) << "ARCVM is not available";
   }
 
   if (disable_trim_while_suspended_) {
@@ -178,9 +175,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnReleaseMemory() {
   if (trim_arcvm_on_memory_pressure_) {
     if (!last_arcvm_trim_ || (base::TimeTicks::Now() - *last_arcvm_trim_ >
                               params_.arcvm_trim_backoff_time)) {
-      const bool is_critical =
-          memory_limit() <= base::MemoryLimit::CriticalPressureThreshold();
-      TrimArcVmProcesses(is_critical);
+      TrimArcVmProcesses();
     }
   }
 }
@@ -371,7 +366,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcProcesses() {
   }
 }
 
-void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(bool is_critical) {
+void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // TODO(crbug.com/40755583): Let the policy own WorkingSetTrimmerPolicyArcVm
   // instance once performance_manager code is migrated to UI thread.
@@ -379,21 +374,11 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(bool is_critical) {
                              ? g_arcvm_delegate_for_testing
                              : WorkingSetTrimmerPolicyArcVm::Get();
 
-  const bool force_reclaim =
-      params_.trim_arcvm_on_critical_pressure && is_critical;
-  const mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot =
-      params_.trim_arcvm_on_first_memory_pressure_after_arcvm_boot
-          ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
-          : mechanism::ArcVmReclaimType::kReclaimNone;
-
   bool is_first_trim_post_boot =
       WorkingSetTrimmerPolicyArcVm::kNotFirstReclaimPostBoot;
   const mechanism::ArcVmReclaimType reclaim_type =
-      force_reclaim
-          ? mechanism::ArcVmReclaimType::kReclaimAll
-          : arcvm_delegate->IsEligibleForReclaim(
-                params_.arcvm_inactivity_time, trim_once_type_after_arcvm_boot,
-                &is_first_trim_post_boot);
+      arcvm_delegate->IsEligibleForReclaim(params_.arcvm_inactivity_time,
+                                           &is_first_trim_post_boot);
 
   // NOTE: To ease unit test, we invoke OnTrimArcVmProcesses even
   // reclaim_type is kReclaimNone.

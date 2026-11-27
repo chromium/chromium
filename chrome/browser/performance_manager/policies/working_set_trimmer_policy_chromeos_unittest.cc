@@ -98,7 +98,6 @@ class ScopedTestArcVmDelegate
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides:
   mechanism::ArcVmReclaimType IsEligibleForReclaim(
       const base::TimeDelta& arcvm_inactivity_time,
-      mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
       bool* is_first_trim_post_boot) override {
     if (is_first_trim_post_boot)
       *is_first_trim_post_boot = is_first_trim_post_boot_;
@@ -137,8 +136,6 @@ class MockWorkingSetTrimmerPolicyChromeOS
     params().trim_arc_aggressive = false;
     params().arcvm_inactivity_time = base::TimeDelta::Min();
     params().arcvm_trim_backoff_time = base::TimeDelta::Min();
-    params().trim_arcvm_on_critical_pressure = false;
-    params().trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
 
     // Setup some default invocations.
     ON_CALL(*this, OnReleaseMemory())
@@ -201,7 +198,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
   MOCK_METHOD1(TrimArcProcess, void(const base::ProcessId));
 
   // Mock methods related to ARCVM process trimming.
-  MOCK_METHOD1(TrimArcVmProcesses, void(bool));
+  MOCK_METHOD0(TrimArcVmProcesses, void(void));
   MOCK_METHOD2(OnTrimArcVmProcesses, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD2(OnArcVmTrimEnded, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD0(GetTrimmer, mechanism::WorkingSetTrimmerChromeOS*(void));
@@ -227,8 +224,8 @@ class MockWorkingSetTrimmerPolicyChromeOS
         proc);
   }
 
-  void DefaultTrimArcVmProcesses(bool is_critical) {
-    WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(is_critical);
+  void DefaultTrimArcVmProcesses() {
+    WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses();
   }
 
   void DefaultOnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
@@ -826,7 +823,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmDontTrimOnlyIfDisabled) {
 }
 
 // This test will validate that we do try to trim the ARCVM process on memory
-// pressure when the feature is enabled.
+// pressure when ARCVM trimming is enabled.
 TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimOnlyIfEnabled) {
   ScopedTestArcVmDelegate delegate(policy(),
                                    mechanism::ArcVmReclaimType::kReclaimNone,
@@ -939,9 +936,6 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimPageLimits) {
   int config_pages_per_minute = 3500;
   int config_max_pages = 20000;
   policy()->trim_arcvm_on_memory_pressure(true);
-  policy()->params().trim_arcvm_on_first_memory_pressure_after_arcvm_boot =
-      true;
-  policy()->params().trim_arcvm_on_critical_pressure = false;
   policy()->params().arcvm_trim_backoff_time = base::Seconds(60);
   policy()->params().trim_arcvm_pages_per_minute = config_pages_per_minute;
   policy()->params().trim_arcvm_max_pages_per_iteration = config_max_pages;
@@ -1197,47 +1191,6 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
 
   FastForwardBy(base::Seconds(12));
   SimulateMemoryPressure(false);
-  run_loop()->Run();
-}
-
-// Tests that the actual reclaim is performed on LEVEL_CRITICAL when the
-// delegate returns kReclaimNone but |trim_arcvm_on_critical_pressure| is
-// set to true.
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
-  ScopedTestArcVmDelegate delegate(policy(),
-                                   mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot);
-
-  policy()->trim_arcvm_on_memory_pressure(true);
-  policy()->params().trim_arcvm_on_critical_pressure = true;
-  policy()->params().arcvm_trim_backoff_time = base::Seconds(60);
-
-  EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
-  EXPECT_CALL(*policy(),
-              OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot))
-      .Times(Exactly(1))
-      .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
-                                 DefaultOnTrimArcVmProcessesAndQuit));
-
-  FastForwardBy(base::Seconds(12));
-  SimulateMemoryPressure(false);
-
-  run_loop()->Run();
-  RecreateRunLoop();
-
-  // Repeat the same with CRITICAL.
-  EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
-  EXPECT_CALL(*policy(),
-              OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimAll,
-                                   kNotFirstReclaimPostBoot))
-      .Times(Exactly(1))
-      .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
-                                 DefaultOnTrimArcVmProcessesAndQuit));
-
-  FastForwardBy(base::Seconds(1));
-  FastForwardBy(policy()->params().arcvm_trim_backoff_time);
-  SimulateMemoryPressure(true);
   run_loop()->Run();
 }
 

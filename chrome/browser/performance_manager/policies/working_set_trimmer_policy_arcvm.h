@@ -58,7 +58,6 @@ class WorkingSetTrimmerPolicyArcVm
   static constexpr bool kNotFirstReclaimPostBoot = false;
   mechanism::ArcVmReclaimType IsEligibleForReclaim(
       const base::TimeDelta& arcvm_inactivity_time,
-      mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
       bool* is_first_trim_post_boot) override;
 
   // ArcMetricsService::UserInteractionObserver overrides.
@@ -96,8 +95,8 @@ class WorkingSetTrimmerPolicyArcVm
   // The time of the last user interacted with ARCVM.
   base::TimeTicks last_user_interaction_;
 
-  // True if IsEligibleForReclaim() has already returned true for the single
-  // trim that happens after boot when `trim_once_after_arcvm_boot` is set.
+  // True if IsEligibleForReclaim() has already returned
+  // kReclaimGuestPageCaches for the single trim that happens after boot.
   bool trimmed_at_boot_ = false;
   // True if observing the user's interactions with ARCVM via ArcMetricsService.
   bool observing_user_interactions_ = false;

@@ -49,15 +49,12 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
     // Returns ReclaimType other than kReclaimNone when ARCVM has been idle for
     // more than |arcvm_inactivity_time| and therefore is safe to reclaim its
     // memory. The function is called only on the UI thread.
-    // If |trim_once_type_after_arcvm_boot| is not kReclaimNone, the function
-    // returns |trim_once_type_after_arcvm_boot| when the function is called for
-    // the first time after ARCVM boot - in which case it will set the
-    // value of |is_first_trim_post_boot| output parameter to true.
+    // On the first call after ARCVM boot, the function returns
+    // kReclaimGuestPageCaches and sets |is_first_trim_post_boot| to true.
     // Use NULL for |is_first_trim_post_boot| if you don't care about
     // whether it is the first call post-boot or not.
     virtual mechanism::ArcVmReclaimType IsEligibleForReclaim(
         const base::TimeDelta& arcvm_inactivity_time,
-        mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
         bool* is_first_trim_post_boot) = 0;
   };
 
@@ -122,7 +119,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
 
   // TrimArcVmProcesses will ask the delegate if it is safe to reclaim memory
   // from ARCVM, and do that when it is. These are virtual for testing.
-  virtual void TrimArcVmProcesses(bool is_critical);
+  virtual void TrimArcVmProcesses();
   virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
                                     bool is_first_trim_post_boot);
   virtual void OnArcVmTrimStarting();

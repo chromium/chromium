@@ -149,30 +149,27 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
 
 // Tests that IsEligibleForReclaim() returns kReclaimNone initially.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, InitialState) {
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
-// Tests that IsEligibleForReclaim() returns kReclaimNone right after boot
-// completion but kReclaimAll after the period.
+// Tests that IsEligibleForReclaim() returns kReclaimGuestPageCaches once right
+// after boot completion, kReclaimNone immediately after, and kReclaimAll after
+// the period.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootComplete) {
   // Indirectly call OnConnectionReady and OnConnectionReadyInternal.
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimAll,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 // Tests that IsEligibleForReclaim() always returns kReclaimNone if the mojo
@@ -186,12 +183,10 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootCompleteThenDisconnect) {
   trimmer()->OnArcSessionStopped(arc::ArcStopReason::CRASH);
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
-  // Even if IsEligibleForReclaim() is called with kReclaimAll, it returns
-  // kReclaimNone because the mojo connection is gone.
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll, nullptr));
+  // Even after boot delay, IsEligibleForReclaim() returns kReclaimNone because
+  // the mojo connection is gone.
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 // Tests the same but with OnArcSessionRestarting().
@@ -204,12 +199,10 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootCompleteThenDisconnect2) {
   trimmer()->OnArcSessionRestarting();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
-  // Even if IsEligibleForReclaim() is called with kReclaimAll, it returns
-  // kReclaimNone because the mojo connection is gone.
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll, nullptr));
+  // Even after boot delay, IsEligibleForReclaim() returns kReclaimNone because
+  // the mojo connection is gone.
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 // Tests that IsEligibleForReclaim() returns kReclaimNone right after user
@@ -219,24 +212,21 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, UserInteraction) {
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
+
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimAll,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   trimmer()->OnUserInteraction(
       arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER);
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimAll,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 // Tests that IsEligibleForReclaim() returns kReclaimNone when ARCVM is no
@@ -246,32 +236,30 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, ArcVmNotRunning) {
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
+
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimAll,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   trimmer()->OnArcSessionRestarting();
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   trimmer()->OnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
+
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimAll,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   trimmer()->OnArcSessionStopped(arc::ArcStopReason::CRASH);
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 // Tests that IsEligibleForReclaim() returns kReclaimNone when ARCVM is focused.
@@ -293,7 +281,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
           .release();
   ASSERT_FALSE(ash::IsArcWindow(chrome_window));
 
-  bool is_first_trim_post_boot = true;
+  bool is_first_trim_post_boot = false;
 
   // Initially, Chrome window is focused.
   trimmer()->OnWindowActivated(
@@ -304,35 +292,34 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
+  // The first call post-boot drops guest page caches.
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
+  EXPECT_EQ(is_first_trim_post_boot, true);
+
   // After boot, ARCVM becomes eligible to reclaim.
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone,
-                &is_first_trim_post_boot));
-
-  // Although this is the first attempt post-boot, it will not be flagged
-  // as such because we pass kReclaimNone above, which disables the
-  // first-boot-after-trim feature and makes the flag irrelevant.
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimAll,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);
 
   // ARCVM window is focused. ARCVM is ineligible to reclaim now.
   trimmer()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT, arc_window,
       chrome_window);
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone,
-                &is_first_trim_post_boot));
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimNone,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);
   is_first_trim_post_boot = true;  // So we can check that it flips to false.
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone,
-                &is_first_trim_post_boot));
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimNone,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);
   is_first_trim_post_boot = true;  // So we can check that it flips to false.
 
@@ -341,27 +328,23 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   trimmer()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
       chrome_window, arc_window);
-  EXPECT_EQ(
-      mechanism::ArcVmReclaimType::kReclaimNone,
-      trimmer()->IsEligibleForReclaim(
-          GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone, nullptr));
+  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimNone,
-                &is_first_trim_post_boot));
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimAll,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);
 }
 
-// Tests that IsEligibleForReclaim(.., kReclaimAll) returns kReclaimAll right
-// after boot completion.
-TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteWithReclaimAll) {
+// Tests that IsEligibleForReclaim() returns kReclaimGuestPageCaches right
+// after boot completion and sets |is_first_trim_post_boot| accordingly.
+TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootComplete) {
   bool is_first_trim_post_boot = true;
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll,
-                &is_first_trim_post_boot));
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimNone,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   // It's not time yet.
   EXPECT_EQ(is_first_trim_post_boot, false);
 
@@ -369,150 +352,90 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteWithReclaimAll) {
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
-  // IsEligibleForReclaim() returns kReclaimAll after boot completion.
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll,
-                &is_first_trim_post_boot));
+  // IsEligibleForReclaim() returns kReclaimGuestPageCaches after boot
+  // completion (but only once.)
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, true);
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll,
-                &is_first_trim_post_boot));
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimNone,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);  // It's no longer "first boot".
 
   is_first_trim_post_boot = true;  // So we can check that it flips below.
   FastForwardBy(GetInterval());
   FastForwardBy(base::Seconds(1));
-  // After the interval, the function returns kReclaimAll again.
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(), mechanism::ArcVmReclaimType::kReclaimAll,
-                &is_first_trim_post_boot));
+  // After the interval, the function returns kReclaimAll.
+  EXPECT_EQ(
+      mechanism::ArcVmReclaimType::kReclaimAll,
+      trimmer()->IsEligibleForReclaim(GetInterval(), &is_first_trim_post_boot));
   EXPECT_EQ(is_first_trim_post_boot, false);
 }
 
-// Tests that IsEligibleForReclaim(.., kReclaimGuestPageCaches) returns
-// kReclaimGuestPageCaches right after boot completion.
-TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootComplete) {
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
-
-  // Indirectly call OnConnectionReady and OnConnectionReadyInternal.
-  ConnectMojoToCallOnConnectionReady();
-  FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
-
-  // IsEligibleForReclaim() returns kReclaimGuestPageCaches after boot
-  // completion (but only once.)
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
-
-  FastForwardBy(GetInterval());
-  FastForwardBy(base::Seconds(1));
-  // After the interval, the function returns kReclaimAll again.
-  EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimAll,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
-}
-
-// Tests that IsEligibleForReclaim(.., true) returns kReclaimGuestPageCaches for
+// Tests that IsEligibleForReclaim() returns kReclaimGuestPageCaches for
 // each ARCVM boot.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteAfterArcVmRestart) {
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   // Indirectly call OnConnectionReady and OnConnectionReadyInternal.
   ConnectMojoToCallOnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   trimmer()->OnArcSessionRestarting();
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   trimmer()->OnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
   // After ARCVM restart, the functions returns kReclaimGuestPageCaches again.
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   // Tests the same with OnArcSessionStopped().
   trimmer()->OnArcSessionStopped(arc::ArcStopReason::CRASH);
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   trimmer()->OnConnectionReady();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
 
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
-// Tests that IsEligibleForReclaim(.., kReclaimGuestPageCaches) doesn't return
-// kReclaimGuestPageCaches until both mojo connections are established.
+// Tests that IsEligibleForReclaim() doesn't return kReclaimGuestPageCaches
+// until both mojo connections are established.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, MojoConnection) {
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   ConnectAppMojo();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting());
   // Since intent_helper.mojom is not connected yet, it returns kReclaimNone.
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   ConnectIntentHelperMojo();
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting() /
                 2);
   // Since |kArcVmBootDelay| hasn't elapsed yet, it returns kReclaimNone.
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimNone,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 
   FastForwardBy(WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting() /
                 2);
   EXPECT_EQ(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-            trimmer()->IsEligibleForReclaim(
-                GetInterval(),
-                mechanism::ArcVmReclaimType::kReclaimGuestPageCaches, nullptr));
+            trimmer()->IsEligibleForReclaim(GetInterval(), nullptr));
 }
 
 }  // namespace

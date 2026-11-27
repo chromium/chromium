@@ -28,9 +28,6 @@ BASE_DECLARE_FEATURE(kTrimOnMemoryPressure);
 // trim under memory pressure.
 BASE_DECLARE_FEATURE(kTrimArcOnMemoryPressure);
 
-// If enabled we will try to trim ARCVM's crosvm under memory pressure.
-BASE_DECLARE_FEATURE(kTrimArcVmOnMemoryPressure);
-
 // If enabled, we will try to trim renderer processes that only have
 // imperceptible frames.
 // TODO(crbug.com/505599086): Remove after the flag is enabled.
@@ -74,46 +71,6 @@ extern const base::FeatureParam<int> kArcMaxProcessesPerTrim;
 // process must have been inactive before it's eligible for reclaim.
 extern const base::FeatureParam<int> kArcProcessInactivityTimeSec;
 
-// The minimum amount of time an ARCVM must have been inactive before it's
-// eligible for reclaim.
-extern const base::FeatureParam<base::TimeDelta> kArcVmInactivityTimeMs;
-
-// Specifies the frequency at which ARCVM's crosvm process can be trimmed.
-extern const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs;
-
-// If true then we will trim ARCVM's crosvm on critical memory pressure
-// regardless of the user's interactions with ARCVM.
-extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
-
-// If true then we will drop ARCVM guest page caches once on the first moderate
-// (or critical though unlikely) memory pressure after ARCVM boot. The regular
-// trimming (i.e. moving pages to zram) is not performed, and the page cache
-// drop is done regardless of the user's interactions with ARCVM.
-extern const base::FeatureParam<bool>
-    kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot;
-
-// Deprecated.
-// TODO(yusukes): Remove this once ChromeOSARCVMReclaimThrottle.gcl Finch
-// experiment is done.
-extern const base::FeatureParam<bool>
-    kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot;
-
-// Limits the number of pages to reclaim on each iteration.
-// Zero means "no ceiling limit" - though reclaim is still possibly limited by
-// kTrimArcVmPagesPerMinute, if that is set.
-// When both limits are set, the lesser (stricter, lower limit) is used.
-// This limits jank caused by reclaim, by making
-// each reclaim operation short.
-extern const base::FeatureParam<int> kTrimArcVmMaxPagesPerIteration;
-
-// Works in combination with kTrimArcVmMaxPagesPerIteration. The intent
-// is to limit the rate of pages reclaimed over time, so we specify that
-// explicitly.
-// Zero means "no per-minute page limit", though reclaim is still possibly
-// limited by kTrimArcVmMaxPagesPerIteration.
-// When both limits are set, the lesser (stricter, lower limit) is used.
-extern const base::FeatureParam<int> kTrimArcVmPagesPerMinute;
-
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
   TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams&);
@@ -136,12 +93,9 @@ struct TrimOnMemoryPressureParams {
   int arc_max_number_processes_per_trim = -1;
   base::TimeDelta arc_process_inactivity_time;
 
-  // These are used when kTrimArcVmOnMemoryPressure is enabled.
+  // Parameters for ARCVM trimming on memory pressure.
   base::TimeDelta arcvm_inactivity_time;
   base::TimeDelta arcvm_trim_backoff_time;
-  bool trim_arcvm_on_critical_pressure = false;
-  bool trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
-  bool only_drop_caches_on_first_memory_pressure_after_arcvm_boot = false;
   int trim_arcvm_max_pages_per_iteration = arc::ArcSession::kNoPageLimit;
   int trim_arcvm_pages_per_minute = arc::ArcSession::kNoPageLimit;
 };
