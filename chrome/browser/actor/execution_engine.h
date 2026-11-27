@@ -211,29 +211,33 @@ class ExecutionEngine : public ToolDelegate,
 
   // Cancels a call to Act. Immediately ends any in progress ToolRequests and
   // calls the ActCallback. No-op if no Act is in progress.
-  void CancelOngoingActions(mojom::ActionResultCode reason);
+  void CancelOngoingAct(mojom::ActionResultCode reason);
 
-  // Notifies ongoing actions that they have been paused.
-  void PauseOngoingActions();
+  // Notifies an in progress tool invoke that it is paused.
+  // CAUTION: The name here is misleading, this method only sends a
+  // notification to the tool that a pause has occurred, it doesn't actually
+  // pause anything by itself.
+  void PauseOngoingAct();
 
   // If there is an ongoing tool request, treat it as having failed with the
   // given reason.
   void FailCurrentTool(mojom::ActionResultCode reason) override;
 
-  // Performs the given tool actions and invokes the callback when completed.
-  // `on_actions_accepted`, which may be null, runs once `actions` are accepted,
-  // right before the first of them starts. It doesn't run if `actions` are
-  // rejected because an action sequence is already in progress. If it stops or
-  // pauses the task, or destroys this engine, `actions` don't start.
+  // Performs the given tool requests and invokes the callback when completed.
+  // `on_tools_accepted`, which may be null, runs once `requests` are accepted,
+  // right before the first of them starts. It doesn't run if `requests` are
+  // rejected because an act sequence is already in progress. If it stops or
+  // pauses the task, or destroys this engine, `requests` don't start.
   using ActCallback =
       base::OnceCallback<void(std::vector<ToolResultWithLatencyInfo>,
                               TabObservationStrategy)>;
-  void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
-           base::OnceClosure on_actions_accepted,
+  void Act(std::vector<std::unique_ptr<ToolRequest>>&& requests,
+           base::OnceClosure on_tools_accepted,
            ActCallback callback);
 
-  // Invalidated anytime `action_sequence_` is reset.
-  base::WeakPtr<ExecutionEngine> GetActionSequenceWeakPtr();
+  // Invalidated anytime an in-progress Act call is completed (success or
+  // failure).
+  base::WeakPtr<ExecutionEngine> GetActSequenceWeakPtr();
 
   // This returns true from when a call to Act is made until the caller
   // receives a reply.
@@ -387,19 +391,18 @@ class ExecutionEngine : public ToolDelegate,
 
   void SetState(State state);
 
-  // Performs safety checks for next action. This is asynchronous.
-  void SafetyChecksForNextAction();
+  // Performs safety checks for the current tool request. This is asynchronous.
+  void SafetyChecksForExecutingTool();
 
-  // Performs synchronous safety checks for the next action. If everything
-  // passes calls tool_controller_.Invoke().
+  // Performs synchronous safety checks for the current ToolRequest. If
+  // everything passes calls tool_controller_.Invoke().
   void DidFinishAsyncSafetyChecks(const url::Origin& committed_origin,
                                   mojom::ActionResultCode result_code);
 
-  // Synchronously executes the next action. There are several types of actions,
-  // including renderer-scoped actions, tab-scoped actions, and global actions.
-  void ExecuteNextAction();
+  // Synchronously invokes the currently executing tool_request
+  void InvokeCurrentToolRequest();
 
-  // Called each time an action finishes.
+  // Called each time a new Tool is created and finishes Validate
   void PostToolCreate(mojom::ActionResultPtr result);
   // Called when the task delegate finishes `DidToolValidation()`.
   void PostDelegateToolValidation(
@@ -418,12 +421,12 @@ class ExecutionEngine : public ToolDelegate,
   bool IsExecutingBaseDispatcher() const;
   bool IsExecutingNestedDispatcher() const;
   void ProcessNextFromDispatcher();
-  // Starts the next action by calling SafetyChecksForNextAction(). Must only be
-  // called if there is a next action.
+  // Starts the next ToolRequest by calling SafetyChecksForExecutingTool(). Must
+  // only be called if there is a next ToolRequest.
   void StartExecutingNewRequest();
-  // Records Action.ResultCode.AfterSkippedWait for the in-progress action if it
-  // started while a skipped stabilization wait was pending. Called wherever an
-  // action's result is reported to the dispatcher.
+  // Records Action.ResultCode.AfterSkippedWait for the in-progress ToolRequest
+  // if it started while a skipped stabilization wait was pending. Called
+  // wherever a ToolRequest's result is reported to the dispatcher.
   void MaybeRecordActionResultCodeAfterSkippedWait(
       const ToolResult& tool_result);
   void ReportResultAndStartNext(
@@ -432,9 +435,7 @@ class ExecutionEngine : public ToolDelegate,
   void CompleteActCall(std::vector<ToolResultWithLatencyInfo> results);
   void RetryCompleteActCallWhenObservationSettled();
 
-  // Returns the next action that will be started when ExecuteNextAction is
-  // reached.
-  const ToolRequest& GetNextAction() const;
+  const ToolRequest& GetNextToolRequest() const;
 
   // Processes the affiliation service results for the given `source_origin`.
   // and saves it into `affiliated_origin_map_`.
@@ -443,9 +444,9 @@ class ExecutionEngine : public ToolDelegate,
                               const std::vector<affiliations::Facet>& results,
                               bool success);
 
-  // Returns the action that was last executed and is still in progress. It is
-  // an error to call this when an action is not in progress.
-  const ToolRequest& GetInProgressAction() const;
+  // Returns the ToolRequest that was last executed and is still in progress. It
+  // is an error to call this when a ToolRequest is not in progress.
+  const ToolRequest& GetInProgressToolRequest() const;
 
   // Returns the surface `request` validates against, looked up in this task's
   // profile. Returns null if the surface is gone or belongs to another profile.
@@ -454,20 +455,21 @@ class ExecutionEngine : public ToolDelegate,
   ActorSurface* GetSurfaceForValidation(const ToolRequest& request);
 
   // Returns the WebContents whose JavaScriptDialogInterceptor corresponds to
-  // `action` (its explicit validation surface, or the task's most recently
-  // actuated surface when `action` has no target surface).
+  // `request` (its explicit validation surface, or the task's most recently
+  // actuated surface when `request` has no target surface).
   content::WebContents* GetWebContentsForDialogAttachment(
-      const ToolRequest& action);
+      const ToolRequest& request);
 
-  // Drains and returns any JavaScript dialogs intercepted on `action`'s
-  // WebContents during this action.
+  // Drains and returns any JavaScript dialogs intercepted on `request`'s
+  // WebContents during this request.
   std::vector<InterceptedJavaScriptDialog> TakeInterceptedJavaScriptDialogs(
-      const ToolRequest& action);
+      const ToolRequest& request);
 
   // Returns the shared PageStabilityConfig to defer observation for the
-  // currently executing action when `kActorStabilizeOncePerBundle` is enabled
-  // and the next queued action can reuse the same observation delayer; returns
-  // `std::nullopt` if the current action must wait immediately.
+  // currently executing ToolRequest when `kActorStabilizeOncePerBundle` is
+  // enabled and the next queued ToolRequest can reuse the same observation
+  // delayer; returns `std::nullopt` if the current ToolRequest must wait
+  // immediately.
   std::optional<ObservationDelayController::PageStabilityConfig>
   GetDeferredObservationConfig() const;
 
@@ -535,8 +537,6 @@ class ExecutionEngine : public ToolDelegate,
 
   State state_ = State::kInit;
 
-  static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
-
   // Owns `this`.
   const base::raw_ref<ActorTask> task_;
 
@@ -581,7 +581,7 @@ class ExecutionEngine : public ToolDelegate,
   std::optional<std::vector<ToolResultWithLatencyInfo>> completed_results_;
   ActCallback act_callback_;
 
-  base::TimeTicks action_start_time_;
+  base::TimeTicks current_request_start_time_;
 
   // The raw navigation ID of the page before the tool was invoked.
   int64_t pre_invoke_navigation_id_ = 0;
@@ -595,9 +595,9 @@ class ExecutionEngine : public ToolDelegate,
   // treating a tool as still in progress.
   bool is_settling_pending_observation_ = false;
 
-  // True if a skipped page-stabilization wait from an earlier action in the
-  // bundle was still pending when the in-progress action started.
-  bool action_started_after_skipped_wait_ = false;
+  // True if a skipped page-stabilization wait from an earlier ToolRequest in
+  // the bundle was still pending when the in-progress ToolRequest started.
+  bool tool_request_started_after_skipped_wait_ = false;
 
   // Manages the registration lifetime of this engine's OriginGatingChecker with
   // the OriginGatingService. Automatically unregisters the checker upon
@@ -618,8 +618,7 @@ class ExecutionEngine : public ToolDelegate,
 
   base::ObserverList<StateObserver> observers_;
 
-  base::OnceCallbackList<void(bool /*success*/)>
-      action_sequence_ended_callbacks_;
+  base::OnceCallbackList<void(bool /*success*/)> act_sequence_ended_callbacks_;
 
   // If a tool finishes while the task is in a waiting state, the finish
   // callback and processing is deferred until the task is resumed.
@@ -637,12 +636,12 @@ class ExecutionEngine : public ToolDelegate,
 
   // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is
   // destroyed. However, this class can invalidate WeakPtrs any time a new set
-  // of actions is passed in. This effectively cancels any ongoing async
-  // actions.
-  base::WeakPtrFactory<ExecutionEngine> actions_weak_ptr_factory_{this};
+  // of ToolRequests is passed in. This effectively cancels any ongoing async
+  // ToolRequests.
+  base::WeakPtrFactory<ExecutionEngine> act_sequence_weak_ptr_factory_{this};
 
   // WeakPtrFactory for consumers that care about the lifetime of this instance,
-  // rather than of a particular action sequence.
+  // rather than of a particular act sequence.
   base::WeakPtrFactory<ExecutionEngine> weak_ptr_factory_{this};
 };
 

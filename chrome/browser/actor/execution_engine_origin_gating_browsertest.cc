@@ -1574,11 +1574,11 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   StopAllTasks();
 
   // Each actual navigation should not have applied the gate. The origin was
-  // confirmed when during SafetyChecksForNextAction.
+  // confirmed when during SafetyChecksForExecutingTool.
   histogram_tester.ExpectUniqueSample("Actor.NavigationGating.AppliedGate",
                                       false, 2);
   // Permission should have been explicitly granted once during
-  // SafetyChecksForNextAction. The navigation to to `www.example.com` had
+  // SafetyChecksForExecutingTool. The navigation to to `www.example.com` had
   // implicit permission via the tool request.
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.PermissionGranted", true, 1);

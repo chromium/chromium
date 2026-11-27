@@ -973,7 +973,7 @@ ExecutionEngineStateWaiter::ExecutionEngineStateWaiter(
     ExecutionEngine& execution_engine,
     ExecutionEngine::State target_state)
     : callback_(std::move(callback)),
-      execution_engine_(execution_engine.GetActionSequenceWeakPtr()),
+      execution_engine_(execution_engine.GetActSequenceWeakPtr()),
       target_state_(target_state) {
   execution_engine_->AddObserver(this);
 }

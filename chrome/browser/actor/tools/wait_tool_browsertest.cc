@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ActorWaitToolBrowserTest, WaitTool_BlockedByScheme) {
 
   // The embedded test server serves over HTTP. For a non-localhost domain like
   // "example.com", the resulting URL is "http://example.com". Tab-gating safety
-  // checks (`SafetyChecksForNextAction`) explicitly block remote HTTP sites
+  // checks (`SafetyChecksForExecutingTool`) explicitly block remote HTTP sites
   // (only allowing HTTPS), resulting in `kActionsBlockedForScheme`.
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/actor/blank.html");

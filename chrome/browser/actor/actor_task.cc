@@ -474,7 +474,7 @@ void ActorTask::OnFinishedAct(
 
   // TODO(b/472322151): There's a subtle bug here - when we pause a task
   // callback_for_act_ is invoked immediately and
-  // ExecutionEngine::CancelOngoingActions is used to terminate ExecutionEngine.
+  // ExecutionEngine::CancelOngoingAct is used to terminate ExecutionEngine.
   // This relies on ActorTask's state not changing until the callback from
   // ExecutionEngine (this function) is invoked. However, if that takes longer
   // than expected and the task is resumed and a new action is sent to Act we
@@ -607,7 +607,7 @@ void ActorTask::Interrupt(bool retain_user_control,
   // TODO(crbug.com/484367299): Implement a proper actor task state for
   // interrupt-with-user-control.
   interrupted_task_needs_user_control_ = retain_user_control;
-  execution_engine_->PauseOngoingActions();
+  execution_engine_->PauseOngoingAct();
   interrupt_reason_ = interrupt_reason;
   SetState(State::kWaitingOnUser);
 }
@@ -645,7 +645,7 @@ bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
     return false;
   }
   did_add_tabs_callback_.Cancel();
-  execution_engine_->CancelOngoingActions(reason);
+  execution_engine_->CancelOngoingAct(reason);
 
   switch (reason) {
     case mojom::ActionResultCode::kTaskWentAway:

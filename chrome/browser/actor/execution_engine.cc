@@ -1297,7 +1297,7 @@ void ExecutionEngine::HandleNavigationToNewOrigin(
   SendNavigationConfirmationRequest(
       destination,
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
-                     GetActionSequenceWeakPtr(), destination, ukm_source_id,
+                     GetActSequenceWeakPtr(), destination, ukm_source_id,
                      std::move(timer), state_,
                      base::BindOnce([](bool permission_granted) {
                        return NoVerdictResult{
@@ -1371,7 +1371,7 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
   task_->delegate()->RequestToShowUserConfirmationDialog(
       task_->id(), destination, for_sensitive_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
-                     GetActionSequenceWeakPtr(), destination,
+                     GetActSequenceWeakPtr(), destination,
                      base::BindOnce([](bool permission_granted) {
                        return NoVerdictResult{
                            .is_allowed = permission_granted,
@@ -1408,7 +1408,7 @@ void ExecutionEngine::UserTakeover(
     RecordDownloadSaveAsDialogTriggered(true);
   }
 
-  CancelOngoingActions(takeover_response_code);
+  CancelOngoingAct(takeover_response_code);
 
   // Cancel any existing user takeover callback
   RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
@@ -1440,15 +1440,15 @@ void ExecutionEngine::DidUninterruptTask() {
 
 bool ExecutionEngine::TabsCanOpenNewWebContents() const {
   return state() == State::kToolInvoke && !is_settling_pending_observation_ &&
-         GetInProgressAction().RequiresOpeningWebContents();
+         GetInProgressToolRequest().RequiresOpeningWebContents();
 }
 
 base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
-  TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
+void ExecutionEngine::CancelOngoingAct(mojom::ActionResultCode reason) {
+  TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingAct");
   deferred_finish_tool_invoke_.Reset();
   is_settling_pending_observation_ = false;
   CHECK(tool_controller_);
@@ -1460,7 +1460,7 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
 
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeTicks start =
-      action_start_time_.is_null() ? now : action_start_time_;
+      current_request_start_time_.is_null() ? now : current_request_start_time_;
 
   ToolResultWithLatencyInfo cancel_result(start, std::max(start, now),
                                           MakeResult(reason));
@@ -1494,8 +1494,8 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   ProcessNextFromDispatcher();
 }
 
-void ExecutionEngine::PauseOngoingActions() {
-  TRACE_EVENT0("actor", "ExecutionEngine::PauseOngoingActions");
+void ExecutionEngine::PauseOngoingAct() {
+  TRACE_EVENT0("actor", "ExecutionEngine::PauseOngoingAct");
   if (tool_controller_) {
     tool_controller_->Pause();
   }
@@ -1512,21 +1512,21 @@ void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   external_tool_failure_reason_ = reason;
 }
 
-void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
-                          base::OnceClosure on_actions_accepted,
+void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& requests,
+                          base::OnceClosure on_tools_accepted,
                           ActorTask::ActCallback callback) {
   TRACE_EVENT0("actor", "ExecutionEngine::Act");
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  CHECK(!actions.empty());
+  CHECK(!requests.empty());
   CHECK(deferred_finish_tool_invoke_.is_null());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(task_->GetState(), ActorTask::State::kActing);
 
   {
     JournalDetailsBuilder journal_details;
-    for (size_t i = 0; i < actions.size(); ++i) {
+    for (size_t i = 0; i < requests.size(); ++i) {
       journal_details.Add(absl::StrFormat("Actions[%d]", i),
-                          actions[i]->JournalEvent());
+                          requests[i]->JournalEvent());
     }
     journal_->Log(GURL::EmptyGURL(), task_->id(), "ExecutionEngine::Act",
                   std::move(journal_details).Build());
@@ -1534,7 +1534,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   if (IsExecutingActCall()) {
     journal_->Log(
-        actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
+        requests[0]->GetURLForJournal(), task_->id(), "Act Failed",
         JournalDetailsBuilder()
             .AddError(
                 "Unable to perform action: task already has action in progress")
@@ -1547,13 +1547,13 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     return;
   }
 
-  if (on_actions_accepted) {
-    // `on_actions_accepted` may stop or pause the task, or destroy it along
-    // with this engine. It runs before this engine takes `actions`, so doing
-    // that doesn't need to cancel actions that haven't started. In all those
-    // cases, `actions` must not start.
+  if (on_tools_accepted) {
+    // `on_tools_accepted` may stop or pause the task, or destroy it along
+    // with this engine. It runs before this engine takes `requests`, so doing
+    // that doesn't need to cancel requests that haven't started. In all those
+    // cases, `requests` must not start.
     base::WeakPtr<ExecutionEngine> weak_this = weak_ptr_factory_.GetWeakPtr();
-    std::move(on_actions_accepted).Run();
+    std::move(on_tools_accepted).Run();
     if (!weak_this) {
       return;
     }
@@ -1571,7 +1571,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   act_callback_ = std::move(callback);
   observation_strategy_ = TabObservationStrategy();
 
-  dispatchers_.push(std::make_unique<BaseDispatcher>(std::move(actions)));
+  dispatchers_.push(std::make_unique<BaseDispatcher>(std::move(requests)));
   ProcessNextFromDispatcher();
 }
 
@@ -1639,39 +1639,39 @@ void ExecutionEngine::StartExecutingNewRequest() {
   // TODO(b/555808355): Consider how observation deferral should work with
   // followup/composite tools.
   if (tool_controller_->HasPendingObservation() &&
-      (GetNextAction().IsFollowup() || IsExecutingNestedDispatcher() ||
+      (GetNextToolRequest().IsFollowup() || IsExecutingNestedDispatcher() ||
        tool_controller_->ShouldSettlePendingObservationBefore(
-           GetNextAction()))) {
-    tool_controller_->SettlePendingObservation(
-        base::BindOnce(&ExecutionEngine::StartExecutingNewRequest,
-                       GetActionSequenceWeakPtr()));
+           GetNextToolRequest()))) {
+    tool_controller_->SettlePendingObservation(base::BindOnce(
+        &ExecutionEngine::StartExecutingNewRequest, GetActSequenceWeakPtr()));
     return;
   }
-  // Captured at action start: by the time the action finishes, the pending
-  // wait may have been settled (early termination) or run (bundle end).
-  action_started_after_skipped_wait_ =
+  // Captured at ToolRequest start: by the time the ToolRequest finishes, the
+  // pending wait may have been settled (early termination) or run (bundle end).
+  tool_request_started_after_skipped_wait_ =
       tool_controller_->HasPendingStabilization();
 
   SetState(State::kStartAction);
-  if (!GetNextAction().IsFollowup()) {
-    action_start_time_ = base::TimeTicks::Now();
+  if (!GetNextToolRequest().IsFollowup()) {
+    current_request_start_time_ = base::TimeTicks::Now();
   }
 
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
-  if (ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
+  if (ActorSurface* actor_surface =
+          GetSurfaceForValidation(GetNextToolRequest());
       actor_surface &&
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
     CHECK(contents);
-    if (contents->IsCrashed() && GetNextAction().ActsOnWebContents()) {
+    if (contents->IsCrashed() && GetNextToolRequest().ActsOnWebContents()) {
       GetJournal().Log(
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::StartExecutingNewRequest",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      if (GetNextAction().GetActorSurfaceHandle().is_null()) {
+      if (GetNextToolRequest().GetActorSurfaceHandle().is_null()) {
         task_->ObserveActorSurfaceOnce(
-            GetNextAction().GetActorSurfaceForValidation());
+            GetNextToolRequest().GetActorSurfaceForValidation());
       } else {
         CHECK(task_->IsActingOnActorSurface(actor_surface->GetHandle()));
       }
@@ -1683,10 +1683,10 @@ void ExecutionEngine::StartExecutingNewRequest() {
     }
   }
 
-  if (GetNextAction().RequiresUrlCheckInCurrentTab()) {
-    SafetyChecksForNextAction();
+  if (GetNextToolRequest().RequiresUrlCheckInCurrentTab()) {
+    SafetyChecksForExecutingTool();
   } else {
-    ExecuteNextAction();
+    InvokeCurrentToolRequest();
   }
 }
 
@@ -1701,8 +1701,9 @@ void ExecutionEngine::ReportResultAndStartNext(
   tool_controller_->ResetActiveTool();
 
   const base::TimeTicks end_time = base::TimeTicks::Now();
-  const base::TimeTicks start_time =
-      action_start_time_.is_null() ? end_time : action_start_time_;
+  const base::TimeTicks start_time = current_request_start_time_.is_null()
+                                         ? end_time
+                                         : current_request_start_time_;
   std::string tool_name(executing_request_->Name());
 
   CurrentDispatcher().OnToolCompleted(ToolResultWithLatencyInfo(
@@ -1711,9 +1712,9 @@ void ExecutionEngine::ReportResultAndStartNext(
   ProcessNextFromDispatcher();
 }
 
-void ExecutionEngine::SafetyChecksForNextAction() {
-  TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForNextAction");
-  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
+void ExecutionEngine::SafetyChecksForExecutingTool() {
+  TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForExecutingTool");
+  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextToolRequest());
 
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
@@ -1736,7 +1737,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
       GateableEvent(origin_gating::PageActionEvent{
           .destination = url,
-          .tool = GetClientToolForRequest(GetNextAction())}),
+          .tool = GetClientToolForRequest(GetNextToolRequest())}),
       base::BindOnce(&ResolveGatingDecision,
                      journal_->CreatePendingAsyncEntry(
                          url, task_->id(), MakeBrowserTrackUUID(task_->id()),
@@ -1747,7 +1748,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
                                            /*for_navigation=*/false);
           }))
           .Then(base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
-                               GetActionSequenceWeakPtr(),
+                               GetActSequenceWeakPtr(),
                                main_frame->GetLastCommittedOrigin())));
 }
 
@@ -1758,7 +1759,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(executing_request_);
 
-  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
+  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextToolRequest());
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
@@ -1773,7 +1774,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   auto ensure_surface_observed = [&]() {
-    const ToolRequest& action = GetNextAction();
+    const ToolRequest& action = GetNextToolRequest();
     if (action.GetActorSurfaceHandle().is_null()) {
       task_->ObserveActorSurfaceOnce(action.GetActorSurfaceForValidation());
     } else {
@@ -1788,7 +1789,8 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    journal_->Log(GetNextAction().GetURLForJournal(), task_id, "Act Failed",
+    journal_->Log(GetNextToolRequest().GetURLForJournal(), task_id,
+                  "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
                       .Build());
@@ -1802,7 +1804,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
   if (!IsOk(result_code)) {
     journal_->Log(
-        GetNextAction().GetURLForJournal(), task_id, "Act Failed",
+        GetNextToolRequest().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     ensure_surface_observed();
     ReportResultAndStartNext(ToolResult::FromDeprecatedActionResult(MakeResult(
@@ -1811,19 +1813,20 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     return;
   }
 
-  ExecuteNextAction();
+  InvokeCurrentToolRequest();
 }
 
-void ExecutionEngine::ExecuteNextAction() {
-  TRACE_EVENT0("actor", "ExecutionEngine::ExecuteNextAction");
+void ExecutionEngine::InvokeCurrentToolRequest() {
+  TRACE_EVENT0("actor", "ExecutionEngine::InvokeCurrentToolRequest");
   CHECK_EQ(state_, State::kStartAction, base::NotFatalUntil::M161);
   CHECK(executing_request_);
   CHECK(tool_controller_);
 
   SetState(State::kToolCreateAndVerify);
   tool_controller_->CreateToolAndValidate(
-      GetInProgressAction(), base::BindOnce(&ExecutionEngine::PostToolCreate,
-                                            GetActionSequenceWeakPtr()));
+      GetInProgressToolRequest(),
+      base::BindOnce(&ExecutionEngine::PostToolCreate,
+                     GetActSequenceWeakPtr()));
 }
 
 void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
@@ -1837,20 +1840,20 @@ void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
   if (!delegate) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ExecutionEngine::PostDelegateToolValidation,
-                                  GetActionSequenceWeakPtr(),
+                                  GetActSequenceWeakPtr(),
                                   /*journal_entry=*/nullptr, MakeOkResult()));
     return;
   }
-  const ToolRequest& action = GetInProgressAction();
+  const ToolRequest& action = GetInProgressToolRequest();
   auto journal_entry = journal_->CreatePendingAsyncEntry(
       action.GetURLForJournal(), task_->id(), MakeBrowserTrackUUID(task_->id()),
       "DidToolValidation",
       JournalDetailsBuilder().Add("tool", action.JournalEvent()).Build());
   delegate->DidToolValidation(
       task_->id(), action,
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &ExecutionEngine::PostDelegateToolValidation,
-          GetActionSequenceWeakPtr(), std::move(journal_entry))));
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&ExecutionEngine::PostDelegateToolValidation,
+                         GetActSequenceWeakPtr(), std::move(journal_entry))));
 }
 
 void ExecutionEngine::PostDelegateToolValidation(
@@ -1870,9 +1873,9 @@ void ExecutionEngine::PostDelegateToolValidation(
   }
   SetState(State::kUiPreInvoke);
   GetUiEventDispatcher().OnPreTool(
-      GetInProgressAction(),
+      GetInProgressToolRequest(),
       base::BindOnce(&ExecutionEngine::FinishedUiPreInvoke,
-                     GetActionSequenceWeakPtr()));
+                     GetActSequenceWeakPtr()));
 }
 
 void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
@@ -1887,7 +1890,7 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
   // Cache the navigation ID before invoking the tool to ensure we log the
   // critical action under the correct pre-navigation page context.
   pre_invoke_navigation_id_ = 0;
-  const ToolRequest& current_action = GetInProgressAction();
+  const ToolRequest& current_action = GetInProgressToolRequest();
   ActorSurface* actor_surface = GetSurfaceForValidation(current_action);
   content::WebContents* contents =
       actor_surface ? actor_surface->GetWebContents() : nullptr;
@@ -1906,7 +1909,7 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 
   SetState(State::kToolInvoke);
   tool_controller_->Invoke(base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
-                                          GetActionSequenceWeakPtr()),
+                                          GetActSequenceWeakPtr()),
                            GetDeferredObservationConfig());
 
   if (tool_invoke_callback_for_testing_) {
@@ -1925,7 +1928,7 @@ void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {
   // so dialogs fired while waiting on the user are not attributed to the
   // already-finished tool.
   std::vector<InterceptedJavaScriptDialog> javascript_dialogs =
-      TakeInterceptedJavaScriptDialogs(GetInProgressAction());
+      TakeInterceptedJavaScriptDialogs(GetInProgressToolRequest());
 
   if (tool_invoke_complete_callback_for_testing_) {
     std::move(tool_invoke_complete_callback_for_testing_).Run();
@@ -1952,7 +1955,7 @@ void ExecutionEngine::FinishToolInvokeWithDialogs(
     return;
   }
 
-  const ToolRequest& current_action = GetInProgressAction();
+  const ToolRequest& current_action = GetInProgressToolRequest();
 
   // The current action errored out. Stop the chain.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason;
@@ -1994,13 +1997,13 @@ void ExecutionEngine::FinishToolInvokeWithDialogs(
       current_action.AsPageToolRequest() &&
       tool_controller_->HasPendingObservation();
   RecordToolTimings(
-      current_action.Name(), end_time - action_start_time_,
+      current_action.Name(), end_time - current_request_start_time_,
       deferred_page_stabilization
           ? std::nullopt
           : std::make_optional(end_time - *result->execution_end_time));
 
   if (ActorSurfaceHandle actor_surface_handle =
-          GetInProgressAction().GetActorSurfaceForValidation();
+          GetInProgressToolRequest().GetActorSurfaceForValidation();
       !actor_surface_handle.is_null()) {
     observation_strategy_.VoteForScreenshot(
         actor_surface_handle,
@@ -2011,14 +2014,14 @@ void ExecutionEngine::FinishToolInvokeWithDialogs(
   }
 
   ToolResultWithLatencyInfo execute_result(
-      action_start_time_, end_time, std::move(tool_result),
+      current_request_start_time_, end_time, std::move(tool_result),
       current_action.Name(), std::move(javascript_dialogs));
 
   SetState(State::kUiPostInvoke);
   GetUiEventDispatcher().OnPostTool(
-      GetInProgressAction(),
+      GetInProgressToolRequest(),
       base::BindOnce(&ExecutionEngine::FinishedUiPostInvoke,
-                     GetActionSequenceWeakPtr(), std::move(execute_result)));
+                     GetActSequenceWeakPtr(), std::move(execute_result)));
 }
 
 void ExecutionEngine::FinishedUiPostInvoke(
@@ -2043,7 +2046,7 @@ void ExecutionEngine::FinishedUiPostInvoke(
 
 void ExecutionEngine::MaybeRecordActionResultCodeAfterSkippedWait(
     const ToolResult& tool_result) {
-  if (!std::exchange(action_started_after_skipped_wait_, false) ||
+  if (!std::exchange(tool_request_started_after_skipped_wait_, false) ||
       !base::FeatureList::IsEnabled(kActorStabilizeOncePerBundle)) {
     return;
   }
@@ -2064,7 +2067,7 @@ void ExecutionEngine::CompleteActCall(
     is_settling_pending_observation_ = true;
     tool_controller_->SettlePendingObservation(base::BindOnce(
         &ExecutionEngine::RetryCompleteActCallWhenObservationSettled,
-        GetActionSequenceWeakPtr()));
+        GetActSequenceWeakPtr()));
     return;
   }
   is_settling_pending_observation_ = false;
@@ -2076,7 +2079,7 @@ void ExecutionEngine::CompleteActCall(
 
   SetState(State::kComplete);
 
-  action_sequence_ended_callbacks_.Notify(is_ok);
+  act_sequence_ended_callbacks_.Notify(is_ok);
 
   if (!is_ok) {
     const std::string error_debug_string =
@@ -2098,7 +2101,7 @@ void ExecutionEngine::CompleteActCall(
   // TODO(b/555808355): Move these to the top of the method.
   executing_request_.reset();
   external_tool_failure_reason_.reset();
-  actions_weak_ptr_factory_.InvalidateWeakPtrs();
+  act_sequence_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExecutionEngine::RetryCompleteActCallWhenObservationSettled() {
@@ -2109,9 +2112,8 @@ void ExecutionEngine::RetryCompleteActCallWhenObservationSettled() {
   CompleteActCall(std::move(results));
 }
 
-// TODO(b/555808355): Rename "Action" to "Request" throughout this class.
-base::WeakPtr<ExecutionEngine> ExecutionEngine::GetActionSequenceWeakPtr() {
-  return actions_weak_ptr_factory_.GetWeakPtr();
+base::WeakPtr<ExecutionEngine> ExecutionEngine::GetActSequenceWeakPtr() {
+  return act_sequence_weak_ptr_factory_.GetWeakPtr();
 }
 
 bool ExecutionEngine::IsExecutingActCall() const {
@@ -2198,7 +2200,7 @@ void ExecutionEngine::SetUserSelectedCredential(
         affiliations::FacetURI::FromPotentiallyInvalidSpec(
             origin.GetURL().GetWithEmptyPath().spec()),
         base::BindOnce(&ExecutionEngine::OnAffiliationsReceived,
-                       GetActionSequenceWeakPtr(), origin,
+                       GetActSequenceWeakPtr(), origin,
                        std::move(affiliations_fetched)));
   } else {
     std::move(affiliations_fetched).Run();
@@ -2325,7 +2327,7 @@ void ExecutionEngine::EnqueueFollowupAction(
   // Follow-ups act on behalf of the in-progress action, so they inherit its
   // observation delay behavior.
   action->SetSkipObservationDelay(
-      GetInProgressAction().ShouldSkipObservationDelay());
+      GetInProgressToolRequest().ShouldSkipObservationDelay());
   static_cast<BaseDispatcher&>(CurrentDispatcher())
       .EnqueueFollowupAction(std::move(action));
 }
@@ -2349,7 +2351,7 @@ void ExecutionEngine::RemoveActorSurface(
 
 base::WeakPtr<actor_login::ActionSequenceDelegate>
 ExecutionEngine::GetActionSequenceDelegate() {
-  return GetActionSequenceWeakPtr();
+  return GetActSequenceWeakPtr();
 }
 
 void ExecutionEngine::OnActionTargetFrameResolved(
@@ -2360,12 +2362,12 @@ void ExecutionEngine::OnActionTargetFrameResolved(
   }
   // Only measure actions that are subject to page-action gating on the main
   // frame (see `StartExecutingNewRequest`).
-  if (!GetInProgressAction().RequiresUrlCheckInCurrentTab()) {
+  if (!GetInProgressToolRequest().RequiresUrlCheckInCurrentTab()) {
     return;
   }
 
   // Page actions are only gated on the main frame's origin (see
-  // `SafetyChecksForNextAction`). Walk up to the main frame, collecting the
+  // `SafetyChecksForExecutingTool`). Walk up to the main frame, collecting the
   // distinct origins of the frames between the target and the main frame.
   std::set<url::Origin> origins;
   RenderFrameHost* main_frame = &target_frame;
@@ -2401,7 +2403,7 @@ void ExecutionEngine::OnActionTargetFrameResolved(
                  base::BindOnce(
                      &ExecutionEngine::RunSubframeGatingDryRun, GetWeakPtr(),
                      WebContents::FromRenderFrameHost(main_frame)->GetWeakPtr(),
-                     GetClientToolForRequest(GetInProgressAction()),
+                     GetClientToolForRequest(GetInProgressToolRequest()),
                      std::move(origins)));
 }
 
@@ -2448,7 +2450,7 @@ void ExecutionEngine::RunSubframeGatingDryRun(
 
 base::CallbackListSubscription ExecutionEngine::RegisterActionSequenceEnded(
     base::OnceCallback<void(bool)> callback) {
-  return action_sequence_ended_callbacks_.Add(std::move(callback));
+  return act_sequence_ended_callbacks_.Add(std::move(callback));
 }
 
 void ExecutionEngine::OnFederatedLoginOutcome(
@@ -2473,14 +2475,13 @@ void ExecutionEngine::SetActorLoginService(
   actor_login_service_ = std::move(actor_login_service);
 }
 
-// TODO(b/555808355): Merge with GetInProgressAction below.
-const ToolRequest& ExecutionEngine::GetNextAction() const {
+// TODO(b/555808355): Merge with GetInProgressToolRequest below.
+const ToolRequest& ExecutionEngine::GetNextToolRequest() const {
   CHECK(executing_request_);
   return *executing_request_;
 }
 
-// TODO(b/555808355): Rename "Action" to "Request" throughout this class.
-const ToolRequest& ExecutionEngine::GetInProgressAction() const {
+const ToolRequest& ExecutionEngine::GetInProgressToolRequest() const {
   CHECK(state_ == State::kUiPreInvoke || state_ == State::kToolInvoke ||
         state_ == State::kUiPostInvoke || state_ == State::kToolCreateAndVerify)
       << "Current state is " << StateToString(state_);
@@ -2495,8 +2496,8 @@ ActorSurface* ExecutionEngine::GetSurfaceForValidation(
 }
 
 content::WebContents* ExecutionEngine::GetWebContentsForDialogAttachment(
-    const ToolRequest& action) {
-  ActorSurfaceHandle surface_handle = action.GetActorSurfaceForValidation();
+    const ToolRequest& request) {
+  ActorSurfaceHandle surface_handle = request.GetActorSurfaceForValidation();
   if (surface_handle.is_null()) {
     surface_handle = task_->GetLastActuatedActorSurface();
   }
@@ -2505,9 +2506,9 @@ content::WebContents* ExecutionEngine::GetWebContentsForDialogAttachment(
 }
 
 std::vector<InterceptedJavaScriptDialog>
-ExecutionEngine::TakeInterceptedJavaScriptDialogs(const ToolRequest& action) {
+ExecutionEngine::TakeInterceptedJavaScriptDialogs(const ToolRequest& request) {
   content::WebContents* web_contents =
-      GetWebContentsForDialogAttachment(action);
+      GetWebContentsForDialogAttachment(request);
   if (!web_contents) {
     return {};
   }
@@ -2520,7 +2521,7 @@ ExecutionEngine::GetDeferredObservationConfig() const {
     return std::nullopt;
   }
 
-  const ToolRequest& current_action = GetInProgressAction();
+  const ToolRequest& current_action = GetInProgressToolRequest();
   const PageToolRequest* current_page_request =
       current_action.AsPageToolRequest();
   if (!current_page_request || current_action.IsFollowup() ||

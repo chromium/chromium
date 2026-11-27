@@ -711,7 +711,7 @@ TEST_F(ExecutionEngineTest, MAYBE_CancelOngoingAction) {
   // Wait for the tool to be invoked, but don't complete it.
   EXPECT_TRUE(on_invoke_future.Wait());
 
-  task_->GetExecutionEngine().CancelOngoingActions(
+  task_->GetExecutionEngine().CancelOngoingAct(
       mojom::ActionResultCode::kTaskWentAway);
 
   // The cancellation should destroy the tool.
@@ -2014,7 +2014,7 @@ class ToolControllerDeferredObservationTest : public ExecutionEngineTest {
   ToolControllerDeferredObservationTest() {
     // This suite drives ToolController directly without going through
     // ExecutionEngine::Act(), so disable the subframe-gating dry run that
-    // queries ExecutionEngine::GetInProgressAction().
+    // queries ExecutionEngine::GetInProgressToolRequest().
     subframe_gating_feature_list_.InitAndDisableFeature(
         kGlicActorSubframeGatingDryRun);
   }
@@ -3056,7 +3056,8 @@ TEST_F(ExecutionEngineUrlGatingTest,
   EXPECT_EQ(allowed_settings.Get(), MayActOnUrlBlockReason::kWrongScheme);
 }
 
-TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
+TEST_F(ExecutionEngineUrlGatingTest,
+       SafetyChecksForExecutingTool_AllowedByCache) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3075,7 +3076,7 @@ TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
 }
 
 TEST_F(ExecutionEngineUrlGatingTest,
-       SafetyChecksForNextAction_PromptsForSensitiveSite) {
+       SafetyChecksForExecutingTool_PromptsForSensitiveSite) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3109,7 +3110,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
 }
 
 TEST_F(ExecutionEngineUrlGatingTest,
-       SafetyChecksForNextAction_PromptsForSensitiveSiteFromCommandLine) {
+       SafetyChecksForExecutingTool_PromptsForSensitiveSiteFromCommandLine) {
   const GURL url("https://c.test/");
   const GURL sub_url("https://sub.c.test/");
   const GURL other_sub_url("https://sub.d.test/");
