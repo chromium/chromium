@@ -35,7 +35,6 @@ namespace performance_manager {
 class Graph;
 class PageLiveStateDecoratorHelper;
 class PageLoadMetricsObserver;
-class PageLoadTrackerDecoratorHelper;
 class PerformanceManagerFeatureObserverClient;
 class PerformanceManagerLifetime;
 class ScopedGlobalScenarioMemory;
@@ -114,10 +113,6 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   // Needed to maintain some of the PageLiveStateDecorator' properties.
   std::unique_ptr<performance_manager::PageLiveStateDecoratorHelper>
       page_live_state_data_helper_;
-
-  // Needed to maintain the PageNode::IsLoading() property.
-  std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
-      page_load_tracker_decorator_helper_;
 
   std::unique_ptr<performance_manager::ScopedGlobalScenarioMemory>
       global_performance_scenario_memory_;

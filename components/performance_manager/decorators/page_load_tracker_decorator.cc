@@ -7,12 +7,17 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace performance_manager {
 
@@ -23,6 +28,152 @@ using LoadIdleState = PageLoadTrackerDecorator::Data::LoadIdleState;
 const char kDescriberName[] = "PageLoadTrackerDecorator";
 
 }  // namespace
+
+// Listens to content::WebContentsObserver notifications for a given WebContents
+// and updates the PageLoadTrackerDecoratorData of its PageNode accordingly.
+class PageLoadTrackerDecorator::WebContentsObserver
+    : public content::WebContentsObserver,
+      public NodeAttachedDataImpl<WebContentsObserver> {
+ public:
+  explicit WebContentsObserver(const PageNode* page_node)
+      : content::WebContentsObserver(page_node->GetWebContents().get()),
+        page_node_(PageNodeImpl::FromNode(page_node)) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK(web_contents());
+
+    // `WebContents` must not be loading when it starts being tracked by this
+    // observer. Otherwise, loading state wouldn't be tracked correctly.
+    DCHECK(!web_contents()->ShouldShowLoadingUI());
+  }
+
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
+  ~WebContentsObserver() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+
+  // content::WebContentsObserver:
+  void DidStartLoading() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK(web_contents()->IsLoading());
+
+    // May be called spuriously when the `WebContents` is already loading.
+    if (loading_state_ != LoadingState::kNotLoading) {
+      return;
+    }
+
+    // Only observe top-level navigation to a different document.
+    if (!web_contents()->ShouldShowLoadingUI()) {
+      return;
+    }
+
+    loading_state_ = LoadingState::kWaitingForNavigation;
+    StartLoading();
+  }
+
+  void PrimaryPageChanged(content::Page& page) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Only observe top-level navigation that will show navigation UI.
+    if (!web_contents()->ShouldShowLoadingUI()) {
+      return;
+    }
+
+    DCHECK(web_contents()->IsLoading());
+
+    // Return if the state is already updated, since it can be called multiple
+    // times between DidStartLoading() and DidStopLoading().
+    if (loading_state_ == LoadingState::kLoading) {
+      return;
+    }
+
+    // There are a few cases where an ongoing navigation will get upgraded to
+    // show loading ui without a DidStartLoading (e.g., if an iframe navigates,
+    // then the top-level frame begins navigating before the iframe navigation
+    // completes). If that happened, emulate the DidStartLoading now before
+    // updating did_commit_.
+    if (loading_state_ != LoadingState::kWaitingForNavigation) {
+      StartLoading();
+    }
+
+    loading_state_ = LoadingState::kLoading;
+
+    Data& data = Data::Get(page_node_.get());
+    DCHECK(data.is_loading_);
+    DCHECK(!data.did_commit_);
+    data.did_commit_ = true;
+
+    PageLoadTrackerDecorator::UpdateLoadIdleStatePage(page_node_);
+  }
+
+  void DidStopLoading() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // The state can be `kNotLoading` if this isn't a top-level navigation to a
+    // different document.
+    if (loading_state_ == LoadingState::kNotLoading) {
+      return;
+    }
+
+    loading_state_ = LoadingState::kNotLoading;
+
+    Data& data = Data::Get(page_node_.get());
+    DCHECK(data.is_loading_);
+    data.is_loading_ = false;
+    data.did_commit_ = false;
+
+    PageLoadTrackerDecorator::UpdateLoadIdleStatePage(page_node_);
+  }
+
+ private:
+  void StartLoading()
+      VALID_BROWSER_THREAD_REQUIRED(content::BrowserThread::UI) {
+    if (!Data::Exists(page_node_.get())) {
+      Data::Create(page_node_.get());
+    }
+
+    Data& data = Data::Get(page_node_.get());
+
+    // Typically, `data` is a newly created PageLoadTrackerDecoratorData.
+    // However, if a load starts before the page reaches an idle state
+    // following the previous load, `data` may indicate that the page is
+    // `kLoadedNotIdling` or `kLoadedAndIdling`. In all cases, restart the state
+    // machine at `kWaitingForNavigation` and clear the `loading_started_`
+    // timestamp.
+    DCHECK_NE(data.load_idle_state(),
+              LoadIdleState::kWaitingForNavigationTimedOut);
+    DCHECK_NE(data.load_idle_state(), LoadIdleState::kLoading);
+    DCHECK_NE(data.load_idle_state(), LoadIdleState::kLoadedAndIdle);
+    DCHECK(!data.is_loading_);
+    DCHECK(!data.did_commit_);
+    data.is_loading_ = true;
+    data.SetLoadIdleState(page_node_, LoadIdleState::kWaitingForNavigation);
+    data.loading_started_ = base::TimeTicks();
+    PageLoadTrackerDecorator::UpdateLoadIdleStatePage(page_node_);
+  }
+
+  const raw_ptr<PageNodeImpl> page_node_;
+
+  enum class LoadingState {
+    // Initial state.
+    // DidStartLoading():     Transition to kWaitingForNavigation.
+    // PrimaryPageChanged():  Invalid from this state.
+    // DidStopLoading():      Invalid from this state.
+    kNotLoading,
+    // DidStartLoading():     Invalid from this state.
+    // PrimaryPageChanged():  Transition to kLoading.
+    // DidStopLoading():      Transition to kNotLoading.
+    kWaitingForNavigation,
+    // DidStartLoading():     Invalid from this state.
+    // PrimaryPageChanged():  Invalid from this state.
+    // DidStopLoading():      Transition to kNotLoading.
+    kLoading,
+  };
+
+  LoadingState loading_state_ GUARDED_BY_BROWSER_THREAD(
+      content::BrowserThread::UI) = LoadingState::kNotLoading;
+};
 
 // static
 constexpr base::TimeDelta
@@ -50,6 +201,7 @@ void PageLoadTrackerDecorator::OnPassedToGraph(Graph* graph) {
 }
 
 void PageLoadTrackerDecorator::OnTakenFromGraph(Graph* graph) {
+  CHECK(graph->GetAllPageNodes().empty());
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   UnregisterObservers(graph);
 }
@@ -69,56 +221,13 @@ base::DictValue PageLoadTrackerDecorator::DescribePageNodeData(
   return ret;
 }
 
+void PageLoadTrackerDecorator::OnPageNodeAdded(const PageNode* page_node) {
+  WebContentsObserver::GetOrCreate(page_node);
+}
+
 void PageLoadTrackerDecorator::OnMainThreadTaskLoadIsLow(
     const ProcessNode* process_node) {
   UpdateLoadIdleStateProcess(ProcessNodeImpl::FromNode(process_node));
-}
-
-// static
-void PageLoadTrackerDecorator::DidStartLoading(PageNodeImpl* page_node) {
-  if (!Data::Exists(page_node)) {
-    Data::Create(page_node);
-  }
-
-  Data& data = Data::Get(page_node);
-
-  // Typically, |data| is a newly created PageLoadTrackerDecoratorData. However,
-  // if a load starts before the page reaches an idle state following the
-  // previous load, |data| may indicate that the page is |kLoadedNotIdling| or
-  // |kLoadedAndIdling|. In all cases, restart the state machine at
-  // |kWaitingForNavigation| and clear the |loading_started_| timestamp.
-  DCHECK_NE(data.load_idle_state(),
-            LoadIdleState::kWaitingForNavigationTimedOut);
-  DCHECK_NE(data.load_idle_state(), LoadIdleState::kLoading);
-  DCHECK_NE(data.load_idle_state(), LoadIdleState::kLoadedAndIdle);
-  DCHECK(!data.is_loading_);
-  DCHECK(!data.did_commit_);
-  data.is_loading_ = true;
-  data.SetLoadIdleState(page_node, LoadIdleState::kWaitingForNavigation);
-  data.loading_started_ = base::TimeTicks();
-  UpdateLoadIdleStatePage(page_node);
-}
-
-// static
-void PageLoadTrackerDecorator::PrimaryPageChanged(PageNodeImpl* page_node) {
-  Data& data = Data::Get(page_node);
-
-  DCHECK(data.is_loading_);
-  DCHECK(!data.did_commit_);
-  data.did_commit_ = true;
-
-  UpdateLoadIdleStatePage(page_node);
-}
-
-// static
-void PageLoadTrackerDecorator::DidStopLoading(PageNodeImpl* page_node) {
-  Data& data = Data::Get(page_node);
-
-  DCHECK(data.is_loading_);
-  data.is_loading_ = false;
-  data.did_commit_ = false;
-
-  UpdateLoadIdleStatePage(page_node);
 }
 
 void PageLoadTrackerDecorator::RegisterObservers(Graph* graph) {
@@ -127,11 +236,13 @@ void PageLoadTrackerDecorator::RegisterObservers(Graph* graph) {
   // TODO(chrisha): Add graph introspection functions to Graph.
   DCHECK(graph->HasOnlySystemNode());
   graph->AddFrameNodeObserver(this);
+  graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);
 }
 
 void PageLoadTrackerDecorator::UnregisterObservers(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
+  graph->RemovePageNodeObserver(this);
   graph->RemoveProcessNodeObserver(this);
 }
 

@@ -4,20 +4,18 @@
 
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 
-#include <memory>
-#include <type_traits>
-#include <utility>
-
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/test_support/graph_test_harness.h"
-#include "components/performance_manager/test_support/mock_graphs.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -26,22 +24,34 @@ using Data = PageLoadTrackerDecorator::Data;
 using LIS = Data::LoadIdleState;
 using LS = PageNode::LoadingState;
 
-class PageLoadTrackerDecoratorTest : public GraphTestHarness {
+class PageLoadTrackerDecoratorTest : public PerformanceManagerTestHarness {
  public:
   PageLoadTrackerDecoratorTest(const PageLoadTrackerDecoratorTest&) = delete;
   PageLoadTrackerDecoratorTest& operator=(const PageLoadTrackerDecoratorTest&) =
       delete;
 
  protected:
-  using Super = GraphTestHarness;
-
-  PageLoadTrackerDecoratorTest() = default;
+  PageLoadTrackerDecoratorTest()
+      : PerformanceManagerTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PageLoadTrackerDecoratorTest() override = default;
 
   void SetUp() override {
-    Super::SetUp();
-    pltd_ = new PageLoadTrackerDecorator();
-    graph()->PassToGraph(base::WrapUnique(pltd_.get()));
+    GetGraphFeatures().EnablePageLoadTrackerDecorator();
+    PerformanceManagerTestHarness::SetUp();
+    SetContents(CreateTestWebContents());
+  }
+
+  void TearDown() override {
+    DeleteContents();
+    PerformanceManagerTestHarness::TearDown();
+  }
+
+  PageNodeImpl* GetPageNode() {
+    base::WeakPtr<PageNode> node =
+        PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+    CHECK(node);
+    return PageNodeImpl::FromNode(node.get());
   }
 
   void TestPageAlmostIdleTransitions(bool timeout_waiting_for_response,
@@ -54,8 +64,6 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
   static constexpr base::TimeDelta GetWaitingForIdleTimeout() {
     return PageLoadTrackerDecorator::kWaitingForIdleTimeout;
   }
-
-  raw_ptr<PageLoadTrackerDecorator> pltd_ = nullptr;
 };
 
 void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
@@ -66,18 +74,18 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   static const base::TimeDelta kWaitingForIdleTimeout =
       PageLoadTrackerDecorator::kWaitingForIdleTimeout;
 
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* frame_node = mock_graph.frame.get();
-  auto* page_node = mock_graph.page.get();
-  auto* proc_node = mock_graph.process.get();
+  auto* page_node = GetPageNode();
 
   // Initially the page should be in a loading not started state.
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadingNotStarted, page_node->GetLoadingState());
 
-  // The state should transition to loading when DidStartLoading() is called to
-  // indicate that loading starts.
-  PageLoadTrackerDecorator::DidStartLoading(page_node);
+  // The state should transition to loading when a navigation starts.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/"), web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Start();
+
   ASSERT_TRUE(Data::Exists(page_node));
   Data& page_data = Data::Get(page_node);
   EXPECT_EQ(LIS::kWaitingForNavigation, page_data.load_idle_state());
@@ -89,26 +97,31 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   if (timeout_waiting_for_response) {
     // Let the timeout run down. The page should transition to loading timed
     // out.
-    task_env().FastForwardBy(
+    task_environment()->FastForwardBy(
         PageLoadTrackerDecorator::kWaitingForNavigationTimeout);
     EXPECT_EQ(LIS::kWaitingForNavigationTimedOut, page_data.load_idle_state());
     EXPECT_EQ(LS::kLoadingTimedOut, page_node->GetLoadingState());
     EXPECT_FALSE(page_data.timer_.IsRunning());
   }
 
-  // Indicate that a page change was committed. The state should transition to
-  // kLoading (no matter whether the kWaitingForNavigationTimeout expired since
+  // Commit the navigation while keeping loading. The state should transition
+  // to kLoading (no matter whether kWaitingForNavigationTimeout expired since
   // load started).
-  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  navigation->Commit();
   EXPECT_EQ(LIS::kLoading, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
   EXPECT_FALSE(page_data.timer_.IsRunning());
 
+  FrameNodeImpl* frame_node = page_node->primary_main_frame_node();
+  ASSERT_TRUE(frame_node);
+  ProcessNodeImpl* proc_node = frame_node->process_node();
+  ASSERT_TRUE(proc_node);
+
   // Mark the page as idling. It should transition from
-  // kLoading directly to kLoadedAndIdling after this.
+  // kLoading directly to kLoadedAndIdling after StopLoading().
   frame_node->SetNetworkAlmostIdle();
   proc_node->SetMainThreadTaskLoadIsLow(true);
-  PageLoadTrackerDecorator::DidStopLoading(page_node);
+  navigation->StopLoading();
   EXPECT_EQ(LIS::kLoadedAndIdling, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoadedBusy, page_node->GetLoadingState());
   EXPECT_TRUE(page_data.timer_.IsRunning());
@@ -124,7 +137,7 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
 
   if (timeout_waiting_for_idle) {
     // Let the timeout run down. The final state transition should occur.
-    task_env().FastForwardBy(kWaitingForIdleTimeout);
+    task_environment()->FastForwardBy(kWaitingForIdleTimeout);
     EXPECT_FALSE(Data::Exists(page_node));
     EXPECT_EQ(LS::kLoadedIdle, page_node->GetLoadingState());
   } else {
@@ -136,7 +149,7 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
     EXPECT_TRUE(page_data.timer_.IsRunning());
 
     // Let the idle timer evaluate. The final state transition should occur.
-    task_env().FastForwardBy(kLoadedAndIdlingTimeout);
+    task_environment()->FastForwardBy(kLoadedAndIdlingTimeout);
     EXPECT_FALSE(Data::Exists(page_node));
     EXPECT_EQ(LS::kLoadedIdle, page_node->GetLoadingState());
   }
@@ -171,25 +184,31 @@ TEST_F(PageLoadTrackerDecoratorTest,
 }
 
 TEST_F(PageLoadTrackerDecoratorTest, TestTransitionsNotIdlingOnDidStopLoading) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* frame_node = mock_graph.frame.get();
-  auto* page_node = mock_graph.page.get();
-  auto* proc_node = mock_graph.process.get();
+  auto* page_node = GetPageNode();
 
   // Initially the page should be in a loading not started state.
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadingNotStarted, page_node->GetLoadingState());
 
-  // The state should transition to loading when PrimaryPageChanged() is called
-  // to indicate that loading starts.
-  PageLoadTrackerDecorator::DidStartLoading(page_node);
-  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  // The state should transition to loading when a navigation commits while
+  // still loading.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/"), web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Start();
+  navigation->Commit();
+
   ASSERT_TRUE(Data::Exists(page_node));
   Data& page_data = Data::Get(page_node);
   EXPECT_EQ(LIS::kLoading, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
   EXPECT_FALSE(page_data.timer_.IsRunning());
 
+  FrameNodeImpl* frame_node = page_node->primary_main_frame_node();
+  ASSERT_TRUE(frame_node);
+  ProcessNodeImpl* proc_node = frame_node->process_node();
+  ASSERT_TRUE(proc_node);
+
   // Mark the page as not idling.
   frame_node->OnNavigationCommitted(
       GURL(), url::Origin(), /*same_document=*/false,
@@ -197,31 +216,36 @@ TEST_F(PageLoadTrackerDecoratorTest, TestTransitionsNotIdlingOnDidStopLoading) {
   proc_node->SetMainThreadTaskLoadIsLow(false);
   EXPECT_FALSE(IsIdling(page_node));
 
-  // DidStopLoading() should cause a transition to kLoadedNotIdling.
-  PageLoadTrackerDecorator::DidStopLoading(page_node);
+  // StopLoading() should cause a transition to kLoadedNotIdling.
+  navigation->StopLoading();
   EXPECT_EQ(LIS::kLoadedNotIdling, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoadedBusy, page_node->GetLoadingState());
   EXPECT_TRUE(page_data.timer_.IsRunning());
 }
 
 TEST_F(PageLoadTrackerDecoratorTest, TestStartLoadingAgainBeforeIdle) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* frame_node = mock_graph.frame.get();
-  auto* page_node = mock_graph.page.get();
-  auto* proc_node = mock_graph.process.get();
+  auto* page_node = GetPageNode();
 
   // Initially the page should be in a loading not started state.
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadingNotStarted, page_node->GetLoadingState());
 
-  // The state should transition to loading when PrimaryPageChanged() is called
-  // to indicate that loading starts.
-  PageLoadTrackerDecorator::DidStartLoading(page_node);
-  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  // Start and commit the first navigation.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/"), web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Start();
+  navigation->Commit();
+
   ASSERT_TRUE(Data::Exists(page_node));
   Data& page_data = Data::Get(page_node);
   EXPECT_EQ(LIS::kLoading, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
+
+  FrameNodeImpl* frame_node = page_node->primary_main_frame_node();
+  ASSERT_TRUE(frame_node);
+  ProcessNodeImpl* proc_node = frame_node->process_node();
+  ASSERT_TRUE(proc_node);
 
   // Mark the page as not idling.
   frame_node->OnNavigationCommitted(
@@ -230,37 +254,44 @@ TEST_F(PageLoadTrackerDecoratorTest, TestStartLoadingAgainBeforeIdle) {
   proc_node->SetMainThreadTaskLoadIsLow(false);
   EXPECT_FALSE(IsIdling(page_node));
 
-  // DidStopLoading() should cause a transition to kLoadedNotIdling.
-  PageLoadTrackerDecorator::DidStopLoading(page_node);
+  // StopLoading() should cause a transition to kLoadedNotIdling.
+  navigation->StopLoading();
   EXPECT_EQ(LIS::kLoadedNotIdling, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoadedBusy, page_node->GetLoadingState());
 
-  // The state should transition to loading if DidStartLoading() is invoked
-  // again, before the page reaches an idle state.
-  PageLoadTrackerDecorator::DidStartLoading(page_node);
+  // The state should transition to loading if a new navigation starts before
+  // the page reaches an idle state.
+  auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example2.com/"), web_contents());
+  navigation2->SetKeepLoading(true);
+  navigation2->Start();
   EXPECT_EQ(LIS::kWaitingForNavigation, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
 
   // Test transitions until the page is loaded and idle.
-  PageLoadTrackerDecorator::PrimaryPageChanged(page_node);
+  navigation2->Commit();
   EXPECT_EQ(LIS::kLoading, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
 
-  PageLoadTrackerDecorator::DidStopLoading(page_node);
+  navigation2->StopLoading();
   EXPECT_EQ(LIS::kLoadedNotIdling, page_data.load_idle_state());
   EXPECT_EQ(LS::kLoadedBusy, page_node->GetLoadingState());
 
-  task_env().FastForwardBy(GetWaitingForIdleTimeout());
+  task_environment()->FastForwardBy(GetWaitingForIdleTimeout());
 
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadedIdle, page_node->GetLoadingState());
 }
 
 TEST_F(PageLoadTrackerDecoratorTest, IsIdling) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* frame_node = mock_graph.frame.get();
-  auto* page_node = mock_graph.page.get();
-  auto* proc_node = mock_graph.process.get();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/"));
+
+  auto* page_node = GetPageNode();
+  FrameNodeImpl* frame_node = page_node->primary_main_frame_node();
+  ASSERT_TRUE(frame_node);
+  ProcessNodeImpl* proc_node = frame_node->process_node();
+  ASSERT_TRUE(proc_node);
 
   // Neither of the idling properties are set, so IsIdling should return false.
   EXPECT_FALSE(IsIdling(page_node));

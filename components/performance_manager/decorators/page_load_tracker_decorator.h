@@ -20,7 +20,7 @@ class FrameNodeImpl;
 class PageNodeImpl;
 class ProcessNodeImpl;
 
-// The PageLoadTracker decorator is responsible for determining when a page is
+// The PageLoadTrackerDecorator is responsible for determining when a page is
 // loading. A page starts loading when incoming data starts arriving for a
 // top-level load to a different document. It stops loading when it reaches an
 // "almost idle" state, based on CPU and network quiescence, or after an
@@ -28,6 +28,7 @@ class ProcessNodeImpl;
 class PageLoadTrackerDecorator : public FrameNodeObserver,
                                  public GraphOwnedDefaultImpl,
                                  public NodeDataDescriberDefaultImpl,
+                                 public PageNodeObserver,
                                  public ProcessNodeObserver {
  public:
   using Data = PageLoadTrackerDecoratorData;
@@ -49,15 +50,11 @@ class PageLoadTrackerDecorator : public FrameNodeObserver,
   // NodeDataDescriber implementation:
   base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
+  // PageNodeObserver implementation:
+  void OnPageNodeAdded(const PageNode* page_node) override;
+
   // ProcessNodeObserver implementation:
   void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) override;
-
-  // Invoked by PageLoadTrackerDecoratorHelper when corresponding
-  // WebContentsObserver methods are invoked, and the WebContents is loading to
-  // a different document.
-  static void DidStartLoading(PageNodeImpl* page_node);
-  static void PrimaryPageChanged(PageNodeImpl* page_node);
-  static void DidStopLoading(PageNodeImpl* page_node);
 
  protected:
   friend class PageLoadTrackerDecoratorTest;
@@ -109,6 +106,9 @@ class PageLoadTrackerDecorator : public FrameNodeObserver,
   static void TransitionToLoadedAndIdle(PageNodeImpl* page_node);
 
   static bool IsIdling(const PageNodeImpl* page_node);
+
+ private:
+  class WebContentsObserver;
 };
 
 }  // namespace performance_manager

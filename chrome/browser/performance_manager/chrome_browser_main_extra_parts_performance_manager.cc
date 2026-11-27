@@ -46,7 +46,6 @@
 #include "components/performance_manager/graph/policies/process_priority_policy.h"
 #include "components/performance_manager/performance_manager_feature_observer_client.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -413,8 +412,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       std::make_unique<performance_manager::PageLoadMetricsObserver>();
   page_live_state_data_helper_ =
       std::make_unique<performance_manager::PageLiveStateDecoratorHelper>();
-  page_load_tracker_decorator_helper_ =
-      std::make_unique<performance_manager::PageLoadTrackerDecoratorHelper>();
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_watcher_ =
       std::make_unique<performance_manager::ExtensionWatcher>();
@@ -480,7 +477,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_watcher_.reset();
 #endif
-  page_load_tracker_decorator_helper_.reset();
   page_live_state_data_helper_.reset();
   page_load_metrics_observer_.reset();
 
