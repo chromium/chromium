@@ -256,33 +256,6 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
   }
 }
 
-bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source) {
-  switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
-    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
-    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
-    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-      return false;
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
-    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
-    case AutofillSuggestionTriggerSource::kGlic:
-      return true;
-  }
-}
-
 bool IsPointerLocked(content::WebContents* web_contents) {
   content::RenderFrameHost* rfh;
   content::RenderWidgetHostView* rwhv;

@@ -836,10 +836,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (!barrier_for_accepting_ || ShouldResetIdleBarrier(trigger_source_)) {
-    barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
-        kIgnoreEarlyClicksOnSuggestionsDuration);
-  }
+  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
+      kIgnoreEarlyClicksOnSuggestionsDuration);
   // TODO(crbug.com/364165357): Use actually shown suggestions.
   delegate_->OnSuggestionsShown(suggestions_, /*metadata=*/{});
 

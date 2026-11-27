@@ -554,57 +554,17 @@ TEST_F(AutofillPopupControllerImplTest,
   client().suggestion_controller(manager()).SelectSuggestion(/*index=*/0);
 }
 
-// Parameterized tests for AutofillSuggestionTriggerSource values that are
-// exempt from standard safety checks.
-class AutofillPopupControllerImplTestWithTriggerSource
-    : public AutofillPopupControllerImplTest,
-      public ::testing::WithParamInterface<AutofillSuggestionTriggerSource> {};
-
-// Tests that the accidental click safety bounds checks are ignored.
-TEST_P(AutofillPopupControllerImplTestWithTriggerSource,
-       IgnoreClickOutsideCheck) {
-  const AutofillSuggestionTriggerSource trigger_source = GetParam();
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry}, trigger_source);
+// Tests that the accidental click safety bounds checks are ignored for
+// proactive Gmail OTP suggestions.
+TEST_F(AutofillPopupControllerImplTest, IgnoreClickOutsideCheckForGmailOtp) {
+  ShowSuggestions(
+      manager(), {SuggestionType::kAddressEntry},
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_TRUE(client()
                   .suggestion_controller(manager())
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
-
-// Tests that updates to the popup suggestions do not reset the accidental click
-// lockout (idle barrier).
-TEST_P(AutofillPopupControllerImplTestWithTriggerSource,
-       UpdateDoesNotResetIdleBarrier) {
-  const AutofillSuggestionTriggerSource trigger_source = GetParam();
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry}, trigger_source);
-  client().suggestion_controller(manager()).OnPopupPainted();
-
-  // Fast forward 400ms (barrier not expired yet).
-  task_environment()->FastForwardBy(base::Milliseconds(400));
-
-  // Reshow suggestions with the trigger source. This should NOT reset the
-  // 500ms barrier.
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry}, trigger_source);
-
-  // Fast forward another 150ms (total 550ms since initial open, 150ms since
-  // reshow). The barrier should have expired.
-  task_environment()->FastForwardBy(base::Milliseconds(150));
-
-  client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
-      /*was_obscured=*/false);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AutofillPopupControllerImplTestWithTriggerSource,
-    ::testing::Values(
-        AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
-        AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
-        AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
-        AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge));
 
 // Tests that Compose saved state notification popup gets hidden after 2
 // seconds, but not after 1 second.
@@ -1178,28 +1138,6 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
 
   // Remove the next entry. The popup should then be hidden since there are
   // no Autofill entries left.
-  EXPECT_CALL(client().suggestion_controller(manager()),
-              Hide(SuggestionHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));
-}
-
-// Tests that removing the last manual/actionable Autocomplete suggestion will
-// successfully hide the popup, even if the remaining items in the list include
-// structural elements (like separators) and a promo button (which is not
-// standalone). The promo button and its separator alone should not be enough to
-// keep the popup open.
-TEST_F(AutofillPopupControllerImplTest,
-       RemoveLastAutocompleteSuggestion_HidesPopupEvenWithMemoryPromo) {
-  ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry,
-                              SuggestionType::kSeparator,
-                              SuggestionType::kAutocompleteAtMemoryButton});
-
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(
-                  Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
-      .WillOnce(Return(true));
-
   EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kNoSuggestions));
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(0));

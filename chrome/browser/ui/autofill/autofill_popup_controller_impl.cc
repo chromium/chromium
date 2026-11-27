@@ -77,16 +77,16 @@ namespace {
 // enforces these paint checks.
 bool ShouldEnforcePaintChecks(AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
-    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
-    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
-    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     // Proactive Gmail OTP suggestions open asynchronously upon email arrival
     // without a direct click on the field, so the user's stationary cursor
     // frequently rests where the row first paints. Gmail OTP suggestions are
     // already restricted to sender-affiliated, PhishGuard-verified origins.
     case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
       return false;
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
+    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
@@ -366,9 +366,7 @@ void AutofillPopupControllerImpl::Show(
 
   should_ignore_mouse_observed_outside_item_bounds_check_ =
       !ShouldEnforcePaintChecks(trigger_source_);
-  if (ShouldResetIdleBarrier(trigger_source_)) {
-    barrier_for_accepting_.reset();
-  }
+  barrier_for_accepting_.reset();
 
   if (view_) {
     OnSuggestionsChanged();
@@ -471,8 +469,7 @@ const LocalFrameToken& AutofillPopupControllerImpl::GetAnchorFrameToken()
 
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
-  return !disable_threshold_for_testing_ &&
-         ShouldResetIdleBarrier(trigger_source_);
+  return !disable_threshold_for_testing_;
 }
 
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
