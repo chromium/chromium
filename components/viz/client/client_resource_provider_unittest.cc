@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -431,6 +432,67 @@ TEST_P(ClientResourceProviderTest, TransferableResourceExportedTwice) {
       EXPECT_CALL(release, Released(sync_token, false));
     }
     provider().ReceiveReturnsFromParent(std::move(returned));
+  }
+}
+
+TEST_P(ClientResourceProviderTest,
+       TransferableResourceExportedTwiceSecondReturnEmptySyncToken) {
+  MockReleaseCallback release;
+  TransferableResource tran = MakeTransferableResource();
+  ResourceId id = provider().ImportResource(
+      tran, base::BindOnce(&MockReleaseCallback::Released,
+                           base::Unretained(&release)));
+
+  // Export the resource twice.
+  std::vector<TransferableResource> exported;
+
+  CHECK(context_provider());
+  provider().PrepareSendToParent({id}, &exported,
+                                 context_provider()->SharedImageInterface());
+  exported.clear();
+  provider().PrepareSendToParent({id}, &exported,
+                                 context_provider()->SharedImageInterface());
+
+  // Exported resources are not released when removed, until all exports are
+  // returned.
+  EXPECT_CALL(release, Released(_, _)).Times(0);
+  provider().RemoveImportedResource(id);
+
+  gpu::SyncToken sync_token(
+      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
+      gpu::CommandBufferId::FromUnsafeValue(0x1), 1234);
+
+  {
+    // Return the resource the first time with a valid sync token.
+    std::vector<ReturnedResource> returned;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(sync_token),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
+    provider().ReceiveReturnsFromParent(std::move(returned));
+  }
+  testing::Mock::VerifyAndClearExpectations(&release);
+
+  {
+    // Return the resource a second time with an empty sync token. The release
+    // callback or shared image should have the first release sync token.
+    std::vector<ReturnedResource> returned;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
+    if (!base::FeatureList::IsEnabled(
+            features::kUseAutomaticSyncTokenManagement)) {
+      EXPECT_CALL(release, Released(sync_token, false));
+    }
+    provider().ReceiveReturnsFromParent(std::move(returned));
+
+    if (base::FeatureList::IsEnabled(
+            features::kUseAutomaticSyncTokenManagement)) {
+      EXPECT_THAT(tran.shared_image()->GetSyncTokensForDisplayCompositor(
+                      gpu::SyncToken()),
+                  testing::Contains(sync_token));
+    }
   }
 }
 

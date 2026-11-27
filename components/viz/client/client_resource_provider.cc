@@ -297,19 +297,19 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
     imported.exported_count -= returned.count;
     imported.returned_lost |= returned.lost;
 
-    if (imported.exported_count) {
-      // Can't remove the imported yet so go to the next, looking for the next
-      // returned resource.
-      continue;
-    }
-
-    // Save the sync token only when the exported count is going to 0. Or IOW
-    // drop all by the last returned sync token.
+    // Always save the sync token in case it's from a different sequence than
+    // the last return or last return has no sync token.
     gpu::SyncToken returned_sync_token =
         imported.resource.shared_image()->EndExport(
             std::move(returned.shared_image_export_result));
     if (returned_sync_token.HasData()) {
       imported.returned_sync_token = returned_sync_token;
+    }
+
+    if (imported.exported_count) {
+      // Can't remove the imported yet so go to the next, looking for the next
+      // returned resource.
+      continue;
     }
 
     if (!imported.marked_for_deletion) {
