@@ -56,7 +56,8 @@ class OcclusionVisibilityInteractiveUITest : public InteractiveBrowserTest {
 // change.
 // TODO(https://crbug.com/40122973): BringWindowToFront can get stuck in a loop
 // on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/591064347): Flaky RunLoop timeout on M156 Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_OcclusionTriggersVisiblityChange \
   DISABLED_OcclusionTriggersVisiblityChange
 #else
