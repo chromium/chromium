@@ -1258,9 +1258,17 @@ bool SkiaOutputSurfaceImplOnGpu::FlushAndSubmitCopyOutput(
     return false;
   }
 
-  if (!end_semaphores.empty()) {
-    CHECK(gr_context());
-    if (!gr_context()->submit()) {
+  if (gr_context()) {
+    const bool sync_cpu =
+        gpu::ShouldVulkanSyncCpuForSkiaSubmit(vulkan_context_provider_);
+    // When DrDC is enabled, SharedImages shared across threads (such as
+    // WrappedSkImageBacking) do not always produce signal semaphores. Submit
+    // the GrDirectContext before ending write access and sending the result,
+    // matching SharedContextState::SubmitIfNecessary().
+    const bool need_submit = sync_cpu || !end_semaphores.empty() ||
+                             context_state_->is_drdc_enabled();
+    if (need_submit &&
+        !gr_context()->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo)) {
       DLOG(ERROR) << copy_output_type << " gr_context->submit() failed";
       return false;
     }
