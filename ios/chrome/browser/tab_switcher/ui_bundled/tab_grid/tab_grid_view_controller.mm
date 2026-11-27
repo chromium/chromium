@@ -1465,10 +1465,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = 0;
   if (IsChromeNextIaEnabled() &&
       self.layoutState.appBarPosition == AppBarPosition::kBottom) {
-    UIView* appBar =
-        [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
-    CGFloat appBarHeight = appBar.bounds.size.height;
-    bottomInset = appBarHeight + self.bottomToolbar.intrinsicContentSize.height;
+    bottomInset =
+        AppBarHeightPortrait() + self.bottomToolbar.intrinsicContentSize.height;
   } else {
     // The content inset of the tab grids must be modified so that the toolbars
     // do not obscure the tabs. This may change depending on orientation.

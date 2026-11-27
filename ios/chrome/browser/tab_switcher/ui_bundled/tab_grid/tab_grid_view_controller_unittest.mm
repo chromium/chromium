@@ -7,6 +7,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -336,6 +337,34 @@ TEST_F(TabGridViewControllerTest, InsetsAccountForAppBarInLandscape) {
 
   insets = incognito_grid.contentInsets;
   EXPECT_GE(insets.left, AppBarHeightLandscape());
+}
+
+// Tests that grid view bottom insets account for the App Bar in portrait when
+// `kChromeNextIa` is enabled.
+TEST_F(TabGridViewControllerTest, InsetsAccountForAppBarInPortrait) {
+  base::test::ScopedFeatureList scoped_feature_list(kChromeNextIa);
+  InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
+  std::ignore = view_controller_.view;
+
+  IncognitoGridViewController* incognito_grid =
+      [[IncognitoGridViewController alloc] init];
+  view_controller_.incognitoTabsViewController = incognito_grid;
+
+  SceneLayoutState* layout_state = [[SceneLayoutState alloc] init];
+  view_controller_.layoutState = layout_state;
+  [layout_state setAppBarPosition:AppBarPosition::kBottom
+                          passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                      CreateSceneKey()];
+  EXPECT_EQ(incognito_grid.contentInsets.bottom, AppBarHeightPortrait());
+
+  view_controller_.bottomToolbar.mode = TabGridMode::kSelection;
+  [view_controller_ setMode:TabGridMode::kSelection];
+  [view_controller_.view layoutIfNeeded];
+  CGFloat bottom_toolbar_height =
+      view_controller_.bottomToolbar.intrinsicContentSize.height;
+  EXPECT_GT(bottom_toolbar_height, 0);
+  EXPECT_EQ(incognito_grid.contentInsets.bottom,
+            AppBarHeightPortrait() + bottom_toolbar_height);
 }
 
 // Tests that `accessibilityElements` is reset to nil when inactive tabs are
