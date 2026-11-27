@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EQUALLY_WEIGHTED_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_ID;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
@@ -45,6 +46,8 @@ public class EntityEditorViewBinder {
             view.setDoneRunnable(model.get(DONE_RUNNABLE));
         } else if (propertyKey == CANCEL_RUNNABLE) {
             view.setCancelRunnable(model.get(CANCEL_RUNNABLE));
+        } else if (propertyKey == EQUALLY_WEIGHTED_BUTTONS) {
+            view.setEquallyWeightedButtons(model.get(EQUALLY_WEIGHTED_BUTTONS));
         } else if (propertyKey == DELETE_CONFIRMATION_TITLE) {
             view.setDeleteConfirmationTitle(model.get(DELETE_CONFIRMATION_TITLE));
         } else if (propertyKey == DELETE_CONFIRMATION_TEXT) {

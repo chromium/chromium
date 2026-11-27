@@ -191,6 +191,10 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
                                  int entity_type,
                                  int record_type) const;
 
+  // Returns true if the editor for `entity_type` must show equally weighted
+  // buttons.
+  bool MustShowEquallyWeightedButtons(JNIEnv* env, int entity_type) const;
+
   // Returns whether the personal context preference is visible.
   bool IsPersonalContextPreferenceVisible(JNIEnv* env);
 

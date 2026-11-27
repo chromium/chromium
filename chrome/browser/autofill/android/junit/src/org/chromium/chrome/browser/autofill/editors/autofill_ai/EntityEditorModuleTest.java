@@ -42,6 +42,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.WalletSourceNotice;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
@@ -315,6 +317,7 @@ public class EntityEditorModuleTest {
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private EntityDataManager mEntityDataManager;
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
     @Mock private EntityDataManager.Natives mEntityDataManagerJni;
 
@@ -331,6 +334,7 @@ public class EntityEditorModuleTest {
         when(mAutofillProfileBridgeJni.getSupportedCountries()).thenReturn(mSupportedCountries);
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
         EntityDataManagerJni.setInstanceForTesting(mEntityDataManagerJni);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
@@ -458,6 +462,56 @@ public class EntityEditorModuleTest {
         showEditorDialog(LOCAL_PASSPORT);
         mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    /**
+     * Tests that the default button style has a filled Done button and a non-filled Cancel button.
+     */
+    @Test
+    public void testButtonStyles_Default() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        when(mEntityDataManager.mustShowEquallyWeightedButtons(EntityTypeName.PASSPORT))
+                .thenReturn(false);
+        showEditorDialog(LOCAL_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertFalse(model.get(EntityEditorProperties.EQUALLY_WEIGHTED_BUTTONS));
+
+        View doneButton = mContainerView.findViewById(R.id.editor_dialog_done_button);
+        View cancelButton = mContainerView.findViewById(R.id.payments_edit_cancel_button);
+        assertEquals(R.style.FilledButton, resolveButtonStyle(doneButton));
+        assertEquals(R.style.TextButton, resolveButtonStyle(cancelButton));
+    }
+
+    /** Tests that both buttons are filled if equally-weighted buttons must be shown. */
+    @Test
+    public void testButtonStyles_EquallyWeighted() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        when(mEntityDataManager.mustShowEquallyWeightedButtons(EntityTypeName.PASSPORT))
+                .thenReturn(true);
+        showEditorDialog(LOCAL_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertTrue(model.get(EntityEditorProperties.EQUALLY_WEIGHTED_BUTTONS));
+
+        View doneButton = mContainerView.findViewById(R.id.editor_dialog_done_button);
+        View cancelButton = mContainerView.findViewById(R.id.payments_edit_cancel_button);
+        assertEquals(R.style.FilledButton, resolveButtonStyle(doneButton));
+        assertEquals(R.style.FilledButton, resolveButtonStyle(cancelButton));
+
+        cancelButton.performClick();
+        assertFalse(model.get(EntityEditorProperties.VISIBLE));
+    }
+
+    /** Returns the resource ID of the current style for the given button. */
+    private static int resolveButtonStyle(View button) {
+        TypedValue buttonStyle = new TypedValue();
+        assertTrue(
+                button.getContext()
+                        .getTheme()
+                        .resolveAttribute(
+                                android.R.attr.buttonStyle, buttonStyle, /* resolveRefs= */ true));
+        return buttonStyle.resourceId;
     }
 
     @Test

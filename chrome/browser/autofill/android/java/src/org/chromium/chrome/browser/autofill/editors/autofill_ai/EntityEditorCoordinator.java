@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
@@ -85,6 +86,7 @@ public class EntityEditorCoordinator {
                         profile,
                         assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         PersonalDataManagerFactory.getForProfile(profile),
+                        EntityDataManagerFactory.getForProfile(profile),
                         entityInstance,
                         detailsForUpsertPass != null
                                 ? detailsForUpsertPass.getLegalMessageLines()

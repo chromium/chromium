@@ -354,6 +354,13 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().getWalletSaveEntityNotice(entityType, accountEmail);
     }
 
+    /** Returns whether equally weighted buttons must be shown in the editor for `entityType`. */
+    public boolean mustShowEquallyWeightedButtons(@EntityTypeName int entityType) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .mustShowEquallyWeightedButtons(mNativeEntityDataManagerAndroid, entityType);
+    }
+
     public boolean isPersonalContextPreferenceVisible() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
@@ -425,6 +432,9 @@ public class EntityDataManager implements Destroyable {
 
         WalletSourceNotice getWalletSaveEntityNotice(
                 @EntityTypeName int entityType, @JniType("std::u16string") String accountEmail);
+
+        boolean mustShowEquallyWeightedButtons(
+                long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
 
         boolean isPersonalContextPreferenceVisible(long nativeEntityDataManagerAndroid);
 

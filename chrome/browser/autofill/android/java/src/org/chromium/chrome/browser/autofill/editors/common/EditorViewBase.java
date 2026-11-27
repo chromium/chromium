@@ -64,6 +64,8 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Confir
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
+import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView.EdgeType;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
@@ -118,7 +120,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     private boolean mIsDismissed;
     private boolean mValidateOnShow;
 
-    private final View mButtonBar;
+    private final DualControlLayout mButtonBar;
     private Button mDoneButton;
 
     private @Nullable Animator mDialogInOutAnimator;
@@ -298,6 +300,24 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     public void setCancelRunnable(Runnable cancelRunnable) {
         mCancelRunnable = cancelRunnable;
+    }
+
+    /** Sets whether the "Done" and "Cancel" buttons should both be rendered as filled buttons. */
+    public void setEquallyWeightedButtons(boolean equallyWeightedButtons) {
+        mButtonBar.removeAllViews();
+        // The "Done" button is already filled.
+        mButtonBar.addView(mDoneButton);
+
+        Button cancelButton =
+                DualControlLayout.createButtonForLayout(
+                        mContext,
+                        equallyWeightedButtons
+                                ? ButtonType.SECONDARY_FILLED
+                                : ButtonType.SECONDARY_TEXT,
+                        mContext.getString(R.string.cancel),
+                        this);
+        cancelButton.setId(R.id.payments_edit_cancel_button);
+        mButtonBar.addView(cancelButton);
     }
 
     public void setOpenHelpCallback(@Nullable Callback<Activity> openHelpCallback) {

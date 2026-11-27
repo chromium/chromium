@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -42,6 +43,9 @@
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/personal_context/core/personal_context_prefs.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -619,6 +623,40 @@ TEST_F(
   EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
                 env(), static_cast<int>(EntityTypeName::kVehicle)),
             std::nullopt);
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns the expected value for
+// different account capability values and entity types.
+TEST_F(EntityDataManagerAndroidTest, MustShowEquallyWeightedButtons) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  auto set_account_capability = [&](bool must_show_equally_weighted_buttons) {
+    AccountCapabilitiesTestMutator(&account_info)
+        .set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+            must_show_equally_weighted_buttons);
+    identity_test_env_.UpdateAccountInfoForAccount(account_info);
+  };
+
+  // Private pass with unknown (unset) capability.
+  EXPECT_TRUE(entity_data_manager_android_->MustShowEquallyWeightedButtons(
+      env(), static_cast<int>(EntityTypeName::kPassport)));
+
+  // Public pass with any capability value.
+  EXPECT_FALSE(entity_data_manager_android_->MustShowEquallyWeightedButtons(
+      env(), static_cast<int>(EntityTypeName::kVehicle)));
+
+  set_account_capability(true);
+  // Private pass with the capability set to true.
+  EXPECT_TRUE(entity_data_manager_android_->MustShowEquallyWeightedButtons(
+      env(), static_cast<int>(EntityTypeName::kPassport)));
+
+  // Private pass with the capability set to false.
+  set_account_capability(false);
+  EXPECT_FALSE(entity_data_manager_android_->MustShowEquallyWeightedButtons(
+      env(), static_cast<int>(EntityTypeName::kPassport)));
 }
 
 }  // namespace

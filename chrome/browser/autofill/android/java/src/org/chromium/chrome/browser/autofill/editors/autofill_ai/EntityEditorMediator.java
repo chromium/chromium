@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EQUALLY_WEIGHTED_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_ID;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
@@ -101,6 +102,7 @@ class EntityEditorMediator {
     private final Profile mProfile;
     private final IdentityManager mIdentityManager;
     private final PersonalDataManager mPersonalDataManager;
+    private final EntityDataManager mEntityDataManager;
     private final EntityInstance mEntityInstance;
     private final @Nullable List<LegalMessageLine> mLegalMessageLines;
     private final byte @Nullable [] mLegalMessageToken;
@@ -116,6 +118,7 @@ class EntityEditorMediator {
             Profile profile,
             IdentityManager identityManager,
             PersonalDataManager personalDataManager,
+            EntityDataManager entityDataManager,
             EntityInstance entityInstance,
             @Nullable List<LegalMessageLine> legalMessageLines,
             byte @Nullable [] legalMessageToken) {
@@ -124,6 +127,7 @@ class EntityEditorMediator {
         mProfile = profile;
         mIdentityManager = identityManager;
         mPersonalDataManager = personalDataManager;
+        mEntityDataManager = entityDataManager;
         mEntityInstance = entityInstance;
         mLegalMessageLines = legalMessageLines;
         mLegalMessageToken = legalMessageToken;
@@ -146,6 +150,10 @@ class EntityEditorMediator {
                 .with(EDITOR_TITLE, editorTitle)
                 .with(DONE_RUNNABLE, this::onDone)
                 .with(CANCEL_RUNNABLE, this::onCancel)
+                .with(
+                        EQUALLY_WEIGHTED_BUTTONS,
+                        mEntityDataManager.mustShowEquallyWeightedButtons(
+                                mEntityInstance.getEntityType().getTypeName()))
                 .with(
                         DELETE_CONFIRMATION_TITLE,
                         mEntityInstance.getEntityType().getDeleteEntityTypeString())

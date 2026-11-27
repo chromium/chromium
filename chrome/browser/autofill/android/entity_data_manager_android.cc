@@ -570,6 +570,15 @@ bool EntityDataManagerAndroid::IsEligibleForWalletNotice(
       static_cast<EntityInstance::RecordType>(record_type));
 }
 
+bool EntityDataManagerAndroid::MustShowEquallyWeightedButtons(
+    JNIEnv* env,
+    int entity_type) const {
+  std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
+  CHECK(type_name);
+  return autofill::MustShowEquallyWeightedButtons(identity_manager_,
+                                                  EntityType(*type_name));
+}
+
 bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
     AutofillAiAction action,
     std::optional<EntityType> entity_type) const {

@@ -29,6 +29,8 @@ public class EntityEditorProperties {
             new ReadableObjectPropertyKey<>("done_callback");
     public static final ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
             new ReadableObjectPropertyKey<>("cancel_callback");
+    public static final ReadableBooleanPropertyKey EQUALLY_WEIGHTED_BUTTONS =
+            new ReadableBooleanPropertyKey("equally_weighted_buttons");
 
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =
             new ReadableObjectPropertyKey<>("delete_confirmation_title");
@@ -58,6 +60,7 @@ public class EntityEditorProperties {
         VISIBLE,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,
+        EQUALLY_WEIGHTED_BUTTONS,
         DELETE_CONFIRMATION_TITLE,
         DELETE_CONFIRMATION_TEXT,
         DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
