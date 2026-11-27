@@ -181,6 +181,18 @@ class VisOptions {
   }
 
   /**
+   * Scaled to World coordinate, given physical pixels taken from UI input.
+   * Integer points in World coordinates are grid lines, but integer points
+   * from UI are centers of pixels; this adds a 0.5 offset to align with the
+   * pixel center domain.
+   * @param {number} s
+   * @return {number}
+   */
+  s2wDevice(s) {
+    return (this.scale > 0) ? (s + 0.5) / this.scale : 0;
+  }
+
+  /**
    * Formats a length in device pixels using the active {@link lengthUnit}.
    * @param {number} px
    * @return {string}

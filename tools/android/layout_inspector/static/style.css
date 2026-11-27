@@ -160,8 +160,13 @@ label:has(#sel-zoom) {
     --screenshot-width: 0px;
     --screenshot-height: 0px;
     cursor: crosshair;
+    display: none;
     flex-shrink: 0;
     position: relative;
+
+    &.active {
+      display: block;
+    }
   }
 
   .canv-base {
@@ -196,14 +201,16 @@ label:has(#sel-zoom) {
   user-select: none;
   white-space: nowrap;
 
-  .div-size-info {
+  .div-size-info,
+  .div-pointer-info {
     align-items: center;
     display: none;
     gap: 15px;
     justify-content: center;
   }
 
-  &[data-show="size"] .div-size-info {
+  &[data-show="size"] .div-size-info,
+  &[data-show="pointer"] .div-pointer-info {
     display: flex;
   }
 
@@ -218,7 +225,7 @@ label:has(#sel-zoom) {
     }
   }
 
-  &.too-narrow {
+  &.too-narrow .div-size-info {
     .sp-size-device,
     .sp-separator {
       display: none;
@@ -226,6 +233,30 @@ label:has(#sel-zoom) {
 
     .sp-size-scaled {
       width: auto;
+    }
+  }
+
+  .div-pointer-info {
+    .sp-pointer-px {
+      text-align: right;
+      width: 16ch;
+    }
+
+    .sp-pointer-dp {
+      width: 16ch;
+    }
+
+    .sp-color-preview {
+      border: 1px solid #888;
+      display: inline-block;
+      height: 1.2em;
+      margin-right: 5px;
+      vertical-align: middle;
+      width: 1.2em;
+    }
+
+    .sp-color-hex {
+      width: 8ch;
     }
   }
 }

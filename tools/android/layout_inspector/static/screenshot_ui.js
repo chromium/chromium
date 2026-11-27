@@ -8,13 +8,14 @@
 
 const SS_INFO_SHOW = {
   NONE: 'none',
+  POINTER: 'pointer',
   SIZE: 'size',
 };
 
 /******** ScreenshotInfoVis ********/
 /**
  * A floating info panel presenting global device size and current screenshot
- * screen size.
+ * screen size, or on hover, current pointer coordinates and pixel colors.
  */
 class ScreenshotInfoVis {
   /**
@@ -26,6 +27,10 @@ class ScreenshotInfoVis {
       root: divScreenshotInfo,
       spSizeDevice: divScreenshotInfo.querySelector('.sp-size-device'),
       spSizeScaled: divScreenshotInfo.querySelector('.sp-size-scaled'),
+      spPointerPx: divScreenshotInfo.querySelector('.sp-pointer-px'),
+      spPointerDp: divScreenshotInfo.querySelector('.sp-pointer-dp'),
+      spColorPreview: divScreenshotInfo.querySelector('.sp-color-preview'),
+      spColorHex: divScreenshotInfo.querySelector('.sp-color-hex'),
     };
     this.visOpts = visOpts;
   }
@@ -36,6 +41,10 @@ class ScreenshotInfoVis {
 
   _formatDp(v) {
     return capFixed(this.visOpts.pxToDp(v), 1);
+  }
+
+  _hex2(c) {
+    return (c ?? 0).toString(16).toUpperCase().padStart(2, '0');
   }
 
   _showSize() {
@@ -56,12 +65,97 @@ class ScreenshotInfoVis {
     this.el.root.dataset.show = SS_INFO_SHOW.SIZE;
   }
 
-  update() {
-    if (this.visOpts.wDims.w > 0 && this.visOpts.wDims.h > 0) {
+  /**
+   * @param {!ScreenshotPointer} pointer
+   * @param {!ImageData} imageData
+   */
+  _showPointer(pointer, imageData) {
+    const [ww, wh] = this.visOpts.wDims;
+    const [wx, wy] = pointer.pt.map(Math.floor);
+
+    this.el.spPointerPx.textContent = `(${wx}, ${wy})px`;
+    this.el.spPointerDp.textContent =
+        `(${this._formatDp(wx)}, ${this._formatDp(wy)})dp`;
+
+    if (wx >= 0 && wx < ww && wy >= 0 && wy < wh) {
+      const data = imageData.data;
+      const i = (wy * ww + wx) * 4;
+      const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+      const hex = `#${this._hex2(r)}${this._hex2(g)}${this._hex2(b)}`;
+
+      this.el.spColorPreview.style.backgroundColor = hex;
+      this.el.spColorHex.textContent = hex;
+    } else {
+      this.el.spColorPreview.style.backgroundColor = 'transparent';
+      this.el.spColorHex.textContent = '';
+    }
+    this.el.root.dataset.show = SS_INFO_SHOW.POINTER;
+  }
+
+  /**
+   * @param {?ScreenshotPointer=} pointer
+   * @param {?ImageData=} imageData
+   */
+  update(pointer = null, imageData = null) {
+    if (pointer != null && imageData != null) {
+      this._showPointer(pointer, imageData);
+    } else if (this.visOpts.wDims.w > 0 && this.visOpts.wDims.h > 0) {
       this._showSize();
     } else {
       this.clear();
     }
+  }
+}
+
+/******** ScreenshotPointer ********/
+/**
+ * Tracks input device state on the screen.
+ *
+ * Normalizes `PointerEvent` offsets against device-independent scaling logic
+ * via `s2wDevice()`, ensuring the pointer coordinates always live in the World
+ * domain.
+ */
+class ScreenshotPointer {
+  /**
+   * @param {!Element} innerEl
+   * @param {!VisOptions} visOpts
+   */
+  constructor(innerEl, visOpts) {
+    this.pt = new PointXY(-1, -1);
+    this.innerEl = innerEl;
+    this.visOpts = visOpts;
+    this.isPressed = false;
+    this.pointerId = null;
+  }
+
+  /**
+   * @param {!PointerEvent} e
+   * @return {boolean} False if ignored due to another active pressed pointer.
+   */
+  updateFromPointerEvent(e) {
+    if (this.pointerId == null) {
+      // Imprint on the very first pointer seen, regardless of type.
+      this.pointerId = e.pointerId;
+    } else if (this.pointerId !== e.pointerId) {
+      // If a new pointer arrives and the old one is no longer 'pressed', allow
+      // the new pointer to take over.
+      if (!this.isPressed) {
+        this.pointerId = e.pointerId;
+      } else {
+        // Ignore event from a different pointer if one is active.
+        return false;
+      }
+    }
+    this.isPressed = (e.buttons !== 0);
+    const rect = this.innerEl.getBoundingClientRect();
+    this.pt.x = this.visOpts.s2wDevice(e.clientX - rect.left);
+    this.pt.y = this.visOpts.s2wDevice(e.clientY - rect.top);
+    return true;
+  }
+
+  leave() {
+    this.isPressed = false;
+    this.pointerId = null;
   }
 }
 
@@ -96,6 +190,8 @@ class ScreenshotVis {
 
     g_svg.edit(this.el.svgMarkup).append(this.hoverHighlight.root);
 
+    this.screenshotImageData = null;
+
     /** @type {?number} Nullable index of the View with hover visuals. */
     this.hoverIndex = null;
   }
@@ -103,7 +199,9 @@ class ScreenshotVis {
   clear() {
     this.hoverIndex = null;
     this.hoverHighlight.setVisible(false);
+    this.el.inner.classList.remove('active');
     this.ctx.clearRect(0, 0, this.el.canvBase.width, this.el.canvBase.height);
+    this.screenshotImageData = null;
     this.screenshotInfoVis.clear();
   }
 
@@ -113,9 +211,13 @@ class ScreenshotVis {
   setScreenshot(imgScreenshot) {
     const el = this.el;
     const {width, height} = imgScreenshot;
+    el.inner.classList.add('active');
     el.canvBase.width = width;
     el.canvBase.height = height;
     this.ctx.drawImage(imgScreenshot, 0, 0);
+    this.screenshotImageData = (width > 0 && height > 0)
+        ? this.ctx.getImageData(0, 0, width, height)
+        : null;
   }
 
   _applyRescale() {
@@ -227,6 +329,8 @@ class ScreenshotController {
     this.visOpts = this.model.visOpts;
     this.onResize = onResize;
 
+    this.pointer = new ScreenshotPointer(this.el.inner, this.visOpts);
+
     this._bindAll();
   }
 
@@ -238,6 +342,7 @@ class ScreenshotController {
   }
 
   clear() {
+    this.pointer.leave();
     this.vis.clear();
   }
 
@@ -260,6 +365,40 @@ class ScreenshotController {
     this._updateScaleAndInfo();
   }
 
+  _clearHoverState() {
+    this.pointer.leave();
+    this.vis.screenshotInfoVis.update();
+  }
+
+  _bindHandlers(elt, handlers) {
+    const dispatch = (e) => {
+      return this.model.isLoaded ? handlers[e.type](e) : false;
+    };
+
+    for (const type of Object.keys(handlers)) {
+      elt.addEventListener(type, dispatch);
+    }
+  }
+
+  _bindScreenshotEvents() {
+    const handlers = {};
+
+    handlers['pointerleave'] = (e) => {
+      if (!this.pointer.updateFromPointerEvent(e)) return;
+
+      this._clearHoverState();
+    };
+
+    handlers['pointermove'] = (e) => {
+      if (!this.pointer.updateFromPointerEvent(e)) return;
+
+      this.vis.screenshotInfoVis.update(this.pointer,
+                                        this.vis.screenshotImageData);
+    };
+
+    this._bindHandlers(this.el.inner, handlers);
+  }
+
   _bindViewportResize() {
     const observer = new ResizeObserver(() => {
       if (this.model.isLoaded) {
@@ -274,6 +413,7 @@ class ScreenshotController {
   }
 
   _bindAll() {
+    this._bindScreenshotEvents();
     this._bindViewportResize();
   }
 }
