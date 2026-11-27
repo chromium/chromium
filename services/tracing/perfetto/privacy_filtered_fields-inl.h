@@ -680,6 +680,11 @@ inline constexpr MessageInfo const* kFrameDeadlineDeciderComplexMessages[] = {
 inline constexpr MessageInfo kFrameDeadlineDecider = {
     kFrameDeadlineDeciderIndices, kFrameDeadlineDeciderComplexMessages};
 
+// Proto Message: MacVoucherReleasePool
+inline constexpr int kMacVoucherReleasePoolIndices[] = {1, 2, -1};
+inline constexpr MessageInfo kMacVoucherReleasePool = {
+    kMacVoucherReleasePoolIndices, nullptr};
+
 // Proto Message: AndroidDeadlineDerivedIntervalCalculation
 inline constexpr int kAndroidDeadlineDerivedIntervalCalculationIndices[] = {
     1, 2, 3, 4, 5, -1};
@@ -696,7 +701,7 @@ inline constexpr int kTrackEventIndices[] = {
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
     1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,
     1060, 1061, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1075, 1076,
-    1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1088, -1};
+    1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1087, 1088, -1};
 inline constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -803,6 +808,7 @@ inline constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kMacVoucherRelease,
     &kAndroidVsyncIntervalDecision,
     &kFrameDeadlineDecider,
+    &kMacVoucherReleasePool,
     &kAndroidDeadlineDerivedIntervalCalculation};
 inline constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                             kTrackEventComplexMessages};
