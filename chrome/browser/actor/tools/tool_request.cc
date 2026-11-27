@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/tools/execution_engine_dispatcher.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "content/public/browser/web_contents.h"
@@ -99,6 +100,11 @@ void ToolRequest::SetSkipObservationDelay(bool skip_observation_delay) {
 
 bool ToolRequest::RequiresOpeningWebContents() const {
   return false;
+}
+
+std::unique_ptr<ExecutionEngineDispatcher> ToolRequest::CreateDispatcher()
+    const {
+  return nullptr;
 }
 
 TabToolRequest::TabToolRequest(ActorSurfaceHandle actor_surface_handle)

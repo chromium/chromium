@@ -1678,6 +1678,13 @@ void ExecutionEngine::ProcessNextFromDispatcher() {
     }
   }
 
+  if (std::unique_ptr<ExecutionEngineDispatcher> dispatcher =
+          executing_request_->CreateDispatcher()) {
+    dispatchers_.push(std::move(dispatcher));
+    ProcessNextFromDispatcher();
+    return;
+  }
+
   StartExecutingNewRequest();
 }
 

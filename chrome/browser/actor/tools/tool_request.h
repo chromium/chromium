@@ -23,10 +23,11 @@
 
 namespace actor {
 
+class ExecutionEngine;
+class ExecutionEngineDispatcher;
+class PageToolRequest;
 class Tool;
 class ToolDelegate;
-class ExecutionEngine;
-class PageToolRequest;
 class ToolRequestVisitorFunctor;
 
 // Base class for all tool requests. For tools scoped to a tab (e.g. History
@@ -109,6 +110,12 @@ class ToolRequest {
   // Instantiates the tool requested by this object.
   virtual CreateToolResult CreateTool(TaskId task_id,
                                       ToolDelegate& tool_delegate) const = 0;
+
+  // Returns a dispatcher if this request is a composite tool implemented in
+  // terms of other ToolRequests, or nullptr for tool instantiating requests.
+  // Dispatcher and Tool are mutually exclusive in a ToolRequest: if a request
+  // generates a dispatcher, ExecutionEngine will not call CreateTool().
+  virtual std::unique_ptr<ExecutionEngineDispatcher> CreateDispatcher() const;
 
   // Gets origin associated with the tool request, if one exists. Right now only
   // navigate requests have this origin. When origin gating is enabled, these
