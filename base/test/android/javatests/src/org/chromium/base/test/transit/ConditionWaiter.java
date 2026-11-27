@@ -460,6 +460,9 @@ public class ConditionWaiter {
         // Create EXIT Conditions for Views that should disappear and LogicalElements that should
         // be false.
         for (ConditionalState conditionalState : mTransition.getExitedStates()) {
+            if (conditionalState.shouldSkipExitConditions(destinationElementIds)) {
+                continue;
+            }
             final Elements originElements = conditionalState.getElements();
             for (Element<?> element : originElements.getElements()) {
                 Condition exitCondition = element.getExitConditionFiltered(destinationElementIds);

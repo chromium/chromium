@@ -25,6 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class representing a state with conditions for entering and exiting.
@@ -228,7 +229,7 @@ public abstract class ConditionalState {
     }
 
     private void collectUnfinishedDescendants(List<ConditionalState> states) {
-        if (mLifecyclePhase == Phase.FINISHED) return;
+        if (mLifecyclePhase == Phase.NEW || mLifecyclePhase == Phase.FINISHED) return;
         states.add(this);
         for (ConditionalState child : mChildren) {
             child.collectUnfinishedDescendants(states);
@@ -245,14 +246,20 @@ public abstract class ConditionalState {
     }
 
     /**
-     * Set the parent of this ConditionalState, e.g. the host {@link Station} of a {@link Facility}.
+     * Set the parent of this ConditionalState, e.g. the host {@link Station} of a {@link Facility},
+     * or the ConditionalState a {@link State} stands for a part of. Must be called before entering
+     * this ConditionalState. Facilities without a parent get their host Station as parent when
+     * entered.
      *
      * <p>Exiting the parent also exits its ACTIVE children in the same Transition, and forcibly
      * finishing the parent also finishes them.
      */
     void setParent(ConditionalState parent) {
         assertInPhase(Phase.NEW);
-        assert parent != this : String.format("%s cannot be its own parent", this);
+        for (ConditionalState ancestor = parent; ancestor != null; ancestor = ancestor.mParent) {
+            assert ancestor != this
+                    : String.format("%s cannot be an ancestor of itself (parent %s)", this, parent);
+        }
         assert mParent == null
                 : String.format("%s already has parent %s, cannot set %s", this, mParent, parent);
         assert parent.getPhase() != Phase.TRANSITIONING_FROM && parent.getPhase() != Phase.FINISHED
@@ -283,6 +290,18 @@ public abstract class ConditionalState {
         if (mParent != null) {
             mParent.mChildren.remove(this);
         }
+    }
+
+    /**
+     * Whether a Transition exiting this ConditionalState into a destination with
+     * |destinationElementIds| should skip waiting for this ConditionalState's EXIT Conditions.
+     *
+     * <p>Elements already skip their EXIT Condition when the destination has an Element with the
+     * same id. This is for children that stand for an Element of their parent whose id differs from
+     * the ids of the Elements the child declares.
+     */
+    boolean shouldSkipExitConditions(Set<String> destinationElementIds) {
+        return false;
     }
 
     /**

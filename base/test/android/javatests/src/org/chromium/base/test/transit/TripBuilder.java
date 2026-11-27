@@ -404,10 +404,11 @@ public class TripBuilder {
         }
 
         // If a context Station is required, infer it from the active Stations.
-        // A context Station is required to travel to a Station or to enter Facilities.
+        // A context Station is required to travel to a Station or to enter Facilities without a
+        // parent.
         if (!hopOn
                 && mContextStation == null
-                && (destinationStation != null || !facilitiesToEnter.isEmpty())) {
+                && (destinationStation != null || hasFacilitiesToEnterWithoutParent())) {
             List<Station<?>> activeStations = TrafficControl.getActiveStations();
             if (activeStations.size() == 1) {
                 mContextStation = activeStations.get(0);
@@ -447,20 +448,24 @@ public class TripBuilder {
                     facilitiesToEnter.add(facility);
                 }
             }
-            for (Facility<?> facility : facilitiesToEnter) {
-                facility.setParent(destinationStation);
-            }
-        } else if (!facilitiesToEnter.isEmpty()) {
+        } else if (hasFacilitiesToEnterWithoutParent()) {
             assert mContextStation != null : "No Station to enter the Facilities in";
             mContextStation.assertInPhase(Phase.ACTIVE);
-            // TODO(crbug.com/406325581): Support entering Facilities from multiple Stations in
-            // multi-window.
-            for (Facility<?> facility : facilitiesToEnter) {
-                facility.setParent(mContextStation);
+        }
+
+        // Facilities entered without a parent get the Station as parent. States have no default
+        // parent, they are not tied to any Station.
+        // TODO(crbug.com/406325581): Support entering Facilities from multiple Stations in
+        // multi-window.
+        Station<?> station = destinationStation != null ? destinationStation : mContextStation;
+        for (Facility<?> facility : facilitiesToEnter) {
+            if (facility.getParent() == null) {
+                facility.setParent(station);
             }
         }
 
         addActiveDescendantsToExit();
+        assertParentsValid(destinationStation);
 
         List<Condition> conditions = mOutcome.getConditions();
         if (!conditions.isEmpty()) {
@@ -516,6 +521,48 @@ public class TripBuilder {
      */
     public <StateT extends ConditionalState> StateT completeAndGet(Class<StateT> stateClass) {
         return complete().get(stateClass);
+    }
+
+    private List<ConditionalState> getStatesToEnter() {
+        List<ConditionalState> statesToEnter = new ArrayList<>(mOutcome.getFacilitiesToEnter());
+        statesToEnter.addAll(mOutcome.getStatesToEnter());
+        return statesToEnter;
+    }
+
+    private boolean hasFacilitiesToEnterWithoutParent() {
+        for (Facility<?> facility : mOutcome.getFacilitiesToEnter()) {
+            if (facility.getParent() == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Assert every ConditionalState to enter whose parent is set has a parent that is either ACTIVE
+     * (and not being exited in this Transition) or entered in this same Transition.
+     */
+    private void assertParentsValid(@Nullable Station<?> destinationStation) {
+        List<ConditionalState> statesToEnter = getStatesToEnter();
+        List<Facility<?>> facilitiesToExit = mOutcome.getFacilitiesToExit();
+        List<State> statesToExit = mOutcome.getStatesToExit();
+        for (ConditionalState state : statesToEnter) {
+            ConditionalState parent = state.getParent();
+            if (parent == null) continue;
+            assert parent != mOriginStation
+                            && !facilitiesToExit.contains(parent)
+                            && !statesToExit.contains(parent)
+                    : String.format(
+                            "Cannot enter %s as a child of %s, which is being exited",
+                            state, parent);
+            boolean isEnteredInThisTrip =
+                    parent == destinationStation || statesToEnter.contains(parent);
+            assert parent.getPhase() == Phase.ACTIVE || isEnteredInThisTrip
+                    : String.format(
+                            "Cannot enter %s as a child of %s, which is in %s and not entered in"
+                                    + " this Transition",
+                            state, parent, ConditionalState.phaseToString(parent.getPhase()));
+        }
     }
 
     /**

@@ -9,7 +9,12 @@ import android.app.Activity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** State is a lightweight, stand-alone ConditionalState not tied to any Station. */
+/**
+ * State is a lightweight ConditionalState not tied to any Station.
+ *
+ * <p>A State can have another ConditionalState as parent: exiting the parent also exits the State
+ * if it is still ACTIVE, and the State uses the parent's Activity if it declares none.
+ */
 @NullMarked
 public class State extends ConditionalState {
 
@@ -51,18 +56,30 @@ public class State extends ConditionalState {
         return mName;
     }
 
+    /**
+     * Set the parent of this State. Must be called before entering this State.
+     *
+     * <p>Exiting the parent also exits this State if it is still ACTIVE, and this State uses the
+     * parent's Activity if it declares none.
+     */
+    @Override
+    public void setParent(ConditionalState parent) {
+        super.setParent(parent);
+    }
+
     @Override
     @Nullable ActivityElement<?> determineActivityElement() {
-        return mUntypedActivityElement;
+        return mUntypedActivityElement != null
+                ? mUntypedActivityElement
+                : super.determineActivityElement();
     }
 
     @Override
     <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
-        ActivityElement<?> existingActivityElement = determineActivityElement();
-        assert existingActivityElement == null
+        assert mUntypedActivityElement == null
                 : String.format(
                         "%s already declared an ActivityElement with id %s",
-                        getName(), existingActivityElement.getId());
+                        getName(), mUntypedActivityElement.getId());
         mUntypedActivityElement = element;
     }
 }

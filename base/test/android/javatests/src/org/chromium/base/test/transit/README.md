@@ -407,6 +407,11 @@ Useful patterns and specialized bases:
   implementing `WebContentsElementProvider` (e.g. `WebPageStation` and
   `CctPageStation`).
 
+A Facility's parent is its Station by default. It can instead be another,
+already active, Facility of the same Station, e.g. a submenu of a menu, by
+calling `setParent()` before entering it. Exiting the parent Facility then also
+exits it.
+
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
 
 ### State {#states}
@@ -419,6 +424,10 @@ Multiple `States` may be active at one time.
 As with `Stations`, concrete, app-specific implementations of State should be
 created in the Transit Layer declaring **Elements**. It usually won't have any
 transition methods.
+
+A State has no parent by default. Calling `setParent()` before entering it ties
+it to another `ConditionalState`: exiting the parent then also exits the State,
+and the State looks for Views in the parent's Activity if it declares none.
 
 [**`State`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.State&ss=chromium
 
@@ -583,8 +592,12 @@ automatically sets `expectActivityDestroyed()` on the exited `Station`'s
 Transitions into and out of `Facilities` are done by calling `enterFacility()`,
 `enterFacilities()`, `exitFacility()`, `exitFacilities()`, or
 `replaceFacility()` (with `facility.replacedBy(next)` as the `Outcome`
-counterpart). If the app moves to another `Station`, any active `Facilities`
-have their exit conditions added to the transition conditions.
+counterpart).
+
+Exiting a `ConditionalState` also exits its active children, and theirs, in the
+same transition, adding their exit conditions to the transition conditions. For
+example, if the app moves to another `Station`, its active `Facilities` are
+exited too.
 
 Transitions into and out of `States` are done by calling `enterState()` and
 `exitState()`.

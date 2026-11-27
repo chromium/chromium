@@ -12,6 +12,10 @@ import org.chromium.build.annotations.Nullable;
 /**
  * Facility is a {@link ConditionalState} scoped to a single host {@link Station} instance.
  *
+ * <p>Its parent is the host {@link Station} by default. It can instead be another, already entered,
+ * Facility of the same host {@link Station}, set with {@link #setParent}, in which case exiting the
+ * parent Facility also exits this Facility.
+ *
  * <p>This should be used for example for popup dialogs, menus, temporary messages. A transit-layer
  * class should be derived from it and instantiated. It should expose facility-specific methods for
  * the test-layer to use.
@@ -66,15 +70,29 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
         mCustomName = name;
     }
 
-    /** Set the host {@link Station}, the parent of this Facility. */
+    /**
+     * Set the parent of this Facility, either its host {@link Station} or another Facility of the
+     * host {@link Station}.
+     */
     @SuppressWarnings("unchecked")
     @Override
-    void setParent(ConditionalState parent) {
-        assert parent instanceof Station<?>
-                : String.format(
-                        "The parent of Facility %s must be a Station, not %s", this, parent);
+    public void setParent(ConditionalState parent) {
+        Station<?> hostStation;
+        if (parent instanceof Station<?> station) {
+            hostStation = station;
+        } else if (parent instanceof Facility<?> parentFacility) {
+            parentFacility.assertInPhase(Phase.ACTIVE);
+            hostStation = parentFacility.getHostStation();
+            assert hostStation != null
+                    : String.format("Parent Facility %s of %s has no host Station", parent, this);
+        } else {
+            throw new AssertionError(
+                    String.format(
+                            "The parent of Facility %s must be a Station or a Facility, not %s",
+                            this, parent));
+        }
         super.setParent(parent);
-        mHostStation = (HostStationT) parent;
+        mHostStation = (HostStationT) hostStation;
     }
 
     /** Get the host {@link Station} this facility is scoped to. */
