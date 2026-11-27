@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.test.transit.omnibox;
 
-import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
-import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.LogicalElement;
 import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -46,8 +46,11 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         //
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).
         urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-        declareEnterCondition(urlBarElement.matches(hasFocus()));
-        declareExitCondition(urlBarElement.matches(doesNotHaveFocus()));
+        // A LogicalElement rather than enter/exit Conditions, so that a Trip to another Station
+        // with the Omnibox focused, e.g. switching tabs, doesn't expect it to lose focus.
+        declareElement(
+                LogicalElement.uiThreadLogicalElement(
+                        "URL bar has focus", urlBar -> whether(urlBar.hasFocus()), urlBarElement));
         statusIconElement = declareOptionalView(STATUS_ICON);
         micButtonElement = declareOptionalView(MIC_BUTTON);
         deleteButtonElement = declareOptionalView(DELETE_BUTTON);
