@@ -631,3 +631,6 @@ crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/t
 
 # Gardening suppression 2026-11-23
 crbug.com/589704479 [ Simulator ] OtpInputDialogEgtest [ Pass Failure ]
+
+# Gardening suppression 2026-11-27
+crbug.com/591086829 [ Simulator ] TipsNotificationsTestCase/testEnhancedSafeBrowsingNotification [ Pass Failure ]
