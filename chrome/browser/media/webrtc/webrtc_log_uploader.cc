@@ -554,6 +554,7 @@ void WebRtcLogUploader::UploadCompressedLog(
             "RTP packet headers for incoming and outgoing WebRTC streams. "
             "Audio or video data is never sent."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://clients2.google.com/cr/report"
         }
         policy {
           cookies_allowed: NO

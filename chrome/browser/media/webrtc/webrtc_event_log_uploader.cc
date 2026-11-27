@@ -58,6 +58,7 @@ constexpr net::NetworkTrafficAnnotationTag
           "WebRTC events such as the timing of audio playout (but not the "
           "content), timing and size of RTP packets sent/received, etc."
         destination: GOOGLE_OWNED_SERVICE
+        legacy_api_url: "https://clients2.google.com/cr/report"
       }
       policy {
         cookies_allowed: NO
