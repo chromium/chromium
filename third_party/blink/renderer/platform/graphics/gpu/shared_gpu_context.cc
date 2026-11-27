@@ -9,7 +9,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -252,13 +251,6 @@ bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   if (!this_ptr->context_provider_wrapper_)
     return false;
-  auto* gl_context =
-      this_ptr->context_provider_wrapper_->ContextProvider().ContextGL();
-
-  if (gl_context) {
-    return gl_context->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
-  }
-
   auto* raster_interface =
       this_ptr->context_provider_wrapper_->ContextProvider().RasterInterface();
   CHECK(raster_interface);
