@@ -131,12 +131,6 @@ const CGFloat kLargeKeyboardAccessoryHeight = 59;
 NSString* const kFormInputAccessoryViewAccessibilityID =
     @"kFormInputAccessoryViewAccessibilityID";
 
-NSString* const kFormInputAccessoryViewAtMemoryButtonAccessibilityID =
-    @"kFormInputAccessoryViewAtMemoryButtonAccessibilityID";
-
-NSString* const kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID =
-    @"kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID";
-
 NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     @"kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID";
 
@@ -157,10 +151,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 @property(nonatomic, weak) UIButton* addressManualFillButton;
 
-@property(nonatomic, weak) UIButton* atMemoryManualFillButton;
-
-@property(nonatomic, weak) UIButton* atMemoryFullButton;
-
 @property(nonatomic, weak) UIView* leadingView;
 
 @property(nonatomic, weak) UIView* trailingView;
@@ -170,8 +160,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 @property(nonatomic, strong) UIImage* creditCardManualFillSymbol;
 
 @property(nonatomic, strong) UIImage* addressManualFillSymbol;
-
-@property(nonatomic, strong) UIImage* atMemoryManualFillSymbol;
 
 @property(nonatomic, strong) UIImage* closeButtonSymbol;
 
@@ -242,7 +230,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         passwordManualFillSymbol:nil
       creditCardManualFillSymbol:nil
          addressManualFillSymbol:nil
-        atMemoryManualFillSymbol:nil
                closeButtonSymbol:nil];
 }
 
@@ -252,7 +239,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-      atMemoryManualFillSymbol:(UIImage*)atMemoryManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol
             isTabletFormFactor:(BOOL)isTabletFormFactor
                      isCompact:(BOOL)isCompact {
@@ -267,7 +253,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         passwordManualFillSymbol:passwordManualFillSymbol
       creditCardManualFillSymbol:creditCardManualFillSymbol
          addressManualFillSymbol:addressManualFillSymbol
-        atMemoryManualFillSymbol:atMemoryManualFillSymbol
                closeButtonSymbol:closeButtonSymbol];
 }
 
@@ -316,13 +301,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   self.passwordManualFillButton.hidden = hideManualFillByCategoryButtons;
   self.creditCardManualFillButton.hidden = hideManualFillByCategoryButtons;
   self.addressManualFillButton.hidden = hideManualFillByCategoryButtons;
-  self.atMemoryManualFillButton.hidden =
-      hideManualFillByCategoryButtons || self.atMemoryButtonHidden;
-
-  BOOL hideAtMemoryButton =
-      (group != FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton);
-  self.atMemoryFullButton.hidden =
-      hideAtMemoryButton || self.atMemoryButtonHidden;
 
   BOOL hideManualFillButton =
       (group != FormInputAccessoryViewSubitemGroup::kExpandButton);
@@ -372,17 +350,13 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     return;
   }
   BOOL fixedSpacing = !self.manualFillButton.hidden;
-  // In `kManualFillButtons` or `kAtMemoryFullButton` mode on iPad or
-  // non-compact layouts (e.g. unfolded iPhone Duo), the effect view's
-  // constraint that aligns to the leading edge of the keyboard accessory is
-  // disabled so `_trailingViewCenteringConstraint` can center the manual fill
-  // buttons in the keyboard accessory.
+  // In `kManualFillButtons` mode on iPad or non-compact layouts (e.g. unfolded
+  // iPhone Duo), the effect view's constraint that aligns to the leading edge
+  // of the keyboard accessory is disabled so `_trailingViewCenteringConstraint`
+  // can center the manual fill buttons in the keyboard accessory.
   BOOL centerMode =
       (_isTabletFormFactor || !_isCompact) &&
-      (_currentGroup ==
-           FormInputAccessoryViewSubitemGroup::kManualFillButtons ||
-       _currentGroup ==
-           FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton);
+      (_currentGroup == FormInputAccessoryViewSubitemGroup::kManualFillButtons);
   _effectViewLeadingConstraint.active = !centerMode;
   _trailingViewCenteringConstraint.active = centerMode;
   if (_isTabletFormFactor) {
@@ -473,10 +447,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [self.delegate formInputAccessoryViewDidTapAddressManualFillButton:self];
 }
 
-- (void)atMemoryManualFillButtonTapped {
-  [self.delegate formInputAccessoryViewDidTapAtMemoryManualFillButton:self];
-}
-
 - (void)omniboxTypingShieldTapped {
   [self.delegate fromInputAccessoryViewDidTapOmniboxTypingShield:self];
 }
@@ -493,7 +463,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-      atMemoryManualFillSymbol:(UIImage*)atMemoryManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol {
   DCHECK(!self.subviews.count);  // This should only be called once.
 
@@ -505,7 +474,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   self.passwordManualFillSymbol = passwordManualFillSymbol;
   self.creditCardManualFillSymbol = creditCardManualFillSymbol;
   self.addressManualFillSymbol = addressManualFillSymbol;
-  self.atMemoryManualFillSymbol = atMemoryManualFillSymbol;
   self.closeButtonSymbol = closeButtonSymbol;
 
   // Attempt to set up the liquid glass effect, otherwise, use the non liquid
@@ -744,16 +712,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     addressManualFillButton.hidden = YES;
     self.addressManualFillButton = addressManualFillButton;
 
-    UIButton* atMemoryManualFillButton =
-        [self createAtMemoryManualFillButtonWithText:textData];
-    atMemoryManualFillButton.hidden = YES;
-    self.atMemoryManualFillButton = atMemoryManualFillButton;
-
-    UIButton* atMemoryFullButton =
-        [self createAtMemoryFullButtonWithText:textData];
-    atMemoryFullButton.hidden = YES;
-    self.atMemoryFullButton = atMemoryFullButton;
-
     if (_isTabletFormFactor) {
       _closeButton.hidden = YES;
     }
@@ -767,9 +725,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     self.nextButton = nextButton;
 
     navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      previousButton, nextButton, atMemoryManualFillButton, atMemoryFullButton,
-      passwordManualFillButton, creditCardManualFillButton,
-      addressManualFillButton, manualFillButton, _closeButton
+      previousButton, nextButton, passwordManualFillButton,
+      creditCardManualFillButton, addressManualFillButton, manualFillButton,
+      _closeButton
     ]];
   } else {
     UIButton* previousButton = [self createPreviousButtonWithText:textData];
@@ -934,54 +892,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
        createImageButton:self.addressManualFillSymbol
                   action:@selector(addressManualFillButtonTapped)
       accessibilityLabel:textData.addressManualFillButtonAccessibilityLabel];
-}
-
-// Create the AtMemory icon button.
-- (UIButton*)createAtMemoryManualFillButtonWithText:
-    (FormInputAccessoryViewTextData*)textData {
-  UIButton* button = [self
-       createImageButton:self.atMemoryManualFillSymbol
-                  action:@selector(atMemoryManualFillButtonTapped)
-      accessibilityLabel:textData.atMemoryManualFillButtonAccessibilityLabel];
-  button.accessibilityIdentifier =
-      kFormInputAccessoryViewAtMemoryButtonAccessibilityID;
-  return button;
-}
-
-// Create the AtMemory full button (icon + title).
-- (UIButton*)createAtMemoryFullButtonWithText:
-    (FormInputAccessoryViewTextData*)textData {
-  UIButton* button = [self createButton:YES];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.image =
-      [self applySymbolTint:self.atMemoryManualFillSymbol];
-  buttonConfiguration.imagePadding = kManualFillTitlePadding;
-
-  NSString* title = textData.atMemoryFullButtonTitle ?: @"";
-  UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
-                                   weight:UIFontWeightMedium];
-  NSDictionary* attributes;
-  if ([self isLiquidGlassEffectEnabled]) {
-    attributes = @{
-      NSFontAttributeName : font,
-      NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor]
-    };
-  } else {
-    attributes = @{NSFontAttributeName : font};
-  }
-  buttonConfiguration.attributedTitle =
-      [[NSAttributedString alloc] initWithString:title attributes:attributes];
-
-  button.configuration = buttonConfiguration;
-  [self setMinimumSizeForButton:button];
-  [button addTarget:self
-                action:@selector(atMemoryManualFillButtonTapped)
-      forControlEvents:UIControlEventTouchUpInside];
-  button.accessibilityLabel = textData.atMemoryFullButtonAccessibilityLabel;
-  button.accessibilityIdentifier =
-      kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID;
-  return button;
 }
 
 // Create the previous button.
@@ -1170,12 +1080,10 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     return;
   }
 
-  // When iPad is showing manual fill buttons, or AtMemory full button,
-  // they will appear in the middle of the screen. In such cases, we need to
-  // disable trailing constraint.
+  // When iPad is showing manual fill buttons, they will appear in the middle
+  // of the screen. In such cases, we need to disable trailing constraint.
   BOOL centerMode =
-      _currentGroup == FormInputAccessoryViewSubitemGroup::kManualFillButtons ||
-      _currentGroup == FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
+      _currentGroup == FormInputAccessoryViewSubitemGroup::kManualFillButtons;
   if ([self isSplitViewActive] && (centerMode || !_isTabletFormFactor)) {
     _trailingConstraint.active = NO;
     _compactTrailingConstraint.active = NO;

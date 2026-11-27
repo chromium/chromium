@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autofill/form_input_accessory/public/form_input_accessory_chromium_text_data.h"
 
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -24,9 +23,6 @@ FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
                              manualFillButtonTitle:
                                  GetNSString(
                                      IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA)
-                           atMemoryFullButtonTitle:
-                               GetNSString(
-                                   IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)
                 manualFillButtonAccessibilityLabel:
                     GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)
         passwordManualFillButtonAccessibilityLabel:
@@ -34,9 +30,5 @@ FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
       creditCardManualFillButtonAccessibilityLabel:
           GetNSString(IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA)
          addressManualFillButtonAccessibilityLabel:
-             GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA)
-        atMemoryManualFillButtonAccessibilityLabel:
-            GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE)
-              atMemoryFullButtonAccessibilityLabel:
-                  GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)];
+             GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA)];
 }

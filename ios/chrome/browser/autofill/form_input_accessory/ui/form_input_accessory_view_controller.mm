@@ -279,7 +279,6 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
 @synthesize creditCardButtonHidden = _creditCardButtonHidden;
 @synthesize navigationDelegate = _navigationDelegate;
 @synthesize passwordButtonHidden = _passwordButtonHidden;
-@synthesize atMemoryButtonHidden = _atMemoryButtonHidden;
 @synthesize contentEditable = _contentEditable;
 @synthesize mainFillingProduct = _mainFillingProduct;
 @synthesize currentFieldId = _currentFieldId;
@@ -294,7 +293,6 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
     _formInputAccessoryViewControllerDelegate =
         formInputAccessoryViewControllerDelegate;
     _keyboardWasClosed = YES;
-    _atMemoryButtonHidden = YES;
 
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
     [self registerForTraitChanges:traits
@@ -376,19 +374,9 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
 
   FormInputAccessoryViewSubitemGroup group;
   if (self.isContentEditable) {
-    // `contenteditable` support is expected to be enabled together with
-    // AtMemory. However, due to the fact that AtMemory may not be available
-    // because of eligibility checks, when a `contenteditable` element is
-    // focused, we might not be able to show the AtMemory full button. There is
-    // also incognito mode where AtMemory is not available for now. Currently,
-    // when a `contenteditable` element is focused, the keyboard accessory is
-    // showing manual fill buttons which can not really fill. Showing navigation
-    // buttons is a better fallback.
-    if (self.atMemoryButtonHidden) {
-      group = FormInputAccessoryViewSubitemGroup::kNavigationButtons;
-    } else {
-      group = FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
-    }
+    // When a `contenteditable` element is focused, manual fill buttons cannot
+    // fill, so show navigation buttons as a fallback.
+    group = FormInputAccessoryViewSubitemGroup::kNavigationButtons;
   } else if ([self hasSingleManualFillButton:hasSuggestions]) {
     group = FormInputAccessoryViewSubitemGroup::kExpandButton;
   } else {
@@ -439,12 +427,6 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
                     forDataType:ManualFillDataType::kAddress];
 }
 
-- (void)atMemoryManualFillButtonPressed:(UIButton*)button {
-  base::RecordAction(base::UserMetricsAction("ManualFallback_OpenAtMemory"));
-  [self manualFillButtonPressed:button
-                    forDataType:ManualFillDataType::kAtMemory];
-}
-
 - (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
   _isBottomOmnibox = isBottomOmnibox;
   [self updateOmniboxTypingShieldVisibility];
@@ -483,10 +465,10 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
 
 - (BOOL)isFormAccessoryVisible {
   if (self.isContentEditable) {
-    return !self.atMemoryButtonHidden;
+    return NO;
   }
   return !(self.addressButtonHidden && self.creditCardButtonHidden &&
-           self.passwordButtonHidden && self.atMemoryButtonHidden &&
+           self.passwordButtonHidden &&
            _formSuggestionView.suggestions.count == 0);
 }
 
@@ -506,13 +488,6 @@ CGFloat OmniboxTypingShieldHeight(bool is_bottom_omnibox,
 
 - (void)setCreditCardButtonHidden:(BOOL)creditCardButtonHidden {
   _creditCardButtonHidden = creditCardButtonHidden;
-  self.brandingViewController.keyboardAccessoryVisible =
-      self.formAccessoryVisible;
-}
-
-- (void)setAtMemoryButtonHidden:(BOOL)atMemoryButtonHidden {
-  _atMemoryButtonHidden = atMemoryButtonHidden;
-  self.formInputAccessoryView.atMemoryButtonHidden = atMemoryButtonHidden;
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
 }
@@ -628,9 +603,6 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   UIImage* closeButtonSymbol =
       SymbolWithPointSize(SymbolKeyboardDown, kSymbolActionPointSize);
 
-  UIImage* atMemorySymbol =
-      SymbolWithPointSize(SymbolMagnifyingglassSpark, kSymbolActionPointSize);
-
   [formInputAccessoryView
             setUpWithLeadingView:self.leadingView
               navigationDelegate:self.navigationDelegate
@@ -641,7 +613,6 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
                                                      kSymbolActionPointSize)
          addressManualFillSymbol:SymbolWithPointSize(SymbolLocation,
                                                      kSymbolActionPointSize)
-        atMemoryManualFillSymbol:atMemorySymbol
                closeButtonSymbol:closeButtonSymbol
               isTabletFormFactor:isTabletFormFactor
                        isCompact:isCompact];
@@ -667,7 +638,6 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   formInputAccessoryView.passThroughTouchesEnabled =
       base::FeatureList::IsEnabled(kFormInputAccessoryPassThroughTouches);
 
-  formInputAccessoryView.atMemoryButtonHidden = _atMemoryButtonHidden;
   self.formInputAccessoryView = formInputAccessoryView;
 }
 

@@ -24,8 +24,6 @@ enum class FormInputAccessoryViewSubitemGroup {
   kManualFillButtons,
   // Navigation buttons: the previous button and the next button.
   kNavigationButtons,
-  // AtMemory button with title.
-  kAtMemoryFullButton,
 };
 
 // Informs the receiver of actions in the accessory view.
@@ -63,18 +61,9 @@ enum class FormInputAccessoryViewSubitemGroup {
 - (void)formInputAccessoryViewDidTapAddressManualFillButton:
     (FormInputAccessoryView*)sender;
 
-// This method is called when the AtMemory manual fill button is tapped.
-// TODO(crbug.com/522326512): Verify this interface.
-- (void)formInputAccessoryViewDidTapAtMemoryManualFillButton:
-    (FormInputAccessoryView*)sender;
-
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
-
-extern NSString* const kFormInputAccessoryViewAtMemoryButtonAccessibilityID;
-
-extern NSString* const kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID;
 
 extern NSString* const
     kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID;
@@ -108,22 +97,12 @@ extern NSString* const
 // "addressManualFillSymbol". Nil otherwise.
 @property(nonatomic, readonly, weak) UIButton* addressManualFillButton;
 
-// The AtMemory icon button.
-@property(nonatomic, readonly, weak) UIButton* atMemoryManualFillButton;
-
-// The AtMemory full button (icon + title). This button shows separately
-// when a `contenteditable` element is focused.
-@property(nonatomic, readonly, weak) UIButton* atMemoryFullButton;
-
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
 
 // The trailing view. Can be nil. It is the parent view of all manual fill
 // buttons, and the close button when split view is not enabled.
 @property(nonatomic, readonly, weak) UIView* trailingView;
-
-// Hides or shows the AtMemory button.
-@property(nonatomic, assign) BOOL atMemoryButtonHidden;
 
 // Whether touches in blank areas should pass through to the underlying UI.
 @property(nonatomic, assign) BOOL passThroughTouchesEnabled;
@@ -154,7 +133,6 @@ extern NSString* const
       passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
-      atMemoryManualFillSymbol:(UIImage*)atMemoryManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol
             isTabletFormFactor:(BOOL)isTabletFormFactor
                      isCompact:(BOOL)isCompact;

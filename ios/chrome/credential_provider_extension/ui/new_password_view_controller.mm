@@ -515,13 +515,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                   previousButtonAccessibilityLabel:
                       CredentialProviderNewPasswordPreviousFieldHintString()
                              manualFillButtonTitle:nil
-                           atMemoryFullButtonTitle:nil
                 manualFillButtonAccessibilityLabel:nil
         passwordManualFillButtonAccessibilityLabel:nil
       creditCardManualFillButtonAccessibilityLabel:nil
-         addressManualFillButtonAccessibilityLabel:nil
-        atMemoryManualFillButtonAccessibilityLabel:nil
-              atMemoryFullButtonAccessibilityLabel:nil];
+         addressManualFillButtonAccessibilityLabel:nil];
 }
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:

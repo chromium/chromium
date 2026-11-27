@@ -10,7 +10,6 @@ source_set("public") {
   ]
   deps = [
     "//base",
-    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ui/base",

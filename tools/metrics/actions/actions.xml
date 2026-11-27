@@ -18536,16 +18536,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ManualFallback_OpenAtMemory">
-  <owner>leozhao@google.com</owner>
-  <owner>novakovica@google.com</owner>
-  <owner>sugoi@google.com</owner>
-  <owner>tmartino@chromium.org</owner>
-  <description>
-    The user opened the AtMemory manual fallback view. iOS only.
-  </description>
-</action>
-
 <action name="ManualFallback_OpenCreditCard">
   <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
