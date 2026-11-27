@@ -6,10 +6,18 @@
 
 #include "ui/base/class_property.h"
 
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(
+    COMPONENT_EXPORT(UI_WM),
+    ui::decoration::HighlightBorder::InsetsType)
+
 namespace wm {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kShadowElevationKey, kShadowElevationDefault)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowHasHighlightBorderKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(
+    ui::decoration::HighlightBorder::InsetsType,
+    kWindowHighlightBorderInsetsKey,
+    ui::decoration::HighlightBorder::InsetsType::kNoInsets)
 
 void SetShadowElevation(aura::Window* window, int elevation) {
   window->SetProperty(kShadowElevationKey, elevation);

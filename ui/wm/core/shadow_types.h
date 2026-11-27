@@ -7,6 +7,8 @@
 
 #include "base/component_export.h"
 #include "ui/aura/window.h"
+#include "ui/base/class_property.h"
+#include "ui/decoration/highlight_border.h"
 
 namespace wm {
 
@@ -56,6 +58,17 @@ extern const aura::WindowProperty<int>* const kShadowElevationKey;
 COMPONENT_EXPORT(UI_WM)
 extern const aura::WindowProperty<bool>* const kWindowHasHighlightBorderKey;
 
+// A property key specifying how the window's highlight border is inset relative
+// to the window bounds.
+COMPONENT_EXPORT(UI_WM)
+extern const aura::WindowProperty<
+    ui::decoration::HighlightBorder::InsetsType>* const
+    kWindowHighlightBorderInsetsKey;
+
 }  // namespace wm
+
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(
+    COMPONENT_EXPORT(UI_WM),
+    ui::decoration::HighlightBorder::InsetsType)
 
 #endif  // UI_WM_CORE_SHADOW_TYPES_H_

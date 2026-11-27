@@ -494,6 +494,44 @@ TEST_F(DecorationControllerTest, CrossFadeOnlyWhenVisible) {
   EXPECT_TRUE(decoration->fading_layer_for_testing());
 }
 
+TEST_F(DecorationControllerTest, HighlightBorderInsetsTypes) {
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds(gfx::Rect(10, 20, 300, 400));
+  window->SetProperty(kWindowHasHighlightBorderKey, true);
+  window->Show();
+
+  ui::decoration::HighlightBorder* highlight_border =
+      DecorationController::GetHighlightBorderForWindow(window.get());
+  ASSERT_TRUE(highlight_border);
+  EXPECT_EQ(ui::decoration::HighlightBorder::InsetsType::kNoInsets,
+            highlight_border->insets_type());
+
+  // Switching to `kHalfInsets` and `kFullInsets` updates the existing border.
+  window->SetProperty(kWindowHighlightBorderInsetsKey,
+                      ui::decoration::HighlightBorder::InsetsType::kHalfInsets);
+  EXPECT_EQ(ui::decoration::HighlightBorder::InsetsType::kHalfInsets,
+            highlight_border->insets_type());
+
+  window->SetProperty(kWindowHighlightBorderInsetsKey,
+                      ui::decoration::HighlightBorder::InsetsType::kFullInsets);
+  EXPECT_EQ(ui::decoration::HighlightBorder::InsetsType::kFullInsets,
+            highlight_border->insets_type());
+
+  // Toggling the highlight border off and back on preserves the configured
+  // insets type.
+  window->SetProperty(kWindowHasHighlightBorderKey, false);
+  EXPECT_FALSE(DecorationController::GetHighlightBorderForWindow(window.get()));
+  window->SetProperty(kWindowHasHighlightBorderKey, true);
+  highlight_border =
+      DecorationController::GetHighlightBorderForWindow(window.get());
+  ASSERT_TRUE(highlight_border);
+  EXPECT_EQ(ui::decoration::HighlightBorder::InsetsType::kFullInsets,
+            highlight_border->insets_type());
+}
+
 TEST_F(DecorationControllerTest, HighlightBorderStacksAboveChildWindows) {
   auto window = std::make_unique<aura::Window>(nullptr);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);

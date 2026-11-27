@@ -241,6 +241,10 @@ void DecorationController::Impl::OnWindowPropertyChanged(aura::Window* window,
     decoration_will_change =
         window->GetProperty(kWindowHasHighlightBorderKey) !=
         static_cast<bool>(old);
+  } else if (key == kWindowHighlightBorderInsetsKey) {
+    decoration_will_change =
+        window->GetProperty(kWindowHighlightBorderInsetsKey) !=
+        static_cast<ui::decoration::HighlightBorder::InsetsType>(old);
   } else if (key == aura::client::kShowStateKey) {
     decoration_will_change = window->GetProperty(aura::client::kShowStateKey) !=
                              static_cast<ui::mojom::WindowShowState>(old);
@@ -410,13 +414,18 @@ void DecorationController::Impl::HandlePossibleDecorationVisibilityChange(
       should_show_shadow ? GetShadowElevationForActiveState(window) : 0);
 
   if (should_show_highlight_border) {
+    const ui::decoration::HighlightBorder::InsetsType insets_type =
+        window->GetProperty(kWindowHighlightBorderInsetsKey);
     if (!source->highlight_border()) {
       source->SetHighlightBorder(
           std::make_unique<ui::decoration::HighlightBorder>(
-              kDefaultHighlightColor, kDefaultBorderColor));
+              kDefaultHighlightColor, kDefaultBorderColor, /*thickness=*/1,
+              insets_type));
       if (delegate_) {
         delegate_->ApplyColorThemeToWindowDecoration(window);
       }
+    } else {
+      source->highlight_border()->SetInsetsType(insets_type);
     }
   } else if (source->highlight_border()) {
     source->SetHighlightBorder(nullptr);
