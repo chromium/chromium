@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -276,4 +277,45 @@ TEST_F(FlossAdminClientTest, TestSetMultiplePolicyBeforeInit) {
   TestSetSimpleSecurePairingEnabled();
   TestInit();
 }
+
+// `on_ready` can destroy the client: when policy disallows Bluetooth,
+// `BluetoothPolicyHandler` shuts the adapter down as soon as it is powered.
+TEST_F(FlossAdminClientTest, DestroyedByOnReady) {
+  auto exported_callback = base::MakeRefCounted<::dbus::MockExportedObject>(
+      bus_.get(), callback_path_);
+  EXPECT_CALL(*exported_callback.get(),
+              ExportMethod(admin::kCallbackInterface, _, _, _))
+      .WillRepeatedly(&FakeExportMethod);
+  EXPECT_CALL(*bus_.get(), GetExportedObject(callback_path_))
+      .WillRepeatedly(testing::Return(exported_callback.get()));
+
+  // Hold the `RegisterCallback` reply until `Init()` has stored `on_ready`.
+  ::dbus::ObjectProxy::ResponseOrErrorCallback register_callback;
+  EXPECT_CALL(
+      *object_proxy_.get(),
+      CallMethodWithErrorResponse(HasMemberOf(admin::kRegisterCallback), _, _))
+      .WillOnce([&register_callback](
+                    ::dbus::MethodCall* method_call, int timeout_ms,
+                    ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
+        register_callback = std::move(cb);
+      });
+
+  // This call is queued until registration, so it is dropped with the client.
+  EXPECT_CALL(*object_proxy_.get(),
+              CallMethodWithErrorResponse(
+                  HasMemberOf(admin::kSetAllowedServices), _, _))
+      .Times(0);
+  client_->SetAllowedServices(base::DoNothing(), kTestUuidStr);
+
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
+                base::BindLambdaForTesting([this]() { client_.reset(); }));
+  ASSERT_FALSE(register_callback.is_null());
+
+  auto response = ::dbus::Response::CreateEmpty();
+  dbus::MessageWriter writer(response.get());
+  writer.AppendUint32(kTestCallbackId);
+  std::move(register_callback).Run(response.get(), /*err=*/nullptr);
+  EXPECT_FALSE(client_);
+}
+
 }  // namespace floss

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -126,7 +127,14 @@ void FlossLEScanClient::OnRegisterScannerCallback(DBusResult<uint32_t> ret) {
 
   // Mark client as ready to use.
   if (on_ready_) {
+    // `on_ready_` can destroy `this`: when policy disallows Bluetooth,
+    // `BluetoothPolicyHandler` shuts the adapter down as soon as it is
+    // powered, which destroys every adapter client.
+    base::WeakPtr<FlossLEScanClient> weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(on_ready_).Run();
+    if (!weak_this) {
+      return;
+    }
   }
 
   while (!pending_register_scanners_.empty()) {

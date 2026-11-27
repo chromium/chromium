@@ -460,4 +460,53 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                     kTestScannerId);
 }
 
+// `on_ready` can destroy the client: when policy disallows Bluetooth,
+// `BluetoothPolicyHandler` shuts the adapter down as soon as it is powered.
+TEST_F(FlossLEScanClientTest, DestroyedByOnReady) {
+  auto exported_callback = base::MakeRefCounted<::dbus::MockExportedObject>(
+      bus_.get(), callback_path_);
+  EXPECT_CALL(*exported_callback.get(),
+              ExportMethod(kScannerCallbackInterfaceName, _, _, _))
+      .WillRepeatedly(&FakeExportMethod);
+  EXPECT_CALL(*bus_.get(), GetExportedObject(callback_path_))
+      .WillRepeatedly(testing::Return(exported_callback.get()));
+
+  // Hold the `RegisterScannerCallback` reply until `Init()` has stored
+  // `on_ready`.
+  ::dbus::ObjectProxy::ResponseOrErrorCallback register_callback;
+  EXPECT_CALL(*object_proxy_.get(),
+              CallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kRegisterScannerCallback), _, _))
+      .WillOnce([&register_callback](
+                    ::dbus::MethodCall* method_call, int timeout_ms,
+                    ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
+        register_callback = std::move(cb);
+      });
+  EXPECT_CALL(*object_proxy_.get(),
+              CallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kUnregisterScannerCallback), _, _));
+
+  // This call is queued until registration, so the destructor fails it.
+  EXPECT_CALL(
+      *object_proxy_.get(),
+      CallMethodWithErrorResponse(HasMemberOf(adapter::kRegisterScanner), _, _))
+      .Times(0);
+  bool register_scanner_failed = false;
+  client_->RegisterScanner(base::BindLambdaForTesting(
+      [&register_scanner_failed](DBusResult<device::BluetoothUUID> ret) {
+        register_scanner_failed = !ret.has_value();
+      }));
+
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
+                base::BindLambdaForTesting([this]() { client_.reset(); }));
+  ASSERT_FALSE(register_callback.is_null());
+
+  auto response = ::dbus::Response::CreateEmpty();
+  dbus::MessageWriter writer(response.get());
+  writer.AppendUint32(kTestCallbackId);
+  std::move(register_callback).Run(response.get(), /*err=*/nullptr);
+  EXPECT_FALSE(client_);
+  EXPECT_TRUE(register_scanner_failed);
+}
+
 }  // namespace floss

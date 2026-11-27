@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "device/bluetooth/floss/floss_admin_client.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 namespace floss {
 PolicyEffect::PolicyEffect() = default;
@@ -68,7 +69,14 @@ void FlossAdminClient::HandleCallbackRegistered(DBusResult<uint32_t> result) {
   }
 
   if (on_ready_) {
+    // `on_ready_` can destroy `this`: when policy disallows Bluetooth,
+    // `BluetoothPolicyHandler` shuts the adapter down as soon as it is
+    // powered, which destroys every adapter client.
+    base::WeakPtr<FlossAdminClient> weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(on_ready_).Run();
+    if (!weak_this) {
+      return;
+    }
   }
 
   client_registered_ = true;
