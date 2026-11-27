@@ -2961,6 +2961,14 @@ targets.binaries.console_test_launcher(
     module_scheme = "gtest",
 )
 
+targets.binaries.generated_script(
+    name = "zucchini_dex_integration_test",
+    label = "//components/zucchini:zucchini_dex_integration_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "gtest",
+)
+
 targets.binaries.console_test_launcher(
     name = "zucchini_unittests",
     label = "//components/zucchini:zucchini_unittests",

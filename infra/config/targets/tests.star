@@ -3695,6 +3695,13 @@ targets.tests.gtest_test(
     name = "zlib_unittests",
 )
 
+targets.tests.isolated_script_test(
+    name = "zucchini_dex_integration_test",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
 targets.tests.gtest_test(
     name = "zucchini_unittests",
 )

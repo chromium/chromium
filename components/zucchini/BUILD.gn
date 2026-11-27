@@ -226,7 +226,7 @@ if (is_win) {
   }
 }
 
-if (is_android && _enable_dex) {
+if (current_toolchain == default_toolchain && is_android && _enable_dex) {
   template("dex_test_archive") {
     action(target_name) {
       testonly = true
@@ -333,8 +333,25 @@ test("zucchini_unittests") {
   }
 }
 
-if (is_android && _enable_dex) {
-  test("zucchini_dex_integration_test") {
+if (current_toolchain == host_toolchain && target_os == "android" &&
+    _enable_dex) {
+  _dex_test_archives = [
+    "dex_v039_old",
+    "dex_v039_new",
+  ]
+
+  copy("copy_dex_testdata") {
+    testonly = true
+    sources = []
+    deps = []
+    foreach(_name, _dex_test_archives) {
+      sources += [ "$root_build_dir/zucchini_testdata/${_name}.zip" ]
+      deps += [ ":${_name}($default_toolchain)" ]
+    }
+    outputs = [ "$root_out_dir/zucchini_testdata/{{source_file_part}}" ]
+  }
+
+  test("zucchini_dex_integration_test_bin") {
     sources = [ "dex_integration_unittest.cc" ]
 
     deps = [
@@ -345,13 +362,23 @@ if (is_android && _enable_dex) {
       "//testing/gtest",
     ]
 
-    data_deps = [
-      ":dex_v039_new",
-      ":dex_v039_old",
-    ]
+    data_deps = [ ":copy_dex_testdata" ]
+  }
+}
 
-    data = get_target_outputs(":dex_v039_old") +
-           get_target_outputs(":dex_v039_new")
+if (current_toolchain == default_toolchain && is_android && _enable_dex) {
+  script_test("zucchini_dex_integration_test") {
+    script = "run_dex_integration_test.py"
+    _host_out_dir =
+        get_label_info(":zucchini_dex_integration_test_bin($host_toolchain)",
+                       "root_out_dir")
+    args = [
+      "@WrappedPath(" +
+          rebase_path("$_host_out_dir/zucchini_dex_integration_test_bin",
+                      root_build_dir) + ")",
+      "--test-launcher-bot-mode",
+    ]
+    data_deps = [ ":zucchini_dex_integration_test_bin($host_toolchain)" ]
   }
 }
 

@@ -4181,6 +4181,7 @@ ci.builder(
             "android_rel_isolated_scripts",
             "content_shell_freeze_test",
             "gtests_once",
+            "zucchini_dex_integration_test",
         ],
         mixins = [
             "16-x64-emulator",
@@ -4307,6 +4308,19 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 12,
                 ),
+            ),
+            "zucchini_dex_integration_test": targets.per_test_modification(
+                mixins = [
+                    "chromium_tests_pool",
+                    "x86-64",
+                    targets.mixin(
+                        ci_only = True,
+                    ),
+                ],
+                remove_mixins = [
+                    "16-x64-emulator",
+                    "emulator-8-cores",
+                ],
             ),
         },
     ),

@@ -2601,6 +2601,12 @@
       "--test-launcher-timeout=400000",
     ],
   },
+  "zucchini_dex_integration_test": {
+    "label": "//components/zucchini:zucchini_dex_integration_test",
+    "type": "generated_script",
+    "module_scheme": "gtest",
+    "skip_usage_check": True,
+  },
   "zucchini_unittests": {
     "label": "//components/zucchini:zucchini_unittests",
     "type": "console_test_launcher",
