@@ -2510,6 +2510,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/user_education",
     "//components/history/core/test",
+    "//content/public/browser",
     "//content/test:test_support",
     "//media",
     "//testing/gmock",

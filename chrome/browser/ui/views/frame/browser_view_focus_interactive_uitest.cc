@@ -25,7 +25,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/popup_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/webview/webview.h"
@@ -329,3 +337,66 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, FocusOrderAfterClosingRightTab) {
 
   TestSplitTabFocusOrder();
 }
+
+#if defined(USE_AURA)
+// Invariant test (relied on by Autofill's `HasOpenHtmlFormPopup` in
+// popup_view_utils.cc): in Split View on Aura, moving focus to the sibling pane
+// dismisses an open HTML form popup in the unfocused pane, and the unfocused
+// pane cannot open a new HTML form popup while unfocused.
+IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest,
+                       SplitViewHtmlFormPopupDismissedAndBlockedWhenUnfocused) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<input id='d' type='date'>")));
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  ASSERT_EQ(tab_strip->count(), 2);
+  content::WebContents* pane_a = tab_strip->GetWebContentsAt(0);
+  content::WebContents* pane_b = tab_strip->GetWebContentsAt(1);
+  tab_strip->AddToNewSplit({0, 1}, split_tabs::SplitTabVisualData(),
+                           split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // 1. Focus pane A and verify an HTML form popup opens (positive control).
+  pane_a->Focus();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return pane_a->GetRenderWidgetHostView()->HasFocus() &&
+           tab_strip->active_index() == 0 &&
+           pane_a->GetVisibility() == content::Visibility::VISIBLE &&
+           pane_b->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+
+  {
+    content::ShowPopupWidgetWaiter waiter(pane_a,
+                                          pane_a->GetPrimaryMainFrame());
+    ASSERT_TRUE(
+        content::ExecJs(pane_a, "document.getElementById('d').showPicker();"));
+    waiter.Wait();
+  }
+  ASSERT_FALSE(pane_a->GetPopupWidgets().empty());
+  ASSERT_TRUE(pane_a->GetPopupWidgets()[0]->IsShowing());
+
+  // 2. Focus pane B: focus transfer must activate pane B and dismiss pane A's
+  // HTML form popup.
+  pane_b->Focus();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return pane_b->GetRenderWidgetHostView()->HasFocus() &&
+           !pane_a->GetRenderWidgetHostView()->HasFocus() &&
+           tab_strip->active_index() == 1 && pane_a->GetPopupWidgets().empty();
+  }));
+
+  // 3. Attempting to open a new HTML form popup in unfocused pane A must be
+  // rejected by `WebContentsImpl::ShowCreatedWidget`.
+  content::ShowPopupWidgetWaiter waiter(pane_a, pane_a->GetPrimaryMainFrame());
+  ASSERT_TRUE(
+      content::ExecJs(pane_a, "document.getElementById('d').showPicker();"));
+  waiter.Wait();
+
+  EXPECT_FALSE(content::RenderWidgetHost::FromID(
+      pane_a->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      waiter.last_routing_id()));
+  EXPECT_TRUE(pane_a->GetPopupWidgets().empty());
+}
+#endif  // defined(USE_AURA)
