@@ -47,6 +47,15 @@ class CORE_EXPORT AppliedTextDecoration {
                         Length,
                         TextDecorationInset,
                         EBoxDecorationBreak);
+  AppliedTextDecoration(TextDecorationLine,
+                        ETextDecorationStyle,
+                        Color unvisited_color,
+                        Color visited_color,
+                        bool is_visited,
+                        TextDecorationThickness,
+                        Length,
+                        TextDecorationInset,
+                        EBoxDecorationBreak);
 
   TextDecorationLine Lines() const {
     return static_cast<TextDecorationLine>(lines_);
@@ -54,8 +63,11 @@ class CORE_EXPORT AppliedTextDecoration {
   ETextDecorationStyle Style() const {
     return static_cast<ETextDecorationStyle>(style_);
   }
-  Color GetColor() const { return color_; }
-  void SetColor(Color color) { color_ = color; }
+  Color GetColor() const { return is_visited_ ? visited_color_ : color_; }
+  void SetColor(Color color) {
+    color_ = color;
+    visited_color_ = color;
+  }
 
   TextDecorationThickness Thickness() const { return thickness_; }
   Length UnderlineOffset() const { return underline_offset_; }
@@ -88,7 +100,12 @@ class CORE_EXPORT AppliedTextDecoration {
   unsigned lines_ : kTextDecorationLineBits;
   unsigned style_ : 3;  // ETextDecorationStyle
   unsigned box_decoration_break_ : 1;
+  // Whether this decoration was created for a visited link. Deliberately
+  // excluded from operator== to avoid leaking :visited state through style
+  // diffing or decoration run merging.
+  unsigned is_visited_ : 1;
   Color color_;
+  Color visited_color_;
   TextDecorationThickness thickness_;
   Length underline_offset_;
   TextDecorationInset decoration_inset_;

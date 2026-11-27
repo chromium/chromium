@@ -119,6 +119,56 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
   }
 }
 
+TEST(AppliedTextDecorationTest, VisitedColorEquality) {
+  const Color red = Color::FromRGB(255, 0, 0);
+  const Color blue = Color::FromRGB(0, 0, 255);
+  const Color green = Color::FromRGB(0, 128, 0);
+
+  AppliedTextDecoration unvisited(
+      TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, red, blue,
+      /*is_visited=*/false, TextDecorationThickness(Length()), Length(),
+      TextDecorationInset(), EBoxDecorationBreak::kSlice);
+  AppliedTextDecoration visited(
+      TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, red, blue,
+      /*is_visited=*/true, TextDecorationThickness(Length()), Length(),
+      TextDecorationInset(), EBoxDecorationBreak::kSlice);
+
+  // GetColor() reflects the link's visited state, while operator== must not.
+  EXPECT_EQ(unvisited.GetColor(), red);
+  EXPECT_EQ(visited.GetColor(), blue);
+  EXPECT_EQ(unvisited, visited);
+
+  // Changing unvisited color makes both unvisited and visited decorations
+  // unequal to the previous decoration, even when unvisited matches visited.
+  AppliedTextDecoration unvisited_toggled(
+      TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, blue, blue,
+      /*is_visited=*/false, TextDecorationThickness(Length()), Length(),
+      TextDecorationInset(), EBoxDecorationBreak::kSlice);
+  AppliedTextDecoration visited_toggled(
+      TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, blue, blue,
+      /*is_visited=*/true, TextDecorationThickness(Length()), Length(),
+      TextDecorationInset(), EBoxDecorationBreak::kSlice);
+  EXPECT_NE(unvisited, unvisited_toggled);
+  EXPECT_NE(visited, visited_toggled);
+  EXPECT_EQ(unvisited_toggled, visited_toggled);
+
+  // Changing visited color also makes both unequal.
+  AppliedTextDecoration visited_color_changed(
+      TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, red, green,
+      /*is_visited=*/false, TextDecorationThickness(Length()), Length(),
+      TextDecorationInset(), EBoxDecorationBreak::kSlice);
+  EXPECT_NE(unvisited, visited_color_changed);
+  EXPECT_NE(visited, visited_color_changed);
+
+  // SetColor() updates both channels so painted color and equality stay
+  // consistent.
+  visited.SetColor(Color::kTransparent);
+  unvisited.SetColor(Color::kTransparent);
+  EXPECT_EQ(visited.GetColor(), Color::kTransparent);
+  EXPECT_EQ(unvisited.GetColor(), Color::kTransparent);
+  EXPECT_EQ(unvisited, visited);
+}
+
 TEST(AppliedTextDecorationTest, CopyConstructor) {
   {
     AppliedTextDecoration instance1 = MakeDecoration(
