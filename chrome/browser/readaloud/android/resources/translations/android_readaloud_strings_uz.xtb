@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Yoqut</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> soniya oldinga</translation>
 <translation id="1984328900355667246">Ijro qilinmaydi</translation>
+<translation id="2009730553732772041">Audio yaratish uchun joriy sahifa kontenti va URL manzili Google bilan ulashiladi. Bu tanlovni istalgan vaqtda sozlamalar orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="2019727681730021602">Standart ijro</translation>
 <translation id="2224347680315897176">Barqaror</translation>
 <translation id="2575502321843437554">Qiziqarli emas</translation>
 <translation id="2611765907167846862">Sokin</translation>
 <translation id="3023502830214299618">Afsuski, bu sahifada hozirda ijro qilinmaydi. Keyinroq qaytadan urining.</translation>
+<translation id="3431227249425330101">Davom etish uchun Chrome sahifa kontentidan “Bu sahifani tinglash” funksiyasida foydalanishiga ruxsat berasizmi?</translation>
 <translation id="3493899379487634969">Qanday muammo yuz berdi?</translation>
 <translation id="3730775656877876887">Audio hikoya yaratilmoqda</translation>
 <translation id="3778044272390020426">Salbiy baho variantlari menyusi</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">"Bu sahifani tinglash" pleyeri.</translation>
 <translation id="7051308646573997571">Marjonrang</translation>
 <translation id="7138678301420049075">Boshqa</translation>
+<translation id="7161867604252594316">“Bu sahifani tinglash” faolsizlantirildi</translation>
 <translation id="7221920857098237570">Tovushsiz</translation>
 <translation id="7237590978482584900">Yaxna</translation>
 <translation id="7282547042039404307">Ravon</translation>

@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
 <translation id="1132789342529761192">업로드는 권장되지 않음</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, 선택됨, 메뉴 항목. 공유를 사용 중지하려면 선택하세요</translation>
 <translation id="11370190534773372">카드 세부정보 입력됨</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">이 앱을 실행하려면 분리형 웹 앱 개발자 모드를 다시 사용 설정하세요.</translation>
 <translation id="2526280916094749336">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 이 주소는 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
 <translation id="2527451058878391043">CVC는 카드 앞면에 있습니다. 카드 번호 오른쪽 상단의 4자리 코드입니다.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, 선택됨</translation>
 <translation id="2529899080962247600">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 이후 항목은 모두 무시됩니다.</translation>
 <translation id="2530042584066815841">마우스 잠금 및 사용</translation>
 <translation id="2535585790302968248">비공개로 탐색하려면 새 시크릿 탭을 여세요.</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">상단</translation>
 <translation id="2666117266261740852">다른 탭 또는 앱 닫기</translation>
 <translation id="266935134738038806">사이트 방문</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, 메뉴 항목. 공유를 사용 설정하려면 선택하세요</translation>
 <translation id="2672201172023654893">관리 대상 브라우저가 아닙니다.</translation>
 <translation id="2674170444375937751">방문 기록에서 이 페이지를 삭제하시겠습니까?</translation>
 <translation id="2675716371350192683">AI를 개선하는 데 내 콘텐츠를 사용하지 않습니다. 조직에서 언제든지 이 설정을 변경할 수도 있습니다.</translation>
@@ -1993,6 +1996,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> 업데이트됨</translation>
 <translation id="4298148761711700950">QR 업로드 없이 즉시 결제</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">이 사이트의 쿠키가 ChromeOS 기기 간에 동기화됩니다. 동기화 항목을 관리하려면 <ph name="SYNC_SETTINGS" /> 설정으로 이동하세요.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> 출처 <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">바로가기 이름이 최대 허용 길이인 <ph name="MAX_LENGTH" />자(영문 기준)를 초과합니다.</translation>
@@ -2202,6 +2206,7 @@
 <translation id="4682496302933121474">페이지를 번역하시겠습니까?</translation>
 <translation id="468314109939257734">가상 카드 번호 보기</translation>
 <translation id="4686942373615810936">방금 생성됨</translation>
+<translation id="468826602575103388">공유를 사용 중지하려면 선택하세요</translation>
 <translation id="4690205240253392065">후불 결제 제공업체 선택</translation>
 <translation id="469028408546145398">시크릿 창 닫기 버튼, 현재 열려 있는 시크릿 창을 모두 닫으려면 활성화하세요.</translation>
 <translation id="4692623383562244444">검색엔진</translation>
@@ -4175,6 +4180,7 @@
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7943397946612013052">다운로드 차단됨</translation>
 <translation id="7943893128817522649">여러 파일의 자동 다운로드를 요청할 수 있음</translation>
+<translation id="7947144323420971076">공유를 사용 설정하려면 선택하세요</translation>
 <translation id="7947285636476623132">유효기간 연도를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 기능 자세히 알아보기</translation>
 <translation id="7947964969544524438">안전하게 Known Traveler Number 저장하기</translation>
@@ -4302,6 +4308,7 @@
 <translation id="8172809706700703589">여행 준비물 목록을 만들어 줘</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8175053171643471349">포인트 카드 관리</translation>
+<translation id="817536628389054635">연락처 정보 입력됨: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">로그인되어 있는 경우 Chrome에서 Google 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다.</translation>
 <translation id="8176440868214972690">기기 관리자가 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>
 <translation id="818254048113802060">{0,plural, =1{콘텐츠로 인해 <ph name="FILE_NAME" /> 파일이 차단되었습니다}other{콘텐츠로 인해 파일 <ph name="FILE_COUNT" />개가 차단되었습니다}}</translation>

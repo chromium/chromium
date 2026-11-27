@@ -519,6 +519,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1570990174567554976">Nagawa ang folder ng bookmark na '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
 <translation id="1571304935088121812">Kopyahin ang username</translation>
+<translation id="1571371559291327711">&amp;Hanapin, i-edit, at higit pang tool</translation>
 <translation id="1571738973904005196">Tingnan ang tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Bisita)</translation>
 <translation id="1573127087832371028">Ilarawan ang isyu</translation>
@@ -966,6 +967,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="204914487372604757">Lumikha ng shortcut sa </translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051669996101374349">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito. Hindi mo mababago ang setting na ito dahil naka-enable sa iyo ang Advanced na Proteksyon.</translation>
+<translation id="2052353138844549871">Posibleng hindi inirerekomenda ang paggamit ng Gemini Enterprise sa hindi pinapamahalaang profile</translation>
 <translation id="2052723746739622752">I-unpin ang Gemini</translation>
 <translation id="2061366302742593739">Walang ipapakita</translation>
 <translation id="2061589908388230480">Kung makikita ng Chromium ang isa sa iyong mga password sa isang pampublikong breach sa data, puwedeng mag-alok ang Google Password Manager na palitan ang password mo para sa iyo kung naka-sign in ka. <ph name="BEGIN_LINK" />Higit pa tungkol sa naka-automate na pagpapalit ng password<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Humiling ng pahintulot, pindutin ang Ctrl + Forward para tumugon</translation>
 <translation id="2349610121459545414">Patuloy na payagan ang site na ito na i-access ang iyong lokasyon</translation>
 <translation id="2350133097354918058">Na-reload</translation>
+<translation id="2351165193188463938">Nagba-browse ka na ngayon gamit ang Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
 <translation id="2353682139907904963">I-pin ang mga bagong extension sa Toolbar</translation>
@@ -1281,6 +1284,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2409709393952490731">Gumamit ng telepono o tablet</translation>
 <translation id="2410940059315936967">Puwedeng mag-embed ng content mula sa iba pang site ang site na binibisita mo, halimbawa, mga larawan, ad, at text. Ang cookies na itinatakda ng iba pang site na ito ay tinatawag na mga third-party na cookie.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Naka-focus sa 1 tab}one{Naka-focus sa # tab}other{Naka-focus sa # na tab}}</translation>
 <translation id="2413009156320833859">I-customize pa ang iyong browser gamit ang mga extension mula sa <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Ipagpatuloy ang pag-browse para sa <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Madilim</translation>
@@ -1690,6 +1694,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2849926636739429924">Higit pang opsyon para sa <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Sarado</translation>
 <translation id="2851291081585704741">Offline ka</translation>
+<translation id="2851527955600412545">Na-update ng iyong organisasyon ang mga patakaran nito para sa Gemini Enterprise sa Chrome. Posibleng hindi mailipat ang history ng chat mo.</translation>
 <translation id="285237063405807022">(naglo-load)</translation>
 <translation id="2853121255651601031">Na-save ang Password</translation>
 <translation id="2855243985454069333">Dine-delete ang history sa lahat ng naka-sync na device</translation>
@@ -2639,6 +2644,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3810593934879994994">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga file sa mga sumusunod na folder</translation>
 <translation id="3810770279996899697">Kailangan ng Password Manager ng access sa MacOS Keychain</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
+<translation id="3811424142236602772">Mag-browse gamit ang Gemini, na na-set up ng <ph name="DOMAIN" /> para sa trabaho. Magtanong habang nagba-browse ka sa pamamagitan ng pag-share ng mga tab bilang konteksto at makakuha ng mga sagot na nakabatay sa mga file at serbisyo ng iyong organisasyon.</translation>
 <translation id="3812525830114410218">Maling certificate</translation>
 <translation id="3813296892522778813">Pumunta sa <ph name="BEGIN_LINK_CHROMIUM" />tulong ng Google Chrome<ph name="END_LINK_CHROMIUM" /> kung hindi mo makita ang hinahanap mo</translation>
 <translation id="3815509884387832993">Pakinggan ang page na ito na parang podcast ito sa pamamagitan ng AI playback gamit ang button na I-on ang AI Playback sa toolbar ng Reading mode</translation>
@@ -3236,6 +3242,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4500055235123625757">Masasagot ng Gemini ang mga tanong tungkol sa video o audio na na-play mo sa <ph name="LINK_BEGIN" />ilang website<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Isalin ang seleksyon sa <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Mag-right click sa isang tab at piliin ang "Idagdag ang tab sa bagong grupo"</translation>
+<translation id="450300557121092531">Mga tab ayon sa device</translation>
 <translation id="4503362512377701151">Nakikita mo ang iyong mga kamakailang ginamit na grupo ng tab para madali kang makapagpatuloy kung saan ka huminto.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4562155266774382038">I-dismiss ang suhestyon</translation>
 <translation id="4563883094055457792">I-restore ang split view</translation>
 <translation id="456449593072900590">I-delete sa paglabas</translation>
+<translation id="4564636746145660922">Suriin ang iyong koneksyon, pagkatapos ay subukan ulit.</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4565465014351935093">Ipakita Lang sa Page na Bagong Tab</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
@@ -3461,6 +3469,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="475088594373173692">Unang user</translation>
 <translation id="4751925628341802838">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4754590344707355551">Pahusayin ang iyong browser gamit ang mga extension</translation>
+<translation id="4754903312643763797">Posibleng may mga nalalapat na ibang tuntunin sa privacy ng data</translation>
 <translation id="4756130875344525429">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4756378406049221019">Ihinto/I-reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
@@ -4143,6 +4152,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5509914365760201064">Nagbigay: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Kumuha ng Mga Paglalarawan ng Larawan mula sa Google</translation>
 <translation id="5512739112435045339">Magbakante ng espasyo sa iyong device. Pagkatapos, subukang mag-download ulit</translation>
+<translation id="5513121759801003159">Hindi maililipat ang history ng chat mo</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Tumingin ng higit pang opsyon para sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Ito ba ang inaasahan mong home page?</translation>
@@ -4951,6 +4961,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6451861213630784801">Naka-sign out Ka</translation>
 <translation id="6453191633103419909">Kalidad ng Pag-project ng Tab/Screen</translation>
 <translation id="6453306703004115497">Isinalin sa <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Maghanap sa on-device na AI</translation>
 <translation id="645433497989692531">Permanente nitong ide-delete ang iyong data mula sa pag-browse sa device na ito. Para ma-recover ang data, mag-sign in bilang</translation>
 <translation id="6455264371803474013">Sa mga partikular na site</translation>
 <translation id="6455521402703088376">Naka-off • In-unpublish ng developer nito ang extension na ito</translation>
@@ -5123,6 +5134,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="663569763553406962">Tingnan kung anong mga extension ang kayang magbasa o magbago ng site</translation>
 <translation id="6636258750460740634">History</translation>
 <translation id="6636623428211296678">Mag-explore pa ng mga setting sa ibaba o tapusin ngayon</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Kasalukuyang naka-disable ang feature na Mga Kasanayan. I-update ang iyong Mga Setting ng Chrome para makapagsimula.</translation>
 <translation id="6639554308659482635">Memorya sa SQLite</translation>
 <translation id="6640268266988685324">Bukas na Tab</translation>
@@ -5256,6 +5268,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6785779729084003225">Gamitin ang <ph name="FOCUS_TOGGLE_HOTKEY" /> para buksan ang Gemini sa Chrome</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Puwede lang isalin ang mga sinusuportahang wika para sa Instant Caption</translation>
+<translation id="6786498102134843646">Hindi ibabatay ang mga sagot sa mga file o serbisyong pinapamahalaan ng <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Mga Extension</translation>
 <translation id="6786804673213172567">Tier 3: MATAAS</translation>
 <translation id="6787531944787756058">naka-save lang ang username na <ph name="USER_EMAIL" /> sa device na ito. Tingnan ang mga detalye</translation>
@@ -5418,6 +5431,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6941514251635934269">Magtanong tungkol sa dokumentong ito</translation>
 <translation id="694168622559714949">Nagtakda ang iyong administrator ng default na wika na hindi puwedeng baguhin</translation>
 <translation id="6941953303876950920">Nire-require ang muling paglulunsad para patuloy na makapag-browse gamit ang Gemini</translation>
+<translation id="6943803108751887058">Pindutin ang Escape para isara</translation>
 <translation id="6944854424004126054">Ibalik ang window</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="694592694773692225">Na-block ang pag-redirect sa page na ito.</translation>
@@ -5744,6 +5758,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7293774463163321848">Puwedeng i-delete ang history ng paghahanap, history ng Gemini, at mga password sa mga setting ng pamamahala ng mga ito</translation>
 <translation id="7296503797589217366">Piliin ang folder na <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">I-save ang impormasyon sa Google Wallet mula sa mga page na tinitingnan mo</translation>
+<translation id="7297535265731442945">Na-update ang Gemini Enterprise</translation>
 <translation id="7297726121602187087">Dark green</translation>
 <translation id="7298195798382681320">Inirerekomenda</translation>
 <translation id="7299515639584427954">Baguhin ang default na app para sa mga sinusuportahang link?</translation>
@@ -5765,6 +5780,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="731827437403763009">Mga innovation sa AI</translation>
 <translation id="7319983568955948908">Ihinto ang Pagbabahagi</translation>
 <translation id="7321545336522791733">Hindi makakonekta sa server</translation>
+<translation id="7321838786611890851">Posibleng walang proteksyong na-set up ng <ph name="DOMAIN" /> ang iyong mga interaction sa Gemini, at posibleng may ibang mga tuntunin sa privacy ng data na nalalapat</translation>
 <translation id="7322515217754205362">Mga Pahintulot sa Site</translation>
 <translation id="7324020307732396723">Buksan ang Mga Setting ng Wika</translation>
 <translation id="7325209047678309347">Nag-jam ang papel</translation>
@@ -6061,6 +6077,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7653354650639364202">{0,plural, =1{Isara ang Isolated window}one{Isara ang Naka-isolate (# window)}other{Isara ang Naka-isolate (# na window)}}</translation>
 <translation id="7654941827281939388">Ginagamit na ang account na ito sa computer na ito.</translation>
 <translation id="7655411746932645568">Puwedeng hilingin ng mga site na kumonekta sa mga serial port</translation>
+<translation id="7656674791025857763">Mag-sign in para magamit ang <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Maliliit na natipid</translation>
 <translation id="7657218410916651670">Posibleng ma-save ang <ph name="BEGIN_LINK_GOOGLE" />iba pang anyo ng aktibidad<ph name="END_LINK_GOOGLE" /> sa iyong Google Account kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
@@ -6272,6 +6289,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7904492297081735975">&amp;Buksan ang manager ng bookmark</translation>
 <translation id="7907312522152480478">Para makuha ang iyong mga tab mula sa iba mo pang device, i-verify na ikaw ito at i-sync ang iyong history at mga tab. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7907837847548254634">Magpakita ng mabilisang highlight sa naka-focus na object</translation>
+<translation id="7908205867885088429">Matuto pa tungkol sa pag-restore ng mga setting sa default</translation>
 <translation id="7908835530772972485">I-delete ang data kapag isinara mo ang lahat ng window</translation>
 <translation id="7909324225945368569">I-rename ang iyong profile</translation>
 <translation id="7909969815743704077">Na-download sa Incognito</translation>
@@ -6663,6 +6681,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8323317289166663449">Basahin at baguhin anglahat ng iyong data sa iyong computer at lahat ng website</translation>
 <translation id="8323518750352551353">Hiwalay na Pag-browse?</translation>
 <translation id="8323744572398547859">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
+<translation id="8324035203198677529">Na-off ng iyong organisasyon ang Gemini Enterprise sa Chrome. Puwede mong patuloy na gamitin ang Gemini sa Chrome, pero hindi na ito maghahanap o tutukoy ng impormasyong pinapamahalaan ng iyong organisasyon. Posibleng hindi mailipat ang history ng chat mo.</translation>
 <translation id="8325413836429495820">Hindi pinapayagang tingnan ang iyong clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
 <translation id="8327386430364625757">Mathematical na font</translation>
@@ -6869,6 +6888,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8551388862522347954">Mga Lisensya</translation>
 <translation id="8552102814346875916">I-save sa listahang "palaging panatilihing aktibo ang mga site na ito"</translation>
 <translation id="8552947739661397736">I-take over ang gawain, kasalukuyang kontrolado ng Gemini</translation>
+<translation id="8555042096950728024">I-drag o gamitin ang mga arrow key para ayusin ulit</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - ipinapakita ang mga na-expand na content</translation>
 <translation id="8557022314818157177">Patuloy na pindutin ang iyong security key hanggang ma-capture ang fingerprint mo</translation>
 <translation id="8557100046150195444">Gamitin ang Touch ID para magpatuloy</translation>
@@ -6961,6 +6981,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8651806635673244884">Puwede mong ilipat ulit ang iyong mga tab sa itaas sa pamamagitan ng pag-right click sa anumang tab at pagpili sa “Ipakita ang mga tab nang pahalang”</translation>
 <translation id="8652400352452647993">Nagka-error sa extension ng pack</translation>
 <translation id="8654151524613148204">Masyadong malaki ang file upang mapangasiwaan ng iyong computer. Paumanhin.</translation>
+<translation id="8654872240409864765">Na-set up ng iyong organisasyon ang Gemini Enterprise sa Chrome. Magtanong sa Gemini tungkol sa kahit ano habang nagba-browse ka, at makakuha ng mga sagot na nakabatay sa mga file at serbisyo sa organisasyon mo.</translation>
 <translation id="8657393004602556571">Gusto mo bang i-discard ang feedback?</translation>
 <translation id="865857184419171576">Isalin ang mga caption sa</translation>
 <translation id="865936634714975126">Magdagdag ng query param sa URL para pumili ng mga uri sa pag-load ng page. Halimbawa: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7124,6 +7145,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="8813937837706331325">Katamtamang natipid</translation>
 <translation id="8815742860876889867">Buksan ang link sa I&amp;solated window</translation>
 <translation id="881799181680267069">Hide Others</translation>
+<translation id="8820301999480837183">Naka-focus sa grupong <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8821206216942230957">Walang access ang iyong account sa Gemini sa Chrome</translation>
 <translation id="8823514049557262177">Kopyahin ang text ng link</translation>
@@ -7163,6 +7185,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="8863753581171631212">Buksan ang link sa bagong <ph name="APP" /></translation>
 <translation id="8864055848767439877">Ibinabahagi ang <ph name="TAB_NAME" /> sa <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Na-save ang password mo</translation>
+<translation id="8865924457197342642">Hindi na available ang Gemini Enterprise</translation>
 <translation id="8866424952450451412">Pamahalaan ang iyong mga custom na workflow na pinapagana ng</translation>
 <translation id="8867102760244540173">Maghanap sa mga tab...</translation>
 <translation id="8867568208303837180">Ipinapadala...</translation>
@@ -7376,6 +7399,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="9096776523567481218">hindi lokal na naka-install</translation>
 <translation id="9099383880226822604">Rainforest</translation>
 <translation id="9100765901046053179">Mga advanced na setting</translation>
+<translation id="9100928301185810363">Naka-focus sa grupong walang pangalan - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Para magkapag-cast, bigyan ng access ang Chrome sa: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokal na Network &gt; Chrome</translation>
 <translation id="9103868373786083162">Pindutin upang bumalik, gamitin ang menu ng konteksto upang makita ang history</translation>
 <translation id="9107096627210171112">I&amp;salin...</translation>

@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Imej yang Anda Salin</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Untuk keluar daripada skrin penuh, seret dari bahagian atas dan sentuh butang kembali</translation>
 <translation id="1132789342529761192">Muat naik tidak disyorkan</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, ditandai, item menu. Pilih untuk mematikan perkongsian</translation>
 <translation id="11370190534773372">Butiran kad diisi</translation>
 <translation id="1138458427267715730">Terima makluman jika harga produk tersebut turun pada mana-mana laman merentas web</translation>
 <translation id="1142713751288681188">Jenis kertas</translation>
@@ -928,6 +929,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2526062290525841862">Untuk menjalankan apl ini, dayakan semula Mod Pembangun Apl Web Terpencil</translation>
 <translation id="2526280916094749336">Anda boleh menggunakan alamat yang disimpan pada seluruh produk Google. Alamat ini akan disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC tertera pada bahagian hadapan kad anda. CVC ialah kod 4 digit pada bahagian atas sebelah kanan, di atas nombor kad anda.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, ditandai</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="2530042584066815841">Kunci dan penggunaan tetikus</translation>
 <translation id="2535585790302968248">Buka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
@@ -1012,6 +1014,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2666117266261740852">Tutup tab atau apl lain</translation>
 <translation id="266935134738038806">Lawati laman</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, item menu. Pilih untuk menghidupkan perkongsian</translation>
 <translation id="2672201172023654893">Penyemak imbas anda tidak diurus.</translation>
 <translation id="2674170444375937751">Adakah anda pasti anda mahu memadamkan halaman ini daripada sejarah anda?</translation>
 <translation id="2675716371350192683">Kandungan anda tidak akan digunakan untuk meningkatkan AI. Organisasi anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
@@ -1994,6 +1997,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4297502707443874121">Lakaran kecil untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> dikemaskinikan</translation>
 <translation id="4298148761711700950">Bayar dengan serta-merta tanpa muat naik QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Kuki untuk laman ini disegerakkan merentas peranti ChromeOS. Untuk mengurus perkara yang anda segerakkan, akses <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> sumber <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Nama pintasan melebihi panjang maksimum <ph name="MAX_LENGTH" /> aksara yang dibenarkan.</translation>
@@ -2203,6 +2207,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4682496302933121474">Terjemahkan halaman?</translation>
 <translation id="468314109939257734">Lihat nombor kad maya anda</translation>
 <translation id="4686942373615810936">Dibuat sebentar tadi</translation>
+<translation id="468826602575103388">Pilih untuk mematikan perkongsian</translation>
 <translation id="4690205240253392065">Pilih penyedia bayar kemudian</translation>
 <translation id="469028408546145398">Butang tutup tetingkap Inkognito, aktifkan untuk menutup semua tetingkap Inkognito yang sedang dibuka</translation>
 <translation id="4692623383562244444">Enjin carian</translation>
@@ -4177,6 +4182,7 @@ Butiran tambahan:
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943397946612013052">Pemuatan turun disekat</translation>
 <translation id="7943893128817522649">Boleh meminta untuk memuat turun berbilang fail secara automatik</translation>
+<translation id="7947144323420971076">Pilih untuk menghidupkan perkongsian</translation>
 <translation id="7947285636476623132">Semak tahun tamat tempoh anda dan cuba lagi</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengetahui tentang ciri Chrome</translation>
 <translation id="7947964969544524438">Simpan Nombor Pengembara Yang Diketahui dengan selamat</translation>
@@ -4304,6 +4310,7 @@ Butiran tambahan:
 <translation id="8172809706700703589">Buat senarai barang untuk dibawa bagi perjalanan saya</translation>
 <translation id="8174047975335711832">Maklumat peranti</translation>
 <translation id="8175053171643471349">Urus kad kesetiaan</translation>
+<translation id="817536628389054635">Maklumat hubungan diisi: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome menawarkan penyimpanan kad dalam Google Account anda kerana anda log masuk. Anda boleh menukar gelagat ini dalam tetapan.</translation>
 <translation id="8176440868214972690">Pentadbir peranti ini telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> disekat disebabkan oleh kandungan}other{<ph name="FILE_COUNT" /> fail disekat disebabkan oleh kandungan}}</translation>

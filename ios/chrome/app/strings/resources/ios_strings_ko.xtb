@@ -227,6 +227,7 @@
 <translation id="1621729191093924223">마이크가 필요한 기능이 작동하지 않음</translation>
 <translation id="1622717322707146952">'Google Calendar에 추가' 또는 'Apple 캘린더에 추가'를 선택합니다.</translation>
 <translation id="1629162218487290695">본인 인증</translation>
+<translation id="1633084385573994059">이 사이트 사용 안함</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">내비게이션 기능을 사용하여 세부 경로 안내를 통해 목적지로 가는 경로 찾기</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
@@ -387,6 +388,7 @@
 <translation id="2102396546234652240">사이트에서 마이크를 사용하도록 허용하지 않음</translation>
 <translation id="2104436223719117661">인기 급상승 검색어</translation>
 <translation id="21133533946938348">탭 고정</translation>
+<translation id="2113761902638026426">Gemini가 <ph name="SITE_DOMAIN" /> 웹사이트로 이동하도록 허용하시겠습니까?</translation>
 <translation id="2117650889962717098">시크릿 모드로 전환하여 탐색 기록을 비공개로 유지하세요.</translation>
 <translation id="2119636449201577317">다음에서 열기…</translation>
 <translation id="2119962645034852864">계정에서 일부 서비스를 사용할 수 없습니다.</translation>
@@ -768,6 +770,7 @@
 <translation id="3350976670663926380">수정 사항 저장됨</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. 관리 계정임</translation>
 <translation id="3365529507898144230">사진에 저장</translation>
+<translation id="3371168305258344914">Gemini가 민감한 정보가 포함되어 있을 수 있는 사이트에서 작업을 수행하려고 합니다</translation>
 <translation id="3371831930909698441">번역을 사용할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="3377063233124932127">저장된 북마크, 비밀번호 등이 상단에 표시됩니다</translation>
 <translation id="3378214228000661758">다음의 패스키 생성</translation>
@@ -1511,6 +1514,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="5684761169742812828">이 비밀번호는 정보 유출로 인해 인터넷에 노출되었습니다. 지금 변경할 수 없는 경우 나중에 다시 참고하도록 이 경고를 유지하는 것이 좋습니다.</translation>
+<translation id="5691020463738411542">기기 간 세이프 브라우징 환경설정 동기화</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" />의 Drive에 저장되었습니다.</translation>
 <translation id="570209299585559496">설정 &gt; 콘텐츠 설정에서 사이트 보기 기본 설정을 데스크톱으로 변경할 수 있습니다.</translation>
 <translation id="5702108177581350218">사용자 이름과 비밀번호의 사본을 공유하면 가족 구성원이 Google 비밀번호 관리자를 사용하여 입력할 수 있습니다</translation>
@@ -1589,6 +1593,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5948605885471592910">열려 있는 모든 항목을 보고 관리하세요</translation>
 <translation id="5952641243319721872">선택사항을 삭제하시겠습니까?</translation>
 <translation id="5956112131836209882">탭 그룹 탭. <ph name="NUMBER_OF_TABS_IN_GROUP" />개 중 <ph name="TAB_INDEX_IN_GROUP" />번째.</translation>
+<translation id="595662449352471176">태스크 시작</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />(으)로 검색</translation>
 <translation id="5963694076845073027">다음에는 여기에서 링크 열기</translation>
 <translation id="5963939892571022323">하이라이트 링크를 생성할 수 없습니다.</translation>
@@ -1809,6 +1814,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="656065428026159829">더보기</translation>
 <translation id="6565899972286925956">무엇이든 만들어 보세요</translation>
 <translation id="6571070086367343653">신용카드 수정</translation>
+<translation id="6571502147204686607">안전하지 않은 사이트로부터 사용자 보호</translation>
 <translation id="6574092468346088891">안전 확인 알림 사용 설정</translation>
 <translation id="6579867704846662339">시크릿 모드에서 다른 앱의 수신 URL을 열도록 선택할 수 있습니다</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
@@ -2249,6 +2255,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7921559948846049514">배경의 테마, 색상 등을 선택하세요.</translation>
 <translation id="792357691529995513">발견된 문제 없음</translation>
 <translation id="7925108652071887026">자동 완성 데이터</translation>
+<translation id="7926290435065552539">안전하게 비밀번호 보호</translation>
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="792762900715361006">사진 또는 동영상 찍기</translation>
 <translation id="7927711904086083099">선택되지 않음</translation>
@@ -2667,6 +2674,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9144230693397287797">설정한 리마인더 및 다른 기기의 탭 업데이트를 받습니다.</translation>
 <translation id="914781932147356857">모두 표시…</translation>
 <translation id="9148126808321036104">다시 로그인</translation>
+<translation id="914964947703922647">태스크 검토</translation>
 <translation id="9149866541089851383">수정...</translation>
 <translation id="9152637745605628097">테마, 색상 중에서 선택하거나 이미지를 업로드하세요.</translation>
 <translation id="9153159728062222866">복사하여 붙여넣지 마세요</translation>

@@ -518,6 +518,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1570990174567554976">"<ph name="BOOKMARK_TITLE" />" əlfəcin qovluğu yaradıldı.</translation>
 <translation id="1571041387761170095">Zəif və ya təkrar işlənən parol yoxdur</translation>
 <translation id="1571304935088121812">İstifadəçi adını kopyalayın</translation>
+<translation id="1571371559291327711">&amp;Tapmaq, redaktə etmək və daha çox alət</translation>
 <translation id="1571738973904005196"><ph name="TAB_ORIGIN" /> tabına baxın</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Qonaq)</translation>
 <translation id="1573127087832371028">Problemi təsvir edin</translation>
@@ -956,6 +957,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="204914487372604757">Qısayol yaradın</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051669996101374349">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın. Qabaqcıl Qoruma aktivləşdirildiyi üçün bu ayarı dəyişə bilməzsiniz.</translation>
+<translation id="2052353138844549871">Gemini Enterprise-ı idarə olunmayan profillə istifadə etmək tövsiyə olunmur</translation>
 <translation id="2052723746739622752">Gemini-ın bərkidilməsini ləğv edin</translation>
 <translation id="2061366302742593739">Göstəriləcək heç nə yoxdur</translation>
 <translation id="2061589908388230480">Chromium parollarınızdan birini ictimai data pozuntusunda aşkar edərsə, hesabınıza daxil olduğunuz halda, Google Parol Meneceri sizin əvəzinizə parolu dəyişdirməyi təklif edə bilər. <ph name="BEGIN_LINK" />Avtomatik parol dəyişikliyi haqqında daha çox məlumat<ph name="END_LINK" /></translation>
@@ -1224,6 +1226,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - İcazə tələb edilib, cavablandırmaq üçün Ctrl + İrəli düyməsini basın</translation>
 <translation id="2349610121459545414">Bu saytın məkanınıza girişinə icazə verməyə davam edin</translation>
 <translation id="2350133097354918058">Yenidən yükləndi</translation>
+<translation id="2351165193188463938">Hazırda Gemini Enterprise ilə axtarış edirsiniz</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera və mikrofona icazə verildi</translation>
 <translation id="2353682139907904963">Yeni artırmaları Alətlər panelinə bərkidin</translation>
@@ -1271,6 +1274,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2409709393952490731">Telefon və ya planşet istifadə edin</translation>
 <translation id="2410940059315936967">Baxdığınız sayt şəkillər, reklamlar və mətn kimi digər saytlardan məzmunu daxil edə bilər. Digər saytlar tərəfindən təyin olunan kukilərə üçüncü tərəf kukiləri deyilir.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{1 taba fokuslanılıb}other{# taba fokuslanılıb}}</translation>
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Veb Marketdən<ph name="END_LINK1" /> əldə edilən artırmalar ilə brauzeri daha da fərdiləşdirin</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> üçün baxmağa davam edin</translation>
 <translation id="2414886740292270097">Qara</translation>
@@ -1680,6 +1684,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> üçün əlavə seçimlər</translation>
 <translation id="285033512555869047">Bağlıdır</translation>
 <translation id="2851291081585704741">Oflaynsınız</translation>
+<translation id="2851527955600412545">Təşkilatınız Chrome-da Gemini Enterprise üçün siyasətlərini yenilədi. Çat tarixçəniz köçürülməyə bilər.</translation>
 <translation id="285237063405807022">(yüklənir)</translation>
 <translation id="2853121255651601031">Parol Yadda Saxlandı</translation>
 <translation id="2855243985454069333">Bütün sinxronlaşdırılmış cihazlardan tarixçəni silir</translation>
@@ -2629,6 +2634,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3810593934879994994"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan fayllara baxa bilər</translation>
 <translation id="3810770279996899697">Parol meneceri MacOS Keychain-ə giriş tələb edir</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="3811424142236602772"><ph name="DOMAIN" /> tərəfindən iş üçün ayarlanmış Gemini ilə axtarış edin. Axtarış zamanı tabları kontekst kimi paylaşaraq suallar verin və təşkilatınızın fayl və xidmətlərinə əsaslanan cavablar alın.</translation>
 <translation id="3812525830114410218">İşləməyən sertifikat</translation>
 <translation id="3813296892522778813">Axtardığınızı tapa bilmirsinizsə <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome yardımı<ph name="END_LINK_CHROMIUM" /> bölməsinə gedin</translation>
 <translation id="3815509884387832993">Oxu rejimi alətlər panelindəki "Sİ oxutmasını aktiv edin" düyməsindən istifadə edərək Sİ oxutması ilə bu səhifəni podkast kimi dinləyin</translation>
@@ -3224,6 +3230,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="4500055235123625757">Gemini <ph name="LINK_BEGIN" />bəzi veb-saytlarda<ph name="LINK_END" /> oxutduğunuz video və ya audio haqqında suallara cavab verə bilər.</translation>
 <translation id="4500647907053779331">&amp;Seçilən hissəni <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="4502477450742595012">Tab üzərinə sağ düymə ilə toxunun və "Yeni qrupa tab əlavə et" seçin</translation>
+<translation id="450300557121092531">Cihazlar üzrə tablar</translation>
 <translation id="4503362512377701151">Asanlıqla qaldığınız yerdən davam etməyiniz üçün son istifadə etdiyiniz tab qruplarını görürsünüz.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3276,6 +3283,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="4562155266774382038">Təklifdən imtina edin</translation>
 <translation id="4563883094055457792">Bölünmüş görünüşü bərpa edin</translation>
 <translation id="456449593072900590">Çıxarkən silin</translation>
+<translation id="4564636746145660922">Bağlantını yoxlayın və yenidən cəhd edin.</translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4565465014351935093">Yalnız Yeni Tab Səhifəsində göstərilsin</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
@@ -3449,6 +3457,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="475088594373173692">İlk istifadəçi</translation>
 <translation id="4751925628341802838">Digər cihazlarınızdakı tarixçəyə daxil olmaq üçün hesabınıza daxil olun, habelə tarixçənizi və tablarınızı <ph name="EMAIL" /> ilə sinxronlaşdırın. Bütün cihazlarınızda artırmaları və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4754590344707355551">Brauzeri artırmalarla təkmilləşdirin</translation>
+<translation id="4754903312643763797">Fərqli data məxfiliyi şərtləri tətbiq oluna bilər</translation>
 <translation id="4756130875344525429"><ph name="DEVICE" /> cihazındakı tarixçəni əldə etmək üçün daxil olun, habelə tarixçə və tablarınızı <ph name="EMAIL" /> ilə sinxronlaşdırın. Bütün cihazlarınızda yadda saxladığınız məlumatları və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4756378406049221019">Dayandırın/Yenidən yükləyin</translation>
 <translation id="4756388243121344051">&amp;Tarixçə</translation>
@@ -4131,6 +4140,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="5509914365760201064">Emitent: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google'dan Şəkil Təsvirləri əldə edin</translation>
 <translation id="5512739112435045339">Cihazınızda yer boşaldın. Sonra yenidən endirməyə cəhd edin</translation>
+<translation id="5513121759801003159">Çat tarixçəniz köçürülməyəcək</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157"><ph name="EXTENSION_NAME" /> üçün digər seçimlərə baxın</translation>
 <translation id="5521078259930077036">Gözlədiyiniz ana səhifə budur?</translation>
@@ -4939,6 +4949,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="6451861213630784801">Çıxış etdiniz</translation>
 <translation id="6453191633103419909">Tab/Ekran Proyeksiya Keyfiyyəti</translation>
 <translation id="6453306703004115497"><ph name="LANGUAGE" /> dilinə tərcümə edildi</translation>
+<translation id="6454212815056355439">Cihazdaxili Sİ-ni axtarın</translation>
 <translation id="645433497989692531">Beləliklə, baxış datanız bu cihazdan həmişəlik siləcək. Datanı bərpa etmək üçün belə daxil olun:</translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
 <translation id="6455521402703088376">Deaktiv • Tərtibatçı bu artırmanın yayımını ləğv edib</translation>
@@ -5109,6 +5120,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="663569763553406962">Saytı oxuya və ya dəyişə bilən artırmalara baxın</translation>
 <translation id="6636258750460740634">Tarixçə</translation>
 <translation id="6636623428211296678">Aşağıda digər ayarları araşdırın və ya indi bitirin</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Bacarıqlar funksiyası hazırda deaktivdir. İşə başlamaq üçün Chrome Ayarlarınızı yeniləyin.</translation>
 <translation id="6639554308659482635">SQLite yaddaş</translation>
 <translation id="6640268266988685324">Açıq Tab</translation>
@@ -5242,6 +5254,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6785779729084003225">Chrome-da Gemini-ı açmaq üçün <ph name="FOCUS_TOGGLE_HOTKEY" /> düyməsindən istifadə edin</translation>
 <translation id="67862343314499040">Tünd-bənövşəyi</translation>
 <translation id="6786480815699355166">Yalnız dəstəklənən Canlı Subtitr dilləri tərcümə edilə bilər</translation>
+<translation id="6786498102134843646">Cavablar <ph name="DOMAIN" /> tərəfindən idarə olunan fayl və ya xidmətlərə əsaslanmayacaq</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
 <translation id="6786804673213172567">Səviyyə 3: YÜKSƏK</translation>
 <translation id="6787531944787756058">istifadəçi adı <ph name="USER_EMAIL" /> bu cihazda yadda saxlanır. Detallara baxın</translation>
@@ -5404,6 +5417,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6941514251635934269">Bu sənəd haqqında soruşun</translation>
 <translation id="694168622559714949">Administratorunuz dəyişdirilə bilməyən bir defolt dil təyin edib.</translation>
 <translation id="6941953303876950920">Gemini ilə axtarışa davam etmək üçün yenidən başladılmalıdır</translation>
+<translation id="6943803108751887058">Bağlamaq üçün Escape düyməsinə basın</translation>
 <translation id="6944854424004126054">Pəncərəni bərpa edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="694592694773692225">Bu səhifədə yönləndirmə deaktiv edilib.</translation>
@@ -5729,6 +5743,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7293774463163321848">Axtarış tarixçəsi, Gemini tarixçəsi və parollar onların idarəetmə ayarlarında silinə bilər</translation>
 <translation id="7296503797589217366">Qovluq seçin: <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Baxdığınız səhifələrdəki məlumatları Google Pulqabıda yadda saxlayın</translation>
+<translation id="7297535265731442945">Gemini Enterprise güncəlləndi</translation>
 <translation id="7297726121602187087">Tünd-yaşıl</translation>
 <translation id="7298195798382681320">Tövsiyə olunur</translation>
 <translation id="7299515639584427954">Dəstəklənən keçidlər üçün defolt tətbiq dəyişdirilsin?</translation>
@@ -5750,6 +5765,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="731827437403763009">Sİ innovasiyaları</translation>
 <translation id="7319983568955948908">Paylaşmanı dayandırın</translation>
 <translation id="7321545336522791733">Server əlçatmazdır</translation>
+<translation id="7321838786611890851">Gemini ilə interaksiyalarınızda <ph name="DOMAIN" /> tərəfindən quraşdırılmış qoruma tədbirləri olmaya bilər və fərqli data məxfiliyi şərtləri tətbiq edilə bilər</translation>
 <translation id="7322515217754205362">Sayt icazələri</translation>
 <translation id="7324020307732396723">Dil ayarlarını açın</translation>
 <translation id="7325209047678309347">Kağız ilişib</translation>
@@ -6046,6 +6062,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7653354650639364202">{0,plural, =1{İzolə edilmiş pəncərəni bağlayın}other{İzolə edilmiş pəncərəni bağlayın (# pəncərə)}}</translation>
 <translation id="7654941827281939388">Bu hesab bu kompüterdə artıq istifadə olunur.</translation>
 <translation id="7655411746932645568">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
+<translation id="7656674791025857763"><ph name="ASSISTANT_NAME" /> istifadə etmək üçün daxil olun</translation>
 <translation id="7657090467145778067">Kiçik qənaət</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Digər fəaliyyət formaları<ph name="END_LINK_GOOGLE" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
@@ -6257,6 +6274,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7904492297081735975">&amp;Əlfəcin menecerini açın</translation>
 <translation id="7907312522152480478">Digər cihazlarınızdakı tablara giriş əldə etmək üçün kimliyinizi doğrulayın, habelə tarixçənizi və tablarınızı sinxronlaşdırın. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="7907837847548254634">Fokuslanmış obyektin üzərində sürətli vurğulama göstərin</translation>
+<translation id="7908205867885088429">Ayarları defolt vəziyyətinə bərpa etmək haqqında ətraflı məlumat</translation>
 <translation id="7908835530772972485">Bütün pəncərələri bağladığınız zaman datanı silin</translation>
 <translation id="7909324225945368569">Profilinizin adını dəyişdirin</translation>
 <translation id="7909969815743704077">Gizli paneldə endirildi</translation>
@@ -6648,6 +6666,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8323317289166663449">Kompüterinizdə və bütün veb saytlarda bütün datanızı oxumaq və dəyişdirmək</translation>
 <translation id="8323518750352551353">Baxış ayrılsın?</translation>
 <translation id="8323744572398547859">Digər cihazlarınızdakı tablara giriş əldə etmək üçün hesabınıza daxil olun və tarixçəni sinxronlaşdırın. Həmçinin bütün cihazlarınızda parollarınızı və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
+<translation id="8324035203198677529">Təşkilatınız Chrome-da Gemini Enterprise-ı deaktiv etdi. Chrome-da Gemini-dan istifadə etməyə davam edə bilərsiniz, lakin o, artıq təşkilatınız tərəfindən idarə olunan məlumatları tapmayacaq və ya onlara istinad etməyəcək. Çat tarixçəniz köçürülməyə bilər.</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>
 <translation id="8327386430364625757">Riyazi şrift</translation>
@@ -6854,6 +6873,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8551388862522347954">Lisenziyalar</translation>
 <translation id="8552102814346875916">"Bu saytları həmişə aktiv saxlayın" siyahısında saxlayın</translation>
 <translation id="8552947739661397736">Tapşırığı öz öhdəliyinizə götürün, hazırda idarəetmə Gemini tərəfindən həyata keçirilir.</translation>
+<translation id="8555042096950728024">Yenidən düzənləmək üçün sürüşdürün və ya ox düymələrindən istifadə edin</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - genişləndirilmiş kontentlər göstərilir</translation>
 <translation id="8557022314818157177">Barmaq iziniz oxunanadək təhlükəsizlik açarına toxunmağa davam edin</translation>
 <translation id="8557100046150195444">Davam etmək üçün toxunuş ID-si</translation>
@@ -6946,6 +6966,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8651806635673244884">İstənilən taba sağ düymə ilə toxunub "Tabları üfüqi göstərin" seçimini etməklə tabları yenidən yuxarı köçürə bilərsiniz</translation>
 <translation id="8652400352452647993">Paket Artırma Xətası</translation>
 <translation id="8654151524613148204">Fayl kompüteriniz üçün çox böyükdür.</translation>
+<translation id="8654872240409864765">Təşkilatınız Chrome-da Gemini Enterprise quraşdırdı. Axtarış zamanı Gemini-dan istədiyinizi soruşun və təşkilatınızdakı fayl və xidmətlərə əsaslanan cavablar alın.</translation>
 <translation id="8657393004602556571">Rəydən imtina etmək istəyirsiniz?</translation>
 <translation id="865857184419171576">Subtitrləri bu dilə tərcümə edin:</translation>
 <translation id="865936634714975126">Səhifə yüklənərkən növləri seçmək üçün URL-də sorğu parametri əlavə edin. Nümunə: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7107,6 +7128,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8813937837706331325">Orta səviyyədə qənaət</translation>
 <translation id="8815742860876889867">Keçidi başqa pəncərədə açın</translation>
 <translation id="881799181680267069">Digərlərini Gizlədin</translation>
+<translation id="8820301999480837183"><ph name="GROUP_NAME" /> qrupuna fokuslanılıb</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="8821206216942230957">Hesabınızın Chrome-da Gemini-a girişi yoxdur</translation>
 <translation id="8823514049557262177">Link mətnini kopyalayın</translation>
@@ -7146,6 +7168,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8863753581171631212">Linki yeni <ph name="APP" /> tətbiqində açın</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> <ph name="APP_NAME" /> ilə paylaşılır</translation>
 <translation id="8864104359314908853">Parol yadda saxlandı</translation>
+<translation id="8865924457197342642">Gemini Enterprise artıq əlçatan deyil</translation>
 <translation id="8866424952450451412">Aşağıdakı texnologiyalarla dəstəklənən fərdi iş axınlarını idarə edin:</translation>
 <translation id="8867102760244540173">Tabları axtarın...</translation>
 <translation id="8867568208303837180">Göndərilir...</translation>
@@ -7358,6 +7381,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9096776523567481218">lokal qaydada quraşdırılmayıb</translation>
 <translation id="9099383880226822604">Yağış meşəsi</translation>
 <translation id="9100765901046053179">Qabaqcıl ayarlar</translation>
+<translation id="9100928301185810363">Adsız qrupa fokuslanılıb - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Yayımlamaq üçün Chrome-a giriş imkanı verin: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokal şəbəkə &gt; Chrome</translation>
 <translation id="9103868373786083162">Geri qayıtmaq üçün basın və tarixməni görmək üçün kontekst menyuya basın</translation>
 <translation id="9107096627210171112">Tərcümə edin...</translation>

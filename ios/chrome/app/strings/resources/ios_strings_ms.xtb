@@ -227,6 +227,7 @@
 <translation id="1621729191093924223">Ciri yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1622717322707146952">Pilih “Tambahkan pada Google Calendar“ atau “Tambahkan pada Apple Calendar“.</translation>
 <translation id="1629162218487290695">Sahkan identiti anda…</translation>
+<translation id="1633084385573994059">Jangan gunakan laman ini</translation>
 <translation id="1634520742547161889">BB/TT</translation>
 <translation id="1636234353664774105">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
@@ -387,6 +388,7 @@
 <translation id="2102396546234652240">Jangan benarkan laman menggunakan mikrofon anda</translation>
 <translation id="2104436223719117661">Carian sohor kini</translation>
 <translation id="21133533946938348">Pin Tab</translation>
+<translation id="2113761902638026426">Benarkan Gemini mengakses <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Pastikan penyemakan imbas anda sulit dengan menukar kepada mod Inkognito</translation>
 <translation id="2119636449201577317">Buka dalam…</translation>
 <translation id="2119962645034852864">Sesetengah perkhidmatan tidak tersedia untuk akaun anda</translation>
@@ -768,6 +770,7 @@
 <translation id="3350976670663926380">Pengeditan disimpan</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaun ini terurus.</translation>
 <translation id="3365529507898144230">Simpan dalam Photos</translation>
+<translation id="3371168305258344914">Gemini akan bertindak pada laman yang mungkin mengandungi maklumat sensitif anda</translation>
 <translation id="3371831930909698441">Translate tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="3377063233124932127">Kini penanda halaman, kata laluan anda yang disimpan dan pelbagai lagi berada di bahagian atas.</translation>
 <translation id="3378214228000661758">Buat kunci laluan untuk</translation>
@@ -1511,6 +1514,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="567881659373499783">Versi <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Untuk menggunakan dan menyimpan kata laluan dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="5684761169742812828">Kata laluan ini terdedah kepada pelanggaran data pada Internet. Jika anda tiada masa untuk menukar kata laluan sekarang, Google mengesyorkan untuk amaran ini mengingatkan anda semula nanti.</translation>
+<translation id="5691020463738411542">Segerakkan pilihan penyemakan imbas selamat merentas peranti</translation>
 <translation id="5694848685995373177">Disimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Anda boleh menukar paparan laman lalai pada desktop dalam tetapan kemudian tetapan kandungan</translation>
 <translation id="5702108177581350218">Apabila anda berkongsi salinan nama pengguna dan kata laluan anda, ahli keluarga anda boleh mengisi nama pengguna dan kata laluan tersebut menggunakan Google Password Manager.</translation>
@@ -1589,6 +1593,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5948605885471592910">Lihat dan urus semua tab dan kumpulan yang telah anda buka</translation>
 <translation id="5952641243319721872">Adakah anda pasti mahu membuang pilihan anda?</translation>
 <translation id="5956112131836209882">Tab kumpulan tab. <ph name="TAB_INDEX_IN_GROUP" /> daripada <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Mulakan tugasan</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Buka pautan di sini pada masa hadapan</translation>
 <translation id="5963939892571022323">Pautan kepada serlahan tidak dapat dibuat.</translation>
@@ -1809,6 +1814,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="656065428026159829">Lihat lagi</translation>
 <translation id="6565899972286925956">Buat apa-apa sahaja</translation>
 <translation id="6571070086367343653">Edit kad kredit</translation>
+<translation id="6571502147204686607">Lindungi diri anda daripada laman yang tidak selamat</translation>
 <translation id="6574092468346088891">Hidupkan pemberitahuan untuk Pemeriksaan Keselamatan</translation>
 <translation id="6579867704846662339">Anda boleh memilih untuk membuka URL masuk daripada apl lain dalam Inkognito.</translation>
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
@@ -2249,6 +2255,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7921559948846049514">Pilih tema, warna atau pelbagai lagi untuk latar anda</translation>
 <translation id="792357691529995513">Tiada isu ditemukan</translation>
 <translation id="7925108652071887026">Autolengkap data</translation>
+<translation id="7926290435065552539">Pastikan kata laluan anda selamat</translation>
 <translation id="7926975587469166629">Nama panggilan kad</translation>
 <translation id="792762900715361006">Ambil Foto atau Rakam Video</translation>
 <translation id="7927711904086083099">Tidak dipilih</translation>
@@ -2667,6 +2674,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="9144230693397287797">Terima kemaskinian untuk peringatan yang anda tetapkan dan tab daripada peranti lain</translation>
 <translation id="914781932147356857">Tandai semua…</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>
+<translation id="914964947703922647">Semak tugasan</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9152637745605628097">Pilih daripada tema, warna atau muat naik imej</translation>
 <translation id="9153159728062222866">Langkau Salin &amp; Tampal</translation>

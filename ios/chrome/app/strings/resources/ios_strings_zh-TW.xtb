@@ -129,7 +129,7 @@
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
 <translation id="1363028406613469049">追蹤</translation>
-<translation id="1365106417372288489">你的 iPhone 最近執行過還原作業，可能已變更預設瀏覽器。</translation>
+<translation id="1365106417372288489">你的 iPhone 最近執行過還原作業，預設瀏覽器可能已變更。</translation>
 <translation id="1366297852155605523">與我共用的項目</translation>
 <translation id="1369286077209859800">顯示分頁群組中的所有分頁</translation>
 <translation id="136942498637440594">你可以搜尋圖片和看到的內容。</translation>
@@ -315,7 +315,7 @@
 <translation id="1888854257756214946">選取密碼…</translation>
 <translation id="1890237935065108104">無法使用這項設定。</translation>
 <translation id="1894023287452300670">追蹤這個地區的價格</translation>
-<translation id="189531189292803889">你的 iPad 最近執行過還原作業，可能已變更預設瀏覽器。</translation>
+<translation id="189531189292803889">你的 iPad 最近執行過還原作業，預設瀏覽器可能已變更。</translation>
 <translation id="1898804291554630487">詢問這個網頁的內容</translation>
 <translation id="1901366738768303267">如何使用這項功能？</translation>
 <translation id="1901600657316773839">保留所選項目</translation>
@@ -1961,7 +1961,7 @@
 <translation id="6998236305642926573">所有任務</translation>
 <translation id="7004032350256606903">貴機構要求你使用私密瀏覽模式。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">在「設定」中設為預設…</translation>
+<translation id="7005768247344091502">前往「設定」設為預設…</translation>
 <translation id="7007970306646738803">請選擇如何處理這部裝置上的現有瀏覽資料，例如分頁、歷史記錄和密碼。</translation>
 <translation id="701134422972919485">這個網站的麥克風存取權</translation>
 <translation id="7012978439516925343">驗證身分以建立密碼金鑰</translation>
@@ -2417,7 +2417,7 @@
 <translation id="8407831512155324054">你的密碼強度夠高</translation>
 <translation id="8414283596511250978">再也不必擔心忘記密碼</translation>
 <translation id="8415120635186642416">研究任何內容</translation>
-<translation id="842523302461531262">在「設定」中設為預設…</translation>
+<translation id="842523302461531262">前往「設定」設為預設…</translation>
 <translation id="8428045167754449968">鄉/鎮/市/區</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">我知道了</translation>

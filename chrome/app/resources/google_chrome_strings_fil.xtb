@@ -75,6 +75,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1640672724030957280">Dina-download...</translation>
 <translation id="1651617469580841801">Kapag ginamit mo ang Google Lens, ipapadala sa Google ang pamagat ng page, URL, at content, pati ang mga PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Buksan ang link sa Inco&amp;gnito Window ng Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Sine-share mo ang tab na ito sa Google Search</translation>
 <translation id="1682634494516646069">Hindi makapagbasa at makapagsulat ang Google Chrome sa direktoryo nito ng data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -258,6 +259,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3380249972812870825">Para buksan ang Gemini sa Chrome, pindutin ang <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Nagdagdag ang Chrome ng AI na tumatakbo sa iyong device. Magagamit ito ng mga site at Chrome para sa mga feature gaya ng:</translation>
 <translation id="3396977131400919238">Nagkaroon ng error sa operating system habang nag-i-install. Paki-download muli ang Google Chrome.</translation>
+<translation id="3404531968986217414">Magsimula ng bagong thread sa Google Search</translation>
 <translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3438681572027105609">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="3450887623636316740">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Puwedeng suriin ng Chrome ang download na ito para sa iyo kung ibibigay mo ang password. Ipapadala sa Ligtas na Pag-browse sa Google ang impormasyon tungkol sa file, pero mananatili sa iyong device ang content ng file at ang password.</translation>
@@ -400,6 +402,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="5003967926796347400">I-click ang “Google Password Manager”</translation>
 <translation id="5043786843026425788">Matuto pa tungkol sa paghahanap gamit ang Google Lens sa Chrome</translation>
 <translation id="504867494566807945">Magbukas ng mga link sa Chrome mula sa anumang app. Para sa madaling pag-access, ipi-pin ito sa iyong taskbar.</translation>
+<translation id="507983337152787026">Magsimula ng Bagong Thread sa Google Search</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang update. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang update. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chrome para ma-apply ang update. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
 <translation id="5105120510934353742">Para makatanggap ng mga update sa Google Chrome sa hinaharap, kakailanganin mo ng macOS 13 o mas bago. Gumagamit ng macOS 12 ang computer na ito.</translation>
 <translation id="5114340746415930644">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mong <ph name="USER_EMAIL" /></translation>
@@ -426,6 +429,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="524751727772074981">Magtanong, nasaan ka man, gamit ang Gemini sa Chrome</translation>
 <translation id="5247617065091903691">Puwede mong i-pin ang panel sa gilid ng Google Search para magtanong habang nagba-browse ka</translation>
 <translation id="5271833978500241046">Gamitin ang mga ito kasama ng iba pang feature ng Gemini sa Chrome</translation>
+<translation id="528611299569739095">Puwedeng gumamit ang pinapamahalaang browser na ito ng Gemini na na-set up para sa trabaho ng <ph name="DOMAIN" />. Puwede itong maghanap ng impormasyon at magbigay ng mga sagot na nakabatay sa mga file at serbisyo ng organisasyon. Nire-require sa paglipat na ilunsad ulit ang Chrome.</translation>
 <translation id="5320351714793324716">Kung papayagan mo ang cookies, posibleng gamitin ng Chrome ang mga ito kapag nagpi-preload</translation>
 <translation id="5321325624576443340">Hindi available ang Google Lens. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="5346389065299425353">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool</translation>
@@ -450,7 +454,9 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5600352656975192682">I-pin ang Chrome sa iyong taskbar para mabilis itong mapuntahan anumang oras</translation>
 <translation id="5602351063754773347">Inirerekomenda ng Chrome na alisin mo ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga sinusuportahang extension<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Lumipat sa Gemini Enterprise na pinapamahalaan ng <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Gawing Iyo Ang Chrome</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{I-unshare ang tab sa Google Search}one{I-unshare ang # tab sa Google Search}other{I-unshare ang # na tab sa Google Search}}</translation>
 <translation id="5649156266046089790">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="565744775970812598">Maaaring mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="566568153320186256">Nakakatipid ng baterya ang Chrome sa pamamagitan ng paglimita sa aktibidad sa background at mga visual effect, gaya ng smooth na pag-scroll at mga frame rate ng video. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Energy Saver<ph name="END_LINK" /></translation>
@@ -544,6 +550,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang 1 minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}one{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}other{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # na minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}}</translation>
 <translation id="6418662306461808273">Lumipat sa kasalukuyang profile sa Chrome?</translation>
 <translation id="6426623519983252346">Makakakita ka ng prompt na subukan ang <ph name="FEATURE_NAME" /> sa susunod na buksan mo ang Chrome iOS.</translation>
+<translation id="6431496891888891615">Puwede kang lumipat sa Gemini na orihinal na nauugnay sa iyong Google Account at hindi pinapamahalaan ng <ph name="DOMAIN" />. Nire-require sa paglipat na ilunsad ulit ang Chrome.</translation>
 <translation id="6434035853014503219">Salamat sa pagpili sa Chrome bilang iyong default browser!</translation>
 <translation id="6438015621983209660">I-extend ang Pinahusay na Ligtas na Pag-browse gamit ang Chrome sa iyong telepono</translation>
 <translation id="6442774133615368941">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera sa Chrome iOS app</translation>
@@ -580,6 +587,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6712881677154121168">Error sa pag-download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Gawing mas mabilis ang Chrome</translation>
 <translation id="6734827584173583205">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="COUNT" /> pa.</translation>
+<translation id="6737759643107005803">Bumalik sa Gemini na hindi pinapamahalaan ng <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">I-dismiss ang aktibong paghahanap sa tab na ito</translation>
 <translation id="6750954913813541382">Para ayusin ang mga error sa pagbabaybay, ipinapadala ng Chrome sa Google ang text na na-type mo sa browser</translation>
 <translation id="6760235774835597023">Pinapabilis ang mga site gamit ang V8 na engine ng Chrome pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chrome. Naka-on ang setting na ito.</translation>
@@ -658,6 +666,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="749228101751499733">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chrome. Gamit ang <ph name="SHORTCUT" />, puwede mong baguhin ang iyong mga setting ng Mga serbisyo ng Google.</translation>
 <translation id="7496017508659652909">Nagpe-preload ang Chrome ng mga page na mas nagpapabilis sa pag-browse at paghahanap. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pag-preload ng mga page<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Sine-share mo ang tab na ito sa Google Search</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Puwede mong i-pin ang Google Lens para sa madaling pag-access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -745,6 +754,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8286862437124483331">Sinusubukan ng Google Chrome na ipakita ang mga password. I-type ang iyong password sa Windows upang payagan ito.</translation>
 <translation id="8291415872436043161">I-download ang Chrome</translation>
 <translation id="829923460755755423">Magdagdag ng shortcut papuntang Google Password Manager</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{I-share ang Tab sa Google Search}one{I-share ang # Tab sa Google Search}other{I-share ang # na Tab sa Google Search}}</translation>
 <translation id="8313851650939857356">Nagkaroon ng error sa startup: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Tagumpay! Madali ka na ngayong makakapagtanong habang nagba-browse ka gamit ang panel ng Google Search</translation>
 <translation id="8336463659890584292">Kapag humiling ang isang site na pribadong mag-preload ng mga link sa page nito, gumagamit ang Chrome ng mga server ng Google. Maitatago nito ang iyong pagkakakilanlan sa na-preload na site, pero malalaman ng Google kung anong mga site ang na-preload.</translation>
@@ -799,6 +809,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8712767363896337380">Malapit nang ma-update! Muling ilunsad ang Chrome para matapos ang pag-update.</translation>
 <translation id="8717554232729236539">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Mag-sign Out sa Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{I-share ang tab sa Google Search}one{I-share ang # tab sa Google Search}other{I-share ang # na tab sa Google Search}}</translation>
 <translation id="873133009373065397">Hindi matukoy o maitakda ng Google Chrome ang default na browser</translation>
 <translation id="8747073452963259673">kaliwang sulok sa ibaba ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, ibaba <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Nagbabakante ng memory ang Chrome mula sa mga hindi aktibong tab. Binibigyan nito ang mga aktibong tab at iba pang app ng higit pang resource ng computer at pinapanatili nitong mabilis ang Chrome. Awtomatikong nagiging aktibo ulit ang iyong mga hindi aktibong tab kapag bumalik ka sa mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Memory Saver<ph name="END_LINK" /></translation>
@@ -850,6 +861,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Membership sa Google.</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="93760716455950538">I-restart ang ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{I-unshare ang Tab sa Google Search}one{I-unshare ang # Tab sa Google Search}other{I-unshare ang # na Tab sa Google Search}}</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="983803489796659991">Hindi na-install dahil walang anumang data ng hash para sa application ang server ng update.</translation>
 <translation id="989816563149873169">Puwedeng magpalipat-lipat sa mga profile sa Chrome sa pamamagitan ng <ph name="SHORTCUT" /></translation>

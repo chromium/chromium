@@ -519,6 +519,7 @@
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' 북마크 폴더가 생성되었습니다.</translation>
 <translation id="1571041387761170095">취약하거나 재사용된 비밀번호 없음</translation>
 <translation id="1571304935088121812">사용자 이름 복사</translation>
+<translation id="1571371559291327711">찾기, 수정, 기타 도구(&amp;F)</translation>
 <translation id="1571738973904005196">탭 보기: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />(게스트)</translation>
 <translation id="1573127087832371028">문제 설명</translation>
@@ -966,6 +967,7 @@
 <translation id="204914487372604757">바로가기 만들기</translation>
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2051669996101374349">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
+<translation id="2052353138844549871">관리되지 않는 프로필에서 Gemini Enterprise를 사용하는 것은 권장되지 않을 수 있습니다.</translation>
 <translation id="2052723746739622752">Gemini 고정 해제</translation>
 <translation id="2061366302742593739">표시할 항목이 없습니다.</translation>
 <translation id="2061589908388230480">공개 정보 유출로 인해 노출된 비밀번호를 Chromium에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경하도록 제안할 수 있습니다. <ph name="BEGIN_LINK" />자동화된 비밀번호 변경에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 권한 요청됨, Ctrl 키와 앞으로를 눌러 응답</translation>
 <translation id="2349610121459545414">이 사이트의 위치 액세스 계속 허용</translation>
 <translation id="2350133097354918058">새로고침 완료</translation>
+<translation id="2351165193188463938">현재 Gemini Enterprise로 탐색 중입니다</translation>
 <translation id="2352662711729498748">1MB 미만</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2353682139907904963">새 확장 프로그램을 툴바에 고정</translation>
@@ -1281,6 +1284,7 @@
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409709393952490731">휴대전화 또는 태블릿 사용</translation>
 <translation id="2410940059315936967">내가 방문한 사이트에서 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 다른 사이트에서 설정한 쿠키를 서드 파티 쿠키라고 합니다.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{탭 1개에 포커스됨}other{탭 #개에 포커스됨}}</translation>
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome 웹 스토어<ph name="END_LINK1" />의 확장 프로그램을 사용해 브라우저를 더욱 맞춤설정하세요.</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
@@ -1690,6 +1694,7 @@
 <translation id="2849926636739429924"><ph name="TAB_GROUP_NAME" /> 옵션 더보기</translation>
 <translation id="285033512555869047">닫힘</translation>
 <translation id="2851291081585704741">오프라인 상태입니다</translation>
+<translation id="2851527955600412545">조직에서 Chrome의 Gemini Enterprise 정책을 업데이트했습니다. 채팅 기록이 이전되지 않을 수 있습니다.</translation>
 <translation id="285237063405807022">(로드 중)</translation>
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
 <translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
@@ -2639,6 +2644,7 @@
 <translation id="3810593934879994994"><ph name="ORIGIN" />에서 다음 폴더의 파일을 볼 수 있습니다.</translation>
 <translation id="3810770279996899697">비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
 <translation id="3810973564298564668">관리</translation>
+<translation id="3811424142236602772"><ph name="DOMAIN" />에서 업무용으로 설정한 Gemini로 탐색하세요. 탐색 중에 탭을 컨텍스트로 공유하여 질문하고 조직의 파일 및 서비스를 바탕으로 한 대답을 받을 수 있습니다.</translation>
 <translation id="3812525830114410218">잘못된 인증서</translation>
 <translation id="3813296892522778813">원하는 자료를 찾지 못했다면 <ph name="BEGIN_LINK_CHROMIUM" />Chrome 도움말<ph name="END_LINK_CHROMIUM" />을 참조하세요.</translation>
 <translation id="3815509884387832993">읽기 모드 툴바에서 AI 재생 사용 설정 버튼을 사용하여 AI 재생으로 이 페이지를 팟캐스트처럼 들어 보세요</translation>
@@ -3234,6 +3240,7 @@
 <translation id="4500055235123625757">Gemini가 <ph name="LINK_BEGIN" />일부 웹사이트<ph name="LINK_END" />에서 사용자가 재생한 동영상 또는 오디오에 관한 질문에 답변할 수 있습니다.</translation>
 <translation id="4500647907053779331">선택사항을 <ph name="LANGUAGE" />로 번역(&amp;T)</translation>
 <translation id="4502477450742595012">탭을 마우스 오른쪽 버튼으로 클릭하고 '새 그룹에 탭 추가'를 선택합니다.</translation>
+<translation id="450300557121092531">기기별 탭</translation>
 <translation id="4503362512377701151">최근에 사용한 탭 그룹이 표시되어 중단한 부분부터 쉽게 다시 시작할 수 있습니다.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3286,6 +3293,7 @@
 <translation id="4562155266774382038">추천 닫기</translation>
 <translation id="4563883094055457792">분할 뷰 복원(&amp;E)</translation>
 <translation id="456449593072900590">종료 시 삭제</translation>
+<translation id="4564636746145660922">연결 상태를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4565465014351935093">새 탭 페이지에만 표시</translation>
 <translation id="4566417217121906555">마이크 음소거</translation>
@@ -3459,6 +3467,7 @@
 <translation id="475088594373173692">첫 번째 사용자</translation>
 <translation id="4751925628341802838">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4754590344707355551">확장 프로그램을 사용해 브라우저를 개선하세요</translation>
+<translation id="4754903312643763797">다른 데이터 개인 정보 보호 약관이 적용될 수 있습니다.</translation>
 <translation id="4756130875344525429"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
@@ -4141,6 +4150,7 @@
 <translation id="5509914365760201064">발행기관: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google에서 이미지 설명 가져오기</translation>
 <translation id="5512739112435045339">기기에서 여유 공간을 확보한 다음 다시 다운로드해 보세요</translation>
+<translation id="5513121759801003159">채팅 기록은 이전되지 않습니다.</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157"><ph name="EXTENSION_NAME" /> 옵션 더보기</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
@@ -4949,6 +4959,7 @@
 <translation id="6451861213630784801">로그아웃 상태임</translation>
 <translation id="6453191633103419909">탭/화면 프로젝션 품질</translation>
 <translation id="6453306703004115497"><ph name="LANGUAGE" />로 번역했습니다.</translation>
+<translation id="6454212815056355439">온디바이스 AI 검색</translation>
 <translation id="645433497989692531">이 기기에서 인터넷 사용 기록이 영구적으로 삭제됩니다. 데이터를 복구하려면 다음 계정으로 로그인하세요.</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455521402703088376">사용 안함 • 개발자가 이 확장 프로그램을 게시 취소했습니다.</translation>
@@ -5119,6 +5130,7 @@
 <translation id="663569763553406962">사이트를 읽거나 변경할 수 있는 확장 프로그램 보기</translation>
 <translation id="6636258750460740634">방문 기록</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">현재 스킬 기능이 사용 중지되어 있습니다. 시작하려면 Chrome 설정을 업데이트하세요.</translation>
 <translation id="6639554308659482635">SQLite 메모리</translation>
 <translation id="6640268266988685324">탭 열기</translation>
@@ -5252,6 +5264,7 @@
 <translation id="6785779729084003225"><ph name="FOCUS_TOGGLE_HOTKEY" /> 키를 사용하여 Chrome에서 Gemini를 여세요</translation>
 <translation id="67862343314499040">보라색</translation>
 <translation id="6786480815699355166">지원되는 실시간 자막 언어만 번역할 수 있습니다.</translation>
+<translation id="6786498102134843646">대답이 <ph name="DOMAIN" />에서 관리하는 파일 또는 서비스를 기반으로 제공되지 않습니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6786804673213172567">등급 3: 높음</translation>
 <translation id="6787531944787756058">사용자 이름(<ph name="USER_EMAIL" />)은 이 기기에만 저장됩니다. 세부정보 보기</translation>
@@ -5414,6 +5427,7 @@
 <translation id="6941514251635934269">이 문서에 관해 물어보세요</translation>
 <translation id="694168622559714949">관리자가 기본 언어를 설정했으며 수정할 수 없습니다.</translation>
 <translation id="6941953303876950920">Gemini로 계속 탐색하려면 다시 실행해야 합니다</translation>
+<translation id="6943803108751887058">닫으려면 Esc 키를 누르세요</translation>
 <translation id="6944854424004126054">복원 창</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="694592694773692225">이 페이지에서 리디렉션이 차단되었습니다.</translation>
@@ -5740,6 +5754,7 @@
 <translation id="7293774463163321848">관리 설정에서 Google 검색 기록, Gemini 기록, 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> 폴더 선택</translation>
 <translation id="7297228218361240128">조회한 페이지에서 Google 월렛에 정보 저장</translation>
+<translation id="7297535265731442945">Gemini Enterprise가 업데이트되었습니다</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
 <translation id="7298195798382681320">권장</translation>
 <translation id="7299515639584427954">지원되는 링크에 사용할 기본 앱을 변경하시겠습니까?</translation>
@@ -5761,6 +5776,7 @@
 <translation id="731827437403763009">AI 혁신</translation>
 <translation id="7319983568955948908">공유 중지</translation>
 <translation id="7321545336522791733">서버에 연결할 수 없음</translation>
+<translation id="7321838786611890851">Gemini와의 상호작용에 <ph name="DOMAIN" />에서 설정한 보호 조치가 적용되지 않을 수 있으며, 다른 데이터 개인 정보 보호 약관이 적용될 수 있습니다.</translation>
 <translation id="7322515217754205362">사이트 권한</translation>
 <translation id="7324020307732396723">언어 설정 열기</translation>
 <translation id="7325209047678309347">용지 걸림</translation>
@@ -6057,6 +6073,7 @@
 <translation id="7653354650639364202">{0,plural, =1{보안 시크릿 창 닫기}other{보안 시크릿 창(#개) 닫기}}</translation>
 <translation id="7654941827281939388">이 계정은 이미 이 컴퓨터에서 사용되고 있습니다.</translation>
 <translation id="7655411746932645568">사이트에서 직렬 포트에 연결하도록 요청할 수 있음</translation>
+<translation id="7656674791025857763"><ph name="ASSISTANT_NAME" />을(를) 사용하려면 로그인하세요</translation>
 <translation id="7657090467145778067">메모리 소폭 절약</translation>
 <translation id="7657218410916651670">로그인할 경우 <ph name="BEGIN_LINK_GOOGLE" />다른 활동 형식<ph name="END_LINK_GOOGLE" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="7658239707568436148">취소</translation>
@@ -6268,6 +6285,7 @@
 <translation id="7904492297081735975">북마크 관리자 열기(&amp;O)</translation>
 <translation id="7907312522152480478">다른 기기에서 탭을 가져오려면 본인 인증을 하고 방문 기록 및 탭을 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="7907837847548254634">포커스된 객체를 빠르게 강조 표시</translation>
+<translation id="7908205867885088429">설정을 기본값으로 복원하는 방법 자세히 알아보기</translation>
 <translation id="7908835530772972485">모든 창을 닫으면 데이터 삭제</translation>
 <translation id="7909324225945368569">프로필 이름 바꾸기</translation>
 <translation id="7909969815743704077">시크릿 모드에서 다운로드됨</translation>
@@ -6659,6 +6677,7 @@
 <translation id="8323317289166663449">컴퓨터 및 모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
 <translation id="8323518750352551353">방문 기록을 별도로 유지하시겠습니까?</translation>
 <translation id="8323744572398547859">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 사용 중인 모든 기기에서 비밀번호 등을 사용할 수도 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
+<translation id="8324035203198677529">조직에서 Chrome의 Gemini Enterprise를 사용 중지했습니다. Chrome의 Gemini를 계속 사용할 수 있지만, 더 이상 조직에서 관리하는 정보를 찾거나 참조하지 않습니다. 채팅 기록이 이전되지 않을 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
@@ -6865,6 +6884,7 @@
 <translation id="8551388862522347954">라이선스</translation>
 <translation id="8552102814346875916">'다음 사이트를 항상 활성 상태로 유지' 목록에 저장</translation>
 <translation id="8552947739661397736">작업 인계 받기(현재 Gemini가 제어 중)</translation>
+<translation id="8555042096950728024">드래그하거나 화살표 키를 사용하여 재정렬하세요</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 확장된 콘텐츠가 표시됩니다.</translation>
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="8557100046150195444">Touch ID로 인증하여 계속</translation>
@@ -6957,6 +6977,7 @@
 <translation id="8651806635673244884">탭을 마우스 오른쪽 버튼으로 클릭하고 '가로로 탭 표시'를 선택하여 탭을 다시 상단으로 이동할 수 있습니다.</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
+<translation id="8654872240409864765">조직에서 Chrome에 Gemini Enterprise를 설정했습니다. 탐색하면서 Gemini에게 무엇이든 물어보고 조직 전반의 파일 및 서비스를 바탕으로 하는 대답을 받아 보세요.</translation>
 <translation id="8657393004602556571">의견을 삭제하시겠습니까?</translation>
 <translation id="865857184419171576">자막 번역 언어</translation>
 <translation id="865936634714975126">URL에 쿼리 매개변수를 추가하여 페이지 로드 시 유형을 선택합니다. 예: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7120,6 +7141,7 @@
 <translation id="8813937837706331325">메모리 다소 절약</translation>
 <translation id="8815742860876889867">보안 시크릿 창에서 링크 열기(&amp;S)</translation>
 <translation id="881799181680267069">기타 숨기기</translation>
+<translation id="8820301999480837183"><ph name="GROUP_NAME" /> 그룹에 포커스됨</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="8821206216942230957">이 계정으로는 Chrome의 Gemini에 액세스할 수 없습니다</translation>
 <translation id="8823514049557262177">링크 텍스트 복사(&amp;X)</translation>
@@ -7159,6 +7181,7 @@
 <translation id="8863753581171631212">새 <ph name="APP" />에서 링크 열기</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="8864104359314908853">비밀번호가 저장됨</translation>
+<translation id="8865924457197342642">Gemini Enterprise를 더 이상 사용할 수 없음</translation>
 <translation id="8866424952450451412">다음에서 제공하는 맞춤 워크플로 관리</translation>
 <translation id="8867102760244540173">탭 검색...</translation>
 <translation id="8867568208303837180">보내는 중...</translation>
@@ -7371,6 +7394,7 @@
 <translation id="9096776523567481218">로컬에 설치되지 않음</translation>
 <translation id="9099383880226822604">열대 우림</translation>
 <translation id="9100765901046053179">고급 설정</translation>
+<translation id="9100928301185810363">이름이 지정되지 않은 그룹에 포커스됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">전송하려면 <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; 로컬 네트워크 &gt; Chrome에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="9107096627210171112">번역…</translation>

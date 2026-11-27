@@ -227,6 +227,7 @@
 <translation id="1621729191093924223">Mikrofon tələb edən xüsusiyyətlər işləməyəcək</translation>
 <translation id="1622717322707146952">"Google Calendar-a əlavə edin" və ya "Apple Calendar-a əlavə edin" seçin.</translation>
 <translation id="1629162218487290695">Kimliyinizi təsdiq edin…</translation>
+<translation id="1633084385573994059">Bu saytdan istifadə etməyin</translation>
 <translation id="1634520742547161889">AA/İİ</translation>
 <translation id="1636234353664774105">Naviqasiya funksiyası vasitəsilə təyinat yeri üzrə istiqamətləri növbəli şəkildə əldə edin</translation>
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
@@ -387,6 +388,7 @@
 <translation id="2102396546234652240">Saytlara mikrofonunuzdan istifadə etmək icazəsi verməyin</translation>
 <translation id="2104436223719117661">Populyar axtarışlar</translation>
 <translation id="21133533946938348">Tabı sancın</translation>
+<translation id="2113761902638026426">Gemini-ın <ph name="SITE_DOMAIN" /> saytına keçməsinə icazə verilsin?</translation>
 <translation id="2117650889962717098">Anonim rejimə keçməklə axtarışınızı gizli saxlayın</translation>
 <translation id="2119636449201577317">Burada açın:</translation>
 <translation id="2119962645034852864">Bəzi xidmətlər hesabınız üçün əlçatan deyil</translation>
@@ -768,6 +770,7 @@
 <translation id="3350976670663926380">Redaktələr yadda saxlanıldı</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hesab idarə edilir.</translation>
 <translation id="3365529507898144230">Fotoda yadda saxlayın</translation>
+<translation id="3371168305258344914">Gemini həssas məlumatlarınızın ola biləcəyi saytda əməliyyat yerinə yetirmək üzrədir</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
 <translation id="3378214228000661758">Bunun üçün parol yaradın</translation>
@@ -1511,6 +1514,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="567881659373499783">Versiya <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Google Hesabında parolları istifadə etmək və yadda saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="5684761169742812828">Bu parol internetdə verilənlərin pozulması nəticəsində ifşa olunub. İndi dəyişməyə vaxt yoxdursa, Google bu xəbərdarlığı sonra xatırlamaq üçün saxlamağı tövsiyə edir.</translation>
+<translation id="5691020463738411542">Güvənli baxış tərcihlərini cihazlar arasında sinxronlaşdırın</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> üçün Diskdə yadda saxlandı.</translation>
 <translation id="570209299585559496">Ayarlar, sonra isə kontent ayarlarında defolt sayt görünüşünü masaüstünə dəyişə bilərsiniz</translation>
 <translation id="5702108177581350218">İstifadəçi adı və parolun kopyasını paylaşdıqda ailə üzvü Google Parol Meneceri ilə onları daxil edə bilər.</translation>
@@ -1589,6 +1593,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5948605885471592910">Açdığınız hər tabı görün və idarə edin</translation>
 <translation id="5952641243319721872">Seçimdən imtina etmək istədiyinizə əminsiniz?</translation>
 <translation id="5956112131836209882">Tab qrupu tabı. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Tapşırıq başladın</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="5963694076845073027">Növbəti dəfə keçidləri burada açın</translation>
 <translation id="5963939892571022323">Vurğulamaya keçid yaratmaq olmur.</translation>
@@ -1809,6 +1814,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="656065428026159829">Daha çoxuna baxın</translation>
 <translation id="6565899972286925956">İstənilən şeyi yaradın</translation>
 <translation id="6571070086367343653">Kredit kartına düzəliş edin</translation>
+<translation id="6571502147204686607">Özünüzü təhlükəli saytlardan qoruyun</translation>
 <translation id="6574092468346088891">Təhlükəsizlik yoxlanışı üçün Bildirişləri aktiv edin</translation>
 <translation id="6579867704846662339">Digər tətbiqlərdən əldə edilən URL-ləri Anonim rejimdə aça bilərsiniz.</translation>
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>
@@ -2249,6 +2255,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7921559948846049514">Arxa fon üçün tema, rəng və ya daha çoxunu seçin</translation>
 <translation id="792357691529995513">Problem tapılmadı</translation>
 <translation id="7925108652071887026">Datanı avtomatik doldurun</translation>
+<translation id="7926290435065552539">Parollarınızı təhlükəsiz saxlayın</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>
 <translation id="792762900715361006">Foto və ya video çəkin</translation>
 <translation id="7927711904086083099">Seçilməyib</translation>
@@ -2667,6 +2674,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9144230693397287797">Ayarladığınız xatırladıcılar və digər cihazlardan olan tablar üçün bildirişlər alın</translation>
 <translation id="914781932147356857">Hamısını qeyd edin…</translation>
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
+<translation id="914964947703922647">Tapşırığı nəzərdən keçirin</translation>
 <translation id="9149866541089851383">Düzəliş edin...</translation>
 <translation id="9152637745605628097">Temalar və rənglər arasından seçim edin və ya şəkil yükləyin</translation>
 <translation id="9153159728062222866">Kopiyalama və Əlavə etməni ötürün</translation>

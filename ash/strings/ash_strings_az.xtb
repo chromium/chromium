@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Faylı seçib, <ph name="KEY" /> düyməsini basın</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Faylı açmaq olmur}other{Faylları açmaq olmur}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 digəri}other{+# digəri}}</translation>
 <translation id="1283126956823499975">Cihazı ayarlayarkən xəta oldu</translation>
 <translation id="1285992161347843613">Telefonun məkanını təyin edin</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> adlı yadda saxlanmış masa artıq mövcuddur</translation>
@@ -2189,6 +2190,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="6249795363855770621">"Tamamlanmış" kimi işarələnmədi. Onlayn olduqda yenidən cəhd edin.</translation>
 <translation id="625369703868467034">Şəbəkə Vəziyyəti</translation>
 <translation id="6254629735336163724">Horizontal formada kilidləndi</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ digər 1 keçid}other{digər +# keçid}}</translation>
 <translation id="6259776178973198997">WiFi Direct sahib məlumatını təzələyin</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivləşdirilir...</translation>

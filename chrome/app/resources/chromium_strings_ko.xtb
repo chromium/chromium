@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1006344083777662909">Google 검색과 이 탭 공유 중</translation>
 <translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="1029669172902658969">다시 실행하여 ChromiumOS 업데이트</translation>
 <translation id="1040916596585577953">Chromium에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
@@ -85,6 +86,7 @@
 <translation id="1880495786739455486">측면 패널에서 검색을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="1880677175115548835">텍스트 선택</translation>
 <translation id="188102464690227119">툴바에 있는 '측면 패널에서 검색' 버튼이 새 아이콘으로 단장했습니다. 이 아이콘을 클릭하면 측면 패널에서 검색을 사용해 탐색 중에도 질문할 수 있습니다.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - Google 검색과 이 탭 공유 중</translation>
 <translation id="1896836275755235458">Chromium에서 부드러운 스크롤 및 동영상 프레임 속도 같은 시각 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 업데이터 서비스</translation>
 <translation id="1929939181775079593">Chromium이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
@@ -104,6 +106,7 @@
 <translation id="2086476982681781442">사기성 파일이며 기기에 예기치 않은 변경사항이 적용될 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="208726765006323911">다음번에 Chromium iOS를 열면 <ph name="FEATURE_NAME" /> 기능을 사용해 보라는 메시지가 표시됩니다.</translation>
 <translation id="2099452623287920103">Google 계정에 저장된 비밀번호 및 기타 Chromium 데이터가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
+<translation id="2104346008417283366">내 Google 계정과 원래 연결되어 있으며 <ph name="DOMAIN" />에서 관리하지 않는 Gemini로 전환할 수 있습니다. 전환하려면 Chromium을 다시 실행해야 합니다.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2135919691573380097">이 사이트 신고</translation>
@@ -271,6 +274,7 @@
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="3945058413678539331">Chromium에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="3950481960271781644">모든 기기에서 저장된 정보 등을 사용하려면 Chromium에 로그인하세요</translation>
+<translation id="3956384805063254165">이 관리 브라우저는 <ph name="DOMAIN" />에서 업무용으로 설정한 Gemini를 사용할 수 있습니다. 조직의 파일 및 서비스를 바탕으로 정보를 찾고 대답을 제공할 수 있습니다. 전환하려면 Chromium을 다시 실행해야 합니다.</translation>
 <translation id="395904275706073188">보호된 페이지는 읽을 수 없습니다. 다른 페이지를 사용해 보세요.</translation>
 <translation id="3962647064319009959">Chromium이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
@@ -363,6 +367,7 @@
 <translation id="494490797786467921">클릭하여 Chromium 로그인 대화상자 닫기</translation>
 <translation id="4950660488495335294">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요</translation>
 <translation id="4992938037305302429">Chromium의 내 계정</translation>
+<translation id="5088350632679445418">Google 검색으로 새 대화목록 시작</translation>
 <translation id="5123973130450702873">Chromium에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="5141988424377517949">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
@@ -401,6 +406,7 @@
 <translation id="5473971139929175403">이 Linux 배포판에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다.</translation>
 <translation id="5475924890392386523">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Google 검색과 탭 공유 중지}other{Google 검색과 탭 #개 공유 중지}}</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium에서 PDF 열기</translation>
 <translation id="5557035028197464376">Chrome에서 검색이 툴바에 고정되었습니다.</translation>
@@ -411,8 +417,10 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5580770360767802657">Chromium을 기본 브라우저로 사용하고 고정하세요</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Google 검색과 탭 공유}other{Google 검색과 탭 #개 공유}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
+<translation id="5608863008645990586"><ph name="DOMAIN" />에서 관리하는 Gemini Enterprise로 전환</translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> 준비가 완료되었습니다. 지금 다시 실행하거나, 화면이 켜진 상태에서 <ph name="IDLE_DURATION" /> 동안 사용하지 않을 때 Chromium이 업데이트되도록 설정할 수 있습니다.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium 업데이트 출시}=1{Chromium 업데이트 출시}other{Chromium 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="5643865575100044307">Chromium 종료 시 기기에 있는 사이트 데이터를 항상 삭제</translation>
@@ -506,6 +514,7 @@
 <translation id="6455857529632101747">Chromium 프로필에 오신 것을 환영합니다</translation>
 <translation id="6460614424172581323">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 탭 그룹을 사용하라는 메시지가 표시됩니다.</translation>
 <translation id="6466344609055215035">Chromium에서 계정 삭제</translation>
+<translation id="6475125381371849386">Google 검색으로 새 대화목록 시작</translation>
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="6510925080656968729">Chromium 설치 제거</translation>
 <translation id="651535675648445253">Chromium에서 바로가기가 열립니다</translation>
@@ -520,6 +529,7 @@
 <translation id="6598877126913850652">Chromium 알림 설정으로 이동</translation>
 <translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Google 검색과 탭 공유}other{Google 검색과 탭 #개 공유}}</translation>
 <translation id="6637855549677695722">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 Chromium의 가장 강력한 안전 기능을 활성화하라는 메시지가 표시됩니다.</translation>
 <translation id="6637908313088374648">이제 Windows 시작 시 Chromium이 실행되므로 즉시 탐색을 시작할 수 있습니다. 설정에서 이 기능을 사용 중지할 수 있습니다</translation>
 <translation id="6644846457769259194">기기 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
@@ -534,6 +544,7 @@
 일부 기능을 사용할 수 없습니다. 다른 프로필 디렉터리를 지정하거나 Chromium의 새로운 버전을 사용하시기 바랍니다.</translation>
 <translation id="6729124504294600478">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chromium을 포함하세요</translation>
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
+<translation id="6737759643107005803"><ph name="DOMAIN" />에서 관리하지 않는 Gemini로 다시 전환</translation>
 <translation id="6742093177587589736">모든 기기에서 북마크 등을 사용하려면 Chromium에 로그인하세요. 로그인하면 이 북마크가 Google 계정에 저장됩니다.</translation>
 <translation id="674891594898436429">이 탭에서 활성 검색 닫기</translation>
 <translation id="6751374565094704799">Chromium의 V8 엔진으로 사이트 속도를 높이지만 Chromium이 공격에 약간 더 취약해집니다. 설정이 사용 설정되어 있습니다.</translation>
@@ -729,6 +740,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8556055872671007529">일부 Chromium 기능 및 확장 프로그램에는 바로가기가 제공됩니다. 다시 사용 설정할 수 있습니다</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Google 검색과 탭 공유 중지}other{Google 검색과 탭 #개 공유 중지}}</translation>
 <translation id="8576826849825683917">여러 조직에서 Chromium을 관리합니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>

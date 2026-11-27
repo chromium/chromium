@@ -75,6 +75,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1640672724030957280">Endirilir...</translation>
 <translation id="1651617469580841801">Google Linzadan istifadə etdiyiniz zaman səhifə başlığı, URL və kontent, o cümlədən PDF sənədləri Google-a göndərilir. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Linki Gizli Chrome Pəncərəsində açın</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Bu tabı Google Axtarış ilə paylaşırsınız</translation>
 <translation id="1682634494516646069">Google Chrome öz data direktoriyasını oxuya və yaza bilmir:  <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Ünvan zolağına və ya axtarış xanasına yazdığınız zaman Chrome təkliflər təqdim etmək üçün yazdıqlarınızı təşkilatın axtarış, Sİ və agent alətlərinə göndərir.</translation>
 <translation id="1698376642261615901">Google Chrome saytları və tətbiqləri ildırım sürətilə açan veb brauzerdir. Sürətlidir, stabildir və istifadə üçün rahatdır. Google Chrome daxilindəki virusdan və fişinqdən qorunma bacarığı ilə internetdə özünüzü tam təhlükəsiz hiss edin.</translation>
@@ -256,6 +257,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3380249972812870825">Gemini-ı Chrome-da açmaq üçün <ph name="GLOBAL_HOTKEY" /> düyməsinə basın</translation>
 <translation id="3392127217442962664">Chrome cihazınızda işləyən Sİ əlavə etdi. Saytlar və Chrome ondan aşağıdakı kimi funksiyalar üçün istifadə edə bilər:</translation>
 <translation id="3396977131400919238">Quraşdırma zamanı əməliyyat xətası baş verdi. Lütfən, Google Chrome'u endirin.</translation>
+<translation id="3404531968986217414">Google Axtarış ilə yeni mövzu başladın</translation>
 <translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
 <translation id="3438681572027105609">Parolları və s. datanı bütün cihazlarınızda əldə etmək üçün Chrome-a daxil olun</translation>
 <translation id="3450887623636316740">Bu fayl təhlükəli ola bilər<ph name="LINE_BREAK" />Parolu təqdim etsəniz, Chrome bu endirməni yoxlaya bilər. Fayl haqqında məlumat Google güvənli baxışa göndərilir, lakin fayl kontenti və parol cihazda qalır.</translation>
@@ -398,6 +400,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="5003967926796347400">"Google Parol Meneceri" üzərinə klikləyin</translation>
 <translation id="5043786843026425788">Chrome-da Google Linza ilə axtarış haqqında ətraflı məlumat əldə edin</translation>
 <translation id="504867494566807945">Chrome-da istənilən tətbiqdən linkləri açın. Asan giriş üçün o, işləmə panelinə bərkidilir.</translation>
+<translation id="507983337152787026">Google Axtarış ilə yeni mövzu başladın</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="5105120510934353742">Google Chrome güncəlləmələri əldə etmək üçün macOS 13 və ya yeni versiya tələb olunur. Bu kompüter macOS 12 versiyasından istifadə edir.</translation>
 <translation id="5114340746415930644">Chrome datasını hesabınızda (<ph name="USER_EMAIL" />) istifadə etmək və yadda saxlamaq üçün parol ifadəsini daxil edin</translation>
@@ -424,6 +427,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="524751727772074981">Chrome-da Gemini ilə istədiyinizi soruşun</translation>
 <translation id="5247617065091903691">Axtarış edərkən sual vermək üçün Google Axtarış yan panelini bərkidə bilərsiniz</translation>
 <translation id="5271833978500241046">Onları Chrome-da digər Gemini funksiyaları ilə birlikdə istifadə edin</translation>
+<translation id="528611299569739095">Bu idarə olunan brauzer <ph name="DOMAIN" /> tərəfindən iş üçün ayarlanmış Gemini-dan istifadə edə bilər. O, məlumat tapa və təşkilatın faylları və xidmətləri əsasında cavablar təqdim edə bilər. Keçid üçün Chrome-u yenidən başlatmaq lazımdır.</translation>
 <translation id="5320351714793324716">Kukilərə icazə versəniz, əvvəlcədən yükləmə zamanı Chrome onlardan istifadə edə bilər</translation>
 <translation id="5321325624576443340">Google Linza əlçatan deyil. Sonra cəhd edin.</translation>
 <translation id="5346389065299425353">Bir neçə tab, fayl və alət əlavə edərək axtarışı dərinləşdirin</translation>
@@ -446,7 +450,9 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5600352656975192682">İstənilən vaxt tez daxil olmaq üçün Chrome-u tapşırıqlar panelinə bərkidin</translation>
 <translation id="5602351063754773347">Chrome onu silməyinizi tövsiyə edir. <ph name="BEGIN_LINK" />Dəstəklənən artırmalar haqqında ətraflı məlumat əldə edin<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586"><ph name="DOMAIN" /> tərəfindən idarə olunan Gemini Enterprise-a keçin</translation>
 <translation id="5610759359710387751">Chrome'u özünüzküləşdirin</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Tabın Google Axtarış ilə paylaşımını ləğv edin}other{# tabın Google Axtarış ilə paylaşımını ləğv edin}}</translation>
 <translation id="5649156266046089790">Chrome profilləri ilə bütün Chrome elementlərinizi ayıra bilərsiniz. Dostlarınız və ailəniz üçün profillər yaradın, yaxud iş və əyləncə olaraq ayırın.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> təlükəli ola bilər, bu səbəbdən Chrome onu blok etdi.</translation>
 <translation id="566568153320186256">Chrome arxa fon fəaliyyətini, habelə rahat sürüşdürmə və video çərçivə səviyyələri kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Enerjiyə Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -540,6 +546,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}other{Chrome # dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}}</translation>
 <translation id="6418662306461808273">Mövcud Chrome profilinə keçirilsin?</translation>
 <translation id="6426623519983252346">Növbəti dəfə Chrome iOS-u açdığınız zaman <ph name="FEATURE_NAME" /> tətbiqini sınamaq üçün göstəriş görəcəksiniz.</translation>
+<translation id="6431496891888891615">Əvvəlcə Google Hesabınızla əlaqələndirilmiş və <ph name="DOMAIN" /> tərəfindən idarə olunmayan Gemini-a keçə bilərsiniz. Keçid üçün Chrome-u yenidən başlatmaq lazımdır.</translation>
 <translation id="6434035853014503219">Chrome-u defolt brauzer kimi seçdiyiniz üçün təşəkkür edirik!</translation>
 <translation id="6438015621983209660">Telefonda Chrome ilə qabaqcıl güvənli baxışı genişləndirin</translation>
 <translation id="6442774133615368941">Chrome iOS tətbiqində kamera ilə alış-veriş edin, tərcümə edin və gördüklərinizi müəyyənləşdirin</translation>
@@ -576,6 +583,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6712881677154121168">Endirmə xətası: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'u sürətli edin</translation>
 <translation id="6734827584173583205">Bu yaxınlarda daxil olmamısınız. Chrome sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="COUNT" /> icazə.</translation>
+<translation id="6737759643107005803"><ph name="DOMAIN" /> tərəfindən idarə olunmayan Gemini-a qayıdın</translation>
 <translation id="674891594898436429">Bu tabda aktiv axtarışı bağlayın</translation>
 <translation id="6750954913813541382">Orfoqrafik səhvləri düzəltmək üçün Chrome brauzerində yazdığınız mətni Google'a göndərir</translation>
 <translation id="6760235774835597023">Chrome-un V8 mühərriki ilə saytları sürətləndirir, lakin Chrome-un hücumlara qarşı müqavimətini bir qədər azaldır. Bu ayar aktivdir.</translation>
@@ -654,6 +662,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7481213027396403996">Chrome’un ən güclü güvənlik sistemini əldə edin</translation>
 <translation id="749228101751499733">Daxil olduğunuz müddətdə Chrome-da Google Hesabınızdan əldə edilən parolları və s. istifadə edə bilərsiniz. <ph name="SHORTCUT" /> Google xidmətləri ayarlarınızı dəyişə bilər.</translation>
 <translation id="7496017508659652909">Chrome səhifələri əvvəlcədən yükləyərək baxış və axtarışı sürətləndirir. <ph name="BEGIN_LINK" />Səhifələri əvvəlcədən yükləmək haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Bu tabı Google Axtarış ilə paylaşırsınız</translation>
 <translation id="7514258452813684157">Google Güncəlləyici Xidməti</translation>
 <translation id="7515191208480168435">Asan giriş üçün Google Linzanı bərkidə bilərsiniz</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -741,6 +750,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8286862437124483331">Google Chrome parolları göstərməyə cəhd edir. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="8291415872436043161">Chrome'u endirin</translation>
 <translation id="829923460755755423">Google Parol Menecerinə qısayol əlavə edin</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Tabı Google Axtarış ilə paylaşın}other{# tabı Google Axtarış ilə paylaşın}}</translation>
 <translation id="8313851650939857356">Başlatma xətası: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Uğurlu oldu! Artıq Google Axtarış paneli ilə axtarış edərkən asanlıqla sual verə bilərsiniz</translation>
 <translation id="8336463659890584292">Sayt öz səhifəsindəki keçidləri gizli olaraq əvvəlcədən yükləməyi tələb etdikdə, Chrome Google serverlərindən istifadə edir. Bu, kimliyinizi əvvəlcədən yüklənmiş saytdan gizlədir, lakin Google hansı saytların əvvəlcədən yükləndiyini öyrənir.</translation>
@@ -795,6 +805,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8712767363896337380">Güncəllənmək üzrədir! Güncəlləməni tamamlamaq üçün Chrome'u yenidən başladın.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> artıq daxil olub. Axtarışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. <ph name="DEVICE" /> cihazından oxu siyahınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="8718062187489036808">Chrome'dan çıxın</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Tabı Google Axtarış ilə paylaşın}other{# tabı Google Axtarış ilə paylaşın}}</translation>
 <translation id="873133009373065397">Google Chrome defolt brauzeri müəyyən edə və ya ayarlaya bilmir</translation>
 <translation id="8747073452963259673">axtarış sahəsinin aşağı sol küncü: <ph name="LEFT" />% sol, <ph name="BOTTOM" />% aşağı</translation>
 <translation id="8748735421235723888">Chrome deaktiv tabların yaddaşını boşaldır. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chrome-u sürətləndirir. Qayıtdığınız zaman deaktiv tablar avtomatik olaraq yenidən aktivləşir. <ph name="BEGIN_LINK" />Yaddaşa Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -846,6 +857,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google üzvlüyü.</translation>
 <translation id="922152298093051471">Chrome'u fərdiləşdirin</translation>
 <translation id="93760716455950538">ChromeOS Flex'i yenidən başladın</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Tabın Google Axtarış ilə paylaşımını ləğv edin}other{# tabın Google Axtarış ilə paylaşımını ləğv edin}}</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="983803489796659991">Yeniləmə serverində tətbiq heş datası olmadığı üçün quraşdırma alınmadı.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome profilləri arasında keçid edə bilər</translation>

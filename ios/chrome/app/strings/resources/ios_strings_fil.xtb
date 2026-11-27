@@ -227,6 +227,7 @@
 <translation id="1621729191093924223">Hindi gagana ang mga feature na nangangailangan ng mikropono</translation>
 <translation id="1622717322707146952">Piliin ang “Idagdag sa Google Calendar“ o “Idagdag sa Apple Calendar.“</translation>
 <translation id="1629162218487290695">I-verify na ikaw ito…</translation>
+<translation id="1633084385573994059">Huwag gamitin ang site na ito</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">Makakuha ng mga direksyon papunta sa iyong destinasyon nang may gabay sa bawat pagliko gamit ang feature para sa navigation</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
@@ -387,6 +388,7 @@
 <translation id="2102396546234652240">Huwag payagan ang mga site na gamitin ang iyong mikropono</translation>
 <translation id="2104436223719117661">Mga trending na paghahanap</translation>
 <translation id="21133533946938348">Pin Tab</translation>
+<translation id="2113761902638026426">Hayaang pumunta ang Gemini sa <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Panatilihing pribado ang iyong pag-browse sa pamamagitan ng paglipat sa Incognito mode</translation>
 <translation id="2119636449201577317">Buksan sa…</translation>
 <translation id="2119962645034852864">Hindi available ang ilang serbisyo para sa iyong account</translation>
@@ -768,6 +770,7 @@
 <translation id="3350976670663926380">Na-save ang mga pag-edit</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Pinapamahalaan ang account na ito.</translation>
 <translation id="3365529507898144230">I-save sa Photos</translation>
+<translation id="3371168305258344914">Gagawa ng aksyon ang Gemini sa site na posibleng may sensitibong impormasyon mo</translation>
 <translation id="3371831930909698441">Available ang pagsasalin. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="3377063233124932127">Nasa taas na ngayon ang iyong mga naka-save na bookmark, password, at higit pa.</translation>
 <translation id="3378214228000661758">Gumawa ng passkey para sa</translation>
@@ -1511,6 +1514,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="567881659373499783">Bersyon <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para magamit at ma-save ang mga password sa iyong Google Account, i-verify na ikaw ito.</translation>
 <translation id="5684761169742812828">Na-expose angpassword na ito sa isang paglabag sa data sa internet. Kung wala kang oras na palitan ito ngayon, inirerekomenda ng Google na panatilihin ang babalang ito para mapaalalahanan ang sarili mo sa ibang pagkakataon.</translation>
+<translation id="5691020463738411542">I-sync ang mga preference sa ligtas na pag-browse sa lahat ng device</translation>
 <translation id="5694848685995373177">Na-save sa Drive para sa <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Puwede mong baguhin ang default na view ng site sa desktop sa mga setting at pagkatapos ay mga setting ng content</translation>
 <translation id="5702108177581350218">Kapag nag-share ka ng kopya ng iyong username at password, puwedeng ilagay ng miyembro ng pamilya mo ang mga ito gamit ang Google Password Manager.</translation>
@@ -1589,6 +1593,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5948605885471592910">Tingnan at pamahalaan ang lahat ng nakabukas sa iyo</translation>
 <translation id="5952641243319721872">Sigurado ka bang gusto mong i-discard ang iyong pinili?</translation>
 <translation id="5956112131836209882">Tab na Grupo ng tab. <ph name="TAB_INDEX_IN_GROUP" /> sa <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Simulan ang gawain</translation>
 <translation id="595769230373966252">Maghanap gamit ang <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Dito magbukas ng mga link sa susunod</translation>
 <translation id="5963939892571022323">Hindi makagawa ng link sa highlight.</translation>
@@ -1809,6 +1814,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6565899972286925956">Gumawa ng kahit ano</translation>
 <translation id="6571070086367343653">I-edit ang credit card</translation>
+<translation id="6571502147204686607">Protektahan ang iyong sarili laban sa mga hindi ligtas na site</translation>
 <translation id="6574092468346088891">I-on ang mga notification para sa Pag-check sa Kaligtasan</translation>
 <translation id="6579867704846662339">Puwede mong piliing buksan sa Incognito ang mga papasok na URL mula sa iba pang app.</translation>
 <translation id="6585618849026997638">Mababalikan mo ang isang page na mahalaga sa iyo sa pamamagitan ng pagdaragdag ng bookmark</translation>
@@ -2249,6 +2255,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7921559948846049514">Pumili ng tema, kulay, o higit pa para sa iyong background</translation>
 <translation id="792357691529995513">Walang nakitang isyu</translation>
 <translation id="7925108652071887026">Mag-autofill ng data</translation>
+<translation id="7926290435065552539">Panatilihing ligtas ang iyong mga password</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>
 <translation id="792762900715361006">Kumuha ng Larawan o Video</translation>
 <translation id="7927711904086083099">Hindi napili</translation>
@@ -2668,6 +2675,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9144230693397287797">Makatanggap ng mga update para sa mga paalalang itatakda mo, at mga tab mula sa iba pang device</translation>
 <translation id="914781932147356857">Markahan lahat…</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
+<translation id="914964947703922647">Suriin ang gawain</translation>
 <translation id="9149866541089851383">I-edit...</translation>
 <translation id="9152637745605628097">Pumili mula sa mga tema, kulay, o mag-upload ng larawan</translation>
 <translation id="9153159728062222866">Laktawan ang Pagkopya at Pag-paste</translation>

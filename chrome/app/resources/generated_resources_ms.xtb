@@ -519,6 +519,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1570990174567554976">Folder penanda halaman '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="1571041387761170095">Tiada kata laluan lemah atau digunakan semula</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
+<translation id="1571371559291327711">&amp;Cari, edit dan pelbagai lagi alatan</translation>
 <translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tetamu)</translation>
 <translation id="1573127087832371028">Huraikan masalah</translation>
@@ -966,6 +967,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="204914487372604757">Cipta pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2051669996101374349">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini. Anda tidak boleh menukar tetapan ini kerana anda telah mendayakan Perlindungan Lanjutan.</translation>
+<translation id="2052353138844549871">Penggunaan Gemini Enterprise dengan profil tidak terurus mungkin tidak disyorkan</translation>
 <translation id="2052723746739622752">Nyahsematkan Gemini</translation>
 <translation id="2061366302742593739">Tiada apa-apa untuk ditunjukkan</translation>
 <translation id="2061589908388230480">Jika Chromium mendapati satu daripada kata laluan anda dalam pelanggaran data umum, Google Password Manager boleh mencadangkan untuk menukar kata laluan sekiranya anda telah log masuk. <ph name="BEGIN_LINK" />Maklumat lanjut tentang penukaran kata laluan automatik<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kebenaran diminta, tekan Ctrl + Maju untuk memberikan respons</translation>
 <translation id="2349610121459545414">Terus membenarkan tapak ini untuk mengakses lokasi anda</translation>
 <translation id="2350133097354918058">Dimuat semula</translation>
+<translation id="2351165193188463938">Kini anda menyemak imbas dengan Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon dibenarkan</translation>
 <translation id="2353682139907904963">Sematkan sambungan baharu pada Bar alat</translation>
@@ -1281,6 +1284,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2409709393952490731">Gunakan telefon atau tablet</translation>
 <translation id="2410940059315936967">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Kuki yang ditetapkan oleh laman lain ini dipanggil kuki pihak ketiga.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Memfokuskan 1 tab}other{Memfokuskan # tab}}</translation>
 <translation id="2413009156320833859">Sesuaikan lagi penyemak imbas anda dengan sambungan daripada <ph name="BEGIN_LINK1" />Gedung Web Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Teruskan menyemak imbas untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Gelap</translation>
@@ -1690,6 +1694,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2849926636739429924">Lagi pilihan untuk <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Tertutup</translation>
 <translation id="2851291081585704741">Anda di luar talian</translation>
+<translation id="2851527955600412545">Organisasi anda mengemaskinikan dasar mereka untuk Gemini Enterprise dalam Chrome. Sejarah sembang anda mungkin tidak dipindahkan.</translation>
 <translation id="285237063405807022">(memuatkan)</translation>
 <translation id="2853121255651601031">Kata Laluan Disimpan</translation>
 <translation id="2855243985454069333">Memadamkan sejarah daripada semua peranti yang disegerakkan</translation>
@@ -2639,6 +2644,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3810593934879994994"><ph name="ORIGIN" /> boleh melihat fail dalam folder berikut</translation>
 <translation id="3810770279996899697">Password Manager memerlukan akses kepada MacOS Keychain</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3811424142236602772">Semak imbas dengan Gemini, disediakan oleh <ph name="DOMAIN" /> untuk kerja. Kemukakan pertanyaan semasa anda menyemak imbas dengan berkongsi tab sebagai konteks dan dapatkan jawapan berdasarkan fail dan perkhidmatan organisasi anda.</translation>
 <translation id="3812525830114410218">Sijil tidak sah</translation>
 <translation id="3813296892522778813">Pergi ke <ph name="BEGIN_LINK_CHROMIUM" />bantuan Google Chrome<ph name="END_LINK_CHROMIUM" /> jika anda tidak menemui perkara yang dicari</translation>
 <translation id="3815509884387832993">Dengar halaman ini seperti audio siar dengan main balik AI menggunakan butang Hidupkan Main Balik AI dalam bar alat Mod membaca</translation>
@@ -3236,6 +3242,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4500055235123625757">Gemini boleh menjawab pertanyaan tentang video atau audio yang telah anda mainkan pada <ph name="LINK_BEGIN" />sesetengah laman web<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Terjemahkan pilihan kepada <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Klik kanan pada tab dan pilih "Tambahkan tab pada kumpulan baharu”</translation>
+<translation id="450300557121092531">Tab mengikut peranti</translation>
 <translation id="4503362512377701151">Anda melihat kumpulan tab yang anda gunakan baru-baru ini untuk membantu anda menyambung daripada tempat anda berhenti dengan mudah.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4562155266774382038">Ketepikan cadangan</translation>
 <translation id="4563883094055457792">P&amp;ulihkan paparan terpisah</translation>
 <translation id="456449593072900590">Padamkan ketika keluar</translation>
+<translation id="4564636746145660922">Semak sambungan anda, kemudian cuba lagi.</translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4565465014351935093">Hanya Tunjukkan pada Halaman Tab Baharu</translation>
 <translation id="4566417217121906555">Redamkan mikrofon</translation>
@@ -3461,6 +3469,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="475088594373173692">Pengguna pertama</translation>
 <translation id="4751925628341802838">Untuk mendapatkan sejarah anda daripada peranti anda yang lain, log masuk dan segerakkan sejarah serta tab anda kepada <ph name="EMAIL" />. Anda juga akan mendapat sambungan anda dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="4754590344707355551">Dayakan penyemak imbas anda dengan sambungan</translation>
+<translation id="4754903312643763797">Syarat privasi data yang berbeza mungkin dikenakan</translation>
 <translation id="4756130875344525429">Untuk mendapatkan sejarah anda daripada <ph name="DEVICE" />, log masuk dan segerakkan sejarah serta tab anda kepada <ph name="EMAIL" />. Anda juga akan mendapat maklumat anda yang disimpan dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="4756378406049221019">Berhenti/Muat Semula</translation>
 <translation id="4756388243121344051">&amp;Sejarah</translation>
@@ -4143,6 +4152,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5509914365760201064">Pengeluar: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Dapatkan Perihalan Imej daripada Google</translation>
 <translation id="5512739112435045339">Kosongkan ruang pada peranti anda. Kemudian, cuba muat turun sekali lagi</translation>
+<translation id="5513121759801003159">Sejarah sembang anda tidak akan dipindahkan</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Lihat lagi pilihan untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Adakah ini halaman utama yang anda jangkakan?</translation>
@@ -4951,6 +4961,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6451861213630784801">Anda dilog keluar</translation>
 <translation id="6453191633103419909">Kualiti Pemancaran Tab/Skrin</translation>
 <translation id="6453306703004115497">Diterjemahkan kepada <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Cari AI pada peranti</translation>
 <translation id="645433497989692531">Tindakan ini akan memadamkan data penyemakan imbas anda daripada peranti ini selama-lamanya. Untuk memulihkan data, log masuk sebagai</translation>
 <translation id="6455264371803474013">Di laman web tertentu</translation>
 <translation id="6455521402703088376">Mati • Sambungan ini dinyahterbitkan boleh pembangun</translation>
@@ -5121,6 +5132,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="663569763553406962">Lihat perkara yang sambungan boleh baca atau ubah pada laman</translation>
 <translation id="6636258750460740634">Sejarah</translation>
 <translation id="6636623428211296678">Terokai lebih banyak tetapan di bawah atau selesaikan sekarang</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Ciri Kemahiran dilumpuhkan pada masa ini. Kemas kinikan Tetapan Chrome anda untuk bermula.</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
 <translation id="6640268266988685324">Buka Tab</translation>
@@ -5254,6 +5266,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6785779729084003225">Gunakan <ph name="FOCUS_TOGGLE_HOTKEY" /> untuk membuka Gemini dalam Chrome</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
 <translation id="6786480815699355166">Hanya bahasa Sari Kata Langsung yang disokong boleh diterjemahkan</translation>
+<translation id="6786498102134843646">Respons tidak akan berasaskan fail atau perkhidmatan yang diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
 <translation id="6786804673213172567">Peringkat 3: TINGGI</translation>
 <translation id="6787531944787756058">nama pengguna <ph name="USER_EMAIL" /> disimpan pada peranti ini sahaja. Lihat butiran</translation>
@@ -5416,6 +5429,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6941514251635934269">Tanya tentang dokumen ini</translation>
 <translation id="694168622559714949">Pentadbir anda telah menetapkan bahasa lalai yang tidak boleh ditukar.</translation>
 <translation id="6941953303876950920">Pelancaran semula diperlukan untuk terus menyemak imbas dengan Gemini</translation>
+<translation id="6943803108751887058">Tekan Escape untuk tutup</translation>
 <translation id="6944854424004126054">Pulihkan tetingkap</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="694592694773692225">Ubah hala disekat pada halaman ini.</translation>
@@ -5742,6 +5756,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7293774463163321848">Sejarah carian, sejarah Gemini dan kata laluan boleh dipadamkan dalam tetapan pengurusan</translation>
 <translation id="7296503797589217366">Pilih <ph name="FOLDER_TITLE" /> folder</translation>
 <translation id="7297228218361240128">Simpan maklumat pada Google Wallet daripada halaman yang anda lihat</translation>
+<translation id="7297535265731442945">Gemini Enterprise telah dikemaskinikan</translation>
 <translation id="7297726121602187087">Hijau gelap</translation>
 <translation id="7298195798382681320">Disyorkan</translation>
 <translation id="7299515639584427954">Tukar apl lalai untuk pautan yang disokong?</translation>
@@ -5763,6 +5778,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="731827437403763009">Inovasi AI</translation>
 <translation id="7319983568955948908">Hentikan Perkongsian</translation>
 <translation id="7321545336522791733">Pelayan tidak dapat dihubungi</translation>
+<translation id="7321838786611890851">Interaksi anda dengan Gemini mungkin tidak mengandungi perlindungan yang disediakan oleh <ph name="DOMAIN" /> dan syarat privasi data yang berbeza mungkin dikenakan</translation>
 <translation id="7322515217754205362">Kebenaran Laman</translation>
 <translation id="7324020307732396723">Buka Tetapan Bahasa</translation>
 <translation id="7325209047678309347">Kertas tersekat</translation>
@@ -6059,6 +6075,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7653354650639364202">{0,plural, =1{Tutup Tetingkap terasing}other{Tutup Terasing (# tetingkap)}}</translation>
 <translation id="7654941827281939388">Akaun ini telah digunakan pada komputer ini.</translation>
 <translation id="7655411746932645568">Laman boleh meminta untuk menyambung kepada port bersiri</translation>
+<translation id="7656674791025857763">Log masuk untuk menggunakan <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Penjimatan kecil</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Bentuk aktiviti lain<ph name="END_LINK_GOOGLE" /> mungkin disimpan dalam Google Account anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.</translation>
 <translation id="7658239707568436148">Batal</translation>
@@ -6270,6 +6287,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="7904492297081735975">&amp;Buka pengurus penanda halaman</translation>
 <translation id="7907312522152480478">Untuk mendapatkan tab anda daripada peranti anda yang lain, sahkan identiti anda dan segerakkan sejarah serta tab anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="7907837847548254634">Tunjukkan sorotan pantas pada objek yang difokuskan</translation>
+<translation id="7908205867885088429">Ketahui cara memulihkan tetapan kepada lalai dengan lebih lanjut</translation>
 <translation id="7908835530772972485">Padamkan data apabila anda menutup semua tetingkap</translation>
 <translation id="7909324225945368569">Namakan semula profil anda</translation>
 <translation id="7909969815743704077">Dimuat turun dalam Inkognito</translation>
@@ -6661,6 +6679,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8323317289166663449">Baca dan ubah semua data anda pada komputer anda dan semua laman web</translation>
 <translation id="8323518750352551353">Asingkan Penyemakan Imbas?</translation>
 <translation id="8323744572398547859">Untuk mendapatkan tab anda daripada peranti anda yang lain, log masuk dan segerakkan sejarah. Anda juga akan mendapat kata laluan anda dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
+<translation id="8324035203198677529">Organisasi anda mematikan Gemini Enterprise dalam Chrome. Anda boleh terus menggunakan Gemini dalam Chrome tetapi Gemini tidak akan menemukan atau merujuk maklumat yang diurus oleh organisasi anda lagi. Sejarah sembang anda mungkin tidak dipindahkan.</translation>
 <translation id="8325413836429495820">Tidak dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantaian sijil</translation>
 <translation id="8327386430364625757">Fon matematik</translation>
@@ -6867,6 +6886,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8551388862522347954">Lesen</translation>
 <translation id="8552102814346875916">Simpan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="8552947739661397736">Ambil alih tugasan, Gemini sedang mengawal</translation>
+<translation id="8555042096950728024">Seret atau gunakan kekunci anak panah untuk menyusun semula</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - kandungan dikembangkan dipaparkan</translation>
 <translation id="8557022314818157177">Teruskan menyentuh kunci keselamatan anda sehingga cap jari anda disimpan</translation>
 <translation id="8557100046150195444">Touch ID untuk meneruskan proses</translation>
@@ -6959,6 +6979,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8651806635673244884">Anda boleh mengalihkan tab anda kembali kepada bahagian atas dengan mengklik kanan mana-mana tab dan memilih “Tunjukkan tab secara mendatar”</translation>
 <translation id="8652400352452647993">Ralat sambungan pek</translation>
 <translation id="8654151524613148204">Fail terlalu besar untuk dikendalikan oleh komputer. Maaf.</translation>
+<translation id="8654872240409864765">Organisasi anda menyediakan Gemini Enterprise dalam Chrome. Tanya Gemini tentang apa-apa sahaja semasa menyemak imbas dan dapatkan jawapan berdasarkan fail dan perkhidmatan merentas organisasi anda.</translation>
 <translation id="8657393004602556571">Adakah anda ingin membuang maklum balas?</translation>
 <translation id="865857184419171576">Terjemahkan sari kata kepada</translation>
 <translation id="865936634714975126">Tambahkan parameter pertanyaan dalam URL untuk memilih jenis semasa pemuatan halaman. Contoh: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7122,6 +7143,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8813937837706331325">Penjimatan sederhana</translation>
 <translation id="8815742860876889867">Buka pautan dalam tetingkap T&amp;erasing</translation>
 <translation id="881799181680267069">Sembunyikan Yang Lain</translation>
+<translation id="8820301999480837183">Memfokuskan kumpulan <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8821206216942230957">Akaun anda tidak mendapat akses kepada Gemini dalam Chrome</translation>
 <translation id="8823514049557262177">Salin te&amp;ks pautan</translation>
@@ -7161,6 +7183,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8863753581171631212">Buka pautan dalam <ph name="APP" /> baharu</translation>
 <translation id="8864055848767439877">Berkongsi <ph name="TAB_NAME" /> ke <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Kata laluan anda telah disimpan</translation>
+<translation id="8865924457197342642">Gemini Enterprise tidak tersedia lagi</translation>
 <translation id="8866424952450451412">Urus aliran kerja tersuai anda yang dikuasakan oleh</translation>
 <translation id="8867102760244540173">Cari tab...</translation>
 <translation id="8867568208303837180">Menghantar...</translation>
@@ -7373,6 +7396,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9096776523567481218">tidak dipasang secara setempat</translation>
 <translation id="9099383880226822604">Hutan hujan</translation>
 <translation id="9100765901046053179">Tetapan terperinci</translation>
+<translation id="9100928301185810363">Memfokuskan kumpulan tidak bernama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Untuk menghantar, beri Chrome akses dalam: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rangkaian Setempat &gt; Chrome</translation>
 <translation id="9103868373786083162">Tekan untuk kembali, menu konteks untuk melihat sejarah</translation>
 <translation id="9107096627210171112">Terjemah...</translation>

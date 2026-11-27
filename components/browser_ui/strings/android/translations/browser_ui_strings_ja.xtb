@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">許可 • おおよそ</translation>
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="1333965224356556482">サイトに位置情報へのアクセスを許可しない</translation>
+<translation id="1352358548984352201">タブや画像などをコンテキストとして追加して、検索の精度を高められます</translation>
 <translation id="1369915414381695676">サイト <ph name="SITE_NAME" /> を追加しました</translation>
 <translation id="1371239764779356792">サイトによるデバイスへのデータ保存を許可します</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">フォント Sans Serif</translation>
 <translation id="1861244985839668297">オンにすると、サイトは HID デバイスの使用を要求できます。オフにすると、サイトは HID デバイスを使用できません。</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
+<translation id="1871213582159462941">ページや写真について質問する</translation>
 <translation id="1881806992065048905">新しいタブページの外観のボトムシート</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1906181697255754968">通常、作業内容を自動的に保存したりするため、サイトがデバイスのファイルやフォルダにアクセスする場合があります</translation>

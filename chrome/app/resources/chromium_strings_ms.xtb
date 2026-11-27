@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1006344083777662909">Anda berkongsi tab ini dengan Search</translation>
 <translation id="1026101648481255140">Sambung Semula Pemasangan</translation>
 <translation id="1029669172902658969">Lancarkan semula untuk mengemas kini &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium mengesyorkan anda agar menyemak sambungan ini</translation>
@@ -84,6 +85,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1880495786739455486">Anda boleh membuka semula Search dalam panel sisi untuk mengemukakan pertanyaan semasa menyemak imbas</translation>
 <translation id="1880677175115548835">Pilih teks</translation>
 <translation id="188102464690227119">Butang "Search dalam panel sisi" pada bar alat mengandungi ikon baharu. Klik ikon tersebut untuk mengemukakan pertanyaan semasa menyemak imbas dengan Search dalam panel sisi.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - Anda berkongsi tab ini dengan Search</translation>
 <translation id="1896836275755235458">Chromium menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Perkhidmatan Pengemas Kini Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak responsif. Lancarkan semula sekarang?</translation>
@@ -103,6 +105,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2086476982681781442">Chromium menyekat muat turun ini kerana fail mengelirukan dan mungkin membuat perubahan tidak dijangka pada peranti anda</translation>
 <translation id="208726765006323911">Anda akan melihat gesaan untuk mencuba <ph name="FEATURE_NAME" /> apabila anda membuka Chromium iOS selepas ini.</translation>
 <translation id="2099452623287920103">Kata laluan anda dan data Chromium lain yang anda simpan dalam Google Account anda akan dialih keluar daripada peranti ini. Untuk menggunakan maklumat itu semula dalam Chromium, log masuk semula.</translation>
+<translation id="2104346008417283366">Anda boleh beralih kepada Gemini yang dikaitkan dengan Google Account anda pada asalnya dan tidak diurus oleh <ph name="DOMAIN" />. Penukaran memerlukan pelancaran semula Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}other{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}}</translation>
 <translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
 <translation id="2135919691573380097">Laporkan laman ini</translation>
@@ -270,6 +273,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3941890832296813527">Ralat pemasangan: Nama fail pemasang tidak sah atau tidak disokong.</translation>
 <translation id="3945058413678539331">Chromium cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="3950481960271781644">Untuk mendapatkan maklumat anda yang disimpan dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium</translation>
+<translation id="3956384805063254165">Penyemak imbas terurus ini boleh menggunakan Gemini yang disediakan untuk kerja oleh <ph name="DOMAIN" />. Gemini boleh menemukan maklumat dan memberikan jawapan berdasarkan fail dan perkhidmatan organisasi. Penukaran memerlukan pelancaran semula Chromium.</translation>
 <translation id="395904275706073188">Halaman yang dilindungi tidak dapat dibaca. Cuba halaman yang lain.</translation>
 <translation id="3962647064319009959">Ketahui tentang cara Chromium memastikan anda selamat</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
@@ -362,6 +366,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="494490797786467921">Klik untuk menutup dialog log masuk Chromium</translation>
 <translation id="4950660488495335294">Dengan profil Chromium, anda dapat mengasingkan semua bahan Chromium anda. Buat profil untuk rakan dan keluarga atau asingkan pekerjaan daripada keseronokan.</translation>
 <translation id="4992938037305302429">Akaun Anda dalam Chromium</translation>
+<translation id="5088350632679445418">Mulakan Urutan Baharu dengan Search</translation>
 <translation id="5123973130450702873">Chromium memerlukan kebenaran untuk menjejaki tangan anda</translation>
 <translation id="5141988424377517949">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
@@ -400,6 +405,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5473971139929175403">Chromium mungkin tidak akan berfungsi dengan betul kerana tidak disokong pada edaran Linux ini lagi</translation>
 <translation id="5475924890392386523">Chromium menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="5496810170689441661">Chromium cuba mengedit kata laluan. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Nyahkongsi tab dengan Search}other{Nyahkongsi # tab dengan Search}}</translation>
 <translation id="5524890928877629608">penjuru atas sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
 <translation id="5557035028197464376">Search dalam Chrome disematkan pada bar alat!</translation>
@@ -410,8 +416,10 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat maklumat anda yang disimpan dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Ralat permulaan: sila jalankan pemasang sebagai pengguna biasa, bukan sebagai pentadbir.</translation>
 <translation id="5580770360767802657">Gunakan Chromium secara lalai dan sematkan Chromium</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Kongsi Tab dengan Search}other{Kongsi # Tab dengan Search}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemaskinian. Tetingkap Terasing anda tidak akan dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemaskinian. # tetingkap Terasing anda tidak akan dibuka semula.}}</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
+<translation id="5608863008645990586">Beralih kepada Gemini Enterprise yang diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> sudah sedia. Anda boleh melancarkan semula sekarang atau menetapkan Chromium untuk dikemaskinikan apabila skrin anda kekal dihidupkan dan tidak digunakan selepas ini selama <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Kemas kini Chromium tersedia}=1{Kemas kini Chromium tersedia}other{Kemas kini Chromium telah tersedia selama # hari}}</translation>
 <translation id="5643865575100044307">Sentiasa padamkan data laman daripada peranti anda apabila anda menutup Chromium</translation>
@@ -505,6 +513,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6455857529632101747">Selamat datang ke profil Chromium</translation>
 <translation id="6460614424172581323">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk menggunakan kumpulan tab.</translation>
 <translation id="6466344609055215035">Alih keluar Akaun daripada Chromium</translation>
+<translation id="6475125381371849386">Mulakan urutan baharu dengan Search</translation>
 <translation id="6475912303565314141">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
 <translation id="6510925080656968729">Nyahpasang Chromium</translation>
 <translation id="651535675648445253">Pintasan dibuka dalam Chromium</translation>
@@ -519,6 +528,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6598877126913850652">Pergi ke tetapan pemberitahuan Chromium</translation>
 <translation id="6600016381025017075">Cari apa-apa item pada halaman ini</translation>
 <translation id="6613594504749178791">Perubahan anda akan dilaksanakan apabila anda melancarkan semula Chromium pada masa hadapan.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Kongsi tab dengan Search}other{Kongsi # tab dengan Search}}</translation>
 <translation id="6637855549677695722">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk mendapatkan ciri keselamatan terbaik Chromium.</translation>
 <translation id="6637908313088374648">Kini Chromium dilancarkan apabila Windows dimulakan supaya anda boleh mula menyemak imbas dengan serta-merta. Anda boleh mematikan pilihan ini dalam tetapan.</translation>
 <translation id="6644846457769259194">Mengemas kini peranti anda (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -533,6 +543,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbeza atau gunakan versi Chromium yang lebih baharu.</translation>
 <translation id="6729124504294600478">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chromium dalam Aktiviti Web &amp; Apl dan perkhidmatan Google terpaut</translation>
 <translation id="6734291798041940871">Chromium telah dipasang untuk semua pengguna pada komputer anda.</translation>
+<translation id="6737759643107005803">Beralih kembali kepada Gemini yang tidak diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="6742093177587589736">Untuk mendapatkan penanda halaman anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium. Penanda halaman ini akan disimpan dalam Google Account anda selepas anda log masuk.</translation>
 <translation id="674891594898436429">Ketepikan carian aktif dalam tab ini</translation>
 <translation id="6751374565094704799">Mempercepat laman dengan enjin V8 Chromium tetapi Chromium menjadi kurang tahan sedikit terhadap serangan. Tetapan ini dihidupkan.</translation>
@@ -728,6 +739,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8556055872671007529">Sesetengah ciri dan sambungan Chromium disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>
 <translation id="8556420416730706394">Anda boleh menyematkan Carian Imej untuk akses mudah; klik butang Semat pada bahagian atas panel sisi</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Nyahkongsi Tab dengan Search}other{Nyahkongsi # Tab dengan Search}}</translation>
 <translation id="8576826849825683917">Berbilang organisasi mengurus Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>

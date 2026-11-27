@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="1132789342529761192">Hindi inirerekomenda ang pag-upload</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, may check, item sa menu. Piliin para i-off ang pag-share</translation>
 <translation id="11370190534773372">Napunan ang mga detalye ng card</translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142713751288681188">Uri ng papel</translation>
@@ -928,6 +929,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2526062290525841862">Para patakbuhin ang app na ito, i-enable ulit ang Developer Mode ng Naka-isolate na Web App</translation>
 <translation id="2526280916094749336">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Nasa harap ng iyong card ang CVC mo. Ito ang 4 na digit na code sa kanang bahagi sa itaas ng numero ng iyong card.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, may check</translation>
 <translation id="2529899080962247600">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang field na ito. Babalewalain ang lahat ng entry na lalampas dito.</translation>
 <translation id="2530042584066815841">Lock at paggamit ng mouse</translation>
 <translation id="2535585790302968248">Magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
@@ -1012,6 +1014,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2666092431469916601">Tuktok</translation>
 <translation id="2666117266261740852">Isara ang iba pang tab o app</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, item sa menu. Piliin para i-on ang pag-share</translation>
 <translation id="2672201172023654893">Hindi pinapamahalaan ang iyong browser.</translation>
 <translation id="2674170444375937751">Sigurado ka bang nais mong tanggalin ang mga pahinang ito mula sa iyong history?</translation>
 <translation id="2675716371350192683">Hindi gagamitin ang iyong content para pahusayin ang AI. Posibleng baguhin ng iyong organisasyon ang mga setting na ito anumang oras.</translation>
@@ -1993,6 +1996,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Na-update na ang <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">Magbayad kaagad nang hindi nag-a-upload ng QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Naka-sync ang cookies para sa site na ito sa iyong mga ChromeOS device. Para pamahalaan kung ano ang sini-sync mo, pumunta sa <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> source <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Lumampas ang pangalan ng shortcut sa maximum na pinapayagang haba na <ph name="MAX_LENGTH" /> (na) character.</translation>
@@ -2202,6 +2206,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4682496302933121474">Isalin ang page?</translation>
 <translation id="468314109939257734">Tingnan ang iyong virtual na numero ng card</translation>
 <translation id="4686942373615810936">Kakagawa lang</translation>
+<translation id="468826602575103388">Piliin para i-off ang pag-share</translation>
 <translation id="4690205240253392065">Pumili ng provider ng pay later</translation>
 <translation id="469028408546145398">Button na Isara ang mga Incognito window, i-activate para maisara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>
 <translation id="4692623383562244444">Mga search engine</translation>
@@ -4176,6 +4181,7 @@ Mga karagdagang detalye:
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943397946612013052">Na-block na pag-download</translation>
 <translation id="7943893128817522649">Puwedeng hilinging awtomatikong mag-download ng maraming file</translation>
+<translation id="7947144323420971076">Piliin para i-on ang pag-share</translation>
 <translation id="7947285636476623132">Tingnan ang iyong taon ng pag-expire at subukan ulit</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para matuto pa tungkol sa mga feature ng Chrome</translation>
 <translation id="7947964969544524438">Secure na i-save ang Known Traveler Number</translation>
@@ -4303,6 +4309,7 @@ Mga karagdagang detalye:
 <translation id="8172809706700703589">Gumawa ng listahan ng dadalhin para sa biyahe ko</translation>
 <translation id="8174047975335711832">Impormasyon ng device</translation>
 <translation id="8175053171643471349">Pamahalaan ang mga loyalty card</translation>
+<translation id="817536628389054635">Napunan ang impormasyon sa pakikipag-ugnayan: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Maaari mong baguhin ang gawing ito sa mga setting.</translation>
 <translation id="8176440868214972690">Nagpadala ang administrator ng device na ito ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="818254048113802060">{0,plural, =1{Na-block ang <ph name="FILE_NAME" /> dahil sa content}one{<ph name="FILE_COUNT" /> file ang na-block dahil sa content}other{<ph name="FILE_COUNT" /> na file ang na-block dahil sa content}}</translation>

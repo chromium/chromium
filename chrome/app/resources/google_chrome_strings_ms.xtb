@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Memuat turun...</translation>
 <translation id="1651617469580841801">Apabila anda menggunakan Google Lens, tajuk halaman, URL dan kandungan, termasuk PDF, akan dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Buka Pautan dalam Tetingkap Inko&amp;gnito Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> - Anda berkongsi tab ini dengan Google Search</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca atau menulis pada direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome akan menghantar perkara yang anda taip kepada alatan carian, AI dan ejen organisasi anda untuk mendapatkan cadangan.</translation>
 <translation id="1698376642261615901">Google Chrome ialah penyemak imbas web yang menjalankan halaman web dan aplikasi dengan kelajuan kilat. Ia pantas, stabil dan mudah digunakan. Semak imbas web dengan lebih selamat dengan perlindungan daripada perisian berniat jahat dan pancingan data yang terbina dalam Google Chrome.</translation>
@@ -254,6 +255,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="3380249972812870825">Untuk membuka Gemini dalam Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome menambahkan AI yang dijalankan pada peranti anda. Laman dan Chrome boleh menggunakan model ini untuk ciri seperti:</translation>
 <translation id="3396977131400919238">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Google Chrome semula.</translation>
+<translation id="3404531968986217414">Mulakan urutan baharu dengan Google Search</translation>
 <translation id="3428747202529429621">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk</translation>
 <translation id="3438681572027105609">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="3450887623636316740">Fail ini mungkin berbahaya<ph name="LINE_BREAK" />Chrome boleh menyemak muat turun ini untuk anda jika anda memberikan kata laluan. Maklumat tentang fail itu akan dihantar kepada Penyemakan Imbas Selamat Google tetapi kandungan dan kata laluan fail akan kekal pada peranti anda.</translation>
@@ -396,6 +398,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5003967926796347400">Klik “Google Password Manager”</translation>
 <translation id="5043786843026425788">Ketahui perihal pencarian menggunakan Google Lens dalam Chrome dengan lebih lanjut</translation>
 <translation id="504867494566807945">Buka pautan dalam Chrome daripada sebarang apl. Selain itu, untuk akses mudah, sematkan Chrome pada bar tugas anda.</translation>
+<translation id="507983337152787026">Mulakan Urutan Baharu dengan Google Search</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. Terdapat tetingkap Inkognito atau Terasing yang dibuka. Tetingkap tersebut tidak akan dibuka semula selepas anda melancarkan semula penyemak imbas.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. Terdapat # tetingkap Inkognito dan Terasing yang dibuka merentas profil. Tetingkap tersebut tidak akan dibuka semula selepas anda melancarkan semula penyemak imbas.}}</translation>
 <translation id="5105120510934353742">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 13 atau versi lebih baharu. Komputer ini menggunakan macOS 12.</translation>
 <translation id="5114340746415930644">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="USER_EMAIL" /></translation>
@@ -420,6 +423,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="524751727772074981">Tanya apa-apa sahaja, di tempat anda berada, dengan Gemini dalam Chrome</translation>
 <translation id="5247617065091903691">Anda boleh menyematkan panel sisi Google Search untuk mengemukakan pertanyaan semasa anda menyemak imbas</translation>
 <translation id="5271833978500241046">Gunakan ciri ini bersama ciri Gemini yang lain dalam Chrome</translation>
+<translation id="528611299569739095">Penyemak imbas terurus ini boleh menggunakan Gemini yang disediakan untuk kerja oleh <ph name="DOMAIN" />. Gemini boleh menemukan maklumat dan memberikan jawapan berdasarkan fail dan perkhidmatan organisasi. Penukaran memerlukan pelancaran semula Chrome.</translation>
 <translation id="5320351714793324716">Jika anda membenarkan kuki, Chrome boleh menggunakan kuki tersebut semasa prapemuatan</translation>
 <translation id="5321325624576443340">Google Lens tidak tersedia. Cuba sebentar lagi.</translation>
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
@@ -442,7 +446,9 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5600352656975192682">Sematkan Chrome pada bar tugas anda untuk menemukan Chromium dengan pantas pada bila-bila masa</translation>
 <translation id="5602351063754773347">Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang sambungan yang disokong<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Beralih kepada Gemini Enterprise yang diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="5610759359710387751">Jadikan Chrome Milik Anda</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Nyahkongsi tab dengan Google Search}other{Nyahkongsi # tab dengan Google Search}}</translation>
 <translation id="5649156266046089790">Dengan profil Chrome, anda dapat mengasingkan semua bahan Chrome anda. Buat profil untuk rakan dan keluarga atau asingkan pekerjaan daripada keseronokan.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, jadi Chrome telah menyekat fail itu.</translation>
 <translation id="566568153320186256">Chrome menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
@@ -536,6 +542,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
 <translation id="6426623519983252346">Anda akan melihat gesaan untuk mencuba <ph name="FEATURE_NAME" /> apabila anda membuka Chrome iOS selepas ini.</translation>
+<translation id="6431496891888891615">Anda boleh beralih kepada Gemini yang dikaitkan dengan Google Account anda pada asalnya dan tidak diurus oleh <ph name="DOMAIN" />. Penukaran memerlukan pelancaran semula Chrome.</translation>
 <translation id="6434035853014503219">Terima kasih kerana memilih Chrome sebagai penyemak imbas lalai anda!</translation>
 <translation id="6438015621983209660">Lanjutkan Penyemakan Imbas Selamat Dipertingkat dengan Chrome pada telefon anda</translation>
 <translation id="6442774133615368941">Beli-belah, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda pada apl Chrome iOS</translation>
@@ -572,6 +579,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6712881677154121168">Ralat muat turun: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Jadikan Chrome lebih pantas</translation>
 <translation id="6734827584173583205">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="COUNT" /> lagi.</translation>
+<translation id="6737759643107005803">Beralih kembali kepada Gemini yang tidak diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="674891594898436429">Ketepikan carian aktif dalam tab ini</translation>
 <translation id="6750954913813541382">Untuk membetulkan kesalahan ejaan, Chrome akan menghantar teks yang anda taip dalam penyemak imbas kepada Google</translation>
 <translation id="6760235774835597023">Mempercepat laman dengan enjin V8 Chrome tetapi Chrome menjadi kurang tahan sedikit terhadap serangan. Tetapan ini dihidupkan.</translation>
@@ -650,6 +658,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7481213027396403996">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="749228101751499733">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. <ph name="SHORTCUT" /> boleh menukar tetapan perkhidmatan Google anda.</translation>
 <translation id="7496017508659652909">Chrome mempramuatkan halaman yang menjadikan penyemakan imbas dan carian lebih pantas. <ph name="BEGIN_LINK" />Ketahui halaman pramuat dengan lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Anda berkongsi tab ini dengan Google Search</translation>
 <translation id="7514258452813684157">Perkhidmatan Pengemas Kini Google</translation>
 <translation id="7515191208480168435">Anda boleh menyematkan Google Lens untuk akses yang mudah</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -737,6 +746,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="8286862437124483331">Google Chrome cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="8291415872436043161">Muat turun Chrome</translation>
 <translation id="829923460755755423">Tambahkan pintasan untuk Google Password Manager</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Kongsi Tab dengan Google Search}other{Kongsi # Tab dengan Google Search}}</translation>
 <translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Berjaya! Kini anda boleh mengemukakan pertanyaan dengan mudah semasa anda menyemak imbas dengan panel Google Search</translation>
 <translation id="8336463659890584292">Apabila laman meminta prapemuatan pautan secara peribadi pada halaman mereka, Chrome menggunakan pelayan Google. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat, tetapi Google mengetahui laman yang dipramuat.</translation>
@@ -791,6 +801,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="8712767363896337380">Kemas kini hampir selesai! Lancarkan semula Chrome untuk menyelesaikan kemas kini.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> sudah log masuk. Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chrome dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapat senarai bacaan anda dan pelbagai lagi daripada <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Log Keluar daripada Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Kongsi tab dengan Google Search}other{Kongsi # tab dengan Google Search}}</translation>
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menetapkan penyemak imbas lalai</translation>
 <translation id="8747073452963259673">penjuru bawah sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome mengosongkan memori daripada tab yang tidak aktif. Langkah ini memberi tab aktif dan apl lain lebih banyak sumber komputer dan memastikan Chrome pantas. Tab anda yang tidak aktif menjadi aktif semula secara automatik apabila anda kembali kepada tab tersebut. <ph name="BEGIN_LINK" />Ketahui Penjimat Memori dengan lebih lanjut<ph name="END_LINK" /></translation>
@@ -842,6 +853,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Keahlian Google.</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulakan semula Chrome OS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Nyahkongsi Tab dengan Google Search}other{Nyahkongsi # Tab dengan Google Search}}</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="983803489796659991">Pemasangan gagal akibat pelayan kemaskinian tidak mengandungi sebarang data cincang untuk aplikasi.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> boleh digunakan untuk beralih antara profil Chrome</translation>

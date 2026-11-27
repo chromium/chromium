@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Kopyalanmış Şəkil</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Tam ekrandan çıxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="1132789342529761192">Yükləmək tövsiyə edilmir</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, işarələnib, menyu elementi. Paylaşımı deaktiv etmək üçün seçin</translation>
 <translation id="11370190534773372">Kart detalları dolduruldu</translation>
 <translation id="1138458427267715730">Veb-saytlarda qiymət düşəndə bildiriş alın</translation>
 <translation id="1142713751288681188">Kağız növü</translation>
@@ -928,6 +929,7 @@
 <translation id="2526062290525841862">Bu tətbiqi işə salmaq üçün Təcrid Edilmiş Veb Tətbiq üzrə Developer Rejimini yenidən aktiv edin</translation>
 <translation id="2526280916094749336">Yadda saxlanmış ünvanları Google məhsullarında istifadə edə bilərsiniz. Bu ünvan Google Hesabında (<ph name="ACCOUNT" />) yadda saxlanacaq.</translation>
 <translation id="2527451058878391043">CVC kartın ön hissəsindədir. Bu, kart nömrəsinin yuxarı sağ tərəfindəki 4 rəqəmli koddur.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, işarələnib</translation>
 <translation id="2529899080962247600">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Bundan sonrakı daxiletmələr nəzərə alınmayacaq.</translation>
 <translation id="2530042584066815841">Maus kilidi və istifadəsi</translation>
 <translation id="2535585790302968248">Gizli baxış üçün yeni Anonim tab açın</translation>
@@ -1012,6 +1014,7 @@
 <translation id="2666092431469916601">Yuxarı</translation>
 <translation id="2666117266261740852">Digər tab və ya tətbiqləri bağlayın</translation>
 <translation id="266935134738038806">Sayta daxil olun</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, menyu elementi. Paylaşımı aktiv etmək üçün seçin</translation>
 <translation id="2672201172023654893">Brauzeriniz idarə edilmir.</translation>
 <translation id="2674170444375937751">Siz tarixi bu pages silmək üçün əminsinizmi?</translation>
 <translation id="2675716371350192683">Kontentiniz Sİ-ni təkmilləşdirmək üçün istifadə edilməyəcək. Təşkilatınız bu ayarları istənilən vaxt dəyişə bilər.</translation>
@@ -1989,6 +1992,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> güncəlləndi</translation>
 <translation id="4298148761711700950">QR yükləmədən dərhal ödəyin</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Bu sayt üçün kukilər ChromeOS cihazlarınızda sinxronlaşdırılır. Sinxronlaşdırdıqlarınızı idarə etmək üçün <ph name="SYNC_SETTINGS" /> bölməsinə keçin.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> üzrə mənbə <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Qısayolun adı icazə verilən maksimum <ph name="MAX_LENGTH" /> simvol uzunluğunu keçir.</translation>
@@ -2198,6 +2202,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4682496302933121474">Səhifə tərcümə edilsin?</translation>
 <translation id="468314109939257734">Virtual kart nömrənizə baxın</translation>
 <translation id="4686942373615810936">İndicə yaradıldı</translation>
+<translation id="468826602575103388">Paylaşımı deaktiv etmək üçün seçin</translation>
 <translation id="4690205240253392065">Sonra ödəmə provayderi seçin</translation>
 <translation id="469028408546145398">"Anonim pəncərələri bağlayın" düyməsi, aktivləşdirərək bütün açıq anonim pəncərələri bağlayın</translation>
 <translation id="4692623383562244444">Axtarış Sistemləri</translation>
@@ -4171,6 +4176,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7943397946612013052">Endirmə bloklanıb</translation>
 <translation id="7943893128817522649">Saytlar çoxsaylı faylları avtomatik endirmək üçün icazə istəyə bilər</translation>
+<translation id="7947144323420971076">Paylaşımı aktiv etmək üçün seçin</translation>
 <translation id="7947285636476623132">Bitmə ilini yoxlayın və yenidən cəhd edin</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7947964969544524438">Bilinən səyahətçi nömrəsini təhlükəsiz şəkildə yadda saxlayın</translation>
@@ -4298,6 +4304,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8172809706700703589">Səyahətim üçün qablaşdırma siyahısı yarat</translation>
 <translation id="8174047975335711832">Cihaz haqqında məlumat</translation>
 <translation id="8175053171643471349">Loyallıq kartlarını idarə edin</translation>
+<translation id="817536628389054635">Kontakt məlumatı dolduruldu: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Daxil olduğunuza görə Chrome kartları Google Hesabında yadda saxlamağı təklif edir. Bunu ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="8176440868214972690">Bu cihazın administratoru aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
 <translation id="818254048113802060">{0,plural, =1{Kontentə görə <ph name="FILE_NAME" /> bloklandı}other{Kontentə görə <ph name="FILE_COUNT" /> fayl bloklandı}}</translation>

@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Piliin ang file, at pagkatapos ay pindutin ang <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Hindi mabuksan ang file}one{Hindi mabuksan ang mga file}other{Hindi mabuksan ang mga file}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 pa}one{+# pa}other{+# pa}}</translation>
 <translation id="1283126956823499975">Nagkaproblema sa pag-set up ng device</translation>
 <translation id="1285992161347843613">Hanapin ang telepono</translation>
 <translation id="1287002645302686982">Mayroon nang naka-save na desk na may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -2191,6 +2192,7 @@ Walang nakakonektang device.</translation>
 <translation id="6249795363855770621">Hindi mamarkahang tapos na. Subukan ulit kapag online.</translation>
 <translation id="625369703868467034">Kalagayan ng Network</translation>
 <translation id="6254629735336163724">Naka-lock sa horizontal</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 pang link}one{+# pang link}other{+# pang link}}</translation>
 <translation id="6259776178973198997">I-refresh ang Impormasyon ng Mga Direktang May-ari ng WiFi</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ina-activate...</translation>

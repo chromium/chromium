@@ -210,6 +210,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1820408774134375111">Bottom sheet sa pag-sign in</translation>
 <translation id="1824902652744048041">I-tap ang I-delete ang data mula sa pag-browse</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
+<translation id="1831587114257679402">Ginawa para sa kaligtasan para makapag-browse ka nang may kumpiyansa</translation>
 <translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="1845958458910716240">Para protektahan ang iyong data, hayaan ang Chrome na alisin ang mga pahintulot sa mga site na hindi mo binisita kamakailan</translation>
 <translation id="1851551847729706116">Shine-share ang <ph name="TAB_NAME" /> sa tab na ito</translation>
@@ -2086,6 +2087,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="886968456388055613">I-filter ayon sa kung sino ang nag-browse</translation>
 <translation id="8872506776304248286">Buksan sa app</translation>
+<translation id="8876112961028111440">Mag-sign in para makuha ang iyong mga bookmark, password, impormasyon sa Autofill, at higit pa sa lahat ng device mo.</translation>
 <translation id="8880275451109933094">Dalawang page na view</translation>
 <translation id="8890668505403261809">Maghanap sa iyong mga tab na Incognito</translation>
 <translation id="8892234476517513962">Naka-sign in ka na</translation>
