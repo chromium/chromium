@@ -42,6 +42,7 @@ constexpr net::NetworkTrafficAnnotationTag kCertTrafficAnnotation =
             "certificate is available in memory or on disk."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
+          static_content: true
           internal {
             contacts {
               email: "georgeseb@google.com"

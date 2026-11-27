@@ -478,7 +478,7 @@ Refer to README.md for content description and update process.
  <item id="webrtc_rtc_transport" added_in_milestone="142" content_hash_code="0456b8fc" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.cc" />
  <item id="email_verification" added_in_milestone="143" content_hash_code="028efd71" os_list="linux,windows,android,chromeos" file_path="content/browser/webid/delegation/email_verifier_network_request_manager.cc" />
  <item id="amount_extraction_model_execution" added_in_milestone="144" content_hash_code="075681fc" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/remote_model_execution_common.cc" />
- <item id="private_ai_get_token" added_in_milestone="144" content_hash_code="007f254e" os_list="linux,windows,chromeos,android" file_path="components/private_ai/phosphor/config_http.cc" />
+ <item id="private_ai_get_token" added_in_milestone="144" content_hash_code="001d963d" os_list="linux,windows,chromeos,android" file_path="components/private_ai/phosphor/config_http.cc" />
  <item id="metrics_report_private_metrics" added_in_milestone="144" content_hash_code="0811746a" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="scam_detection_model_execution" added_in_milestone="145" content_hash_code="00530fb3" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/remote_model_execution_common.cc" />
  <item id="sync_device_statistics_metrics" added_in_milestone="145" content_hash_code="06d02833" os_list="linux,windows,android,chromeos" file_path="components/sync/service/device_statistics_request_impl.cc" />
@@ -551,8 +551,8 @@ Refer to README.md for content description and update process.
  <item id="network_hints_preconnect" added_in_milestone="132" content_hash_code="034f1524" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/network_hints_handler_impl.cc" />
  <item id="proxy_config_linux_resolver" added_in_milestone="157" content_hash_code="031b836f" os_list="linux" file_path="net/proxy_resolution/linux/linux_system_proxy_resolution_request.cc" />
  <item id="cryptauth_cmtg_device_keys" added_in_milestone="157" content_hash_code="05dfe7f9" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.cc" />
- <item id="private_ai_cert_fetch" added_in_milestone="157" content_hash_code="06d0631f" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_certificate_downloader.cc" />
- <item id="private_ai_tls_client" added_in_milestone="158" content_hash_code="06ded3c7" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_websocket_client.cc" />
+ <item id="private_ai_cert_fetch" added_in_milestone="157" content_hash_code="017a837b" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_certificate_downloader.cc" />
+ <item id="private_ai_tls_client" added_in_milestone="158" content_hash_code="02381319" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_websocket_client.cc" />
  <item id="actor_file_upload_tool" added_in_milestone="159" content_hash_code="07969238" os_list="linux,windows,android,chromeos" file_path="chrome/browser/actor/tools/file_upload_tool.cc" />
  <item id="context_hub_memory_bank_image_fetch" added_in_milestone="157" content_hash_code="00b233f1" os_list="linux,windows,android,chromeos" file_path="chrome/browser/context_hub/context_hub_service.cc" />
  <item id="android_connectivity_detector" added_in_milestone="159" content_hash_code="03cb7560" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java" />

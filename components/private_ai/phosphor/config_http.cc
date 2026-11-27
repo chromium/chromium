@@ -43,6 +43,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
       data:
         "Sign-in OAuth Token"
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "phosphor-pa.googleapis.com"
       internal {
         contacts {
           email: "dullweber@chromium.org"
