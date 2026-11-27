@@ -388,6 +388,7 @@ void WindowTreeHostManager::Shutdown() {
   }
   CHECK(primary_rwc);
 
+  window_tree_hosts_.clear();
   Shell::SetRootWindowForNewWindows(nullptr);
   for (auto* rwc : to_delete)
     delete rwc;
