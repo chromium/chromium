@@ -278,7 +278,7 @@ public class VoiceRecognitionHandler {
         AutocompleteInput input =
                 new AutocompleteInput(OmniboxFocusReason.SEARCH_QUERY)
                         .setUserText(query)
-                        .setSelection(TextSelection.SELECT_ALL)
+                        .setSelection(TextSelection.SELECT_END)
                         .setRequestType(requestType);
         mOmniboxStub.beginInput(input);
     }
