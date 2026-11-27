@@ -1,0 +1,16 @@
+Tests that uncaught promise rejections happened in workers are logged with stack traces.
+Uncaught (in promise) Error: err1
+runPromisesInWorker at .../inspector-protocol/resources/worker-with-unhandled-promises.js:1:17
+onmessage at .../inspector-protocol/resources/worker-with-unhandled-promises.js:22:2
+--Worker.postMessage--
+startWorker at console-uncaught-promise-in-worker.js:5:13
+--setTimeout--
+(anonymous) at console-uncaught-promise-in-worker.js:1:4
+Uncaught (in promise) Error: err2
+runPromisesInWorker at .../inspector-protocol/resources/worker-with-unhandled-promises.js:18:9
+onmessage at .../inspector-protocol/resources/worker-with-unhandled-promises.js:22:2
+--Worker.postMessage--
+startWorker at console-uncaught-promise-in-worker.js:5:13
+--setTimeout--
+(anonymous) at console-uncaught-promise-in-worker.js:1:4
+
