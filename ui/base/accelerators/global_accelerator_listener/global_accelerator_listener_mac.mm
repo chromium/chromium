@@ -115,8 +115,9 @@ void GlobalAcceleratorListenerMac::StopListening() {
 void GlobalAcceleratorListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   // This hot key should be registered.
-  CHECK(id_accelerators_.find(hot_key_id.id) != id_accelerators_.end(),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/590419055): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(id_accelerators_.find(hot_key_id.id) != id_accelerators_.end());
   // Look up the accelerator based on this hot key ID.
   const ui::Accelerator& accelerator = id_accelerators_[hot_key_id.id];
   NotifyKeyPressed(accelerator);
