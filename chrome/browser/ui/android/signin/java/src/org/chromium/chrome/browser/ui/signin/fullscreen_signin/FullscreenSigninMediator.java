@@ -43,7 +43,6 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -90,8 +89,6 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     private FullscreenSigninState mState = new FullscreenSigninState();
     // Created once native is ready. Provides the account list and the selected account's data.
     private @Nullable ProfileDataCache mProfileDataCache;
-    // Set with the cache.
-    private @Nullable IdentityManager mIdentityManager;
     // Events dispatched while another event is being handled, in order.
     private final ArrayDeque<FullscreenSigninEvent> mPendingEvents = new ArrayDeque<>();
     private boolean mIsDispatching;
@@ -267,7 +264,6 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                         assertNonNull(
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(getOriginalProfile()));
-                mIdentityManager = identityManager;
                 ProfileDataCache profileDataCache =
                         ProfileDataCache.createWithDefaultImageSize(mContext, identityManager);
                 mProfileDataCache = profileDataCache;
@@ -326,22 +322,17 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     }
 
     /**
-     * Returns the account IDs, or null if the accounts haven't finished loading.
+     * Returns the filtered account IDs from {@link ProfileDataCache}, or null if the accounts
+     * haven't finished loading.
      *
-     * <p>Accounts are read only from IdentityManager. This assumes
-     * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS is enabled (so {@link ProfileDataCache} also reads
-     * from IdentityManager), which must be the default before this mediator launches.
+     * <p>Assumes MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS is enabled, which must be the default
+     * before this mediator launches.
      */
     private @Nullable List<CoreAccountId> getAccountIdsIfLoaded() {
-        if (!assertNonNull(mProfileDataCache).getAccounts().isFulfilled()) return null;
-        IdentityManager identityManager = assertNonNull(mIdentityManager);
-        // As in ProfileDataCache, a failed load counts as no accounts.
-        if (identityManager.getRefreshTokensLoadingState() != RefreshTokensLoadingState.SUCCEEDED) {
-            return List.of();
-        }
+        ProfileDataCache profileDataCache = assertNonNull(mProfileDataCache);
+        if (!profileDataCache.getAccounts().isFulfilled()) return null;
         List<CoreAccountId> accountIds = new ArrayList<>();
-        for (AccountInfo account :
-                identityManager.getExtendedAccountInfoForAccountsWithRefreshToken()) {
+        for (AccountInfo account : profileDataCache.getFilteredAccountInfoIfFulfilledOrEmpty()) {
             accountIds.add(account.getId());
         }
         return accountIds;

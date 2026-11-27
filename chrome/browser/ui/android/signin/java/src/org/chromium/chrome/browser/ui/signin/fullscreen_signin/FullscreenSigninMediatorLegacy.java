@@ -254,6 +254,7 @@ class FullscreenSigninMediatorLegacy
         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
         mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
         mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
+        refreshAccountsIfLoaded();
         logPromoShownFunnelEvent(/* isBackPress= */ true);
     }
 
@@ -330,7 +331,7 @@ class FullscreenSigninMediatorLegacy
         // before showing the UI. This is necessary to override the previously selected account
         // in case updateAccount is called before the initial load completion.
         AccountPreviewPreference accountPreference = null;
-        if (mConfig.selectedAccountEmail == null
+        if (getPreselectedAccountEmail() == null
                 && mPendingSelectedAccountEmail == null
                 && mAddedAccount == null) {
             if (!accounts.isEmpty()) {
@@ -522,7 +523,9 @@ class FullscreenSigninMediatorLegacy
                 return;
             }
         }
-        mDelegate.addAccount(mConfig.selectedAccountEmail);
+        String preselectedAccountEmail = getPreselectedAccountEmail();
+        if (preselectedAccountEmail == null) return;
+        mDelegate.addAccount(preselectedAccountEmail);
     }
 
     @Override
@@ -542,7 +545,7 @@ class FullscreenSigninMediatorLegacy
 
     @Override
     public void onAddAccountCanceled() {
-        if (mConfig.selectedAccountEmail == null) {
+        if (getPreselectedAccountEmail() == null) {
             return;
         }
         mDelegate.abortFlow();
@@ -626,7 +629,7 @@ class FullscreenSigninMediatorLegacy
         // "Add account to device" was clicked in the account picker.
         SigninMetricsUtils.logSigninFunnelEvent(
                 mAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED);
-        mDelegate.addAccount(mConfig.selectedAccountEmail);
+        mDelegate.addAccount(getPreselectedAccountEmail());
     }
 
     /** Implements {@link UMADialogCoordinator.Listener} */
@@ -680,7 +683,7 @@ class FullscreenSigninMediatorLegacy
             // Without an account, the button starts the add account flow instead of signing in.
             SigninMetricsUtils.logSigninFunnelEvent(
                     mAccessPoint, SigninFunnelEvent.ADD_ACCOUNT_CLICKED);
-            mDelegate.addAccount(mConfig.selectedAccountEmail);
+            mDelegate.addAccount(getPreselectedAccountEmail());
             return;
         }
 
@@ -848,6 +851,7 @@ class FullscreenSigninMediatorLegacy
                 mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
                 mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
                 mModel.set(FullscreenSigninProperties.PROFILE_PICTURE, null);
+                refreshAccountsIfLoaded();
             }
         };
     }
@@ -991,11 +995,29 @@ class FullscreenSigninMediatorLegacy
         }
     }
 
+    /** Applies the account list updates ignored while signing in, see {@link #updateAccounts}. */
+    private void refreshAccountsIfLoaded() {
+        if (mContinueButtonProfileDataCache != null && areAccountsLoaded()) {
+            updateAccounts(getAccounts());
+        }
+    }
+
     private void updateAccounts(List<AccountInfo> accounts) {
+        if (isContinueOrDismissClicked()) {
+            // Keep the account being signed in, even if it is hidden meanwhile, e.g. because it was
+            // signed in to another profile.
+            return;
+        }
         @Nullable AccountInfo pendingSelectedAccount =
                 mPendingSelectedAccountEmail == null
                         ? null
                         : AccountUtils.findAccountByEmail(accounts, mPendingSelectedAccountEmail);
+        if (pendingSelectedAccount == null
+                && mPendingSelectedAccountEmail != null
+                && isAccountHiddenFromAccountList(mPendingSelectedAccountEmail)) {
+            // The account won't appear in the list. Fall back to the default account.
+            mPendingSelectedAccountEmail = null;
+        }
         if (pendingSelectedAccount != null) {
             if (mAddedAccount != null
                     && TextUtils.equals(mAddedAccount.getEmail(), mPendingSelectedAccountEmail)) {
@@ -1117,6 +1139,30 @@ class FullscreenSigninMediatorLegacy
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
     }
 
+    /**
+     * Returns the email of the account requested by the config, or null if there is none or if it
+     * is on the device but hidden from the account list, e.g. signed in to another profile.
+     */
+    private @Nullable String getPreselectedAccountEmail() {
+        String email = mConfig.selectedAccountEmail;
+        return email == null || isAccountHiddenFromAccountList(email) ? null : email;
+    }
+
+    private boolean isAccountHiddenFromAccountList(String email) {
+        if (mContinueButtonProfileDataCache == null || !shouldUseIdentityManagerForAccounts()) {
+            return false;
+        }
+        var accountsPromise = mContinueButtonProfileDataCache.getAccounts();
+        if (!accountsPromise.isFulfilled()) return false;
+        @Nullable AccountInfo account =
+                getIdentityManager().findExtendedAccountInfoByEmailAddress(email);
+        if (account == null) return false;
+        for (DisplayableProfileData profileData : accountsPromise.getResult()) {
+            if (profileData.getAccountId().equals(account.getId())) return false;
+        }
+        return true;
+    }
+
     private boolean shouldUseIdentityManagerForAccounts() {
         assert mContinueButtonProfileDataCache != null;
         return SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
@@ -1144,7 +1190,8 @@ class FullscreenSigninMediatorLegacy
     private List<AccountInfo> getAccounts() {
         assert areAccountsLoaded();
         if (shouldUseIdentityManagerForAccounts()) {
-            return getIdentityManager().getExtendedAccountInfoForAccountsWithRefreshToken();
+            return assertNonNull(mContinueButtonProfileDataCache)
+                    .getFilteredAccountInfoIfFulfilledOrEmpty();
         }
         return mAccountManagerFacade.getAccounts().getResult();
     }

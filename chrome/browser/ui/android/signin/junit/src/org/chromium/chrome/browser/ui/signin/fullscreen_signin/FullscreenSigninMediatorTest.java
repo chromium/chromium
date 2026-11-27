@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -54,12 +55,17 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -87,7 +93,9 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -95,6 +103,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Unit tests for {@link FullscreenSigninMediator} and {@link FullscreenSigninMediatorLegacy}.
@@ -144,6 +153,8 @@ public class FullscreenSigninMediatorTest {
     private OneshotSupplierImpl<Boolean> mPolicyLoadListener = new OneshotSupplierImpl<>();
     private OneshotSupplierImpl<Boolean> mChildAccountStatusSupplier = new OneshotSupplierImpl<>();
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
+    private final FakeProfileAttributesStorage mProfileAttributesStorage =
+            new FakeProfileAttributesStorage();
     private final boolean mIsIdentityManagerSourceOfAccounts;
     private final boolean mIsStateMachineEnabled;
 
@@ -171,6 +182,7 @@ public class FullscreenSigninMediatorTest {
                 mIsIdentityManagerSourceOfAccounts);
         FeatureOverrides.overrideFlag(
                 SigninFeatures.FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE, mIsStateMachineEnabled);
+        ProfileAttributesStorage.setInstanceForTesting(mProfileAttributesStorage);
 
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
@@ -769,6 +781,149 @@ public class FullscreenSigninMediatorTest {
     }
 
     @Test
+    public void testPreselectedAccountNotOnDevice_addsAccount() {
+        assumeFalse(mIsStateMachineEnabled);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        showSigninScreen(TestAccounts.ACCOUNT2);
+
+        verify(mDelegateMock).addAccount(TestAccounts.ACCOUNT2.getEmail());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testPreselectedAccountSignedInToOtherProfile_isIgnored() {
+        assumeLegacyMediatorWithIdentityManager();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT2.getId());
+
+        showSigninScreen(TestAccounts.ACCOUNT2);
+
+        // The default account is selected and the account isn't added again.
+        verify(mDelegateMock, never()).addAccount(any());
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
+        // "Add account" in the account picker isn't prefilled with the account.
+        ((FullscreenSigninMediatorLegacy) mMediator).addAccount();
+        mMediator.onAddAccountCanceled();
+        verify(mDelegateMock).addAccount(null);
+        verify(mDelegateMock, never()).abortFlow();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testPreselectedAccountSignedInToOtherProfile_selectsPreferredAccount() {
+        assumeLegacyMediatorWithIdentityManager();
+        FeatureOverrides.enable(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        when(mDelegateMock.canUsePreferredAccount()).thenReturn(true);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForSignin())
+                .thenReturn(
+                        new AccountPreviewPreference(
+                                TestAccounts.ACCOUNT2.getGaiaId(),
+                                new int[] {},
+                                DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED));
+
+        showSigninScreen(TestAccounts.TEST_ACCOUNT_NO_NAME);
+
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountOfOtherProfileIsNotSelectedByDefault() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT1.getId());
+
+        showSigninScreen(/* preselectedAccount= */ null);
+
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountsSignedInToOtherProfilesAreHiddenLive() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        showSigninScreen(/* preselectedAccount= */ null);
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
+
+        // The selected account is hidden: the default account is selected instead.
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT1.getId());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
+
+        // All accounts are hidden.
+        setPrimaryAccountsOfOtherProfiles(
+                TestAccounts.ACCOUNT1.getId(), TestAccounts.ACCOUNT2.getId());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNoAccountIsDisplayed();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testSelectedAccountSignedInToOtherProfileDuringSignin_refreshesOnAbort() {
+        assumeLegacyMediatorWithIdentityManager();
+        // Skip the account management check, so that sign-in is requested directly.
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        // With a custom logo, sign-in starts after a delay instead of an animation.
+        mLogoId = R.drawable.ic_domain;
+        showSigninScreen(/* preselectedAccount= */ null);
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT1.getId());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // The mediator doesn't switch accounts mid-sign-in; SigninManager aborts it instead, and
+        // the screen refreshes to the remaining account once aborted.
+        verify(mSigninManagerMock)
+                .signin(eq(TestAccounts.ACCOUNT1), anyInt(), mSignInCallbackCaptor.capture());
+        mSignInCallbackCaptor.getValue().onSignInAborted();
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testSelectedAccountSignedInToOtherProfileDuringSignin_refreshesOnReset() {
+        assumeLegacyMediatorWithIdentityManager();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        showSigninScreen(/* preselectedAccount= */ null);
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT1.getId());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
+
+        mMediator.reset();
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testOnlyAccountPreselectedAndSignedInToOtherProfile_addsAccountWithoutEmail() {
+        assumeLegacyMediatorWithIdentityManager();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setPrimaryAccountsOfOtherProfiles(TestAccounts.ACCOUNT1.getId());
+        showSigninScreen(TestAccounts.ACCOUNT1);
+        assertNoAccountIsDisplayed();
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        mMediator.onAddAccountCanceled();
+
+        verify(mDelegateMock).addAccount(null);
+        verify(mDelegateMock, never()).abortFlow();
+    }
+
+    @Test
     public void testSigninFunnel_accountPickerDismissed() {
         assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
@@ -1062,6 +1217,31 @@ public class FullscreenSigninMediatorTest {
                 context.getString(R.string.fre_welcome),
                 mModel.get(FullscreenSigninProperties.TITLE_STRING));
         assertNull(mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+    }
+
+    /**
+     * Skips tests of account-selection behaviors not yet implemented in the state-machine mediator,
+     * and the legacy AccountManagerFacade path where filtering doesn't apply.
+     */
+    private void assumeLegacyMediatorWithIdentityManager() {
+        assumeFalse(mIsStateMachineEnabled);
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+    }
+
+    /**
+     * Shows the sign-in screen with sign-in supported.
+     *
+     * @param preselectedAccount the account requested by the config, or null for none.
+     */
+    private void showSigninScreen(AccountInfo preselectedAccount) {
+        setUpSigninSupported(true);
+        mSelectedAccountEmail = preselectedAccount == null ? null : preselectedAccount.getEmail();
+        createMediator();
+        initializeNative();
+    }
+
+    private void setPrimaryAccountsOfOtherProfiles(CoreAccountId... accountIds) {
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(accountIds));
     }
 
     private void setUpSigninSupported(boolean isSigninSupported) {
