@@ -4,6 +4,8 @@
 
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback.h"
@@ -284,6 +286,9 @@ bool ContainsValidKey(
                          (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
                              keyList
                        error:(NSError*)error {
+  CHECK(std::ranges::is_sorted(
+      keyList, {}, &trusted_vault::TrustedVaultKeyAndVersion::version));
+
   __weak __typeof(self) weakSelf = self;
   if (!keyList.empty()) {
     if (purpose == webauthn::ReauthenticatePurpose::kDecrypt &&

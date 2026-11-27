@@ -60,7 +60,9 @@ class PasskeyKeychainProvider {
   //   decrypt. This is mostly for logging purposes and has no effect on the
   //   fetched keys.
   // - `callback` is called once the keys are fetched and receives the fetched
-  //   keys and their versions as input (the vector will be empty on failure).
+  //   keys and their versions (ordered by ascending version from oldest to
+  //   newest, where the last element is the most recent), or an empty vector on
+  //   failure.
   virtual void FetchKeys(NSString* gaia,
                          webauthn::ReauthenticatePurpose purpose,
                          webauthn::KeysWithVersionsFetchedCallback callback);
@@ -85,12 +87,15 @@ class PasskeyKeychainProvider {
   //   decrypt. This is mostly for logging purposes and has no effect on the
   //   fetched keys.
   // - `callback` is called once the keys are fetched and receives the fetched
-  //   keys and their versions as input (the vector will be empty on failure).
-  void Reauthenticate(NSString* gaia,
-                      UINavigationController* navigation_controller,
-                      UIView* navigation_item_title_view,
-                      webauthn::ReauthenticatePurpose purpose,
-                      webauthn::KeysWithVersionsFetchedCallback callback);
+  //   keys and their versions (ordered by ascending version from oldest to
+  //   newest, where the last element is the most recent), or an empty vector on
+  //   failure.
+  virtual void Reauthenticate(
+      NSString* gaia,
+      UINavigationController* navigation_controller,
+      UIView* navigation_item_title_view,
+      webauthn::ReauthenticatePurpose purpose,
+      webauthn::KeysWithVersionsFetchedCallback callback);
 
   // Checks if the identity identified by `gaia` is in the degraded
   // recoverability state.

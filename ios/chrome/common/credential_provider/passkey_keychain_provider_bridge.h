@@ -69,10 +69,11 @@ enum class PasskeyKeychainError : NSInteger {
 @property(nonatomic, weak) id<PasskeyKeychainProviderBridgeDelegate> delegate;
 
 // Initiates the process to fetch the trusted vault keys and their versions, and
-// calls the completion block with them as input. `credential` will be used to
-// validate the trusted vault key. When `allowUI` is `NO`, no UI is presented
-// and `fetchTrustedVaultKeysCompletionBlock` is called with empty keys if keys
-// cannot be retrieved silently.
+// calls the completion block with them (ordered by ascending version from
+// oldest to newest, where the last element is the most recent). `credential`
+// will be used to validate the trusted vault key. When `allowUI` is `NO`, no UI
+// is presented and `fetchTrustedVaultKeysCompletionBlock` is called with empty
+// keys if keys cannot be retrieved silently.
 - (void)fetchTrustedVaultKeysForGaia:(NSString*)gaia
                           credential:(id<Credential>)credential
                              purpose:(webauthn::ReauthenticatePurpose)purpose
