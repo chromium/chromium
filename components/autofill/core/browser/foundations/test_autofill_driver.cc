@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -68,6 +69,27 @@ bool TestAutofillDriver::IsActive() const {
 
 bool TestAutofillDriver::IsEmbedded() const {
   return is_embedded_;
+}
+
+void TestAutofillDriver::set_frame_token(LocalFrameToken frame_token) {
+  frame_token_ = frame_token;
+  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
+    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
+  }
+}
+
+void TestAutofillDriver::SetParent(TestAutofillDriver* parent) {
+  parent_ = parent;
+  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
+    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
+  }
+}
+
+void TestAutofillDriver::SetIsEmbedded(bool is_embedded) {
+  is_embedded_ = is_embedded;
+  if (autofill_client_->GetAutofillDriverFactory().Owns(*this)) {
+    autofill_client_->GetAutofillDriverFactory().CheckValidFrameTree();
+  }
 }
 
 TestAutofillClient& TestAutofillDriver::GetAutofillClient() {

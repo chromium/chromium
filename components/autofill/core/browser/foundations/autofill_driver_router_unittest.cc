@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,11 +111,12 @@ class AutofillDriverRouterTest : public testing::Test {
       FakeAutofillDriver* parent = nullptr,
       FakeAutofillDriver::AutofillPermissionPolicy policy =
           FakeAutofillDriver::AutofillPermissionPolicy::kDefault) {
+    TestAutofillDriverFactory& factory = client_.GetAutofillDriverFactory();
+    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
     auto& driver = static_cast<FakeAutofillDriver&>(
-        client_.GetAutofillDriverFactory().TakeOwnership(
-            FakeAutofillDriver::CreateChildFrame(&client_, origin, parent,
-                                                 policy)));
-    client_.GetAutofillDriverFactory().Activate(driver);
+        factory.TakeOwnership(FakeAutofillDriver::CreateChildFrame(
+            &client_, origin, parent, policy)));
+    factory.Activate(driver);
     return driver;
   }
 

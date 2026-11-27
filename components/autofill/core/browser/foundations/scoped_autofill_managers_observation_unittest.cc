@@ -23,7 +23,12 @@ class ScopedAutofillManagersObservationTest
  public:
   using enum AutofillManager::LifecycleState;
 
-  ScopedAutofillManagersObservationTest() { InitAutofillClient(); }
+  ScopedAutofillManagersObservationTest() {
+    InitAutofillClient();
+    // Tests in this fixture start with no drivers and exercise transitions from
+    // `kInactive` before any primary main frame is activated.
+    autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;

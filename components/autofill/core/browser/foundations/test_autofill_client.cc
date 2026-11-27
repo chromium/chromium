@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 
-#include "base/check.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 
 namespace autofill {
@@ -20,40 +19,17 @@ TestAutofillDriverFactory& TestAutofillClientBase::GetAutofillDriverFactory() {
 
 AutofillManager*
 TestAutofillClientBase::GetAutofillManagerForPrimaryMainFrame() {
-  AutofillDriver* driver = nullptr;
-  size_t num_matches = 0;
+  // Unlike GetExistingDrivers(), this checks even when no drivers exist yet so
+  // tests that forget to create a driver don't silently get nullptr.
+  autofill_driver_factory_.CheckValidFrameTree();
   for (AutofillDriver* d : GetAutofillDriverFactory().GetExistingDrivers()) {
-    if (d->IsActive() && !d->IsEmbedded() && !d->GetParent() &&
-        d->GetLifecycleState() == AutofillDriver::LifecycleState::kActive) {
-      driver = d;
-      ++num_matches;
+    if (d->IsActive() &&
+        d->GetLifecycleState() == AutofillDriver::LifecycleState::kActive &&
+        !d->IsEmbedded() && !d->GetParent()) {
+      return &d->GetAutofillManager();
     }
   }
-  CHECK(allow_null_primary_main_frame_driver_ || num_matches > 0)
-      << "No active primary main frame AutofillDriver found.\n\n"
-         "If your test is using `WithTestAutofillClientDriverManager`, call "
-         "`CreateAndActivateAutofillDriver()` or "
-         "`ActivateAutofillDriver()`.\n\n"
-         "Otherwise, make sure it satisfies `IsActive()` and "
-         "`GetLifecycleState() == kActive` and `!IsEmbedded()` and "
-         "`GetParent() == nullptr`.\n\n"
-         "If you specifically want to test a scenario without a primary "
-         "main frame, you can disable this CHECK with "
-         "`AllowNullPrimaryMainFrameDriver(true)`.";
-  CHECK(allow_multiple_primary_main_frame_drivers_ || num_matches <= 1)
-      << "Found " << num_matches
-      << " active primary main frame AutofillDrivers.\n\n"
-         "If your test is using `WithTestAutofillClientDriverManager`, make "
-         "sure at most one driver is activated (via "
-         "`CreateAndActivateAutofillDriver()` or "
-         "`ActivateAutofillDriver()`).\n\n"
-         "Otherwise, make sure at most one driver satisfies `IsActive()` and "
-         "`GetLifecycleState() == kActive` and `!IsEmbedded()` and "
-         "`GetParent() == nullptr`.\n\n"
-         "If you specifically want to test a scenario with multiple primary "
-         "main frames, you can disable this CHECK with "
-         "`AllowMultiplePrimaryMainFrameDrivers(true)`.";
-  return driver ? &driver->GetAutofillManager() : nullptr;
+  return nullptr;
 }
 
 TestAutofillClient::TestAutofillClient()

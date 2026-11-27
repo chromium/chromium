@@ -5624,6 +5624,10 @@ class BrowserAutofillManagerTestPageLanguageDetection
 };
 
 TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
+  // Some parameter combinations make the only root frame inactive or embedded,
+  // leaving no active primary main frame.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
+
   // The frame under test is the root frame or, if `has_parent()`, a child frame
   // of the root frame.
   autofill_driver(0).SetIsEmbedded(is_embedded());

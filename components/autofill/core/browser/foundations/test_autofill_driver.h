@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -155,16 +156,14 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
     autofill_manager_ = std::move(autofill_manager);
   }
 
-  void set_frame_token(LocalFrameToken frame_token) {
-    frame_token_ = frame_token;
-  }
+  void set_frame_token(LocalFrameToken frame_token);
 
   void SetRemoteFrameToken(RemoteFrameToken remote_frame_token,
                            LocalFrameToken local_frame_token) {
     remote_frame_tokens_[remote_frame_token] = local_frame_token;
   }
 
-  void SetParent(TestAutofillDriver* parent) { parent_ = parent; }
+  void SetParent(TestAutofillDriver* parent);
 
   // Called by TestAutofillDriverFactory::Activate() and Deactivate() so that
   // IsActive() is consistent with GetLifecycleState(), like in production.
@@ -172,7 +171,7 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
     is_active_ = is_active;
   }
 
-  void SetIsEmbedded(bool is_embedded) { is_embedded_ = is_embedded; }
+  void SetIsEmbedded(bool is_embedded);
 
   void SetPolicyControlledFeatureAutofillEnabled(bool enabled) {
     policy_controlled_feature_autofill_enabled_ = enabled;

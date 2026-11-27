@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/actor/actor_test_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
@@ -1005,7 +1006,7 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoAutofillManager) {
   base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestAutofillClient client;
-  client.AllowNullPrimaryMainFrameDriver(true);
+  client.GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   ASSERT_FALSE(client.GetAutofillManagerForPrimaryMainFrame());
 
   GetSuggestionsFuture future;

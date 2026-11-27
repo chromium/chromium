@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 
 namespace autofill {
@@ -31,10 +32,13 @@ namespace autofill {
 //     TaskEnvironment is destroyed.
 //   Typically, that's in the constructor or SetUp() and the destructor or
 //   TearDown().
-// - Call CreateAndActivateAutofillDriver() (or CreateAutofillDriver() if the
-//   driver should start inactive) to create an AutofillDriver and
+// - Call CreateAndActivateAutofillDriver() to create an AutofillDriver and
 //   AutofillManager. The living AutofillDrivers and their AutofillManagers are
 //   destroyed implicitly by DestroyAutofillClient().
+//   CreateAutofillDriver() creates an inactive driver instead. Since
+//   TestAutofillDriverFactory validates the frame tree, it is only suitable for
+//   additional drivers (e.g., subframes), not for the first driver; see the
+//   function's documentation for the exceptions.
 //
 // For example:
 //
@@ -93,7 +97,7 @@ class WithTestAutofillClientDriverManager {
   }
 
   // Destroys the AutofillClient, including the AutofillDrivers created by
-  // CreateAutofillDriver() and their owned AutofillManagers.
+  // Create[AndActivate]AutofillDriver() and their owned AutofillManagers.
   //
   // Usually called in the test fixture's destructor or TearUp(). If it is not
   // called explicitly, ~WithTestAutofillClientDriverManager() calls it.
@@ -106,11 +110,20 @@ class WithTestAutofillClientDriverManager {
   // Creates a new AutofillDriver and its owned AutofillManager, leaving it
   // inactive (`AutofillDriver::LifecycleState::kInactive`). Most tests should
   // prefer `CreateAndActivateAutofillDriver()`.
+  //
+  // TestAutofillDriverFactory validates the frame tree when it takes ownership
+  // of the new driver. Therefore, this function CHECK-fails if there is no
+  // active primary main frame afterwards. In particular, it cannot be used to
+  // create the first driver unless
+  // - a TestAutofillDriverFactory::ScopedValidationSuppressor is alive, or
+  // - TestAutofillDriverFactory::RequirePrimaryMainFrame(false) was called.
   void CreateAutofillDriver() { CreateAutofillDriverImpl(); }
 
   // Creates a new AutofillDriver and its owned AutofillManager, and activates
   // the newly created driver via `ActivateAutofillDriver()`.
   void CreateAndActivateAutofillDriver() {
+    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(
+        autofill_client().GetAutofillDriverFactory());
     ActivateAutofillDriver(CreateAutofillDriverImpl());
   }
 
@@ -125,20 +138,18 @@ class WithTestAutofillClientDriverManager {
         CHECK_DEREF(autofill_client().GetPaymentsAutofillClient()));
   }
 
-  // See CreateAutofillDriver().
+  // See CreateAndActivateAutofillDriver().
   Driver& autofill_driver(size_t index = 0) {
     TestAutofillDriver* driver =
         autofill_client().GetAutofillDriverFactory().driver(index);
     CHECK(driver) << "There are only "
-                  << autofill_client()
-                         .GetAutofillDriverFactory()
-                         .GetExistingDrivers()
-                         .size()
-                  << ". Call CreateAutofillDriver() to create one.";
+                  << autofill_client().GetAutofillDriverFactory().num_drivers()
+                  << ". Call CreateAndActivateAutofillDriver() to create one.";
+    autofill_client().GetAutofillDriverFactory().CheckValidFrameTree();
     return static_cast<Driver&>(*driver);
   }
 
-  // See CreateAutofillDriver().
+  // See CreateAndActivateAutofillDriver().
   Manager& autofill_manager(size_t index = 0) {
     return static_cast<Manager&>(autofill_driver(index).GetAutofillManager());
   }

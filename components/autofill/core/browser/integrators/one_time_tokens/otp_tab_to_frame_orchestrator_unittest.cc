@@ -423,6 +423,9 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   SendSmsOtp("333333");
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 
+  // Simulate BFCache deactivation of the sole driver without creating a
+  // replacement primary main frame.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   DeactivateAutofillDriver(autofill_driver());
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), IsEmpty());
 

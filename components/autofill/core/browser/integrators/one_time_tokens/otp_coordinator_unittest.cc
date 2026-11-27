@@ -1358,6 +1358,8 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
       HasValue("111111"));
 
+  // Deactivating the sole driver leaves no active primary main frame.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   DeactivateAutofillDriver(autofill_driver());
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().deliveries(), IsEmpty());
@@ -1379,6 +1381,8 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsLoggedProactiveOutcomes) {
   ASSERT_FALSE(
       test_api_coordinator().logged_proactive_outcomes_by_field().empty());
 
+  // Deactivating the sole driver leaves no active primary main frame.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   DeactivateAutofillDriver(autofill_driver());
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().logged_proactive_outcomes_by_field(),

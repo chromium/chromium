@@ -261,6 +261,7 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   // If the main AutofillDriver is inactive, it's not the right
   // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   DeactivateAutofillDriver(autofill_driver());
 
   EXPECT_CALL(autofill_driver(), ObserveFieldVisibility).Times(0);

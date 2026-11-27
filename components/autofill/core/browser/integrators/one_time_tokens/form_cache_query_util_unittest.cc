@@ -196,6 +196,9 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
               FieldsAre(form, form->field(1)));
   ASSERT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
+  // This test toggles the sole driver to inactive and pending-deletion states
+  // without creating another primary main frame.
+  autofill_client().GetAutofillDriverFactory().RequirePrimaryMainFrame(false);
   DeactivateAutofillDriver(autofill_driver());
   EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),

@@ -417,12 +417,16 @@ class FormForestTestWithMockedTree : public FormForestTest {
     GURL url(!frame_info.url.empty() ? frame_info.url
              : !parent_driver        ? kMainUrl
                                      : kIframeUrl);
-    FakeAutofillDriver& driver = static_cast<FakeAutofillDriver&>(
-        client_.GetAutofillDriverFactory().TakeOwnership(
-            FakeAutofillDriver::CreateChildFrame(
-                &client_, Origin(url), /*parent=*/parent_driver,
-                /*shared_autofill=*/frame_info.policy)));
-    client_.GetAutofillDriverFactory().Activate(driver);
+    TestAutofillDriverFactory& factory = client_.GetAutofillDriverFactory();
+    FakeAutofillDriver& driver = [&]() -> FakeAutofillDriver& {
+      TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
+      auto& d = static_cast<FakeAutofillDriver&>(
+          factory.TakeOwnership(FakeAutofillDriver::CreateChildFrame(
+              &client_, Origin(url), /*parent=*/parent_driver,
+              /*autofill_policy=*/frame_info.policy)));
+      factory.Activate(d);
+      return d;
+    }();
 
     std::vector<FormData> forms;
     for (const FormInfo& form_info : frame_info.forms) {
