@@ -625,6 +625,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                 "When enabled, WebView exports trace events to the Android Perfetto service."),
+        Flag.baseFeature(
+                NetFeatures.ENABLE_QUIC_V6_TO_V4_MIGRATION,
+                "Enables falling back to the initial DNS-resolved IPv4 address when a QUIC"
+                        + " session connected over IPv6 attempts to migrate to an IPv4-only"
+                        + " network."),
         Flag.baseFeature(NetFeatures.ENABLE_TLS13_EARLY_DATA, "Enables TLS 1.3 Early Data"),
         Flag.baseFeature("EnsureExistingRendererAlive"),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
