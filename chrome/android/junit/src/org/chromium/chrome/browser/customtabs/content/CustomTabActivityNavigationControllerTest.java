@@ -69,8 +69,8 @@ public class CustomTabActivityNavigationControllerTest {
 
         @Override
         @SuppressWarnings("MissingSuperCall")
-        public void onNewIntent(Intent intent) {
-            mLastNewIntent = intent;
+        public void onNewIntent(Intent newIntent, Intent oldIntent) {
+            mLastNewIntent = newIntent;
         }
     }
 
@@ -268,6 +268,7 @@ public class CustomTabActivityNavigationControllerTest {
     public void finishes_whenDoneReparentingToAdjacentActivity() {
         TestChromeTabbedActivity adjacentActivity =
                 Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        adjacentActivity.setInitializedForTesting(true);
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         MultiWindowUtils.setActivitySupplierForTesting(() -> adjacentActivity);
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);

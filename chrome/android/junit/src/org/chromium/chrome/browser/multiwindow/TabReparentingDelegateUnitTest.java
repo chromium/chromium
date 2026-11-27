@@ -77,8 +77,8 @@ public class TabReparentingDelegateUnitTest {
 
         @Override
         @SuppressWarnings("MissingSuperCall") // super requires native initialization.
-        public void onNewIntent(Intent intent) {
-            mNewIntents.add(intent);
+        public void onNewIntent(Intent newIntent, Intent oldIntent) {
+            mNewIntents.add(newIntent);
         }
     }
 
@@ -115,7 +115,9 @@ public class TabReparentingDelegateUnitTest {
         TabReparentingDelegate.setPersistentStoreForTesting(mTabPersistentStore);
 
         mCurrentActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        mCurrentActivity.setInitializedForTesting(true);
         mDestActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        mDestActivity.setInitializedForTesting(true);
 
         MultiWindowTestUtils.setupTabModelSelectorFactory(mock(Profile.class), mock(Profile.class));
         TabWindowManagerSingleton.getInstance()

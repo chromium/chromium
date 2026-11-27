@@ -535,9 +535,9 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleNewIntent(intent, true);
+    public void onNewIntent(Intent newIntent, Intent oldIntent) {
+        super.onNewIntent(newIntent, oldIntent);
+        handleNewIntent(newIntent, true);
     }
 
     @Override

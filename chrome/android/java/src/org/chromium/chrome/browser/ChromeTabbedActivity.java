@@ -260,7 +260,6 @@ import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfBackPressHandler;
@@ -1984,19 +1983,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
+    public void onNewIntent(Intent newIntent, Intent oldIntent) {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onNewIntent")) {
             mIntentHandlingTimeMs = SystemClock.uptimeMillis();
-
-            // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
-            if (ShareHelper.isCleanerIntent(intent)) {
-                return;
-            }
 
             // The intent to use in maybeDispatchExplicitMainViewIntent(). We're explicitly
             // adding NEW_TASK flag to make sure backing from CCT brings up the caller activity,
             // and not Chrome
-            Intent intentForDispatching = new Intent(intent);
+            Intent intentForDispatching = new Intent(newIntent);
             intentForDispatching.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             @LaunchIntentDispatcher.Action
             int action =
@@ -2009,12 +2003,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return;
             }
 
-            super.onNewIntent(intent);
+            super.onNewIntent(newIntent, oldIntent);
 
             boolean shouldShowRegularOverviewMode =
                     IntentUtils.safeGetBooleanExtra(
-                            intent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
-            if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(intent)) {
+                            newIntent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
+            if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(newIntent)) {
                 mTabModelSelector.selectModel(/* incognito= */ false);
                 // On Desktop Android, selecting the regular model displays the desktop tab strip
                 // and active tab in LayoutType.BROWSING; opening LayoutType.HUB is suppressed.

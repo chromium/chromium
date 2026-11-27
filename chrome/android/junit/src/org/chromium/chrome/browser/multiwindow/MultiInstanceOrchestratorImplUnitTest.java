@@ -116,8 +116,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         @Override
         @SuppressWarnings("MissingSuperCall")
-        public void onNewIntent(Intent intent) {
-            mLastNewIntent = intent;
+        public void onNewIntent(Intent newIntent, Intent oldIntent) {
+            mLastNewIntent = newIntent;
         }
     }
 
@@ -157,8 +157,10 @@ public class MultiInstanceOrchestratorImplUnitTest {
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(mTabbedStartupWindowPolicyDelegate);
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mTabbedActivity1 = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        mTabbedActivity1.setInitializedForTesting(true);
         mTabbedActivity1.mTabModelSelector = mTabModelSelector1;
         mTabbedActivity2 = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        mTabbedActivity2.setInitializedForTesting(true);
         mMultiInstanceOrchestrator = MultiInstanceOrchestratorImpl.getInstance();
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity2, mMultiInstanceManager2);

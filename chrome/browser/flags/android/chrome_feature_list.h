@@ -229,7 +229,7 @@ BASE_DECLARE_FEATURE(kGmsCoreBindServiceOptimization);
 BASE_DECLARE_FEATURE(kHighPrioritySiteNotifications);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomeButtonRemoval);
-BASE_DECLARE_FEATURE(kImprovedA2HS);
+BASE_DECLARE_FEATURE(kIgnoreNewIntentsDuringStartup);
 BASE_DECLARE_FEATURE(kInAppUpdateFlow);
 BASE_DECLARE_FEATURE(kInAppWindowManagerDeprecation);
 BASE_DECLARE_FEATURE(kIncognitoAsWindowFullScreen);

@@ -697,6 +697,7 @@ public abstract class ChromeFeatureList {
     public static final String HOME_BUTTON_REMOVAL = "HomeButtonRemoval";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String HTTPS_FIRST_DIALOG_UI = "HttpsFirstDialogUi";
+    public static final String IGNORE_NEW_INTENTS_DURING_STARTUP = "IgnoreNewIntentsDuringStartup";
     public static final String INCOGNITO_AS_WINDOW_FULL_SCREEN = "IncognitoAsWindowFullScreen";
     public static final String INCOGNITO_MODE_FORCED_ANDROID = "IncognitoModeForcedAndroid";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
@@ -993,6 +994,7 @@ public abstract class ChromeFeatureList {
                             Map.entry(AVOID_TASK_TRAMPOLINES, true),
                             Map.entry(DEVICE_REAUTH_REFACTOR, true),
                             Map.entry(GMSCORE_BIND_SERVICE_OPTIMIZATION, true),
+                            Map.entry(IGNORE_NEW_INTENTS_DURING_STARTUP, true),
                             Map.entry(NTP_AURORA, true),
                             Map.entry(NTP_AURORA_V2, true),
                             Map.entry(UNIVERSAL_KEYBOARD_HANDLING, true));

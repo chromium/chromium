@@ -123,8 +123,8 @@ public class MultiWindowUtilsUnitTest {
 
         @Override
         @SuppressWarnings("MissingSuperCall")
-        public void onNewIntent(Intent intent) {
-            mLastNewIntent = intent;
+        public void onNewIntent(Intent newIntent, Intent oldIntent) {
+            mLastNewIntent = newIntent;
         }
     }
 
@@ -202,7 +202,10 @@ public class MultiWindowUtilsUnitTest {
     }
 
     private TestChromeTabbedActivity createActivity() {
-        return Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        TestChromeTabbedActivity activity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        activity.setInitializedForTesting(true);
+        return activity;
     }
 
     @Test

@@ -444,6 +444,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHighPrioritySiteNotifications,
     &kHistoryPaneAndroid,
     &kHomeButtonRemoval,
+    &kIgnoreNewIntentsDuringStartup,
     &kInAppUpdateFlow,
     &kInAppWindowManagerDeprecation,
     &kIncognitoAsWindowFullScreen,
@@ -1061,6 +1062,7 @@ BASE_FEATURE(kWebAppShortEdgesCutoutMode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kXplatSyncedSetupThemes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_RUNTIME_MUTABLE_FEATURE(kAvoidTaskTrampolines, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kIgnoreNewIntentsDuringStartup, base::FEATURE_ENABLED_BY_DEFAULT);
 // go/keep-sorted end
 // BASE_FEATURE_END
 

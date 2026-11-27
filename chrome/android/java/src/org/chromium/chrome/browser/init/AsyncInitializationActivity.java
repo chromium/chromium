@@ -22,6 +22,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
@@ -122,6 +123,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     private boolean mStartupDelayed;
     private boolean mFirstDrawComplete;
+    private boolean mStateInitialized;
 
     private @Nullable Runnable mOnInflationCompleteCallback;
 
@@ -300,8 +302,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     public void initializeCompositor() {}
 
+    @CallSuper
     @Override
-    public void initializeState() {}
+    public void initializeState() {
+        mStateInitialized = true;
+    }
 
     @CallSuper
     @Override
@@ -703,14 +708,26 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mNativeInitializationController.onStop();
     }
 
-    @CallSuper
     @Override
     @SuppressLint("MissingSuperCall") // Empty method in parent Activity class.
-    public void onNewIntent(Intent intent) {
+    public final void onNewIntent(Intent intent) {
         if (intent == null) return;
         if (ShareHelper.isCleanerIntent(intent)) return;
-        mNativeInitializationController.onNewIntent(intent);
-        setIntent(intent);
+        // https://crbug.com/576124265: Don't replace the intent during startup
+        // or we get an inconsistent view of state during startup.
+        if (!mStateInitialized && !IntentUtils.isTrustedIntentFromSelf(intent)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.IGNORE_NEW_INTENTS_DURING_STARTUP)) {
+            return;
+        }
+
+        onNewIntent(intent, getIntent());
+    }
+
+    @CallSuper
+    public void onNewIntent(Intent newIntent, Intent oldIntent) {
+        mNativeInitializationController.onNewIntent(newIntent);
+        setIntent(newIntent);
     }
 
     @CallSuper
@@ -1076,5 +1093,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                             getComponentName().flattenToString(),
                             /* hardwareAccelerated= */ true);
         }
+    }
+
+    public void setInitializedForTesting(boolean initialized) {
+        mStateInitialized = initialized;
     }
 }

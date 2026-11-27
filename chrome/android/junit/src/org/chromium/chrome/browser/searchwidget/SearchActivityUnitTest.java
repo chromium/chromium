@@ -176,6 +176,7 @@ public class SearchActivityUnitTest {
         FirstRunStatus.setFirstRunFlowComplete(true);
         mController = Robolectric.buildActivity(TestSearchActivity.class);
         mActivity = mController.get();
+        mActivity.setInitializedForTesting(true);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(mActivity);
         mDataProvider = mActivity.getSearchBoxDataProviderForTesting();

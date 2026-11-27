@@ -146,7 +146,6 @@ import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -397,21 +396,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
-        // Drop the cleaner intent since it's created in order to clear up the OS share sheet.
-        if (ShareHelper.isCleanerIntent(intent)) {
-            return;
-        }
-
-        Intent originalIntent = getIntent();
-        super.onNewIntent(intent);
+    public void onNewIntent(Intent newIntent, Intent oldIntent) {
+        super.onNewIntent(newIntent, oldIntent);
         // Currently we can't handle arbitrary updates of intent parameters, so make sure
         // getIntent() returns the same intent as before.
-        setIntent(originalIntent);
+        setIntent(oldIntent);
 
         // Color scheme doesn't matter here: currently we don't support updating UI using Intents.
         BrowserServicesIntentDataProvider dataProvider =
-                assertNonNull(buildIntentDataProvider(intent, COLOR_SCHEME_LIGHT));
+                assertNonNull(buildIntentDataProvider(newIntent, COLOR_SCHEME_LIGHT));
 
         assumeNonNull(mCustomTabIntentHandler);
         mCustomTabIntentHandler.onNewIntent(dataProvider);

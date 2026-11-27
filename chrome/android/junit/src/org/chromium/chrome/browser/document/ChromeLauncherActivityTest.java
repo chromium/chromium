@@ -17,6 +17,7 @@ import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -31,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.ApkInfo;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -104,7 +107,7 @@ public class ChromeLauncherActivityTest {
 
         @Override
         @SuppressWarnings("MissingSuperCall")
-        public void onNewIntent(Intent intent) {
+        public void onNewIntent(Intent newIntent, Intent oldIntent) {
             mOnNewIntentCalled = true;
         }
 
@@ -141,6 +144,9 @@ public class ChromeLauncherActivityTest {
         // Robolectric automatically registers created activities with ApplicationStatus
         mTabbedActivity = Robolectric.buildActivity(MockChromeTabbedActivity.class).create().get();
         mTabbedActivity.setActivityManager(mActivityManager);
+        // State must be initialized before we can receive new intents, but we can't run
+        // initializeState without mocking the world.
+        mTabbedActivity.setInitializedForTesting(true);
 
         // Inject mocks into our shadow activity
         mTabbedActivity.mTabModelSelector = mTabModelSelector;
@@ -254,6 +260,22 @@ public class ChromeLauncherActivityTest {
         Assert.assertTrue(launcherActivity.isFinishing());
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.IGNORE_NEW_INTENTS_DURING_STARTUP})
+    public void testBringTabToFront_IntentDroppedBeforeStateInitialized() {
+        mTabbedActivity.setInitializedForTesting(false);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("about:blank"));
+        mTabbedActivity.onNewIntent(intent);
+
+        // Verify onNewIntent was called on the target activity
+        Assert.assertFalse(mTabbedActivity.mOnNewIntentCalled);
+
+        intent.setPackage(ApkInfo.getHostPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        mTabbedActivity.onNewIntent(intent);
+        Assert.assertTrue(mTabbedActivity.mOnNewIntentCalled);
     }
 
     @Test

@@ -39,5 +39,7 @@ void ChromeBrowserFieldTrials::EnableRuntimeMutableFeatures(
 #if BUILDFLAG(IS_ANDROID)
   feature_list->EnableRuntimeMutability(chrome::android::kAvoidTaskTrampolines,
                                         base::DoNothing());
+  feature_list->EnableRuntimeMutability(
+      chrome::android::kIgnoreNewIntentsDuringStartup, base::DoNothing());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
