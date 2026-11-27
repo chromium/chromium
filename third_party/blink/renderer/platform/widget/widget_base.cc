@@ -809,6 +809,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
     params.embedder_params->main_thread_id = main_thread_id_;
   }
+#if BUILDFLAG(IS_MAC)
+  params.embedder_params->workgroup_scope = cc::mojo_embedder::
+      AsyncLayerTreeFrameSink::WorkgroupScope::kProcessForegroundThreads;
+#endif
 
   params.embedder_params->compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
@@ -1046,6 +1050,10 @@ std::unique_ptr<cc::LayerTreeFrameSink> WidgetBase::CreateUnboundedFrameSink(
   if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
     embedder_params->main_thread_id = main_thread_id_;
   }
+#if BUILDFLAG(IS_MAC)
+  embedder_params->workgroup_scope = cc::mojo_embedder::
+      AsyncLayerTreeFrameSink::WorkgroupScope::kProcessForegroundThreads;
+#endif
   embedder_params->wants_animate_only_begin_frames = true;
   embedder_params->no_compositor_frame_acks =
       base::FeatureList::IsEnabled(::features::kNoCompositorFrameAcks);

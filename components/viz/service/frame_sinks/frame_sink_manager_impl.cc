@@ -49,6 +49,8 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/apple/scoped_mach_port.h"
+#include "base/task/thread_type.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo_mac.h"
 #include "ui/display/display_features.h"
 #include "ui/display/mac/ca_display_link_mac.h"
@@ -128,19 +130,20 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
     ui::VSyncProviderMac::GetInstance();
   }
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const bool is_single_process = command_line->HasSwitch("single-process");
+  const bool in_host_process = gpu_service_ && gpu_service_->in_host_process();
+
   // To support CADisplayLink in the GPU process, WindowServer events must be
   // manually pumped because child processes lack the standard NSApplication
   // event loop. We create a dedicated thread for this purpose. Note: Do not
   // start WindowServerEventPumpThread in the browser process, as it will
   // interfere with the standard event loop.
   if (ui::DisplayLinkMac::SupportsCADisplayLinkInGPU()) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     bool in_process_or_headless_switch =
-        command_line->HasSwitch("in-process-gpu") ||
-        command_line->HasSwitch("single-process") ||
+        command_line->HasSwitch("in-process-gpu") || is_single_process ||
         command_line->HasSwitch("single-process-tests") ||
         command_line->HasSwitch(switches::kHeadless);
-    bool in_host_process = gpu_service_ && gpu_service_->in_host_process();
     if (!in_process_or_headless_switch && !in_host_process &&
         !ui::WindowServerEventPumpThread::NSAppInitialized()) {
       auto update_vsync_displays_cb =
@@ -151,6 +154,15 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
           std::make_unique<ui::WindowServerEventPumpThread>(
               std::move(update_vsync_displays_cb));
     }
+  }
+
+  if (!is_single_process) {
+    workgroup_interval_ =
+        base::mac::WorkgroupInterval::Create("CrDisplayFrame");
+  }
+  if (workgroup_interval_ && gpu_service_ && !in_host_process) {
+    base::mac::SetProcessForegroundWorkgroup(workgroup_interval_->workgroup(),
+                                             base::ThreadType::kPresentation);
   }
 #endif
 }
@@ -1623,5 +1635,18 @@ bool FrameSinkManagerImpl::IsChildOf(const FrameSinkId& parent,
   }
   return it->second.children.contains(child);
 }
+
+#if BUILDFLAG(IS_MAC)
+mojo::PlatformHandle FrameSinkManagerImpl::DuplicateWorkgroupPort() const {
+  if (!workgroup_interval_) {
+    return mojo::PlatformHandle();
+  }
+  base::apple::ScopedMachSendRight port = workgroup_interval_->CopyPort();
+  if (!port.is_valid()) {
+    return mojo::PlatformHandle();
+  }
+  return mojo::PlatformHandle(std::move(port));
+}
+#endif
 
 }  // namespace viz

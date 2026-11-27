@@ -23,6 +23,7 @@ cc_component("mojo_embedder") {
     "//components/viz/common",
     "//gpu/ipc/client",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
     "//services/viz/public/mojom",
     "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",

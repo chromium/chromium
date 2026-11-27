@@ -687,6 +687,14 @@ void RootCompositorFrameSinkImpl::SetThreads(
 }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+void RootCompositorFrameSinkImpl::RequestWorkgroupPort(
+    RequestWorkgroupPortCallback callback) {
+  std::move(callback).Run(
+      support_->frame_sink_manager()->DuplicateWorkgroupPort());
+}
+#endif
+
 base::flat_set<base::PlatformThreadId>
 RootCompositorFrameSinkImpl::GetPendingRendererMainThreads() const {
   base::flat_set<base::PlatformThreadId> thread_ids;

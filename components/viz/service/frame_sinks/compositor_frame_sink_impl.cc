@@ -210,6 +210,14 @@ void CompositorFrameSinkImpl::SetThreads(const std::vector<Thread>& threads) {
 }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+void CompositorFrameSinkImpl::RequestWorkgroupPort(
+    RequestWorkgroupPortCallback callback) {
+  std::move(callback).Run(
+      support_->frame_sink_manager()->DuplicateWorkgroupPort());
+}
+#endif
+
 void CompositorFrameSinkImpl::OnClientConnectionLost() {
   // The client that owns this CompositorFrameSink is either shutting down or
   // has done something invalid and the connection to the client was terminated.

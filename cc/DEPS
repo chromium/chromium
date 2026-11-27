@@ -25,6 +25,7 @@ include_rules = [
   "+gpu/ipc/client/gpu_channel_observer.h",
   "+gpu/vulkan",
   "+media",
+  "+mojo/public/cpp/platform/platform_handle.h",
   "+mojo/public/cpp/system/buffer.h",
   "+mojo/public/cpp/system/platform_handle.h",
   "+skia/buildflags.h",

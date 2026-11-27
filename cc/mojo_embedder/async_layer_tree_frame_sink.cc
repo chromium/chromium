@@ -29,6 +29,11 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/scoped_mach_port.h"
+#include "base/mac/workgroup.h"
+#endif
+
 namespace cc {
 namespace mojo_embedder {
 
@@ -80,6 +85,9 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
 #if BUILDFLAG(IS_ANDROID)
       io_thread_id_(params->io_thread_id),
       main_thread_id_(params->main_thread_id),
+#endif
+#if BUILDFLAG(IS_MAC)
+      workgroup_scope_(params->workgroup_scope),
 #endif
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
@@ -152,10 +160,43 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     threads.push_back({main_thread_id_, viz::Thread::Type::kMain});
   }
   compositor_frame_sink_ptr_->SetThreads(threads);
+#elif BUILDFLAG(IS_MAC)
+  if (base::mac::WorkgroupInterval::IsSupported() &&
+      base::FeatureList::IsEnabled(base::mac::kMacWorkgroupInterval)) {
+    compositor_frame_sink_ptr_->RequestWorkgroupPort(
+        base::BindOnce(&AsyncLayerTreeFrameSink::OnWorkgroupPortReceived,
+                       weak_factory_.GetWeakPtr()));
+  }
 #endif
 
   return true;
 }
+
+#if BUILDFLAG(IS_MAC)
+void AsyncLayerTreeFrameSink::OnWorkgroupPortReceived(
+    mojo::PlatformHandle workgroup_port) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!workgroup_port.is_valid_mach_send()) {
+    return;
+  }
+  base::apple::ScopedMachSendRight send_right =
+      workgroup_port.TakeMachSendRight();
+  base::mac::Workgroup workgroup =
+      base::mac::Workgroup::CreateFromPort("CrFrameClient", send_right.get());
+  if (!workgroup) {
+    return;
+  }
+
+  switch (workgroup_scope_) {
+    case WorkgroupScope::kBoundThread:
+      base::mac::Workgroup::JoinCurrentThread(std::move(workgroup));
+      return;
+    case WorkgroupScope::kProcessForegroundThreads:
+      base::mac::SetProcessForegroundWorkgroup(std::move(workgroup));
+      return;
+  }
+}
+#endif
 
 void AsyncLayerTreeFrameSink::DetachFromClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

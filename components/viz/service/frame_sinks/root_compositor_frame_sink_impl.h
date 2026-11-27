@@ -125,6 +125,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<Thread>& threads) override;
 #endif
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   base::ScopedClosureRunner GetCacheBackBufferCb();

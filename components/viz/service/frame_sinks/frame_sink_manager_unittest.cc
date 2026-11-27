@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/tracing/test_trace_processor.h"
+#include "build/build_config.h"
 #include "components/input/features.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -32,6 +33,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/workgroup.h"
+#include "base/test/scoped_command_line.h"
+#endif
 
 namespace viz {
 namespace {
@@ -181,6 +187,16 @@ class FrameSinkManagerTest : public testing::Test {
                       base::FunctionRef<void(const FrameSinkId&)> callback) {
     manager_->RecurseParents(frame_sink_id, callback);
   }
+
+#if BUILDFLAG(IS_MAC)
+  bool HasWorkgroupInterval() const {
+    return manager_->workgroup_interval_ != nullptr;
+  }
+  bool IsWorkgroupIntervalStarted() const {
+    return manager_->workgroup_interval_ &&
+           manager_->workgroup_interval_->is_started();
+  }
+#endif
 
   // testing::Test implementation.
   void SetUp() override {
@@ -2789,5 +2805,81 @@ TEST_F(FrameSinkManagerNonEmptyFrameTest, InvalidateClearsRequest) {
   support.reset();
   manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 }
+
+#if BUILDFLAG(IS_MAC)
+class MacWorkgroupOnlyFrameSinkManagerTest : public FrameSinkManagerTest {
+ protected:
+  MacWorkgroupOnlyFrameSinkManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(base::mac::kMacWorkgroupInterval);
+  }
+
+  ~MacWorkgroupOnlyFrameSinkManagerTest() override {
+    base::mac::ResetProcessForegroundWorkgroupForTesting();
+  }
+};
+
+TEST_F(MacWorkgroupOnlyFrameSinkManagerTest,
+       MacWorkgroupOnlyArmSharesPortWithoutReportingIntervals) {
+  if (!HasWorkgroupInterval()) {
+    GTEST_SKIP() << "os_workgroup_interval_create unavailable on this host";
+  }
+
+  // The shared "CrDisplayFrame" port is exported to client processes. No
+  // intervals are reported.
+  EXPECT_TRUE(manager_->DuplicateWorkgroupPort().is_valid_mach_send());
+
+  FakeExternalBeginFrameSource source(0.f, false);
+  MockCompositorFrameSinkClient client;
+  ParentLocalSurfaceIdAllocator allocator;
+
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  RootCompositorFrameSinkData root_data;
+  manager_->CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+  auto sink = std::make_unique<CompositorFrameSinkSupport>(
+      &client, manager_.get(), kFrameSinkIdA, /*is_root=*/false);
+  manager_->RegisterBeginFrameSource(&source, kFrameSinkIdA);
+
+  sink->SetNeedsBeginFrame(true);
+  EXPECT_FALSE(IsWorkgroupIntervalStarted());
+
+  const base::TimeTicks t0 = base::TimeTicks::Now();
+  const base::TimeDelta k60Hz = base::Milliseconds(16);
+  BeginFrameArgs args =
+      source.CreateBeginFrameArgsWithGenerator(t0, t0 + k60Hz, k60Hz);
+  source.TestOnBeginFrame(args);
+  EXPECT_FALSE(IsWorkgroupIntervalStarted());
+
+  allocator.GenerateId();
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetBeginFrameAck(BeginFrameAck(args, true))
+                              .Build();
+  sink->SubmitCompositorFrame(allocator.GetCurrentLocalSurfaceId(),
+                              std::move(frame));
+  EXPECT_FALSE(IsWorkgroupIntervalStarted());
+
+  manager_->UnregisterBeginFrameSource(&source);
+  sink.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+}
+
+TEST_F(MacWorkgroupOnlyFrameSinkManagerTest, DisabledInSingleProcessMode) {
+  if (!HasWorkgroupInterval()) {
+    GTEST_SKIP() << "os_workgroup_interval_create unavailable on this host";
+  }
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch("single-process");
+
+  FrameSinkManagerImpl::InitParams init_params(&output_surface_provider_);
+  FrameSinkManagerImpl single_process_manager(init_params);
+  EXPECT_FALSE(
+      single_process_manager.DuplicateWorkgroupPort().is_valid_mach_send());
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace viz

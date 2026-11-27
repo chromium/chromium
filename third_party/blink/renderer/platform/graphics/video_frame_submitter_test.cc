@@ -117,6 +117,11 @@ class VideoMockCompositorFrameSink
                void(viz::mojom::blink::PendingLayerContextPtr,
                     viz::mojom::blink::LayerContextSettingsPtr));
   MOCK_METHOD1(SetThreads, void(const Vector<viz::Thread>&));
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

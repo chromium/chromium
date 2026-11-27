@@ -90,16 +90,24 @@ class BASE_EXPORT Workgroup {
   mach_port_t port_ = MACH_PORT_NULL;
 };
 
-// Excludes background/utility threads as well as audio threads whose cadences
-// are independent of display VSyncs.
-constexpr bool ShouldJoinProcessForegroundWorkgroup(ThreadType thread_type) {
-  return thread_type == ThreadType::kDefault ||
-         thread_type == ThreadType::kPresentation;
+// Excludes threads below `min_thread_type` (e.g. background/utility) as well
+// as audio threads whose cadences are independent of display VSyncs. The
+// single-argument default checks static `[ThreadType::kDefault,
+// ThreadType::kPresentation]` eligibility.
+constexpr bool ShouldJoinProcessForegroundWorkgroup(
+    ThreadType thread_type,
+    ThreadType min_thread_type = ThreadType::kDefault) {
+  return thread_type >= min_thread_type &&
+         thread_type <= ThreadType::kPresentation;
 }
 
 // Sets (or clears) the Workgroup that eligible SequenceManager threads and
-// ThreadPool workers in this process join while enabled. Thread-safe.
-BASE_EXPORT void SetProcessForegroundWorkgroup(Workgroup workgroup);
+// ThreadPool workers in `[min_thread_type, ThreadType::kPresentation]` join
+// while enabled (`min_thread_type` must be in `[ThreadType::kDefault,
+// ThreadType::kPresentation]`). Thread-safe.
+BASE_EXPORT void SetProcessForegroundWorkgroup(
+    Workgroup workgroup,
+    ThreadType min_thread_type = ThreadType::kDefault);
 
 // Enables or suspends joining the configured process foreground workgroup
 // (enabled by default). When false, threads joined via foreground sync leave on

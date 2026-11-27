@@ -32,6 +32,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "mojo/public/cpp/platform/platform_handle.h"
+#endif
+
 namespace viz {
 class RasterContextProvider;
 }  // namespace viz
@@ -68,6 +72,13 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
         client_receiver;
   };
 
+#if BUILDFLAG(IS_MAC)
+  enum class WorkgroupScope {
+    kBoundThread,               // Only the thread the sink is bound on.
+    kProcessForegroundThreads,  // Every kDefault/kPresentation thread.
+  };
+#endif
+
   struct CC_MOJO_EMBEDDER_EXPORT InitParams {
     InitParams();
     ~InitParams();
@@ -79,6 +90,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     bool wants_animate_only_begin_frames = false;
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
     base::PlatformThreadId main_thread_id = base::kInvalidThreadId;
+#if BUILDFLAG(IS_MAC)
+    WorkgroupScope workgroup_scope = WorkgroupScope::kBoundThread;
+#endif
 
     // If `true`, the CompositorFrameSinkClient receiver will receive IPC
     // directly to the thread on which the AsyncLayerTreeFrameSink lives, rather
@@ -177,6 +191,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
 
   void SendManualBeginFrame();
+#if BUILDFLAG(IS_MAC)
+  void OnWorkgroupPortReceived(mojo::PlatformHandle workgroup_port);
+#endif
 
   const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
@@ -187,6 +204,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 #if BUILDFLAG(IS_ANDROID)
   base::PlatformThreadId io_thread_id_;
   base::PlatformThreadId main_thread_id_;
+#endif
+#if BUILDFLAG(IS_MAC)
+  WorkgroupScope workgroup_scope_ = WorkgroupScope::kBoundThread;
 #endif
 
   // Message pipes that will be bound when BindToClient() is called.

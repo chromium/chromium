@@ -66,6 +66,7 @@ struct ThreadWorkgroupTlsState {
 struct ForegroundWorkgroupGlobal {
   Lock lock;
   Workgroup configured_workgroup GUARDED_BY(lock);
+  ThreadType min_thread_type GUARDED_BY(lock) = ThreadType::kDefault;
   bool is_enabled GUARDED_BY(lock) = true;
 };
 
@@ -199,14 +200,15 @@ struct Workgroup::TlsImpl {
     LeaveState(state);
   }
 
-  static void Sync(Workgroup target_workgroup) {
+  static void Sync(Workgroup target_workgroup, ThreadType min_thread_type) {
     auto* state = GetState();
     if (state && (state->owner == JoinOwner::kExplicit ||
                   state->owner == JoinOwner::kIntervalOwner)) {
       return;
     }
     const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
-    if (target_workgroup && ShouldJoinProcessForegroundWorkgroup(thread_type)) {
+    if (target_workgroup &&
+        ShouldJoinProcessForegroundWorkgroup(thread_type, min_thread_type)) {
       Join(std::move(target_workgroup), JoinOwner::kSynced);
     } else if (state && state->owner == JoinOwner::kSynced) {
       LeaveState(state);
@@ -218,8 +220,9 @@ struct ProcessSync {
   static bool SameBacking(const Workgroup& a, const Workgroup& b) {
     return a.SameBackingAs(b);
   }
-  static void SyncCurrentThread(Workgroup target_workgroup) {
-    Workgroup::TlsImpl::Sync(std::move(target_workgroup));
+  static void SyncCurrentThread(Workgroup target_workgroup,
+                                ThreadType min_thread_type) {
+    Workgroup::TlsImpl::Sync(std::move(target_workgroup), min_thread_type);
   }
 };
 
@@ -229,6 +232,7 @@ std::atomic<uint32_t> g_foreground_workgroup_generation{0};
 
 void SyncCurrentThreadToForegroundWorkgroupSlow(uint32_t& local_generation) {
   Workgroup target_workgroup;
+  ThreadType min_thread_type = ThreadType::kDefault;
   uint32_t observed_generation = 0;
   {
     auto& global = GetForegroundWorkgroupGlobal();
@@ -236,10 +240,11 @@ void SyncCurrentThreadToForegroundWorkgroupSlow(uint32_t& local_generation) {
     if (global.is_enabled) {
       target_workgroup = global.configured_workgroup;
     }
+    min_thread_type = global.min_thread_type;
     observed_generation =
         g_foreground_workgroup_generation.load(std::memory_order_relaxed);
   }
-  ProcessSync::SyncCurrentThread(std::move(target_workgroup));
+  ProcessSync::SyncCurrentThread(std::move(target_workgroup), min_thread_type);
   local_generation = observed_generation;
 }
 
@@ -311,7 +316,10 @@ Workgroup Workgroup::GetCurrentThreadWorkgroup() {
   return state ? state->workgroup : Workgroup();
 }
 
-void SetProcessForegroundWorkgroup(Workgroup workgroup) {
+void SetProcessForegroundWorkgroup(Workgroup workgroup,
+                                   ThreadType min_thread_type) {
+  CHECK_GE(min_thread_type, ThreadType::kDefault);
+  CHECK_LE(min_thread_type, ThreadType::kPresentation);
   if (!IsArchitectureSupported()) {
     return;
   }
@@ -319,18 +327,22 @@ void SetProcessForegroundWorkgroup(Workgroup workgroup) {
   {
     auto& global = GetForegroundWorkgroupGlobal();
     AutoLock lock(global.lock);
-    if (ProcessSync::SameBacking(global.configured_workgroup, workgroup)) {
+    if (ProcessSync::SameBacking(global.configured_workgroup, workgroup) &&
+        global.min_thread_type == min_thread_type) {
       return;
     }
+    const bool had_workgroup = static_cast<bool>(global.configured_workgroup);
     global.configured_workgroup = std::move(workgroup);
-    if (!global.is_enabled) {
+    global.min_thread_type = min_thread_type;
+    if (!global.is_enabled ||
+        (!had_workgroup && !global.configured_workgroup)) {
       return;
     }
     target_workgroup = global.configured_workgroup;
     internal::g_foreground_workgroup_generation.fetch_add(
         1, std::memory_order_release);
   }
-  ProcessSync::SyncCurrentThread(std::move(target_workgroup));
+  ProcessSync::SyncCurrentThread(std::move(target_workgroup), min_thread_type);
 }
 
 void SetProcessForegroundWorkgroupEnabled(bool enabled) {
@@ -339,6 +351,7 @@ void SetProcessForegroundWorkgroupEnabled(bool enabled) {
     return;
   }
   Workgroup target_workgroup;
+  ThreadType min_thread_type = ThreadType::kDefault;
   {
     auto& global = GetForegroundWorkgroupGlobal();
     AutoLock lock(global.lock);
@@ -352,10 +365,11 @@ void SetProcessForegroundWorkgroupEnabled(bool enabled) {
     if (enabled) {
       target_workgroup = global.configured_workgroup;
     }
+    min_thread_type = global.min_thread_type;
     internal::g_foreground_workgroup_generation.fetch_add(
         1, std::memory_order_release);
   }
-  ProcessSync::SyncCurrentThread(std::move(target_workgroup));
+  ProcessSync::SyncCurrentThread(std::move(target_workgroup), min_thread_type);
 }
 
 void ResetProcessForegroundWorkgroupForTesting() {
@@ -363,6 +377,7 @@ void ResetProcessForegroundWorkgroupForTesting() {
     auto& global = GetForegroundWorkgroupGlobal();
     AutoLock lock(global.lock);
     global.configured_workgroup = {};
+    global.min_thread_type = ThreadType::kDefault;
     global.is_enabled = true;
     internal::g_foreground_workgroup_generation.fetch_add(
         1, std::memory_order_release);

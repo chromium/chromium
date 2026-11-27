@@ -184,6 +184,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "base/mac/workgroup.h"
 #include "content/renderer/theme_helper_mac.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #endif
@@ -1712,6 +1713,12 @@ void RenderThreadImpl::OnRendererHidden() {
         base::Process::Priority::kBestEffort);
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (!IsInBrowserProcess()) {
+    base::mac::SetProcessForegroundWorkgroupEnabled(false);
+  }
+#endif
+
   blink_isolates_pressure_listener_.OnRendererHidden();
 #if BUILDFLAG(IS_ANDROID)
   blink::WebMemoryFeatures::SetRendererVisible(false);
@@ -1724,6 +1731,13 @@ void RenderThreadImpl::OnRendererVisible() {
     blink::WebV8Features::SetIsolatePriority(
         base::Process::Priority::kUserBlocking);
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (!IsInBrowserProcess()) {
+    base::mac::SetProcessForegroundWorkgroupEnabled(true);
+  }
+#endif
+
   blink_isolates_pressure_listener_.OnRendererVisible();
 #if BUILDFLAG(IS_ANDROID)
   blink::WebMemoryFeatures::SetRendererVisible(true);

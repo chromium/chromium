@@ -214,6 +214,11 @@ class MockCompositorFrameSink : public viz::mojom::CompositorFrameSink {
                void(viz::mojom::PendingLayerContextPtr,
                     viz::mojom::LayerContextSettingsPtr));
   MOCK_METHOD1(SetThreads, void(const std::vector<viz::Thread>&));
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
   MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void(void));
 
  private:

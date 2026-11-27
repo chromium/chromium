@@ -148,6 +148,11 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->SetThreads(frame_sink_id_.sink_id(), threads);
   }
 #endif
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
 
  private:
   const base::WeakPtr<VideoFrameSinkBundle> bundle_;

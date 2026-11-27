@@ -46,6 +46,11 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 #endif
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
 
   viz::CompositorFrame TakeLastFrame() { return std::move(last_frame_); }
   const std::optional<::viz::HitTestRegionList>& hit_test_region_list() const {

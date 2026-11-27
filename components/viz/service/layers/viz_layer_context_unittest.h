@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -85,6 +86,11 @@ class FakeCompositorFrameSink : public mojom::CompositorFrameSink {
   MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void());
   MOCK_METHOD0(InitializeCompositorFrameSinkType, void());
   MOCK_METHOD1(SetThreads, void(const std::vector<Thread>&));
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
 
  private:
   raw_ptr<FakeLayerContext> layer_context_;

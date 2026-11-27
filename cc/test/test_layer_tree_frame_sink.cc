@@ -136,6 +136,11 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 #endif
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+#endif
 
   raw_ptr<viz::CompositorFrameSinkSupport> support_;
   mojo::Receiver<viz::mojom::CompositorFrameSink> receiver_;

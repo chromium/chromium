@@ -58,6 +58,9 @@
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/workgroup.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
+
 namespace ui {
 class WindowServerEventPumpThread;
 }
@@ -463,6 +466,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // WindowServerEventPumpThread fails and all frame sinks must fall back to a
   // timer. In the latter case `display_id` is ignored.
   void UpdateVSyncDisplays(int64_t display_id);
+
+  mojo::PlatformHandle DuplicateWorkgroupPort() const;
 #endif
 
  private:
@@ -718,6 +723,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   std::unique_ptr<ExternalBeginFrameSourceMojoMac> external_begin_frame_source_;
 
   std::unique_ptr<ui::WindowServerEventPumpThread> window_server_event_thread_;
+
+  std::unique_ptr<base::mac::WorkgroupInterval> workgroup_interval_;
 #endif
 
   // Counts frames for test.

@@ -113,6 +113,13 @@ interface CompositorFrameSink {
   // adjust performance to allow power saving.
   [EnableIf=is_android]
   SetThreads(array<Thread> threads);
+
+  // Returns a Mach send right for the display compositor's os_workgroup_t so
+  // client threads can join it. Safe to pass to untrusted renderers: XNU
+  // restricts start/update/finish to the creating task, allowing port holders
+  // only to join/leave their own threads.
+  [EnableIf=is_mac]
+  RequestWorkgroupPort() => (handle<platform>? workgroup_port);
 };
 
 interface CompositorFrameSinkClient {

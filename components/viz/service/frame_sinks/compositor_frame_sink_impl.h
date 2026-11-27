@@ -58,6 +58,9 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<Thread>& threads) override;
 #endif
+#if BUILDFLAG(IS_MAC)
+  void RequestWorkgroupPort(RequestWorkgroupPortCallback callback) override;
+#endif
 
  private:
   void OnClientConnectionLost();

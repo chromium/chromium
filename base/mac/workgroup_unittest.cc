@@ -184,10 +184,16 @@ TEST_F(WorkgroupIntervalTest,
 
   EXPECT_TRUE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kDefault));
   EXPECT_TRUE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kPresentation));
+  EXPECT_FALSE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kDefault,
+                                                    ThreadType::kPresentation));
+  EXPECT_TRUE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kPresentation,
+                                                   ThreadType::kPresentation));
   EXPECT_FALSE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kBackground));
   EXPECT_FALSE(ShouldJoinProcessForegroundWorkgroup(ThreadType::kUtility));
   EXPECT_FALSE(
       ShouldJoinProcessForegroundWorkgroup(ThreadType::kAudioProcessing));
+  EXPECT_FALSE(ShouldJoinProcessForegroundWorkgroup(
+      ThreadType::kAudioProcessing, ThreadType::kPresentation));
   EXPECT_FALSE(
       ShouldJoinProcessForegroundWorkgroup(ThreadType::kRealtimeAudio));
 
@@ -311,6 +317,80 @@ TEST_F(WorkgroupIntervalTest,
   ResetProcessForegroundWorkgroupForTesting();
   helper_thread.FlushForTesting();
   EXPECT_FALSE(Workgroup::GetCurrentThreadWorkgroup());
+}
+
+TEST_F(WorkgroupIntervalTest, MinThreadTypeFiltersDefaultThreads) {
+  if (!WorkgroupInterval::IsSupported()) {
+    GTEST_SKIP() << "WorkgroupInterval unsupported on this host";
+  }
+
+  test::TaskEnvironment task_environment;
+  Thread default_thread("CrTestDefaultThread");
+  ASSERT_TRUE(default_thread.Start());
+
+  Thread presentation_thread("CrTestPresentationThread");
+  Thread::Options presentation_options;
+  presentation_options.thread_type = ThreadType::kPresentation;
+  ASSERT_TRUE(
+      presentation_thread.StartWithOptions(std::move(presentation_options)));
+
+  RemoteIntervalHost display_host("CrMinThreadTypeHost");
+  ASSERT_TRUE(display_host.workgroup());
+
+  SetProcessForegroundWorkgroup(display_host.workgroup(),
+                                ThreadType::kPresentation);
+
+  // The main test thread and `default_thread` run at ThreadType::kDefault and
+  // must stay unjoined, while `presentation_thread` joins.
+  EXPECT_FALSE(Workgroup::GetCurrentThreadWorkgroup());
+
+  bool default_joined = true;
+  default_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        default_joined =
+            static_cast<bool>(Workgroup::GetCurrentThreadWorkgroup());
+      }));
+  default_thread.FlushForTesting();
+  EXPECT_FALSE(default_joined);
+
+  bool presentation_joined = false;
+  presentation_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        presentation_joined = (Workgroup::GetCurrentThreadWorkgroup() ==
+                               display_host.workgroup());
+      }));
+  presentation_thread.FlushForTesting();
+  EXPECT_TRUE(presentation_joined);
+
+  // Lowering the threshold to kDefault joins `default_thread`; raising it back
+  // to kPresentation makes `default_thread` leave while `presentation_thread`
+  // remains joined.
+  SetProcessForegroundWorkgroup(display_host.workgroup(), ThreadType::kDefault);
+  default_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        default_joined = (Workgroup::GetCurrentThreadWorkgroup() ==
+                          display_host.workgroup());
+      }));
+  default_thread.FlushForTesting();
+  EXPECT_TRUE(default_joined);
+
+  SetProcessForegroundWorkgroup(display_host.workgroup(),
+                                ThreadType::kPresentation);
+  default_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        default_joined =
+            static_cast<bool>(Workgroup::GetCurrentThreadWorkgroup());
+      }));
+  default_thread.FlushForTesting();
+  EXPECT_FALSE(default_joined);
+
+  presentation_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        presentation_joined = (Workgroup::GetCurrentThreadWorkgroup() ==
+                               display_host.workgroup());
+      }));
+  presentation_thread.FlushForTesting();
+  EXPECT_TRUE(presentation_joined);
 }
 
 }  // namespace
