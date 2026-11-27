@@ -699,7 +699,6 @@ function setUpScopeCheckboxes() {
     {id: 'AutofillAi'},
     {id: 'AutofillActor'},
     {id: 'OneTimeTokens'},
-    {id: 'AtMemory'},
     {id: 'EmailVerification'},
     {id: 'CustomFormControls'},
   ];

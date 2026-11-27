@@ -48,8 +48,6 @@ class LogBuffer;
   T(AutofillActor)                                                     \
   /* One Time Token. */                                                \
   T(OneTimeTokens)                                                     \
-  /* AtMemory. */                                                      \
-  T(AtMemory)                                                          \
   /* Email Verification Protocol (EVP). */                             \
   T(EmailVerification)                                                 \
   /* Custom form controls, e.g. custom selects. */                     \
