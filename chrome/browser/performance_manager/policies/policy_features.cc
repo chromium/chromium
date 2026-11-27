@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 
 #include "base/feature_list.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -146,6 +147,45 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Configures BackgroundTabLoadingPolicy restoration limits and memory-pressure
+// stopping threshold.
+BASE_FEATURE(kBackgroundTabLoadingPolicyTuning,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Minimum and maximum total number of restored background tabs to load across
+// the browser session (including subsequent window or tab restores).
+BASE_FEATURE_PARAM(int,
+                   kBackgroundTabLoadingMinTabsToLoad,
+                   &kBackgroundTabLoadingPolicyTuning,
+                   4);
+BASE_FEATURE_PARAM(int,
+                   kBackgroundTabLoadingMaxTabsToLoad,
+                   &kBackgroundTabLoadingPolicyTuning,
+                   20);
+
+// Minimum free physical memory (MiB) required to load tabs beyond
+// `kBackgroundTabLoadingMinTabsToLoad`. 0 disables the free-memory check.
+BASE_FEATURE_PARAM(int,
+                   kBackgroundTabLoadingDesiredFreeMemoryMb,
+                   &kBackgroundTabLoadingPolicyTuning,
+                   150);
+
+// Maximum time since last use for loading a restored background tab beyond
+// `kBackgroundTabLoadingMinTabsToLoad`. Negative durations or `"inf"`
+// (`base::TimeDelta::Max()`) disable the tab-age check.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBackgroundTabLoadingMaxTimeSinceLastUse,
+                   &kBackgroundTabLoadingPolicyTuning,
+                   base::Days(30));
+
+// `base::MemoryLimit` allowed-capacity percentage at or below which queued
+// background tab loads stop (100 = no pressure, 50 = moderate pressure,
+// 0 = critical pressure; negative values disable stopping on memory pressure).
+BASE_FEATURE_PARAM(int,
+                   kBackgroundTabLoadingStopLoadingMemoryLimitPercent,
+                   &kBackgroundTabLoadingPolicyTuning,
+                   base::MemoryLimit::ModeratePressureThreshold().percent());
 
 BASE_FEATURE(kDeferBackgroundTabLoadsWhileVisiblePageLoads,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -29,6 +31,8 @@ namespace performance_manager {
 class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundTabLoadingBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kBackgroundTabLoadingPolicyTuning);
     url_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
@@ -77,6 +81,7 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
   }
 
   GURL url_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {

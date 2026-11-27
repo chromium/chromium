@@ -17,7 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory_coordinator/utils.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -38,6 +38,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "content/public/browser/browser_context.h"
@@ -194,6 +195,32 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(
       kMinSimultaneousTabLoads, kMaxSimultaneousTabLoads,
       kCoresPerSimultaneousTabLoad, base::SysInfo::NumberOfProcessors());
+  CHECK_EQ(features::kBackgroundTabLoadingMinTabsToLoad.default_value,
+           static_cast<int>(kMinTabsToLoad));
+  CHECK_EQ(features::kBackgroundTabLoadingMaxTabsToLoad.default_value,
+           static_cast<int>(kMaxTabsToLoad));
+  CHECK_EQ(features::kBackgroundTabLoadingDesiredFreeMemoryMb.default_value,
+           static_cast<int>(kDesiredAmountOfFreeMemoryMb));
+  CHECK_EQ(features::kBackgroundTabLoadingMaxTimeSinceLastUse.default_value,
+           kMaxTimeSinceLastUseToLoad);
+  CHECK_EQ(features::kBackgroundTabLoadingStopLoadingMemoryLimitPercent
+               .default_value,
+           kStopLoadingMemoryLimitPercent);
+  if (base::FeatureList::IsEnabled(
+          features::kBackgroundTabLoadingPolicyTuning)) {
+    max_tabs_to_load_ = base::saturated_cast<uint32_t>(
+        features::kBackgroundTabLoadingMaxTabsToLoad.Get());
+    min_tabs_to_load_ =
+        std::min(max_tabs_to_load_,
+                 base::saturated_cast<uint32_t>(
+                     features::kBackgroundTabLoadingMinTabsToLoad.Get()));
+    desired_free_memory_mb_ = base::saturated_cast<uint32_t>(
+        features::kBackgroundTabLoadingDesiredFreeMemoryMb.Get());
+    max_time_since_last_use_to_load_ =
+        features::kBackgroundTabLoadingMaxTimeSinceLastUse.Get();
+    stop_loading_memory_limit_percent_ =
+        features::kBackgroundTabLoadingStopLoadingMemoryLimitPercent.Get();
+  }
 }
 
 BackgroundTabLoadingPolicy::~BackgroundTabLoadingPolicy() = default;
@@ -360,6 +387,11 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     page_nodes_to_load_.emplace_back(page_node);
   }
 
+  if (!page_nodes_to_load_.empty() && ShouldStopForMemoryLimit()) {
+    StopLoadingTabs();
+    return;
+  }
+
   // Asynchronously determine whether pages added to `page_nodes_to_load_` are
   // used in background. Do this after all pages have been added to
   // `page_nodes_to_load_`, otherwise the policy may start loading pages without
@@ -383,10 +415,8 @@ void BackgroundTabLoadingPolicy::SetMockLoaderForTesting(
 
 void BackgroundTabLoadingPolicy::SetMaxLoadedTabCountForTesting(
     size_t max_tabs_to_load) {
-  max_tabs_to_load_ = max_tabs_to_load;
-  if (min_tabs_to_load_ > max_tabs_to_load_) {
-    min_tabs_to_load_ = max_tabs_to_load_;
-  }
+  max_tabs_to_load_ = base::saturated_cast<uint32_t>(max_tabs_to_load);
+  min_tabs_to_load_ = std::min(kMinTabsToLoad, max_tabs_to_load_);
 }
 
 void BackgroundTabLoadingPolicy::SetMaxSimultaneousLoadsForTesting(
@@ -443,6 +473,17 @@ base::DictValue BackgroundTabLoadingPolicy::DescribePageNodeData(
 base::DictValue BackgroundTabLoadingPolicy::DescribeSystemNodeData(
     const SystemNode* node) const {
   base::DictValue dict;
+  dict.Set("min_tabs_to_load", base::saturated_cast<int>(min_tabs_to_load_));
+  dict.Set("max_tabs_to_load", base::saturated_cast<int>(max_tabs_to_load_));
+  dict.Set("desired_free_memory_mb",
+           base::saturated_cast<int>(desired_free_memory_mb_));
+  dict.Set("max_time_since_last_use",
+           HasMaxTimeSinceLastUseLimit()
+               ? TimeDeltaToValue(max_time_since_last_use_to_load_)
+               : base::Value("disabled"));
+  dict.Set("stop_loading_memory_limit_percent",
+           stop_loading_memory_limit_percent_);
+  dict.Set("memory_limit_percent", memory_limit().percent());
   dict.Set("max_simultaneous_tab_loads",
            base::saturated_cast<int>(max_simultaneous_tab_loads_));
   dict.Set("tab_loads_started", base::saturated_cast<int>(tab_loads_started_));
@@ -461,17 +502,22 @@ BackgroundTabLoadingPolicy::LoadDecision BackgroundTabLoadingPolicy::ShouldLoad(
   }
 
   // If there is a free memory constraint then enforce it.
-  size_t free_memory_mb = GetFreePhysicalMemoryMib();
-  if (free_memory_mb < kDesiredAmountOfFreeMemoryMb) {
-    return LoadDecision::kSkipForFreeMemory;
+  if (desired_free_memory_mb_ > 0) {
+    size_t free_memory_mb = GetFreePhysicalMemoryMib();
+    if (free_memory_mb < desired_free_memory_mb_) {
+      return LoadDecision::kSkipForFreeMemory;
+    }
   }
 
-  // Enforce a max time since last use.
-  const base::TimeDelta time_since_last_visibility_change =
-      base::TimeTicks::Now() -
-      page_node_data.page_node->GetVisibilityState().last_change_time;
-  if (time_since_last_visibility_change > kMaxTimeSinceLastUseToLoad) {
-    return LoadDecision::kSkipForTabAge;
+  // Enforce a max time since last use unless disabled via a negative or
+  // infinite (`base::TimeDelta::Max()`) duration.
+  if (HasMaxTimeSinceLastUseLimit()) {
+    const base::TimeDelta time_since_last_visibility_change =
+        base::TimeTicks::Now() -
+        page_node_data.page_node->GetVisibilityState().last_change_time;
+    if (time_since_last_visibility_change > max_time_since_last_use_to_load_) {
+      return LoadDecision::kSkipForTabAge;
+    }
   }
 
   return LoadDecision::kLoad;
@@ -507,6 +553,16 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
   DispatchNotifyAllTabsScoredIfNeeded();
 }
 
+bool BackgroundTabLoadingPolicy::HasMaxTimeSinceLastUseLimit() const {
+  return !max_time_since_last_use_to_load_.is_negative() &&
+         !max_time_since_last_use_to_load_.is_max();
+}
+
+bool BackgroundTabLoadingPolicy::ShouldStopForMemoryLimit() const {
+  return stop_loading_memory_limit_percent_ >= 0 &&
+         memory_limit().percent() <= stop_loading_memory_limit_percent_;
+}
+
 void BackgroundTabLoadingPolicy::StopLoadingTabs() {
   TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::StopLoadingTabs");
   // Clear out the remaining tabs to load and clean ourselves up.
@@ -523,15 +579,23 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
 }
 
 void BackgroundTabLoadingPolicy::OnUpdateMemoryLimit() {
+  const bool will_stop =
+      !page_nodes_to_load_.empty() && ShouldStopForMemoryLimit();
   TRACE_EVENT_INSTANT(
       "browser", "BackgroundTabLoadingPolicy::OnUpdateMemoryLimitStopLoading",
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* debug = event->add_debug_annotations();
-        debug->set_name("memory_limit");
-        debug->set_int_value(memory_limit().percent());
+        auto* limit_debug = event->add_debug_annotations();
+        limit_debug->set_name("memory_limit");
+        limit_debug->set_int_value(memory_limit().percent());
+        auto* threshold_debug = event->add_debug_annotations();
+        threshold_debug->set_name("stop_loading_memory_limit_percent");
+        threshold_debug->set_int_value(stop_loading_memory_limit_percent_);
+        auto* stop_debug = event->add_debug_annotations();
+        stop_debug->set_name("will_stop");
+        stop_debug->set_bool_value(will_stop);
       });
-  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
+  if (will_stop) {
     StopLoadingTabs();
   }
 }
@@ -772,8 +836,9 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
 }
 
 size_t BackgroundTabLoadingPolicy::GetFreePhysicalMemoryMib() const {
-  if (free_memory_mb_for_testing_ != 0)
-    return free_memory_mb_for_testing_;
+  if (free_memory_mb_for_testing_.has_value()) {
+    return *free_memory_mb_for_testing_;
+  }
   return base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB();
 }
 

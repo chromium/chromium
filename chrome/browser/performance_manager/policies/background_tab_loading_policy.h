@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_BACKGROUND_TAB_LOADING_POLICY_H_
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <vector>
@@ -14,6 +16,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -87,6 +91,9 @@ class BackgroundTabLoadingPolicy
       std::vector<PageNodeData> page_node_and_permission_vector);
 
   void SetMockLoaderForTesting(std::unique_ptr<mechanism::PageLoader> loader);
+  // Overrides the maximum number of restored tabs to load for tests, clamping
+  // the minimum tab-load count to `max_tabs_to_load` (up to the default
+  // minimum).
   void SetMaxLoadedTabCountForTesting(size_t max_tabs_to_load);
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);
   void SetFreeMemoryForTesting(size_t free_memory_mb);
@@ -191,6 +198,14 @@ class BackgroundTabLoadingPolicy
   // This will initialize |page_node_to_load_data->used_in_bg| to the proper
   // value, score the tab and call DispatchNotifyAllTabsScoredIfNeeded().
   void OnUsedInBackgroundAvailable(base::WeakPtr<PageNode> page_node);
+
+  // Returns true if a finite non-negative `max_time_since_last_use_to_load_`
+  // constraint is configured.
+  bool HasMaxTimeSinceLastUseLimit() const;
+
+  // Returns true if the current `memory_limit()` requires stopping queued
+  // background tab loads.
+  bool ShouldStopForMemoryLimit() const;
 
   // Stops loading tabs by clearing |page_nodes_to_load_|.
   void StopLoadingTabs();
@@ -321,23 +336,34 @@ class BackgroundTabLoadingPolicy
   size_t tabs_scored_ = 0;
 
   // Used to overwrite the amount of free memory available on the system.
-  size_t free_memory_mb_for_testing_ = 0;
+  std::optional<size_t> free_memory_mb_for_testing_;
 
   // The minimum total number of restored tabs to load, unless overridden in a
-  // test.
+  // test or field trial.
   static constexpr uint32_t kMinTabsToLoad = 4;
   uint32_t min_tabs_to_load_ = kMinTabsToLoad;
 
   // The maximum total number of restored tabs to load, unless overridden in a
-  // test.
+  // test or field trial.
   static constexpr uint32_t kMaxTabsToLoad = 20;
   uint32_t max_tabs_to_load_ = kMaxTabsToLoad;
 
   // The minimum amount of memory to keep free.
   static constexpr uint32_t kDesiredAmountOfFreeMemoryMb = 150;
+  uint32_t desired_free_memory_mb_ = kDesiredAmountOfFreeMemoryMb;
 
   // The maximum time since last use of a tab in order for it to be loaded.
+  // Negative values or `base::TimeDelta::Max()` (`"inf"`) disable the tab-age
+  // constraint.
   static constexpr base::TimeDelta kMaxTimeSinceLastUseToLoad = base::Days(30);
+  base::TimeDelta max_time_since_last_use_to_load_ = kMaxTimeSinceLastUseToLoad;
+
+  // `base::MemoryLimit` allowed-capacity percentage at or below which queued
+  // loads stop (100 = no pressure, 50 = moderate pressure, 0 = critical
+  // pressure; negative values disable stopping on memory pressure).
+  static constexpr int kStopLoadingMemoryLimitPercent =
+      base::MemoryLimit::ModeratePressureThreshold().percent();
+  int stop_loading_memory_limit_percent_ = kStopLoadingMemoryLimitPercent;
 
   // Lower bound for the maximum number of tabs to load simultaneously.
   static constexpr uint32_t kMinSimultaneousTabLoads = 1;

@@ -12,8 +12,8 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
-#include "base/memory_coordinator/utils.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
@@ -24,6 +24,8 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
@@ -107,14 +109,26 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
 class BackgroundTabLoadingPolicyFeatureListSetup {
  protected:
   explicit BackgroundTabLoadingPolicyFeatureListSetup(
-      bool enable_defer_while_visible_loading = true) {
+      bool enable_defer_while_visible_loading = true,
+      std::optional<base::FieldTrialParams> tuning_params = std::nullopt) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (enable_defer_while_visible_loading) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads);
+      enabled_features.emplace_back(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads,
+          base::FieldTrialParams{});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kDeferBackgroundTabLoadsWhileVisiblePageLoads);
     }
+    if (tuning_params.has_value()) {
+      enabled_features.emplace_back(features::kBackgroundTabLoadingPolicyTuning,
+                                    std::move(*tuning_params));
+    } else {
+      disabled_features.push_back(features::kBackgroundTabLoadingPolicyTuning);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
   ~BackgroundTabLoadingPolicyFeatureListSetup() = default;
 
@@ -128,9 +142,11 @@ class BackgroundTabLoadingPolicyTest
   using Super = GraphTestHarness;
 
   explicit BackgroundTabLoadingPolicyTest(
-      bool enable_defer_while_visible_loading = true)
+      bool enable_defer_while_visible_loading = true,
+      std::optional<base::FieldTrialParams> tuning_params = std::nullopt)
       : BackgroundTabLoadingPolicyFeatureListSetup(
-            enable_defer_while_visible_loading) {}
+            enable_defer_while_visible_loading,
+            std::move(tuning_params)) {}
   ~BackgroundTabLoadingPolicyTest() override = default;
   BackgroundTabLoadingPolicyTest(const BackgroundTabLoadingPolicyTest& other) =
       delete;
@@ -143,6 +159,11 @@ class BackgroundTabLoadingPolicyTest
     system_node_ = std::make_unique<TestNodeWrapper<SystemNodeImpl>>(
         TestNodeWrapper<SystemNodeImpl>::Create(graph()));
 
+    InstallPolicy();
+  }
+
+  void InstallPolicy() {
+    CHECK(!policy_);
     // Create the policy.
     auto policy =
         std::make_unique<MockBackgroundTabLoadingPolicy>(base::BindRepeating(
@@ -674,6 +695,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_FreeMemory) {
             policy()->ShouldLoad(page_node_data));
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit + 1);
   EXPECT_EQ(LoadDecision::kLoad, policy()->ShouldLoad(page_node_data));
+  policy()->SetFreeMemoryForTesting(0);
+  EXPECT_EQ(LoadDecision::kSkipForFreeMemory,
+            policy()->ShouldLoad(page_node_data));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
@@ -1661,6 +1685,335 @@ TEST_F(BackgroundTabLoadingPolicyTest, Metrics_RecordedOnGraphTeardown) {
   ExpectSingleRestoreMetrics(
       histogram_tester,
       {.scheduled = 3, .loaded_by_policy = 1, .closed_before_loading = 2});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, DescribeSystemNodeData) {
+  const base::DictValue all_describers =
+      graph()->GetNodeDataDescriberRegistry()->DescribeNodeData(system_node());
+  const base::DictValue* dict =
+      all_describers.FindDict("BackgroundTabLoadingPolicy");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(4, dict->FindInt("min_tabs_to_load"));
+  EXPECT_EQ(20, dict->FindInt("max_tabs_to_load"));
+  EXPECT_EQ(150, dict->FindInt("desired_free_memory_mb"));
+  const base::Value* max_age = dict->Find("max_time_since_last_use");
+  ASSERT_TRUE(max_age);
+  EXPECT_EQ(TimeDeltaToValue(base::Days(30)), *max_age);
+  EXPECT_EQ(base::MemoryLimit::ModeratePressureThreshold().percent(),
+            dict->FindInt("stop_loading_memory_limit_percent"));
+  EXPECT_EQ(base::MemoryLimit::Default().percent(),
+            dict->FindInt("memory_limit_percent"));
+  EXPECT_EQ(4, dict->FindInt("max_simultaneous_tab_loads"));
+  EXPECT_EQ(0, dict->FindInt("tab_loads_started"));
+  EXPECT_EQ(0, dict->FindInt("tabs_scored"));
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       StopsImmediatelyWhenRegisteredUnderModeratePressure) {
+  // Simulate moderate memory pressure active on the registry before the policy
+  // registers (registration updates `memory_limit_` while suppressing
+  // `OnUpdateMemoryLimit()`).
+  TakePolicyFromGraph();
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::ModeratePressureThreshold());
+  InstallPolicy();
+
+  // 1. Desktop session restore passes an already-loading foreground tab
+  // alongside unloaded background tabs: queued background tabs are dropped
+  // immediately while the restore wave stays active until the foreground tab
+  // finishes loading.
+  {
+    base::HistogramTester histogram_tester;
+    std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+    std::vector<PageNodeData> to_load;
+    for (int i = 0; i < 4; ++i) {
+      page_nodes.push_back(CreateNode<PageNodeImpl>());
+      page_nodes.back()->SetType(PageType::kTab);
+      to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+    }
+    page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+
+    EXPECT_CALL(*loader(), LoadPageNode(_)).Times(0);
+    policy()->ScheduleLoadForRestoredTabs(to_load);
+    ::testing::Mock::VerifyAndClear(loader());
+
+    EXPECT_EQ(0, num_all_tabs_loaded_calls());
+    histogram_tester.ExpectTotalCount(
+        "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+    page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+    EXPECT_EQ(1, num_all_tabs_loaded_calls());
+    ExpectSingleRestoreMetrics(histogram_tester,
+                               {.scheduled = 4,
+                                .already_loading = 1,
+                                .stopped_for_memory_pressure = 3});
+  }
+
+  // 2. Single-tab restore where only an already-loading foreground tab is
+  // passed (`page_nodes_to_load_` remains empty) also completes cleanly under
+  // memory pressure.
+  {
+    base::HistogramTester histogram_tester;
+    auto fg_page = CreateNode<PageNodeImpl>();
+    fg_page->SetType(PageType::kTab);
+    fg_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+    EXPECT_CALL(*loader(), LoadPageNode(_)).Times(0);
+    policy()->ScheduleLoadForRestoredTabs(
+        {PageNodeData(fg_page->GetWeakPtr())});
+    ::testing::Mock::VerifyAndClear(loader());
+
+    EXPECT_EQ(1, num_all_tabs_loaded_calls());
+    histogram_tester.ExpectTotalCount(
+        "SessionRestore.BackgroundTabLoading.TabCount", 0);
+    fg_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+    EXPECT_EQ(2, num_all_tabs_loaded_calls());
+    ExpectSingleRestoreMetrics(histogram_tester,
+                               {.scheduled = 1, .already_loading = 1});
+  }
+}
+
+class BackgroundTabLoadingPolicyNoLoadTuningTest
+    : public BackgroundTabLoadingPolicyTest {
+ public:
+  BackgroundTabLoadingPolicyNoLoadTuningTest()
+      : BackgroundTabLoadingPolicyTest(
+            /*enable_defer_while_visible_loading=*/true,
+            base::FieldTrialParams{
+                {features::kBackgroundTabLoadingMinTabsToLoad.name, "0"},
+                {features::kBackgroundTabLoadingMaxTabsToLoad.name, "0"}}) {}
+};
+
+TEST_F(BackgroundTabLoadingPolicyNoLoadTuningTest, SkipsAllRestoredTabs) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 5; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(_)).Times(0);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+  ExpectSingleRestoreMetrics(histogram_tester,
+                             {.scheduled = 5, .skipped_for_max_tabs = 5});
+}
+
+TEST_F(BackgroundTabLoadingPolicyNoLoadTuningTest,
+       SetMaxLoadedTabCountForTestingNormalizesMinTabs) {
+  base::HistogramTester histogram_tester;
+
+  // Under a NoLoad field trial (min = 0, max = 0), overriding the max count to
+  // 2 for testing must still load 2 tabs even with 0 MiB free memory.
+  policy()->SetMaxLoadedTabCountForTesting(2);
+  policy()->SetFreeMemoryForTesting(0);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 3; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(2)
+      .WillRepeatedly([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 3, .loaded_by_policy = 2, .skipped_for_max_tabs = 1});
+}
+
+class BackgroundTabLoadingPolicyExtremeLoadTuningTest
+    : public BackgroundTabLoadingPolicyTest {
+ public:
+  BackgroundTabLoadingPolicyExtremeLoadTuningTest()
+      : BackgroundTabLoadingPolicyTest(
+            /*enable_defer_while_visible_loading=*/true,
+            base::FieldTrialParams{
+                {features::kBackgroundTabLoadingMinTabsToLoad.name, "4"},
+                {features::kBackgroundTabLoadingMaxTabsToLoad.name, "10000"},
+                {features::kBackgroundTabLoadingDesiredFreeMemoryMb.name, "0"},
+                {features::kBackgroundTabLoadingMaxTimeSinceLastUse.name,
+                 "-1s"},
+                {features::kBackgroundTabLoadingStopLoadingMemoryLimitPercent
+                     .name,
+                 "0"}}) {}
+};
+
+TEST_F(BackgroundTabLoadingPolicyExtremeLoadTuningTest,
+       LoadsOldTabsWithZeroFreeMemoryAndStopsOnlyOnCriticalPressure) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+  policy()->SetFreeMemoryForTesting(0);
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 6; ++i) {
+    page_nodes.push_back(
+        CreateNode<PageNodeImpl>(nullptr, base::UnguessableToken(), GURL(),
+                                 PagePropertyFlags{}, now - base::Days(60)));
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Moderate memory pressure (50%) is ignored in ExtremeLoad.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+
+  // Complete tabs 0..3 (`kBackgroundTabLoadingMinTabsToLoad` = 4), initiating
+  // tabs 1..4; tab 4 still loads despite 0 MiB free memory and 60-day tab age.
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i + 1].get()));
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+    ::testing::Mock::VerifyAndClear(loader());
+  }
+
+  // Critical memory pressure (0%) stops remaining queued tab `page_nodes[5]`.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::CriticalPressureThreshold());
+  page_nodes[4]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[4]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ExpectSingleRestoreMetrics(histogram_tester,
+                             {.scheduled = 6,
+                              .loaded_by_policy = 5,
+                              .stopped_for_memory_pressure = 1});
+}
+
+class BackgroundTabLoadingPolicyMinExceedsMaxTuningTest
+    : public BackgroundTabLoadingPolicyTest {
+ public:
+  BackgroundTabLoadingPolicyMinExceedsMaxTuningTest()
+      : BackgroundTabLoadingPolicyTest(
+            /*enable_defer_while_visible_loading=*/true,
+            base::FieldTrialParams{
+                {features::kBackgroundTabLoadingMinTabsToLoad.name, "10"},
+                {features::kBackgroundTabLoadingMaxTabsToLoad.name, "2"},
+                {features::kBackgroundTabLoadingDesiredFreeMemoryMb.name,
+                 "-10"}}) {}
+};
+
+TEST_F(BackgroundTabLoadingPolicyMinExceedsMaxTuningTest, ClampsMinDownToMax) {
+  base::HistogramTester histogram_tester;
+
+  const base::DictValue all_describers =
+      graph()->GetNodeDataDescriberRegistry()->DescribeNodeData(system_node());
+  const base::DictValue* dict =
+      all_describers.FindDict("BackgroundTabLoadingPolicy");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(2, dict->FindInt("min_tabs_to_load"));
+  EXPECT_EQ(2, dict->FindInt("max_tabs_to_load"));
+  EXPECT_EQ(0, dict->FindInt("desired_free_memory_mb"));
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 4; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(2)
+      .WillRepeatedly([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 4, .loaded_by_policy = 2, .skipped_for_max_tabs = 2});
+}
+
+class BackgroundTabLoadingPolicyNeverStopOnPressureTuningTest
+    : public BackgroundTabLoadingPolicyTest {
+ public:
+  BackgroundTabLoadingPolicyNeverStopOnPressureTuningTest()
+      : BackgroundTabLoadingPolicyTest(
+            /*enable_defer_while_visible_loading=*/true,
+            base::FieldTrialParams{
+                {features::kBackgroundTabLoadingMinTabsToLoad.name, "0"},
+                {features::kBackgroundTabLoadingMaxTimeSinceLastUse.name,
+                 "inf"},
+                {features::kBackgroundTabLoadingStopLoadingMemoryLimitPercent
+                     .name,
+                 "-1"}}) {}
+};
+
+TEST_F(BackgroundTabLoadingPolicyNeverStopOnPressureTuningTest,
+       IgnoresCriticalPressureAndInfiniteMaxAge) {
+  base::HistogramTester histogram_tester;
+
+  TakePolicyFromGraph();
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::CriticalPressureThreshold());
+  InstallPolicy();
+
+  const base::DictValue all_describers =
+      graph()->GetNodeDataDescriberRegistry()->DescribeNodeData(system_node());
+  const base::DictValue* dict =
+      all_describers.FindDict("BackgroundTabLoadingPolicy");
+  ASSERT_TRUE(dict);
+  const std::string* max_age = dict->FindString("max_time_since_last_use");
+  ASSERT_TRUE(max_age);
+  EXPECT_EQ("disabled", *max_age);
+  EXPECT_EQ(-1, dict->FindInt("stop_loading_memory_limit_percent"));
+  EXPECT_EQ(0, dict->FindInt("memory_limit_percent"));
+
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+  const base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 3; ++i) {
+    page_nodes.push_back(
+        CreateNode<PageNodeImpl>(nullptr, base::UnguessableToken(), GURL(),
+                                 PagePropertyFlags{}, now - base::Days(60)));
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Re-notifying critical pressure mid-restore also does not stop loading.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::CriticalPressureThreshold());
+
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i + 1].get()));
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+    ::testing::Mock::VerifyAndClear(loader());
+  }
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ExpectSingleRestoreMetrics(histogram_tester,
+                             {.scheduled = 3, .loaded_by_policy = 3});
 }
 
 }  // namespace policies

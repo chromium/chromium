@@ -148,6 +148,16 @@ struct TrimOnMemoryPressureParams {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+BASE_DECLARE_FEATURE(kBackgroundTabLoadingPolicyTuning);
+
+BASE_DECLARE_FEATURE_PARAM(int, kBackgroundTabLoadingMinTabsToLoad);
+BASE_DECLARE_FEATURE_PARAM(int, kBackgroundTabLoadingMaxTabsToLoad);
+BASE_DECLARE_FEATURE_PARAM(int, kBackgroundTabLoadingDesiredFreeMemoryMb);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kBackgroundTabLoadingMaxTimeSinceLastUse);
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kBackgroundTabLoadingStopLoadingMemoryLimitPercent);
+
 // When enabled, BackgroundTabLoadingPolicy defers initiating restored
 // background tab loads while any visible page is loading.
 BASE_DECLARE_FEATURE(kDeferBackgroundTabLoadsWhileVisiblePageLoads);
