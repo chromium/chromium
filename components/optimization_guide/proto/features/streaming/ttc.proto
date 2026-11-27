@@ -51,12 +51,14 @@ message TtcClientFrame {
 
 // Top-level container for incoming stream messages from Server to Chrome.
 message TtcServerFrame {
+  // Previously `ToolCall tool_call`, replaced by `tool_call_batch`.
+  reserved 3;
+  reserved tool_call;
+
   oneof frame {
     SessionStatusResponse session_status = 1;
     ServerContent server_content = 2;
 
-    // TODO(crbug.com/576271717): Deprecate in favor of ToolCallBatch below.
-    ToolCall tool_call = 3;
     GoAway go_away = 4;
     ServerErrorNotification server_error = 5;
 
