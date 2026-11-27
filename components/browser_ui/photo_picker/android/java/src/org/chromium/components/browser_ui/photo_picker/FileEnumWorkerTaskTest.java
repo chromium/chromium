@@ -8,11 +8,10 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-
-import androidx.annotation.IntDef;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.robolectric.fakes.BaseCursor;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -29,9 +27,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,15 +34,6 @@ import java.util.List;
 /** Tests for {@link FileEnumWorkerTaskTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumeratedCallback {
-    // The Fields the test Cursor represents.
-    @IntDef({Fields.ID, Fields.MIME_TYPE, Fields.DATE_ADDED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Fields {
-        int ID = 0;
-        int MIME_TYPE = 1;
-        int DATE_ADDED = 2;
-    }
-
     private static class TestFileEnumWorkerTask extends FileEnumWorkerTask {
         private boolean mShouldShowCameraTile = true;
         private boolean mShouldShowBrowseTile = true;
@@ -72,14 +58,19 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
         @Override
         protected Cursor createImageCursor(
                 Uri contentUri, String[] selectColumns, String[] whereArgs, String orderBy) {
-            ArrayList<TestData> list = new ArrayList<>();
-            list.add(new TestData("file0", "text/html", 0));
-            list.add(new TestData("file1", "image/jpeg", 1));
-            list.add(new TestData("file2", "image/jpeg", 2));
-            list.add(new TestData("file3", "video/mp4", 3));
-            list.add(new TestData("file4", "video/mp4", 4));
-
-            return new FileCursor(list);
+            MatrixCursor cursor =
+                    new MatrixCursor(
+                            new String[] {
+                                MediaStore.Files.FileColumns._ID,
+                                MediaStore.Files.FileColumns.MIME_TYPE,
+                                MediaStore.Files.FileColumns.DATE_ADDED,
+                            });
+            cursor.addRow(new Object[] {1, "text/html", 0L});
+            cursor.addRow(new Object[] {2, "image/jpeg", 1L});
+            cursor.addRow(new Object[] {3, "image/jpeg", 2L});
+            cursor.addRow(new Object[] {4, "video/mp4", 3L});
+            cursor.addRow(new Object[] {5, "video/mp4", 4L});
+            return cursor;
         }
 
         @Override
@@ -91,79 +82,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
         protected boolean shouldShowBrowseTile() {
             return mShouldShowBrowseTile;
         }
-    }
-
-    private static class TestData {
-        public final Uri mUri;
-        public final String mMimeType;
-        public final long mDateAdded;
-
-        public TestData(String uri, String mimeType, long dateAdded) {
-            mUri = Uri.parse(uri);
-            mMimeType = mimeType;
-            mDateAdded = dateAdded;
-        }
-    }
-
-    private static class FileCursor extends BaseCursor {
-        private final List<TestData> mData;
-
-        private int mIndex;
-
-        public FileCursor(List<TestData> data) {
-            mData = data;
-        }
-
-        @Override
-        public int getCount() {
-            return mData.size();
-        }
-
-        @Override
-        public boolean moveToNext() {
-            return mIndex++ < mData.size();
-        }
-
-        @Override
-        public int getColumnIndex(String columnName) {
-            switch (columnName) {
-                case MediaStore.Files.FileColumns._ID:
-                    return Fields.ID;
-                case MediaStore.Files.FileColumns.MIME_TYPE:
-                    return Fields.MIME_TYPE;
-                case MediaStore.Files.FileColumns.DATE_ADDED:
-                    return Fields.DATE_ADDED;
-                default:
-                    return -1;
-            }
-        }
-
-        @Override
-        public int getInt(int columnIndex) {
-            if (columnIndex == Fields.ID) {
-                return mIndex;
-            }
-            return -1;
-        }
-
-        @Override
-        public long getLong(int columnIndex) {
-            if (columnIndex == Fields.DATE_ADDED) {
-                return mData.get(mIndex - 1).mDateAdded;
-            }
-            return -1;
-        }
-
-        @Override
-        public String getString(int columnIndex) {
-            if (columnIndex == Fields.MIME_TYPE) {
-                return mData.get(mIndex - 1).mMimeType;
-            }
-            return "";
-        }
-
-        @Override
-        public void close() {}
     }
 
     // A callback that fires the task completes.

@@ -24,13 +24,17 @@ import static org.chromium.ui.base.ClipboardImpl.CHROME_WEB_CUSTOM_DATA_MIME_TYP
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
@@ -54,9 +58,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.fakes.BaseCursor;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowToast;
 
@@ -75,7 +77,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /** Tests logic in the Clipboard class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -95,6 +99,7 @@ public class ClipboardTest {
     private ClipboardImpl mClipboard;
     private Context mRealContext;
     private String mPackageName;
+    private final Set<Uri> mMockFileUris = new HashSet<>();
 
     @Before
     public void setup() {
@@ -510,16 +515,64 @@ public class ClipboardTest {
         stub.doNothing().when(mMockClipboardManager).setPrimaryClip(any(ClipData.class));
     }
 
+    private static class FakeFileContentProvider extends ContentProvider {
+        private final Set<Uri> mRegisteredUris;
+
+        FakeFileContentProvider(Set<Uri> registeredUris) {
+            mRegisteredUris = registeredUris;
+        }
+
+        @Override
+        public boolean onCreate() {
+            return true;
+        }
+
+        @Override
+        public Cursor query(
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
+                String sortOrder) {
+            if (!mRegisteredUris.contains(uri)) return null;
+            MatrixCursor cursor =
+                    new MatrixCursor(
+                            new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+            cursor.addRow(new Object[] {null, 0L});
+            return cursor;
+        }
+
+        @Override
+        public String getType(Uri uri) {
+            return null;
+        }
+
+        @Override
+        public Uri insert(Uri uri, ContentValues values) {
+            return null;
+        }
+
+        @Override
+        public int delete(Uri uri, String selection, String[] selectionArgs) {
+            return 0;
+        }
+
+        @Override
+        public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+            return 0;
+        }
+    }
+
     private void registerMockFileUri(String uriString) {
-        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
-        ShadowContentResolver shadowContentResolver = Shadows.shadowOf(cr);
-
-        BaseCursor mockCursor = Mockito.mock(BaseCursor.class);
-        when(mockCursor.moveToFirst()).thenReturn(true);
-        when(mockCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)).thenReturn(0);
-        when(mockCursor.getColumnIndex(OpenableColumns.SIZE)).thenReturn(1);
-
-        shadowContentResolver.setCursor(Uri.parse(uriString), mockCursor);
+        Uri uri = Uri.parse(uriString);
+        String authority = uri.getAuthority();
+        mMockFileUris.add(uri);
+        FakeFileContentProvider provider = new FakeFileContentProvider(mMockFileUris);
+        ProviderInfo providerInfo = new ProviderInfo();
+        int atIndex = authority.lastIndexOf('@');
+        providerInfo.authority = atIndex == -1 ? authority : authority.substring(atIndex + 1);
+        provider.attachInfo(mRealContext, providerInfo);
+        ShadowContentResolver.registerProviderInternal(authority, provider);
     }
 
     private void assertTextFromLatestToast(@StringRes int strRes) {
