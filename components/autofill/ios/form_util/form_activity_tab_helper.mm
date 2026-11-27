@@ -13,6 +13,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/not_fatal_until.h"
@@ -393,8 +394,15 @@ void FormActivityTabHelper::HandleFormActivity(
     return;
   }
 
-  for (auto& observer : observers_)
-    observer.FormActivityRegistered(web_state, sender_frame, params);
+  // An observer may spin a nested run loop that destroys `sender_frame`, so
+  // stop notifying once it is gone.
+  base::WeakPtr<web::WebFrame> weak_frame = sender_frame->AsWeakPtr();
+  for (auto& observer : observers_) {
+    if (!weak_frame) {
+      return;
+    }
+    observer.FormActivityRegistered(web_state, weak_frame.get(), params);
+  }
 }
 
 void FormActivityTabHelper::HandleFormRemoval(
@@ -412,8 +420,15 @@ void FormActivityTabHelper::HandleFormRemoval(
     return;
   }
 
-  for (auto& observer : observers_)
-    observer.FormRemoved(web_state, sender_frame, params);
+  // An observer may spin a nested run loop that destroys `sender_frame`, so
+  // stop notifying once it is gone.
+  base::WeakPtr<web::WebFrame> weak_frame = sender_frame->AsWeakPtr();
+  for (auto& observer : observers_) {
+    if (!weak_frame) {
+      return;
+    }
+    observer.FormRemoved(web_state, weak_frame.get(), params);
+  }
 }
 
 void FormActivityTabHelper::FormSubmissionHandler(
@@ -526,9 +541,15 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // by the user, unless that field was autofilled in the first place.
   const bool perfect_filling = IsFormDataPerfectlyFilled(form);
 
+  // An observer may spin a nested run loop that destroys `sender_frame`, so
+  // stop notifying once it is gone.
+  base::WeakPtr<web::WebFrame> weak_frame = sender_frame->AsWeakPtr();
   for (auto& observer : observers_) {
-    observer.DocumentSubmitted(web_state, sender_frame, form, submitted_by_user,
-                               perfect_filling);
+    if (!weak_frame) {
+      break;
+    }
+    observer.DocumentSubmitted(web_state, weak_frame.get(), form,
+                               submitted_by_user, perfect_filling);
   }
 
   RecordFormSubmissionOutcome(FormSubmissionOutcome::kHandled);
