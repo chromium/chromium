@@ -222,10 +222,8 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
   test_api(autofill_driver()).SetLifecycleState(initial_state);
 
   // An embedded frame tree exists alongside the primary main frame.
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver({.is_embedded = true});
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).SetIsEmbedded(true);
-  ActivateAutofillDriver(autofill_driver(1));
   FormStructure* embedded_form =
       AddOtpForm(url::Origin::Create(GURL("https://sub.example.test")),
                  /*driver_index=*/1);
@@ -245,10 +243,8 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
 // `AutofillDriver` are returned only while that child driver is active,
 // non-embedded, and still alive in `AutofillDriverFactory`.
 TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver({.parent = &autofill_driver(0)});
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).SetParent(&autofill_driver(0));
-  ActivateAutofillDriver(autofill_driver(1));
 
   FormStructure* form = AddForm({
       .fields =

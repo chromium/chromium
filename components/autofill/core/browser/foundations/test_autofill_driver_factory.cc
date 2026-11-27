@@ -75,6 +75,16 @@ TestAutofillClient& TestAutofillDriverFactory::client() {
   return static_cast<TestAutofillClient&>(*client_);
 }
 
+void TestAutofillDriverFactory::ApplyParams(TestAutofillDriver& driver,
+                                            CreateParams params) {
+  if (params.parent) {
+    driver.SetParent(params.parent);
+  }
+  if (params.is_embedded) {
+    driver.SetIsEmbedded(true);
+  }
+}
+
 void TestAutofillDriverFactory::Adopt(
     std::unique_ptr<TestAutofillDriver> driver) {
   TestAutofillDriver& raw_driver = *driver;
@@ -84,12 +94,14 @@ void TestAutofillDriverFactory::Adopt(
   }
 }
 
-TestAutofillDriver& TestAutofillDriverFactory::Create() {
-  return Create<TestAutofillDriver, TestBrowserAutofillManager>();
+TestAutofillDriver& TestAutofillDriverFactory::Create(CreateParams params) {
+  return Create<TestAutofillDriver, TestBrowserAutofillManager>(params);
 }
 
-TestAutofillDriver& TestAutofillDriverFactory::CreateAndActivate() {
-  return CreateAndActivate<TestAutofillDriver, TestBrowserAutofillManager>();
+TestAutofillDriver& TestAutofillDriverFactory::CreateAndActivate(
+    CreateParams params) {
+  return CreateAndActivate<TestAutofillDriver, TestBrowserAutofillManager>(
+      params);
 }
 
 void TestAutofillDriverFactory::Activate(TestAutofillDriver& driver) {

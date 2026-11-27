@@ -261,10 +261,8 @@ class FakeAutofillDriver : public TestAutofillDriver {
       const url::Origin& origin,
       FakeAutofillDriver* parent,
       AutofillPermissionPolicy autofill_policy) {
-    TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
-    FakeAutofillDriver& driver =
-        factory.CreateAndActivate<FakeAutofillDriver>(origin);
-    driver.SetParent(parent);
+    FakeAutofillDriver& driver = factory.CreateAndActivate<FakeAutofillDriver>(
+        {.parent = parent}, origin);
     driver.set_frame_token(test::MakeLocalFrameToken());
     if (parent && driver.origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),

@@ -117,18 +117,20 @@ class WithTestAutofillClientDriverManager {
   // driver unless
   // - a TestAutofillDriverFactory::ScopedValidationSuppressor is alive, or
   // - TestAutofillDriverFactory::RequirePrimaryMainFrame(false) was called.
-  void CreateAutofillDriver() {
-    autofill_client()
+  Driver& CreateAutofillDriver(
+      TestAutofillDriverFactory::CreateParams params = {}) {
+    return autofill_client()
         .GetAutofillDriverFactory()
-        .template Create<Driver, Manager>();
+        .template Create<Driver, Manager>(params);
   }
 
   // Creates a new AutofillDriver and its owned AutofillManager, and activates
   // the newly created driver via `ActivateAutofillDriver()`.
-  void CreateAndActivateAutofillDriver() {
-    autofill_client()
+  Driver& CreateAndActivateAutofillDriver(
+      TestAutofillDriverFactory::CreateParams params = {}) {
+    return autofill_client()
         .GetAutofillDriverFactory()
-        .template CreateAndActivate<Driver, Manager>();
+        .template CreateAndActivate<Driver, Manager>(params);
   }
 
   Client& autofill_client() {

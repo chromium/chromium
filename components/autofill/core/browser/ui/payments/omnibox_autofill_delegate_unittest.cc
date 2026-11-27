@@ -211,9 +211,7 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   // The BrowserAutofillManager of a child frame is not the right one to run
   // OmniboxAutofillDelegate logic.
-  CreateAutofillDriver();
-  autofill_driver(1).SetParent(&autofill_driver(0));
-  ActivateAutofillDriver(autofill_driver(1));
+  CreateAndActivateAutofillDriver({.parent = &autofill_driver(0)});
 
   EXPECT_CALL(autofill_driver(0), ObserveFieldVisibility).Times(0);
   EXPECT_CALL(autofill_driver(1), ObserveFieldVisibility).Times(0);
@@ -236,10 +234,8 @@ TEST_F(OmniboxAutofillDelegateTest,
   // The BrowserAutofillManager of an embedded frame tree, which exists
   // alongside the primary main frame, is not the right one to run
   // OmniboxAutofillDelegate logic.
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver({.is_embedded = true});
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).SetIsEmbedded(true);
-  ActivateAutofillDriver(autofill_driver(1));
 
   EXPECT_CALL(autofill_driver(0), ObserveFieldVisibility).Times(0);
   EXPECT_CALL(autofill_driver(1), ObserveFieldVisibility).Times(0);
@@ -1381,14 +1377,11 @@ class OmniboxAutofillDelegateFillingTest
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
   // Create drivers and set unique frame tokens.
   CreateAndActivateAutofillDriver();  // Main frame (index 0)
-  CreateAutofillDriver();             // Subframe (index 1)
+  CreateAndActivateAutofillDriver(
+      {.parent = &autofill_driver(0)});  // Subframe (index 1)
 
   autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-
-  // Establish the subframe relationship.
-  autofill_driver(1).SetParent(&autofill_driver(0));
-  ActivateAutofillDriver(autofill_driver(1));
 
   ON_CALL(autofill_client(), GetAutofillManagerForPrimaryMainFrame)
       .WillByDefault(Return(&autofill_manager(0)));

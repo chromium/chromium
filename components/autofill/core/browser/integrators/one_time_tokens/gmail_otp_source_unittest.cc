@@ -1096,19 +1096,18 @@ TEST_F(GmailOtpSourceTest, DoesNotCallGetParentWhenResolvingPageUkmSourceId) {
   TestAutofillDriverFactory::ScopedValidationSuppressor suppressor(factory);
 
   auto& inactive_driver = factory.Create<GetParentCountingAutofillDriver>(
-      ukm::UkmRecorder::GetNewSourceID());
+      {}, ukm::UkmRecorder::GetNewSourceID());
 
-  auto& embedded_driver = factory.Create<GetParentCountingAutofillDriver>(
-      ukm::UkmRecorder::GetNewSourceID());
-  embedded_driver.SetIsEmbedded(true);
-  factory.Activate(embedded_driver);
+  auto& embedded_driver =
+      factory.CreateAndActivate<GetParentCountingAutofillDriver>(
+          {.is_embedded = true}, ukm::UkmRecorder::GetNewSourceID());
 
   auto& active_child_driver =
-      factory.Create<GetParentCountingAutofillDriver>(expected_source_id);
+      factory.Create<GetParentCountingAutofillDriver>({}, expected_source_id);
 
   auto& main_driver =
       factory.CreateAndActivate<GetParentCountingAutofillDriver>(
-          expected_source_id);
+          {}, expected_source_id);
   active_child_driver.SetParent(&main_driver);
   factory.Activate(active_child_driver);
 

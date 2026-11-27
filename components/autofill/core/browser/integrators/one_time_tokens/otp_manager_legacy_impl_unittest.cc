@@ -689,10 +689,8 @@ TEST_F(OtpManagerLegacyImplTest, GetOtpSuggestionsCrossOriginFormReturnsEmpty) {
 // match.
 TEST_F(OtpManagerLegacyImplTest, EmbeddedFrameTreeNoQueryIssued) {
   // An embedded frame tree exists alongside the primary main frame.
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver({.is_embedded = true});
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).SetIsEmbedded(true);
-  ActivateAutofillDriver(autofill_driver(1));
 
   OtpManagerLegacyImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 
@@ -708,10 +706,8 @@ TEST_F(OtpManagerLegacyImplTest, EmbeddedFrameTreeNoQueryIssued) {
 TEST_F(OtpManagerLegacyImplTest,
        EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
   // An embedded frame tree exists alongside the primary main frame.
-  CreateAutofillDriver();
+  CreateAndActivateAutofillDriver({.is_embedded = true});
   autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
-  autofill_driver(1).SetIsEmbedded(true);
-  ActivateAutofillDriver(autofill_driver(1));
 
   OtpManagerLegacyImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 

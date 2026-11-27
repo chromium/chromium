@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
@@ -22,6 +23,21 @@ class TestAutofillClient;
 class TestAutofillClientBase;
 class TestAutofillDriver;
 class TestBrowserAutofillManager;
+
+namespace internal {
+
+// Configuration for `TestAutofillDriverFactory::Create()` and
+// `CreateAndActivate()`. Defined outside `TestAutofillDriverFactory` so it can
+// be used as a default argument on member functions of the class.
+struct TestAutofillDriverCreateParams {
+  STACK_ALLOCATED();
+
+ public:
+  TestAutofillDriver* parent = nullptr;
+  bool is_embedded = false;
+};
+
+}  // namespace internal
 
 class TestAutofillDriverFactory : public AutofillDriverFactory {
  public:
@@ -55,6 +71,8 @@ class TestAutofillDriverFactory : public AutofillDriverFactory {
                             base::PassKey<TestAutofillClientBase>);
   ~TestAutofillDriverFactory() override;
 
+  using CreateParams = internal::TestAutofillDriverCreateParams;
+
   // Creates a `DriverT` and a `ManagerT` for it. The factory owns the new
   // driver, which is initially inactive.
   //
@@ -68,13 +86,14 @@ class TestAutofillDriverFactory : public AutofillDriverFactory {
             typename... Args>
     requires(std::derived_from<DriverT, TestAutofillDriver> &&
              std::derived_from<ManagerT, AutofillManager>)
-  DriverT& Create(Args&&... args) {
+  DriverT& Create(CreateParams params = {}, Args&&... args) {
     // Constructors of `DriverT` may call functions that validate the frame
     // tree.
     ScopedValidationSuppressor suppressor(*this);
     auto driver = std::make_unique<DriverT>(
         &client(), base::PassKey<TestAutofillDriverFactory>(),
         std::forward<Args>(args)...);
+    ApplyParams(*driver, params);
     driver->set_autofill_manager(std::make_unique<ManagerT>(driver.get()),
                                  /*pass_key=*/{});
     DriverT& raw_driver = *driver;
@@ -82,7 +101,7 @@ class TestAutofillDriverFactory : public AutofillDriverFactory {
     return raw_driver;
   }
 
-  TestAutofillDriver& Create();
+  TestAutofillDriver& Create(CreateParams params = {});
 
   // Like Create(), but also activates the new driver.
   template <typename DriverT,
@@ -90,15 +109,16 @@ class TestAutofillDriverFactory : public AutofillDriverFactory {
             typename... Args>
     requires(std::derived_from<DriverT, TestAutofillDriver> &&
              std::derived_from<ManagerT, AutofillManager>)
-  DriverT& CreateAndActivate(Args&&... args) {
+  DriverT& CreateAndActivate(CreateParams params = {}, Args&&... args) {
     // The new driver may be the first primary main frame.
     ScopedValidationSuppressor suppressor(*this);
-    DriverT& driver = Create<DriverT, ManagerT>(std::forward<Args>(args)...);
+    DriverT& driver =
+        Create<DriverT, ManagerT>(params, std::forward<Args>(args)...);
     Activate(driver);
     return driver;
   }
 
-  TestAutofillDriver& CreateAndActivate();
+  TestAutofillDriver& CreateAndActivate(CreateParams params = {});
 
   // See AutofillDriver::LifecycleState for documentation.
   void Activate(TestAutofillDriver& driver);
@@ -135,6 +155,9 @@ class TestAutofillDriverFactory : public AutofillDriverFactory {
  private:
   // The TestAutofillClient that owns this factory.
   TestAutofillClient& client();
+
+  // Applies `params` to `driver`.
+  static void ApplyParams(TestAutofillDriver& driver, CreateParams params);
 
   // Takes ownership of `driver` and notifies the observers.
   void Adopt(std::unique_ptr<TestAutofillDriver> driver);

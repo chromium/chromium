@@ -409,8 +409,7 @@ class AutofillManagerTest_ObserverCalls
 // OnAutofillManagerStateChanged() observer events.
 TEST_F(AutofillManagerTest_ObserverCalls, OnAutofillManagerStateChanged) {
   using enum AutofillManager::LifecycleState;
-  CreateAutofillDriver();
-  autofill_driver(1).SetParent(&autofill_driver(0));
+  CreateAutofillDriver({.parent = &autofill_driver(0)});
   observation().Reset();
   observation().Observe(&autofill_manager(1));
   auto m = Ref(autofill_manager(1));
@@ -981,9 +980,7 @@ TEST_F(AutofillManagerTest,
       GURL("https://example.com/"));
   autofill_client().GetCustomFormControlScriptIndex()->SetEntries(
       {{.host = "example.com", .script = "const x = 1;"}});
-  CreateAutofillDriver();
-  autofill_driver(1).SetParent(&autofill_driver(0));
-  ActivateAutofillDriver(autofill_driver(1));
+  CreateAndActivateAutofillDriver({.parent = &autofill_driver(0)});
   std::vector<FormData> forms = CreateTestForms(1);
 
   EXPECT_CALL(autofill_driver(1), LoadCustomFormControlScript).Times(0);

@@ -5632,11 +5632,12 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   // of the root frame.
   autofill_driver(0).SetIsEmbedded(is_embedded());
   if (has_parent()) {
-    CreateAutofillDriver();
-    autofill_driver(1).SetIsEmbedded(is_embedded());
-    autofill_driver(1).SetParent(&autofill_driver(0));
+    TestAutofillDriverFactory::CreateParams params = {
+        .parent = &autofill_driver(0), .is_embedded = is_embedded()};
     if (is_active()) {
-      ActivateAutofillDriver(autofill_driver(1));
+      CreateAndActivateAutofillDriver(params);
+    } else {
+      CreateAutofillDriver(params);
     }
   } else if (!is_active()) {
     DeactivateAutofillDriver(autofill_driver(0));
