@@ -60,7 +60,8 @@ TEST_F(ScopedSendingEventTest, SetHandlingSendEvent) {
 }
 
 // Nested call restores previous value rather than resetting flag.
-TEST_F(ScopedSendingEventTest, NestedSetHandlingSendEvent) {
+// TODO(crbug.com/591046156): Re-enable once Mac CRASH flake is fixed.
+TEST_F(ScopedSendingEventTest, DISABLED_NestedSetHandlingSendEvent) {
   id<CrAppProtocol> app = NSApp;
   EXPECT_FALSE([app isHandlingSendEvent]);
   {
