@@ -395,8 +395,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.PrivacyGuide.EntryExit"
     enum="SettingsPrivacyGuideInteractions" expires_after="2027-05-02">
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     How the users navigated into the Privacy guide as well as links out of the
@@ -406,8 +406,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
     expires_after="2027-02-28">
-  <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     The number of settings steps that can be shown in the Privacy Guide flow.
@@ -418,8 +419,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.PrivacyGuide.NextNavigation"
     enum="SettingsPrivacyGuideInteractions" expires_after="2027-02-28">
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     The step in the Privacy guide from which a user clicked the 'next' button.
@@ -428,8 +429,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.PrivacyGuide.SettingsStates"
     enum="SettingsPrivacyGuideSettingsStates" expires_after="2027-02-28">
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Records whether or not the user kept the same settings or changed it, and
@@ -441,8 +442,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
     expires_after="2027-02-28">
-  <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Records which steps were set to be eligible to be shown when user clicks
