@@ -59,7 +59,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "utils_unittest.mm" ]
+  sources = [
+    "default_browser_interest_signals_unittest.mm",
+    "utils_unittest.mm",
+  ]
   deps = [
     ":default_browser_interest_signals",
     ":features",

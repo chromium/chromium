@@ -680,6 +680,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
 - (void)locationBarSearchCopiedTextTapped {
   default_browser::NotifyOmniboxTextCopyPasteAndNavigate(
+      self.isOffTheRecord,
       feature_engagement::TrackerFactory::GetForProfile(self.profile));
 }
 

@@ -335,7 +335,8 @@ using base::UserMetricsAction;
     } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
       RecordAction(
           UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
-      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
+      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.isIncognito,
+                                                             self.tracker);
       [itemProvider loadObjectOfClass:[NSString class]
                     completionHandler:textCompletion];
       break;
@@ -360,7 +361,8 @@ using base::UserMetricsAction;
 }
 
 - (void)searchCopiedText {
-  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
+  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.isIncognito,
+                                                         self.tracker);
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(std::optional<std::u16string> optionalText) {

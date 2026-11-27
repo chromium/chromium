@@ -100,13 +100,15 @@ void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker) {
 void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
                                           feature_engagement::Tracker* tracker,
                                           SceneState* scene_state) {
+  // In Incognito, the tracker is the regular profile's, so recording the event
+  // would persist Incognito activity.
+  if (is_off_record) {
+    return;
+  }
+
   if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
-  }
-
-  if (is_off_record) {
-    return;
   }
 
   // Notify contextual promo.
@@ -118,7 +120,14 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 }
 
 void NotifyOmniboxTextCopyPasteAndNavigate(
+    bool is_off_record,
     feature_engagement::Tracker* tracker) {
+  // In Incognito, the tracker is the regular profile's, so recording the event
+  // would persist Incognito activity.
+  if (is_off_record) {
+    return;
+  }
+
   if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);

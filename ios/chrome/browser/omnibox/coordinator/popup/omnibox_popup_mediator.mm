@@ -188,7 +188,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           self.incognito, self.tracker, self.sceneState);
     }
     if (match.type == omnibox::AutocompleteMatchType::kClipboardText) {
-      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
+      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.incognito,
+                                                             self.tracker);
     }
 
     if (!self.incognito &&

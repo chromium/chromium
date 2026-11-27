@@ -53,14 +53,15 @@ void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker);
 void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user copy-pastes and navigates to a
-// URL in omnibox.
+// URL in omnibox. Nothing is recorded in Incognito.
 void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
                                           feature_engagement::Tracker* tracker,
                                           SceneState* scene_state);
 
 // Records all necessary information when user copy-pastes and searches a text
-// in omnibox.
+// in omnibox. Nothing is recorded in Incognito.
 void NotifyOmniboxTextCopyPasteAndNavigate(
+    bool is_off_record,
     feature_engagement::Tracker* tracker);
 
 // Record all necessary information when Default Browser FRE promo is shown.
