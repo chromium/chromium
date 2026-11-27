@@ -230,27 +230,30 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
                                  &cache);
 }
 
+std::vector<std::string> GetCursorThemes(const std::string& rm_xcursor_theme) {
+  std::vector<std::string> themes;
+#if BUILDFLAG(IS_LINUX)
+  // The toolkit theme has the highest priority.
+  if (auto* linux_ui = LinuxUi::instance()) {
+    themes.push_back(linux_ui->GetCursorThemeName());
+  }
+#endif
+
+  // Next try XCURSOR_THEME, then Xcursor.theme, matching libXcursor.
+  themes.push_back(GetEnv("XCURSOR_THEME"));
+  themes.push_back(rm_xcursor_theme);
+
+  // As a last resort, use the default theme.
+  themes.push_back("default");
+
+  std::erase_if(themes, [](const std::string& theme) { return theme.empty(); });
+  return themes;
+}
+
 scoped_refptr<base::RefCountedMemory> ReadCursorFile(
     const std::string& cursor_name,
     const std::string& rm_xcursor_theme) {
-  constexpr const char kDefaultTheme[] = "default";
-  std::string themes[] = {
-#if BUILDFLAG(IS_LINUX)
-    // The toolkit theme has the highest priority.
-    LinuxUi::instance() ? LinuxUi::instance()->GetCursorThemeName()
-                        : std::string(),
-#endif
-
-    // Next try Xcursor.theme.
-    rm_xcursor_theme,
-
-    // As a last resort, use the default theme.
-    kDefaultTheme,
-  };
-
-  for (const std::string& theme : themes) {
-    if (theme.empty())
-      continue;
+  for (const std::string& theme : GetCursorThemes(rm_xcursor_theme)) {
     if (auto file = ReadCursorFromTheme(theme, cursor_name)) {
       return file;
     }
@@ -279,6 +282,11 @@ std::vector<XCursorLoader::Image> ReadCursorImages(
 
 bool IsValidCursorThemeNameForTesting(const std::string& theme) {
   return IsValidCursorThemeName(theme);
+}
+
+std::vector<std::string> GetCursorThemesForTesting(
+    const std::string& rm_xcursor_theme) {
+  return GetCursorThemes(rm_xcursor_theme);
 }
 
 XCursorLoader::XCursorLoader(x11::Connection* connection,

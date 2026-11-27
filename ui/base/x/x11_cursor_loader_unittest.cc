@@ -6,7 +6,12 @@
 
 #undef Bool
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/containers/span.h"
+#include "base/environment.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/byte_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -290,6 +295,26 @@ TEST(XCursorLoaderTest, ThemeNameValidation) {
   };
   for (const char* theme : kValidThemes) {
     EXPECT_TRUE(IsValidCursorThemeNameForTesting(theme));
+  }
+}
+
+TEST(XCursorLoaderTest, XcursorThemeEnv) {
+  auto env = base::Environment::Create();
+  std::optional<std::string> old_theme = env->GetVar("XCURSOR_THEME");
+
+  env->UnSetVar("XCURSOR_THEME");
+  EXPECT_EQ(GetCursorThemesForTesting("rm_theme"),
+            (std::vector<std::string>{"rm_theme", "default"}));
+
+  // XCURSOR_THEME takes precedence over Xcursor.theme, like libXcursor.
+  env->SetVar("XCURSOR_THEME", "env_theme");
+  EXPECT_EQ(GetCursorThemesForTesting("rm_theme"),
+            (std::vector<std::string>{"env_theme", "rm_theme", "default"}));
+
+  if (old_theme) {
+    env->SetVar("XCURSOR_THEME", *old_theme);
+  } else {
+    env->UnSetVar("XCURSOR_THEME");
   }
 }
 
