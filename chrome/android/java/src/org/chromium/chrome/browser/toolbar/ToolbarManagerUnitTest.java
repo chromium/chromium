@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -194,6 +195,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -1737,6 +1739,39 @@ public class ToolbarManagerUnitTest {
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false")
     public void testControlContainerTopMargin_RefactorOnlyArmDisabled() {
         verifyControlContainerTopMarginOnlyUpdatesOnOffsetChanged();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures({
+        ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP,
+        ChromeFeatureList.ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP
+    })
+    public void testDownloadToolbarButtonSetup_tabletToolbar() {
+        OfflineContentProvider provider = mock(OfflineContentProvider.class);
+        OfflineContentAggregatorFactory.setOfflineContentProviderForTests(provider);
+
+        mToolbarManager.destroy();
+        DeviceInfo.setIsDesktopForTesting(true);
+        mToolbarManager = createToolbarManager(LazyOneshotSupplier.fromValue(mFindToolbarManager));
+
+        verify(provider).addObserver(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP,
+        ChromeFeatureList.ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP
+    })
+    public void testDownloadToolbarButtonSetup_nonTabletToolbarSkipped() {
+        OfflineContentProvider provider = mock(OfflineContentProvider.class);
+        OfflineContentAggregatorFactory.setOfflineContentProviderForTests(provider);
+
+        mToolbarManager.destroy();
+        DeviceInfo.setIsDesktopForTesting(true);
+        mToolbarManager = createToolbarManager(LazyOneshotSupplier.fromValue(mFindToolbarManager));
+
+        verify(provider, never()).addObserver(any());
     }
 
     private void verifyControlContainerTopMarginOnlyUpdatesOnOffsetChanged() {

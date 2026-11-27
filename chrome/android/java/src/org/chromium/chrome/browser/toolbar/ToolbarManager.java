@@ -2966,9 +2966,10 @@ public class ToolbarManager
 
         PictureInPictureWindowManagerBridge.initializeWithNative();
 
-        if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
-            // The offline content aggregator requires native, so the download model, controller and
-            // tray are created here.
+        if (DownloadFeatures.isDownloadToolbarButtonEnabled()
+                && mToolbarLayout instanceof ToolbarTablet) {
+            // Only ToolbarTablet has the download button stub, and the offline content aggregator
+            // requires native, so the download model, controller and tray are created here.
             mDownloadStateModel = new DownloadStateModel(OfflineContentAggregatorFactory.get());
             mDownloadToolbarButtonController =
                     new DownloadToolbarButtonController(
