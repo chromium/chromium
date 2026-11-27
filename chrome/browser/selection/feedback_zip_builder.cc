@@ -36,7 +36,9 @@
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/common/channel_info.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/active_field_trials.h"
@@ -51,6 +53,21 @@ namespace selection {
 
 namespace {
 
+std::string_view PageContextEligibilityToString(
+    const tabs::PageContextEligibilityHelper* helper) {
+  if (!helper) {
+    return "Missing";
+  }
+  switch (helper->IsPageContextEligible()) {
+    case optimization_guide::PageContextEligibilityStatus::kUnknown:
+      return "Unknown";
+    case optimization_guide::PageContextEligibilityStatus::kEligible:
+      return "Eligible";
+    case optimization_guide::PageContextEligibilityStatus::kNotEligible:
+      return "Not Eligible";
+  }
+}
+
 struct TabMetadata {
   std::string page_url;
   signin_util::SignedInState signed_in_state =
@@ -58,6 +75,7 @@ struct TabMetadata {
   bool is_signed_in = false;
   bool is_google_internal_account = false;
   std::optional<bool> server_suggestions_enabled;
+  std::optional<std::string_view> page_context_eligibility;
 };
 
 std::string BuildMetadataJson(const TabMetadata& tab_metadata,
@@ -145,6 +163,10 @@ std::string BuildMetadataJson(const TabMetadata& tab_metadata,
           .Set("account", get_account_dict())
           .Set("variations", get_variations_dict())
           .Set("smart_selection_feature_params", get_feature_params_dict());
+  if (tab_metadata.page_context_eligibility.has_value()) {
+    dict.Set("page_context_eligibility",
+             *tab_metadata.page_context_eligibility);
+  }
 
   return base::WriteJsonWithOptions(dict,
                                     base::JSONWriter::OPTIONS_PRETTY_PRINT)
@@ -274,6 +296,9 @@ void FeedbackZipBuilder::SetTab(tabs::TabInterface& tab,
           identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
               .email);
 
+  const tabs::PageContextEligibilityHelper* const eligibility_helper =
+      tabs::PageContextEligibilityHelper::From(&tab);
+
   state_->tab_metadata = TabMetadata{
       .page_url = web_contents ? web_contents->GetLastCommittedURL().spec()
                                : std::string(),
@@ -281,6 +306,8 @@ void FeedbackZipBuilder::SetTab(tabs::TabInterface& tab,
       .is_signed_in = is_signed_in,
       .is_google_internal_account = is_google_internal_account,
       .server_suggestions_enabled = server_suggestions_enabled,
+      .page_context_eligibility =
+          PageContextEligibilityToString(eligibility_helper),
   };
 }
 

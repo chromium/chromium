@@ -58,8 +58,8 @@ class FeedbackZipBuilder {
   // - `request.pb`: the serialized SmartSelectionSuggestionsRequest proto,
   // - `response.pb`: the serialized SmartSelectionSuggestionsResponse proto,
   // - `suggestions.json`: the generated client suggestions,
-  // - `metadata.json`: client/environment metadata (OS, build, account,
-  //   active variations, and feature parameters),
+  // - `metadata.json`: client/environment metadata (OS, build, account, page
+  //   context eligibility, active variations, and feature parameters),
   // and passes the created ZIP path to `callback` (or `std::nullopt` on
   // failure).
   void CreateZip(

@@ -1256,6 +1256,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   base::DictValue metadata_dict = ParseJsonDict(files["metadata.json"]);
   EXPECT_THAT(metadata_dict, IsSupersetOfValue(R"({
     "page_url": "https://example.com/feedback",
+    "page_context_eligibility": "Eligible",
     "account": {
       "state": "Signed Out",
       "is_signed_in": false,
@@ -1414,8 +1415,42 @@ TEST_F(SuggestionServiceUnitTest,
 // `RequestSuggestions` call and produces a valid ZIP archive containing
 // `metadata.json`.
 TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipBeforeAnyRequest) {
-  EXPECT_THAT(CreateAndUnzip(FeedbackZipBuilder()),
-              ElementsAre(Key("metadata.json")));
+  base::flat_map<std::string, std::string> files =
+      CreateAndUnzip(FeedbackZipBuilder());
+  ASSERT_THAT(files, ElementsAre(Key("metadata.json")));
+  EXPECT_FALSE(
+      ParseJsonDict(files["metadata.json"]).Find("page_context_eligibility"));
+}
+
+// Tests that `metadata.json` records the tab's page context eligibility status
+// for each eligibility state and when the helper is missing.
+TEST_F(SuggestionServiceUnitTest,
+       CreateFeedbackZipRecordsPageContextEligibility) {
+  auto get_eligibility_from_zip = [](tabs::TabInterface& tab) {
+    FeedbackZipBuilder zip_builder;
+    zip_builder.SetTab(tab, /*server_suggestions_enabled=*/true);
+    base::flat_map<std::string, std::string> files =
+        CreateAndUnzip(zip_builder);
+    const base::DictValue metadata_dict = ParseJsonDict(files["metadata.json"]);
+    const std::string* const value =
+        metadata_dict.FindString("page_context_eligibility");
+    return value ? *value : std::string();
+  };
+
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  EXPECT_EQ(get_eligibility_from_zip(mock_tab()), "Eligible");
+
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  EXPECT_EQ(get_eligibility_from_zip(mock_tab()), "Not Eligible");
+
+  eligibility_helper().SetStatus(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+  EXPECT_EQ(get_eligibility_from_zip(mock_tab()), "Unknown");
+
+  tabs::MockTabInterface tab_without_helper;
+  EXPECT_EQ(get_eligibility_from_zip(tab_without_helper), "Missing");
 }
 
 // Tests that overlapping `RequestSuggestions` calls receive isolated
