@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>&lt;animateMotion> along a path with accumulate="sum"</title>
+<link rel="help" href="https://w3c.github.io/svgwg/specs/animations/#AnimateMotionElement">
+<link rel="help" href="https://w3c.github.io/svgwg/specs/animations/#RotateAttribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<svg id="svg" width="400" height="400"></svg>
+<script>
+// Every animation repeats a 4s motion along a path a whole number of times and
+// is then frozen. With accumulate="sum" each iteration after the first builds
+// on the end of the previous one, so the frozen position is the end point of
+// the path multiplied by the number of iterations. The rotation comes from the
+// direction of the path at its end, or from 'rotate', and does not accumulate.
+const simpleDuration = 4;
+
+const motionPaths = [
+  {
+    name: 'closed polyline',
+    path: 'M100,100L100,500 500,500 500,100 100,100',
+    end: {x: 100, y: 100},
+    // The last segment runs from (500,100) to (100,100).
+    endDirection: 180,
+    repeatDurations: [8, 12, 16],
+  },
+  {
+    name: 'open curve',
+    path: 'M100,100c0,200 200,200 200,0',
+    end: {x: 300, y: 100},
+    // The last control point, (300,300), is straight below the end point.
+    endDirection: -90,
+    repeatDurations: [8, 12],
+  },
+];
+
+const rotations = [
+  {rotate: null, angle: () => 0},
+  {rotate: 'auto', angle: endDirection => endDirection},
+  {rotate: 'auto-reverse', angle: endDirection => endDirection + 180},
+  {rotate: '60', angle: () => 60},
+];
+
+const svg = document.getElementById('svg');
+const svgNamespace = 'http://www.w3.org/2000/svg';
+
+function createAnimatedTarget(path, repeatDuration, rotate) {
+  const target = document.createElementNS(svgNamespace, 'rect');
+  target.setAttribute('width', '10');
+  target.setAttribute('height', '10');
+  const motion = document.createElementNS(svgNamespace, 'animateMotion');
+  motion.setAttribute('path', path);
+  motion.setAttribute('dur', `${simpleDuration}s`);
+  motion.setAttribute('repeatDur', `${repeatDuration}s`);
+  motion.setAttribute('accumulate', 'sum');
+  motion.setAttribute('fill', 'freeze');
+  if (rotate !== null) {
+    motion.setAttribute('rotate', rotate);
+  }
+  target.appendChild(motion);
+  return svg.appendChild(target);
+}
+
+function sampleAt(time) {
+  svg.setCurrentTime(time);
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+// The rotation is post-multiplied onto the translation computed for the motion.
+// The direction at the end of a curve may be approximated, so allow the same
+// tolerance as the other tests of motion along curves.
+function assert_motion_transform(target, x, y, angleInDegrees) {
+  const ctm = target.getCTM();
+  const expected = new DOMMatrix().translate(x, y).rotate(angleInDegrees);
+  for (const component of ['a', 'b', 'c', 'd', 'e', 'f']) {
+    assert_approx_equals(ctm[component], expected[component], 0.01,
+                         `matrix ${component}`);
+  }
+}
+
+// Document begin is the moment the load event is triggered, so the timeline
+// cannot be sampled until after that event has been dispatched. Yield once
+// before pausing and driving it manually.
+promise_setup(() => new Promise(resolve => {
+  window.addEventListener('load', () => requestAnimationFrame(() => {
+    svg.pauseAnimations();
+    resolve();
+  }));
+}));
+
+for (const {name, path, end, endDirection, repeatDurations} of motionPaths) {
+  for (const repeatDuration of repeatDurations) {
+    const iterations = repeatDuration / simpleDuration;
+    for (const {rotate, angle} of rotations) {
+      const target = createAnimatedTarget(path, repeatDuration, rotate);
+      promise_test(async () => {
+        await sampleAt(repeatDuration);
+        assert_motion_transform(target, end.x * iterations, end.y * iterations,
+                                angle(endDirection));
+      }, `${name}, ${iterations} iterations, ` +
+         (rotate === null ? 'no rotate' : `rotate="${rotate}"`));
+    }
+  }
+}
+</script>
