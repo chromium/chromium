@@ -466,6 +466,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/handoff/HandoffControllerUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentTabsCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentTabsGroupViewUnitTest.java",
+      "src/org/chromium/chrome/browser/recent_tabs/RecentTabsManagerUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentTabsPageUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedEntriesManagerTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedEntriesManagerUnitTest.java",
