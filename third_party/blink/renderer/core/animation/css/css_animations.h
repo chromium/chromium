@@ -88,6 +88,10 @@ class CORE_EXPORT CSSAnimations final {
   static bool IsAnimatingFontAffectingProperties(const ElementAnimations*);
   static bool IsAnimatingLineHeightProperty(const ElementAnimations*);
   static bool IsAnimatingZoomProperty(const ElementAnimations*);
+  // Returns true if animating any high-priority property other than
+  // font-affecting properties, zoom, or color (which are handled separately).
+  static bool IsAnimatingHighPriorityProperties(const ElementAnimations*);
+  static bool IsAnimatingColorProperty(const ElementAnimations*);
   static bool IsAnimatingRevert(const ElementAnimations*);
   static bool IsAnimatingDisplayProperty(const ElementAnimations*);
   static void CalculateTimelineUpdate(CSSAnimationUpdate&,

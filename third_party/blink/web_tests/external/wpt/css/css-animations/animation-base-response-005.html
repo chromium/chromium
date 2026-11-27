@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests that base responds to animated high-priority properties</title>
+<link rel="help" href="https://drafts.csswg.org/css-animations-1/">
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#widget-accent">
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-switching">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @property --accent {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgb(0, 0, 0);
+  }
+
+  @keyframes flip-accent {
+    0% { accent-color: rgb(255, 0, 0); }
+    50% { accent-color: rgb(0, 128, 0); }
+    100% { accent-color: rgb(255, 0, 0); }
+  }
+
+  #accent-target {
+    accent-color: rgb(255, 0, 0);
+    --accent: AccentColor;
+  }
+
+  .animate-accent {
+    animation: flip-accent 10s linear paused;
+  }
+
+  #color-accent-target {
+    color: rgb(255, 0, 0);
+    accent-color: currentcolor;
+    --accent: AccentColor;
+  }
+
+  #select-ref-auto {
+    appearance: auto;
+  }
+
+  #select-ref-base {
+    appearance: base-select;
+  }
+
+  #select-target {
+    appearance: auto;
+  }
+</style>
+<div id="accent-target"></div>
+<div id="color-accent-target"></div>
+<select id="select-ref-auto"><option>Option</option></select>
+<select id="select-ref-base"><option>Option</option></select>
+<select id="select-target"><option>Option</option></select>
+<script>
+  const red = "rgb(255, 0, 0)";
+  const green = "rgb(0, 128, 0)";
+
+  test(() => {
+    const target = document.getElementById("accent-target");
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    target.classList.add("animate-accent");
+    const anim = target.getAnimations()[0];
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    // Advance the animation to trigger an animation-only style update.
+    anim.currentTime = 5000;
+    assert_equals(getComputedStyle(target).accentColor, green);
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), green);
+
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).accentColor, red);
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    target.classList.remove("animate-accent");
+  }, "CSS animation of accent-color updates registered AccentColor");
+
+  test(() => {
+    const target = document.getElementById("accent-target");
+    const anim = target.animate(
+      { accentColor: [red, green] },
+      { duration: 1000, fill: "forwards" }
+    );
+    anim.pause();
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    anim.currentTime = 1000;
+    assert_equals(getComputedStyle(target).accentColor, green);
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), green);
+
+    anim.cancel();
+  }, "Web animation of accent-color updates registered AccentColor");
+
+  test(() => {
+    const target = document.getElementById("color-accent-target");
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    const anim = target.animate(
+      { color: [red, green] },
+      { duration: 1000, fill: "forwards" }
+    );
+    anim.pause();
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), red);
+
+    anim.currentTime = 1000;
+    assert_equals(getComputedStyle(target).color, green);
+    assert_equals(getComputedStyle(target).getPropertyValue("--accent"), green);
+
+    anim.cancel();
+  }, "Web animation of color updates registered AccentColor when accent-color is currentcolor");
+
+  test(() => {
+    const refAuto = document.getElementById("select-ref-auto");
+    const refBase = document.getElementById("select-ref-base");
+    const target = document.getElementById("select-target");
+    const autoDisplay = getComputedStyle(refAuto).display;
+    const baseDisplay = getComputedStyle(refBase).display;
+    assert_not_equals(autoDisplay, baseDisplay,
+        "appearance: base-select should change select display");
+
+    assert_equals(getComputedStyle(target).display, autoDisplay);
+
+    const anim = target.animate(
+      { appearance: ["auto", "base-select"] },
+      { duration: 1000, fill: "forwards" }
+    );
+    anim.pause();
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).display, autoDisplay);
+
+    anim.currentTime = 1000;
+    assert_equals(getComputedStyle(target).appearance, "base-select");
+    assert_equals(getComputedStyle(target).display, baseDisplay);
+
+    anim.currentTime = 0;
+    assert_equals(getComputedStyle(target).appearance, "auto");
+    assert_equals(getComputedStyle(target).display, autoDisplay);
+
+    anim.cancel();
+  }, "Web animation of appearance on select updates dependent styles");
+</script>

@@ -3236,12 +3236,19 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
-  // Animating color-scheme can change computed values of registered colors
-  // (e.g. light-dark()) and styles depending on them.
-  if (element_animations->GetEffectStack().AffectsProperties(
-          [](const PropertyHandle& property) {
-            return property == PropertyHandle(GetCSSPropertyColorScheme());
-          })) {
+  // High-priority properties (such as color-scheme, accent-color, math-depth,
+  // appearance, etc.) are applied early in the cascade because other properties
+  // can depend on them, so animating them can make the cached base style stale.
+  if (CSSAnimations::IsAnimatingHighPriorityProperties(element_animations)) {
+    return false;
+  }
+
+  // When accent-color depends on currentcolor, AccentColor/AccentColorText
+  // keywords resolve against the element's color at computed-value time.
+  if (RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled() &&
+      !base_style->AccentColor().IsAutoColor() &&
+      base_style->AccentColor().DependsOnCurrentColor() &&
+      CSSAnimations::IsAnimatingColorProperty(element_animations)) {
     return false;
   }
 

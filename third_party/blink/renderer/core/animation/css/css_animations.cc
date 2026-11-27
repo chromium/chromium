@@ -3681,6 +3681,38 @@ bool IsZoomPropertyHandle(const PropertyHandle& property) {
   return property == PropertyHandle(GetCSSPropertyZoom());
 }
 
+bool IsHighPriorityPropertyHandle(const PropertyHandle& property) {
+  if (property.IsCSSCustomProperty()) {
+    return false;
+  }
+  const CSSProperty& css_property = property.GetCSSProperty();
+  if (!IsHighPriority(css_property.PropertyID())) {
+    return false;
+  }
+  // Font-affecting properties are handled separately (only invalidating base
+  // style when font-relative units are present).
+  if (css_property.AffectsFont()) {
+    return false;
+  }
+  switch (css_property.PropertyID()) {
+    // Handled separately in CanReuseBaseComputedStyle() behind its feature
+    // flag.
+    case CSSPropertyID::kZoom:
+    // Color resolves currentcolor at used-value time, except when accent-color
+    // depends on currentcolor (handled separately via
+    // IsAnimatingColorProperty()).
+    case CSSPropertyID::kColor:
+    case CSSPropertyID::kInternalVisitedColor:
+      return false;
+    default:
+      return true;
+  }
+}
+
+bool IsColorPropertyHandle(const PropertyHandle& property) {
+  return property == PropertyHandle(GetCSSPropertyColor());
+}
+
 bool IsDisplayPropertyHandle(const PropertyHandle& property) {
   return property == PropertyHandle(GetCSSPropertyDisplay());
 }
@@ -4078,6 +4110,20 @@ bool CSSAnimations::IsAnimatingZoomProperty(
   return element_animations &&
          element_animations->GetEffectStack().AffectsProperties(
              IsZoomPropertyHandle);
+}
+
+bool CSSAnimations::IsAnimatingHighPriorityProperties(
+    const ElementAnimations* element_animations) {
+  return element_animations &&
+         element_animations->GetEffectStack().AffectsProperties(
+             IsHighPriorityPropertyHandle);
+}
+
+bool CSSAnimations::IsAnimatingColorProperty(
+    const ElementAnimations* element_animations) {
+  return element_animations &&
+         element_animations->GetEffectStack().AffectsProperties(
+             IsColorPropertyHandle);
 }
 
 bool CSSAnimations::IsAnimatingRevert(
