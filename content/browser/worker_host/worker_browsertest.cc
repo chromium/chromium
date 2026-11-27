@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
+
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -44,9 +46,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -68,6 +72,8 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/storage_access_api/status.h"
@@ -78,6 +84,7 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -89,6 +96,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -106,6 +114,7 @@
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -2891,6 +2900,346 @@ IN_PROC_BROWSER_TEST_F(
       w.onerror = () => reject(new Error('data worker failed'));
     })
   )"));
+}
+
+namespace {
+
+void WriteRedirectResponse(network::mojom::URLLoaderClient* client,
+                           const GURL& new_url) {
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = net::HTTP_TEMPORARY_REDIRECT;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = new_url;
+
+  auto response = network::mojom::URLResponseHead::New();
+  std::string raw_headers = net::HttpUtil::AssembleRawHeaders(base::StrCat(
+      {"HTTP/1.1 307 Internal Redirect\nLocation: ", new_url.spec(), "\n\n"}));
+  response->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
+  response->parsed_headers = network::mojom::ParsedHeaders::New();
+  client->OnReceiveRedirect(redirect_info, std::move(response));
+}
+
+class RedirectingWorkerScriptThrottle : public blink::URLLoaderThrottle {
+ public:
+  RedirectingWorkerScriptThrottle(const GURL& match_url, const GURL& target_url)
+      : match_url_(match_url), target_url_(target_url) {}
+  ~RedirectingWorkerScriptThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    if (request->url == match_url_) {
+      request->url = target_url_;
+    }
+  }
+
+ private:
+  const GURL match_url_;
+  const GURL target_url_;
+};
+
+class WorkerThrottleTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  WorkerThrottleTestContentBrowserClient(const GURL& match_url,
+                                         const GURL& target_url)
+      : match_url_(match_url), target_url_(target_url) {}
+  ~WorkerThrottleTestContentBrowserClient() override = default;
+
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      BrowserContext* browser_context,
+      const base::RepeatingCallback<WebContents*()>& wc_getter,
+      NavigationUIData* navigation_ui_data,
+      FrameTreeNodeId frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
+    auto throttles =
+        ContentBrowserTestContentBrowserClient::CreateURLLoaderThrottles(
+            request, browser_context, wc_getter, navigation_ui_data,
+            frame_tree_node_id, navigation_id);
+    if (request.destination == network::mojom::RequestDestination::kWorker ||
+        request.destination ==
+            network::mojom::RequestDestination::kSharedWorker) {
+      throttles.push_back(std::make_unique<RedirectingWorkerScriptThrottle>(
+          match_url_, target_url_));
+    }
+    return throttles;
+  }
+
+ private:
+  const GURL match_url_;
+  const GURL target_url_;
+};
+
+}  // namespace
+
+// Verifies that worker main-script requests starting from local schemes
+// (`about:`, `filesystem:`, `data:`) reject redirects (both from URL loaders
+// and from `URLLoaderThrottle::WillStartRequest`) without requesting the
+// redirect target or masking a non-committable URL, sanitize unexpected
+// service worker metadata on local-scheme responses, and preserve legitimate
+// same-origin HTTPS redirects and unredirected local-scheme workers.
+IN_PROC_BROWSER_TEST_F(WorkerTest,
+                       WorkerMainScriptRejectsRedirectsFromLocalSchemes) {
+  const GURL main_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL plain_https_worker_url =
+      ssl_server()->GetURL("a.test", "/workers/plain_worker.js");
+  const GURL redirected_https_worker_url = ssl_server()->GetURL(
+      "a.test", "/server-redirect?" + plain_https_worker_url.spec());
+  const GURL non_committable_target("noncommittable-scheme:worker.js");
+  const GURL non_committable_sw_url("file:///non_committable_path");
+  const GURL about_blank_url(url::kAboutBlankURL);
+  const GURL filesystem_worker_url(
+      base::StrCat({"filesystem:", main_url.DeprecatedGetOriginAsURL().spec(),
+                    "temporary/worker.js"}));
+  const GURL throttle_redirected_data_url(
+      "data:text/javascript,postMessage('redirected-data');");
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(main_rfh);
+  ASSERT_TRUE(IsSafeRedirectTarget(about_blank_url, non_committable_target));
+  ASSERT_TRUE(
+      IsSafeRedirectTarget(filesystem_worker_url, non_committable_target));
+  ASSERT_FALSE(
+      IsSafeRedirectTarget(non_committable_target, non_committable_sw_url));
+  ASSERT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
+      main_rfh->GetProcess()->GetDeprecatedID(), non_committable_target));
+  ASSERT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanCommitURL(
+      main_rfh->GetProcess()->GetDeprecatedID(), non_committable_sw_url));
+
+  WorkerFinalResponseURLObserver observer(shell()
+                                              ->web_contents()
+                                              ->GetBrowserContext()
+                                              ->GetDefaultStoragePartition());
+
+  // 1. DedicatedWorker `about:blank` main-script load redirected by a loader
+  // must fail without following the redirect or delivering response bytes.
+  {
+    std::atomic<bool> initial_request_intercepted{false};
+    std::atomic<bool> redirect_target_requested{false};
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url == about_blank_url) {
+            initial_request_intercepted.store(true);
+            WriteRedirectResponse(params->client.get(), non_committable_target);
+            return true;
+          }
+          if (params->url_request.url == non_committable_target) {
+            redirect_target_requested.store(true);
+            URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
+                "self.postMessage('unexpected-body');", params->client.get(),
+                /*ssl_info=*/std::nullopt, non_committable_target);
+            return true;
+          }
+          return false;
+        }));
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(main_rfh, about_blank_url, factory,
+                                           client);
+    EXPECT_TRUE(initial_request_intercepted.load());
+    EXPECT_TRUE(client.script_load_start_failed());
+    EXPECT_FALSE(client.script_load_started());
+    EXPECT_FALSE(client.main_script_load_params());
+    EXPECT_FALSE(redirect_target_requested.load());
+    EXPECT_TRUE(observer.final_response_urls().empty());
+  }
+
+  // 2. SharedWorker same-origin `filesystem:` main-script load redirected by a
+  // loader must also fail without requesting the redirect target or adopting a
+  // final response URL.
+  if (SupportsSharedWorker()) {
+    std::atomic<bool> initial_request_intercepted{false};
+    std::atomic<bool> redirect_target_requested{false};
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url == filesystem_worker_url) {
+            initial_request_intercepted.store(true);
+            WriteRedirectResponse(params->client.get(), non_committable_target);
+            return true;
+          }
+          if (params->url_request.url == non_committable_target) {
+            redirect_target_requested.store(true);
+            URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
+                "onconnect = e => e.ports[0].postMessage('unexpected-body');",
+                params->client.get(), /*ssl_info=*/std::nullopt,
+                non_committable_target);
+            return true;
+          }
+          return false;
+        }));
+
+    EXPECT_EQ("error", EvalJs(main_rfh, JsReplace(R"(
+      new Promise(resolve => {
+        const worker = new SharedWorker($1);
+        worker.onerror = () => resolve('error');
+        worker.port.onmessage = e => resolve(e.data);
+      })
+    )",
+                                                  filesystem_worker_url)));
+    EXPECT_TRUE(initial_request_intercepted.load());
+    EXPECT_FALSE(redirect_target_requested.load());
+    EXPECT_TRUE(observer.final_response_urls().empty());
+    EXPECT_FALSE(GetSharedWorkerHost(filesystem_worker_url));
+  }
+
+  // 3. Worker `data:` main-script loads redirected via
+  // `URLLoaderThrottle::WillStartRequest` (before `WorkerScriptLoader` is
+  // created) must fail cleanly without crashing or following the redirect.
+  {
+    std::atomic<bool> redirect_target_requested{false};
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url == non_committable_target) {
+            redirect_target_requested.store(true);
+            URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
+                "self.postMessage('unexpected-body');", params->client.get(),
+                /*ssl_info=*/std::nullopt, non_committable_target);
+            return true;
+          }
+          return false;
+        }));
+
+    WorkerThrottleTestContentBrowserClient throttle_browser_client(
+        throttle_redirected_data_url, non_committable_target);
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(
+        main_rfh, throttle_redirected_data_url, factory, client);
+    EXPECT_TRUE(client.script_load_start_failed());
+    EXPECT_FALSE(client.script_load_started());
+    EXPECT_FALSE(client.main_script_load_params());
+    EXPECT_FALSE(redirect_target_requested.load());
+    EXPECT_TRUE(observer.final_response_urls().empty());
+
+    if (SupportsSharedWorker()) {
+      EXPECT_EQ("error",
+                EvalJs(main_rfh, JsReplace(R"(
+        new Promise(resolve => {
+          const worker = new SharedWorker($1);
+          worker.onerror = () => resolve('error');
+          worker.port.onmessage = e => resolve(e.data);
+        })
+      )",
+                                           throttle_redirected_data_url)));
+      EXPECT_FALSE(redirect_target_requested.load());
+      EXPECT_TRUE(observer.final_response_urls().empty());
+    }
+  }
+
+  // 3b. Non-local, non-HTTP(S) main-script load redirected via
+  // `URLLoaderThrottle::WillStartRequest` to an unsafe target (`file:`) must
+  // also be rejected by `!IsSafeRedirectTarget(...)` in `WorkerScriptFetcher`.
+  {
+    std::atomic<bool> unsafe_target_requested{false};
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url == non_committable_sw_url) {
+            unsafe_target_requested.store(true);
+            URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
+                "self.postMessage('unexpected-body');", params->client.get(),
+                /*ssl_info=*/std::nullopt, non_committable_sw_url);
+            return true;
+          }
+          return false;
+        }));
+
+    WorkerThrottleTestContentBrowserClient throttle_browser_client(
+        non_committable_target, non_committable_sw_url);
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(main_rfh, non_committable_target,
+                                           factory, client);
+    EXPECT_TRUE(client.script_load_start_failed());
+    EXPECT_FALSE(client.script_load_started());
+    EXPECT_FALSE(client.main_script_load_params());
+    EXPECT_FALSE(unsafe_target_requested.load());
+    EXPECT_TRUE(observer.final_response_urls().empty());
+  }
+
+  // 4. Local-scheme response sanitization: an unredirected `about:blank`
+  // response carrying unexpected `url_list_via_service_worker` metadata must
+  // have its service worker metadata stripped before reaching the renderer.
+  {
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url != about_blank_url) {
+            return false;
+          }
+          WriteWorkerScriptResponseWithServiceWorkerUrlList(
+              params->client.get(), {non_committable_sw_url});
+          return true;
+        }));
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerHostFactoryClient client;
+    StartDedicatedWorkerScriptLoadForFrame(main_rfh, about_blank_url, factory,
+                                           client);
+    EXPECT_TRUE(client.script_load_started());
+    EXPECT_FALSE(client.script_load_start_failed());
+    ASSERT_TRUE(client.main_script_load_params());
+    EXPECT_FALSE(client.main_script_load_params()
+                     ->response_head->was_fetched_via_service_worker);
+    EXPECT_TRUE(client.main_script_load_params()
+                    ->response_head->url_list_via_service_worker.empty());
+    ASSERT_EQ(1u, observer.final_response_urls().size());
+    EXPECT_EQ(about_blank_url, observer.final_response_urls().back());
+  }
+
+  // 5. Positive controls: legitimate same-origin HTTPS worker redirects and
+  // unredirected `blob:` and `data:` workers continue to succeed.
+  {
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url != plain_https_worker_url) {
+            return false;
+          }
+          URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
+              "self.postMessage('https-redirect-ok');", params->client.get(),
+              /*ssl_info=*/std::nullopt, plain_https_worker_url);
+          return true;
+        }));
+
+    EXPECT_EQ("https-redirect-ok",
+              EvalJs(main_rfh, JsReplace(R"(
+      new Promise((resolve, reject) => {
+        const worker = new Worker($1);
+        worker.onmessage = e => resolve(e.data);
+        worker.onerror = () => reject(new Error('https worker failed'));
+      })
+    )",
+                                         redirected_https_worker_url)));
+    EXPECT_EQ(plain_https_worker_url, observer.final_response_urls().back());
+  }
+
+  EXPECT_EQ("blob-ok", EvalJs(main_rfh, R"(
+    new Promise((resolve, reject) => {
+      const blob = new Blob(["postMessage('blob-ok');"],
+                            {type: 'text/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      worker.onmessage = e => resolve(e.data);
+      worker.onerror = () => reject(new Error('blob worker failed'));
+    })
+  )"));
+  EXPECT_TRUE(observer.final_response_urls().back().SchemeIsBlob());
+
+  EXPECT_EQ("data-ok", EvalJs(main_rfh, R"(
+    new Promise((resolve, reject) => {
+      const worker = new Worker("data:text/javascript,postMessage('data-ok');");
+      worker.onmessage = e => resolve(e.data);
+      worker.onerror = () => reject(new Error('data worker failed'));
+    })
+  )"));
+  EXPECT_TRUE(observer.final_response_urls().back().SchemeIs(url::kDataScheme));
 }
 
 }  // namespace content

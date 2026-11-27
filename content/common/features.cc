@@ -995,6 +995,11 @@ BASE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig,
 // `mojo::DataPipeProducer` on the `ThreadPool`.
 BASE_FEATURE(kWebUISyncDataPipeWrite, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Rejects redirects from local-scheme worker main script URLs and sanitizes
+// local-scheme worker main script response metadata.
+BASE_FEATURE(kWorkerScriptLocalSchemeRedirectCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Please keep features in alphabetical order.
 
 bool IsEnforceSameDocumentOriginInvariantsEnabled() {

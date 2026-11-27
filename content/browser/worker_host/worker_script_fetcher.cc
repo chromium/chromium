@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/connection_allowlist_utils.h"
@@ -31,6 +32,7 @@
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -45,10 +47,12 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -715,6 +719,9 @@ GURL WorkerScriptFetcher::DetermineFinalResponseUrl(
     blink::mojom::WorkerMainScriptLoadParams* main_script_load_params) {
   CHECK(main_script_load_params, base::NotFatalUntil::M160);
 
+  // Local-scheme requests never produce redirects or service worker responses
+  // (enforced in `WorkerScriptLoader` and
+  // `WorkerScriptFetcher::OnReceiveRedirect`).
   if (initial_request_url.SchemeIsLocal()) {
     return initial_request_url;
   }
@@ -810,7 +817,10 @@ void WorkerScriptFetcher::OnReceiveResponse(
   if (main_script_load_params_->response_head->parsed_headers) {
     std::move(callback_).Run(std::move(main_script_load_params_),
                              nullptr /* completion_status */);
-    script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
+    if (base::WeakPtr<WorkerScriptLoader> script_loader =
+            script_loader_factory_->GetScriptLoader()) {
+      script_loader->OnFetcherCallbackCalled();
+    }
     delete this;
     return;
   }
@@ -825,6 +835,22 @@ void WorkerScriptFetcher::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+
+  const GURL& current_url = redirect_infos_.empty()
+                                ? resource_request_->url
+                                : redirect_infos_.back().new_url;
+  if ((current_url.SchemeIsLocal() ||
+       !IsSafeRedirectTarget(current_url, redirect_info.new_url)) &&
+      base::FeatureList::IsEnabled(
+          features::kWorkerScriptLocalSchemeRedirectCheck)) {
+    // Reset `url_loader_` before `OnComplete()` deletes `this` so that
+    // `ThrottlingURLLoader`'s `WeakWrapperSharedURLLoaderFactory` does not
+    // outlive `script_loader_factory_`.
+    url_loader_.reset();
+    OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
+    return;
+  }
+
   redirect_infos_.push_back(redirect_info);
   redirect_response_heads_.push_back(std::move(response_head));
   url_loader_->FollowRedirect(/*headers_update_params=*/{});
@@ -854,7 +880,10 @@ void WorkerScriptFetcher::OnComplete(
   CHECK_NE(status.error_code, net::OK);
 
   std::move(callback_).Run(/*main_script_load_params=*/nullptr, &status);
-  script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
+  if (base::WeakPtr<WorkerScriptLoader> script_loader =
+          script_loader_factory_->GetScriptLoader()) {
+    script_loader->OnFetcherCallbackCalled();
+  }
   delete this;
 }
 
@@ -868,7 +897,10 @@ void WorkerScriptFetcher::DidParseHeaders(
 
   std::move(callback_).Run(std::move(main_script_load_params_),
                            nullptr /* completion_status */);
-  script_loader_factory_->GetScriptLoader()->OnFetcherCallbackCalled();
+  if (base::WeakPtr<WorkerScriptLoader> script_loader =
+          script_loader_factory_->GetScriptLoader()) {
+    script_loader->OnFetcherCallbackCalled();
+  }
   delete this;
 }
 

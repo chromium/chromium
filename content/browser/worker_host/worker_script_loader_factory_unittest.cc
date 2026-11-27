@@ -44,6 +44,8 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -774,6 +776,160 @@ TEST_F(WorkerScriptLoaderFactoryTest,
   ASSERT_TRUE(worker_client);
   EXPECT_TRUE(worker_client->disallows_service_worker_control());
   EXPECT_FALSE(worker_client->IsEligibleForServiceWorkerController());
+}
+
+// Tests that redirects received while loading any local-scheme URL (`about:`,
+// `data:`, `filesystem:`) are rejected with `ERR_UNSAFE_REDIRECT` before being
+// forwarded or followed.
+TEST_F(WorkerScriptLoaderFactoryTest, RedirectFromLocalSchemeUrls) {
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  const GURL kLocalSchemeUrls[] = {
+      GURL(url::kAboutBlankURL),
+      GURL("data:text/javascript,postMessage('done');"),
+      GURL("filesystem:https://www.example.com/temporary/worker.js"),
+  };
+
+  for (const GURL& url : kLocalSchemeUrls) {
+    SCOPED_TRACE(url.spec());
+    auto handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+        handle.get(), browser_context_getter_, network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader =
+        CreateTestLoaderAndStart(url, factory.get(), &client);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+    net::RedirectInfo redirect_info;
+    redirect_info.status_code = 302;
+    redirect_info.new_method = "GET";
+    redirect_info.new_url = GURL("https://other.example.com/worker.js");
+    factory->GetScriptLoader()->OnReceiveRedirect(
+        redirect_info, network::mojom::URLResponseHead::New());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return client.has_received_redirect() || client.has_received_completion();
+    }));
+
+    EXPECT_FALSE(client.has_received_redirect());
+    ASSERT_TRUE(client.has_received_completion());
+    EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, client.completion_status().error_code);
+
+    // Same-scheme `filesystem:` directory redirects (where
+    // `IsSafeRedirectTarget` returns true) must also be rejected for worker
+    // main script loads.
+    if (url.SchemeIsFileSystem()) {
+      auto dir_handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+          helper_->context_wrapper(), base::DoNothing(),
+          /*fetch_event_client_id=*/"");
+      auto dir_factory = std::make_unique<WorkerScriptLoaderFactory>(
+          helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+          net::IsolationInfo::CreateForInternalRequest(
+              url::Origin::Create(url)),
+          dir_handle.get(), browser_context_getter_, network_loader_factory_);
+
+      network::TestURLLoaderClient dir_client;
+      mojo::PendingRemote<network::mojom::URLLoader> dir_loader =
+          CreateTestLoaderAndStart(url, dir_factory.get(), &dir_client);
+      ASSERT_TRUE(base::test::RunUntil(
+          [&]() { return dir_factory->GetScriptLoader() != nullptr; }));
+
+      net::RedirectInfo dir_redirect_info;
+      dir_redirect_info.status_code = 301;
+      dir_redirect_info.new_method = "GET";
+      dir_redirect_info.new_url =
+          GURL("filesystem:https://www.example.com/temporary/dir/");
+      dir_factory->GetScriptLoader()->OnReceiveRedirect(
+          dir_redirect_info, network::mojom::URLResponseHead::New());
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return dir_client.has_received_redirect() ||
+               dir_client.has_received_completion();
+      }));
+
+      EXPECT_FALSE(dir_client.has_received_redirect());
+      ASSERT_TRUE(dir_client.has_received_completion());
+      EXPECT_EQ(net::ERR_UNSAFE_REDIRECT,
+                dir_client.completion_status().error_code);
+    }
+  }
+}
+
+// Tests that response headers received while loading any local-scheme URL
+// (`about:`, `data:`, `filesystem:`) have service worker and network endpoint
+// metadata sanitized before forwarding to the client, and complete normally
+// when unredirected.
+TEST_F(WorkerScriptLoaderFactoryTest, ResponseFromLocalSchemeUrls) {
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  const GURL kLocalSchemeUrls[] = {
+      GURL(url::kAboutBlankURL),
+      GURL("data:text/javascript,postMessage('done');"),
+      GURL("filesystem:https://www.example.com/temporary/worker.js"),
+  };
+
+  for (const GURL& url : kLocalSchemeUrls) {
+    SCOPED_TRACE(url.spec());
+    auto handle = std::make_unique<ServiceWorkerMainResourceHandle>(
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
+    auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+        helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+        handle.get(), browser_context_getter_, network_loader_factory_);
+
+    network::TestURLLoaderClient client;
+    mojo::PendingRemote<network::mojom::URLLoader> loader =
+        CreateTestLoaderAndStart(url, factory.get(), &client);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->was_fetched_via_service_worker = true;
+    response_head->url_list_via_service_worker = {
+        GURL("https://other.example.com/worker.js")};
+    response_head->service_worker_response_source =
+        network::mojom::FetchResponseSource::kCacheStorage;
+    response_head->client_address_space =
+        network::mojom::IPAddressSpace::kLoopback;
+    response_head->response_address_space =
+        network::mojom::IPAddressSpace::kLoopback;
+    response_head->remote_endpoint =
+        net::IPEndPoint(net::IPAddress::IPv4Localhost(), 8080);
+    response_head->was_fetched_via_cache = true;
+    response_head->is_validated = true;
+
+    factory->GetScriptLoader()->OnReceiveResponse(
+        std::move(response_head), mojo::ScopedDataPipeConsumerHandle(),
+        std::nullopt);
+    client.RunUntilResponseReceived();
+
+    ASSERT_TRUE(client.has_received_response());
+    EXPECT_FALSE(client.response_head()->was_fetched_via_service_worker);
+    EXPECT_TRUE(client.response_head()->url_list_via_service_worker.empty());
+    EXPECT_EQ(network::mojom::FetchResponseSource::kUnspecified,
+              client.response_head()->service_worker_response_source);
+    EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+              client.response_head()->client_address_space);
+    EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+              client.response_head()->response_address_space);
+    EXPECT_EQ(net::IPEndPoint(), client.response_head()->remote_endpoint);
+    EXPECT_FALSE(client.response_head()->was_fetched_via_cache);
+    EXPECT_FALSE(client.response_head()->is_validated);
+
+    factory->GetScriptLoader()->OnComplete(
+        network::URLLoaderCompletionStatus(net::OK));
+    factory->GetScriptLoader()->OnFetcherCallbackCalled();
+    client.RunUntilComplete();
+    EXPECT_EQ(net::OK, client.completion_status().error_code);
+  }
 }
 
 // TODO(falken): Add a test for a shared worker that's controlled by a service

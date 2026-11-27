@@ -47,8 +47,9 @@ class ServiceWorkerMainResourceLoaderInterceptor;
 // NavigationLoaderInterceptor to intercept the request with its own loader, and
 // goes to |default_loader_factory| otherwise. Once a loader is started, this
 // class acts as the URLLoaderClient for it, forwarding messages to the outer
-// client. On redirects, it starts over with the new request URL, possibly
-// starting a new loader and becoming the client of that.
+// client. On valid redirects, it starts over with the new request URL, possibly
+// starting a new loader and becoming the client of that (redirects from
+// local-scheme URLs or to unsafe targets fail with `net::ERR_UNSAFE_REDIRECT`).
 //
 // Lives on the UI thread.
 class CONTENT_EXPORT WorkerScriptLoader

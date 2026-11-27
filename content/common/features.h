@@ -289,6 +289,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIDirectResourceDecompression);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIInProcessResourceLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUISyncDataPipeWrite);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWorkerScriptLocalSchemeRedirectCheck);
 
 // Please keep features in alphabetical order.
 

@@ -4,12 +4,14 @@
 
 #include "content/browser/worker_host/worker_script_loader.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_utils.h"
@@ -229,11 +231,15 @@ void WorkerScriptLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  if (resource_request_.url.SchemeIsBlob() && response_head) {
-    // A blob URL is loaded by a renderer-hosted BlobURLLoader. A blob URL
-    // request is never handled by a service worker or a network socket.
-    // Sanitize service worker and network address space fields to ensure
-    // robustness against invalid input and maintain expected specifications.
+  if (response_head &&
+      (resource_request_.url.SchemeIsBlob() ||
+       (resource_request_.url.SchemeIsLocal() &&
+        base::FeatureList::IsEnabled(
+            features::kWorkerScriptLocalSchemeRedirectCheck)))) {
+    // A local-scheme URL (`about:`, `blob:`, `data:`, `filesystem:`) is never
+    // handled by a service worker or a network socket. Sanitize service worker
+    // and network address space fields to ensure robustness against invalid
+    // input and maintain expected specifications.
     response_head->was_fetched_via_service_worker = false;
     response_head->url_list_via_service_worker.clear();
     response_head->service_worker_response_source =
@@ -257,8 +263,11 @@ void WorkerScriptLoader::OnReceiveRedirect(
     network::mojom::URLResponseHeadPtr response_head) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
-  if (resource_request_.url.SchemeIsBlob()) {
-    // Loading a blob URL never produces a redirect.
+  if (resource_request_.url.SchemeIsBlob() ||
+      (resource_request_.url.SchemeIsLocal() &&
+       base::FeatureList::IsEnabled(
+           features::kWorkerScriptLocalSchemeRedirectCheck))) {
+    // Loading a local-scheme URL never produces a redirect.
     complete_status_ =
         network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT);
     CommitCompleted();
