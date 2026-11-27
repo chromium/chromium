@@ -48,16 +48,17 @@ class FormCacheQueryUtilTest
     autofill_driver().set_frame_token(test::MakeLocalFrameToken());
   }
 
-  FormStructure* AddForm(const FormDescription& form_description) {
+  FormStructure* AddForm(const FormDescription& form_description,
+                         size_t driver_index = 0) {
+    TestBrowserAutofillManager& manager = autofill_manager(driver_index);
     FormData form = test::GetFormData(form_description);
     auto form_structure = std::make_unique<FormStructure>(form);
     test_api(*form_structure)
         .SetFieldTypes(test::GetServerTypes(form_description));
     test_api(*form_structure).AssignSections();
     FormStructure* added_form = form_structure.get();
-    test_api(autofill_manager())
-        .AddSeenFormStructure(std::move(form_structure));
-    test_api(autofill_manager()).OnFormsParsed({form});
+    test_api(manager).AddSeenFormStructure(std::move(form_structure));
+    test_api(manager).OnFormsParsed({form});
     return added_form;
   }
 
@@ -70,18 +71,22 @@ class FormCacheQueryUtilTest
   }
 
   FormStructure* AddOtpForm(url::Origin otp_origin = url::Origin::Create(
-                                GURL("https://sub.example.test"))) {
-    return AddForm({
-        .fields =
-            {
-                {.server_type = NAME_FIRST},
-                {.server_type = ONE_TIME_CODE,
-                 .host_frame = autofill_driver().GetFrameToken(),
-                 .origin = std::move(otp_origin)},
-            },
-        .host_frame = autofill_driver().GetFrameToken(),
-        .main_frame_origin = main_origin_,
-    });
+                                GURL("https://sub.example.test")),
+                            size_t driver_index = 0) {
+    return AddForm(
+        {
+            .fields =
+                {
+                    {.server_type = NAME_FIRST},
+                    {.server_type = ONE_TIME_CODE,
+                     .host_frame =
+                         autofill_driver(driver_index).GetFrameToken(),
+                     .origin = std::move(otp_origin)},
+                },
+            .host_frame = autofill_driver(driver_index).GetFrameToken(),
+            .main_frame_origin = main_origin_,
+        },
+        driver_index);
   }
 
  protected:
@@ -200,15 +205,7 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
   autofill_driver().SetIsActive(true);
-  autofill_driver().SetIsEmbedded(true);
-  EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
-  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
-              FieldsAre(nullptr, nullptr));
-  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
-              FieldsAre(nullptr, nullptr));
-  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
-  autofill_driver().SetIsEmbedded(false);
   const AutofillDriver::LifecycleState initial_state =
       autofill_driver().GetLifecycleState();
   test_api(autofill_driver())
@@ -220,6 +217,25 @@ TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
               FieldsAre(nullptr, nullptr));
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
   test_api(autofill_driver()).SetLifecycleState(initial_state);
+
+  // An embedded frame tree exists alongside the primary main frame.
+  CreateAutofillDriver();
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetIsEmbedded(true);
+  ActivateAutofillDriver(autofill_driver(1));
+  FormStructure* embedded_form =
+      AddOtpForm(url::Origin::Create(GURL("https://sub.example.test")),
+                 /*driver_index=*/1);
+  FieldGlobalId embedded_otp_field_id = embedded_form->field(1)->global_id();
+  embedded_form->field(1)->set_value(u"123");
+  embedded_form->field(1)->AddFieldModifier(FieldModifier::kUser);
+  EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver(1)));
+  EXPECT_THAT(FindOtpField(autofill_manager(1), embedded_form->global_id(),
+                           embedded_otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager(1)),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager(1)));
 }
 
 // Verifies that flattened cross-frame OTP fields hosted by a child

@@ -82,24 +82,24 @@ class OtpManagerLegacyImplTest
     test_field_.set_origin(url::Origin::Create(GURL("https://example.test")));
   }
 
-  const FormStructure* AddForm(const FormDescription& form_description) {
+  const FormStructure* AddForm(const FormDescription& form_description,
+                               size_t driver_index = 0) {
+    TestBrowserAutofillManager& manager = autofill_manager(driver_index);
     FormData form = test::GetFormData(form_description);
     FormGlobalId form_id = form.global_id();
     auto form_structure = std::make_unique<FormStructure>(form);
     test_api(*form_structure).SetFieldTypes(GetServerTypes(form_description));
     test_api(*form_structure).AssignSections();
-    test_api(autofill_manager())
-        .AddSeenFormStructure(std::move(form_structure));
-    test_api(autofill_manager()).OnFormsParsed({form});
+    test_api(manager).AddSeenFormStructure(std::move(form_structure));
+    test_api(manager).OnFormsParsed({form});
 
     // This would typically happen during parsing but is skipped if a form is
     // injected via the test API.
-    autofill_manager().NotifyObservers(
+    manager.NotifyObservers(
         &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined, form_id,
         TestBrowserAutofillManager::Observer::FieldTypeSource::kAutofillAiModel,
         /*small_forms_were_parsed=*/false);
-    const FormStructure* cached_form =
-        autofill_manager().FindCachedFormById(form_id);
+    const FormStructure* cached_form = manager.FindCachedFormById(form_id);
     if (cached_form && !cached_form->fields().empty()) {
       test_field_ = *cached_form->field(0);
     }
@@ -109,21 +109,22 @@ class OtpManagerLegacyImplTest
   const FormStructure* AddFormWithOtpField(
       std::optional<url::Origin> field_origin = std::nullopt,
       std::optional<url::Origin> main_frame_origin = std::nullopt,
-      bool is_focusable = true) {
+      bool is_focusable = true,
+      size_t driver_index = 0) {
     FormDescription form_description = {
         .fields =
             {
                 {.server_type = ONE_TIME_CODE,
-                 .host_frame = autofill_driver().GetFrameToken(),
+                 .host_frame = autofill_driver(driver_index).GetFrameToken(),
                  .is_focusable = is_focusable,
                  .label = u"OTP",
                  .name = u"otp",
                  .origin = field_origin},
             },
-        .host_frame = autofill_driver().GetFrameToken(),
+        .host_frame = autofill_driver(driver_index).GetFrameToken(),
         .main_frame_origin = main_frame_origin,
     };
-    return AddForm(form_description);
+    return AddForm(form_description, driver_index);
   }
 
   const FormStructure* AddFormWithFirstNameField() {
@@ -687,13 +688,18 @@ TEST_F(OtpManagerLegacyImplTest, GetOtpSuggestionsCrossOriginFormReturnsEmpty) {
 // no SMS OTP subscription is started even if field and main frame origins
 // match.
 TEST_F(OtpManagerLegacyImplTest, EmbeddedFrameTreeNoQueryIssued) {
-  autofill_driver().SetIsEmbedded(true);
+  // An embedded frame tree exists alongside the primary main frame.
+  CreateAutofillDriver();
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetIsEmbedded(true);
+  ActivateAutofillDriver(autofill_driver(1));
 
-  OtpManagerLegacyImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  OtpManagerLegacyImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 
   AddFormWithOtpField(
       /*field_origin=*/url::Origin::Create(GURL("https://example.test")),
-      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")),
+      /*is_focusable=*/true, /*driver_index=*/1);
   EXPECT_EQ(sms_otp_service_.num_subscribers(), 0u);
 }
 
@@ -701,15 +707,20 @@ TEST_F(OtpManagerLegacyImplTest, EmbeddedFrameTreeNoQueryIssued) {
 // driver is for an embedded frame tree (e.g. fenced frame).
 TEST_F(OtpManagerLegacyImplTest,
        EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
-  autofill_driver().SetIsEmbedded(true);
+  // An embedded frame tree exists alongside the primary main frame.
+  CreateAutofillDriver();
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetIsEmbedded(true);
+  ActivateAutofillDriver(autofill_driver(1));
 
-  OtpManagerLegacyImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  OtpManagerLegacyImpl otp_manager(autofill_manager(1), &sms_otp_service_);
 
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
 
   const FormStructure* form = AddFormWithOtpField(
       /*field_origin=*/url::Origin::Create(GURL("https://example.test")),
-      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")),
+      /*is_focusable=*/true, /*driver_index=*/1);
   ASSERT_TRUE(form);
 
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;

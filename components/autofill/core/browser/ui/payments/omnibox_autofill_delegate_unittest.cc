@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -232,14 +233,22 @@ TEST_F(OmniboxAutofillDelegateTest,
        OnFieldTypesDetermined_CalledFromEmbeddedDriver_Aborts) {
   base::HistogramTester histogram_tester;
 
-  // If the main AutofillDriver is embedded, it's not the right
-  // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
-  autofill_driver().SetIsEmbedded(true);
+  // The BrowserAutofillManager of an embedded frame tree, which exists
+  // alongside the primary main frame, is not the right one to run
+  // OmniboxAutofillDelegate logic.
+  CreateAutofillDriver();
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetIsEmbedded(true);
+  ActivateAutofillDriver(autofill_driver(1));
 
-  EXPECT_CALL(autofill_driver(), ObserveFieldVisibility).Times(0);
+  EXPECT_CALL(autofill_driver(0), ObserveFieldVisibility).Times(0);
+  EXPECT_CALL(autofill_driver(1), ObserveFieldVisibility).Times(0);
 
-  FormData form = CreateTestCreditCardFormData();
-  FormsSeen({form});
+  FormData form = CreateFormDataForFrame(CreateTestCreditCardFormData(),
+                                         autofill_driver(1).GetFrameToken());
+  autofill_manager(1).OnFormsSeen(/*updated_forms=*/{form},
+                                  /*removed_forms=*/{},
+                                  AutofillManagerTestApi::pass_key());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart1",

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -174,14 +175,14 @@ class OtpFieldDetectorAutofillManagerObserverTest
     return form;
   }
 
-  void AddOtpToThePage(const FormData& form) {
-    autofill_manager().AddSeenForm(
-        form,
-        /*field_types=*/std::vector<FieldType>{ONE_TIME_CODE});
+  void AddOtpToThePage(const FormData& form, size_t driver_index = 0) {
+    TestBrowserAutofillManager& manager = autofill_manager(driver_index);
+    manager.AddSeenForm(form,
+                        /*field_types=*/std::vector<FieldType>{ONE_TIME_CODE});
 
     // Notify observers manually as this would typically happen during parsing
     // but the step is skipped when using the Test APIs.
-    autofill_manager().NotifyObservers(
+    manager.NotifyObservers(
         &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined,
         form.global_id(),
         TestBrowserAutofillManager::Observer::FieldTypeSource::
@@ -234,11 +235,19 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
 // register as present.
 TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
        IsOtpFieldPresent_EmbeddedFrameTreeIgnored) {
-  autofill_driver().SetIsEmbedded(true);
+  // An embedded frame tree exists alongside the primary main frame.
+  CreateAutofillDriver();
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).SetIsEmbedded(true);
+  ActivateAutofillDriver(autofill_driver(1));
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      embedded_manager_observation{&otp_field_detector()};
+  embedded_manager_observation.Observe(&autofill_manager(1));
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
 
   FormData form = CreateSimpleOtp();
-  AddOtpToThePage(form);
+  form.set_host_frame(autofill_driver(1).GetFrameToken());
+  AddOtpToThePage(form, /*driver_index=*/1);
 
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
 }
