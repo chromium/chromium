@@ -3128,8 +3128,17 @@ IN_PROC_BROWSER_TEST_P(TabDragTargetTest, DelegateMovesTabToSourceTabStrip) {
 
 // Validates behavior when the drag delegate moves the dragged tab to another
 // browser's window.
+// TODO(crbug.com/590915001): Flaking/crashing in ui_controls_internal_win.cc
+// on M156 Win Arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_DelegateMovesTabToOtherBrowserTabStrip \
+  DISABLED_DelegateMovesTabToOtherBrowserTabStrip
+#else
+#define MAYBE_DelegateMovesTabToOtherBrowserTabStrip \
+  DelegateMovesTabToOtherBrowserTabStrip
+#endif
 IN_PROC_BROWSER_TEST_P(TabDragTargetTest,
-                       DelegateMovesTabToOtherBrowserTabStrip) {
+                       MAYBE_DelegateMovesTabToOtherBrowserTabStrip) {
   AddTabsAndResetBrowser(browser(), 1);
   ASSERT_EQ("0 1", IDString(browser()->GetTabStripModel()));
   BrowserWindowInterface* browser2 = CreateAnotherBrowserAndResize();
