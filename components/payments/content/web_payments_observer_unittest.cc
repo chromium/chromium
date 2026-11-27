@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -16,13 +17,19 @@
 #include "base/time/time.h"
 #include "components/payments/core/features.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace payments {
 namespace {
@@ -244,6 +251,160 @@ TEST_F(WebPaymentsObserverTest, RecordsTelemetryFor3DSFormSubmission) {
                       ukm::builders::Payments_ThreeDSecure_ChallengeResponse::
                           kEntryName)
                   .empty());
+}
+
+class WebPaymentsObserverCheckoutTelemetryTest
+    : public WebPaymentsObserverTest {
+ public:
+  WebPaymentsObserverCheckoutTelemetryTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kCheckoutTelemetry);
+  }
+
+  void NavigateAndSetTitle(std::string_view url, std::u16string_view title) {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                               GURL(url));
+    SetCommittedTitle(title);
+  }
+
+  void SetCommittedTitle(std::u16string_view title) {
+    web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                        std::u16string(title));
+  }
+};
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       ClassifiesCheckoutAndOrderConfirmationPerNavigation) {
+  NavigateAndSetTitle("https://store.example/checkout", u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+
+  NavigateAndSetTitle("https://store.example/order-confirmation",
+                      u"Order Confirmation");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  EXPECT_TRUE(observer_->classified_order_confirmation_for_testing());
+  NavigateAndSetTitle("chrome://settings/payments", u"Checkout");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+  NavigateAndSetTitle("https://store.example/", u"Store Home");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       ClassifiesBothStagesOnInPlaceTitleTransition) {
+  NavigateAndSetTitle("https://store.example/", u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+
+  SetCommittedTitle(u"Order Confirmation");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  EXPECT_TRUE(observer_->classified_order_confirmation_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       ClassifiesAgainAfterSameDocumentNavigation) {
+  NavigateAndSetTitle("https://store.example/checkout", u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://store.example/order-confirmation"), main_rfh())
+      ->CommitSameDocument();
+  // Nothing is classified until the title is set.
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+
+  SetCommittedTitle(u"Order Confirmation");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  EXPECT_TRUE(observer_->classified_order_confirmation_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest, UsesEntryUrlAndRawTitle) {
+  // Set a title before clearing it because TitleWasSet() only fires when the
+  // title changes. With an empty title, the display title falls back to the URL
+  // (which would match the title regex), and both the virtual URL and pending
+  // URL point at /checkout (which would match the URL regex).
+  NavigateAndSetTitle("https://store.example/pre-checkout", u"Store Home");
+  controller().GetLastCommittedEntry()->SetVirtualURL(
+      GURL("https://store.example/checkout"));
+  auto pending = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://store.example/checkout"), web_contents());
+  pending->Start();
+  SetCommittedTitle(u"");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+
+  NavigateAndSetTitle("https://store.example/checkout", u"Store Home");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       IgnoresTitleOfNonCommittedEntries) {
+  NavigateAndSetTitle("https://store.example/", u"Store Home");
+  content::NavigationEntry* earlier_entry =
+      controller().GetLastCommittedEntry();
+  NavigateAndSetTitle("https://store.example/cart", u"Cart");
+  ASSERT_NE(earlier_entry, controller().GetLastCommittedEntry());
+
+  web_contents()->UpdateTitleForEntry(earlier_entry, u"Order Confirmation");
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+
+  auto pending = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://store.example/checkout"), web_contents());
+  pending->Start();
+  ASSERT_NE(controller().GetPendingEntry(), nullptr);
+  web_contents()->UpdateTitleForEntry(controller().GetPendingEntry(),
+                                      u"Checkout");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       IgnoresUncommittedAndSubframeNavigations) {
+  NavigateAndSetTitle("https://store.example/checkout", u"Checkout");
+  auto aborted = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://store.example/cart"), web_contents());
+  aborted->Start();
+  aborted->AbortCommit();
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+
+  content::RenderFrameHost* child =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://store.example/frame"), child);
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       DoesNotClassifyWhenFeatureDisabled) {
+  NavigateAndSetTitle("https://store.example/cart", u"Cart");
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(features::kCheckoutTelemetry);
+  SetCommittedTitle(u"Checkout");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  NavigateAndSetTitle("https://store.example/checkout", u"Checkout");
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  NavigateAndSetTitle("https://store.example/order-confirmation",
+                      u"Order Confirmation");
+  EXPECT_FALSE(observer_->classified_order_confirmation_for_testing());
+}
+
+TEST_F(WebPaymentsObserverCheckoutTelemetryTest,
+       HandlesRepeatedIdenticalUrlAndTitle) {
+  const GURL url("https://store.example/checkout");
+  NavigateAndSetTitle(url.spec(), u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  SetCommittedTitle(u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  content::NavigationSimulator::CreateRendererInitiated(url, main_rfh())
+      ->CommitSameDocument();
+  SetCommittedTitle(u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
+  auto post =
+      content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+  post->SetMethod("POST");
+  post->Commit();
+  EXPECT_FALSE(observer_->classified_checkout_for_testing());
+  SetCommittedTitle(u"Checkout");
+  EXPECT_TRUE(observer_->classified_checkout_for_testing());
 }
 
 }  // namespace payments
