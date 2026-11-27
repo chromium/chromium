@@ -879,6 +879,10 @@ Element& PseudoElement::UltimateOriginatingElement() const {
   return *parent;
 }
 
+CascadeFilter PseudoElement::GetCascadeFilter() const {
+  return UltimateOriginatingElement().GetCascadeFilter();
+}
+
 bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
                                        const ComputedStyle* pseudo_style,
                                        const Element* originating_element) {

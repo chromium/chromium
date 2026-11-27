@@ -22,9 +22,12 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -2682,6 +2685,81 @@ TEST_F(HTMLCapabilityElementBaseLayoutChangeTest,
   DeferredChecker checker(permission_element);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLCapabilityElementBaseTest, PseudoElementStyleIsCascadeFiltered) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .target::before {
+        content: "spoof";
+        contain: layout;
+      }
+      usermedia::scroll-button(inline-end) {
+        content: "";
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <div id="regular" class="target"></div>
+    <usermedia id="camera" class="target" type="camera"></usermedia>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Warm the MatchedPropertiesCache with an unfiltered ::before style that has
+  // the same matched properties.
+  Element* regular = GetElementById("regular");
+  ASSERT_TRUE(regular);
+  PseudoElement* regular_before = regular->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(regular_before);
+  ASSERT_TRUE(regular_before->GetComputedStyle());
+  EXPECT_NE(nullptr, regular_before->GetComputedStyle()->GetContentData());
+  EXPECT_TRUE(regular_before->GetComputedStyle()->ContainsLayout());
+
+  auto* permission_element =
+      To<HTMLCapabilityElementBase>(GetElementById("camera"));
+  ASSERT_TRUE(permission_element);
+
+  // Resolving style for a PseudoElement whose originating element is a
+  // capability element must apply the originating element's CascadeFilter, and
+  // must not reuse the unfiltered MatchedPropertiesCache entry.
+  auto* pseudo =
+      MakeGarbageCollected<PseudoElement>(permission_element, kPseudoIdBefore);
+  const ComputedStyle* filtered_style =
+      GetDocument().GetStyleResolver().ResolveStyle(
+          pseudo, StyleRecalcContext::FromAncestors(*permission_element));
+  ASSERT_TRUE(filtered_style);
+  EXPECT_EQ(nullptr, filtered_style->GetContentData());
+  EXPECT_FALSE(filtered_style->ContainsLayout());
+
+  // ::scroll-button needs no scroll container, but `content` is filtered out,
+  // so author CSS must not be able to create a box for it.
+  PseudoElement* scroll_button =
+      permission_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
+  EXPECT_TRUE(!scroll_button || !scroll_button->GetLayoutObject());
+}
+
+TEST_F(HTMLCapabilityElementBaseTest,
+       OverscrollAreaNotAllowedOnCapabilityElement) {
+  ScopedCSSScrollSnapTypePairForTest scroll_snap_type_pair(true);
+  ScopedOverscrollAreasForTest overscroll_areas(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer style="width: 400px; height: 400px;">
+      <usermedia id="camera" type="camera" overscrollarea></usermedia>
+    </div>
+    <button command="toggle-overscroll" commandfor="camera">toggle</button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* permission_element =
+      To<HTMLCapabilityElementBase>(GetElementById("camera"));
+  ASSERT_TRUE(permission_element);
+  EXPECT_FALSE(permission_element->IsValidOverscrollArea());
+  EXPECT_EQ(nullptr, permission_element->GetPseudoElement(
+                         kPseudoIdOverscrollAreaParent));
+  EXPECT_EQ(nullptr,
+            permission_element->GetPseudoElement(kPseudoIdBackdrop));
 }
 
 }  // namespace blink

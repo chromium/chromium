@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Author ::scroll-button styles cannot give the usermedia element a hit-testable box</title>
+<link rel="help" href="https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  body { margin: 0; }
+  #pepc::scroll-button(inline-end) {
+    content: "";
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2147483647;
+  }
+</style>
+<usermedia id="pepc" type="camera"></usermedia>
+<script>
+test(() => {
+  const pepc = document.getElementById("pepc");
+  const rect = pepc.getBoundingClientRect();
+  const x = window.innerWidth - 5;
+  const y = window.innerHeight - 5;
+  assert_false(x >= rect.left && x <= rect.right &&
+               y >= rect.top && y <= rect.bottom,
+               "test point must be outside the element");
+  assert_not_equals(document.elementFromPoint(x, y), pepc);
+}, "::scroll-button on a permission element does not cover the viewport");
+</script>

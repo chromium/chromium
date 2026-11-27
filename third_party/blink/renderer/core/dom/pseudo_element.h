@@ -63,6 +63,7 @@ class CORE_EXPORT PseudoElement : public Element {
   bool CanGeneratePseudoElement(PseudoId) const override;
   static bool CanGeneratePseudoElement(PseudoId parent_pseudo_id,
                                        PseudoId pseudo_id);
+  CascadeFilter GetCascadeFilter() const override;
 
   // Returns true if the PseudoElement can generates child boxes based on the
   // CSS content property.

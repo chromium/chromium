@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -160,7 +161,8 @@ const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
 bool OverscrollAreaTracker::ShouldBeOverscrollArea(Element& element) {
   if (!element.FastHasAttribute(html_names::kOverscrollareaAttr) ||
       !RuntimeEnabledFeatures::OverscrollAreasEnabled(
-          element.GetExecutionContext())) {
+          element.GetExecutionContext()) ||
+      IsA<HTMLCapabilityElementBase>(element)) {
     return false;
   }
   const ComputedStyle* parent_style = element.ParentComputedStyle();
