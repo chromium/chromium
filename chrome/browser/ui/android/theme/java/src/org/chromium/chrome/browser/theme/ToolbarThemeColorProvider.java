@@ -55,7 +55,7 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
         mControlsPosition = browserControlsStateProvider.getControlsPosition();
 
         mBrowserControlsStateProvider.addObserver(this);
-        updateActiveProvider(/* animate= */ false);
+        updateActiveProvider();
     }
 
     /**
@@ -97,7 +97,7 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
     public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
         if (mControlsPosition == controlsPosition) return;
         mControlsPosition = controlsPosition;
-        updateActiveProvider(/* animate= */ true);
+        updateActiveProvider();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
         updateTint(tint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
     }
 
-    private void updateActiveProvider(boolean animate) {
+    private void updateActiveProvider() {
         ThemeColorProvider newProvider;
         if (mIsBottomBarEnabled && mControlsPosition == ControlsPosition.BOTTOM) {
             newProvider = mBottomUiThemeColorProvider;
@@ -131,7 +131,7 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
             mActiveProvider.addThemeColorObserver(this);
             mActiveProvider.addTintObserver(this);
 
-            updatePrimaryColor(mActiveProvider.getThemeColor(), animate);
+            updatePrimaryColor(mActiveProvider.getThemeColor(), /* shouldAnimate= */ false);
             updateTint(
                     mActiveProvider.getTint(),
                     mActiveProvider.getActivityFocusTint(),

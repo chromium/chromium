@@ -3002,9 +3002,9 @@ public class ToolbarPhone extends ToolbarLayout
         // Ignore theme color changes while the omnibox is focused, since we want a standard,
         // app-defined color for the toolbar in this scenario, not the site's color. We'll
         // transition back to the site's color on unfocus.
-        if (urlHasFocus() || !isVisualStateValidForBrandColorTransition(mVisualState)) return;
+        if (urlHasFocus() || mVisualState == VisualState.NEW_TAB_NORMAL) return;
 
-        if (!shouldAnimate) {
+        if (!shouldAnimate || !isVisualStateValidForBrandColorTransition(mVisualState)) {
             updateToolbarBackground(finalColor);
             updateModernLocationBarColor(finalLocationBarColor);
             return;

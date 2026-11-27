@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,6 +42,7 @@ public class ToolbarThemeColorProviderTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private BottomUiThemeColorProvider mBottomUiThemeColorProvider;
+    @Mock private ThemeColorObserver mThemeColorObserver;
     @Mock private Tab mTab;
 
     private Context mContext;
@@ -109,13 +111,16 @@ public class ToolbarThemeColorProviderTest {
                         mTopUiThemeColorProvider,
                         mBottomUiThemeColorProvider,
                         mBrowserControlsStateProvider);
+        mToolbarThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
         assertEquals(TOP_COLOR, mToolbarThemeColorProvider.getThemeColor());
 
         mToolbarThemeColorProvider.onControlsPositionChanged(ControlsPosition.BOTTOM);
         assertEquals(BOTTOM_COLOR, mToolbarThemeColorProvider.getThemeColor());
+        verify(mThemeColorObserver).onThemeColorChanged(BOTTOM_COLOR, /* shouldAnimate= */ false);
 
         mToolbarThemeColorProvider.onControlsPositionChanged(ControlsPosition.TOP);
         assertEquals(TOP_COLOR, mToolbarThemeColorProvider.getThemeColor());
+        verify(mThemeColorObserver).onThemeColorChanged(TOP_COLOR, /* shouldAnimate= */ false);
     }
 
     @Test
@@ -126,9 +131,11 @@ public class ToolbarThemeColorProviderTest {
                         mTopUiThemeColorProvider,
                         mBottomUiThemeColorProvider,
                         mBrowserControlsStateProvider);
+        mToolbarThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
 
-        mToolbarThemeColorProvider.onThemeColorChanged(Color.GREEN, true);
+        mToolbarThemeColorProvider.onThemeColorChanged(Color.GREEN, /* shouldAnimate= */ true);
         assertEquals(Color.GREEN, mToolbarThemeColorProvider.getThemeColor());
+        verify(mThemeColorObserver).onThemeColorChanged(Color.GREEN, /* shouldAnimate= */ true);
 
         ColorStateList newTint =
                 mContext.getColorStateList(R.color.default_icon_color_light_tint_list);

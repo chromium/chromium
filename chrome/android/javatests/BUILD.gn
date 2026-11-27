@@ -1748,6 +1748,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/prefs/android:java",
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",

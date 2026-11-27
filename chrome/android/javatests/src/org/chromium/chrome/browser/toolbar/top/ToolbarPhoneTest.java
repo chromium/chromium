@@ -41,6 +41,7 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -69,6 +70,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -80,11 +82,17 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -92,6 +100,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -103,10 +112,13 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
 /** Instrumentation tests for {@link ToolbarPhone}. */
@@ -174,6 +186,24 @@ public class ToolbarPhoneTest {
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarButtonsContainer = mToolbar.findViewById(R.id.toolbar_buttons);
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (ChromeSharedPreferences.getInstance()
+                            .contains(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED)) {
+                        // Sync both prefs to top first so removeKey does not write the shared pref
+                        // back, then clear LocalStatePrefs after shared pref listeners have run.
+                        AddressBarPreference.setToolbarPositionAndSource(
+                                ToolbarPositionAndSource.TOP_SETTINGS);
+                        ChromeSharedPreferences.getInstance()
+                                .removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
+                        LocalStatePrefs.get().clearPref(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+                        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+                    }
+                });
     }
 
     @Test
@@ -921,5 +951,58 @@ public class ToolbarPhoneTest {
                             0,
                             0);
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT,
+    })
+    public void testIncognitoToolbarColor_onControlsPositionChange() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        @ColorInt
+        int topColor = ChromeColors.getDefaultThemeColor(activity, /* isIncognito= */ true);
+        @ColorInt
+        int bottomColor =
+                IncognitoColors.getColorSurfaceContainerHigh(activity, /* isIncognito= */ true);
+        assertNotEquals(topColor, bottomColor);
+
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
+        ColorDrawable toolbarBackground = mToolbar.getBackgroundDrawable();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            activity.getActivityTab().isIncognitoBranded(), Matchers.is(true));
+                    Criteria.checkThat(toolbarBackground.getColor(), Matchers.is(topColor));
+                });
+
+        // Bottom-anchored on the incognito NTP: the toolbar matches the bottom bar surface.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AddressBarPreference.setToolbarPositionAndSource(
+                            ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+                    assertFalse(mToolbar.isAnimationRunningForTesting());
+                });
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(toolbarBackground.getColor(), Matchers.is(bottomColor)));
+
+        // Focusing and unfocusing the omnibox at the bottom keeps the bottom bar surface color.
+        mOmnibox.requestFocus();
+        mOmnibox.clearFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(bottomColor, toolbarBackground.getColor()));
+
+        // Top-anchored again: the toolbar returns to the default incognito color.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AddressBarPreference.setToolbarPositionAndSource(
+                            ToolbarPositionAndSource.TOP_LONG_PRESS);
+                    assertFalse(mToolbar.isAnimationRunningForTesting());
+                });
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(toolbarBackground.getColor(), Matchers.is(topColor)));
     }
 }
