@@ -766,3 +766,6 @@ crbug.com/589704479 [ Simulator ] OtpInputDialogEgtest [ Pass Failure ]
 crbug.com/587566569 [ Simulator ] BookmarksFolderChooserAccountTestCase/testEditFunctionalityOnSingleFolderAccount [ Pass Failure ]
 crbug.com/588485339 [ Simulator ] BookmarksEntriesTestCase/testContextMenuForMultipleURLOpenAllInIncognito [ Pass Failure ]
 crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/testAddAccount [ Pass Failure ]
+
+# Gardening suppression 2026-11-27
+crbug.com/591068135 [ iOS26 iPhone Simulator ] SharedTabGroupsTestCase/testCancelShareGroupOnAccountSwitch [Pass Failure]
