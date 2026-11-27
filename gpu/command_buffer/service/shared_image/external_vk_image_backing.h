@@ -136,9 +136,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
   // GL (i.e. GL wrote the image and signaled the end access semaphore).
   bool get_and_reset_wait_for_gl_finish() {
     bool needs_wait = wait_for_gl_finish_;
-    if (wait_for_gl_finish_) {
-      wait_for_gl_finish_ = false;
-    }
+    wait_for_gl_finish_ = false;
     return needs_wait;
   }
 
