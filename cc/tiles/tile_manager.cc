@@ -25,7 +25,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -454,54 +453,6 @@ void TileManager::FinishTasksAndCleanUp() {
   locked_image_tasks_.clear();
 }
 
-void TileManager::ScheduleReduceTileMemoryWhenIdle(
-    base::TimeDelta time_since_last_active) {
-  if (!base::FeatureList::IsEnabled(features::kReclaimPrepaintTilesWhenIdle) ||
-      has_pending_idle_task_) {
-    return;
-  }
-
-  has_pending_idle_task_ = true;
-  base::TimeDelta delay = kDelayBeforeTimeReclaim - time_since_last_active;
-
-  TaskRunnerWithOverride()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&TileManager::ReduceTileMemoryWhenIdle,
-                     ready_to_draw_callback_weak_ptr_factory_.GetWeakPtr()),
-      delay);
-}
-
-void TileManager::ReduceTileMemoryWhenIdle() {
-  has_pending_idle_task_ = false;
-
-  base::TimeDelta time_since_last_active =
-      NowWithOverride() - last_active_time_;
-
-  if (time_since_last_active < kDelayBeforeTimeReclaim) {
-    ScheduleReduceTileMemoryWhenIdle(time_since_last_active);
-    return;
-  }
-
-  MemoryUsage limit(0, 0);
-  MemoryUsage usage(resource_pool_->memory_usage_bytes(),
-                    resource_pool_->resource_count());
-
-  // Ensures that all the resources that are not at least as important as this
-  // one are evicted.
-  constexpr TilePriority kVisiblePriority =
-      TilePriority(HIGH_RESOLUTION, TilePriority::NOW, 0);
-  // Note: we don't need to flush anything here, even though this is a case
-  // where frames are not being produced. The resource pool will itself issue a
-  // flush after a few seconds when a resource becomes unused.
-  bool freed_required_for_draw_tile = false;
-  FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
-      nullptr, limit, kVisiblePriority, &usage, &freed_required_for_draw_tile);
-  if (freed_required_for_draw_tile) {
-    client_->SetNeedsRedraw(/*animation_only=*/false,
-                            /*skip_if_inside_draw=*/true);
-  }
-}
-
 void TileManager::SetResources(ResourcePool* resource_pool,
                                ImageDecodeCache* image_decode_cache,
                                TaskGraphRunner* task_graph_runner,
@@ -609,8 +560,6 @@ bool TileManager::PrepareTiles(
     const GlobalStateThatImpactsTilePriority& state) {
   TRACE_EVENT("cc", __PRETTY_FUNCTION__);
   ++prepare_tiles_count_;
-  last_active_time_ = NowWithOverride();
-  ScheduleReduceTileMemoryWhenIdle(base::TimeDelta());
 
   TRACE_EVENT1("cc,benchmark", "TileManager::PrepareTiles", "prepare_tiles_id",
                prepare_tiles_count_);
@@ -2207,13 +2156,6 @@ void TileManager::ActivationStateAsValueInto(
   state->EndArray();
 }
 
-void TileManager::SetOverridesForTesting(
-    scoped_refptr<base::TaskRunner> task_runner_for_testing,
-    const base::TickClock* clock) {
-  task_runner_for_testing_ = task_runner_for_testing;
-  tick_clock_for_testing_ = clock;
-}
-
 bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail !=
@@ -2265,16 +2207,6 @@ bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 bool TileManager::ShouldRasterOccludedTiles() const {
   return (global_state_.memory_limit_policy != ALLOW_NOTHING &&
           global_state_.memory_limit_policy != ALLOW_ABSOLUTE_MINIMUM);
-}
-
-base::TimeTicks TileManager::NowWithOverride() const {
-  return tick_clock_for_testing_ ? tick_clock_for_testing_->NowTicks()
-                                 : base::TimeTicks::Now();
-}
-
-base::TaskRunner* TileManager::TaskRunnerWithOverride() const {
-  return task_runner_for_testing_ ? task_runner_for_testing_.get()
-                                  : task_runner_;
 }
 
 TileManager::MemoryUsage::MemoryUsage()

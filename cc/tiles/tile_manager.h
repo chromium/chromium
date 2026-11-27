@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -237,10 +236,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   void set_active_url(const GURL& url) { active_url_ = url; }
 
-  void SetOverridesForTesting(
-      scoped_refptr<base::TaskRunner> task_runner_for_testing,
-      const base::TickClock* clock);
-
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
@@ -306,10 +301,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   // Frees the resources of all occluded tiles.
   void FreeResourcesForOccludedTiles();
-
-  // If we haven't produced a frame in a while, drop the "nice to have" tiles.
-  void ScheduleReduceTileMemoryWhenIdle(base::TimeDelta time_since_last_active);
-  void ReduceTileMemoryWhenIdle();
 
   // True if tile resources are present and freed.
   void FreeResourcesForTile(Tile* tile);
@@ -379,13 +370,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void CheckRasterFinishedQueries();
 
   bool ShouldRasterOccludedTiles() const;
-  base::TimeTicks NowWithOverride() const;
-  base::TaskRunner* TaskRunnerWithOverride() const;
 
- public:
-  static constexpr base::TimeDelta kDelayBeforeTimeReclaim = base::Minutes(5);
-
- private:
   void InsertNodesForRasterTask(TileTask* raster_task,
                                 uint16_t priority,
                                 bool use_foreground_category);
@@ -449,11 +434,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   int num_of_tiles_with_checker_images_ = 0;
 
   GURL active_url_;
-
-  base::TimeTicks last_active_time_;
-  bool has_pending_idle_task_ = false;
-  scoped_refptr<base::TaskRunner> task_runner_for_testing_ = nullptr;
-  raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
 
   float metrics_sampling_rate_ = .01;
 

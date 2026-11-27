@@ -48,8 +48,6 @@ BASE_FEATURE_PARAM(int,
                    "frames",
                    4);
 
-BASE_FEATURE(kReclaimPrepaintTilesWhenIdle, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This saves memory on all platforms, but while on Android savings are
 // significant (~10MiB or more of foreground memory), on desktop they were
 // small, so only enable on Android.

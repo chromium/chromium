@@ -28,10 +28,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeRemoveRenderPasses);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferImplInvalidation);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeferImplInvalidationFrames);
 
-// When no frames are produced in a certain time interval, reclaim prepaint
-// tiles.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);
-
 // Feature to reduce the area in which invisible tiles are kept around.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSmallerInterestArea);
 
