@@ -49,6 +49,7 @@ source_set("commands") {
     "mini_map_commands.h",
     "new_tab_page_commands.h",
     "non_modal_signin_promo_commands.h",
+    "notifications_opt_in_commands.h",
     "omnibox_commands.h",
     "open_lens_input_selection_command.h",
     "open_lens_input_selection_command.mm",

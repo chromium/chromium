@@ -19,7 +19,6 @@ class ScopedClosureRunner;
 }
 @protocol BadgeItem;
 class GURL;
-enum class NotificationOptInAccessPoint;
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
@@ -118,15 +117,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows and dismisses the Tab Groups promo.
 - (void)showTabGroupsPromo;
 - (void)dismissTabGroupsPromo;
-
-// Shows the notifications opt-in view from `accessPoint`.
-- (void)showNotificationsOptInFromAccessPoint:
-            (NotificationOptInAccessPoint)accessPoint
-                           baseViewController:
-                               (UIViewController*)baseViewController;
-
-// Dismisses the notifications opt-in view.
-- (void)dismissNotificationsOptIn;
 
 // Show the add account view
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint

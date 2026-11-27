@@ -92,6 +92,7 @@
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/app_store_review_swift.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
@@ -140,6 +141,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/notifications_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -236,6 +238,7 @@ const char kContextPanelDismissedHistogram[] =
                                 MiniMapCommands,
                                 NonModalSignInPromoCommands,
                                 NonModalSignInPromoCoordinatorDelegate,
+                                NotificationsOptInCommands,
                                 PageActionMenuCommands,
                                 PageInfoCommands,
                                 ParentAccessCommands,
@@ -318,6 +321,7 @@ const char kContextPanelDismissedHistogram[] =
   LevelUpCoordinator* _levelUpCoordinator;
   MiniMapCoordinator* _miniMapCoordinator;
   NonModalSignInPromoCoordinator* _nonModalSignInPromoCoordinator;
+  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
   PageInfoCoordinator* _pageInfoCoordinator;
   ParentAccessCoordinator* _parentAccessCoordinator;
@@ -438,6 +442,7 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissPictureInPicture];
   [self hideMiniMap];
   [self stopNonModalSignInPromoCoordinator];
+  [self hideNotificationsOptIn];
   [self hidePageInfo];
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
@@ -705,6 +710,7 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(LevelUpCommands),
     @protocol(MiniMapCommands),
     @protocol(NonModalSignInPromoCommands),
+    @protocol(NotificationsOptInCommands),
     @protocol(PageActionMenuCommands),
     @protocol(PageInfoCommands),
     @protocol(ParentAccessCommands),
@@ -1857,6 +1863,27 @@ const char kContextPanelDismissedHistogram[] =
   // TODO(crbug.com/555077798): Replace this by command protocol.
   CHECK_EQ(_nonModalSignInPromoCoordinator, coordinator);
   [self stopNonModalSignInPromoCoordinator];
+}
+
+#pragma mark - NotificationsOptInCommands
+
+- (void)showNotificationsOptInFromAccessPoint:
+            (NotificationOptInAccessPoint)accessPoint
+                           baseViewController:
+                               (UIViewController*)baseViewController {
+  [_notificationsOptInCoordinator stop];
+
+  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_browser];
+  _notificationsOptInCoordinator.accessPoint = accessPoint;
+
+  [_notificationsOptInCoordinator start];
+}
+
+- (void)hideNotificationsOptIn {
+  [_notificationsOptInCoordinator stop];
+  _notificationsOptInCoordinator = nil;
 }
 
 #pragma mark - PageActionMenuCommands

@@ -7,15 +7,11 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol NotificationsOptInCoordinatorDelegate;
 enum class NotificationOptInAccessPoint;
 
 // Coordinator that manages the presentation of the
 // NotificationsOptInViewController.
 @interface NotificationsOptInCoordinator : ChromeCoordinator
-
-// The delegate that receives events from this coordinator.
-@property(nonatomic, weak) id<NotificationsOptInCoordinatorDelegate> delegate;
 
 // The access point that triggered the opt-in flow.
 @property(nonatomic, assign) NotificationOptInAccessPoint accessPoint;

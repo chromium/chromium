@@ -37,7 +37,6 @@ source_set("notifications_opt_in") {
   sources = [
     "notifications_opt_in_coordinator.h",
     "notifications_opt_in_coordinator.mm",
-    "notifications_opt_in_coordinator_delegate.h",
     "notifications_opt_in_mediator.h",
     "notifications_opt_in_mediator.mm",
   ]

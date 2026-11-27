@@ -155,6 +155,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
+#import "ios/chrome/browser/shared/public/commands/notifications_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -889,7 +890,7 @@ using segmentation_platform::TipIdentifier;
       CHECK(!segmentation_platform::features::
                 IsMagicStackTipsNotificationTipIosActionableEnabled());
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          BrowserCoordinatorCommands)
+                          NotificationsOptInCommands)
           showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
                                                     kTips
                              baseViewController:self.magicStackCollectionView];
@@ -1381,7 +1382,7 @@ using segmentation_platform::TipIdentifier;
       break;
     case SetUpListItemType::kNotifications:
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          BrowserCoordinatorCommands)
+                          NotificationsOptInCommands)
           showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
                                                     kSetUpList
                              baseViewController:self.magicStackCollectionView];

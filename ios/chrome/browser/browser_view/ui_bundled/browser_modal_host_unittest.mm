@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
@@ -48,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/notifications_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -491,6 +494,61 @@ TEST_F(BrowserModalHostTest, StartsAndDismissesNonModalSignInPromo) {
   OCMExpect([mockCoordinator stop]);
   OCMExpect([(NonModalSignInPromoCoordinator*)mockCoordinator setDelegate:nil]);
   [delegate dismissNonModalSignInPromo:mockCoordinator];
+
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-showNotificationsOptInFromAccessPoint:baseViewController:`
+// starts the NotificationsOptInCoordinator on the given base view controller,
+// and that `-clearPresentedState` stops it.
+TEST_F(BrowserModalHostTest, StartsAndClearsNotificationsOptInCoordinator) {
+  UIViewController* presentingViewController = [[UIViewController alloc] init];
+  id classMock = OCMClassMock([NotificationsOptInCoordinator class]);
+  NotificationsOptInCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:presentingViewController
+                                   browser:browser_.get()])
+      .andReturn(mockCoordinator);
+  OCMExpect(
+      [mockCoordinator setAccessPoint:NotificationOptInAccessPoint::kTips]);
+  OCMExpect([mockCoordinator start]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<NotificationsOptInCommands> handler =
+      HandlerForProtocol(dispatcher, NotificationsOptInCommands);
+
+  [handler
+      showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::kTips
+                         baseViewController:presentingViewController];
+
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  OCMExpect([mockCoordinator stop]);
+  [modal_host_ clearPresentedState];
+
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-hideNotificationsOptIn` stops the NotificationsOptInCoordinator.
+TEST_F(BrowserModalHostTest, HidesNotificationsOptInCoordinator) {
+  id classMock = OCMClassMock([NotificationsOptInCoordinator class]);
+  NotificationsOptInCoordinator* mockCoordinator = classMock;
+  OCMStub([classMock alloc]).andReturn(classMock);
+  OCMStub([[classMock ignoringNonObjectArgs]
+              initWithBaseViewController:[OCMArg any]
+                                 browser:browser_.get()])
+      .andReturn(mockCoordinator);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<NotificationsOptInCommands> handler =
+      HandlerForProtocol(dispatcher, NotificationsOptInCommands);
+  [handler showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
+                                                     kSetUpList
+                              baseViewController:base_view_controller_];
+
+  OCMExpect([mockCoordinator stop]);
+  [handler hideNotificationsOptIn];
 
   EXPECT_OCMOCK_VERIFY(classMock);
 }

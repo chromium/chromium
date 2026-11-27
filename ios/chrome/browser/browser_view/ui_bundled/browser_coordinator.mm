@@ -141,9 +141,6 @@
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator_impl.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
-#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
-#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator_delegate.h"
-#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_blur_overlay_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
@@ -305,7 +302,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     FindInPageCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
-    NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
     PrerenderBrowserAgentDelegate,
@@ -506,9 +502,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
-
-  // The coordinator for the notifications opt-in screen.
-  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 }
 
 #pragma mark - SnackbarCoordinatorDelegate
@@ -1423,7 +1416,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self dismissPriceTrackingPromo];
   [self dismissSearchWhatYouSeePromo];
   [self dismissTabGroupsPromo];
-  [self dismissNotificationsOptIn];
   [self hideComposeboxImmediately:YES completion:nil];
   [self dismissMultimodalActionsMenu];
   [self stopVoiceSearchCoordinator];
@@ -1832,26 +1824,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   _tabGroupsPromoCoordinator = nil;
 }
 
-- (void)showNotificationsOptInFromAccessPoint:
-            (NotificationOptInAccessPoint)accessPoint
-                           baseViewController:
-                               (UIViewController*)baseViewController {
-  [_notificationsOptInCoordinator stop];
-
-  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:self.browser];
-  _notificationsOptInCoordinator.accessPoint = accessPoint;
-  _notificationsOptInCoordinator.delegate = self;
-
-  [_notificationsOptInCoordinator start];
-}
-
-- (void)dismissNotificationsOptIn {
-  [_notificationsOptInCoordinator stop];
-  _notificationsOptInCoordinator = nil;
-}
-
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                        prefilledEmail:(NSString*)email {
   if (_signinCoordinator.viewWillPersist ||
@@ -1947,7 +1919,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self dismissSearchWhatYouSeePromo];
   [self dismissPriceTrackingPromo];
   [self dismissTabGroupsPromo];
-  [self dismissNotificationsOptIn];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -3082,14 +3053,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     (WebUsageEnablerBrowserAgent*)webUsageEnabler {
   self.active = WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
                     ->IsWebUsageEnabled();
-}
-
-#pragma mark - NotificationsOptInCoordinatorDelegate
-
-- (void)notificationsOptInScreenDidFinish:
-    (NotificationsOptInCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _notificationsOptInCoordinator);
-  [self dismissNotificationsOptIn];
 }
 
 #pragma mark - SigninReauthCoordinatorDelegate

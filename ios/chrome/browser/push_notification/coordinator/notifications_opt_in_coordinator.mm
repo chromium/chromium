@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_alert_coordinator.h"
-#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_mediator.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/push_notification/ui/notifications_opt_in_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/notifications_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -142,9 +142,9 @@
   _optInAlertCoordinator = nil;
   switch (result) {
     case NotificationsOptInAlertResult::kPermissionGranted:
-      [self dismissViewController];
       [self recordNotificationsEnabledForClients:alertCoordinator.clientIds
                                                      .value()];
+      [self dismissViewController];
       break;
     case NotificationsOptInAlertResult::kPermissionDenied:
     case NotificationsOptInAlertResult::kCanceled:
@@ -160,10 +160,10 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate notificationsOptInScreenDidFinish:self];
   base::UmaHistogramEnumeration(
       kNotificationsOptInPromptActionHistogram,
       NotificationsOptInPromptActionType::kSwipedToDismiss);
+  [self hideNotificationsOptIn];
 }
 
 #pragma mark - Private
@@ -174,15 +174,29 @@
               .empty();
 }
 
-// Dismisses the base view controller.
+// Dismisses the view controller and requests teardown of this coordinator.
 - (void)dismissViewController {
+  if (!_viewController.presentingViewController) {
+    [self hideNotificationsOptIn];
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
-                           [weakSelf.delegate
-                               notificationsOptInScreenDidFinish:weakSelf];
+                           [weakSelf hideNotificationsOptIn];
                          }];
+}
+
+// Dispatches the command to stop and release this coordinator.
+- (void)hideNotificationsOptIn {
+  // No-op if `-stop` already ran while dismissal was in flight.
+  if (!_viewController) {
+    return;
+  }
+  id<NotificationsOptInCommands> notificationsOptInHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), NotificationsOptInCommands);
+  [notificationsOptInHandler hideNotificationsOptIn];
 }
 
 // Records notifications that are enabled through the prompt.
