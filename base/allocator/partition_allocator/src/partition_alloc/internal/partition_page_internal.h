@@ -429,6 +429,9 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  DCheckRootLockIsAcquired(ToSuperPageExtent()->root);
+#endif
   auto* subsequent_page_metadata =
       GetSubsequentPageMetadata(reinterpret_cast<PartitionPageMetadata*>(this));
   subsequent_page_metadata->raw_size = raw_size;

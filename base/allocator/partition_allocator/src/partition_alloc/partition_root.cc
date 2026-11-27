@@ -31,6 +31,7 @@
 #include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_cookie.h"
+#include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/reservation_offset_table.h"
@@ -1426,11 +1427,23 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  size_t current_usable_size = GetSlotUsableSize(slot_span);
+  size_t current_usable_size =
+      slot_span->CanStoreRawSize() ? 0 : GetSlotUsableSize(slot_span);
+  size_t new_usable_size = current_usable_size;
 
   if (slot_span->CanStoreRawSize()) {
-    size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
-    slot_span->SetRawSize(new_raw_size);
+    const size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
+    {
+      // `PartitionPurgeSlotSpan()` and `PartitionDumpSlotSpanStats()` read
+      // `GetRawSize()` under `PartitionRootLock(this)`. Synchronize raw size
+      // updates with the root lock so concurrent purging cannot discard pages
+      // needed by the resized allocation.
+      ::partition_alloc::internal::ScopedGuard guard{
+          internal::PartitionRootLock(this)};
+      current_usable_size = GetSlotUsableSize(slot_span);
+      slot_span->SetRawSize(new_raw_size);
+      new_usable_size = GetSlotUsableSize(slot_span);
+    }
 #if PARTITION_ALLOC_HAS_DCHECKED_BRP
     if (brp_enabled()) [[likely]] {
       internal::InSlotMetadata* new_ref_count = internal::InSlotMetadata::From(
@@ -1452,7 +1465,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     // raw size (otherwise we wouldn't know where to look for it later).
     if (settings_.use_cookie) {
       internal::PartitionCookieWriteValue(PA_UNSAFE_TODO(
-          static_cast<unsigned char*>(object) + GetSlotUsableSize(slot_span)));
+          static_cast<unsigned char*>(object) + new_usable_size));
     }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
@@ -1478,7 +1491,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   internal::ThreadCache* thread_cache = GetOrCreateThreadCache();
   if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
     thread_cache->RecordDeallocation(current_usable_size);
-    thread_cache->RecordAllocation(GetSlotUsableSize(slot_span));
+    thread_cache->RecordAllocation(new_usable_size);
   }
 
   return object;

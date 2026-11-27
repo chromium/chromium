@@ -230,7 +230,8 @@ struct SlotSpanMetadata {
   void RegisterEmpty();
 
   // The caller is responsible for ensuring that raw_size can be stored before
-  // calling Set/GetRawSize.
+  // calling Set/GetRawSize, and that the PartitionRoot lock is held before
+  // calling SetRawSize.
   PA_ALWAYS_INLINE void SetRawSize(size_t raw_size);
 
   PA_ALWAYS_INLINE void SetFreelistHead(FreelistEntry* new_head);

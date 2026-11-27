@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -4374,6 +4375,356 @@ TEST_P(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
   EXPECT_TRUE(ptr);
 
   allocator.root()->Free(ptr);
+}
+
+namespace {
+
+struct SingleSlotNormalBucketRange {
+  size_t slot_size = 0;
+  size_t min_pages = 0;
+  size_t max_pages = 0;
+};
+
+class ScopedReallocatableBuffer {
+ public:
+  ScopedReallocatableBuffer(PartitionRoot* root, size_t initial_size)
+      : root_(root),
+        ptr_(
+            static_cast<unsigned char*>(root_->Alloc(initial_size, type_name))),
+        size_(ptr_ ? initial_size : 0) {}
+
+  ~ScopedReallocatableBuffer() {
+    if (ptr_) {
+      root_->Free(ptr_);
+    }
+  }
+
+  ScopedReallocatableBuffer(const ScopedReallocatableBuffer&) = delete;
+  ScopedReallocatableBuffer& operator=(const ScopedReallocatableBuffer&) =
+      delete;
+
+  unsigned char* get() const { return ptr_; }
+
+  base::span<unsigned char> AsSpan() const {
+    // SAFETY: `PartitionRoot::Alloc()` and `PartitionRoot::Realloc()` return
+    // raw pointers rather than spans; `ptr_` points to a live allocation from
+    // `root_` with at least `size_` usable bytes (or is null when `size_ ==
+    // 0`).
+    return PA_UNSAFE_BUFFERS(base::span(ptr_, size_));
+  }
+
+  unsigned char* Realloc(size_t new_size) {
+    auto* resized =
+        static_cast<unsigned char*>(root_->Realloc(ptr_, new_size, type_name));
+    if (resized || new_size == 0) {
+      ptr_ = resized;
+      size_ = resized ? new_size : 0;
+    }
+    return resized;
+  }
+
+  void* PageAtIndex(size_t page) const {
+    return reinterpret_cast<void*>(UntagPtr(ptr_) - kPointerOffset +
+                                   (page * SystemPageSize()));
+  }
+
+ private:
+  PartitionRoot* const root_;
+  unsigned char* ptr_;
+  size_t size_;
+};
+
+class ConcurrentInPlaceReallocDelegate
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  ConcurrentInPlaceReallocDelegate(PartitionRoot* root,
+                                   SingleSlotNormalBucketRange range,
+                                   std::atomic<int>& started_threads,
+                                   std::atomic<bool>& stop,
+                                   std::atomic<size_t>& completed_cycles,
+                                   std::atomic<bool>& mismatch_detected)
+      : root_(root),
+        range_(range),
+        started_threads_(started_threads),
+        stop_(stop),
+        completed_cycles_(completed_cycles),
+        mismatch_detected_(mismatch_detected) {}
+
+  void ThreadMain() override {
+    constexpr unsigned char kPattern = 0xA5;
+    const size_t min_size =
+        root_->AdjustSizeForExtrasSubtract(range_.min_pages * SystemPageSize());
+    started_threads_.fetch_add(1, std::memory_order_release);
+
+    while (!stop_.load(std::memory_order_relaxed) &&
+           !mismatch_detected_.load(std::memory_order_relaxed)) {
+      ScopedReallocatableBuffer alloc(root_, min_size);
+      unsigned char* bytes = alloc.get();
+      if (!bytes) {
+        mismatch_detected_.store(true, std::memory_order_relaxed);
+        break;
+      }
+      size_t current_size = min_size;
+      std::ranges::fill(alloc.AsSpan(), kPattern);
+
+      bool failed = false;
+      for (size_t pages = range_.min_pages + 1; pages <= range_.max_pages;
+           ++pages) {
+        const size_t next_size =
+            root_->AdjustSizeForExtrasSubtract(pages * SystemPageSize());
+        unsigned char* resized = alloc.Realloc(next_size);
+        if (UntagPtr(resized) != UntagPtr(bytes)) {
+          mismatch_detected_.store(true, std::memory_order_relaxed);
+          failed = true;
+          break;
+        }
+        bytes = resized;
+        std::ranges::fill(alloc.AsSpan().subspan(current_size), kPattern);
+        current_size = next_size;
+      }
+
+      if (!failed) {
+        for (unsigned char byte : alloc.AsSpan()) {
+          if (byte != kPattern) {
+            mismatch_detected_.store(true, std::memory_order_relaxed);
+            failed = true;
+            break;
+          }
+        }
+      }
+
+      if (!failed) {
+        unsigned char* shrunk = alloc.Realloc(min_size);
+        if (UntagPtr(shrunk) != UntagPtr(bytes)) {
+          mismatch_detected_.store(true, std::memory_order_relaxed);
+          failed = true;
+        } else {
+          for (unsigned char byte : alloc.AsSpan()) {
+            if (byte != kPattern) {
+              mismatch_detected_.store(true, std::memory_order_relaxed);
+              break;
+            }
+          }
+        }
+      }
+
+      completed_cycles_.fetch_add(1, std::memory_order_relaxed);
+    }
+  }
+
+ private:
+  PartitionRoot* const root_;
+  const SingleSlotNormalBucketRange range_;
+  std::atomic<int>& started_threads_;
+  std::atomic<bool>& stop_;
+  std::atomic<size_t>& completed_cycles_;
+  std::atomic<bool>& mismatch_detected_;
+};
+
+}  // namespace
+
+TEST_P(PartitionAllocTest, InPlaceReallocAndPurgeForSingleSlotNormalBuckets) {
+  std::vector<SingleSlotNormalBucketRange> ranges;
+  size_t prev_slot_size = 0;
+  for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
+    const auto& bucket = allocator.root()->buckets_[i];
+    if (!bucket.is_valid() || bucket.is_direct_mapped() ||
+        SizeToIndex(bucket.slot_size) != i) {
+      continue;
+    }
+    if (bucket.CanStoreRawSize() && prev_slot_size > 0 &&
+        bucket.slot_size - prev_slot_size >= 2 * SystemPageSize()) {
+      const size_t min_pages = (prev_slot_size / SystemPageSize()) + 1;
+      const size_t max_pages = bucket.slot_size / SystemPageSize();
+      if (min_pages < max_pages &&
+          SizeToIndex(min_pages * SystemPageSize()) == i &&
+          SizeToIndex(max_pages * SystemPageSize()) == i) {
+        ranges.push_back({
+            .slot_size = bucket.slot_size,
+            .min_pages = min_pages,
+            .max_pages = max_pages,
+        });
+      }
+    }
+    prev_slot_size = bucket.slot_size;
+  }
+  if (ranges.empty() && SystemPageSize() >= 65536 &&
+      GetBucketDistribution() == BucketDistribution::kDenser) {
+    // With 64 KiB system pages under the denser bucket distribution, the
+    // maximum normal-bucket step up to `kMaxBucketSize` is 64 KiB (1 system
+    // page), so no normal bucket spans multiple page counts.
+    GTEST_SKIP();
+  }
+  ASSERT_FALSE(ranges.empty());
+
+  const SingleSlotNormalBucketRange target = ranges.front();
+  const size_t min_size = allocator.root()->AdjustSizeForExtrasSubtract(
+      target.min_pages * SystemPageSize());
+  const size_t max_size = allocator.root()->AdjustSizeForExtrasSubtract(
+      target.max_pages * SystemPageSize());
+
+  const auto expect_bucket_stats = [&](size_t expected_discardable_bytes,
+                                       size_t expected_active_bytes) {
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(target.slot_size);
+    ASSERT_TRUE(stats);
+    EXPECT_EQ(expected_discardable_bytes, stats->discardable_bytes);
+    EXPECT_EQ(expected_active_bytes, stats->active_bytes);
+  };
+
+  // 1. Verify in-place growth updates raw size so subsequent purging preserves
+  // all grown pages.
+  {
+    allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
+    ScopedReallocatableBuffer alloc(allocator.root(), min_size);
+    unsigned char* const ptr = alloc.get();
+    ASSERT_TRUE(ptr);
+    const SlotSpan* slot_span = SlotSpan::FromSlotStart(
+        SlotStart::Unchecked(ptr).Untag(), allocator.root());
+    ASSERT_TRUE(slot_span->CanStoreRawSize());
+    ASSERT_FALSE(slot_span->bucket->is_direct_mapped());
+    ASSERT_EQ(slot_span, slot_span->bucket->active_slot_spans_head);
+    ASSERT_FALSE(slot_span->marked_full);
+    std::ranges::fill(alloc.AsSpan(), 0x5Au);
+
+    ASSERT_NO_FATAL_FAILURE(expect_bucket_stats(
+        (target.max_pages - target.min_pages) * SystemPageSize(),
+        target.min_pages * SystemPageSize()));
+
+    unsigned char* grown = alloc.Realloc(max_size);
+    ASSERT_EQ(UntagPtr(ptr), UntagPtr(grown));
+    std::ranges::fill(alloc.AsSpan().subspan(min_size), 0xA5u);
+    ASSERT_EQ(slot_span, slot_span->bucket->active_slot_spans_head);
+    ASSERT_FALSE(slot_span->marked_full);
+
+    ASSERT_NO_FATAL_FAILURE(expect_bucket_stats(0u, target.slot_size));
+
+    allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+    for (size_t page = 0; page < target.max_pages; ++page) {
+      CHECK_PAGE_IN_CORE(alloc.PageAtIndex(page), true);
+    }
+    const base::span<const unsigned char> grown_bytes = alloc.AsSpan();
+    for (size_t i = 0; i < min_size; ++i) {
+      if (grown_bytes[i] != 0x5Au) {
+        ADD_FAILURE() << "Unexpected initial byte at offset " << i;
+        break;
+      }
+    }
+    for (size_t i = min_size; i < max_size; ++i) {
+      if (grown_bytes[i] != 0xA5u) {
+        ADD_FAILURE() << "Unexpected grown byte at offset " << i;
+        break;
+      }
+    }
+  }
+
+  // 2. Verify in-place shrink updates raw size so subsequent purging discards
+  // trailing unused pages while preserving live bytes.
+  {
+    allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
+    ScopedReallocatableBuffer alloc(allocator.root(), max_size);
+    unsigned char* const ptr = alloc.get();
+    ASSERT_TRUE(ptr);
+    const SlotSpan* slot_span = SlotSpan::FromSlotStart(
+        SlotStart::Unchecked(ptr).Untag(), allocator.root());
+    ASSERT_TRUE(slot_span->CanStoreRawSize());
+    ASSERT_FALSE(slot_span->bucket->is_direct_mapped());
+    ASSERT_EQ(slot_span, slot_span->bucket->active_slot_spans_head);
+    ASSERT_FALSE(slot_span->marked_full);
+    std::ranges::fill(alloc.AsSpan(), 0x5Au);
+    for (size_t page = 0; page < target.max_pages; ++page) {
+      CHECK_PAGE_IN_CORE(alloc.PageAtIndex(page), true);
+    }
+
+    unsigned char* shrunk = alloc.Realloc(min_size);
+    ASSERT_EQ(UntagPtr(ptr), UntagPtr(shrunk));
+    ASSERT_EQ(slot_span, slot_span->bucket->active_slot_spans_head);
+    ASSERT_FALSE(slot_span->marked_full);
+
+    ASSERT_NO_FATAL_FAILURE(expect_bucket_stats(
+        (target.max_pages - target.min_pages) * SystemPageSize(),
+        target.min_pages * SystemPageSize()));
+
+    allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+    for (size_t page = 0; page < target.min_pages; ++page) {
+      CHECK_PAGE_IN_CORE(alloc.PageAtIndex(page), true);
+    }
+    for (size_t page = target.min_pages; page < target.max_pages; ++page) {
+      CHECK_PAGE_IN_CORE(alloc.PageAtIndex(page), false);
+    }
+    const base::span<const unsigned char> shrunk_bytes = alloc.AsSpan();
+    for (size_t i = 0; i < min_size; ++i) {
+      if (shrunk_bytes[i] != 0x5Au) {
+        ADD_FAILURE() << "Unexpected retained byte at offset " << i;
+        break;
+      }
+    }
+  }
+
+  // Newly spawned worker threads do not inherit per-thread PKRU permissions for
+  // pkey-isolated pools.
+  if (UseThreadIsolatedPool()) {
+    return;
+  }
+
+  // 3. Verify concurrent in-place growth/shrink and background purging never
+  // discard live pages or overwrite trailing cookies. Assign distinct buckets
+  // across workers when available so allocations do not immediately evict each
+  // other from `active_slot_spans_head` before `PurgeMemory()` visits them.
+  std::atomic<int> started_threads{0};
+  std::atomic<bool> stop{false};
+  std::atomic<size_t> completed_cycles{0};
+  std::atomic<bool> mismatch_detected{false};
+
+  constexpr size_t kNumThreads = 4;
+  std::vector<std::unique_ptr<ConcurrentInPlaceReallocDelegate>> delegates;
+  delegates.reserve(kNumThreads);
+  for (size_t i = 0; i < kNumThreads; ++i) {
+    delegates.push_back(std::make_unique<ConcurrentInPlaceReallocDelegate>(
+        allocator.root(), ranges[i % ranges.size()], started_threads, stop,
+        completed_cycles, mismatch_detected));
+  }
+
+  std::array<base::PlatformThreadHandle, kNumThreads> handles{};
+  size_t created_threads = 0;
+  for (size_t i = 0; i < kNumThreads; ++i) {
+    if (!base::PlatformThreadForTesting::Create(0, delegates[i].get(),
+                                                &handles[i])) {
+      break;
+    }
+    ++created_threads;
+  }
+  if (created_threads < kNumThreads) {
+    stop.store(true, std::memory_order_relaxed);
+    for (size_t i = 0; i < created_threads; ++i) {
+      base::PlatformThreadForTesting::Join(handles[i]);
+    }
+    FAIL() << "Failed to create worker threads";
+  }
+  while (started_threads.load(std::memory_order_acquire) <
+         static_cast<int>(kNumThreads)) {
+    base::PlatformThreadForTesting::YieldCurrentThread();
+  }
+
+  constexpr size_t kMinPurgeLoops = 400;
+  constexpr size_t kMinWorkerCycles = 200;
+  for (size_t i = 0;
+       (i < kMinPurgeLoops ||
+        completed_cycles.load(std::memory_order_relaxed) < kMinWorkerCycles) &&
+       !mismatch_detected.load(std::memory_order_relaxed);
+       ++i) {
+    allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  }
+
+  stop.store(true, std::memory_order_relaxed);
+  for (auto& handle : handles) {
+    base::PlatformThreadForTesting::Join(handle);
+  }
+
+  EXPECT_FALSE(mismatch_detected.load(std::memory_order_relaxed));
 }
 
 TEST_P(PartitionAllocTest, ZeroFill) {

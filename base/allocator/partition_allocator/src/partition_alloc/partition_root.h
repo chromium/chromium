@@ -945,7 +945,8 @@ class alignas(internal::kPartitionCachelineSize)
   bool TryReallocInPlaceForNormalBuckets(void* object,
                                          SlotSpanMetadata* slot_span,
                                          size_t new_size)
-      PA_LOCKS_EXCLUDED(thread_cache_construction_lock_);
+      PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this),
+                        thread_cache_construction_lock_);
   bool TryReallocInPlaceForDirectMap(SlotSpanMetadata* slot_span,
                                      size_t requested_size)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
