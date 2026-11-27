@@ -493,10 +493,6 @@ public class NtpCustomizationConfigManager {
                 assumeNonNull(themeCollectionData.getBitmap()),
                 themeCollectionData.getBackgroundImageInfo(),
                 oldType);
-        // Updates the daily refresh timestamp if daily refresh enabled.
-        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
-                TimeUtils.currentTimeMillis(), mBackgroundType, mCustomBackgroundInfo);
-
         saveThemeCollectionInfoToSharedPreference(themeCollectionData);
     }
 
@@ -612,7 +608,8 @@ public class NtpCustomizationConfigManager {
     /**
      * Persists the theme collection's image file path, background info, matrices and primary color
      * to SharedPreferences, and saves the bitmap to disk if it isn't saved on this device yet (e.g.
-     * when newly selected, synced or from remote history).
+     * when newly selected, synced or from remote history). Also records the daily refresh timestamp
+     * if daily refresh is enabled.
      */
     private static void saveThemeCollectionInfoToSharedPreference(
             NtpBackgroundDataThemeCollection themeCollectionData) {
@@ -624,13 +621,25 @@ public class NtpCustomizationConfigManager {
                 themeCollectionData,
                 themeCollectionData.isBitmapSaved() ? null : themeCollectionData.getBitmap(),
                 assumeNonNull(themeCollectionData.getBackgroundImageInfo()));
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                TimeUtils.currentTimeMillis(),
+                NtpBackgroundType.THEME_COLLECTION,
+                themeCollectionData.getCustomBackgroundInfo());
     }
 
-    /** Persists the Chrome color's color id and daily refresh setting to SharedPreferences. */
+    /**
+     * Persists the Chrome color's color id and daily refresh setting to SharedPreferences. Also
+     * records the daily refresh timestamp if daily refresh is enabled.
+     */
     private static void saveChromeColorInfoToSharedPreference(NtpBackgroundDataColor colorData) {
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorData.getThemeColorId());
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(
                 colorData.isChromeColorDailyRefreshEnabled());
+        // Save the daily refresh setting first because maybeUpdateDailyRefreshTimestamp() reads it.
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                TimeUtils.currentTimeMillis(),
+                NtpBackgroundType.CHROME_COLOR,
+                /* customBackgroundInfo= */ null);
     }
 
     /**
@@ -695,12 +704,6 @@ public class NtpCustomizationConfigManager {
 
             assert backgroundData instanceof NtpBackgroundDataColor;
             saveChromeColorInfoToSharedPreference((NtpBackgroundDataColor) backgroundData);
-            // Updates the daily refresh timestamp if enabled. This must be called after the daily
-            // refresh setting is saved, which it reads.
-            NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
-                    TimeUtils.currentTimeMillis(),
-                    mBackgroundType,
-                    /* customBackgroundInfo= */ null);
         }
 
         if (colorInfo instanceof NtpThemeColorFromHexInfo colorFromHexInfo) {

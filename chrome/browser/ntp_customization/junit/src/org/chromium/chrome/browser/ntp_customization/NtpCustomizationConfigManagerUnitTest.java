@@ -1170,6 +1170,30 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnSyncedThemeCollectionImageChanged_dailyRefresh_setsTimestamp() {
+        testOnSyncedThemeCollectionTimestampImpl(/* isDailyRefreshEnabled= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnSyncedThemeCollectionImageChanged_staticCollection_doesNotSetTimestamp() {
+        testOnSyncedThemeCollectionTimestampImpl(/* isDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnSyncedChromeColorChanged_dailyRefresh_setsTimestamp() {
+        testOnSyncedChromeColorTimestampImpl(/* isDailyRefreshEnabled= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnSyncedChromeColorChanged_staticColor_doesNotSetTimestamp() {
+        testOnSyncedChromeColorTimestampImpl(/* isDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testMaybeApplyBackgroundUpdateFromDeviceSync_withoutMismatch() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
 
@@ -2122,5 +2146,40 @@ public class NtpCustomizationConfigManagerUnitTest {
             verify(mNtpSyncedThemeManager, never())
                     .fetchNextThemeCollectionImageAfterDailyRefreshApplied();
         }
+    }
+
+    /**
+     * Verifies that persisting a synced theme collection records the daily refresh timestamp only
+     * when daily refresh is enabled.
+     */
+    private void testOnSyncedThemeCollectionTimestampImpl(boolean isDailyRefreshEnabled) {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        assertFalse(hasPref(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        isDailyRefreshEnabled);
+        manager.onSyncedThemeCollectionImageChanged(mContext, createTestThemeCollectionData(info));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(
+                isDailyRefreshEnabled, hasPref(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+    }
+
+    /**
+     * Verifies that persisting a synced Chrome color records the daily refresh timestamp only when
+     * daily refresh is enabled.
+     */
+    private void testOnSyncedChromeColorTimestampImpl(boolean isDailyRefreshEnabled) {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        assertFalse(hasPref(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+
+        manager.onSyncedChromeColorChanged(mContext, createTestColorData(isDailyRefreshEnabled));
+
+        assertEquals(
+                isDailyRefreshEnabled, hasPref(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
     }
 }
