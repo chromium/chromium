@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -1332,5 +1333,75 @@ public class SettingsPageFragmentDelegateImplTest {
         root.addView(inner);
         inner.addView(recyclerView);
         assertEquals(recyclerView, SettingsPageFragmentDelegateImpl.findRecyclerView(root));
+    }
+
+    private void verifyBackStackListenersRemovedOnDestroy(
+            FragmentManager hostChildFragmentManager,
+            FragmentManager multiColumnChildFragmentManager) {
+        ArgumentCaptor<FragmentManager.OnBackStackChangedListener> hostListenerCaptor =
+                ArgumentCaptor.forClass(FragmentManager.OnBackStackChangedListener.class);
+        verify(hostChildFragmentManager)
+                .addOnBackStackChangedListener(hostListenerCaptor.capture());
+
+        ArgumentCaptor<FragmentManager.OnBackStackChangedListener> multiColumnListenerCaptor =
+                ArgumentCaptor.forClass(FragmentManager.OnBackStackChangedListener.class);
+        verify(multiColumnChildFragmentManager)
+                .addOnBackStackChangedListener(multiColumnListenerCaptor.capture());
+
+        FragmentManager.OnBackStackChangedListener listener = hostListenerCaptor.getValue();
+        assertNotNull(listener);
+        assertSame(listener, multiColumnListenerCaptor.getValue());
+
+        mDelegate.destroySettings();
+
+        verify(hostChildFragmentManager).removeOnBackStackChangedListener(listener);
+        verify(multiColumnChildFragmentManager).removeOnBackStackChangedListener(listener);
+    }
+
+    @Test
+    public void testDestroySettings_removesBackStackChangedListeners_deferredPath() {
+        FragmentManager hostChildFragmentManager = mock(FragmentManager.class);
+        FragmentManager multiColumnChildFragmentManager = mock(FragmentManager.class);
+        when(mMockSettingsHostFragment.getHostFragmentManager())
+                .thenReturn(hostChildFragmentManager);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull())
+                .thenReturn(multiColumnChildFragmentManager);
+
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+        triggerFragmentViewCreated();
+
+        verifyBackStackListenersRemovedOnDestroy(
+                hostChildFragmentManager, multiColumnChildFragmentManager);
+    }
+
+    @Test
+    public void testDestroySettings_removesBackStackChangedListeners_warmPath() {
+        FragmentManager hostChildFragmentManager = mock(FragmentManager.class);
+        FragmentManager multiColumnChildFragmentManager = mock(FragmentManager.class);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getHostFragmentManager())
+                .thenReturn(hostChildFragmentManager);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull())
+                .thenReturn(multiColumnChildFragmentManager);
+
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+
+        verifyBackStackListenersRemovedOnDestroy(
+                hostChildFragmentManager, multiColumnChildFragmentManager);
+    }
+
+    @Test
+    public void testDestroySettings_nullChildFragmentManagers_safeCleanup() {
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getHostFragmentManager()).thenReturn(null);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+        mDelegate.destroySettings();
+
+        verify(mMockSettingsHostFragment, atLeastOnce()).getHostFragmentManager();
+        verify(mMultiColumnSettings).getChildFragmentManagerOrNull();
     }
 }

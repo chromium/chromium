@@ -92,8 +92,12 @@ public class SettingsPageFragmentDelegateImpl
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final String mFragmentTag;
     private final Tab mTab;
+    private final FragmentManager.OnBackStackChangedListener mBackStackChangedListener;
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
+    private @Nullable FragmentManager mHostChildFragmentManager;
+    private @Nullable FragmentManager mMultiColumnChildFragmentManager;
+
     private @Nullable SettingsInTabNavigationDelegate mSettingsNavigationDelegate;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
@@ -133,6 +137,7 @@ public class SettingsPageFragmentDelegateImpl
         // existing settings tabs (or closing tabs in the undo close tab snackbar queue). Use
         // tab.getId() because it is stable across Activity restarts (e.g. theme changes).
         mFragmentTag = SETTINGS_NATIVE_PAGE_TAG + "_" + tab.getId();
+        mBackStackChangedListener = this::updateBackPressState;
     }
 
     @Override
@@ -314,11 +319,9 @@ public class SettingsPageFragmentDelegateImpl
             if (!url.isEmpty()) updateForUrl(url);
         }
 
-        if (mSettingsHostFragment.isAdded()) {
-            mSettingsHostFragment
-                    .getChildFragmentManager()
-                    .addOnBackStackChangedListener(this::updateBackPressState);
-        }
+        mHostChildFragmentManager =
+                updateBackStackChangedListener(
+                        mHostChildFragmentManager, mSettingsHostFragment.getHostFragmentManager());
 
         assert mActivity instanceof ActivityLifecycleDispatcherProvider;
         ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().register(this);
@@ -353,11 +356,10 @@ public class SettingsPageFragmentDelegateImpl
                     multiColumnSettings, multiColumnSettings.requireView(), savedInstanceState);
             createSearchCoordinator(multiColumnSettings, savedInstanceState);
             multiColumnSettings.addObserver(this);
-            if (multiColumnSettings.isAdded()) {
-                multiColumnSettings
-                        .getChildFragmentManager()
-                        .addOnBackStackChangedListener(this::updateBackPressState);
-            }
+            mMultiColumnChildFragmentManager =
+                    updateBackStackChangedListener(
+                            mMultiColumnChildFragmentManager,
+                            multiColumnSettings.getChildFragmentManagerOrNull());
             onHeaderLayoutUpdated();
         } else {
             // Otherwise create the title updater and search coordinator when the fragment is
@@ -545,6 +547,10 @@ public class SettingsPageFragmentDelegateImpl
             mActivity.unregisterComponentCallbacks(mComponentCallbacks);
             mComponentCallbacks = null;
         }
+
+        mHostChildFragmentManager = updateBackStackChangedListener(mHostChildFragmentManager, null);
+        mMultiColumnChildFragmentManager =
+                updateBackStackChangedListener(mMultiColumnChildFragmentManager, null);
 
         if (mSettingsHostFragment != null) {
             boolean isUrlNavEnabled = ChromeFeatureList.sSettingsInTabUrlNav.isEnabled();
@@ -933,6 +939,22 @@ public class SettingsPageFragmentDelegateImpl
         mBackPressStateSupplier.set(canHandle);
     }
 
+    /**
+     * Moves {@link #mBackStackChangedListener} from {@code currentManager} to {@code newManager},
+     * returning {@code newManager}.
+     */
+    private @Nullable FragmentManager updateBackStackChangedListener(
+            @Nullable FragmentManager currentManager, @Nullable FragmentManager newManager) {
+        if (currentManager == newManager) return currentManager;
+        if (currentManager != null) {
+            currentManager.removeOnBackStackChangedListener(mBackStackChangedListener);
+        }
+        if (newManager != null) {
+            newManager.addOnBackStackChangedListener(mBackStackChangedListener);
+        }
+        return newManager;
+    }
+
     /** Utility class to handle creating the title updater and deferred URL navigation. */
     private class TitleUpdaterLifecycleCallbacks
             extends FragmentManager.FragmentLifecycleCallbacks {
@@ -949,12 +971,10 @@ public class SettingsPageFragmentDelegateImpl
                 createMultiColumnTitleUpdater(multiColumnSettings, v, savedInstanceState);
                 createSearchCoordinator(multiColumnSettings, savedInstanceState);
                 multiColumnSettings.addObserver(SettingsPageFragmentDelegateImpl.this);
-                if (multiColumnSettings.isAdded()) {
-                    multiColumnSettings
-                            .getChildFragmentManager()
-                            .addOnBackStackChangedListener(
-                                    SettingsPageFragmentDelegateImpl.this::updateBackPressState);
-                }
+                mMultiColumnChildFragmentManager =
+                        updateBackStackChangedListener(
+                                mMultiColumnChildFragmentManager,
+                                multiColumnSettings.getChildFragmentManagerOrNull());
                 updateBackPressState();
 
                 assert mTitleUpdaterLifecycleCallbacks == this;
