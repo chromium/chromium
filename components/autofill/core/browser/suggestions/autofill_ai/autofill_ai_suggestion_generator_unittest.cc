@@ -69,10 +69,14 @@ using ::testing::ElementsAreArray;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
+using ::testing::NiceMock;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::ResultOf;
 using ::testing::Return;
 using ::testing::SafeMatcherCast;
+using ::testing::SaveArg;
+using ::testing::VariantWith;
 
 constexpr base::i18n::LanguageTag kAppLocaleUS =
     base::i18n::GetKnownLanguageTag("en-US");
@@ -96,14 +100,19 @@ auto HasLabels(auto&&... row_matchers) {
                    std::forward<decltype(row_matchers)>(row_matchers)))...));
 }
 
+Matcher<const Suggestion&> HasEntityGuid(const EntityInstance::EntityId& guid) {
+  return Field("Suggestion::payload", &Suggestion::payload,
+               VariantWith<Suggestion::AutofillAiPayload>(
+                   Field("Suggestion::AutofillAiPayload::guid",
+                         &Suggestion::AutofillAiPayload::guid, guid)));
+}
+
 Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
-  return ResultOf(
-      "Suggestion::payload",
-      [](const Suggestion& s) {
-        return std::get<Suggestion::AutofillAiPayload>(s.payload)
-            .requires_server_fetch;
-      },
-      requires_server_fetch);
+  return Field("Suggestion::payload", &Suggestion::payload,
+               VariantWith<Suggestion::AutofillAiPayload>(
+                   Field("Suggestion::AutofillAiPayload::requires_server_fetch",
+                         &Suggestion::AutofillAiPayload::requires_server_fetch,
+                         requires_server_fetch)));
 }
 
 Matcher<Suggestion> HasAcceptability(Suggestion::Acceptability acceptability) {
@@ -133,7 +142,7 @@ Matcher<Suggestion> SuggestionTypeHasTextAndAcceptability(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-std::vector<testing::Matcher<Suggestion>> MaybeSuggestedByGeminiTitle() {
+std::vector<Matcher<Suggestion>> MaybeSuggestedByGeminiTitle() {
   return {AllOf(EqualsSuggestion(SuggestionType::kTitle,
                                  l10n_util::GetStringUTF16(
                                      IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI)),
@@ -143,31 +152,29 @@ std::vector<testing::Matcher<Suggestion>> MaybeSuggestedByGeminiTitle() {
                       Suggestion::FiltrationPolicy::kStatic))};
 }
 #else
-std::vector<testing::Matcher<Suggestion>> MaybeSuggestedByGeminiTitle() {
+std::vector<Matcher<Suggestion>> MaybeSuggestedByGeminiTitle() {
   return {};
 }
 #endif
 
-// Flattens a mix of individual `testing::Matcher<Suggestion>` (or convertible
-// matchers) and `std::vector<testing::Matcher<Suggestion>>` into a single list
-// of matchers suitable for `testing::ElementsAreArray()`.
+// Flattens a mix of individual `Matcher<Suggestion>` (or convertible matchers)
+// and `std::vector<Matcher<Suggestion>>` into a single list of matchers
+// suitable for `ElementsAreArray()`.
 // This allows platform-aware helper functions like
 // `MaybeSuggestedByGeminiTitle()` to conditionally inject different matchers
 // per platform into GMock assertion lists without duplicating test bodies.
 template <typename... Matchers>
-std::vector<testing::Matcher<Suggestion>> FlattenMatchers(
-    Matchers&&... matchers) {
-  std::vector<testing::Matcher<Suggestion>> result;
+std::vector<Matcher<Suggestion>> FlattenMatchers(Matchers&&... matchers) {
+  std::vector<Matcher<Suggestion>> result;
   auto add = [&result](auto&& item) {
     using T = std::decay_t<decltype(item)>;
-    if constexpr (std::is_same_v<T,
-                                 std::vector<testing::Matcher<Suggestion>>>) {
+    if constexpr (std::is_same_v<T, std::vector<Matcher<Suggestion>>>) {
       for (const auto& m : item) {
         result.push_back(m);
       }
     } else {
-      result.push_back(testing::SafeMatcherCast<Suggestion>(
-          std::forward<decltype(item)>(item)));
+      result.push_back(
+          SafeMatcherCast<Suggestion>(std::forward<decltype(item)>(item)));
     }
   };
   (add(std::forward<Matchers>(matchers)), ...);
@@ -370,8 +377,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager>
-      pcontext_manager_;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> pcontext_manager_;
   TestAutofillClient autofill_client_;
   std::vector<EntityInstance> entities_;
   std::optional<FormStructure> form_structure_;
@@ -404,12 +410,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
 
   EXPECT_CALL(
       suggestions_generated_callback,
-      Run(testing::Pair(
-          SuggestionGenerator::SuggestionDataSource::kAutofillAi,
-          ElementsAre(EqualsSuggestion(kFillAutofillAi),
-                      EqualsSuggestion(kSeparator),
-                      EqualsSuggestion(kManageAutofillAiIdentityDocs)))))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
+               ElementsAre(EqualsSuggestion(kFillAutofillAi),
+                           EqualsSuggestion(kSeparator),
+                           EqualsSuggestion(kManageAutofillAiIdentityDocs)))))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
                                   suggestions_generated_callback.Get());
@@ -432,11 +437,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
-  EXPECT_CALL(
-      suggestions_generated_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
-                        IsEmpty())))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
+                       IsEmpty())))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
                                   suggestions_generated_callback.Get());
@@ -457,11 +461,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, NoSuggestionsIfNoEntities) {
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
-  EXPECT_CALL(
-      suggestions_generated_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
-                        IsEmpty())))
-      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
+                       IsEmpty())))
+      .WillOnce(SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
                                   suggestions_generated_callback.Get());
@@ -490,13 +493,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PassportEntity) {
 
   // There should be only one suggestion whose main text matches the entity
   // value for the passport name.
-  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(
-                               HasMainText(GetPassportName(passport_entity))));
+  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(AllOf(
+                               HasMainText(GetPassportName(passport_entity)),
+                               HasIcon(Suggestion::Icon::kPassport))));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
-  EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kPassport));
 
   // The triggering/first field is of Autofill AI type.
   EXPECT_EQ(GetFillValueForField(*payload, field(0)),
@@ -1276,10 +1279,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(
       suggestions,
-      IdentityDocSuggestionsAre(HasMainText(GetObfuscatedValue(
-          GetPassportNumber(passport_entity), /*visible_suffix_length=*/4))));
-  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(
-                               HasLabel(u"Passport · Pippi Långstrump")));
+      IdentityDocSuggestionsAre(AllOf(
+          HasMainText(GetObfuscatedValue(GetPassportNumber(passport_entity),
+                                         /*visible_suffix_length=*/4)),
+          HasLabel(u"Passport · Pippi Långstrump"))));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
@@ -1365,17 +1368,12 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   edm().RecordEntityUsed(passport4.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
   // Note that two of the resulting suggestions are a line separator and a
   // footer.
-  ASSERT_EQ(suggestions.size(), 3u);
-  const Suggestion::AutofillAiPayload* payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(payload->guid, passport4.guid());
-  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(
-                               HasMainText(GetPassportName(passport4))));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(HasMainText(GetPassportName(passport4)),
+                                      HasEntityGuid(passport4.guid()))));
 }
 
 // Test that if a Local entity and a PersonalContext entity have the
@@ -1399,18 +1397,12 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   edm().RecordEntityUsed(passport_pc.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
-
   // There should be only one suggestion (excluding separator and footer),
   // and it should be the Local one.
-  ASSERT_EQ(suggestions.size(), 3u);
-  const Suggestion::AutofillAiPayload* payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(payload->guid, passport_local.guid());
-  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(
-                               HasMainText(GetPassportName(passport_local))));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  AllOf(HasMainText(GetPassportName(passport_local)),
+                        HasEntityGuid(passport_local.guid()))));
 }
 
 // Test that if a ServerWallet, Local, and PersonalContext entity have
@@ -1444,18 +1436,12 @@ TEST_F(
   edm().RecordEntityUsed(passport_server.guid(), now - base::Minutes(2));
   webdata_helper().WaitUntilIdle();
 
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
-
   // There should be only one suggestion (excluding separator and footer),
   // and it should be the ServerWallet one because it has the highest priority.
-  ASSERT_EQ(suggestions.size(), 3u);
-  const Suggestion::AutofillAiPayload* payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(payload->guid, passport_server.guid());
-  EXPECT_THAT(suggestions, IdentityDocSuggestionsAre(
-                               HasMainText(GetPassportName(passport_server))));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  AllOf(HasMainText(GetPassportName(passport_server)),
+                        HasEntityGuid(passport_server.guid()))));
 }
 
 // Test that if a server entity is a subset of a local one, we do not favor it.
@@ -1479,18 +1465,12 @@ TEST_F(
   webdata_helper().WaitUntilIdle();
 
   // `passport2` is deduped because it is a proper subset of `passport1`.
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
   // Note that two of the resulting suggestions are a line separator and a
   // footer.
-  ASSERT_EQ(suggestions.size(), 3u);
-  const Suggestion::AutofillAiPayload* payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(payload->guid, passport1.guid());
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
-      IdentityDocSuggestionsAre(HasMainText(GetPassportName(passport1))));
+      IdentityDocSuggestionsAre(AllOf(HasMainText(GetPassportName(passport1)),
+                                      HasEntityGuid(passport1.guid()))));
 }
 
 // Test that if a local entity's obfuscated attribute ends in the same suffix as
@@ -1507,13 +1487,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetEntities({passport1, passport2});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
 
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
-  ASSERT_EQ(suggestions.size(), 3u);
-  const Suggestion::AutofillAiPayload* payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(payload->guid, passport2.guid());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(HasEntityGuid(passport2.guid())));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -2236,7 +2211,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, WalletSuggestionsShowIPH) {
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, ShowFetchingSuggestionWhenPending) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({PASSPORT_NUMBER});
@@ -2257,7 +2232,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, ShowFetchingSuggestionWhenPending) {
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        NoFetchingSuggestionWhenNoDataExists) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({PASSPORT_NUMBER});
@@ -2276,7 +2251,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, NoFetchingSuggestionWhenNotPending) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({PASSPORT_NUMBER});
@@ -2295,7 +2270,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, NoFetchingSuggestionWhenNotPending) {
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        NoFetchingSuggestionWhenTriggerFieldIsNotPending) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   // Form has Passport and National ID.
@@ -2337,7 +2312,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 // `kPassport` prefetch status is `kPending` on the page.
 TEST_F(AutofillAiSuggestionGeneratorTest,
        NoFetchingSuggestionOnUnrelatedNameField) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({NAME_FULL, ADDRESS_HOME_LINE1});
@@ -2360,7 +2335,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 // whereas focusing an adjacent `NAME_FULL` field does.
 TEST_F(AutofillAiSuggestionGeneratorTest,
        NoFetchingSuggestionOnDistantNameField) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   // Field 0 (`NAME_FULL`) is at distance 6 (> `kMaxPropagationDistance` = 5)
@@ -2771,7 +2746,7 @@ TEST_F(
 
 TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
        ShowFetchingSuggestionWhenPending) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({PASSPORT_NUMBER});
@@ -2795,7 +2770,7 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
 
 TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
        ShowFetchingSuggestionWhenMultiplePending) {
-  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
 
   SetForm({PASSPORT_NUMBER, VEHICLE_LICENSE_PLATE, NAME_FULL});
