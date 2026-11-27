@@ -1942,13 +1942,19 @@ crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/585198482 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gru.https.any.html?gpu [ Crash ]
 crbug.com/585198482 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu [ Pass Timeout ]
 crbug.com/585198482 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?gpu [ Pass Timeout ]
-crbug.com/585198482 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Pass Timeout ]
 crbug.com/585198482 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Pass Timeout ]
 crbug.com/585198482 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gru.https.any.html?gpu [ Crash ]
 crbug.com/585198482 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu [ Pass Timeout ]
 crbug.com/585198482 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?gpu [ Pass Timeout ]
-crbug.com/585198482 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Pass Timeout ]
 crbug.com/585198482 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Pass Timeout ]
+
+# Dawn's Metal relaxed math change changes these outputs on Intel Mac. Accept both until that change rolls in and sticks then baselines can be updated.
+crbug.com/586653065 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure Pass ]
+crbug.com/586653065 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?gpu [ Failure Pass ]
+crbug.com/586653065 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure Pass Timeout ]
+crbug.com/586653065 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure Pass ]
+crbug.com/586653065 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure Pass Timeout ]
+
 # Regression from TFLite/LiteRT roll (crrev.com/c/8822586).
 crbug.com/587539586 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/slice.https.any.html?gpu [ Crash ]
 
