@@ -254,15 +254,19 @@ TEST(AutofillAiImportStringUtilsTest, GetWalletNoticeStringId_UpdatePrompt) {
 }
 
 // Tests that `GetWalletNoticeStringId()` returns the correct Wallet notice
-// string for save prompts of private passes if
-// `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+// string for save prompts if `kAutofillRegionalizedPrivatePassesUxRefine` is
+// disabled.
 TEST(AutofillAiImportStringUtilsTest,
      GetWalletNoticeStringId_UpdatedPrivatePassNoticeDisabled) {
   base::test::ScopedFeatureList feature_list(
-      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses},
+      /*enabled_features=*/{},
       /*disabled_features=*/{
+          features::kAutofillAiWalletPrivatePasses,
           features::kAutofillRegionalizedPrivatePassesUxRefine});
   EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kPassport),
+                                    /*is_save_prompt=*/true),
+            IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
+  EXPECT_EQ(GetWalletNoticeStringId(EntityType(EntityTypeName::kVehicle),
                                     /*is_save_prompt=*/true),
             IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW);
 }

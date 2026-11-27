@@ -615,30 +615,16 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       };
     }
 
-    if (loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
-      // Show footer only when it is a new entity and type supports Wallet
-      // storage. This is sufficient because the entities stored in Wallet are
-      // not editable from the settings.
-      const manageYourInfoLink = `<a target="_blank" href="${
-          this.walletManageYourInfoUrl_(this.entityInstance.type)}">${
-          i18n('autofillAiManageYourInfo')}</a>`;
-      return {
-        html: i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
-          substitutions:
-              [walletTitle, manageYourInfoLink, walletTitle, this.userEmail_],
-          tags: ['a'],
-          attrs: ['href', 'target'],
-        }),
-        stringNames,
-      };
-    }
-
-    // Show footer only when it is a new entity and type supports Wallet
-    // storage. This is sufficient because the entities stored in Wallet are
-    // not editable from the settings.
+    const manageYourInfoLink = `<a target="_blank" href="${
+        this.walletManageYourInfoUrl_(this.entityInstance.type)}">${
+        i18n('autofillAiManageYourInfo')}</a>`;
     return {
-      html: sanitizeInnerHtml(
-          i18n('saveInfoToWalletAccountNotice', walletTitle, this.userEmail_)),
+      html: i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
+        substitutions:
+            [walletTitle, manageYourInfoLink, walletTitle, this.userEmail_],
+        tags: ['a'],
+        attrs: ['href', 'target'],
+      }),
       stringNames,
     };
     // LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api_browsertest.cc:WalletPrivatePassConsentStrings)

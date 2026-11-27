@@ -2028,8 +2028,6 @@ constexpr webui::LocalizedString kAutofillLocalizedStrings[] = {
      IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR},
     {"autofillAiAddOrEditDialogRequiredFieldError",
      IDS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_REQUIRED_FIELD_ERROR},
-    {"saveInfoToWalletAccountNotice",
-     IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE},
     {"saveInfoToWalletSettingsAccountNotice",
      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW},
     {"saveInfoToWalletPrivatePassAccountNotice",

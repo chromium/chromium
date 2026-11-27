@@ -428,7 +428,10 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
     dialog.entityInstance = newEntity;
     loadTimeData.overrideValues({
-      saveInfoToWalletAccountNotice: 'Save to $1 using $2',
+      saveInfoToWalletSettingsAccountNotice:
+          'Save to $1. You can $2 in $3 for $4.',
+      autofillAiManageYourInfo: 'manage your info',
+      managePrivatePassesUrl: 'https://support.google.com/wallet',
       googleWalletTitle: 'Google Wallet',
     });
 
@@ -764,7 +767,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       title: 'ConsentStringNames_NewPrivatePass_UxRefineEnabled',
     },
     // Tests that saving a new private pass to Wallet records the settings
-    // account notice strings when `enableAutofillAiWalletPrivatePasses` is on.
+    // account notice strings regardless of
+    // `enableAutofillAiWalletPrivatePasses`.
     {
       enableAutofillAiWalletPrivatePasses: true,
       passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
@@ -776,15 +780,14 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       ],
       title: 'ConsentStringNames_NewPrivatePass_WalletPrivatePassesEnabled',
     },
-    // Tests that saving a new private pass to Wallet records the legacy account
-    // notice strings when `enableAutofillAiWalletPrivatePasses` is off.
     {
       enableAutofillAiWalletPrivatePasses: false,
       passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       supportsWalletStorage: true,
       expectedConsentStringNames: [
         'googleWalletTitle',
-        'saveInfoToWalletAccountNotice',
+        'autofillAiManageYourInfo',
+        'saveInfoToWalletSettingsAccountNotice',
       ],
       title: 'ConsentStringNames_NewPrivatePass_WalletPrivatePassesDisabled',
     },

@@ -271,9 +271,7 @@ int GetWalletNoticeStringId(EntityType entity_type, bool is_save_prompt) {
           features::kAutofillRegionalizedPrivatePassesUxRefine)) {
     return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
   }
-  return base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
-             ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW
-             : IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE;
+  return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
 }
 
 WalletImportPromptNotice GetWalletImportPromptNotice(
@@ -317,7 +315,6 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
           gfx::Range(offsets[1], offsets[1] + manage_info_text.size());
       return notice;
     }
-    case IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE:
     case IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE:
       notice.text = l10n_util::GetStringFUTF16(
           notice_id, {google_wallet_text, account_email}, &offsets);

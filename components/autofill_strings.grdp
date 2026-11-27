@@ -1410,9 +1410,6 @@
   <message name="IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK" desc="Clickable link text that replaces MANAGE_INFO_LINK inside the middle of the sentence: 'Save your info in Google Wallet and get things done faster, like filling forms across Google products. You can MANAGE_INFO_LINK in Google Wallet for alexpark@gmail.com.'. The capitalization, punctuation and grammar must fit into the full sentence after insertion.">
     manage your info
   </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet.">
-    Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>.
-  </message>
   <!-- Prompt strings used on Desktop -->
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
