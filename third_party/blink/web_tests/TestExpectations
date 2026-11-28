@@ -8833,3 +8833,4 @@ crbug.com/590639898 [ Debug Linux ] external/wpt/html/browsers/browsing-the-web/
 # Gardener 2026-11-28
 crbug.com/591173527 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass Timeout ]
 crbug.com/590646349 [ Debug Linux ] external/wpt/webdriver/tests/classic/set_window_rect/user_prompts.py [ Failure Pass Timeout ]
+crbug.com/591308488 [ Debug Linux ] external/wpt/encoding/unsupported-labels.window.html [ Crash Pass ]
