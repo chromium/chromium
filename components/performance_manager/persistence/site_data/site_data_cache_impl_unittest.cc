@@ -9,8 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/test_support/persistence/unittest_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,10 +43,9 @@ class MockSiteCache : public testing::NoopSiteDataStore {
 
 class SiteDataCacheImplTest : public ::testing::Test {
  protected:
-  SiteDataCacheImplTest()
-      : data_cache_factory_(std::make_unique<SiteDataCacheFactory>()) {
-    data_cache_ = std::make_unique<SiteDataCacheImpl>(
-        browser_context_.UniqueToken(), browser_context_.GetPath());
+  SiteDataCacheImplTest() {
+    data_cache_ =
+        std::make_unique<SiteDataCacheImpl>(browser_context_.GetPath());
     mock_db_ = new ::testing::StrictMock<MockSiteCache>();
     data_cache_->SetDataStoreForTesting(base::WrapUnique(mock_db_.get()));
     WaitForAsyncOperationsToComplete();
@@ -120,7 +117,6 @@ class SiteDataCacheImplTest : public ::testing::Test {
   // Owned by |data_cache_|.
   raw_ptr<::testing::StrictMock<MockSiteCache>, DanglingUntriaged> mock_db_ =
       nullptr;
-  std::unique_ptr<SiteDataCacheFactory> data_cache_factory_;
   std::unique_ptr<SiteDataCacheImpl> data_cache_;
 
   std::unique_ptr<SiteDataReader> reader_;
@@ -225,46 +221,32 @@ TEST_F(SiteDataCacheImplTest, ClearAllSiteData) {
   writer2_->NotifySiteUnloaded(TabVisibility::kBackground);
 }
 
-TEST_F(SiteDataCacheImplTest, InspectorWorks) {
-  // Make sure the inspector interface was registered at construction.
-  auto* factory = SiteDataCacheFactory::GetInstance();
-  ASSERT_TRUE(factory);
-  SiteDataCacheInspector* inspector =
-      factory->GetInspectorForBrowserContext(browser_context_.UniqueToken());
-  EXPECT_NE(nullptr, inspector);
-  EXPECT_EQ(data_cache_.get(), inspector);
-
-  EXPECT_STREQ("SiteDataCache", inspector->GetDataCacheName());
+TEST_F(SiteDataCacheImplTest, DiagnosticsWork) {
+  EXPECT_STREQ("SiteDataCache", data_cache_->GetDataCacheName());
 
   // We expect an empty data store at the outset.
-  EXPECT_EQ(0U, inspector->GetAllInMemoryOrigins().size());
+  EXPECT_EQ(0U, data_cache_->GetAllInMemoryOrigins().size());
   std::unique_ptr<SiteDataProto> data;
   bool is_dirty = false;
-  EXPECT_FALSE(inspector->GetDataForOrigin(origin_, &is_dirty, &data));
+  EXPECT_FALSE(data_cache_->GetDataForOrigin(origin_, &is_dirty, &data));
   EXPECT_FALSE(is_dirty);
   EXPECT_EQ(nullptr, data.get());
 
   {
-    // Add an entry, see that it's reflected in the inspector interface.
+    // Add an entry, see that it's reflected in the diagnostic functions.
     auto writer = data_cache_->GetWriterForOrigin(origin_);
 
-    EXPECT_EQ(1U, inspector->GetAllInMemoryOrigins().size());
-    EXPECT_TRUE(inspector->GetDataForOrigin(origin_, &is_dirty, &data));
+    EXPECT_EQ(1U, data_cache_->GetAllInMemoryOrigins().size());
+    EXPECT_TRUE(data_cache_->GetDataForOrigin(origin_, &is_dirty, &data));
     EXPECT_FALSE(is_dirty);
     ASSERT_NE(nullptr, data.get());
 
     // Touch the underlying data, see that the dirty bit updates.
     writer->NotifySiteLoaded(TabVisibility::kBackground);
-    EXPECT_TRUE(inspector->GetDataForOrigin(origin_, &is_dirty, &data));
+    EXPECT_TRUE(data_cache_->GetDataForOrigin(origin_, &is_dirty, &data));
     EXPECT_TRUE(is_dirty);
     writer->NotifySiteUnloaded(TabVisibility::kBackground);
   }
-
-  // Make sure the interface is unregistered from the browser context on
-  // destruction.
-  data_cache_.reset();
-  EXPECT_EQ(nullptr, factory->GetInspectorForBrowserContext(
-                         browser_context_.UniqueToken()));
 }
 
 // TODO(crbug.com/40056631): Turn this into a death test to verify that

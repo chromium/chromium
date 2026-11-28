@@ -137,7 +137,6 @@ static_library("performance_manager") {
     "persistence/site_data/site_data_cache_factory.h",
     "persistence/site_data/site_data_cache_impl.cc",
     "persistence/site_data/site_data_cache_impl.h",
-    "persistence/site_data/site_data_cache_inspector.h",
     "persistence/site_data/site_data_impl.cc",
     "persistence/site_data/site_data_impl.h",
     "persistence/site_data/site_data_reader.cc",

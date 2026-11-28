@@ -11,7 +11,6 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/persistence/site_data/non_recording_site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_impl.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -29,11 +28,6 @@ SiteDataCacheFactory::SiteDataCacheFactory() {
 SiteDataCacheFactory::~SiteDataCacheFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(this, g_instance);
-  // Clear the cache map before unsetting |g_instance| as this will cause some
-  // calls to |SetDataCacheInspectorForBrowserContext|.
-  data_cache_map_.clear();
-  for (const auto& iter : data_cache_map_)
-    DCHECK_EQ(0, iter.second->Size());
   g_instance = nullptr;
 }
 
@@ -49,29 +43,6 @@ SiteDataCache* SiteDataCacheFactory::GetDataCacheForBrowserContext(
   if (it != data_cache_map_.end())
     return it->second.get();
   return nullptr;
-}
-
-SiteDataCacheInspector* SiteDataCacheFactory::GetInspectorForBrowserContext(
-    const base::UnguessableToken& browser_context_id) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = data_cache_inspector_map_.find(browser_context_id);
-  if (it != data_cache_inspector_map_.end())
-    return it->second;
-  return nullptr;
-}
-
-void SiteDataCacheFactory::SetDataCacheInspectorForBrowserContext(
-    SiteDataCacheInspector* inspector,
-    const base::UnguessableToken& browser_context_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (inspector) {
-    DCHECK_EQ(nullptr, GetInspectorForBrowserContext(browser_context_id));
-    data_cache_inspector_map_.emplace(
-        std::make_pair(browser_context_id, inspector));
-  } else {
-    DCHECK_NE(nullptr, GetInspectorForBrowserContext(browser_context_id));
-    data_cache_inspector_map_.erase(browser_context_id);
-  }
 }
 
 bool SiteDataCacheFactory::IsDataCacheRecordingForTesting(
@@ -91,14 +62,6 @@ void SiteDataCacheFactory::SetCacheForTesting(
   data_cache_map_.emplace(browser_context_id, std::move(cache));
 }
 
-void SiteDataCacheFactory::SetCacheInspectorForTesting(
-    const base::UnguessableToken& browser_context_id,
-    SiteDataCacheInspector* inspector) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!data_cache_inspector_map_.contains(browser_context_id));
-  data_cache_inspector_map_.emplace(browser_context_id, inspector);
-}
-
 void SiteDataCacheFactory::OnBrowserContextCreated(
     const base::UnguessableToken& browser_context_id,
     const base::FilePath& context_path,
@@ -108,21 +71,16 @@ void SiteDataCacheFactory::OnBrowserContextCreated(
   DCHECK(!data_cache_map_.contains(browser_context_id));
 
   if (parent_context_id) {
-    SiteDataCacheInspector* parent_debug =
-        GetInspectorForBrowserContext(parent_context_id.value());
-    DCHECK(parent_debug);
     DCHECK(data_cache_map_.contains(parent_context_id.value()));
     SiteDataCache* data_cache_for_readers =
         data_cache_map_[parent_context_id.value()].get();
     DCHECK(data_cache_for_readers);
     data_cache_map_.emplace(
-        std::move(browser_context_id),
-        std::make_unique<NonRecordingSiteDataCache>(
-            browser_context_id, parent_debug, data_cache_for_readers));
+        browser_context_id,
+        std::make_unique<NonRecordingSiteDataCache>(*data_cache_for_readers));
   } else {
-    data_cache_map_.emplace(
-        std::move(browser_context_id),
-        std::make_unique<SiteDataCacheImpl>(browser_context_id, context_path));
+    data_cache_map_.emplace(browser_context_id,
+                            std::make_unique<SiteDataCacheImpl>(context_path));
   }
 }
 

@@ -40,8 +40,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
               EXPECT_TRUE(factory);
               EXPECT_NE(nullptr, factory->GetDataCacheForBrowserContext(
                                      browser_context_id));
-              EXPECT_NE(nullptr, factory->GetInspectorForBrowserContext(
-                                     browser_context_id));
               std::move(quit_closure).Run();
             },
             browser_context.UniqueToken(), run_loop.QuitClosure()));
@@ -57,8 +55,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
             [](const base::UnguessableToken& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {
               EXPECT_EQ(nullptr, factory->GetDataCacheForBrowserContext(
-                                     browser_context_id));
-              EXPECT_EQ(nullptr, factory->GetInspectorForBrowserContext(
                                      browser_context_id));
               std::move(quit_closure).Run();
             },

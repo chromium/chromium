@@ -11,15 +11,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 
 namespace performance_manager {
-
-class SiteDataCacheInspector;
 
 // This class is responsible for tracking the SiteDataCache instances associated
 // with each browser context. Instances of this class should be created and used
@@ -42,21 +39,6 @@ class SiteDataCacheFactory {
   SiteDataCache* GetDataCacheForBrowserContext(
       const base::UnguessableToken& browser_context_id) const;
 
-  // Returns the data cache inspector associated with |browser_context_id|, or
-  // null if there's no data cache inspector for this context yet.
-  SiteDataCacheInspector* GetInspectorForBrowserContext(
-      const base::UnguessableToken& browser_context_id) const;
-
-  // Sets the inspector instance associated with a given browser context.
-  // If |inspector| is nullptr the association is cleared.
-  // The caller must ensure that |inspector|'s registration is cleared before
-  // |inspector| or |browser_context| are deleted.
-  // The intent is for this to be called from the SiteDataCache implementation
-  // class' constructors and destructors.
-  void SetDataCacheInspectorForBrowserContext(
-      SiteDataCacheInspector* inspector,
-      const base::UnguessableToken& browser_context_id);
-
   // Testing functions to check if the data cache associated with
   // |browser_context_id| is recording.
   bool IsDataCacheRecordingForTesting(
@@ -66,10 +48,6 @@ class SiteDataCacheFactory {
   // cache.
   void SetCacheForTesting(const base::UnguessableToken& browser_context_id,
                           std::unique_ptr<SiteDataCache> cache);
-
-  void SetCacheInspectorForTesting(
-      const base::UnguessableToken& browser_context_id,
-      SiteDataCacheInspector* inspector);
 
   // Implementation of the corresponding *OnUIThread public static functions
   // that runs on this object's task runner.
@@ -85,10 +63,6 @@ class SiteDataCacheFactory {
   // object owns the caches.
   base::flat_map<base::UnguessableToken, std::unique_ptr<SiteDataCache>>
       data_cache_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A map that associates a BrowserContext's ID with a SiteDataCacheInspector.
-  base::flat_map<base::UnguessableToken, raw_ptr<SiteDataCacheInspector>>
-      data_cache_inspector_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

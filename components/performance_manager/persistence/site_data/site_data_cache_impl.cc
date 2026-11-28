@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 
@@ -24,29 +23,16 @@ constexpr char kDataStoreDBName[] = "Site Characteristics Database";
 }  // namespace
 
 SiteDataCacheImpl::SiteDataCacheImpl(
-    const base::UnguessableToken& browser_context_id,
-    const base::FilePath& browser_context_path)
-    : browser_context_id_(browser_context_id) {
+    const base::FilePath& browser_context_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_store_ = std::make_unique<LevelDBSiteDataStore>(
       browser_context_path.AppendASCII(kDataStoreDBName));
-
-  // Register the debug interface against the browser context. The factory
-  // should always exist by the time this is called, since it is created once
-  // there's a browser context with keyed services enabled.
-  auto* factory = SiteDataCacheFactory::GetInstance();
-  CHECK(factory);
-  factory->SetDataCacheInspectorForBrowserContext(this, browser_context_id_);
 }
 
-SiteDataCacheImpl::SiteDataCacheImpl(
-    const base::UnguessableToken& browser_context_id)
-    : browser_context_id_(browser_context_id) {}
+SiteDataCacheImpl::SiteDataCacheImpl() = default;
 
 SiteDataCacheImpl::~SiteDataCacheImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SiteDataCacheFactory::GetInstance()->SetDataCacheInspectorForBrowserContext(
-      nullptr, browser_context_id_);
 }
 
 std::unique_ptr<SiteDataReader> SiteDataCacheImpl::GetReaderForOrigin(
@@ -111,11 +97,6 @@ bool SiteDataCacheImpl::GetDataForOrigin(const url::Origin& origin,
   *is_dirty = it->second->is_dirty();
   *data = std::move(ret);
   return true;
-}
-
-SiteDataCacheImpl* SiteDataCacheImpl::GetDataCache() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return this;
 }
 
 internal::SiteDataImpl* SiteDataCacheImpl::GetOrCreateFeatureImpl(

@@ -17,10 +17,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/unguessable_token.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -29,14 +28,12 @@ namespace performance_manager {
 // This class should never be used for off the record profiles, the
 // NonRecordingSiteDataCache class should be used instead.
 class SiteDataCacheImpl : public SiteDataCache,
-                          public SiteDataCacheInspector,
                           public internal::SiteDataImpl::OnDestroyDelegate {
  public:
   using SiteDataMap =
       base::flat_map<url::Origin, raw_ptr<internal::SiteDataImpl>>;
 
-  SiteDataCacheImpl(const base::UnguessableToken& browser_context_id,
-                    const base::FilePath& browser_context_path);
+  explicit SiteDataCacheImpl(const base::FilePath& browser_context_path);
 
   SiteDataCacheImpl(const SiteDataCacheImpl&) = delete;
   SiteDataCacheImpl& operator=(const SiteDataCacheImpl&) = delete;
@@ -50,6 +47,12 @@ class SiteDataCacheImpl : public SiteDataCache,
       const url::Origin& origin) override;
   bool IsRecording() const override;
   int Size() const override;
+  const char* GetDataCacheName() override;
+  std::vector<url::Origin> GetAllInMemoryOrigins() override;
+  void GetDataStoreSize(DataStoreSizeCallback on_have_data) override;
+  bool GetDataForOrigin(const url::Origin& origin,
+                        bool* is_dirty,
+                        std::unique_ptr<SiteDataProto>* data) override;
 
   const SiteDataMap& origin_data_map_for_testing() const {
     return origin_data_map_;
@@ -61,15 +64,6 @@ class SiteDataCacheImpl : public SiteDataCache,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     data_store_ = std::move(data_store);
   }
-
-  // SiteDataCacheImplInspector:
-  const char* GetDataCacheName() override;
-  std::vector<url::Origin> GetAllInMemoryOrigins() override;
-  void GetDataStoreSize(DataStoreSizeCallback on_have_data) override;
-  bool GetDataForOrigin(const url::Origin& origin,
-                        bool* is_dirty,
-                        std::unique_ptr<SiteDataProto>* data) override;
-  SiteDataCacheImpl* GetDataCache() override;
 
   // Remove a specific set of entries from the cache and the on-disk store.
   // Virtual for testing.
@@ -87,7 +81,7 @@ class SiteDataCacheImpl : public SiteDataCache,
  protected:
   // Version of the constructor that doesn't create the data store, for testing
   // purposes only.
-  explicit SiteDataCacheImpl(const base::UnguessableToken& browser_context_id);
+  SiteDataCacheImpl();
 
  private:
   // Returns a pointer to the SiteDataImpl object associated with |origin|,
@@ -102,9 +96,6 @@ class SiteDataCacheImpl : public SiteDataCache,
 
   std::unique_ptr<SiteDataStore> data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The ID of the browser context this data store is associated with.
-  const base::UnguessableToken browser_context_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

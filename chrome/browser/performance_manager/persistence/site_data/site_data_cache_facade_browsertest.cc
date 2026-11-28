@@ -25,7 +25,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
@@ -154,10 +153,8 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
     // Look up the reader and writer for `origin`.
     auto* factory = SiteDataCacheFactory::GetInstance();
     ASSERT_TRUE(factory);
-    SiteDataCacheInspector* inspector =
-        factory->GetInspectorForBrowserContext(browser_context_id);
-    ASSERT_TRUE(inspector);
-    SiteDataCache* cache = inspector->GetDataCache();
+    SiteDataCache* cache =
+        factory->GetDataCacheForBrowserContext(browser_context_id);
     ASSERT_TRUE(cache);
     std::unique_ptr<SiteDataReader> reader = cache->GetReaderForOrigin(origin);
     ASSERT_TRUE(reader);

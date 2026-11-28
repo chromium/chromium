@@ -8,8 +8,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
+#include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
@@ -107,13 +107,13 @@ void SiteDataProviderImpl::CreateAndBind(
 void SiteDataProviderImpl::GetSiteDataArray(
     const std::vector<std::string>& explicitly_requested_origins,
     GetSiteDataArrayCallback callback) {
-  performance_manager::SiteDataCacheInspector* inspector = nullptr;
+  performance_manager::SiteDataCache* data_cache = nullptr;
   if (auto* factory =
           performance_manager::SiteDataCacheFactory::GetInstance()) {
-    inspector = factory->GetInspectorForBrowserContext(profile_id_);
+    data_cache = factory->GetDataCacheForBrowserContext(profile_id_);
   }
-  if (!inspector) {
-    // Early return with a nullptr if there's no inspector.
+  if (!data_cache) {
+    // Early return with a nullptr if there's no data cache.
     std::move(callback).Run(nullptr);
     return;
   }
@@ -125,8 +125,6 @@ void SiteDataProviderImpl::GetSiteDataArray(
   // this function.
   OriginToReaderMap prev_requested_origins;
   prev_requested_origins.swap(requested_origins_);
-  performance_manager::SiteDataCache* data_cache = inspector->GetDataCache();
-  CHECK(data_cache, base::NotFatalUntil::M162);
 
   for (const std::string& origin : explicitly_requested_origins) {
     auto it = prev_requested_origins.find(origin);
@@ -143,13 +141,13 @@ void SiteDataProviderImpl::GetSiteDataArray(
   discards::mojom::SiteDataArrayPtr result =
       discards::mojom::SiteDataArray::New();
   std::vector<url::Origin> in_memory_origins =
-      inspector->GetAllInMemoryOrigins();
+      data_cache->GetAllInMemoryOrigins();
   for (const url::Origin& origin : in_memory_origins) {
     // Get the data for this origin and convert it from proto to the
     // corresponding mojo structure.
     std::unique_ptr<SiteDataProto> proto;
     bool is_dirty = false;
-    if (inspector->GetDataForOrigin(origin, &is_dirty, &proto)) {
+    if (data_cache->GetDataForOrigin(origin, &is_dirty, &proto)) {
       auto entry = ConvertEntryFromProto(proto.get());
       entry->origin = origin.Serialize();
       entry->is_dirty = is_dirty;
@@ -163,19 +161,19 @@ void SiteDataProviderImpl::GetSiteDataArray(
 
 void SiteDataProviderImpl::GetSiteDataDatabaseSize(
     GetSiteDataDatabaseSizeCallback callback) {
-  performance_manager::SiteDataCacheInspector* inspector = nullptr;
+  performance_manager::SiteDataCache* data_cache = nullptr;
   if (auto* factory =
           performance_manager::SiteDataCacheFactory::GetInstance()) {
-    inspector = factory->GetInspectorForBrowserContext(profile_id_);
+    data_cache = factory->GetDataCacheForBrowserContext(profile_id_);
   }
-  if (!inspector) {
-    // Early return with a nullptr if there's no inspector.
+  if (!data_cache) {
+    // Early return with a nullptr if there's no data cache.
     std::move(callback).Run(nullptr);
     return;
   }
 
-  // Adapt the inspector callback to the mojom callback with this lambda.
-  auto inspector_callback = base::BindOnce(
+  // Adapt the data cache callback to the mojom callback with this lambda.
+  auto data_cache_callback = base::BindOnce(
       [](GetSiteDataDatabaseSizeCallback callback,
          std::optional<int64_t> num_rows,
          std::optional<base::ByteSize> on_disk_size) {
@@ -189,7 +187,7 @@ void SiteDataProviderImpl::GetSiteDataDatabaseSize(
       },
       std::move(callback));
 
-  inspector->GetDataStoreSize(std::move(inspector_callback));
+  data_cache->GetDataStoreSize(std::move(data_cache_callback));
 }
 
 // static

@@ -5,8 +5,12 @@
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/byte_size.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -104,6 +108,16 @@ class MockDataCache : public SiteDataCache {
   }
   bool IsRecording() const override { return true; }
   int Size() const override { return 0; }
+  const char* GetDataCacheName() override { return "MockDataCache"; }
+  std::vector<url::Origin> GetAllInMemoryOrigins() override { return {}; }
+  void GetDataStoreSize(DataStoreSizeCallback on_have_data) override {
+    std::move(on_have_data).Run(std::nullopt, std::nullopt);
+  }
+  bool GetDataForOrigin(const url::Origin& origin,
+                        bool* is_dirty,
+                        std::unique_ptr<SiteDataProto>* data) override {
+    return false;
+  }
 
  private:
   testing::NoopSiteDataStore data_store_;

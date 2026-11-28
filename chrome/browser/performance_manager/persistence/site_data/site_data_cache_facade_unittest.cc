@@ -37,9 +37,7 @@ namespace {
 // called from there.
 class LenientMockSiteDataCacheImpl : public SiteDataCacheImpl {
  public:
-  explicit LenientMockSiteDataCacheImpl(
-      const base::UnguessableToken& browser_context_id)
-      : SiteDataCacheImpl(browser_context_id) {}
+  LenientMockSiteDataCacheImpl() = default;
 
   LenientMockSiteDataCacheImpl(const LenientMockSiteDataCacheImpl&) = delete;
   LenientMockSiteDataCacheImpl& operator=(const LenientMockSiteDataCacheImpl&) =
@@ -115,13 +113,12 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
     MockSiteDataCache* mock_cache_raw = nullptr;
     auto browser_context_id = profile()->UniqueToken();
 
-    auto mock_cache = std::make_unique<MockSiteDataCache>(browser_context_id);
+    auto mock_cache = std::make_unique<MockSiteDataCache>();
     mock_cache_raw = mock_cache.get();
 
     auto* factory = SiteDataCacheFactory::GetInstance();
     EXPECT_TRUE(factory);
     factory->SetCacheForTesting(browser_context_id, std::move(mock_cache));
-    factory->SetCacheInspectorForTesting(browser_context_id, mock_cache_raw);
 
     return mock_cache_raw;
   }

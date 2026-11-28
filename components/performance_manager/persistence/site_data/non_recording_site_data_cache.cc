@@ -4,35 +4,21 @@
 
 #include "components/performance_manager/persistence/site_data/non_recording_site_data_cache.h"
 
-#include "base/check.h"
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/persistence/site_data/noop_site_data_writer.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 
 namespace performance_manager {
 
 NonRecordingSiteDataCache::NonRecordingSiteDataCache(
-    const base::UnguessableToken& browser_context_id,
-    SiteDataCacheInspector* data_cache_inspector,
-    SiteDataCache* data_cache_for_readers)
-    : data_cache_for_readers_(data_cache_for_readers),
-      data_cache_inspector_(data_cache_inspector),
-      browser_context_id_(browser_context_id) {
-  DCHECK(data_cache_for_readers_);
-  // Register the debug interface against the browser context. The factory
-  // should always exist by the time this is called, since it is created once
-  // there's a browser context with keyed services enabled.
-  auto* factory = SiteDataCacheFactory::GetInstance();
-  CHECK(factory);
-  factory->SetDataCacheInspectorForBrowserContext(this, browser_context_id_);
-}
+    SiteDataCache& data_cache_for_readers)
+    : data_cache_for_readers_(data_cache_for_readers) {}
 
-NonRecordingSiteDataCache::~NonRecordingSiteDataCache() {
-  SiteDataCacheFactory::GetInstance()->SetDataCacheInspectorForBrowserContext(
-      nullptr, browser_context_id_);
-}
+NonRecordingSiteDataCache::~NonRecordingSiteDataCache() = default;
 
 std::unique_ptr<SiteDataReader> NonRecordingSiteDataCache::GetReaderForOrigin(
     const url::Origin& origin) {
@@ -59,34 +45,19 @@ const char* NonRecordingSiteDataCache::GetDataCacheName() {
 }
 
 std::vector<url::Origin> NonRecordingSiteDataCache::GetAllInMemoryOrigins() {
-  if (!data_cache_inspector_)
-    return std::vector<url::Origin>();
-
-  return data_cache_inspector_->GetAllInMemoryOrigins();
+  return data_cache_for_readers_->GetAllInMemoryOrigins();
 }
 
 void NonRecordingSiteDataCache::GetDataStoreSize(
     DataStoreSizeCallback on_have_data) {
-  if (!data_cache_inspector_) {
-    std::move(on_have_data).Run(std::nullopt, std::nullopt);
-    return;
-  }
-
-  data_cache_inspector_->GetDataStoreSize(std::move(on_have_data));
+  data_cache_for_readers_->GetDataStoreSize(std::move(on_have_data));
 }
 
 bool NonRecordingSiteDataCache::GetDataForOrigin(
     const url::Origin& origin,
     bool* is_dirty,
     std::unique_ptr<SiteDataProto>* data) {
-  if (!data_cache_inspector_)
-    return false;
-
-  return data_cache_inspector_->GetDataForOrigin(origin, is_dirty, data);
-}
-
-NonRecordingSiteDataCache* NonRecordingSiteDataCache::GetDataCache() {
-  return this;
+  return data_cache_for_readers_->GetDataForOrigin(origin, is_dirty, data);
 }
 
 }  // namespace performance_manager
