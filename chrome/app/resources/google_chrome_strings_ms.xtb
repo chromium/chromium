@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1001534784610492198">Arkib pemasang rosak atau tidak sah. Sila muat turun Google Chrome semula.</translation>
+<translation id="1003032879891166432">Untuk menggunakan kata laluan anda yang disimpan merentas peranti, imbas kod QR dengan kamera telefon anda untuk log masuk ke Chrome.</translation>
 <translation id="1006034097353797313">Teruskan dari tempat anda berhenti: Chrome memulihkan tab anda setiap kali anda memulakan semula apl. Untuk mematikan ciri ini, akses</translation>
 <translation id="1018937009655463387">Untuk berkongsi tetingkap anda, benarkan rakaman skrin untuk Chrome dalam Tetapan Sistem.</translation>
 <translation id="1026101648481255140">Sambung Semula Pemasangan</translation>
@@ -485,6 +486,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5947104538377036631">Pintasan Chrome</translation>
 <translation id="5960071705175224773">Tetapan anda telah diubah oleh apl yang tidak diketahui</translation>
 <translation id="5980111191913430208">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar fail dipasang daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>
+<translation id="5985355560468572884">Untuk sentiasa kembali kepada laman yang telah anda tandai halaman, imbas kod QR dengan kamera telefon anda untuk log masuk ke Chrome.</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemaskinian. Terdapat tetingkap Inkognito atau Terasing yang dibuka. Tetingkap tersebut tidak akan dibuka semula selepas anda melancarkan semula penyemak imbas.}other{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemaskinian. Terdapat # tetingkap Inkognito dan Terasing yang dibuka merentas profil. Tetingkap tersebut tidak akan dibuka semula selepas anda melancarkan semula penyemak imbas.}}</translation>
 <translation id="6009821354356307391">Minta susulan</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alatan daripada Chrome<ph name="END_LINK" />, anda boleh menyemak imbas dengan selamat dan mengekalkan kawalan anda</translation>

@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Dewiswch y ffeil, a phwyswch <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Methu ag agor y ffeil}zero{Methu ag agor y ffeiliau}two{Methu ag agor y ffeiliau}few{Methu ag agor y ffeiliau}many{Methu ag agor y ffeiliau}other{Methu ag agor y ffeiliau}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+1 arall}zero{+# arall}two{+# arall}few{+# arall}many{+# arall}other{+# arall}}</translation>
 <translation id="1283126956823499975">Aeth rhywbeth o'i le gyda gosod y ddyfais</translation>
 <translation id="1285992161347843613">Lleoli'r ffôn</translation>
 <translation id="1287002645302686982">Mae desg wedi'i chadw o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
@@ -2197,6 +2198,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6249795363855770621">Methu â marcio fel wedi'i chwblhau. Rhowch gynnig arall arni pan fyddwch ar-lein.</translation>
 <translation id="625369703868467034">Iechyd y Rhwydwaith</translation>
 <translation id="6254629735336163724">Wedi'i gloi i lorweddol</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+1 ddolen arall}zero{+# dolen arall}two{+# ddolen arall}few{+# dolen arall}many{+# dolen arall}other{+# dolen arall}}</translation>
 <translation id="6259776178973198997">Adnewyddu Gwybodaeth Perchnogion WiFi Uniongyrchol</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wrthi'n gweithredu...</translation>

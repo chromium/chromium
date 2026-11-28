@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Llun y gwnaethoch ei gopïo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – I adael y sgrîn lawn, llusgwch o'r brig a chyffwrdd â'r botwm yn ôl</translation>
 <translation id="1132789342529761192">Ni argymhellir uwchlwytho</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, wedi'i dicio, eitem dewislen. Dewiswch i ddiffodd rhannu</translation>
 <translation id="11370190534773372">Manylion cerdyn wedi'u llenwi</translation>
 <translation id="1138458427267715730">Cael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan ar draws y we</translation>
 <translation id="1142713751288681188">Math o bapur</translation>
@@ -928,6 +929,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2526062290525841862">I redeg yr ap hwn, ail-alluogwch y Modd Datblygwr Ap Gwe Ynysig</translation>
 <translation id="2526280916094749336">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, wedi'i dicio</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
 <translation id="2530042584066815841">Clo llygoden a defnydd</translation>
 <translation id="2535585790302968248">Agor tab Anhysbys newydd i bori'n breifat</translation>
@@ -1012,6 +1014,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2666092431469916601">Brig</translation>
 <translation id="2666117266261740852">Caewch dabiau neu apiau eraill</translation>
 <translation id="266935134738038806">Mynd i'r wefan</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, eitem dewislen. Dewiswch i droi rhannu ymlaen</translation>
 <translation id="2672201172023654893">Nid yw eich porwr yn cael ei reoli.</translation>
 <translation id="2674170444375937751">Ydych chi'n siŵr eich bod chi am ddileu'r tudalennau hyn o'ch hanes?</translation>
 <translation id="2675716371350192683">Ni fydd eich cynnwys yn cael ei ddefnyddio i wella AI. Gall eich sefydliad newid y gosodiadau hyn unrhyw bryd.</translation>
@@ -1991,6 +1994,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4297502707443874121">Mân-lun ar gyfer tudalen <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Diweddarwyd <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">Talu ar unwaith heb uwchlwytho QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Mae cwcis ar gyfer y wefan hon yn cael eu cysoni ar draws eich dyfeisiau ChromeOS. I reoli'r hyn rydych yn ei gysoni, ewch i <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760">Ffynhonnell <ph name="APP_NAME" /> <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Mae enw'r llwybr byr yn fwy na'r hyd mwyaf a ganiateir o <ph name="MAX_LENGTH" /> nod.</translation>
@@ -2200,6 +2204,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4682496302933121474">Cyfieithu'r dudalen?</translation>
 <translation id="468314109939257734">Gweld rhif eich cerdyn rhithwir</translation>
 <translation id="4686942373615810936">Newydd ei greu</translation>
+<translation id="468826602575103388">Dewiswch i ddiffodd rhannu</translation>
 <translation id="4690205240253392065">Dewiswch ddarparwr talu'n ddiweddarach</translation>
 <translation id="469028408546145398">Botwm cau ffenestri Anhysbys, gweithredwch i gau pob ffenestr Anhysbys sydd ar agor ar hyn o bryd</translation>
 <translation id="4692623383562244444">Peiriant chwilio</translation>
@@ -4170,6 +4175,7 @@ Manylion ychwanegol:
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943397946612013052">Lawrlwytho wedi'i rwystro</translation>
 <translation id="7943893128817522649">Yn gallu gofyn am lawrlwytho mwy nag un ffeil yn awtomatig</translation>
+<translation id="7947144323420971076">Dewiswch i droi rhannu ymlaen</translation>
 <translation id="7947285636476623132">Gwiriwch eich blwyddyn darfod a rhowch gynnig arall arni</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i ddysgu am nodweddion Chrome</translation>
 <translation id="7947964969544524438">Cadw'r Rhif Teithiwr Hysbys yn ddiogel</translation>
@@ -4297,6 +4303,7 @@ Manylion ychwanegol:
 <translation id="8172809706700703589">Creu rhestr pacio ar gyfer fy nhaith</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
 <translation id="8175053171643471349">Rheoli cardiau teyrngarwch</translation>
+<translation id="817536628389054635">Manylion cyswllt wedi'u llenwi: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Mae Chrome yn cynnig cadw eich cardiau yn eich Cyfrif Google oherwydd eich bod wedi mewngofnodi. Gallwch newid yr ymddygiad hwn yn y gosodiadau.</translation>
 <translation id="8176440868214972690">Mae gweinyddwr y ddyfais hon wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="818254048113802060">{0,plural, =1{Cafodd <ph name="FILE_NAME" /> ei rhwystro oherwydd y cynnwys}zero{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}two{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}few{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}many{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}other{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}}</translation>
