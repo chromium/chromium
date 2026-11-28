@@ -55,6 +55,10 @@ source_set("lifetime") {
     ]
   }
 
+  if (is_linux) {
+    public += [ "xsmp_api_linux.h" ]
+  }
+
   if (is_linux && use_dbus) {
     public += [ "session_end_listener_linux.h" ]
     public_deps += [
@@ -201,6 +205,10 @@ source_set("impl") {
     ]
   }
 
+  if (is_linux) {
+    sources += [ "xsmp_api_linux.cc" ]
+  }
+
   if (is_linux && use_dbus) {
     sources += [ "session_end_listener_linux.cc" ]
     deps += [
@@ -264,6 +272,9 @@ if (!is_android) {
         "//components/policy/core/common",
         "//components/policy/core/common:test_support",
       ]
+    }
+    if (is_linux) {
+      sources += [ "xsmp_api_linux_unittest.cc" ]
     }
     if (is_linux && use_dbus) {
       sources += [ "session_end_listener_linux_unittest.cc" ]
