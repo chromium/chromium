@@ -182,6 +182,9 @@ void EventSource::Connect() {
 }
 
 void EventSource::NetworkRequestEnded() {
+  if (parser_) {
+    parser_->Stop();
+  }
   loader_ = nullptr;
 
   if (state_ != kClosed)

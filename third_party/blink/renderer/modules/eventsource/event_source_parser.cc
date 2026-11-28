@@ -49,11 +49,15 @@ void EventSourceParser::AddBytes(base::span<const char> bytes) {
     is_recognizing_crlf_ = false;
     if (bytes[i] == '\r' || bytes[i] == '\n') {
       line_.append_range(bytes.subspan(start, i - start));
-      ParseLine();
-      line_.clear();
-      start = i + 1;
       is_recognizing_crlf_ = bytes[i] == '\r';
       is_recognizing_bom_ = false;
+      start = i + 1;
+      ParseLine();
+      line_.clear();
+      // ParseLine() may synchronously stop the parser.
+      if (is_stopped_) {
+        return;
+      }
     }
   }
   if (is_stopped_)

@@ -394,6 +394,25 @@ TEST(EventSourceParserStoppingTest, StopWhileParsing) {
   EXPECT_EQ("99", parser->LastEventId());
 }
 
+TEST(EventSourceParserStoppingTest, StopDuringParseLineWithCRLF) {
+  test::TaskEnvironment task_environment;
+  StoppingClient* client = MakeGarbageCollected<StoppingClient>();
+  EventSourceParser* parser =
+      MakeGarbageCollected<EventSourceParser>(AtomicString(), client);
+  client->SetParser(parser);
+
+  const char kInput[] = "data:hello\r\nid:99\r\n\r\nid:44\ndata:bye\n\n";
+  parser->AddBytes(base::span_from_cstring(kInput));
+
+  const auto& events = client->Events();
+
+  ASSERT_EQ(1u, events.size());
+  ASSERT_EQ(EventOrReconnectionTimeSetting::Type::kEvent, events[0].type);
+  EXPECT_EQ("message", events[0].event);
+  EXPECT_EQ("hello", events[0].data);
+  EXPECT_EQ("99", parser->LastEventId());
+}
+
 TEST_F(EventSourceParserTest, IgnoreIdHavingNullCharacter) {
   constexpr char input[] =
       "id:99\ndata:hello\n\nid:4\x0"

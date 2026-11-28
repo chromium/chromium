@@ -553,8 +553,12 @@ XMLHttpRequestUpload* XMLHttpRequest::upload() {
 void XMLHttpRequest::TrackProgress(uint64_t length) {
   received_length_ += length;
 
+  ThreadableLoader* previous_loader = loader_.Get();
   ChangeState(kLoading);
   if (async_) {
+    if (error_ || loader_ != previous_loader) {
+      return;
+    }
     // readyStateChange event is fired as well.
     DispatchProgressEventFromSnapshot(event_type_names::kProgress);
   }
@@ -1688,8 +1692,13 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
   if (error_)
     return;
 
-  if (state_ < kHeadersReceived)
+  if (state_ < kHeadersReceived) {
+    ThreadableLoader* previous_loader = loader_.Get();
     ChangeState(kHeadersReceived);
+    if (error_ || state_ != kHeadersReceived || loader_ != previous_loader) {
+      return;
+    }
+  }
 
   if (downloading_to_blob_ &&
       response_type_code_ != V8XMLHttpRequestResponseType::Enum::kBlob &&
@@ -1792,8 +1801,13 @@ void XMLHttpRequest::DidSendData(uint64_t bytes_sent,
   if (!upload_)
     return;
 
-  if (upload_events_allowed_)
+  if (upload_events_allowed_) {
+    ThreadableLoader* previous_loader = loader_.Get();
     upload_->DispatchProgressEvent(bytes_sent, total_bytes_to_be_sent);
+    if (error_ || loader_ != previous_loader) {
+      return;
+    }
+  }
 
   if (bytes_sent == total_bytes_to_be_sent && !upload_complete_) {
     upload_complete_ = true;
@@ -1882,13 +1896,16 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
 
   DCHECK(!downloading_to_blob_ || blob_loader_);
 
-  if (state_ < kHeadersReceived)
+  if (state_ < kHeadersReceived) {
+    ThreadableLoader* previous_loader = loader_.Get();
     ChangeState(kHeadersReceived);
-
-  // We need to check for |m_error| again, because |changeState| may trigger
-  // readystatechange, and user javascript can cause |abort()|.
-  if (error_)
-    return;
+    // We need to check for |error_|, |state_|, and |loader_| again, because
+    // |ChangeState()| may trigger readystatechange, and user javascript can
+    // cause |abort()| or |open()|.
+    if (error_ || state_ != kHeadersReceived || loader_ != previous_loader) {
+      return;
+    }
+  }
 
   if (data.empty()) {
     return;
@@ -1939,15 +1956,17 @@ void XMLHttpRequest::DidDownloadData(uint64_t data_length) {
 
   DCHECK(downloading_to_blob_);
 
-  if (state_ < kHeadersReceived)
+  if (state_ < kHeadersReceived) {
+    ThreadableLoader* previous_loader = loader_.Get();
     ChangeState(kHeadersReceived);
+    // readystatechange event handler may put this XHR in an error state or
+    // reopen it. Check |error_|, |state_|, and |loader_| again here.
+    if (error_ || state_ != kHeadersReceived || loader_ != previous_loader) {
+      return;
+    }
+  }
 
   if (!data_length)
-    return;
-
-  // readystatechange event handler may do something to put this XHR in error
-  // state. We need to check m_error again here.
-  if (error_)
     return;
 
   length_downloaded_to_blob_ += data_length;
