@@ -166,6 +166,10 @@ inline bool IsDefaultIgnorable(UChar32 c) {
   return u_hasBinaryProperty(c, UCHAR_DEFAULT_IGNORABLE_CODE_POINT);
 }
 
+// Returns true if the string contains any Control (Cc) or Format (Cf)
+// characters.
+PLATFORM_EXPORT bool ContainsUnicodeControlOrFormat(const String& str);
+
 inline bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
   if (c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
       c == uchar::kObjectReplacementCharacter) {

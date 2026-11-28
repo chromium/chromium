@@ -514,6 +514,35 @@ TEST(CharacterTest, IsBidiControl) {
   EXPECT_FALSE(unicode::IsBidiControl(0x05D0));
 }
 
+TEST(CharacterTest, ContainsUnicodeControlOrFormat) {
+  // Null and empty strings.
+  EXPECT_FALSE(unicode::ContainsUnicodeControlOrFormat(String()));
+  EXPECT_FALSE(unicode::ContainsUnicodeControlOrFormat(g_empty_string));
+  EXPECT_FALSE(unicode::ContainsUnicodeControlOrFormat(""));
+
+  // 8-bit strings without control or format characters.
+  String str8("hello world");
+  ASSERT_TRUE(str8.Is8Bit());
+  EXPECT_FALSE(unicode::ContainsUnicodeControlOrFormat(str8));
+
+  // 8-bit strings with ASCII control characters (Cc) and Latin-1 Soft Hyphen
+  // (Cf, 0xAD).
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat("hello\nworld"));
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat("hello\x7Fworld"));
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat("hello\x85world"));
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat("hello\xADworld"));
+
+  // 16-bit strings without control or format characters.
+  String str16(u"hello \u3042 \U0002070E");
+  ASSERT_FALSE(str16.Is8Bit());
+  EXPECT_FALSE(unicode::ContainsUnicodeControlOrFormat(str16));
+
+  // 16-bit strings with BMP and supplementary Format characters (Cf).
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat(u"hello\u200Bworld"));
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat(u"hello\u202Eworld"));
+  EXPECT_TRUE(unicode::ContainsUnicodeControlOrFormat(u"hello\U000E0001world"));
+}
+
 TEST(CharacterTest, IsNonCharacter) {
   // See http://www.unicode.org/faq/private_use.html#nonchar4
   EXPECT_FALSE(unicode::IsNonCharacter(0xFDD0 - 1));

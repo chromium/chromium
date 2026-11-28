@@ -265,7 +265,6 @@ _CONFIG = [
             'base::ClampFloor',
             'base::ClampRound',
             'base::IsTypeInRangeForNumericType',
-            'base::IsUnicodeControl',
             'base::IsValueInRangeForNumericType',
             'base::IsValueNegative',
             'base::MakeStrictNum',
@@ -425,6 +424,9 @@ _CONFIG = [
         'allowed': [
             # BCP47 language tags used as keys in manifest localization maps.
             'base::i18n::LanguageTag',
+            # Validate manifest file handler extensions for Unicode control and
+            # format characters.
+            'base::i18n::ContainsUnicodeControlOrFormat',
             # Abseil containers for locale-keyed maps.
             'absl::flat_hash_map',
             # Base types for string conversions and error handling.

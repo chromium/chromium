@@ -19,6 +19,7 @@ include_rules = [
     "+base/cpu.h",
     "+base/files",
     "+base/i18n/icu_util.h",
+    "+base/i18n/unicode_string_util.h",
     "+base/json",
     "+base/lazy_instance.h",
     "+base/mac/mac_util.h",

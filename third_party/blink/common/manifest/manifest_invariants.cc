@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/i18n/unicode_string_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,8 +16,6 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/icu/source/common/unicode/uchar.h"
-#include "third_party/icu/source/common/unicode/utf16.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -152,13 +151,9 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
         if (!extension.starts_with(u".") || extension.length() <= 1) {
           return ManifestInvariantError::kFileHandlerInvalidExtension;
         }
-        for (size_t i = 0; i < extension.length();) {
-          UChar32 c;
-          U16_NEXT(extension, i, extension.length(), c);
-          if (base::IsUnicodeControl(c) || u_charType(c) == U_FORMAT_CHAR) {
-            return ManifestInvariantError::
-                kFileHandlerExtensionContainsControlOrFormat;
-          }
+        if (base::i18n::ContainsUnicodeControlOrFormat(extension)) {
+          return ManifestInvariantError::
+              kFileHandlerExtensionContainsControlOrFormat;
         }
       }
     }

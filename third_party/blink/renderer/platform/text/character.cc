@@ -39,6 +39,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/unicode_string_util.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -78,6 +79,16 @@ base::Lock& GetFreezePatternLock() {
 }
 
 }  // namespace
+
+bool ContainsUnicodeControlOrFormat(const String& str) {
+  if (str.empty()) {
+    return false;
+  }
+  if (str.Is8Bit()) {
+    return base::i18n::ContainsUnicodeControlOrFormatLatin1(str.Span8());
+  }
+  return base::i18n::ContainsUnicodeControlOrFormat(str.View16());
+}
 
 void internal::ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicode_set,
                                             const char* pattern) {
