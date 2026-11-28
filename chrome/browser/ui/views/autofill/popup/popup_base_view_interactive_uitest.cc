@@ -40,6 +40,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -310,6 +311,9 @@ IN_PROC_BROWSER_TEST_F(PopupBaseViewInteractiveUiTest,
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(subframe);
   ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+  // The OOPIF's renderer drops input while its commits are deferred after
+  // load, so wait until it has submitted a frame.
+  content::WaitForHitTestData(subframe);
   ASSERT_TRUE(
       content::ExecJs(subframe, "document.getElementById('s').focus();"));
 
