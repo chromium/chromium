@@ -7734,6 +7734,42 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunHashIncludesFontParams) {
                            kText, face_params, range));
 }
 
+// One iterator that walks over the whole text splits all the runs into
+// graphemes, but a run must be split as if it were the whole text. The runs
+// below start inside a grapheme of the whole text.
+TEST_F(RenderTextTest, HarfBuzz_RunStartsInsideGrapheme) {
+  RenderText* render_text = GetRenderText();
+  // Only test how the text is itemized, whatever the fonts support.
+  render_text->ignore_missing_glyph_breaks_for_test(true);
+
+  // U+0600 (ARABIC NUMBER SIGN) joins the following "1" into one grapheme, but
+  // they have different scripts, so "1" starts a run.
+  render_text->SetText(u"x\u06001y");
+  EXPECT_EQ("[0][1][2][3]", GetRunListStructureString());
+
+  // ㊗ (U+3297), 🏽 (U+1F3FD, a skin tone), U+200D (ZERO WIDTH JOINER) and
+  // 👧 (U+1F467) are one grapheme. ㊗ has a different script, so 🏽 starts a
+  // run. Without ㊗, the joiner does not join 👧, which is then a grapheme and,
+  // as a pictograph, a run of its own.
+  render_text->SetText(u"\u3297\U0001F3FD\u200D\U0001F467");
+  EXPECT_EQ("[0][1->3][4->5]", GetRunListStructureString());
+
+  // U+0600 (ARABIC NUMBER SIGN, Prepend) joins the following regional indicator
+  // flag pair (🇺🇸) into one grapheme, but has a different script. After
+  // cutting at index 1, the two flag pairs (🇺🇸🇺🇸) must still pair by GB12/13
+  // as [1->4] and [5->8] (a weight break at index 3 must not split the first
+  // flag).
+  render_text->SetText(u"\u0600\U0001F1FA\U0001F1F8\U0001F1FA\U0001F1F8");
+  render_text->ApplyWeight(Font::Weight::BOLD, Range(3, 9));
+  EXPECT_EQ("[0][1->4][5->8]", GetRunListStructureString());
+
+  // The same with 🅰 (U+1F170), which has the same script as the rest, but is
+  // left-to-right in a right-to-left text.
+  render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_RTL);
+  render_text->SetText(u"\U0001F170\U0001F3FD\u200D\U0001F467");
+  EXPECT_EQ("[6<-5][4<-2][0->1]", GetRunListStructureString());
+}
+
 TEST_F(RenderTextTest, GlyphBounds) {
   const auto kTestStrings = std::to_array<const char16_t*>(
       {u"asdf 1234 qwer", u"\u0647\u0654", u"\u0645\u0631\u062D\u0628\u0627"});

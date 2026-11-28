@@ -403,58 +403,101 @@ bool AreGraphemePropertiesCompatible(const GraphemeProperties& first,
          first.has_emoji == second.has_emoji && first.block == second.block;
 }
 
-// Returns the end of the current grapheme cluster. This function is finding the
-// breaking point where grapheme properties are no longer compatible
-// (see: UNICODE TEXT SEGMENTATION (http://unicode.org/reports/tr29/).
-// Breaks between |run_start| and |run_end| and force break after the grapheme
-// starting at |run_break|.
-size_t FindRunBreakingCharacter(std::u16string_view text,
-                                UScriptCode script,
-                                size_t run_start,
-                                size_t run_break,
-                                size_t run_end) {
-  const size_t run_length = run_end - run_start;
-  const std::u16string_view run_text(text.substr(run_start, run_length));
-  const bool is_common_script = (script == USCRIPT_COMMON);
-
-  DCHECK(!run_text.empty());
-
-  // Create an iterator to split the text in graphemes.
-  base::i18n::BreakIterator grapheme_iterator(
-      run_text, base::i18n::BreakIterator::BREAK_CHARACTER);
-  if (!grapheme_iterator.Init() || !grapheme_iterator.Advance()) {
-    NOTREACHED();
+// Splits a text into graphemes with one ICU break iterator that walks forward
+// over the text. The callers cut the graphemes at the end of the run they are
+// splitting. A grapheme break only depends on the text before it and the next
+// character, so a run that starts at a grapheme boundary has the same graphemes
+// as the text. After a grapheme was cut, the next run starts inside a grapheme,
+// so the iterator restarts there, as if the text started there.
+class RunGraphemeIterator {
+ public:
+  explicit RunGraphemeIterator(std::u16string_view text)
+      : text_(text),
+        icu_iterator_(text, base::i18n::BreakIterator::BREAK_CHARACTER) {
+    CHECK(icu_iterator_.Init());
   }
 
+  // Returns the start of the next grapheme.
+  size_t pos() const { return pos_; }
+
+  // Returns the next grapheme, cut at |end|. Does not move pos(); call Skip()
+  // to move past it.
+  std::u16string_view GetNextGrapheme(size_t end) {
+    DCHECK_LT(pos_, end);
+    DCHECK_LE(end, text_.size());
+    if (pos_ == grapheme_.end()) {
+      ReadGrapheme();
+    } else if (grapheme_.start() < pos_ && pos_ < grapheme_.end()) {
+      // The previous grapheme was cut, so |pos_| is inside |grapheme_|.
+      // Restart ICU at |pos_|, as if the text started there.
+      icu_iterator_.SetText(text_.substr(pos_));
+      offset_ = pos_;
+      ReadGrapheme();
+    }
+    return text_.substr(pos_, std::min<size_t>(grapheme_.end(), end) - pos_);
+  }
+
+  // Moves pos() past |grapheme|, which was returned by GetNextGrapheme().
+  void Skip(std::u16string_view grapheme) { pos_ += grapheme.size(); }
+
+ private:
+  // Reads the grapheme at |pos_| from ICU into |grapheme_|.
+  void ReadGrapheme() {
+    CHECK(icu_iterator_.Advance());
+    grapheme_ = Range(pos_, offset_ + icu_iterator_.pos());
+  }
+
+  const std::u16string_view text_;
+  base::i18n::BreakIterator icu_iterator_;
+  // Where the text of |icu_iterator_| starts in |text_|.
+  size_t offset_ = 0;
+  // The last grapheme read from |icu_iterator_|.
+  Range grapheme_;
+  // The start of the next grapheme.
+  size_t pos_ = 0;
+};
+
+// Returns the next run, which starts at the position of |grapheme_iterator|,
+// and moves |grapheme_iterator| to its end. This function is finding the
+// breaking point where grapheme properties are no longer compatible
+// (see: UNICODE TEXT SEGMENTATION (http://unicode.org/reports/tr29/).
+// Breaks before |run_end| and force break after the grapheme starting at
+// |run_break|.
+Range FindRunBreakingCharacter(UScriptCode script,
+                               size_t run_break,
+                               size_t run_end,
+                               RunGraphemeIterator& grapheme_iterator) {
+  const bool is_common_script = (script == USCRIPT_COMMON);
+  const size_t run_start = grapheme_iterator.pos();
+
   // Retrieve the first grapheme and its codepoint properties.
-  const std::u16string_view first_grapheme_text = grapheme_iterator.GetString();
+  const std::u16string_view first_grapheme_text =
+      grapheme_iterator.GetNextGrapheme(run_end);
   const GraphemeProperties first_grapheme_properties =
       RetrieveGraphemeProperties(first_grapheme_text, is_common_script);
+  grapheme_iterator.Skip(first_grapheme_text);
 
   // Append subsequent graphemes in this grapheme cluster if they are
   // compatible, otherwise break the current run.
-  while (grapheme_iterator.Advance()) {
+  while (grapheme_iterator.pos() < run_end) {
     const std::u16string_view current_grapheme_text =
-        grapheme_iterator.GetString();
+        grapheme_iterator.GetNextGrapheme(run_end);
     const GraphemeProperties current_grapheme_properties =
         RetrieveGraphemeProperties(current_grapheme_text, is_common_script);
 
-    const size_t current_breaking_position =
-        run_start + grapheme_iterator.prev();
     if (!AreGraphemePropertiesCompatible(first_grapheme_properties,
                                          current_grapheme_properties)) {
-      return current_breaking_position;
+      break;
     }
 
     // Break if the beginning of this grapheme is after |run_break|.
-    if (run_start + grapheme_iterator.prev() >= run_break) {
-      DCHECK_LE(current_breaking_position, run_end);
-      return current_breaking_position;
+    if (grapheme_iterator.pos() >= run_break) {
+      break;
     }
+    grapheme_iterator.Skip(current_grapheme_text);
   }
 
-  // Do not break this run, returns end of the text.
-  return run_end;
+  return Range(run_start, grapheme_iterator.pos());
 }
 
 // Find the longest sequence of characters from 0 and up to |length| that have
@@ -2231,10 +2274,13 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
   // break text runs to keep ligature between graphemes (e.g. Arabic word).
   internal::StyleIterator style = GetLayoutTextStyleIterator();
 
+  // Iterator to split runs in graphemes, shared by all the runs.
+  RunGraphemeIterator grapheme_iterator(text);
+
   // Split the original text by logical runs, then each logical run by common
   // script and each sequence at special characters and style boundaries. This
-  // invariant holds: bidi_run_start <= script_run_start <= breaking_run_start
-  // <= breaking_run_end <= script_run_end <= bidi_run_end
+  // invariant holds: bidi_run_start <= script_run_start <= run_range.start()
+  // < run_range.end() <= script_run_end <= bidi_run_end
   for (size_t bidi_run_start = 0; bidi_run_start < text.length();) {
     // Determine the longest logical run (e.g. same bidi direction) from this
     // point.
@@ -2260,38 +2306,35 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
           script_run_start;
       DCHECK_LT(script_run_start, script_run_end);
 
-      for (size_t breaking_run_start = script_run_start;
-           breaking_run_start < script_run_end;) {
+      DCHECK_EQ(grapheme_iterator.pos(), script_run_start);
+      while (grapheme_iterator.pos() < script_run_end) {
         // Find the break boundary for style. The style won't break a grapheme
         // since the style of the first character is applied to the whole
         // grapheme.
-        style.IncrementToPosition(breaking_run_start);
+        style.IncrementToPosition(grapheme_iterator.pos());
         size_t text_style_end = style.GetTextBreakingRange().end();
 
         // Break runs at certain characters that need to be rendered separately
         // to prevent an unusual character from forcing a fallback font on the
         // entire run. After script intersection, many codepoints end up in the
         // script COMMON but can't be rendered together.
-        size_t breaking_run_end = FindRunBreakingCharacter(
-            text, script, breaking_run_start, text_style_end, script_run_end);
+        const Range run_range = FindRunBreakingCharacter(
+            script, text_style_end, script_run_end, grapheme_iterator);
 
-        DCHECK_LT(breaking_run_start, breaking_run_end);
-        DCHECK(IsValidCodePointIndex(text, breaking_run_end));
+        DCHECK(!run_range.is_empty());
+        DCHECK(IsValidCodePointIndex(text, run_range.end()));
 
         // Set the font params for the current run for the current run break.
         internal::TextRunHarfBuzz::FontParams font_params =
             CreateFontParams(primary_font, bidi_level, script, style);
 
-        // Create the current run from [breaking_run_start, breaking_run_end[.
+        // Create the current run from |run_range|.
         auto run = std::make_unique<internal::TextRunHarfBuzz>(primary_font);
-        run->range = Range(breaking_run_start, breaking_run_end);
+        run->range = run_range;
 
         // Add the created run to the set of runs.
         (*out_commonized_run_map)[font_params].push_back(run.get());
         out_run_list->Add(std::move(run));
-
-        // Move to the next run.
-        breaking_run_start = breaking_run_end;
       }
 
       // Move to the next script sequence.
