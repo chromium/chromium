@@ -137,7 +137,7 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification(
       WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
       ui::EventTimeForNow(), LatencyInfo());
   touch.event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
-  touch.event.unique_touch_event_id = ui::GetNextTouchEventId();
+  touch.event.unique_touch_event_id = ui::GetNextEventId();
   {
     ScopedDispatchToRendererCallback dispatch_callback(
         client_->GetDispatchToRendererCallback());

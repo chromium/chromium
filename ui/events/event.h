@@ -100,6 +100,12 @@ class EVENTS_EXPORT Event {
   const LatencyInfo* latency() const { return &latency_; }
   void set_latency(const LatencyInfo& latency) { latency_ = latency; }
 
+  // A unique identifier for this event. Copies of an event share the id
+  // of the original, so it tells if two events are the same event.
+  // NOTE: this is *not* serialized over mojom, as the number is unique
+  // to a particular process.
+  uint32_t unique_event_id() const { return unique_event_id_; }
+
   int source_device_id() const { return source_device_id_; }
   void set_source_device_id(int id) { source_device_id_ = id; }
 
@@ -343,6 +349,7 @@ class EVENTS_EXPORT Event {
   base::TimeTicks time_stamp_;
   LatencyInfo latency_;
   int flags_;
+  uint32_t unique_event_id_;
   PlatformEvent native_event_;
   bool cancelable_ = true;
   // Neither Event copy constructor nor the assignment operator copies
@@ -687,7 +694,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   template <class T>
   TouchEvent(const TouchEvent& model, T* source, T* target)
       : LocatedEvent(model, source, target),
-        unique_event_id_(model.unique_event_id_),
         may_cause_scrolling_(model.may_cause_scrolling_),
         pointer_details_(model.pointer_details_) {}
 
@@ -708,9 +714,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   TouchEvent(const TouchEvent& copy);
 
   ~TouchEvent() override;
-
-  // A unique identifier for this event.
-  uint32_t unique_event_id() const { return unique_event_id_; }
 
   void set_may_cause_scrolling(bool causes) { may_cause_scrolling_ = causes; }
   bool may_cause_scrolling() const { return may_cause_scrolling_; }
@@ -745,12 +748,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   std::unique_ptr<Event> Clone() const override;
 
  private:
-  // A unique identifier for the touch event.
-  // NOTE: this is *not* serialized over mojom, as the number is unique to
-  // a particular process, and as mojom may go cross process, to serialize could
-  // lead to conflicts.
-  uint32_t unique_event_id_;
-
   // Whether the (unhandled) touch event will produce a scroll event (e.g., a
   // touchmove that exceeds the platform slop region, or a touchend that
   // causes a fling). Defaults to false.

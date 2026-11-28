@@ -101,7 +101,7 @@ MotionEventGeneric::MotionEventGeneric(Action action,
                                        const PointerProperties& pointer)
     : action_(action),
       event_time_(event_time),
-      unique_event_id_(ui::GetNextTouchEventId()),
+      unique_event_id_(ui::GetNextEventId()),
       action_index_(0),
       button_state_(0),
       flags_(0) {
@@ -299,7 +299,7 @@ std::unique_ptr<MotionEventGeneric> MotionEventGeneric::CancelEvent(
     cancel_event->RemovePointerAt(event.GetActionIndex());
   }
   cancel_event->set_action(Action::CANCEL);
-  cancel_event->set_unique_event_id(ui::GetNextTouchEventId());
+  cancel_event->set_unique_event_id(ui::GetNextEventId());
   return cancel_event;
 }
 
@@ -328,7 +328,7 @@ void MotionEventGeneric::PushHistoricalEvent(
 
 MotionEventGeneric::MotionEventGeneric()
     : action_(Action::NONE),
-      unique_event_id_(ui::GetNextTouchEventId()),
+      unique_event_id_(ui::GetNextEventId()),
       action_index_(-1),
       button_state_(0) {}
 

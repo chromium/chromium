@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   //  TODO(wjmaclean): Figure out why we can send two touch events with the same
   //  id, and not only does it work, it fails to work if we give the second
   //  event a unique id!
-  //  touch_event.unique_touch_event_id = ui::GetNextTouchEventId();
+  //  touch_event.unique_touch_event_id = ui::GetNextEventId();
   input_event_router->RouteTouchEvent(root_view, &touch_event,
                                       ui::LatencyInfo());
   touch_event.ResetPoints();

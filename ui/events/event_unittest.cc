@@ -392,6 +392,47 @@ TEST(EventTest, KeyEventCopy) {
   EXPECT_EQ(copied_key->key_code(), key.key_code());
 }
 
+// Tests that every event gets its own unique id regardless of its type.
+TEST(EventTest, UniqueEventId) {
+  const KeyEvent key1(EventType::kKeyPressed, VKEY_A, EF_NONE);
+  const KeyEvent key2(EventType::kKeyPressed, VKEY_A, EF_NONE);
+  const MouseEvent mouse(EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                         EventTimeForNow(), EF_NONE, EF_NONE);
+  const TouchEvent touch(EventType::kTouchPressed, gfx::Point(),
+                         EventTimeForNow(), PointerDetails());
+  const GestureEvent gesture(0, 0, EF_NONE, EventTimeForNow(),
+                             GestureEventDetails(EventType::kGestureTap));
+
+  const std::array<uint32_t, 5> ids = {
+      key1.unique_event_id(), key2.unique_event_id(), mouse.unique_event_id(),
+      touch.unique_event_id(), gesture.unique_event_id()};
+  for (size_t i = 0; i < ids.size(); ++i) {
+    EXPECT_NE(0u, ids[i]);
+    for (size_t j = i + 1; j < ids.size(); ++j) {
+      EXPECT_NE(ids[i], ids[j]) << i << " vs " << j;
+    }
+  }
+}
+
+// Tests that a copy of an event shares the unique id of the original.
+TEST(EventTest, UniqueEventIdIsCopied) {
+  const KeyEvent key(EventType::kKeyPressed, VKEY_A, EF_NONE);
+  const KeyEvent copied_key(key);
+  EXPECT_EQ(key.unique_event_id(), copied_key.unique_event_id());
+  EXPECT_EQ(key.unique_event_id(), key.Clone()->unique_event_id());
+
+  KeyEvent assigned_key(EventType::kKeyReleased, VKEY_B, EF_NONE);
+  EXPECT_NE(key.unique_event_id(), assigned_key.unique_event_id());
+  assigned_key = key;
+  EXPECT_EQ(key.unique_event_id(), assigned_key.unique_event_id());
+
+  const TouchEvent touch(EventType::kTouchPressed, gfx::Point(),
+                         EventTimeForNow(), PointerDetails());
+  const TouchEvent copied_touch(touch);
+  EXPECT_EQ(touch.unique_event_id(), copied_touch.unique_event_id());
+  EXPECT_EQ(touch.unique_event_id(), touch.Clone()->unique_event_id());
+}
+
 TEST(EventTest, KeyEventCode) {
   const DomCode kDomCodeForSpace = DomCode::SPACE;
   const char kCodeForSpace[] = "Space";

@@ -282,13 +282,14 @@ Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
     : type_(type),
       time_stamp_(time_stamp.is_null() ? EventTimeForNow() : time_stamp),
       flags_(flags),
-      native_event_(CreateInvalidPlatformEvent()) {
-}
+      unique_event_id_(GetNextEventId()),
+      native_event_(CreateInvalidPlatformEvent()) {}
 
 Event::Event(const PlatformEvent& native_event, EventType type, int flags)
     : type_(type),
       time_stamp_(EventTimeFromNative(native_event)),
       flags_(flags),
+      unique_event_id_(GetNextEventId()),
       // Note that the construction of an Event directly from a PlatformEvent
       // is the only time that ShouldCopyPlatformEvents() is not consulted.
       native_event_(native_event) {
@@ -306,6 +307,7 @@ Event::Event(const Event& copy)
       time_stamp_(copy.time_stamp_),
       latency_(copy.latency_),
       flags_(copy.flags_),
+      unique_event_id_(copy.unique_event_id_),
       native_event_(ShouldCopyPlatformEvents() ? copy.native_event_
                                                : CreateInvalidPlatformEvent()),
       source_device_id_(copy.source_device_id_),
@@ -319,6 +321,7 @@ Event& Event::operator=(const Event& rhs) {
     time_stamp_ = rhs.time_stamp_;
     latency_ = rhs.latency_;
     flags_ = rhs.flags_;
+    unique_event_id_ = rhs.unique_event_id_;
     native_event_ = ShouldCopyPlatformEvents() ? rhs.native_event_
                                                : CreateInvalidPlatformEvent();
     cancelable_ = rhs.cancelable_;
@@ -684,7 +687,6 @@ const int MouseWheelEvent::kWheelDelta = 53;
 
 TouchEvent::TouchEvent(const PlatformEvent& native_event)
     : LocatedEvent(native_event),
-      unique_event_id_(ui::GetNextTouchEventId()),
       pointer_details_(GetTouchPointerDetailsFromNative(native_event)) {
   latency()->AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, time_stamp());
@@ -698,7 +700,6 @@ TouchEvent::TouchEvent(EventType type,
                        const PointerDetails& pointer_details,
                        int flags)
     : LocatedEvent(type, location, root_location, time_stamp, flags),
-      unique_event_id_(ui::GetNextTouchEventId()),
       pointer_details_(pointer_details) {
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
 }
@@ -717,7 +718,6 @@ TouchEvent::TouchEvent(EventType type,
 
 TouchEvent::TouchEvent(const TouchEvent& copy)
     : LocatedEvent(copy),
-      unique_event_id_(copy.unique_event_id_),
       may_cause_scrolling_(copy.may_cause_scrolling_),
       hovering_(copy.hovering_),
       pointer_details_(copy.pointer_details_) {

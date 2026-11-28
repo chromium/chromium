@@ -312,7 +312,7 @@ bool TouchEmulatorImpl::HandleEmulatedTouchEvent(
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   scoped_refptr<ui::FilteredGestureProvider> gesture_provider(
       gesture_provider_);
-  event.unique_touch_event_id = ui::GetNextTouchEventId();
+  event.unique_touch_event_id = ui::GetNextEventId();
   auto result = gesture_provider->OnTouchEvent(MotionEventWeb(event));
   if (!result.succeeded || !weak_this) {
     return true;

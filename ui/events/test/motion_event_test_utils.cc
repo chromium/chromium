@@ -83,7 +83,7 @@ MockMotionEvent::MockMotionEvent(Action action,
                                  const std::vector<gfx::PointF>& positions) {
   set_action(action);
   set_event_time(time);
-  set_unique_event_id(ui::GetNextTouchEventId());
+  set_unique_event_id(ui::GetNextEventId());
   if (action == Action::POINTER_UP || action == Action::POINTER_DOWN)
     set_action_index(static_cast<int>(positions.size()) - 1);
   for (auto position : positions) {
@@ -190,7 +190,7 @@ void MockMotionEvent::PushPointer(float x, float y) {
 }
 
 void MockMotionEvent::UpdatePointersAndID() {
-  set_unique_event_id(ui::GetNextTouchEventId());
+  set_unique_event_id(ui::GetNextEventId());
   switch (GetAction()) {
     case Action::POINTER_UP: {
       int index = GetActionIndex();

@@ -328,7 +328,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
           ? blink::WebInputEvent::DispatchType::kEventNonBlocking
           : blink::WebInputEvent::DispatchType::kBlocking;
   result.hovering = type == blink::WebInputEvent::Type::kTouchEnd;
-  result.unique_touch_event_id = ui::GetNextTouchEventId();
+  result.unique_touch_event_id = ui::GetNextEventId();
 
   size_t touch_index = 0;
   if (type == blink::WebInputEvent::Type::kTouchStart) {

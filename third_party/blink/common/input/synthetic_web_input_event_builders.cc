@@ -154,7 +154,7 @@ WebGestureEvent SyntheticWebGestureEventBuilder::BuildFling(
 }
 
 SyntheticWebTouchEvent::SyntheticWebTouchEvent() : WebTouchEvent() {
-  unique_touch_event_id = ui::GetNextTouchEventId();
+  unique_touch_event_id = ui::GetNextEventId();
   SetTimestamp(ui::EventTimeForNow());
   pointer_id_ = 0;
 }
@@ -185,7 +185,7 @@ void SyntheticWebTouchEvent::ResetPoints() {
   touches_length = activePointCount;
   type_ = WebInputEvent::Type::kUndefined;
   moved_beyond_slop_region = false;
-  unique_touch_event_id = ui::GetNextTouchEventId();
+  unique_touch_event_id = ui::GetNextEventId();
 }
 
 int SyntheticWebTouchEvent::PressPoint(float x,

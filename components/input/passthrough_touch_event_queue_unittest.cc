@@ -828,7 +828,7 @@ TEST_F(PassthroughTouchEventQueueTest, SynchronousAcksInOrder) {
                                ui::EventTimeForNow());
   followup_event.touches_length = 1;
   followup_event.touches[0].id = 0;
-  followup_event.unique_touch_event_id = ui::GetNextTouchEventId();
+  followup_event.unique_touch_event_id = ui::GetNextEventId();
   followup_event.touches[0].state = WebTouchPoint::State::kStateMoved;
   SetFollowupEvent(followup_event);
   SetSyncAckResult(blink::mojom::InputEventResultState::kConsumed);

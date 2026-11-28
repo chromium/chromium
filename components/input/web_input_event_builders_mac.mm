@@ -691,7 +691,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
                               ui::EventTimeStampFromSeconds([event timestamp]));
   ui::ComputeEventLatencyOS(base::apple::OwnedNSEvent(event));
   result.hovering = event_type == blink::WebInputEvent::Type::kTouchEnd;
-  result.unique_touch_event_id = ui::GetNextTouchEventId();
+  result.unique_touch_event_id = ui::GetNextEventId();
   result.touches_length = 1;
 
   EventLocationInfo info = GetWebEventLocationForEventInView(event, view);

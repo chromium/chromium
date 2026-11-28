@@ -5,7 +5,6 @@
 #include "ui/events/base_event_utils.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,15 +28,15 @@ const base::TickClock* g_tick_clock = nullptr;
 
 }  // namespace
 
-base::AtomicSequenceNumber g_next_event_id;
+base::AtomicSequenceNumberT<uint32_t> g_next_event_id;
 
-uint32_t GetNextTouchEventId() {
-  // Set the first touch event ID to 1 because we set id to 0 for other types
-  // of events.
+uint32_t GetNextEventId() {
+  // Skip 0, which is used to mean "no event", both for the first id and
+  // when the id wraps around.
   uint32_t id = g_next_event_id.GetNext();
-  if (id == 0)
+  if (id == 0) {
     id = g_next_event_id.GetNext();
-  CHECK_NE(0U, id, base::NotFatalUntil::M163);
+  }
   return id;
 }
 

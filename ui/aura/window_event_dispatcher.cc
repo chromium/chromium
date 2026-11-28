@@ -434,7 +434,8 @@ void WindowEventDispatcher::OnWindowHidden(Window* invisible,
 
 bool WindowEventDispatcher::is_dispatched_held_event(
     const ui::Event& event) const {
-  return dispatching_held_event_ == &event;
+  return dispatching_held_event_id_ != 0 &&
+         dispatching_held_event_id_ == event.unique_event_id();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -612,7 +613,7 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
   CHECK(window()->Contains(target_window));
 
   auto target_window_weak = target_window->GetWeakPtrAsWindow();
-  if (!dispatching_held_event_) {
+  if (dispatching_held_event_id_ == 0) {
     bool can_be_held = IsEventCandidateForHold(*event);
     if (!move_hold_count_ || !can_be_held) {
       if (can_be_held)
@@ -867,7 +868,7 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
     return DispatchDetails();
   }
 
-  CHECK(!dispatching_held_event_);
+  CHECK_EQ(dispatching_held_event_id_, 0u);
 
   DispatchDetails dispatch_details;
   if (held_repostable_event_) {
@@ -875,7 +876,7 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
         held_repostable_event_->type() == ui::EventType::kTouchPressed) {
       std::unique_ptr<ui::LocatedEvent> event =
           std::move(held_repostable_event_);
-      dispatching_held_event_ = event.get();
+      dispatching_held_event_id_ = event->unique_event_id();
       dispatch_details = OnEventFromSource(event.get());
     } else {
       // TODO(rbyers): GESTURE_TAP_DOWN not yet supported: crbug.com/170987.
@@ -896,13 +897,13 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
     // so drop the held mouse event.
     if (event->IsTouchEvent() ||
         (event->IsMouseEvent() && !synthesize_mouse_move_)) {
-      dispatching_held_event_ = event.get();
+      dispatching_held_event_id_ = event->unique_event_id();
       dispatch_details = OnEventFromSource(event.get());
     }
   }
 
   if (!dispatch_details.dispatcher_destroyed) {
-    dispatching_held_event_ = nullptr;
+    dispatching_held_event_id_ = 0;
     if (did_dispatch_held_move_event_callback_)
       std::move(did_dispatch_held_move_event_callback_).Run();
   }
@@ -1026,7 +1027,7 @@ DispatchDetails WindowEventDispatcher::PreDispatchMouseEvent(
   Env::GetInstance()->env_controller()->UpdateStateForMouseEvent(
       window(), target, *event);
 
-  if (IsEventCandidateForHold(*event) && !dispatching_held_event_) {
+  if (IsEventCandidateForHold(*event) && dispatching_held_event_id_ == 0) {
     if (move_hold_count_) {
       held_move_event_ = base::WrapUnique<ui::MouseEvent>(
           event->Clone().release()->AsMouseEvent());
@@ -1133,7 +1134,7 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
     Window* target,
     ui::TouchEvent* event) {
   if (event->type() == ui::EventType::kTouchMoved && move_hold_count_ &&
-      !dispatching_held_event_) {
+      dispatching_held_event_id_ == 0) {
     held_move_event_ = base::WrapUnique<ui::TouchEvent>(
         event->Clone().release()->AsTouchEvent());
     held_move_event_->ConvertLocationToTarget(target, window());

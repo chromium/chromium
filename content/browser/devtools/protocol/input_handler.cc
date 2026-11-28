@@ -1819,7 +1819,7 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
             ? blink::WebInputEvent::DispatchType::kEventNonBlocking
             : blink::WebInputEvent::DispatchType::kBlocking;
     event.moved_beyond_slop_region = true;
-    event.unique_touch_event_id = ui::GetNextTouchEventId();
+    event.unique_touch_event_id = ui::GetNextEventId();
     for (unsigned j = 0; j < event.touches_length; j++) {
       event.touches[j].SetPositionInWidget(
           event.touches[j].PositionInWidget() + delta_to_root);

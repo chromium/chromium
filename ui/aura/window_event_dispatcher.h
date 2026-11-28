@@ -5,6 +5,8 @@
 #ifndef UI_AURA_WINDOW_EVENT_DISPATCHER_H_
 #define UI_AURA_WINDOW_EVENT_DISPATCHER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <queue>
 #include <vector>
@@ -305,9 +307,9 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Allowing for reposting of events. Used when exiting context menus.
   std::unique_ptr<ui::LocatedEvent> held_repostable_event_;
 
-  // Set when dispatching a held event.
-  raw_ptr<ui::LocatedEvent, DanglingUntriaged> dispatching_held_event_ =
-      nullptr;
+  // The unique id of the held event being dispatched, or 0 if no held event
+  // is being dispatched.
+  uint32_t dispatching_held_event_id_ = 0;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};

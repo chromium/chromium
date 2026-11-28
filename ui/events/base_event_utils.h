@@ -18,7 +18,7 @@ class TimeTicks;
 namespace ui {
 
 // Generate an unique identifier for events.
-EVENTS_BASE_EXPORT uint32_t GetNextTouchEventId();
+EVENTS_BASE_EXPORT uint32_t GetNextEventId();
 
 // Checks if |flags| contains system key modifiers.
 EVENTS_BASE_EXPORT bool IsSystemKeyModifier(int flags);

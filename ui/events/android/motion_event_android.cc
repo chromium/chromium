@@ -169,7 +169,7 @@ MotionEventAndroid::Pointer::Pointer(int32_t id,
 MotionEventAndroid::CachedPointer::CachedPointer() = default;
 
 MotionEventAndroid::MotionEventAndroid()
-    : unique_event_id_(ui::GetNextTouchEventId()) {}
+    : unique_event_id_(ui::GetNextEventId()) {}
 
 MotionEventAndroid::MotionEventAndroid(
     float pix_to_dip,
@@ -211,7 +211,7 @@ MotionEventAndroid::MotionEventAndroid(
       cached_flags_(ToEventFlags(android_meta_state, android_button_state)),
       cached_raw_position_offset_(ToDips(raw_offset_x_pixels),
                                   ToDips(raw_offset_y_pixels)),
-      unique_event_id_(ui::GetNextTouchEventId()),
+      unique_event_id_(ui::GetNextEventId()),
       source_(std::move(source)) {
   CHECK_GT(cached_pointer_count_, 0U, base::NotFatalUntil::M163);
   CHECK(cached_pointer_count_ == 1 || pointer1, base::NotFatalUntil::M163);
@@ -241,7 +241,7 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e,
       cached_button_state_(e.cached_button_state_),
       cached_flags_(e.cached_flags_),
       cached_raw_position_offset_(e.cached_raw_position_offset_),
-      unique_event_id_(ui::GetNextTouchEventId()),
+      unique_event_id_(ui::GetNextEventId()),
       source_(e.source_->Clone()) {
   cached_pointers_.push_back(CreateCachedPointer(e.cached_pointers_[0], point));
   if (cached_pointer_count_ > 1) {
