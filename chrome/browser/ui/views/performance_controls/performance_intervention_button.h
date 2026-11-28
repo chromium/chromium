@@ -40,9 +40,6 @@ class PerformanceInterventionButton
   bool IsButtonShowing() const override;
   bool IsBubbleShowing() const override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -57,17 +54,16 @@ class PerformanceInterventionButton
  private:
   void OnClicked();
   void CreateBubble();
-  void UpdateIconColor();
+
+  // Updates the icon to the active or inactive color. The intervention button
+  // should show the active color when it becomes visible and stay in the
+  // active color until the user clicks on the button.
+  void UpdateIconColor(bool is_active);
 
   std::unique_ptr<PerformanceInterventionButtonController> controller_;
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<views::BubbleDialogModelHost> bubble_dialog_model_host_ = nullptr;
 
-  // Boolean that keeps track if the intervention button icon should be shown
-  // in the active color. The intervention button should show the active color
-  // when it becomes visible and stay in the active color until the user clicks
-  // on the button.
-  bool is_active_ = true;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};
 };

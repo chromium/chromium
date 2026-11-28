@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -50,12 +51,14 @@ PerformanceInterventionButton::PerformanceInterventionButton(
   if (menu_model()) {
     GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
   }
+
+  UpdateIconColor(/*is_active=*/true);
 }
 
 PerformanceInterventionButton::~PerformanceInterventionButton() = default;
 
 void PerformanceInterventionButton::Show() {
-  is_active_ = true;
+  UpdateIconColor(/*is_active=*/true);
   SetVisible(true);
   PreferredSizeChanged();
   CreateBubble();
@@ -80,14 +83,8 @@ void PerformanceInterventionButton::OnWidgetDestroying(views::Widget* widget) {
   scoped_widget_observation_.Reset();
 }
 
-void PerformanceInterventionButton::OnThemeChanged() {
-  ToolbarButton::OnThemeChanged();
-  UpdateIconColor();
-}
-
 void PerformanceInterventionButton::OnClicked() {
-  is_active_ = false;
-  UpdateIconColor();
+  UpdateIconColor(/*is_active=*/false);
   if (IsBubbleShowing()) {
     PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
   } else {
@@ -103,17 +100,17 @@ void PerformanceInterventionButton::CreateBubble() {
   scoped_widget_observation_.Observe(bubble_dialog_model_host_->GetWidget());
 }
 
-void PerformanceInterventionButton::UpdateIconColor() {
+void PerformanceInterventionButton::UpdateIconColor(bool is_active) {
   const ui::ColorId icon_color =
-      is_active_ ? kColorPerformanceInterventionButtonIconActive
-                 : kColorPerformanceInterventionButtonIconInactive;
+      is_active ? kColorPerformanceInterventionButtonIconActive
+                : kColorPerformanceInterventionButtonIconInactive;
 
   SetImageModel(
       ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? kSpeedIcon
                                          : kPerformanceSpeedometerOldIcon,
-                                     GetColorProvider()->GetColor(icon_color)));
+                                     icon_color));
 }
 
 BEGIN_METADATA(PerformanceInterventionButton)
