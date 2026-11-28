@@ -68,9 +68,6 @@ SkColor IconLabelBubbleView::Delegate::GetIconLabelBubbleInkDropColor() const {
 IconLabelBubbleView::SeparatorView::SeparatorView(IconLabelBubbleView* owner) {
   CHECK(owner, base::NotFatalUntil::M162);
   owner_ = owner;
-
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
 }
 
 void IconLabelBubbleView::SeparatorView::OnPaint(gfx::Canvas* canvas) {
@@ -96,6 +93,14 @@ void IconLabelBubbleView::SeparatorView::OnThemeChanged() {
 void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   if (!GetVisible()) {
     return;
+  }
+
+  // Create the layer lazily when visible so hidden separators (nearly all
+  // IconLabelBubbleView instances in LocationBarView) do not allocate
+  // compositor layers.
+  if (!layer()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
   }
 
   // When using focus rings are visible we should hide the separator instantly

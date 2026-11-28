@@ -479,7 +479,6 @@ TEST_F(IconLabelBubbleViewTest, MouseInkDropState) {
 // an ink drop. Otherwise, it should be visible.
 TEST_F(IconLabelBubbleViewTest, SeparatorOpacity) {
   views::View* separator_view = view()->separator_view();
-  separator_view->SetPaintToLayer();
   view()->SetLabel(u"x");
   EXPECT_EQ(1.0f, separator_view->layer()->opacity());
 
@@ -498,6 +497,35 @@ TEST_F(IconLabelBubbleViewTest, SeparatorOpacity) {
   view()->InkDropAnimationStarted();
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDrop()->GetTargetInkDropState());
   EXPECT_EQ(1.0f, separator_view->layer()->opacity());
+}
+
+// Verifies the separator layer is created lazily when the separator first
+// becomes visible and is retained across visibility changes.
+TEST_F(IconLabelBubbleViewTest, SeparatorLayerCreatedLazily) {
+  // A newly constructed view with an empty label hides its separator and should
+  // not allocate a compositor layer. TestIconLabelBubbleView sets a non-empty
+  // label in its constructor, so construct a base IconLabelBubbleView here.
+  IconLabelBubbleView empty_view(gfx::FontList(), this);
+  views::View* separator_view = empty_view.separator_view();
+  EXPECT_FALSE(separator_view->layer());
+
+  // Updating opacity while the separator is hidden should not allocate a layer.
+  empty_view.InkDropAnimationStarted();
+  EXPECT_FALSE(separator_view->layer());
+
+  // Setting a label shows the separator and lazily allocates a non-opaque layer
+  // for opacity fades.
+  empty_view.SetLabel(u"x");
+  ui::Layer* separator_layer = separator_view->layer();
+  ASSERT_TRUE(separator_layer);
+  EXPECT_FALSE(separator_layer->fills_bounds_opaquely());
+
+  // Hiding and re-showing the view retains the layer so repeated layout passes
+  // do not destroy and recreate it.
+  empty_view.SetVisible(false);
+  EXPECT_EQ(separator_layer, separator_view->layer());
+  empty_view.SetVisible(true);
+  EXPECT_EQ(separator_layer, separator_view->layer());
 }
 
 #if !BUILDFLAG(IS_MAC)

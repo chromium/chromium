@@ -115,7 +115,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
     virtual SkColor GetIconLabelBubbleBackgroundColor() const = 0;
   };
 
-  // A view that draws the separator.
+  // A view that draws the separator. Its compositor layer is created lazily in
+  // UpdateOpacity(), since most IconLabelBubbleView instances never display a
+  // separator.
   class SeparatorView : public views::View {
     METADATA_HEADER(SeparatorView, views::View)
 
@@ -128,7 +130,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
     void OnPaint(gfx::Canvas* canvas) override;
     void OnThemeChanged() override;
 
-    // Updates the opacity based on the ink drop's state.
+    // Updates the opacity based on the ink drop's state, lazily creating a
+    // compositor layer when the separator is visible.
     void UpdateOpacity();
 
    private:
