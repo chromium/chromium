@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
@@ -433,9 +434,43 @@ TEST_F(BytesConsumerTeeTest, ConsumerCanBeErroredInTwoPhaseRead) {
       Result::kError,
       (MakeGarbageCollected<BytesConsumerTestReader>(dest2))->Run().first);
   EXPECT_EQ(BytesConsumer::PublicState::kErrored, dest1->GetPublicState());
-  EXPECT_EQ(num_on_state_change_called + 1, client->NumOnStateChangeCalled());
+  // OnStateChange() must not be called while a two-phase read is in progress.
+  EXPECT_EQ(num_on_state_change_called, client->NumOnStateChangeCalled());
   EXPECT_EQ('a', buffer[0]);
+  EXPECT_EQ(Result::kError, dest1->EndRead(buffer.size()));
+  EXPECT_EQ(num_on_state_change_called, client->NumOnStateChangeCalled());
+}
+
+TEST_F(BytesConsumerTeeTest, BeginReadDuringActiveTwoPhaseReadCrashes) {
+  ReplayingBytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
+      GetDocument().GetTaskRunner(TaskType::kNetworking));
+  src->Add(Command(Command::kData, "a"));
+  src->Add(Command(Command::kDone));
+
+  BytesConsumer* dest1 = nullptr;
+  BytesConsumer* dest2 = nullptr;
+  BytesConsumerTee(GetFrame().DomWindow(), src, &dest1, &dest2);
+
+  base::span<const char> buffer;
+  ASSERT_EQ(Result::kOk, dest1->BeginRead(buffer));
+
+  base::span<const char> nested_buffer;
+  EXPECT_CHECK_DEATH(std::ignore = dest1->BeginRead(nested_buffer));
+
   EXPECT_EQ(Result::kOk, dest1->EndRead(buffer.size()));
+}
+
+TEST_F(BytesConsumerTeeTest, EndReadWithoutActiveTwoPhaseReadCrashes) {
+  ReplayingBytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
+      GetDocument().GetTaskRunner(TaskType::kNetworking));
+  src->Add(Command(Command::kData, "a"));
+  src->Add(Command(Command::kDone));
+
+  BytesConsumer* dest1 = nullptr;
+  BytesConsumer* dest2 = nullptr;
+  BytesConsumerTee(GetFrame().DomWindow(), src, &dest1, &dest2);
+
+  EXPECT_CHECK_DEATH(std::ignore = dest1->EndRead(0));
 }
 
 TEST_F(BytesConsumerTeeTest,

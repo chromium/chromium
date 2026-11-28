@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 
+#include <tuple>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
@@ -140,6 +142,7 @@ void BytesUploader::WriteDataOnPipe() {
       return;
     }
     if (mojo_result != MOJO_RESULT_OK) {
+      std::ignore = consumer_->EndRead(0);
       CloseOnError();
       return;
     }

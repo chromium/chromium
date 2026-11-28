@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -772,6 +773,52 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueGrowableAndResizableUint8Array) {
     EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
     EXPECT_FALSE(isolate->HasPendingException());
   }
+}
+
+TEST(ReadableStreamBytesConsumerTest,
+     BeginReadDuringActiveTwoPhaseReadCrashes) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+  DOMUint8Array* chunk = DOMUint8Array::Create(4);
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
+  underlying_source->Close();
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+
+  base::span<const char> buffer;
+  ASSERT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
+  test::RunPendingTasks();
+  ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
+
+  base::span<const char> nested_buffer;
+  EXPECT_CHECK_DEATH(std::ignore = consumer->BeginRead(nested_buffer));
+
+  EXPECT_EQ(Result::kOk, consumer->EndRead(buffer.size()));
+}
+
+TEST(ReadableStreamBytesConsumerTest, EndReadWithoutActiveTwoPhaseReadCrashes) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+
+  EXPECT_CHECK_DEATH(std::ignore = consumer->EndRead(0));
 }
 
 }  // namespace

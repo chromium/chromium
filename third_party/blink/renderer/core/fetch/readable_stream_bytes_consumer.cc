@@ -94,6 +94,7 @@ ReadableStreamBytesConsumer::~ReadableStreamBytesConsumer() {}
 
 BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     base::span<const char>& buffer) {
+  CHECK(!is_in_two_phase_read_);
   buffer = {};
   if (state_ == PublicState::kErrored)
     return Result::kError;
@@ -113,6 +114,7 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     DCHECK_LE(pending_offset_, pending_buffer_->length());
     buffer =
         base::as_chars(pending_buffer_->ByteSpan().subspan(pending_offset_));
+    is_in_two_phase_read_ = true;
     return Result::kOk;
   }
   if (!is_reading_) {
@@ -131,6 +133,8 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
 }
 
 BytesConsumer::Result ReadableStreamBytesConsumer::EndRead(size_t read_size) {
+  CHECK(is_in_two_phase_read_);
+  is_in_two_phase_read_ = false;
   DCHECK(pending_buffer_);
 
   // While the buffer size is immutable once constructed, the buffer can be
@@ -161,6 +165,7 @@ void ReadableStreamBytesConsumer::ClearClient() {
 }
 
 void ReadableStreamBytesConsumer::Cancel() {
+  CHECK(!is_in_two_phase_read_);
   if (state_ == PublicState::kClosed || state_ == PublicState::kErrored)
     return;
   // BytesConsumer::Cancel can be called with ScriptForbiddenScope (e.g.,
@@ -194,6 +199,7 @@ void ReadableStreamBytesConsumer::Trace(Visitor* visitor) const {
 }
 
 void ReadableStreamBytesConsumer::OnRead(DOMUint8Array* buffer) {
+  CHECK(!is_in_two_phase_read_);
   DCHECK(is_reading_);
   DCHECK(buffer);
   DCHECK(!pending_buffer_);
@@ -216,6 +222,7 @@ void ReadableStreamBytesConsumer::OnRead(DOMUint8Array* buffer) {
 }
 
 void ReadableStreamBytesConsumer::OnReadDone() {
+  CHECK(!is_in_two_phase_read_);
   DCHECK(is_reading_);
   DCHECK(!pending_buffer_);
   if (is_inside_read_) {
@@ -238,6 +245,7 @@ void ReadableStreamBytesConsumer::OnReadDone() {
 }
 
 void ReadableStreamBytesConsumer::OnRejected() {
+  CHECK(!is_in_two_phase_read_);
   DCHECK(is_reading_);
   DCHECK(!pending_buffer_);
   if (is_inside_read_) {

@@ -261,4 +261,32 @@ TEST_F(BytesUploaderTest, StartReadingWithoutGetSize) {
   EXPECT_FALSE(Remote().is_connected());
 }
 
+TEST_F(BytesUploaderTest, PipeClosedDuringWriteCallsEndReadBeforeCancel) {
+  auto* mock_bytes_consumer =
+      MakeGarbageCollected<StrictMock<MockBytesConsumer>>();
+  base::MockCallback<ChunkedDataPipeGetter::GetSizeCallback> get_size_callback;
+  {
+    InSequence s;
+
+    EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
+        .WillOnce([](base::span<const char>& buffer) {
+          buffer = base::span_from_cstring("foobar");
+          return BytesConsumer::Result::kOk;
+        });
+    EXPECT_CALL(*mock_bytes_consumer, EndRead(0u))
+        .WillOnce(Return(BytesConsumer::Result::kOk));
+    EXPECT_CALL(*mock_bytes_consumer, Cancel());
+    EXPECT_CALL(get_size_callback, Run(net::ERR_FAILED, 0u));
+  }
+
+  InitializeBytesUploader(mock_bytes_consumer);
+  // Close the consumer end so WriteData() fails with
+  // MOJO_RESULT_FAILED_PRECONDITION.
+  Readable().reset();
+  Remote()->GetSize(get_size_callback.Get());
+  Remote()->StartReading(std::move(Writable()));
+  test::RunPendingTasks();
+}
+
 }  // namespace blink

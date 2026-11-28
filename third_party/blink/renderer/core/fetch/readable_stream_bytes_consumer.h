@@ -58,6 +58,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   PublicState state_ = PublicState::kReadableOrWaiting;
   bool is_reading_ = false;
   bool is_inside_read_ = false;
+  bool is_in_two_phase_read_ = false;
 };
 
 }  // namespace blink

@@ -155,7 +155,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
         : execution_context_(execution_context), tee_(tee) {}
 
     Result BeginRead(base::span<const char>& buffer) override {
-      DCHECK(!chunk_in_use_);
+      CHECK(!chunk_in_use_);
       buffer = {};
       if (is_cancelled_ || is_closed_)
         return Result::kDone;
@@ -181,13 +181,14 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     }
 
     Result EndRead(size_t read) override {
-      DCHECK(chunk_in_use_);
+      CHECK(chunk_in_use_);
       DCHECK(chunks_.empty() || chunk_in_use_ == chunks_[0]);
       chunk_in_use_ = nullptr;
       if (chunks_.empty()) {
         // This object becomes errored during the two-phase read.
         DCHECK_EQ(PublicState::kErrored, GetPublicState());
-        return Result::kOk;
+        ClearClient();
+        return Result::kError;
       }
       Chunk* chunk = chunks_[0];
       DCHECK_LE(offset_ + read, chunk->size());
@@ -217,7 +218,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     void ClearClient() override { client_ = nullptr; }
 
     void Cancel() override {
-      DCHECK(!chunk_in_use_);
+      CHECK(!chunk_in_use_);
       auto state = GetPublicState();
       if (state == PublicState::kClosed || state == PublicState::kErrored)
         return;
@@ -255,16 +256,19 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     }
 
     void Notify() {
-      if (is_cancelled_ || is_closed_)
+      if (is_cancelled_ || is_closed_ || chunk_in_use_) {
         return;
+      }
       if (chunks_.empty() && tee_->GetPublicState() == PublicState::kClosed) {
         Close();
         return;
       }
       if (client_) {
-        client_->OnStateChange();
-        if (GetPublicState() == PublicState::kErrored)
+        BytesConsumer::Client* client = client_;
+        if (GetPublicState() == PublicState::kErrored) {
           ClearClient();
+        }
+        client->OnStateChange();
       }
     }
 
