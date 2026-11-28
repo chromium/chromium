@@ -3726,12 +3726,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, BlockUntilHeadReceived) {
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       base::Milliseconds(500), 1);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueSample(
@@ -3797,12 +3797,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, NVSBlockUntilHeadReceived) {
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       base::Milliseconds(600), 1);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueSample(
@@ -3874,12 +3874,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(700), 1);
   histogram_tester().ExpectUniqueSample(
@@ -3955,12 +3955,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(kAddedToURLRequestStartLatency + kHeaderLatency), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4031,12 +4031,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(800), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4088,12 +4088,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4161,12 +4161,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 2);
   histogram_tester().ExpectUniqueSample(
@@ -4189,12 +4189,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // thus shouldn't be considered as a candidate in the first place.
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 2);
   histogram_tester().ExpectUniqueSample(
@@ -4242,12 +4242,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(300), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4354,12 +4354,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       base::Milliseconds(kAddedToURLRequestStartLatency + kHeaderLatency), 1);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueSample(
@@ -4607,12 +4607,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(0), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4665,12 +4665,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, BlockUntilHeadTimedout) {
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(1000), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4729,12 +4729,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, HeadReceivedBeforeTimeout) {
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(1000), 1);
   histogram_tester().ExpectUniqueSample(
@@ -4800,12 +4800,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MultipleGetPrefetchToServe) {
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            histogram_suffix}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       base::Milliseconds(1000), 2);
   histogram_tester().ExpectUniqueSample(
@@ -4892,12 +4892,12 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
       true, 1);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            metrics_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            metrics_suffix}),
       0);
 }
@@ -4950,12 +4950,12 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
       true, 1);
   histogram_tester().ExpectUniqueTimeSample(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served.",
            metrics_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
            metrics_suffix}),
       0);
 }
@@ -9362,27 +9362,27 @@ TEST_P(
       "Prerender.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Immediate2",
       base::Milliseconds(kHeaderLatency), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Immediate2",
       base::Milliseconds(kHeaderLatency), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
 }

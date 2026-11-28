@@ -1638,7 +1638,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
 
   // The navigation used A.
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Immediate2",
       1);
 }

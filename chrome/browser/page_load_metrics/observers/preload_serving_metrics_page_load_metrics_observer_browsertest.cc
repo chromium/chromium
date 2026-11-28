@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", 200, 1);
   histogram_tester.ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Immediate2",
       1);
 }

@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
+#include <string>
+
 #include "base/byte_size.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -2363,15 +2365,31 @@ void PrefetchContainer::RecordBlockUntilHeadDurationHistogram(
     const std::optional<base::TimeDelta>& blocked_duration,
     bool served,
     bool is_nav_prerender) {
+  const base::TimeDelta duration = blocked_duration.value_or(base::Seconds(0));
+  const std::string suffix =
+      base::StrCat({served ? "Served." : "NotServed.", GetMetricsSuffix()});
+  const std::string prerender_suffix =
+      base::StrCat({is_nav_prerender ? "Prerender." : "NonPrerender.", suffix});
+
+  // Temporarily dual-log the deprecated `Prefetch.BlockUntilHeadDuration.*`
+  // histograms until server-side configs migrate to `BlockUntilHeadDuration2`.
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.", suffix}),
+      duration);
   base::UmaHistogramTimes(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
-                    served ? "Served." : "NotServed.", GetMetricsSuffix()}),
-      blocked_duration.value_or(base::Seconds(0)));
-  base::UmaHistogramTimes(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
-                    is_nav_prerender ? "Prerender." : "NonPrerender.",
-                    served ? "Served." : "NotServed.", GetMetricsSuffix()}),
-      blocked_duration.value_or(base::Seconds(0)));
+                    prerender_suffix}),
+      duration);
+
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.", suffix}),
+      duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.",
+                    prerender_suffix}),
+      duration);
 }
 
 void PrefetchContainer::RecordPrefetchPotentialCandidateServingResultHistogram(

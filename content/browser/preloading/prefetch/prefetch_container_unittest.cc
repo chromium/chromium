@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/byte_size.h"
 #include "base/strings/strcat.h"
@@ -975,27 +976,27 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
       "Prerender.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Immediate2",
       base::Milliseconds(0), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Immediate2",
       base::Milliseconds(0), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
 
@@ -1017,27 +1018,27 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
       "Prerender.SpeculationRule_Eager2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Eager2",
       base::Milliseconds(10), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Eager2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Eager2",
       base::Milliseconds(10), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Eager2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Eager2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Eager2",
       0);
 
@@ -1046,27 +1047,27 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
       "Prerender.SpeculationRule_Moderate",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Moderate",
       base::Milliseconds(10), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Moderate",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Moderate",
       base::Milliseconds(10), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Moderate",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Moderate",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Moderate",
       0);
 
@@ -1083,27 +1084,27 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
       "Prerender.SpeculationRule_Conservative",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Conservative",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Conservative",
       base::Milliseconds(0), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Conservative",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Conservative",
       base::Milliseconds(0), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Conservative",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Conservative",
       0);
 
@@ -1118,32 +1119,32 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester().ExpectTotalCount(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "Served.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "NotServed.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       base::Milliseconds(20), 1);
   histogram_tester().ExpectTotalCount(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "NonPrerender.Served.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "NonPrerender.NotServed.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       base::Milliseconds(20), 1);
   histogram_tester().ExpectTotalCount(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "Prerender.Served.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester().ExpectTotalCount(
-      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
+      base::StrCat({"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate."
                     "Prerender.NotServed.Embedder_",
                     test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
@@ -1200,29 +1201,76 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
       "Prerender.SpeculationRule_Immediate2",
       true, 1);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Served."
       "SpeculationRule_Immediate2",
       test_case.blocked_duration.value_or(base::Seconds(0)), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed."
       "SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "Served.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NonPrerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
   histogram_tester().ExpectUniqueTimeSample(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender.Served."
       "SpeculationRule_Immediate2",
       test_case.blocked_duration.value_or(base::Seconds(0)), 1);
   histogram_tester().ExpectTotalCount(
-      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
+      "Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
+}
+
+// Verifies `BlockUntilHeadDuration2` separates durations above 10 seconds into
+// distinct buckets rather than collapsing them into a 10-second overflow
+// bucket, while temporarily dual-logging to `BlockUntilHeadDuration`.
+TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms_ExceedsTenSeconds) {
+  const GURL prefetch_url = GURL("https://test.example/?nvsparam=1");
+  const GURL navigated_url = GURL("https://test.example/");
+
+  for (base::TimeDelta duration : {base::Seconds(15), base::Seconds(60)}) {
+    auto prefetch_container = CreateEmbedderPrefetchContainer(prefetch_url);
+    prefetch_container->OnUnregisterCandidate(
+        navigated_url, /*is_served=*/true,
+        PrefetchPotentialCandidateServingResult::kServed,
+        /*is_nav_prerender=*/false, duration);
+  }
+
+  for (const std::string& histogram_name : {
+           base::StrCat({"Prefetch.BlockUntilHeadDuration2."
+                         "PerMatchingCandidate.Served.Embedder_",
+                         test::kPreloadingEmbedderHistogramSuffixForTesting}),
+           base::StrCat({"Prefetch.BlockUntilHeadDuration2."
+                         "PerMatchingCandidate.NonPrerender.Served.Embedder_",
+                         test::kPreloadingEmbedderHistogramSuffixForTesting}),
+       }) {
+    SCOPED_TRACE(histogram_name);
+    histogram_tester().ExpectTotalCount(histogram_name, 2);
+    histogram_tester().ExpectTimeBucketCount(histogram_name, base::Seconds(15),
+                                             1);
+    histogram_tester().ExpectTimeBucketCount(histogram_name, base::Seconds(60),
+                                             1);
+    EXPECT_EQ(histogram_tester().GetAllSamples(histogram_name).size(), 2u);
+  }
+
+  for (const std::string& legacy_histogram_name : {
+           base::StrCat({"Prefetch.BlockUntilHeadDuration."
+                         "PerMatchingCandidate.Served.Embedder_",
+                         test::kPreloadingEmbedderHistogramSuffixForTesting}),
+           base::StrCat({"Prefetch.BlockUntilHeadDuration."
+                         "PerMatchingCandidate.NonPrerender.Served.Embedder_",
+                         test::kPreloadingEmbedderHistogramSuffixForTesting}),
+       }) {
+    SCOPED_TRACE(legacy_histogram_name);
+    histogram_tester().ExpectTotalCount(legacy_histogram_name, 2);
+    EXPECT_EQ(histogram_tester().GetAllSamples(legacy_histogram_name).size(),
+              1u);
+  }
 }
 
 TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {

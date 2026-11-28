@@ -90,11 +90,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2027-04-11">
+    units="ms" expires_after="2027-02-28">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
+    Deprecated in favor of
+    `Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}`
+    (which extends the upper range from 10 seconds to 3 minutes); kept
+    temporarily while server-side configs migrate.
+
     When a navigation started, `PrefetchMatchResolver` collects potentially
     matching prefetches for it. Judging a prefetch actually matches or not needs
     non-redirect header. If a prefetch has non-redirect header and actually
@@ -119,11 +124,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2027-05-16">
+    units="ms" expires_after="2027-02-28">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
+    Deprecated in favor of
+    `Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}`
+    (which extends the upper range from 10 seconds to 3 minutes); kept
+    temporarily while server-side configs migrate.
+
     When a navigation started, `PrefetchMatchResolver` collects potentially
     matching prefetches for it. Judging a prefetch actually matches or not needs
     non-redirect header. If a prefetch has non-redirect header and actually
@@ -141,6 +151,70 @@ chromium-metrics-reviews@google.com.
 
     Before 2025-04-25, this histogram was recorded as
     `PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.*`.
+  </summary>
+  <token key="WasServed" variants="WasServed"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2027-09-12">
+  <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
+
+    This histogram records that duration navigation was blocked by the prefetch
+    matching, when the matching is settled (range: 1ms to 3 minutes, 50
+    buckets). Zero is recorded when the navigation is not blocked.
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}, and whether its
+    candidate was eventually served or not as {WasServed}.
+
+    Recorded iff {PrerenderOrNonPrerender}.
+
+    Replaces
+    `Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}`
+    (which capped at 10 seconds).
+  </summary>
+  <token key="PrerenderOrNonPrerender" variants="PrerenderOrNonPrerender"/>
+  <token key="WasServed" variants="WasServed"/>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2027-09-12">
+  <owner>kenoss@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this process ends synchronously. If not, it waits non-redirect
+    headers until it finds a matched and servable one or there is no more
+    candidates.
+
+    This histogram records that duration navigation was blocked by the prefetch
+    matching, when the matching is settled (range: 1ms to 3 minutes, 50
+    buckets). Zero is recorded when the navigation is not blocked.
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}, and whether its
+    candidate was eventually served or not as {WasServed}.
+
+    Replaces
+    `Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}`
+    (which capped at 10 seconds; before 2025-04-25, recorded as
+    `PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.*`).
   </summary>
   <token key="WasServed" variants="WasServed"/>
   <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>

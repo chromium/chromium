@@ -698,7 +698,8 @@ class CONTENT_EXPORT PrefetchContainer
   // Records `Prefetch.PrefetchContainer.ServedCount`.
   void RecordPrefetchContainerServedCountHistogram();
 
-  // Records `Prefetch.BlockUntilHeadDuration.*` UMAs.
+  // Records `Prefetch.BlockUntilHeadDuration2.*` (and deprecated
+  // `Prefetch.BlockUntilHeadDuration.*`) UMAs.
   void RecordBlockUntilHeadDurationHistogram(
       const std::optional<base::TimeDelta>& blocked_duration,
       bool served,
