@@ -884,14 +884,12 @@ TEST_F(DevToolsFileHelperTest,
   const base::FilePath git_objects_info_dir =
       git_dir.AppendASCII("objects").AppendASCII("info");
   const base::FilePath git_refs_dir = git_dir.AppendASCII("refs");
-  const base::FilePath mvn_dir = repo_dir.GetPath().AppendASCII(".mvn");
   ASSERT_TRUE(base::CreateDirectory(git_hooks_dir));
   ASSERT_TRUE(base::CreateDirectory(git_objects_info_dir));
   ASSERT_TRUE(base::CreateDirectory(git_refs_dir));
-  ASSERT_TRUE(base::CreateDirectory(mvn_dir));
 
   for (const base::FilePath& blocked_path :
-       {git_dir, git_hooks_dir, git_objects_info_dir, mvn_dir}) {
+       {git_dir, git_hooks_dir, git_objects_info_dir}) {
     SCOPED_TRACE(blocked_path);
     base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
     EXPECT_CALL(connect_cb, Run(false));
