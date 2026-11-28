@@ -4,8 +4,10 @@
 # found in the LICENSE file.
 
 import configparser
+import os
 import pathlib
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -134,6 +136,61 @@ class DesktopIntegrationTest(unittest.TestCase):
                 self.assertEqual(rdn["Exec"], primary["Exec"])
                 self.assertEqual(rdn["Icon"], primary["Icon"])
                 self.assertEqual(rdn["Name"], primary["Name"])
+
+
+@unittest.skipUnless(
+    sys.platform.startswith("linux"), "Linux wrapper script test"
+)
+class WrapperTest(unittest.TestCase):
+    def test_execs_binary_without_wrapper_argv0(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = pathlib.Path(tmpdir).resolve()
+            wrapper_src = (SCRIPT_DIR / "wrapper").read_text(encoding="utf-8")
+            wrapper_path = tmp / "google-chrome"
+            wrapper_path.write_text(
+                wrapper_src.replace("@@channel", "stable").replace(
+                    "@@PROGNAME", "chrome"
+                ),
+                encoding="utf-8",
+            )
+            wrapper_path.chmod(0o755)
+
+            # Symlink an ELF binary as `chrome` so argv[0] is preserved
+            # verbatim (a `#!` script would replace argv[0] with the path).
+            binary_path = tmp / "chrome"
+            binary_path.symlink_to(shutil.which("bash"))
+
+            result_file = tmp / "result.txt"
+            stdio_file = tmp / "stdio.txt"
+            env = os.environ.copy()
+            env["XDG_DATA_HOME"] = str(tmp / "xdg")
+            env["RESULT_FILE"] = str(result_file)
+
+            with stdio_file.open("wb") as stdio:
+                subprocess.run(
+                    [
+                        str(wrapper_path),
+                        "-c",
+                        'printf "%s\\n%s\\n%s\\n%s\\n" '
+                        '"$0" '
+                        '"$CHROME_WRAPPER" '
+                        '"$(test -p /dev/stdout && echo pipe || echo other)" '
+                        '"$(test -p /dev/stderr && echo pipe || echo other)" '
+                        '> "$RESULT_FILE"',
+                    ],
+                    env=env,
+                    stdout=stdio,
+                    stderr=stdio,
+                    check=True,
+                )
+
+            argv0, chrome_wrapper, stdout_kind, stderr_kind = (
+                result_file.read_text(encoding="utf-8").splitlines()
+            )
+            self.assertEqual(argv0, str(binary_path))
+            self.assertEqual(chrome_wrapper, str(wrapper_path))
+            self.assertEqual(stdout_kind, "pipe")
+            self.assertEqual(stderr_kind, "pipe")
 
 
 if __name__ == "__main__":

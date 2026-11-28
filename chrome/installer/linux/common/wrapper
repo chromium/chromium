@@ -42,5 +42,9 @@ if [ -v chrome_posixly_correct ]; then
   export POSIXLY_CORRECT="$chrome_posixly_correct"
 fi
 
-# Note: exec -a below is a bashism.
-exec -a "$0" "$HERE/@@PROGNAME" "$@"
+# Do not use `exec -a "$0"`: in-browser restarts (e.g. chrome://restart)
+# relaunch argv[0], so preserving the wrapper path re-runs this script on every
+# restart and chains two additional `cat` processes each time
+# (http://crbug.com/40555961). Because self-restarts bypass this wrapper, do
+# not add setup here that must be re-applied on restart or across updates.
+exec "$HERE/@@PROGNAME" "$@"
