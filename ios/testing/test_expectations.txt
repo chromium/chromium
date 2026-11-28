@@ -308,7 +308,6 @@ crbug.com/40279461 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBotto
 crbug.com/40279461 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetNoUsername [ Pass Failure ]
 crbug.com/361518360 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSingleSharedPassword [ Pass Failure ]
 crbug.com/361518360 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard [ Pass Failure ]
-crbug.com/361518360 [ iPhone Device ] CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard [ Failure ]
 crbug.com/40260214 [ Simulator ] PasswordControllerEGTest/testPasswordGeneration [ Pass Failure ]
 crbug.com/453627553 PasswordControllerEGTest/testSaveTypedCredentialInUff [ Pass Failure ]
 crbug.com/453627553 PasswordControllerEGTest/testUpdateTypedCredentialInUff [ Pass Failure ]
