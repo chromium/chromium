@@ -99,7 +99,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY;
 import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_NONE;
-import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS;
+import static org.chromium.ui.accessibility.AccessibilityState.SAMSUNG_TALKBACK_PACKAGE_NAME;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -1718,7 +1718,7 @@ public class WebContentsAccessibilityTest {
                     AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
                     AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                     AccessibilityStateTestHelper.setServiceIdsForTesting(
-                            KNOWN_SCREEN_READER_SERVICE_IDS, true);
+                            SAMSUNG_TALKBACK_PACKAGE_NAME + "/.TalkbackService", true);
                 });
 
         var histogramWatcher =

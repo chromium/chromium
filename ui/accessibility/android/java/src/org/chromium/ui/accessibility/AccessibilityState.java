@@ -39,9 +39,7 @@ public class AccessibilityState {
     public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
-    // Known screen reader service IDs, currently set only to TalkBack but can be expanded to a list
-    // if more screen readers appear in the ecosystem.
-    public static final String KNOWN_SCREEN_READER_SERVICE_IDS =
+    public static final String GOOGLE_TALKBACK_SERVICE_ID =
             "com.google.android.marvin.talkback/.TalkBackService";
 
     public static final String SAMSUNG_TALKBACK_PACKAGE_NAME =

@@ -13,7 +13,7 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.accessibility.AccessibilityState.AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID;
-import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS;
+import static org.chromium.ui.accessibility.AccessibilityState.GOOGLE_TALKBACK_SERVICE_ID;
 import static org.chromium.ui.accessibility.AccessibilityState.SAMSUNG_TALKBACK_PACKAGE_NAME;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -628,7 +628,7 @@ class AccessibilityStateDelegateImpl
         boolean isGoogleTalkBackEnabled = false;
         boolean isSamsungTalkBackEnabled = false;
         for (ServiceProperties service : mServiceProperties) {
-            if (KNOWN_SCREEN_READER_SERVICE_IDS.equals(service.id)) {
+            if (GOOGLE_TALKBACK_SERVICE_ID.equals(service.id)) {
                 isGoogleTalkBackEnabled = true;
             }
             if (isSamsungTalkBack(service.id)) {

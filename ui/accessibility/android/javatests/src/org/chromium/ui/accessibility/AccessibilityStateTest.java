@@ -734,9 +734,7 @@ public class AccessibilityStateTest {
     @Test
     public void testIsSamsungTalkBackEnabled_false() {
         AccessibilityServiceInfo googleTalkBack =
-                new BuilderForTests()
-                        .setId(AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS)
-                        .build();
+                new BuilderForTests().setId(AccessibilityState.GOOGLE_TALKBACK_SERVICE_ID).build();
         startTestWithService(googleTalkBack);
 
         mDelegate.updateAccessibilityServices();
