@@ -301,7 +301,6 @@ source_set("test_support") {
     "test_support/fake_memory_saver_mode_delegate.h",
     "test_support/fake_power_monitor_source.h",
     "test_support/page_discarding_utils.h",
-    "test_support/site_data_utils.h",
     "test_support/test_user_performance_tuning_manager_environment.h",
   ]
 
@@ -312,7 +311,6 @@ source_set("test_support") {
     "test_support/fake_memory_saver_mode_delegate.cc",
     "test_support/fake_power_monitor_source.cc",
     "test_support/page_discarding_utils.cc",
-    "test_support/site_data_utils.cc",
     "test_support/test_user_performance_tuning_manager_environment.cc",
   ]
 

@@ -4,10 +4,7 @@
 
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 
-#include "base/auto_reset.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,29 +16,9 @@
 
 namespace performance_manager {
 
-namespace {
-// Tests that want to use this factory will have to explicitly enable it.
-bool g_enable_for_testing = false;
-}
-
 SiteDataCacheFacadeFactory* SiteDataCacheFacadeFactory::GetInstance() {
   static base::NoDestructor<SiteDataCacheFacadeFactory> instance;
   return instance.get();
-}
-
-// static
-std::unique_ptr<base::AutoReset<bool>>
-SiteDataCacheFacadeFactory::EnableForTesting() {
-  // Only one AutoReset served by this function can exists, otherwise the first
-  // one being released would set g_enable_for_testing to false while there's
-  // other AutoReset still existing.
-  CHECK(!g_enable_for_testing, base::NotFatalUntil::M163);
-  return std::make_unique<base::AutoReset<bool>>(&g_enable_for_testing, true);
-}
-
-// static
-void SiteDataCacheFacadeFactory::DisassociateForTesting(Profile* profile) {
-  GetInstance()->Disassociate(profile);
 }
 
 SiteDataCacheFacade* SiteDataCacheFacadeFactory::GetProfileFacadeForTesting(
@@ -79,7 +56,8 @@ bool SiteDataCacheFacadeFactory::ServiceIsCreatedWithBrowserContext() const {
 }
 
 bool SiteDataCacheFacadeFactory::ServiceIsNULLWhileTesting() const {
-  return !g_enable_for_testing;
+  // Unit tests that need a SiteDataCacheFacade create it directly.
+  return true;
 }
 
 void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
