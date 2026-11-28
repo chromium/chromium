@@ -278,11 +278,6 @@ SavedTabGroupButton::CreateDefaultBorder() const {
   return border;
 }
 
-void SavedTabGroupButton::OnThemeChanged() {
-  views::MenuButton::OnThemeChanged();
-  UpdateButtonLayout();
-}
-
 void SavedTabGroupButton::WriteDragDataForView(View* sender,
                                                const gfx::Point& press_pt,
                                                ui::OSExchangeData* data) {

@@ -57,7 +57,6 @@ class SavedTabGroupButton : public views::MenuButton,
   void PaintButtonContents(gfx::Canvas* canvas) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
-  void OnThemeChanged() override;
 
   void UpdateCachedTooltipText();
 
