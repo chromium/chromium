@@ -31,6 +31,7 @@
 <translation id="1321110954513621549">Ativada • Aproximado</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="1333965224356556482">Não permitir que os sites acessem sua localização</translation>
+<translation id="1352358548984352201">Adicione guias, imagens e muito mais como contexto para melhorar a pesquisa</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> adicionado</translation>
 <translation id="1371239764779356792">Permitir que sites salvem dados no seu dispositivo</translation>
 <translation id="1383876407941801731">Pesquise</translation>
@@ -87,6 +88,7 @@
 <translation id="1848033246551405023">Fonte Sans Serif</translation>
 <translation id="1861244985839668297">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos HID. Quando ela está desativada, os sites não podem usar dispositivos HID.</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
+<translation id="1871213582159462941">Pergunte sobre uma página ou foto</translation>
 <translation id="1881806992065048905">Página inferior de aparência da página "Nova guia"</translation>
 <translation id="1887786770086287077">O acesso ao local está desativado neste dispositivo. Ative nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Os sites geralmente acessam arquivos e pastas no dispositivo para recursos como salvamento automático</translation>

@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Hình ảnh bạn đã sao chép</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Để thoát khỏi chế độ toàn màn hình, hãy kéo từ trên xuống rồi nhấn vào nút quay lại</translation>
 <translation id="1132789342529761192">Không nên tải lên</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, đã đánh dấu, mục trong trình đơn. Chọn để tắt tính năng chia sẻ</translation>
 <translation id="11370190534773372">Điền chi tiết thẻ</translation>
 <translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1142713751288681188">Loại giấy</translation>
@@ -928,6 +929,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2526062290525841862">Để chạy ứng dụng này, hãy bật lại Chế độ nhà phát triển ứng dụng web tách biệt</translation>
 <translation id="2526280916094749336">Bạn có thể sử dụng địa chỉ đã lưu trên các sản phẩm của Google. Địa chỉ này sẽ được lưu trong Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
 <translation id="2527451058878391043">CVC của bạn nằm ở mặt trước của thẻ. Đó là mã gồm 4 chữ số ở trên cùng bên phải, phía trên số thẻ của bạn.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, đã đánh dấu</translation>
 <translation id="2529899080962247600">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Tất cả mục thừa sẽ bị bỏ qua.</translation>
 <translation id="2530042584066815841">Khoá và sử dụng chuột</translation>
 <translation id="2535585790302968248">Mở một thẻ ẩn danh mới để duyệt web ở chế độ riêng tư</translation>
@@ -1012,6 +1014,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2666117266261740852">Đóng các thẻ hoặc ứng dụng khác</translation>
 <translation id="266935134738038806">Truy cập trang web</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, mục trong trình đơn. Chọn để bật tính năng chia sẻ</translation>
 <translation id="2672201172023654893">Trình duyệt của bạn không được quản lý.</translation>
 <translation id="2674170444375937751">Bạn có chắc chắn muốn xóa những trang này khỏi nhật ký duyệt web của mình không?</translation>
 <translation id="2675716371350192683">Nội dung của bạn sẽ không được dùng để cải thiện AI. Tổ chức của bạn có thể thay đổi các chế độ cài đặt này bất cứ lúc nào.</translation>
@@ -1992,6 +1995,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4297502707443874121">Hình thu nhỏ của trang <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Đã cập nhật <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">Thanh toán ngay mà không cần tải mã QR lên</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Cookie cho trang web này được đồng bộ hoá trên các thiết bị ChromeOS của bạn. Để quản lý dữ liệu bạn đồng bộ hoá, hãy truy cập vào <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760">Nguồn <ph name="APP_NAME" /> <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Tên của lối tắt vượt quá độ dài tối đa được phép là <ph name="MAX_LENGTH" /> ký tự.</translation>
@@ -2201,6 +2205,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4682496302933121474">Dịch trang này?</translation>
 <translation id="468314109939257734">Xem số thẻ ảo của bạn</translation>
 <translation id="4686942373615810936">Vừa tạo</translation>
+<translation id="468826602575103388">Chọn để tắt tính năng chia sẻ</translation>
 <translation id="4690205240253392065">Chọn một nhà cung cấp dịch vụ trả sau</translation>
 <translation id="469028408546145398">Nút Đóng cửa sổ ẩn danh, hãy nhấn nút này để đóng tất cả cửa sổ ẩn danh hiện đang mở</translation>
 <translation id="4692623383562244444">Công cụ tìm kiếm</translation>
@@ -4172,6 +4177,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7943397946612013052">Tính năng tải xuống bị chặn</translation>
 <translation id="7943893128817522649">Trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
+<translation id="7947144323420971076">Chọn để bật tính năng chia sẻ</translation>
 <translation id="7947285636476623132">Kiểm tra năm hết hạn của bạn và thử lại</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tìm hiểu về các tính năng của Chrome</translation>
 <translation id="7947964969544524438">Lưu mã số Known Traveler Number một cách an toàn</translation>
@@ -4299,6 +4305,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8172809706700703589">Lập danh sách đồ dùng cần mang cho chuyến đi của tôi</translation>
 <translation id="8174047975335711832">Thông tin thiết bị</translation>
 <translation id="8175053171643471349">Quản lý thẻ khách hàng thân thiết</translation>
+<translation id="817536628389054635">Thông tin liên hệ đã điền: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="8176440868214972690">Quản trị viên của thiết bị này đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> đã bị chặn do nội dung}other{<ph name="FILE_COUNT" /> tệp đã bị chặn do nội dung}}</translation>

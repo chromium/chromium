@@ -519,6 +519,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1570990174567554976">A pasta de favoritos "<ph name="BOOKMARK_TITLE" />" foi criada.</translation>
 <translation id="1571041387761170095">Nenhuma senha fraca ou reutilizada</translation>
 <translation id="1571304935088121812">Copiar nome de usuário</translation>
+<translation id="1571371559291327711">&amp;Localizar, editar e mais ferramentas</translation>
 <translation id="1571738973904005196">Ver guia: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (visitante)</translation>
 <translation id="1573127087832371028">Descreva o problema</translation>
@@ -966,6 +967,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2051669996101374349">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo. Não é possível mudar essa configuração porque a Proteção Avançada está ativada.</translation>
+<translation id="2052353138844549871">Não é recomendável usar o Gemini Enterprise com um perfil não gerenciado</translation>
 <translation id="2052723746739622752">Liberar o Gemini</translation>
 <translation id="2061366302742593739">Nada para mostrar</translation>
 <translation id="2061589908388230480">Se o Chromium encontrar uma das suas senhas em uma violação de dados pública, o Gerenciador de Senhas do Google poderá oferecer a opção de mudar a senha se você estiver com a conta conectada. <ph name="BEGIN_LINK" />Mais informações sobre a mudança automatizada de senha<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: permissão solicitada; Pressione Ctrl + Avançar para responder</translation>
 <translation id="2349610121459545414">Continuar permitindo que este site acesse sua localização</translation>
 <translation id="2350133097354918058">Atualizada</translation>
+<translation id="2351165193188463938">Agora você está navegando com o Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Câmera e microfone permitidos</translation>
 <translation id="2353682139907904963">Fixar novas extensões na Barra de Ferramentas</translation>
@@ -1281,6 +1284,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="2408955596600435184">Informe seu PIN</translation>
 <translation id="2409709393952490731">Usar um smartphone ou tablet</translation>
 <translation id="2410940059315936967">O site que você acessou pode incorporar conteúdo de outros, como imagens, anúncios e texto. Os cookies definidos por esses outros sites são chamados de cookies de terceiros.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Foco em 1 guia}one{Foco em # guia}other{Foco em # guias}}</translation>
 <translation id="2413009156320833859">Personalize ainda mais seu navegador com extensões da <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Retomar a navegação para <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -1689,6 +1693,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="2849926636739429924">Mais opções de <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Fechado</translation>
 <translation id="2851291081585704741">Você está off-line</translation>
+<translation id="2851527955600412545">Sua organização atualizou as políticas do Gemini Enterprise no Chrome. Seu histórico de conversas pode não ser transferido.</translation>
 <translation id="285237063405807022">(carregando)</translation>
 <translation id="2853121255651601031">Senha salva</translation>
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
@@ -2639,6 +2644,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3810593934879994994"><ph name="ORIGIN" /> tem permissão para ver arquivos nas seguintes pastas</translation>
 <translation id="3810770279996899697">O Gerenciador de senhas precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
+<translation id="3811424142236602772">Navegue com o Gemini, configurado por <ph name="DOMAIN" /> para o trabalho. Faça perguntas enquanto navega compartilhando guias como contexto e receba respostas baseadas nos arquivos e serviços da sua organização.</translation>
 <translation id="3812525830114410218">Certificado inválido</translation>
 <translation id="3813296892522778813">Se você não encontrar o que está procurando, acesse a <ph name="BEGIN_LINK_CHROMIUM" />Ajuda do Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3815509884387832993">Ouça esta página como se fosse um podcast com a reprodução com IA usando o botão Ativar Reprodução com IA na barra de ferramentas do Modo de Leitura</translation>
@@ -3236,6 +3242,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4500055235123625757">O Gemini pode responder a perguntas sobre o vídeo ou áudio que você ouviu em <ph name="LINK_BEGIN" />alguns sites<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Traduzir seleção para o <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Clique com o botão direito do mouse em uma guia e selecione "Adicionar guia ao novo grupo"</translation>
+<translation id="450300557121092531">Guias por dispositivo</translation>
 <translation id="4503362512377701151">Você está vendo os grupos de guias usados recentemente para retomar o trabalho com facilidade.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4562155266774382038">Dispensar sugestão</translation>
 <translation id="4563883094055457792">R&amp;estaurar visualização dividida</translation>
 <translation id="456449593072900590">Excluir ao sair</translation>
+<translation id="4564636746145660922">Verifique sua conexão e tente de novo.</translation>
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4565465014351935093">Mostrar apenas na página Nova Guia</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
@@ -3461,6 +3469,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4751925628341802838">Para acessar o histórico dos seus outros dispositivos, faça login e sincronize esse registro e as guias com <ph name="EMAIL" />. Você também terá acesso às suas extensões e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. Com base no histórico, o Google pode personalizar a Pesquisa e outros serviços para você.</translation>
 <translation id="4754590344707355551">Deixe seu navegador ainda melhor com extensões</translation>
+<translation id="4754903312643763797">Termos de privacidade de dados diferentes podem ser aplicados</translation>
 <translation id="4756130875344525429">Para acessar o histórico do <ph name="DEVICE" />, faça login e sincronize esse registro e as guias com <ph name="EMAIL" />. Você também terá acesso às informações salvas e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. Com base no histórico, o Google pode personalizar a Pesquisa e outros serviços para você.</translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
@@ -4143,6 +4152,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="5509914365760201064">Emissor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Ver descrições de imagens do Google</translation>
 <translation id="5512739112435045339">Libere espaço no dispositivo. Depois, tente fazer o download novamente</translation>
+<translation id="5513121759801003159">Seu histórico de conversas não será transferido</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Ver mais opções para <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Esta é a página inicial que você esperava?</translation>
@@ -4952,6 +4962,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6451861213630784801">Sua conta está desconectada</translation>
 <translation id="6453191633103419909">Qualidade da projeção de guia/tela</translation>
 <translation id="6453306703004115497">Traduzido para <ph name="LANGUAGE" />.</translation>
+<translation id="6454212815056355439">Pesquisar IA no dispositivo</translation>
 <translation id="645433497989692531">Isso excluirá permanentemente os dados de navegação deste dispositivo. Para recuperar os dados, faça login como</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455521402703088376">Desativada • A publicação desta extensão foi cancelada pelo desenvolvedor</translation>
@@ -5124,6 +5135,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="663569763553406962">Conferir quais extensões podem ler ou mudar um site</translation>
 <translation id="6636258750460740634">Histórico</translation>
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">O recurso Habilidades está desativado no momento. Atualize as configurações do Chrome para começar.</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
@@ -5257,6 +5269,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6785779729084003225">Use <ph name="FOCUS_TOGGLE_HOTKEY" /> para abrir o Gemini no Chrome</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Somente os idiomas disponíveis na legenda instantânea podem ser traduzidos</translation>
+<translation id="6786498102134843646">As respostas não serão baseadas em arquivos ou serviços gerenciados por <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6786804673213172567">Nível 3: alto</translation>
 <translation id="6787531944787756058">O nome de usuário <ph name="USER_EMAIL" /> foi salvo apenas neste dispositivo. Detalhes</translation>
@@ -5419,6 +5432,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6941514251635934269">Perguntar sobre este documento</translation>
 <translation id="694168622559714949">O administrador definiu um idioma padrão que não pode ser modificado.</translation>
 <translation id="6941953303876950920">É necessário reiniciar para continuar navegando com o Gemini</translation>
+<translation id="6943803108751887058">Pressione Esc para fechar</translation>
 <translation id="6944854424004126054">Restaurar janela</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">Redirecionamento bloqueado nesta página.</translation>
@@ -5745,6 +5759,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7293774463163321848">O histórico de pesquisa, do Gemini e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Salvar informações na Carteira do Google das páginas que você acessa</translation>
+<translation id="7297535265731442945">O Gemini Enterprise foi atualizado</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299515639584427954">Mudar o app padrão dos links compatíveis?</translation>
@@ -5766,6 +5781,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="731827437403763009">Inovações com IA</translation>
 <translation id="7319983568955948908">Parar compartilhamento</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
+<translation id="7321838786611890851">Suas interações com o Gemini podem não ter as proteções configuradas por <ph name="DOMAIN" />, e termos de privacidade de dados diferentes podem ser aplicados</translation>
 <translation id="7322515217754205362">Permissões de sites</translation>
 <translation id="7324020307732396723">Abrir configurações de idioma</translation>
 <translation id="7325209047678309347">Atolamento de papel</translation>
@@ -6062,6 +6078,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7653354650639364202">{0,plural, =1{Fechar janela isolada}one{Fechar isolada (# janela)}other{Fechar isoladas (# janelas)}}</translation>
 <translation id="7654941827281939388">Esta conta já está sendo utilizada neste computador.</translation>
 <translation id="7655411746932645568">Os sites podem pedir para se conectar a portas seriais</translation>
+<translation id="7656674791025857763">Faça login para usar o <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Pequena economia</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Outras formas de atividade<ph name="END_LINK_GOOGLE" /> podem ser salvas na sua Conta do Google quando ela está conectada. É possível excluí-las a qualquer momento.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -6273,6 +6290,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7904492297081735975">&amp;Abrir gerenciador de favoritos</translation>
 <translation id="7907312522152480478">Para acessar as guias dos seus outros dispositivos, confirme sua identidade e sincronize o histórico e as guias. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="7907837847548254634">Mostrar um destaque rápido no objeto focalizado</translation>
+<translation id="7908205867885088429">Saiba como restaurar as configurações padrão</translation>
 <translation id="7908835530772972485">Excluir dados ao fechar todas as janelas</translation>
 <translation id="7909324225945368569">Renomeie seu perfil</translation>
 <translation id="7909969815743704077">Download feito no modo anônimo</translation>
@@ -6664,6 +6682,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8323317289166663449">Ler e mudar seus dados no computador e em qualquer site</translation>
 <translation id="8323518750352551353">Navegação separada?</translation>
 <translation id="8323744572398547859">Para acessar as guias dos seus outros dispositivos, faça login e sincronize o histórico. Você também terá acesso a senhas e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="8324035203198677529">Sua organização desativou o Gemini Enterprise no Chrome. Você pode continuar usando o Gemini no Chrome, mas ele não vai mais encontrar nem referenciar informações gerenciadas pela sua organização. Seu histórico de conversas pode não ser transferido.</translation>
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
 <translation id="8327386430364625757">Fonte matemática</translation>
@@ -6870,6 +6889,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8552102814346875916">Salvar na lista "Sempre manter estes sites ativos"</translation>
 <translation id="8552947739661397736">Assumir a tarefa. No momento, o Gemini está no controle</translation>
+<translation id="8555042096950728024">Arraste ou use as teclas de seta para reorganizar</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" />. O conteúdo está aberto e sendo exibido</translation>
 <translation id="8557022314818157177">Continue tocando na sua chave de segurança até capturar sua impressão digital</translation>
 <translation id="8557100046150195444">Use o Touch ID para continuar</translation>
@@ -6962,6 +6982,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8651806635673244884">Para mover as guias de volta para a parte de cima, clique com o botão direito em qualquer guia e selecione "Mostrar guias horizontalmente"</translation>
 <translation id="8652400352452647993">Erro de extensão de pacote</translation>
 <translation id="8654151524613148204">O arquivo é muito grande para seu computador administrar.</translation>
+<translation id="8654872240409864765">Sua organização configurou o Gemini Enterprise no Chrome. Peça ao Gemini o que quiser enquanto navega e receba respostas baseadas em arquivos e serviços da sua organização.</translation>
 <translation id="8657393004602556571">Quer descartar o feedback?</translation>
 <translation id="865857184419171576">Traduzir legendas para o</translation>
 <translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento da página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7125,6 +7146,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8813937837706331325">Economia média</translation>
 <translation id="8815742860876889867">Abrir link em uma Janela I&amp;solada</translation>
 <translation id="881799181680267069">Ocultar outros</translation>
+<translation id="8820301999480837183">Foco no grupo <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8821206216942230957">Sua conta não tem acesso ao Gemini no Chrome</translation>
 <translation id="8823514049557262177">Copiar texto do link</translation>
@@ -7164,6 +7186,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8863753581171631212">Abrir link em nova janela do <ph name="APP" /></translation>
 <translation id="8864055848767439877">Compartilhando <ph name="TAB_NAME" /> com <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Sua senha foi salva</translation>
+<translation id="8865924457197342642">O Gemini Enterprise não está mais disponível</translation>
 <translation id="8866424952450451412">Gerencie fluxos de trabalho personalizados com a tecnologia</translation>
 <translation id="8867102760244540173">Pesquisar guias…</translation>
 <translation id="8867568208303837180">Enviando...</translation>
@@ -7376,6 +7399,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9096776523567481218">não está instalado localmente</translation>
 <translation id="9099383880226822604">Floresta tropical</translation>
 <translation id="9100765901046053179">Configurações avançadas</translation>
+<translation id="9100928301185810363">Foco no grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Para transmitir, permita o acesso do Chrome em: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rede local &gt; Chrome</translation>
 <translation id="9103868373786083162">Pressione para voltar ao menu de contexto e ver o histórico</translation>
 <translation id="9107096627210171112">Traduzir...</translation>

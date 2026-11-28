@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Skopírovaný obrázok</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Ak chcete ukončiť režim celej obrazovky, potiahnite zhora a klepnite na tlačidlo Späť</translation>
 <translation id="1132789342529761192">Nahrávanie sa neodporúča</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, začiarknuté, položka ponuky. Výberom vypnete zdieľanie.</translation>
 <translation id="11370190534773372">Boli vyplnené údaje karty</translation>
 <translation id="1138458427267715730">Dostávajte upozornenia na pokles ceny na ľubovoľnom webe na internete</translation>
 <translation id="1142713751288681188">Typ papiera</translation>
@@ -928,6 +929,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2526062290525841862">Ak chcete spustiť túto aplikáciu, znova povoľte režim vývojára izolovanej webovej aplikácie</translation>
 <translation id="2526280916094749336">V službách Googlu môžete používať uložené adresy. Táto adresa bude uložená do vášho účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Overovací kód karty nájdete na jej prednej strane. Ide o štvormiestny kód vpravo hore nad číslom karty.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, začiarknuté</translation>
 <translation id="2529899080962247600">Toto pole by nemalo mať viac ako tento počet vstupov: <ph name="MAX_ITEMS_LIMIT" />. Všetky ďalšie vstupy budú ignorované.</translation>
 <translation id="2530042584066815841">Uzamykanie a používanie myši</translation>
 <translation id="2535585790302968248">Otvoriť novú kartu inkognito a prehliadať v súkromí</translation>
@@ -1012,6 +1014,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2666092431469916601">Vrch</translation>
 <translation id="2666117266261740852">Zavrite ostatné karty alebo aplikácie</translation>
 <translation id="266935134738038806">Navštíviť web</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, položka ponuky. Výberom zapnete zdieľanie.</translation>
 <translation id="2672201172023654893">Váš prehliadač nie je spravovaný.</translation>
 <translation id="2674170444375937751">Naozaj chcete odstrániť tieto stránky zo svojej histórie?</translation>
 <translation id="2675716371350192683">Pomocou vášho obsahu sa nebude zlepšovať umelá inteligencia. Vaša organizácia môže tieto nastavenia kedykoľvek zmeniť.</translation>
@@ -1988,6 +1991,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Atribút <ph name="ATTRIBUTE_NAME" /> bol aktualizovaný</translation>
 <translation id="4298148761711700950">Plaťte okamžite bez nahrávania QR kódu</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Súbory cookie tohto webu sa synchronizujú vo vašich zariadeniach ChromeOS. Ak chcete spravovať, čo sa má synchronizovať, prejdite na <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" />, zdroj: <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Názov skratky prekračuje maximálny povolený počet znakov (<ph name="MAX_LENGTH" />).</translation>
@@ -2197,6 +2201,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4682496302933121474">Chcete stránku preložiť?</translation>
 <translation id="468314109939257734">Zobraziť číslo virtuálnej karty</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
+<translation id="468826602575103388">Výberom vypnete zdieľanie</translation>
 <translation id="4690205240253392065">Vyberte poskytovateľa platby neskôr</translation>
 <translation id="469028408546145398">Tlačidlo Zavrieť okná inkognito, ktorého aktivovaním zavriete všetky aktuálne otvorené okná inkognito</translation>
 <translation id="4692623383562244444">Vyhľadávače</translation>
@@ -4167,6 +4172,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943397946612013052">Blokované sťahovanie</translation>
 <translation id="7943893128817522649">Môže žiadať o povolenie automaticky sťahovať viacero súborov</translation>
+<translation id="7947144323420971076">Výberom zapnete zdieľanie</translation>
 <translation id="7947285636476623132">Skontrolujte rok vypršania platnosti a skúste to znova</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter zistíte viac o funkciách Chromu</translation>
 <translation id="7947964969544524438">Bezpečne si uložte číslo Known Traveler Number</translation>
@@ -4294,6 +4300,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8172809706700703589">Spíš mi zoznam vecí, ktoré si mám zbaliť na cestu</translation>
 <translation id="8174047975335711832">Informácie o zariadení</translation>
 <translation id="8175053171643471349">Spravovať vernostné karty</translation>
+<translation id="817536628389054635">Vyplnené kontaktné údaje: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome poskytuje možnosť uložiť karty v účte Google, pretože ste sa prihlásili. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="8176440868214972690">Správca tohto zariadenia odoslal na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="818254048113802060">{0,plural, =1{Súbor <ph name="FILE_NAME" /> bol zablokovaný na základe obsahu}few{<ph name="FILE_COUNT" /> súbory boli zablokované na základe obsahu}many{<ph name="FILE_COUNT" /> files were blocked because of content}other{<ph name="FILE_COUNT" /> súborov bolo zablokovaných na základe obsahu}}</translation>

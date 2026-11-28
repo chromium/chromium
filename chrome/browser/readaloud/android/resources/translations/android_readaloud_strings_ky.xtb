@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секунд алдыга түрдүрүү</translation>
 <translation id="1984328900355667246">Окуп берүү жеткиликсиз</translation>
+<translation id="2009730553732772041">Аудио түзүү үчүн сиз ачып турган беттин контенти жана URL дареги Google менен бөлүшүлөт. Бул тандоону каалаган убакта параметрлерден өзгөртө аласыз.</translation>
 <translation id="2019727681730021602">Кадимки ойнотуу</translation>
 <translation id="2224347680315897176">Туруктуу</translation>
 <translation id="2575502321843437554">Кызыксыз</translation>
 <translation id="2611765907167846862">Тынч</translation>
 <translation id="3023502830214299618">Тилекке каршы, учурда бул баракты окуп берүү жеткиликсиз. Кийинчерээк кайталап көрүңүз.</translation>
+<translation id="3431227249425330101">Улантуу үчүн Chrome'го "Бул баракты угуу" функциясы үчүн барактын мазмунун колдонууга уруксат бересизби?</translation>
 <translation id="3493899379487634969">Кандай ката кетти?</translation>
 <translation id="3730775656877876887">ЖИ аудиосу түзүлүүдө</translation>
 <translation id="3778044272390020426">Терс пикир билдирүү параметрлеринин менюсу</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">"Бул баракты угуу" ойноткучу</translation>
 <translation id="7051308646573997571">Маржан</translation>
 <translation id="7138678301420049075">Башка</translation>
+<translation id="7161867604252594316">"Бул баракты угуу" өчүк</translation>
 <translation id="7221920857098237570">Жумшак</translation>
 <translation id="7237590978482584900">Бейгам</translation>
 <translation id="7282547042039404307">Жылма</translation>

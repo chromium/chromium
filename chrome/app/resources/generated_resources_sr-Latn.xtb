@@ -2584,6 +2584,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3771721161825963003">Prikaži kartice vertikalno</translation>
 <translation id="3771851622616482156">Odjavićete se sa ovog sajta, uključujući i instance na otvorenim karticama</translation>
 <translation id="3772951945682043324">Nema nedavno zatvorenih kartica</translation>
+<translation id="3775389358290351377">Promenite dobavljača (Tab)</translation>
 <translation id="3775432569830822555">Sertifikat SSL servera</translation>
 <translation id="3776508619697147021">Sajtovi mogu da traže da automatski preuzimaju više fajlova</translation>
 <translation id="3776796446459804932">Ovaj dodatak krši smernice Chrome veb-prodavnice.</translation>
@@ -3049,6 +3050,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="429530814437327574">Prikaži grupisano</translation>
 <translation id="4296632172536745000">Prvobitna lozinka za ovaj sajt je pronađena u javnoj povredi podataka. <ph name="DATE" /> ste zatražili da <ph name="BRAND" /> automatski promeni lozinku za vas.</translation>
 <translation id="42981349822642051">Proširite</translation>
+<translation id="4298381759837744019">Potražite „<ph name="QUERY" />“ u podešavanjima</translation>
 <translation id="4298660926525614540">Nazivi prenosivih memorija</translation>
 <translation id="4299022904780065004">Novi &amp;prozor bez arhiviranja</translation>
 <translation id="4301231341924904092">Promeni je za mene</translation>
@@ -4287,6 +4289,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="568984110402742489">Slanje povratnih informacija nije uspelo</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
+<translation id="5693100627879528952">Saznajte više o podešavanjima pretraživača i pretrage sajta</translation>
 <translation id="5693255400847650006">Mikrofon se koristi</translation>
 <translation id="5693806089748511108">Veštine</translation>
 <translation id="5694689722959820210">Napravi grupu kartica</translation>

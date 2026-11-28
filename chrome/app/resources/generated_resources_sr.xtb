@@ -2584,6 +2584,7 @@
 <translation id="3771721161825963003">Прикажи картице вертикално</translation>
 <translation id="3771851622616482156">Одјавићете се са овог сајта, укључујући и инстанце на отвореним картицама</translation>
 <translation id="3772951945682043324">Нема недавно затворених картица</translation>
+<translation id="3775389358290351377">Промените добављача (Tab)</translation>
 <translation id="3775432569830822555">Сертификат SSL сервера</translation>
 <translation id="3776508619697147021">Сајтови могу да траже да аутоматски преузимају више фајлова</translation>
 <translation id="3776796446459804932">Овај додатак крши смернице Chrome веб-продавнице.</translation>
@@ -3049,6 +3050,7 @@
 <translation id="429530814437327574">Прикажи груписано</translation>
 <translation id="4296632172536745000">Првобитна лозинка за овај сајт је пронађена у јавној повреди података. <ph name="DATE" /> сте затражили да <ph name="BRAND" /> аутоматски промени лозинку за вас.</translation>
 <translation id="42981349822642051">Проширите</translation>
+<translation id="4298381759837744019">Потражите „<ph name="QUERY" />“ у подешавањима</translation>
 <translation id="4298660926525614540">Називи преносивих меморија</translation>
 <translation id="4299022904780065004">Нови &amp;прозор без архивирања</translation>
 <translation id="4301231341924904092">Промени је за мене</translation>
@@ -4287,6 +4289,7 @@
 <translation id="5689516760719285838">Локација</translation>
 <translation id="568984110402742489">Слање повратних информација није успело</translation>
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
+<translation id="5693100627879528952">Сазнајте више о подешавањима претраживача и претраге сајта</translation>
 <translation id="5693255400847650006">Микрофон се користи</translation>
 <translation id="5693806089748511108">Вештине</translation>
 <translation id="5694689722959820210">Направи групу картица</translation>

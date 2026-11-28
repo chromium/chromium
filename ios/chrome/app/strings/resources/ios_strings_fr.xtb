@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Les fonctionnalités qui nécessitent l'accès au micro ne seront pas disponibles</translation>
 <translation id="1622717322707146952">Sélectionnez "Ajouter à Google Agenda" ou "Ajouter au calendrier Apple".</translation>
 <translation id="1629162218487290695">Valider votre identité…</translation>
+<translation id="1633084385573994059">Ne pas utiliser ce site</translation>
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtenir des itinéraires vers votre destination avec des instructions de navigation détaillées</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Ne pas autoriser les sites à utiliser votre micro</translation>
 <translation id="2104436223719117661">Recherches populaires</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
+<translation id="2113761902638026426">Autoriser Gemini à accéder à <ph name="SITE_DOMAIN" /> ?</translation>
 <translation id="2117650889962717098">Protégez la confidentialité de votre navigation en passant en mode navigation privée</translation>
 <translation id="2119636449201577317">Ouvrir dans…</translation>
 <translation id="2119962645034852864">Certains services ne sont pas disponibles pour votre compte</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Modifications enregistrées</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ce compte est géré.</translation>
 <translation id="3365529507898144230">Enregistrer dans Photos</translation>
+<translation id="3371168305258344914">Gemini est sur le point d'effectuer une action sur un site susceptible de contenir vos informations sensibles</translation>
 <translation id="3371831930909698441">La traduction est disponible. Options disponibles au bas de l'écran.</translation>
 <translation id="3377063233124932127">Vos favoris, vos mots de passe et d'autres éléments sont désormais affichés en haut de la page.</translation>
 <translation id="3378214228000661758">Créer une clé d'accès pour</translation>
@@ -1508,6 +1511,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Pour utiliser et enregistrer les mots de passe dans votre compte Google, confirmez votre identité.</translation>
 <translation id="5684761169742812828">Ce mot de passe a été compromis lors d'une violation des données sur Internet. Si vous n'avez pas le temps de le modifier maintenant, Google vous recommande de conserver cet avertissement pour vous en souvenir plus tard.</translation>
+<translation id="5691020463738411542">Synchronisez vos préférences de navigation sécurisée sur tous vos appareils</translation>
 <translation id="5694848685995373177">Enregistré dans Drive pour <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Vous pouvez remplacer le mode d'affichage par défaut du site par le mode ordinateur de bureau dans Paramètres &gt; Paramètres de contenu</translation>
 <translation id="5702108177581350218">Lorsque vous partagez une copie de votre nom d'utilisateur et de votre mot de passe, les membres de votre famille peuvent les renseigner à l'aide du Gestionnaire de mots de passe de Google.</translation>
@@ -1586,6 +1590,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5948605885471592910">Consultez et gérez tout ce que vous avez ouvert</translation>
 <translation id="5952641243319721872">Voulez-vous vraiment annuler votre sélection ?</translation>
 <translation id="5956112131836209882">Onglet dans le groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Démarrer la tâche</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Ouvrez les liens ici la prochaine fois</translation>
 <translation id="5963939892571022323">Impossible de créer un lien vers le texte en surbrillance.</translation>
@@ -1806,6 +1811,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="656065428026159829">Voir plus</translation>
 <translation id="6565899972286925956">Créez ce que vous voulez</translation>
 <translation id="6571070086367343653">Modifier la carte de crédit</translation>
+<translation id="6571502147204686607">Protégez-vous contre les sites non sécurisés</translation>
 <translation id="6574092468346088891">Activer les notifications du contrôle de sécurité</translation>
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes d'autres applis en navigation privée.</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
@@ -2246,6 +2252,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7921559948846049514">Choisissez un thème, une couleur ou plus pour votre arrière-plan</translation>
 <translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7925108652071887026">Données de saisie automatique</translation>
+<translation id="7926290435065552539">Protégez vos mots de passe</translation>
 <translation id="7926975587469166629">Nom donné à la carte</translation>
 <translation id="792762900715361006">Prendre une photo/vidéo</translation>
 <translation id="7927711904086083099">Non sélectionné</translation>
@@ -2664,6 +2671,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="9144230693397287797">Recevoir des informations sur les rappels que vous avez définis et les onglets d'autres appareils</translation>
 <translation id="914781932147356857">Tout marquer…</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>
+<translation id="914964947703922647">Examinez la tâche</translation>
 <translation id="9149866541089851383">Modifier...</translation>
 <translation id="9152637745605628097">Choisissez parmi des thèmes et des couleurs, ou importez une image</translation>
 <translation id="9153159728062222866">Ne perdez plus de temps à copier-coller</translation>

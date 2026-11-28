@@ -519,6 +519,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1570990174567554976">Đã tạo thư mục dấu trang "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Không có mật khẩu yếu hoặc mật khẩu trùng lặp</translation>
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
+<translation id="1571371559291327711">&amp;Tìm, chỉnh sửa và các công cụ khác</translation>
 <translation id="1571738973904005196">Xem thẻ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Khách)</translation>
 <translation id="1573127087832371028">Mô tả vấn đề</translation>
@@ -966,6 +967,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="204914487372604757">Tạo lối tắt</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2051669996101374349">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS. Bạn không thể thay đổi chế độ cài đặt này vì đã bật tính năng Bảo vệ nâng cao.</translation>
+<translation id="2052353138844549871">Bạn không nên sử dụng Gemini Enterprise bằng hồ sơ không được quản lý</translation>
 <translation id="2052723746739622752">Bỏ ghim Gemini</translation>
 <translation id="2061366302742593739">Không có nội dung nào để hiện</translation>
 <translation id="2061589908388230480">Nếu Chromium nhận thấy một trong những mật khẩu của bạn trong sự cố rò rỉ dữ liệu công khai, Trình quản lý mật khẩu của Google có thể đề xuất thay đổi mật khẩu nếu bạn đã đăng nhập. <ph name="BEGIN_LINK" />Xem thêm thông tin về tính năng thay đổi mật khẩu tự động<ph name="END_LINK" /></translation>
@@ -1234,6 +1236,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Đã yêu cầu quyền. Hãy nhấn tổ hợp phím Ctrl + Mũi tên tiến để phản hồi</translation>
 <translation id="2349610121459545414">Tiếp tục cho phép trang web này truy cập thông tin vị trí của bạn</translation>
 <translation id="2350133097354918058">Đã tải lại</translation>
+<translation id="2351165193188463938">Giờ đây, bạn sẽ duyệt web bằng Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2353682139907904963">Ghim các tiện ích mới vào Thanh công cụ</translation>
@@ -1281,6 +1284,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="2409709393952490731">Sử dụng điện thoại hoặc máy tính bảng</translation>
 <translation id="2410940059315936967">Trang web bạn truy cập có thể nhúng nội dung từ các trang web khác, chẳng hạn như hình ảnh, quảng cáo và văn bản. Cookie do các trang web khác đặt được gọi là cookie của bên thứ ba.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Đã đặt tiêu điểm vào 1 thẻ}other{Đã đặt tiêu điểm vào # thẻ}}</translation>
 <translation id="2413009156320833859">Tuỳ chỉnh trình duyệt cho phù hợp với bạn hơn nữa bằng các tiện ích trên <ph name="BEGIN_LINK1" />Cửa hàng Chrome trực tuyến<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Tiếp tục duyệt xem <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tối</translation>
@@ -1690,6 +1694,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2849926636739429924">Tuỳ chọn khác cho <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Đã đóng</translation>
 <translation id="2851291081585704741">Bạn hiện không có kết nối mạng</translation>
+<translation id="2851527955600412545">Tổ chức của bạn đã cập nhật các chính sách cho Gemini Enterprise trong Chrome. Nhật ký trò chuyện của bạn có thể sẽ không được chuyển sang.</translation>
 <translation id="285237063405807022">(đang tải)</translation>
 <translation id="2853121255651601031">Đã lưu mật khẩu</translation>
 <translation id="2855243985454069333">Xoá nhật ký khỏi mọi thiết bị đã đồng bộ hoá</translation>
@@ -2639,6 +2644,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3810593934879994994"><ph name="ORIGIN" /> có thể xem tệp trong các thư mục sau đây</translation>
 <translation id="3810770279996899697">Trình quản lý mật khẩu cần quyền truy cập vào MacOS Keychain</translation>
 <translation id="3810973564298564668">Quản lý</translation>
+<translation id="3811424142236602772">Duyệt web bằng Gemini, do <ph name="DOMAIN" /> thiết lập cho công việc. Đặt câu hỏi trong khi duyệt web bằng cách chia sẻ các thẻ làm ngữ cảnh và nhận câu trả lời neo bám vào các tệp và dịch vụ của tổ chức bạn.</translation>
 <translation id="3812525830114410218">Chứng chỉ không hợp lệ</translation>
 <translation id="3813296892522778813">Hãy truy cập <ph name="BEGIN_LINK_CHROMIUM" />Trợ giúp Google Chrome<ph name="END_LINK_CHROMIUM" /> nếu bạn không tìm thấy nội dung mình đang tìm kiếm</translation>
 <translation id="3815509884387832993">Nghe trang này như một podcast bằng tính năng phát bằng AI, sử dụng nút Bật tính năng phát bằng AI trên thanh công cụ của Chế độ đọc</translation>
@@ -3236,6 +3242,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4500055235123625757">Gemini có thể trả lời câu hỏi về video hoặc âm thanh mà bạn đã phát trên <ph name="LINK_BEGIN" />một số trang web<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Dịch văn bản đã chọn sang <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Nhấp chuột phải vào một thẻ rồi chọn "Thêm thẻ vào nhóm mới"</translation>
+<translation id="450300557121092531">Thẻ theo thiết bị</translation>
 <translation id="4503362512377701151">Bạn đang thấy các nhóm thẻ mà bạn đã dùng gần đây để dễ dàng tiếp tục công việc.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3288,6 +3295,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4562155266774382038">Đóng đề xuất</translation>
 <translation id="4563883094055457792">K&amp;hôi phục chế độ xem chia đôi màn hình</translation>
 <translation id="456449593072900590">Xoá khi thoát</translation>
+<translation id="4564636746145660922">Hãy kiểm tra kết nối của bạn rồi thử lại.</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4565465014351935093">Chỉ hiển thị trên trang thẻ mới</translation>
 <translation id="4566417217121906555">Tắt micrô</translation>
@@ -3461,6 +3469,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="475088594373173692">Người dùng đầu tiên</translation>
 <translation id="4751925628341802838">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy đăng nhập cũng như đồng bộ hoá nhật ký và thẻ của bạn với <ph name="EMAIL" />. Bạn cũng có thể sử dụng các tiện ích và nhiều nội dung khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4754590344707355551">Tăng cường trình duyệt bằng các tiện ích</translation>
+<translation id="4754903312643763797">Các điều khoản khác về quyền riêng tư đối với dữ liệu có thể sẽ được áp dụng</translation>
 <translation id="4756130875344525429">Để truy cập vào nhật ký của bạn trên <ph name="DEVICE" />, hãy đăng nhập cũng như đồng bộ hoá nhật ký và thẻ của bạn với <ph name="EMAIL" />. Bạn cũng có thể truy cập thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4756378406049221019">Dừng/Tải lại</translation>
 <translation id="4756388243121344051">&amp;Nhật ký</translation>
@@ -4143,6 +4152,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5509914365760201064">Nhà cung cấp: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Lấy nội dung mô tả hình ảnh từ Google</translation>
 <translation id="5512739112435045339">Hãy giải phóng dung lượng trên thiết bị. Sau đó hãy thử tải xuống lại</translation>
+<translation id="5513121759801003159">Nhật ký trò chuyện của bạn sẽ không được chuyển</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Xem các lựa chọn khác cho <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">Đây có phải là trang chủ bạn muốn không?</translation>
@@ -4951,6 +4961,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6451861213630784801">Bạn đã đăng xuất</translation>
 <translation id="6453191633103419909">Chất lượng chiếu màn hình/thẻ</translation>
 <translation id="6453306703004115497">Đã được dịch sang <ph name="LANGUAGE" />.</translation>
+<translation id="6454212815056355439">Tìm AI trên thiết bị</translation>
 <translation id="645433497989692531">Thao tác này sẽ xoá vĩnh viễn dữ liệu duyệt web của bạn khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập bằng</translation>
 <translation id="6455264371803474013">Trên các trang web cụ thể</translation>
 <translation id="6455521402703088376">Đang tắt • Nhà phát triển đã huỷ phát hành tiện ích này</translation>
@@ -5121,6 +5132,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="663569763553406962">Xem tiện ích nào có thể đọc hoặc thay đổi một trang web</translation>
 <translation id="6636258750460740634">Nhật ký</translation>
 <translation id="6636623428211296678">Khám phá thêm về các chế độ cài đặt bên dưới hoặc hoàn tất ngay bây giờ</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Tính năng Kỹ năng hiện đang tắt. Hãy cập nhật Chế độ cài đặt Chrome để bắt đầu.</translation>
 <translation id="6639554308659482635">Bộ nhớ SQLite</translation>
 <translation id="6640268266988685324">Thẻ đang mở</translation>
@@ -5254,6 +5266,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6785779729084003225">Dùng <ph name="FOCUS_TOGGLE_HOTKEY" /> để mở Gemini trong Chrome</translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
 <translation id="6786480815699355166">Chỉ có thể dịch các ngôn ngữ được hỗ trợ cho tính năng Phụ đề trực tiếp</translation>
+<translation id="6786498102134843646">Câu trả lời sẽ không neo bám vào các tệp hoặc dịch vụ do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
 <translation id="6786804673213172567">Cấp 3: CAO</translation>
 <translation id="6787531944787756058">tên người dùng <ph name="USER_EMAIL" /> chỉ được lưu trên thiết bị này. Xem chi tiết</translation>
@@ -5416,6 +5429,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6941514251635934269">Hỏi về tài liệu này</translation>
 <translation id="694168622559714949">Bạn không thể sửa đổi ngôn ngữ vì quản trị viên đã đặt đây là ngôn ngữ mặc định.</translation>
 <translation id="6941953303876950920">Bạn cần chạy lại Chrome để tiếp tục duyệt web bằng Gemini</translation>
+<translation id="6943803108751887058">Nhấn phím Escape để đóng</translation>
 <translation id="6944854424004126054">Khôi phục cửa sổ</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="694592694773692225">Đã chặn chuyển hướng trên trang này.</translation>
@@ -5742,6 +5756,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7293774463163321848">Bạn có thể xoá nhật ký tìm kiếm, nhật ký hoạt động trên Gemini và mật khẩu trong phần cài đặt quản lý tương ứng</translation>
 <translation id="7296503797589217366">Chọn thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297228218361240128">Lưu thông tin vào Google Wallet từ các trang bạn xem</translation>
+<translation id="7297535265731442945">Gemini Enterprise đã được cập nhật</translation>
 <translation id="7297726121602187087">Xanh lục đậm</translation>
 <translation id="7298195798382681320">Được đề xuất</translation>
 <translation id="7299515639584427954">Thay đổi ứng dụng mặc định cho các đường liên kết được hỗ trợ?</translation>
@@ -5763,6 +5778,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="731827437403763009">Phát kiến về AI</translation>
 <translation id="7319983568955948908">Ngừng chia sẻ</translation>
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
+<translation id="7321838786611890851">Các hoạt động tương tác của bạn với Gemini có thể không được áp dụng các biện pháp bảo vệ do <ph name="DOMAIN" /> thiết lập, đồng thời các điều khoản khác về quyền riêng tư đối với dữ liệu có thể sẽ được áp dụng</translation>
 <translation id="7322515217754205362">Quyền cho trang web</translation>
 <translation id="7324020307732396723">Mở phần cài đặt ngôn ngữ</translation>
 <translation id="7325209047678309347">Kẹt giấy</translation>
@@ -6059,6 +6075,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7653354650639364202">{0,plural, =1{Đóng cửa sổ biệt lập}other{Đóng cửa sổ biệt lập (# cửa sổ)}}</translation>
 <translation id="7654941827281939388">Tài khoản này đã đang được sử dụng trên máy tính này.</translation>
 <translation id="7655411746932645568">Các trang web có thể yêu cầu kết nối với cổng nối tiếp</translation>
+<translation id="7656674791025857763">Đăng nhập để sử dụng <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Mức tiết kiệm nhỏ</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Các hình thức hoạt động khác<ph name="END_LINK_GOOGLE" /> có thể được lưu trong Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="7658239707568436148">Huỷ</translation>
@@ -6270,6 +6287,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7904492297081735975">&amp;Mở trình quản lý dấu trang</translation>
 <translation id="7907312522152480478">Để truy cập các thẻ mà bạn mở trên những thiết bị khác, hãy xác minh danh tính của bạn cũng như đồng bộ hoá thẻ và nhật ký. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="7907837847548254634">Làm nổi bật đối tượng được đặt tiêu điểm trong giây lát</translation>
+<translation id="7908205867885088429">Tìm hiểu thêm về cách khôi phục các chế độ cài đặt về mặc định</translation>
 <translation id="7908835530772972485">Xoá dữ liệu khi bạn đóng tất cả cửa sổ</translation>
 <translation id="7909324225945368569">Đổi tên hồ sơ của bạn</translation>
 <translation id="7909969815743704077">Đã tải xuống ở chế độ Ẩn danh</translation>
@@ -6661,6 +6679,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8323317289166663449">Đọc và thay đổi tất cả dữ liệu trên mọi trang web và trên máy tính của bạn</translation>
 <translation id="8323518750352551353">Tách riêng hoạt động duyệt web?</translation>
 <translation id="8323744572398547859">Để truy cập các thẻ mà bạn mở trên những thiết bị khác, hãy đăng nhập và đồng bộ hoá nhật ký. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
+<translation id="8324035203198677529">Tổ chức của bạn đã tắt Gemini Enterprise trong Chrome. Bạn có thể tiếp tục dùng Gemini trong Chrome, nhưng công cụ này sẽ không còn tìm hoặc tham chiếu thông tin do tổ chức của bạn quản lý. Nhật ký trò chuyện của bạn có thể sẽ không được chuyển sang.</translation>
 <translation id="8325413836429495820">Không được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>
 <translation id="8327386430364625757">Phông chữ toán học</translation>
@@ -6867,6 +6886,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8551388862522347954">Giấy phép</translation>
 <translation id="8552102814346875916">Lưu vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="8552947739661397736">Tự thực hiện (hiện do Gemini đảm nhận)</translation>
+<translation id="8555042096950728024">Kéo hoặc dùng các phím mũi tên để sắp xếp lại</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – đang hiển thị nội dung mở rộng</translation>
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
 <translation id="8557100046150195444">Dùng Touch ID để tiếp tục</translation>
@@ -6959,6 +6979,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8651806635673244884">Bạn có thể di chuyển các thẻ trở lại vị trí trên cùng bằng cách nhấp chuột phải vào một thẻ bất kỳ rồi chọn "Hiện các thẻ theo chiều ngang"</translation>
 <translation id="8652400352452647993">Lỗi đóng gói tiện ích</translation>
 <translation id="8654151524613148204">Rất tiếc, tệp quá lớn để máy tính của bạn có thể xử lý.</translation>
+<translation id="8654872240409864765">Tổ chức của bạn đã thiết lập Gemini Enterprise trong Chrome. Bạn có thể hỏi Gemini về bất cứ điều gì trong khi duyệt web và nhận câu trả lời neo bám vào các tệp cũng như dịch vụ trong tổ chức bạn.</translation>
 <translation id="8657393004602556571">Bạn có muốn loại bỏ ý kiến phản hồi này không?</translation>
 <translation id="865857184419171576">Dịch phụ đề sang</translation>
 <translation id="865936634714975126">Thêm tham số truy vấn trong URL để chọn loại khi tải trang. Ví dụ: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7122,6 +7143,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8813937837706331325">Mức tiết kiệm trung bình</translation>
 <translation id="8815742860876889867">Mở đường liên kết trong cửa sổ b&amp;iệt lập</translation>
 <translation id="881799181680267069">Ẩn Cửa sổ khác</translation>
+<translation id="8820301999480837183">Đã đặt tiêu điểm vào nhóm <ph name="GROUP_NAME" /></translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="8821206216942230957">Tài khoản của bạn không có quyền sử dụng Gemini trong Chrome</translation>
 <translation id="8823514049557262177">Sao chép &amp;văn bản liên kết</translation>
@@ -7161,6 +7183,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8863753581171631212">Mở đường liên kết trong <ph name="APP" /> mới</translation>
 <translation id="8864055848767439877">Đang chia sẻ <ph name="TAB_NAME" /> với <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Mật khẩu của bạn đã được lưu</translation>
+<translation id="8865924457197342642">Gemini Enterprise không còn được cung cấp nữa</translation>
 <translation id="8866424952450451412">Quản lý quy trình công việc tuỳ chỉnh được hỗ trợ bởi</translation>
 <translation id="8867102760244540173">Tìm kiếm thẻ...</translation>
 <translation id="8867568208303837180">Đang gửi...</translation>
@@ -7373,6 +7396,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9096776523567481218">chưa cài đặt trên máy</translation>
 <translation id="9099383880226822604">Rừng nhiệt đới</translation>
 <translation id="9100765901046053179">Cài đặt nâng cao</translation>
+<translation id="9100928301185810363">Đã đặt tiêu điểm vào nhóm chưa có tên – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Để truyền, hãy cấp cho Chrome quyền truy cập trong: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Mạng cục bộ &gt; Chrome</translation>
 <translation id="9103868373786083162">Nhấn để quay lại, nhấn menu ngữ cảnh để xem lịch sử</translation>
 <translation id="9107096627210171112">Dịch...</translation>

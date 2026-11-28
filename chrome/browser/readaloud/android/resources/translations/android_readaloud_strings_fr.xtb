@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubis</translation>
 <translation id="1921351128855867012">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="1984328900355667246">Lecture indisponible</translation>
+<translation id="2009730553732772041">Le contenu et l'URL de la page sur laquelle vous vous trouvez seront partagés avec Google pour générer de l'audio. Vous pouvez modifier ce choix à tout moment dans les paramètres.</translation>
 <translation id="2019727681730021602">Lecture standard</translation>
 <translation id="2224347680315897176">Stable</translation>
 <translation id="2575502321843437554">Pas assez engageant</translation>
 <translation id="2611765907167846862">Serein</translation>
 <translation id="3023502830214299618">Malheureusement, cette page ne peut pas être lue pour le moment. Veuillez réessayer plus tard.</translation>
+<translation id="3431227249425330101">Pour continuer, autoriser Chrome à utiliser le contenu de la page pour "Écouter cette page" ?</translation>
 <translation id="3493899379487634969">Qu'est-ce qui s'est passé ?</translation>
 <translation id="3730775656877876887">Génération de la lecture IA en cours</translation>
 <translation id="3778044272390020426">Menu d'options de commentaires négatifs</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Lecteur "Écouter cette page"</translation>
 <translation id="7051308646573997571">Corail</translation>
 <translation id="7138678301420049075">Autre</translation>
+<translation id="7161867604252594316">"Écouter cette page" est désactivé</translation>
 <translation id="7221920857098237570">Doux</translation>
 <translation id="7237590978482584900">Enjoué</translation>
 <translation id="7282547042039404307">Fluide</translation>

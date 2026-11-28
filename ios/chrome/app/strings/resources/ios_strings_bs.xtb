@@ -226,7 +226,7 @@
 <translation id="1621729191093924223">Funkcije za koje je potreban mikrofon neće funkcionirati</translation>
 <translation id="1622717322707146952">Odaberite "Dodajte na Google Kalendar" ili "Dodajte na Apple Kalendar".</translation>
 <translation id="1629162218487290695">Potvrda identiteta…</translation>
-<translation id="1633084385573994059">Nemoj upotrebljavati ovu web-lokaciju</translation>
+<translation id="1633084385573994059">Nemoj koristiti ovu web lokaciju</translation>
 <translation id="1634520742547161889">MM/GG</translation>
 <translation id="1636234353664774105">Dobijajte smjernice do odredišta uz detaljan vodič pomoću navigacijske funkcije</translation>
 <translation id="1641113438599504367">Sigurno pregledanje</translation>
@@ -387,7 +387,7 @@
 <translation id="2102396546234652240">Nemoj dozvoliti web lokacijama korištenje mikrofona</translation>
 <translation id="2104436223719117661">Popularna pretraživanja</translation>
 <translation id="21133533946938348">Zakači karticu</translation>
-<translation id="2113761902638026426">Želite li dopustiti Geminiju da otvori <ph name="SITE_DOMAIN" />?</translation>
+<translation id="2113761902638026426">Dozvoliti Geminiju da ode na <ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Zadržite privatnost pregledanja prelaskom na anonimni način rada</translation>
 <translation id="2119636449201577317">Otvaranje u aplikaciji…</translation>
 <translation id="2119962645034852864">Određene usluge nisu dostupne za vaš račun</translation>
@@ -768,7 +768,7 @@
 <translation id="3350976670663926380">Izmjene su sačuvane</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ovim računom se upravlja.</translation>
 <translation id="3365529507898144230">Sačuvaj na Fotografijama</translation>
-<translation id="3371168305258344914">Gemini će uskoro izvršiti radnju na web-lokaciji koja možda sadrži vaše osjetljive podatke</translation>
+<translation id="3371168305258344914">Gemini će uskoro poduzeti radnju na web lokaciji koja možda sadržava vaše osjetljive informacije</translation>
 <translation id="3371831930909698441">Dostupan je Prevodilac. Opcije su dostupne pri dnu ekrana.</translation>
 <translation id="3377063233124932127">Vaše sačuvane oznake, lozinke i drugo su sada na vrhu prikaza.</translation>
 <translation id="3378214228000661758">Kreirajte pristupni ključ za</translation>
@@ -1511,7 +1511,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="567881659373499783">Verzija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Da koristite i sačuvate lozinke na Google računu, potvrdite identitet.</translation>
 <translation id="5684761169742812828">Lozinka je bila izložena u narušavanju podataka na internetu. Ako sada nemate vremena da je promijenite, Google vam preporučuje da sačuvate ovo upozorenje kao podsjetnik za kasnije.</translation>
-<translation id="5691020463738411542">Sinkronizirajte postavke sigurnog pregledavanja na svim uređajima</translation>
+<translation id="5691020463738411542">Sinhronizirajte postavke sigurnog pregledanja na svim uređajima</translation>
 <translation id="5694848685995373177">Sačuvano je na Disk za <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Promjena zadanog prikaza web lokacije na prikaz za računar odlaskom u postavke, a zatim postavke sadržaja</translation>
 <translation id="5702108177581350218">Kada podijelite kopiju svog korisničkog imena i lozinke, član vaše porodice ih može popuniti pomoću Google upravitelja lozinki.</translation>
@@ -1811,7 +1811,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="656065428026159829">Prikaži više</translation>
 <translation id="6565899972286925956">Kreirajte bilo šta</translation>
 <translation id="6571070086367343653">Uređivanje kreditne kartice</translation>
-<translation id="6571502147204686607">Zaštitite se od nesigurnih web-lokacija</translation>
+<translation id="6571502147204686607">Zaštitite se od nesigurnih web lokacija</translation>
 <translation id="6574092468346088891">Uključite obavještenja za sigurnosnu provjeru</translation>
 <translation id="6579867704846662339">Možete odabrati otvaranje dolaznih URL-ova iz drugih aplikacija u anonimnom načinu rada.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
@@ -2252,7 +2252,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="7921559948846049514">Odaberite temu, boju ili drugo za pozadinu</translation>
 <translation id="792357691529995513">Nije pronađen nijedan problem</translation>
 <translation id="7925108652071887026">Podaci automatskog popunjavanja</translation>
-<translation id="7926290435065552539">Zaštitite svoje zaporke</translation>
+<translation id="7926290435065552539">Zaštitite lozinke</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="792762900715361006">Snimi fotografiju ili videozapis</translation>
 <translation id="7927711904086083099">Nije odabrano</translation>

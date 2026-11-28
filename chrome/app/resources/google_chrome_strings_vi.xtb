@@ -73,6 +73,7 @@
 <translation id="1640672724030957280">Đang tải xuống...</translation>
 <translation id="1651617469580841801">Khi bạn sử dụng Google Ống kính thì nội dung, URL và tiêu đề của trang, bao gồm cả tệp PDF, sẽ được gửi tới Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1674870198290878346">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
+<translation id="167594665289110631"><ph name="WINDOW_TITLE" /> – Bạn đang chia sẻ thẻ này với Google Tìm kiếm</translation>
 <translation id="1682634494516646069">Google Chrome không thể đọc và ghi vào thư mục dữ liệu:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -256,6 +257,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3380249972812870825">Để mở Gemini trong Chrome, hãy nhấn <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3392127217442962664">Chrome hiện đã tích hợp AI hoạt động ngay trên thiết bị của bạn. Các trang web và Chrome có thể sử dụng mô hình AI này cho các tính năng như:</translation>
 <translation id="3396977131400919238">Đã xảy ra lỗi hệ điều hành trong quá trình cài đặt. Vui lòng tải xuống lại Google Chrome.</translation>
+<translation id="3404531968986217414">Bắt đầu chuỗi mới bằng Google Tìm kiếm</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3438681572027105609">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="3450887623636316740">Tệp này có thể nguy hiểm<ph name="LINE_BREAK" />Chrome có thể giúp bạn kiểm tra nội dung tải xuống này nếu bạn cung cấp mật khẩu. Thông tin về tệp sẽ được gửi tới dịch vụ Duyệt web An toàn của Google nhưng nội dung tệp và mật khẩu vẫn nằm trên thiết bị của bạn.</translation>
@@ -398,6 +400,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5003967926796347400">Nhấp vào "Trình quản lý mật khẩu của Google"</translation>
 <translation id="5043786843026425788">Tìm hiểu thêm về cách tìm kiếm bằng Google Ống kính trong Chrome</translation>
 <translation id="504867494566807945">Mở đường liên kết trong Chrome từ ứng dụng bất kỳ. Ngoài ra, Chrome sẽ được ghim vào thanh tác vụ để bạn dễ dàng truy cập.</translation>
+<translation id="507983337152787026">Bắt đầu chuỗi mới bằng Google Tìm kiếm</translation>
 <translation id="5098698934038952252">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="5105120510934353742">Để nhận các bản cập nhật Google Chrome sau này, bạn cần có macOS 13 trở lên. Máy tính này đang sử dụng macOS 12.</translation>
 <translation id="5114340746415930644">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="USER_EMAIL" /> của bạn</translation>
@@ -424,6 +427,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="524751727772074981">Hỏi bất cứ điều gì và từ bất cứ đâu với Gemini trong Chrome</translation>
 <translation id="5247617065091903691">Bạn có thể ghim bảng điều khiển bên của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="5271833978500241046">Sử dụng các kỹ năng này cùng với các tính năng khác của Gemini trong Chrome</translation>
+<translation id="528611299569739095">Trình duyệt được quản lý này có thể sử dụng phiên bản Gemini do <ph name="DOMAIN" /> thiết lập cho công việc. Phiên bản đó có thể tìm thông tin và đưa ra câu trả lời neo bám vào các tệp và dịch vụ của tổ chức. Để chuyển đổi, bạn cần chạy lại Chrome.</translation>
 <translation id="5320351714793324716">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này khi tải trước</translation>
 <translation id="5321325624576443340">Không dùng được Google Ống kính. Hãy thử lại sau.</translation>
 <translation id="5346389065299425353">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ</translation>
@@ -446,7 +450,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="5600352656975192682">Ghim Chrome vào thanh tác vụ để truy cập nhanh bất cứ lúc nào</translation>
 <translation id="5602351063754773347">Chrome khuyên bạn nên loại bỏ tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" /></translation>
+<translation id="5608863008645990586">Chuyển sang Gemini Enterprise do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="5610759359710387751">Sử dụng Chrome theo cách của bạn</translation>
+<translation id="564257059644081091">{NUM_TABS,plural, =1{Ngừng chia sẻ thẻ với Google Tìm kiếm}other{Ngừng chia sẻ # thẻ với Google Tìm kiếm}}</translation>
 <translation id="5649156266046089790">Với các hồ sơ trên Chrome, bạn có thể tách biệt từng nội dung của mình. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="566568153320186256">Chrome sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt mà và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm pin<ph name="END_LINK" /></translation>
@@ -540,6 +546,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6417690341895039567">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chrome sau 1 phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}other{Tổ chức sẽ tự động đóng Chrome sau # phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}}</translation>
 <translation id="6418662306461808273">Chuyển sang hồ sơ hiện có trên Chrome?</translation>
 <translation id="6426623519983252346">Lần tới, khi mở Chrome iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
+<translation id="6431496891888891615">Bạn có thể chuyển sang phiên bản Gemini vốn được liên kết với Tài khoản Google của bạn và không do <ph name="DOMAIN" /> quản lý. Để chuyển đổi, bạn cần chạy lại Chrome.</translation>
 <translation id="6434035853014503219">Cảm ơn bạn đã chọn Chrome làm trình duyệt mặc định!</translation>
 <translation id="6438015621983209660">Mở rộng phạm vi của tính năng Duyệt web an toàn có tăng cường bảo vệ với Chrome trên điện thoại</translation>
 <translation id="6442774133615368941">Mua sắm, dịch văn bản và nhận dạng những thứ bạn thấy bằng camera trên ứng dụng Chrome dành cho iOS</translation>
@@ -576,6 +583,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6712881677154121168">Lỗi khi tải xuống: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Giúp Chrome hoạt động nhanh hơn</translation>
 <translation id="6734827584173583205">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="COUNT" /> quyền khác.</translation>
+<translation id="6737759643107005803">Chuyển về phiên bản Gemini không do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="674891594898436429">Đóng phiên tìm kiếm đang diễn ra trong thẻ này</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
 <translation id="6760235774835597023">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome. Chế độ cài đặt này đang bật.</translation>
@@ -654,6 +662,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7481213027396403996">Lớp bảo mật mạnh nhất của Chrome</translation>
 <translation id="749228101751499733">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. <ph name="SHORTCUT" /> có thể thay đổi chế độ cài đặt cho các dịch vụ của Google mà bạn sử dụng.</translation>
 <translation id="7496017508659652909">Chrome tải trước các trang để giúp bạn duyệt web và tìm kiếm nhanh hơn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về tính năng tải trước trang<ph name="END_LINK" /></translation>
+<translation id="7512102939658787283">Bạn đang chia sẻ thẻ này với Google Tìm kiếm</translation>
 <translation id="7514258452813684157">Dịch vụ Trình cập nhật Google</translation>
 <translation id="7515191208480168435">Bạn có thể ghim Google Ống kính để tiện truy cập</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -741,6 +750,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8286862437124483331">Google Chrome đang cố gắng hiển thị mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="8291415872436043161">Tải Chrome xuống</translation>
 <translation id="829923460755755423">Thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
+<translation id="8302613214059692501">{NUM_TABS,plural, =1{Chia sẻ thẻ với Google Tìm kiếm}other{Chia sẻ # thẻ với Google Tìm kiếm}}</translation>
 <translation id="8313851650939857356">Lỗi khi khởi động: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321058241987390452">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Google Tìm kiếm</translation>
 <translation id="8336463659890584292">Khi một trang web yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, Chrome sẽ sử dụng các máy chủ của Google. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước, nhưng Google biết được trang web nào được tải trước.</translation>
@@ -795,6 +805,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8712767363896337380">Sắp xong rồi! Hãy chạy lại Chrome để hoàn tất quá trình cập nhật.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng danh sách đọc và nhiều nội dung khác trên <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Đăng xuất khỏi Chrome</translation>
+<translation id="872566061310308038">{NUM_TABS,plural, =1{Chia sẻ thẻ với Google Tìm kiếm}other{Chia sẻ # thẻ với Google Tìm kiếm}}</translation>
 <translation id="873133009373065397">Google Chrome không thể xác định hoặc đặt trình duyệt mặc định</translation>
 <translation id="8747073452963259673">góc dưới cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="BOTTOM" />% từ dưới cùng lên</translation>
 <translation id="8748735421235723888">Chrome giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chrome thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm bộ nhớ<ph name="END_LINK" /></translation>
@@ -846,6 +857,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Gói thành viên Google.</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="93760716455950538">Khởi động lại ChromeOS Flex</translation>
+<translation id="942523836246905265">{NUM_TABS,plural, =1{Ngừng chia sẻ thẻ với Google Tìm kiếm}other{Ngừng chia sẻ # thẻ với Google Tìm kiếm}}</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="983803489796659991">Không cài đặt được do máy chủ cập nhật không có dữ liệu băm nào cho ứng dụng.</translation>
 <translation id="989816563149873169">Phím tắt <ph name="SHORTCUT" /> có thể giúp chuyển đổi giữa các hồ sơ trên Chrome</translation>

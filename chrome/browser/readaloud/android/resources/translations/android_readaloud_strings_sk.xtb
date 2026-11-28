@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubín</translation>
 <translation id="1921351128855867012">Pretočiť dopredu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="1984328900355667246">Prehrávanie nie je k dispozícii</translation>
+<translation id="2009730553732772041">Obsah a webová adresa stránky, na ktorej sa nachádzate, sa budú zdieľať s Googlom, aby mohol vygenerovať zvuk. Tento výber môžete kedykoľvek aktualizovať v nastaveniach.</translation>
 <translation id="2019727681730021602">Štandardné prehrávanie</translation>
 <translation id="2224347680315897176">Vyrovnaný</translation>
 <translation id="2575502321843437554">Nedostatočne pútavé</translation>
 <translation id="2611765907167846862">Pokojná</translation>
 <translation id="3023502830214299618">Ľutujeme, ale prehrávanie nie je momentálne k dispozícii pre túto stránku. Skúste to znova neskôr.</translation>
+<translation id="3431227249425330101">Ak chcete pokračovať, povoľte Chromu používať obsah stránky pre funkciu Vypočuť obsah tejto stránky</translation>
 <translation id="3493899379487634969">Kde nastala chyba?</translation>
 <translation id="3730775656877876887">Generuje sa prehrávanie pomocou umelej inteligencie</translation>
 <translation id="3778044272390020426">Ponuka možností negatívnej spätnej väzby</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Prehrávač „Vypočuť obsah tejto stránky“</translation>
 <translation id="7051308646573997571">Koralová</translation>
 <translation id="7138678301420049075">Ostatné</translation>
+<translation id="7161867604252594316">Funkcia Vypočuť obsah tejto stránky je vypnutá</translation>
 <translation id="7221920857098237570">Jemný</translation>
 <translation id="7237590978482584900">Uvoľnený</translation>
 <translation id="7282547042039404307">Plynulá</translation>

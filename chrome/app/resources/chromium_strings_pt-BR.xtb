@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1006344083777662909">Você está compartilhando esta guia com a Pesquisa</translation>
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="1029669172902658969">Reinicializar para atualizar o &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">O Chromium recomenda que você revise essa extensão</translation>
@@ -84,6 +85,7 @@
 <translation id="1880495786739455486">Você pode reabrir a Pesquisa no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
 <translation id="188102464690227119">O botão "Pesquisar no painel lateral" na barra de ferramentas tem um novo ícone. Clique nele para fazer perguntas enquanto navega com a Pesquisa no painel lateral.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" />: você está compartilhando esta guia com a Pesquisa</translation>
 <translation id="1896836275755235458">O Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1929939181775079593">O Chromium não está respondendo. Reiniciar agora?</translation>
@@ -103,6 +105,7 @@
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="208726765006323911">Você verá uma mensagem para testar o recurso <ph name="FEATURE_NAME" /> na próxima vez que abrir o Chromium para iOS.</translation>
 <translation id="2099452623287920103">As senhas e outros dados do Chromium salvos na sua Conta do Google serão removidos deste dispositivo. Para os usar de novo no Chromium, faça login outra vez.</translation>
+<translation id="2104346008417283366">Você pode trocar para o Gemini originalmente associado à sua Conta do Google e não gerenciado por <ph name="DOMAIN" />. Para mudar, é necessário reiniciar o Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
 <translation id="2135919691573380097">Denunciar este site</translation>
@@ -268,6 +271,7 @@
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="3945058413678539331">O Chromium está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="3950481960271781644">Para acessar suas informações salvas e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
+<translation id="3956384805063254165">Este navegador gerenciado pode usar o Gemini configurado para o trabalho por <ph name="DOMAIN" />. Ele pode encontrar informações e dar respostas com base nos arquivos e serviços da organização. Para mudar, é necessário reiniciar o Chromium.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Tente acessar outra.</translation>
 <translation id="3962647064319009959">Saiba como o Chromium protege você</translation>
 <translation id="3967822245660637423">Download concluído</translation>
@@ -360,6 +364,7 @@
 <translation id="494490797786467921">Clique para fechar a caixa de diálogo de login do Chromium</translation>
 <translation id="4950660488495335294">Você pode usar os perfis do Chromium para separar todos seus dados nele. Crie perfis para amigos e familiares ou separe trabalho de lazer.</translation>
 <translation id="4992938037305302429">Sua conta no Chromium</translation>
+<translation id="5088350632679445418">Iniciar uma nova conversa com a Pesquisa</translation>
 <translation id="5123973130450702873">O Chromium precisa de permissão para rastrear suas mãos</translation>
 <translation id="5141988424377517949">Você não visitou os sites recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
@@ -398,6 +403,7 @@
 <translation id="5473971139929175403">É possível que o Chromium não funcione corretamente, porque esta distribuição do Linux não tem mais suporte a ele</translation>
 <translation id="5475924890392386523">O Chromium bloqueou o download porque o arquivo pode prejudicar suas contas pessoais e de redes sociais</translation>
 <translation id="5496810170689441661">O Chromium está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Cancelar o compartilhamento da guia com a Pesquisa}one{Cancelar o compartilhamento de # guia com a Pesquisa}other{Cancelar o compartilhamento de # guias com a Pesquisa}}</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5557035028197464376">A Pesquisa no Chrome foi fixada na barra de ferramentas.</translation>
@@ -408,8 +414,10 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5576587363991567745">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso às informações salvas e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por padrão e o mantenha fixado</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Compartilhar guia com a Pesquisa}one{Compartilhar # guia com a Pesquisa}other{Compartilhar # guias com a Pesquisa}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{O administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela isolada não será reaberta.}one{O administrador exige que você reinicie o Chromium para que uma atualização seja feita. # janela isolada não será reaberta.}other{O administrador exige que você reinicie o Chromium para que uma atualização seja feita. # janelas isoladas não serão reabertas.}}</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5608863008645990586">Mudar para o Gemini Enterprise gerenciado por <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823">Uma <ph name="IMPORTANT_UPDATE" /> está pronta. Você pode reiniciar agora ou configurar o Chromium para atualizar na próxima vez que a tela ficar ligada e sem uso por <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Uma atualização do Chromium está disponível}=1{Uma atualização do Chromium está disponível}one{Uma atualização do Chromium está disponível há # dia}other{Uma atualização do Chromium está disponível há # dias}}</translation>
 <translation id="5643865575100044307">Sempre excluir dados do site do seu dispositivo ao fechar o Chromium</translation>
@@ -503,6 +511,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6455857529632101747">Conheça os perfis do Chromium</translation>
 <translation id="6460614424172581323">Na próxima vez que você abrir o Chromium no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para usar grupos de guias.</translation>
 <translation id="6466344609055215035">Remover conta do Chromium</translation>
+<translation id="6475125381371849386">Iniciar uma nova conversa com a Pesquisa</translation>
 <translation id="6475912303565314141">Controla também qual página deve ser exibida quando você inicia o Chromium.</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
 <translation id="651535675648445253">Os atalhos são abertos no Chromium</translation>
@@ -517,6 +526,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6598877126913850652">Acessar as configurações de notificação do Chromium</translation>
 <translation id="6600016381025017075">Pesquise o que quiser nesta página</translation>
 <translation id="6613594504749178791">As alterações entrarão em vigor na próxima vez que você reiniciar o Chromium.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Compartilhar guia com a Pesquisa}one{Compartilhar # guia com a Pesquisa}other{Compartilhar # guias com a Pesquisa}}</translation>
 <translation id="6637855549677695722">Você verá um aviso para ativar os melhores recursos de segurança do Chromium na próxima vez que abri-lo no seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6637908313088374648">Agora o Chromium é iniciado junto com o Windows para você começar a navegar na hora. Desative essa opção nas configurações quando quiser.</translation>
 <translation id="6644846457769259194">Atualizando seu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -529,6 +539,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6717134281241384636">Seu perfil não pode ser usado porque é de uma versão mais recente do Chromium. Alguns recursos podem não estar disponíveis. Especifique outro diretório de perfil ou use uma versão mais recente do Chromium.</translation>
 <translation id="6729124504294600478">Para acessar a personalização e outros recursos, inclua o Chromium na Atividade na Web e de apps e os Serviços do Google vinculados</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os usuários do seu computador.</translation>
+<translation id="6737759643107005803">Voltar para o Gemini não gerenciado por <ph name="DOMAIN" /></translation>
 <translation id="6742093177587589736">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chromium. Este favorito será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="674891594898436429">Dispensar a busca de atividade nesta guia</translation>
 <translation id="6751374565094704799">Deixa os sites mais rápidos com o mecanismo V8 do Chromium, mas o navegador fica um pouco menos resistente a ataques. Esta configuração está ativada.</translation>
@@ -722,6 +733,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8556055872671007529">Alguns recursos e extensões do Chromium incluem atalhos. Você pode reativá-los.</translation>
 <translation id="8556420416730706394">Você pode fixar a pesquisa por imagens para facilitar o acesso. Clique no botão "Fixar" na parte de cima do painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Cancelar o compartilhamento da guia com a Pesquisa}one{Cancelar o compartilhamento de # guia com a Pesquisa}other{Cancelar o compartilhamento de # guias com a Pesquisa}}</translation>
 <translation id="8576826849825683917">Várias organizações gerenciam o Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8619360774459241877">Iniciando o Chromium…</translation>

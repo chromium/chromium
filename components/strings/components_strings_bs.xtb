@@ -78,7 +78,7 @@
 <translation id="1131264053432022307">Slika koju ste kopirali</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – da zatvorite prikaz preko cijelog ekrana, prevucite s vrha i dodirnite dugme za nazad</translation>
 <translation id="1132789342529761192">Otpremanje se ne preporučuje</translation>
-<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, označeno, stavka izbornika. Odaberite da biste isključili dijeljenje</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, označeno, stavka menija. Odabir za isključivanje dijeljenja</translation>
 <translation id="11370190534773372">Podaci o kartici su popunjeni</translation>
 <translation id="1138458427267715730">Dobijte obavještenje kada cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="1142713751288681188">Vrsta papira</translation>
@@ -929,7 +929,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2526062290525841862">Da pokrenete ovu aplikaciju, ponovo omogućite način rada za programere za izoliranu web aplikaciju</translation>
 <translation id="2526280916094749336">Možete koristiti sačuvane adrese na Googleovim proizvodima. Adresa će se sačuvati na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Vaš CVC je na prednjoj strani kartice. To je četverocifreni kôd u gornjem desnom uglu iznad broja kartice.</translation>
-<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, potvrđeno</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, označeno</translation>
 <translation id="2529899080962247600">Ovo polje ne smije sadržavati više od sljedećeg broja unosa: <ph name="MAX_ITEMS_LIMIT" />. Svi daljnji unosi će se zanemariti.</translation>
 <translation id="2530042584066815841">Zaključavanje i korištenje miša</translation>
 <translation id="2535585790302968248">Otvorite novu anonimnu karticu da privatno pregledate</translation>
@@ -1014,7 +1014,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2666092431469916601">Gornji</translation>
 <translation id="2666117266261740852">Zatvori ostale kartice ili aplikacije</translation>
 <translation id="266935134738038806">Posjetite web lokaciju</translation>
-<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, stavka izbornika. Odaberite da biste uključili dijeljenje</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, stavka menija. Odabir za uključivanje dijeljenja</translation>
 <translation id="2672201172023654893">Vašim preglednikom se ne upravlja.</translation>
 <translation id="2674170444375937751">Jeste li sigurni da želite izbrisati ove stranice iz historije?</translation>
 <translation id="2675716371350192683">Vaš sadržaj se neće koristiti za poboljšanje AI-ja. Vaša organizacija može promijeniti ove postavke bilo kada.</translation>
@@ -2205,7 +2205,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4682496302933121474">Prevesti stranicu?</translation>
 <translation id="468314109939257734">Pogledajte broj virtuelne kartice</translation>
 <translation id="4686942373615810936">Kreirano je upravo sada</translation>
-<translation id="468826602575103388">Odaberite da biste isključili dijeljenje</translation>
+<translation id="468826602575103388">Odabir za isključivanje dijeljenja</translation>
 <translation id="4690205240253392065">Odaberite pružaoca usluge kasnijeg plaćanja</translation>
 <translation id="469028408546145398">Dugme Zatvori anonimni prozor, aktivirajte da zatvorite sve anonimne prozore koji su trenutno otvoreni</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
@@ -4177,7 +4177,7 @@ Dodatni detalji:
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943397946612013052">Preuzimanje je blokirano</translation>
 <translation id="7943893128817522649">Može tražiti da automatski preuzima više fajlova</translation>
-<translation id="7947144323420971076">Odaberite da biste uključili dijeljenje</translation>
+<translation id="7947144323420971076">Odabir za uključivanje dijeljenja</translation>
 <translation id="7947285636476623132">Provjerite godinu isteka kartice i pokušajte ponovo</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da saznate više o funkcijama Chromea</translation>
 <translation id="7947964969544524438">Sigurno sačuvajte broj provjerenog putnika</translation>
@@ -4305,7 +4305,7 @@ Dodatni detalji:
 <translation id="8172809706700703589">Kreiraj listu za pakiranje za moje putovanje</translation>
 <translation id="8174047975335711832">Informacije s uređaja</translation>
 <translation id="8175053171643471349">Upravljajte karticama lojalnosti</translation>
-<translation id="817536628389054635">Ispunjeni su podaci za kontakt: <ph name="FILLED_TYPES" /></translation>
+<translation id="817536628389054635">Popunjeni su kontakt podaci: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome vam nudi pohranjivanje vaših kartica na Google računu zato što ste prijavljeni. Ovo ponašanje možete promjeniti u postavkama</translation>
 <translation id="8176440868214972690">Administrator ovog uređaja je poslao određene informacije web lokacijama u nastavku, naprimjer postavke ili pravila.</translation>
 <translation id="818254048113802060">{0,plural, =1{Fajl <ph name="FILE_NAME" /> je blokiran zbog sadržaja}one{<ph name="FILE_COUNT" /> fajl je blokiran zbog sadržaja}few{<ph name="FILE_COUNT" /> fajla su blokirana zbog sadržaja}other{<ph name="FILE_COUNT" /> fajlova je blokirano zbog sadržaja}}</translation>

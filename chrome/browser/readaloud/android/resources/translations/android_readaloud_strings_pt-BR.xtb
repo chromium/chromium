@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Rubi</translation>
 <translation id="1921351128855867012">Avançar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="1984328900355667246">Reprodução indisponível</translation>
+<translation id="2009730553732772041">O conteúdo e o URL da página aberta serão compartilhados com o Google para gerar áudio. É possível atualizar essa definição nas configurações a qualquer momento.</translation>
 <translation id="2019727681730021602">Reprodução padrão</translation>
 <translation id="2224347680315897176">Constante</translation>
 <translation id="2575502321843437554">Não é interessante o suficiente</translation>
 <translation id="2611765907167846862">Tranquilo</translation>
 <translation id="3023502830214299618">A reprodução não está disponível para esta página no momento. Tente de novo mais tarde.</translation>
+<translation id="3431227249425330101">Para continuar, permita que o Chrome use o conteúdo da página para o recurso Ouvir Esta Página?</translation>
 <translation id="3493899379487634969">O que houve de errado?</translation>
 <translation id="3730775656877876887">Gerando reprodução com IA</translation>
 <translation id="3778044272390020426">Menu de opções para feedback negativo</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">Player "Ouvir esta página"</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7138678301420049075">Outro</translation>
+<translation id="7161867604252594316">O recurso Ouvir Esta Página está desativado</translation>
 <translation id="7221920857098237570">Gentil</translation>
 <translation id="7237590978482584900">Leve</translation>
 <translation id="7282547042039404307">Suave</translation>

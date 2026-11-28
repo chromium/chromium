@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1006344083777662909">Fitxa hau Bilaketa zerbitzuarekin partekatzen ari zara</translation>
 <translation id="1026101648481255140">Berrekin instalazioari</translation>
 <translation id="1029669172902658969">&amp;Chromium OS eguneratzeko, exekuta ezazu berriro</translation>
 <translation id="1040916596585577953">Luzapen hau berrikustea gomendatzen dizu Chromium-ek</translation>
@@ -83,6 +84,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1880495786739455486">Alboko paneleko Bilaketa berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
 <translation id="1880677175115548835">Hautatu testua</translation>
 <translation id="188102464690227119">Tresna-barrako "alboko paneleko Bilaketa" botoiak ikono berri bat du. Saka ezazu arakatu bitartean alboko paneleko Bilaketa zerbitzuarekin galderak egiteko.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" />: fitxa hau Bilaketa zerbitzuarekin partekatzen ari zara</translation>
 <translation id="1896836275755235458">Chromium-ek bateria aurrezten du atzeko planoko jarduerak eta ikusizko efektuak mugatuta (esaterako, gora eta behera modu leunean egiteko aukera eta bideoen irudi-abiadurak). <ph name="BEGIN_LINK" />Lortu energia-aurreztaileari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium eguneratzeko zerbitzua</translation>
 <translation id="1929939181775079593">Chromium-ek ez du eranzuten. Berrabiarazi nahi duzu?</translation>
@@ -102,6 +104,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2086476982681781442">Chromium-ek deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
 <translation id="208726765006323911"><ph name="FEATURE_NAME" /> probatzeko eskatuko zaizu iOS-erako Chromium irekitzen duzun hurrengo aldian.</translation>
 <translation id="2099452623287920103">Google-ko kontuan gordetako pasahitzak eta Chromium-eko beste datuak gailu honetatik kenduko dira. Chromium-en haiek berriro ere erabiltzeko, hasi saioa berriro.</translation>
+<translation id="2104346008417283366"><ph name="DOMAIN" /> erakundeak kudeatzen ez duen eta aurrez zure Google-ko kontuarekin lotuta zegoen Gemini-ra alda zaitezke. Aldatzeko, Chromium berriro exekutatu behar da.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium minutu batez erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}other{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium # minutuz erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}}</translation>
 <translation id="2126108037660393668">Deskargatutako fitxategia ezin izan da egiaztatu.</translation>
 <translation id="2135919691573380097">Salatu webgunea</translation>
@@ -268,6 +271,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3941890832296813527">Instalazio-errorea: instalatzailearen fitxategi-izenak ez du balio edo ez da onartzen.</translation>
 <translation id="3945058413678539331">Pasahitzak kopiatzen saiatzen ari da Chromium. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="3950481960271781644">Gordetako informazioa eta bestelako datuak gailu guztietan eskuratzeko, hasi saioa Chromium-en</translation>
+<translation id="3956384805063254165">Kudeatutako arakatzaile honek <ph name="DOMAIN" /> erakundeak lanerako konfiguratutako Gemini erabil dezake. Erakundearen fitxategietan eta zerbitzuetan oinarrituta informazioa aurkitu eta erantzunak eman ditzake. Aldatzeko, Chromium berriro exekutatu behar da.</translation>
 <translation id="395904275706073188">Babestutako orriak ezin dira irakurri. Probatu beste orri batekin.</translation>
 <translation id="3962647064319009959">Lortu Chromium-ek zu babesteko duen moduari buruzko informazio gehiago</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
@@ -359,6 +363,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="494490797786467921">Chromium-en saioa hasteko leihoa ixteko, sakatu hau</translation>
 <translation id="4950660488495335294">Chromium-eko profilekin, Chromium-en dituzun gauza guztiak bereiz ditzakezu. Sortu profilak lagunentzat eta familiako kideentzat, edo banandu gauza pertsonalak eta lanekoak.</translation>
 <translation id="4992938037305302429">Zure kontua Chromium-en</translation>
+<translation id="5088350632679445418">Hasi elkarrizketa-hari berri bat Bilaketa zerbitzuarekin</translation>
 <translation id="5123973130450702873">Chromium-ek zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5141988424377517949">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimena kendu dio.</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
@@ -396,6 +401,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5473971139929175403">Chromium-ek agian ez du behar bezala funtzionatuko ez delako jada bateragarria Linux banaketa honekin</translation>
 <translation id="5475924890392386523">Chromium-ek deskarga hau blokeatu du, fitxategiak zure kontu pertsonalak eta sare sozialetakoak kaltetuko dituelako agian</translation>
 <translation id="5496810170689441661">Pasahitzak editatzen saiatzen ari da Chromium. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Utzi fitxa Bilaketa zerbitzuarekin partekatzeari}other{Utzi # fitxa Bilaketa zerbitzuarekin partekatzeari}}</translation>
 <translation id="5524890928877629608">bilaketa-eremuaren goiko ezkerreko ertza: % <ph name="LEFT" /> ezkerrean, % <ph name="TOP" /> goian</translation>
 <translation id="5527463683072221100">Ireki PDFak Chromium-en</translation>
 <translation id="5557035028197464376">Ainguratu da Chrome-ko Bilaketa tresna-barran!</translation>
@@ -406,8 +412,10 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Gainera, <ph name="DEVICE" /> gailuan gordetako informazioa eta bestelako datuak lortuko dituzu.</translation>
 <translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
 <translation id="5580770360767802657">Erabili Chromium modu lehenetsian eta aingura ezazu</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Partekatu fitxa Bilaketa zerbitzuarekin}other{Partekatu # fitxa Bilaketa zerbitzuarekin}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. Leiho isolatua ez da irekiko berriro.}other{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
+<translation id="5608863008645990586">Aldatu <ph name="DOMAIN" /> erakundeak kudeatutako Gemini Enterprise-ra</translation>
 <translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> prest dago. Orain berriro exekutatu dezakezu, edo Chromium pantaila piztuta eta <ph name="IDLE_DURATION" /> inaktibo igarotzen dituzun hurrengo aldian eguneratzeko ezarri.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium arakatzailearen eguneratze bat dago erabilgarri}=1{Chromium arakatzailearen eguneratze bat dago erabilgarri}other{Chromium arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
 <translation id="5643865575100044307">Chromium ixten duzunean, ezabatu beti webguneetako datuak gailutik</translation>
@@ -499,6 +507,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
 <translation id="6460614424172581323"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, fitxa taldeak erabiltzeko eskatuko zaizu.</translation>
 <translation id="6466344609055215035">Kendu kontua Chromium-etik</translation>
+<translation id="6475125381371849386">Hasi elkarrizketa-hari berri bat Bilaketa zerbitzuarekin</translation>
 <translation id="6475912303565314141">Chromium abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="6510925080656968729">Desinstalatu Chromium</translation>
 <translation id="651535675648445253">Chromium-en irekita dauden lasterbideak</translation>
@@ -513,6 +522,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="6598877126913850652">Joan Chromium-en jakinarazpen-ezarpenetara</translation>
 <translation id="6600016381025017075">Bilatu edozer orri honetan</translation>
 <translation id="6613594504749178791">Aldaketek Chromium abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Partekatu fitxa Bilaketa zerbitzuarekin}other{Partekatu # fitxa Bilaketa zerbitzuarekin}}</translation>
 <translation id="6637855549677695722"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Chromium-en segurtasun-eginbide onenak lortzeko eskatuko zaizu.</translation>
 <translation id="6637908313088374648">Orain, Windows abiaraztean exekutatzen da Chromium, berehala arakatzen has zaitezen. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="6644846457769259194">Gailua eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -527,6 +537,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio bat edo erabili Chromium bertsio berriago bat.</translation>
 <translation id="6729124504294600478">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chromium sareko eta aplikazioetako jardueretan eta lotutako Google-ren zerbitzuetan</translation>
 <translation id="6734291798041940871">Ordenagailuko erabiltzaile guztientzat dago instalatuta Chromium.</translation>
+<translation id="6737759643107005803">Itzuli <ph name="DOMAIN" /> erakundeak kudeatzen ez duen Gemini-ra</translation>
 <translation id="6742093177587589736">Laster-markak eta bestelako datuak zure gailu guztietan erabili ahal izateko, hasi saioa Chromium-en. Saioa hasi ondoren, laster-marka hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="674891594898436429">Baztertu fitxa honetako bilaketa aktiboa</translation>
 <translation id="6751374565094704799">Webguneen abiadura handitzen du Chromium-en V8 motorrarekin, baina erasoen aurrean Chromium apur bat ahulagoa da. Aktibatuta dago ezarpena.</translation>
@@ -722,6 +733,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8556055872671007529">Chromium-en eginbide eta luzapen batzuek lasterbideak dituzte. Haiek berriro aktibatzea aukera dezakezu.</translation>
 <translation id="8556420416730706394">Irudi-bilaketa erraz erabiltzeko, aingura ezazu. Horretarako, sakatu ainguratzeko botoia alboko panelaren goialdean.</translation>
 <translation id="856656450041460113">Bilatu hizkuntzen zerrendan</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Utzi fitxa Bilaketa zerbitzuarekin partekatzeari}other{Utzi # fitxa Bilaketa zerbitzuarekin partekatzeari}}</translation>
 <translation id="8576826849825683917">Erakunde batek baino gehiagok kudeatzen dute Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8619360774459241877">Chromium abiarazten…</translation>

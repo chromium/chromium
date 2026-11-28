@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Vyberte soubor a stiskněte <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Soubor nelze otevřít}few{Soubory nelze otevřít}many{Soubory nelze otevřít}other{Soubory nelze otevřít}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+ ještě 1}few{+ ještě #}many{+ ještě #}other{+ ještě #}}</translation>
 <translation id="1283126956823499975">Při nastavování zařízení se něco pokazilo</translation>
 <translation id="1285992161347843613">Najít telefon</translation>
 <translation id="1287002645302686982">Uložená plocha s názvem <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
@@ -2193,6 +2194,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6249795363855770621">Nelze označit jako dokončené. Zkuste to, až budete online.</translation>
 <translation id="625369703868467034">Stav sítě</translation>
 <translation id="6254629735336163724">Uzamknuto na šířku</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ 1 další odkaz}few{+# další odkazy}many{+# dalšího odkazu}other{+# dalších odkazů}}</translation>
 <translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>

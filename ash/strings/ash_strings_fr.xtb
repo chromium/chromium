@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">Sélectionnez le fichier, puis appuyez sur <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossible d'ouvrir le fichier}one{Impossible d'ouvrir le fichier}other{Impossible d'ouvrir les fichiers}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{+ 1 autre}one{+ # autre}other{+ # autres}}</translation>
 <translation id="1283126956823499975">Un problème est survenu lors de la configuration de l'appareil</translation>
 <translation id="1285992161347843613">Localiser le téléphone</translation>
 <translation id="1287002645302686982">Il y a déjà un bureau enregistré nommé "<ph name="DESK_TEMPLATE_NAME" />"</translation>
@@ -2191,6 +2192,7 @@ Aucun appareil connecté.</translation>
 <translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="625369703868467034">État du réseau</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{+ 1 autre lien}one{+ # autre lien}other{+ # autres liens}}</translation>
 <translation id="6259776178973198997">Actualiser les infos sur les propriétaires Wi-Fi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>

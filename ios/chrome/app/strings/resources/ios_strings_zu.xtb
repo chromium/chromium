@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">Izici ezidinga imakrofoni ngeke zisebenze</translation>
 <translation id="1622717322707146952">Khetha okuthi "Engeza ku-Google Calendar" noma "Engeza ku-Apple Calendar."</translation>
 <translation id="1629162218487290695">Qinisekisa ukuthi nguwe…</translation>
+<translation id="1633084385573994059">Ungasebenzisi leli sayithi</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">Thola izikhombisi-ndlela eziya endaweni oya kuyo ngeziqondiso ngokuphendula usebenzisa isakhi sokufuna.</translation>
 <translation id="1641113438599504367">Ukuphequlula okuphephile</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">Ungavumeli amasayithi asebenzise imakrofoni yakho</translation>
 <translation id="2104436223719117661">Usesho oluwundabuzekwayo</translation>
 <translation id="21133533946938348">Phina ithebhu</translation>
+<translation id="2113761902638026426">Vumela iGemini iye ku-<ph name="SITE_DOMAIN" />?</translation>
 <translation id="2117650889962717098">Gcina ukubhrawuza kwakho ukugodlile ngokushintshela kumodi ye-Incognito</translation>
 <translation id="2119636449201577317">Vula ku…</translation>
 <translation id="2119962645034852864">Amanye amasevisi awatholakali ku-akhawunti yakho</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">Okuhleliwe kulondoloziwe</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Le akhawunti iyalawulwa.</translation>
 <translation id="3365529507898144230">Londoloza ku-Photos</translation>
+<translation id="3371168305258344914">IGemini isizokwenza okuthile kusayithi okungenzeka inemininingwane yakho ebucayi</translation>
 <translation id="3371831930909698441">Ukuhumusha kuyatholakala. Izinketho ziyatholakala eduze kwangaphansi kwesikrini.</translation>
 <translation id="3377063233124932127">Manje amabhukhimakhi akho alondoloziwe, amaphasiwedi nokunye sekuphezulu.</translation>
 <translation id="3378214228000661758">Sungula ukhiye wokudlula wokuthi</translation>
@@ -1508,6 +1511,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="567881659373499783">Inguqulo engu-<ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Ukuze usebenzise futhi ulondoloze amaphasiwedi ku-Google Account yakho, qinisekisa ukuthi nguwe.</translation>
 <translation id="5684761169742812828">Le phasiwedi idalulwe ekwephuleni umthetho kwedatha ku-inthanethi. Uma ungenaso isikhathi sokuyishintsha njengamanje, i-Google incoma ukuthi ugcine lesi sexwayiso ukuze uzikhumbuze ngokuhamba kwesikhathi.</translation>
+<translation id="5691020463738411542">Vumelanisa okuncamelayo kokubhrawuza okuphephile kuwo wonke amadivayisi</translation>
 <translation id="5694848685995373177">Ilondolozwe ku-Drive ka-<ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Ungashintshela ukubuka isayithi okuzenzakalelayo kudeskithophu kokuthi amasethingi bese amasethingi okuqukethwe</translation>
 <translation id="5702108177581350218">Uma wabelana ngekhophi yegama lakho lomsebenzisi nephasiwedi, ilungu lomndeni wakho lingakwazi ukuwagcwalisa lisebenzisa Umphathi Wephasiwedi Ye-Google.</translation>
@@ -1586,6 +1590,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5948605885471592910">Bheka futhi ulawule yonke into oyivulile</translation>
 <translation id="5952641243319721872">Uyaqiniseka ukuthi ufuna ukulahla okukhethile?</translation>
 <translation id="5956112131836209882">Ithebhu yeqembu lethebhu. I-<ph name="TAB_INDEX_IN_GROUP" /> kokungu-<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
+<translation id="595662449352471176">Qala umsebenzi</translation>
 <translation id="595769230373966252">Sesha nge-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963694076845073027">Vula amalinki lapha ngesikhathi esizayo</translation>
 <translation id="5963939892571022323">Isixhumanisi sokokugqamisa asikwazi ukudalwa.</translation>
@@ -1806,6 +1811,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="656065428026159829">Bona okwengeziwe</translation>
 <translation id="6565899972286925956">Sungula noma yini</translation>
 <translation id="6571070086367343653">Hlela ikhadi lesikweletu</translation>
+<translation id="6571502147204686607">Zivikele kumasayithi angaphephile</translation>
 <translation id="6574092468346088891">Vula izaziso Zokuhlola Ukuphepha</translation>
 <translation id="6579867704846662339">Ungakhetha ukuvula ama-URL angenayo kwamanye ama-app ku-Incognito.</translation>
 <translation id="6585618849026997638">Ungabuyela ekhasini elibalulekile kuwe ngokwengeza ibhukhimakhi</translation>
@@ -2246,6 +2252,7 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="7921559948846049514">Khetha itimu, umbala, noma okwengeziwe kwengemuva lakho</translation>
 <translation id="792357691529995513">Azikho izinkinga ezitholiwe</translation>
 <translation id="7925108652071887026">Gcwalisa ngokuzenzakalela idatha</translation>
+<translation id="7926290435065552539">Gcina amaphasiwedi akho ephephile</translation>
 <translation id="7926975587469166629">Igama lesidlaliso lekhadi</translation>
 <translation id="792762900715361006">Thatha Isithombe noma Ividiyo</translation>
 <translation id="7927711904086083099">Ayikhethiwe</translation>
@@ -2664,6 +2671,7 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="9144230693397287797">Thola izibuyekezo zezikhumbuzi ozisethile, namathebhu asuka kwamanye amadivayisi</translation>
 <translation id="914781932147356857">Maka konke…</translation>
 <translation id="9148126808321036104">Phinda ungene ngemvume</translation>
+<translation id="914964947703922647">Buyekeza umsebenzi</translation>
 <translation id="9149866541089851383">Hlela...</translation>
 <translation id="9152637745605628097">Khetha kumatimu, imibala noma layisha isithombe</translation>
 <translation id="9153159728062222866">Yeqa Ukukopisha Nokunamathisela</translation>

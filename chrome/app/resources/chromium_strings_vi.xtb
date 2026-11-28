@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1006344083777662909">Bạn đang chia sẻ thẻ này với Tìm kiếm</translation>
 <translation id="1026101648481255140">Tiếp tục cài đặt</translation>
 <translation id="1029669172902658969">Chạy lại để cập nhật &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">Chromium khuyên bạn nên xem xét tiện ích này</translation>
@@ -84,6 +85,7 @@
 <translation id="1880495786739455486">Bạn có thể mở lại Tìm kiếm trong bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="1880677175115548835">Chọn văn bản</translation>
 <translation id="188102464690227119">Nút "Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong bảng điều khiển bên.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> – Bạn đang chia sẻ thẻ này với Tìm kiếm</translation>
 <translation id="1896836275755235458">Chromium sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt mà và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm pin<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Dịch vụ Trình cập nhật Chromium</translation>
 <translation id="1929939181775079593">Chromium không phản hồi. Chạy lại ngay bây giờ?</translation>
@@ -103,6 +105,7 @@
 <translation id="2086476982681781442">Chromium đã chặn tệp tải xuống này vì tệp này chứa nội dung lừa đảo và có thể thực hiện các thay đổi không mong muốn đối với thiết bị của bạn</translation>
 <translation id="208726765006323911">Lần tới, khi mở Chromium iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Mật khẩu và các dữ liệu khác trên Chromium mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
+<translation id="2104346008417283366">Bạn có thể chuyển sang phiên bản Gemini vốn được liên kết với Tài khoản Google của bạn và không do <ph name="DOMAIN" /> quản lý. Để chuyển đổi, bạn cần chạy lại Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2135919691573380097">Báo cáo trang web này</translation>
@@ -270,6 +273,7 @@
 <translation id="3941890832296813527">Lỗi cài đặt: Tên tệp của trình cài đặt không hợp lệ hoặc không được hỗ trợ.</translation>
 <translation id="3945058413678539331">Chromium đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="3950481960271781644">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
+<translation id="3956384805063254165">Trình duyệt được quản lý này có thể sử dụng phiên bản Gemini do <ph name="DOMAIN" /> thiết lập cho công việc. Phiên bản đó có thể tìm thông tin và đưa ra câu trả lời neo bám vào các tệp và dịch vụ của tổ chức. Để chuyển đổi, bạn cần chạy lại Chromium.</translation>
 <translation id="395904275706073188">Không thể đọc các trang được bảo vệ. Hãy thử đọc một trang khác.</translation>
 <translation id="3962647064319009959">Tìm hiểu cách Chromium bảo vệ bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
@@ -362,6 +366,7 @@
 <translation id="494490797786467921">Nhấp để đóng hộp thoại đăng nhập vào Chromium</translation>
 <translation id="4950660488495335294">Với các hồ sơ trên Chromium, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="4992938037305302429">Tài khoản của bạn trong Chromium</translation>
+<translation id="5088350632679445418">Bắt đầu chuỗi mới bằng Tìm kiếm</translation>
 <translation id="5123973130450702873">Chromium cần có quyền theo dõi cử chỉ tay của bạn</translation>
 <translation id="5141988424377517949">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
@@ -400,6 +405,7 @@
 <translation id="5473971139929175403">Chromium có thể không hoạt động đúng cách do không còn được hỗ trợ trên bản phân phối Linux này</translation>
 <translation id="5475924890392386523">Chromium đã chặn tệp tải xuống này vì tệp có thể gây hại cho tài khoản cá nhân và tài khoản mạng xã hội của bạn</translation>
 <translation id="5496810170689441661">Chromium đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Ngừng chia sẻ thẻ với Tìm kiếm}other{Ngừng chia sẻ # thẻ với Tìm kiếm}}</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>
 <translation id="5557035028197464376">Đã ghim Tìm kiếm trong Chrome vào thanh công cụ!</translation>
@@ -410,8 +416,10 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng sẽ nhận được thông tin đã lưu và nhiều dữ liệu khác trên <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
 <translation id="5580770360767802657">Sử dụng Chromium theo mặc định và ghim Chromium</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Chia sẻ thẻ với Tìm kiếm}other{Chia sẻ # thẻ với Tìm kiếm}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
+<translation id="5608863008645990586">Chuyển sang Gemini Enterprise do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="5614149501995591823">Đã có <ph name="IMPORTANT_UPDATE" />. Bạn có thể chạy lại ngay hoặc thiết lập để Chromium cập nhật vào lần tới khi màn hình vẫn bật và không được sử dụng trong <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Đã có bản cập nhật Chromium}=1{Đã có bản cập nhật Chromium}other{Đã có bản cập nhật Chromium từ # ngày trước}}</translation>
 <translation id="5643865575100044307">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chromium</translation>
@@ -505,6 +513,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6455857529632101747">Chào mừng bạn đến với hồ sơ trên Chromium</translation>
 <translation id="6460614424172581323">Lần tới, khi mở Chromium trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng nhóm thẻ.</translation>
 <translation id="6466344609055215035">Xoá tài khoản khỏi Chromium</translation>
+<translation id="6475125381371849386">Bắt đầu chuỗi mới bằng Tìm kiếm</translation>
 <translation id="6475912303565314141">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium.</translation>
 <translation id="6510925080656968729">Gỡ cài đặt Chromium</translation>
 <translation id="651535675648445253">Phím tắt mở ra trong Chromium</translation>
@@ -519,6 +528,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6598877126913850652">Chuyển đến phần cài đặt thông báo của Chromium</translation>
 <translation id="6600016381025017075">Tìm nội dung bất kỳ trên trang này</translation>
 <translation id="6613594504749178791">Các thay đổi của bạn sẽ có hiệu lực vào lần tới khi bạn chạy lại Chromium.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Chia sẻ thẻ với Tìm kiếm}other{Chia sẻ # thẻ với Tìm kiếm}}</translation>
 <translation id="6637855549677695722">Lần tới, khi mở Chromium trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng các tính năng an toàn tốt nhất của Chromium.</translation>
 <translation id="6637908313088374648">Chromium hiện khởi chạy khi Windows khởi động để bạn có thể bắt đầu duyệt web ngay lập tức. Bạn có thể tắt lựa chọn này trong phần cài đặt.</translation>
 <translation id="6644846457769259194">Đang cập nhật thiết bị của bạn (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -533,6 +543,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 Một số tính năng có thể không khả dụng. Hãy chỉ định thư mục cấu hình khác hoặc sử dụng phiên bản Chromium mới hơn.</translation>
 <translation id="6729124504294600478">Để sử dụng chế độ cá nhân hoá và các tính năng khác, hãy thêm Chromium vào mục Hoạt động trên web và ứng dụng cũng như các dịch vụ của Google được liên kết</translation>
 <translation id="6734291798041940871">Chromium đã được cài đặt cho tất cả người dùng trên máy tính của bạn.</translation>
+<translation id="6737759643107005803">Chuyển về phiên bản Gemini không do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="6742093177587589736">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
 <translation id="674891594898436429">Đóng phiên tìm kiếm đang diễn ra trong thẻ này</translation>
 <translation id="6751374565094704799">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium. Chế độ cài đặt này đang bật.</translation>
@@ -728,6 +739,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8556055872671007529">Một số tính năng và tiện ích của Chromium đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="8556420416730706394">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng; hãy nhấp vào nút Ghim ở đầu bảng điều khiển bên</translation>
 <translation id="856656450041460113">Tìm kiếm trong danh sách ngôn ngữ</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Ngừng chia sẻ thẻ với Tìm kiếm}other{Ngừng chia sẻ # thẻ với Tìm kiếm}}</translation>
 <translation id="8576826849825683917">Nhiều tổ chức quản lý Chromium</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8619360774459241877">Đang khởi động Chromium...</translation>
