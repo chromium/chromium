@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/install_attributes:test_support",
     "//components/account_id:test_support",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/user_manager:test_support",
     "//content/test:test_support",
     "//testing/gtest",

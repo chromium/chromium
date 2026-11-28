@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -31,6 +32,7 @@
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
 #include "components/enterprise/device_trust/core/common_types.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,6 +123,33 @@ InjectMockChallengeKey() {
       std::move(mock_challenge_key), challenge_key_ptr);
 }
 
+class DestructionObservingMockTpmChallengeKey
+    : public ash::attestation::MockTpmChallengeKey {
+ public:
+  explicit DestructionObservingMockTpmChallengeKey(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~DestructionObservingMockTpmChallengeKey() override {
+    std::move(on_destroy_).Run();
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
+class DestructionObservingMockTpmChallengeKeySubtle
+    : public ash::attestation::MockTpmChallengeKeySubtle {
+ public:
+  explicit DestructionObservingMockTpmChallengeKeySubtle(
+      base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~DestructionObservingMockTpmChallengeKeySubtle() override {
+    std::move(on_destroy_).Run();
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
 }  // namespace
 
 class AshAttestationServiceImplTest : public testing::Test {
@@ -167,6 +196,31 @@ class AshAttestationServiceImplTest : public testing::Test {
   TestingProfile test_profile_;
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
+
+namespace {
+
+struct ScopedIsolatedModeInitializer {
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
+};
+
+class AshAttestationServiceImplIsolatedModeTest
+    : private ScopedIsolatedModeInitializer,
+      public AshAttestationServiceImplTest {
+ protected:
+  TestingProfile* CreateIsolatedModeProfile() {
+    TestingProfile* isolated_profile =
+        TestingProfile::Builder().BuildIncognito(&test_profile_);
+    // Match `OffTheRecordProfileImpl::GetProfileUserName()`, which returns
+    // empty.
+    isolated_profile->set_profile_name(std::string());
+    EXPECT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+    EXPECT_TRUE(isolated_profile->GetProfileUserName().empty());
+    return isolated_profile;
+  }
+};
+
+}  // namespace
 
 TEST_F(AshAttestationServiceImplTest,
        BuildChallengeResponse_DeviceManagedSuccess) {
@@ -262,6 +316,193 @@ TEST_F(AshAttestationServiceImplTest, TryPrepareKey_DeviceUnmanagedSuccess) {
   auto attestation_service =
       std::make_unique<AshAttestationServiceImpl>(&test_profile_);
   attestation_service->TryPrepareKey();
+}
+
+TEST_F(AshAttestationServiceImplTest,
+       TryPrepareKey_IncognitoDoesNotResolveOriginalUserName) {
+  SetDeviceManagement(false);
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(&test_profile_);
+  // Match `OffTheRecordProfileImpl::GetProfileUserName()`, which returns empty.
+  incognito_profile->set_profile_name(std::string());
+  ASSERT_TRUE(incognito_profile->IsIncognitoProfile());
+  ASSERT_FALSE(incognito_profile->IsEnterpriseIsolatedModeProfile());
+  ASSERT_TRUE(incognito_profile->GetProfileUserName().empty());
+
+  auto [scoped_challenge_key_subtle_override, mock_challenge_key_subtle] =
+      InjectMockChallengeKeySubtle();
+  EXPECT_CALL(*mock_challenge_key_subtle,
+              StartPrepareKeyStep(
+                  ::attestation::DEVICE_TRUST_CONNECTOR, false,
+                  ::attestation::KEY_TYPE_RSA,
+                  std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix),
+                  incognito_profile, _, _))
+      .Times(1);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(incognito_profile);
+  attestation_service->TryPrepareKey();
+}
+
+TEST_F(AshAttestationServiceImplIsolatedModeTest,
+       BuildChallengeResponse_DeviceUnmanagedSuccess) {
+  SetDeviceManagement(false);
+  TestingProfile* isolated_profile = CreateIsolatedModeProfile();
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(isolated_profile);
+
+  auto proto_challenge = GetSerializedSignedChallenge();
+  auto [scoped_challenge_key_override, mock_challenge_key] =
+      InjectMockChallengeKey();
+  EXPECT_CALL(
+      *mock_challenge_key,
+      BuildResponse(
+          ::attestation::DEVICE_TRUST_CONNECTOR,
+          /*profile=*/isolated_profile, /*callback=*/_,
+          /*challenge=*/proto_challenge,
+          /*register_key=*/false,
+          /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+          /*key_name=*/
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          /*signals=*/_))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              kFakeResponse)));
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service->BuildChallengeResponseForVAChallenge(
+      proto_challenge, CreateSignals(), levels_, future.GetCallback());
+
+  VerifyAttestationFlowSuccessful(future.Get());
+}
+
+TEST_F(AshAttestationServiceImplIsolatedModeTest,
+       BuildChallengeResponse_DeviceManagedSuccess) {
+  SetDeviceManagement(true);
+  TestingProfile* isolated_profile = CreateIsolatedModeProfile();
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(isolated_profile);
+
+  auto proto_challenge = GetSerializedSignedChallenge();
+  auto [scoped_challenge_key_override, mock_challenge_key] =
+      InjectMockChallengeKey();
+  EXPECT_CALL(*mock_challenge_key,
+              BuildResponse(::attestation::ENTERPRISE_MACHINE,
+                            /*profile=*/isolated_profile, /*callback=*/_,
+                            /*challenge=*/proto_challenge,
+                            /*register_key=*/false,
+                            /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              kFakeResponse)));
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service->BuildChallengeResponseForVAChallenge(
+      proto_challenge, CreateSignals(), levels_, future.GetCallback());
+
+  VerifyAttestationFlowSuccessful(future.Get());
+}
+
+TEST_F(AshAttestationServiceImplIsolatedModeTest,
+       TryPrepareKey_DeviceUnmanagedSuccess) {
+  SetDeviceManagement(false);
+  TestingProfile* isolated_profile = CreateIsolatedModeProfile();
+
+  auto [scoped_challenge_key_subtle_override, mock_challenge_key_subtle] =
+      InjectMockChallengeKeySubtle();
+  EXPECT_CALL(
+      *mock_challenge_key_subtle,
+      StartPrepareKeyStep(
+          ::attestation::DEVICE_TRUST_CONNECTOR, false,
+          ::attestation::KEY_TYPE_RSA,
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          isolated_profile, _, _))
+      .Times(1);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(isolated_profile);
+  attestation_service->TryPrepareKey();
+}
+
+TEST_F(AshAttestationServiceImplIsolatedModeTest,
+       DestroyServiceCancelsPendingChallenge) {
+  SetDeviceManagement(false);
+  TestingProfile* isolated_profile = CreateIsolatedModeProfile();
+
+  bool challenger_destroyed = false;
+  auto mock_challenge_key =
+      std::make_unique<DestructionObservingMockTpmChallengeKey>(
+          base::BindLambdaForTesting(
+              [&challenger_destroyed]() { challenger_destroyed = true; }));
+  auto* mock_challenge_key_ptr = mock_challenge_key.get();
+  TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting
+      scoped_challenge_key_override(std::move(mock_challenge_key));
+
+  auto proto_challenge = GetSerializedSignedChallenge();
+  EXPECT_CALL(
+      *mock_challenge_key_ptr,
+      BuildResponse(
+          ::attestation::DEVICE_TRUST_CONNECTOR,
+          /*profile=*/isolated_profile, /*callback=*/_,
+          /*challenge=*/proto_challenge,
+          /*register_key=*/false,
+          /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+          /*key_name=*/
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          /*signals=*/_))
+      .Times(1);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(isolated_profile);
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service->BuildChallengeResponseForVAChallenge(
+      proto_challenge, CreateSignals(), levels_, future.GetCallback());
+
+  EXPECT_FALSE(challenger_destroyed);
+  attestation_service.reset();
+  EXPECT_TRUE(challenger_destroyed);
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(AshAttestationServiceImplIsolatedModeTest,
+       DestroyServiceCancelsPendingKeyPreparation) {
+  SetDeviceManagement(false);
+  TestingProfile* isolated_profile = CreateIsolatedModeProfile();
+
+  bool challenger_destroyed = false;
+  auto mock_challenge_key_subtle =
+      std::make_unique<DestructionObservingMockTpmChallengeKeySubtle>(
+          base::BindLambdaForTesting(
+              [&challenger_destroyed]() { challenger_destroyed = true; }));
+  auto* mock_challenge_key_subtle_ptr = mock_challenge_key_subtle.get();
+  TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting
+      scoped_challenge_key_subtle_override(
+          std::move(mock_challenge_key_subtle));
+
+  EXPECT_CALL(
+      *mock_challenge_key_subtle_ptr,
+      StartPrepareKeyStep(
+          ::attestation::DEVICE_TRUST_CONNECTOR, false,
+          ::attestation::KEY_TYPE_RSA,
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          isolated_profile, _, _))
+      .Times(1);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(isolated_profile);
+  attestation_service->TryPrepareKey();
+
+  EXPECT_FALSE(challenger_destroyed);
+  attestation_service.reset();
+  EXPECT_TRUE(challenger_destroyed);
 }
 
 }  // namespace enterprise_connectors

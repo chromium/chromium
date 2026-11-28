@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -57,6 +58,10 @@ DTAttestationResult ToAttestationResult(TpmChallengeKeyResultCode code) {
 AshAttestationServiceImpl::Username GetUserNameForKeyName(Profile* profile) {
   if (!profile) {
     return AshAttestationServiceImpl::Username();
+  }
+
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    profile = profile->GetOriginalProfile();
   }
 
   return AshAttestationServiceImpl::Username(profile->GetProfileUserName());
@@ -108,23 +113,26 @@ void AshAttestationServiceImpl::TryPrepareKey() {
   auto tpm_key_challenge_subtle =
       ash::attestation::TpmChallengeKeySubtleFactory::Create();
   auto* tpm_key_challenge_subtle_ptr = tpm_key_challenge_subtle.get();
+  const uint64_t request_id = ++next_request_id_;
+  pending_key_preparations_.emplace(request_id,
+                                    std::move(tpm_key_challenge_subtle));
   tpm_key_challenge_subtle_ptr->StartPrepareKeyStep(
       flow_type, /*register_key=*/false,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name_for_spkac=*/key_name.value(), profile_,
       base::BindOnce(&AshAttestationServiceImpl::KeyPrepareCallback,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(tpm_key_challenge_subtle)),
+                     weak_factory_.GetWeakPtr(), request_id),
       std::nullopt);
 }
 
 void AshAttestationServiceImpl::KeyPrepareCallback(
-    std::unique_ptr<ash::attestation::TpmChallengeKeySubtle> tpm_key_challenger,
+    uint64_t request_id,
     const ash::attestation::TpmChallengeKeyResult& result) {
   if (!result.IsSuccess()) {
     LOG(ERROR) << "Key preparation failed with error: "
                << result.GetErrorMessage();
   }
+  pending_key_preparations_.erase(request_id);
 }
 
 void AshAttestationServiceImpl::BuildChallengeResponseForVAChallenge(
@@ -143,17 +151,20 @@ void AshAttestationServiceImpl::BuildChallengeResponseForVAChallenge(
   KeyName key_name = GetKeyName(flow_type, GetUserNameForKeyName(profile_));
 
   // Using flow type DEVICE_TRUST_CONNECTOR for attestation is currently only
-  // supported inside a session.
+  // supported inside a session (including Enterprise Isolated Mode profiles).
   CHECK(flow_type != ::attestation::DEVICE_TRUST_CONNECTOR ||
-        profile_ && profile_->IsRegularProfile());
+        (profile_ && (profile_->IsRegularProfile() ||
+                      profile_->IsEnterpriseIsolatedModeProfile())));
 
   auto tpm_key_challenger =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
+  const uint64_t request_id = ++next_request_id_;
+  pending_challenges_.emplace(request_id, std::move(tpm_key_challenger));
   tpm_key_challenger_ptr->BuildResponse(
       base::Seconds(15), flow_type, profile_,
       base::BindOnce(&AshAttestationServiceImpl::ReturnResult,
-                     weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
+                     weak_factory_.GetWeakPtr(), request_id,
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
@@ -162,8 +173,7 @@ void AshAttestationServiceImpl::BuildChallengeResponseForVAChallenge(
 }
 
 void AshAttestationServiceImpl::ReturnResult(
-    std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
-        tpm_key_challenger,
+    uint64_t request_id,
     AttestationCallback callback,
     const ash::attestation::TpmChallengeKeyResult& result) {
   std::string encoded_response;
@@ -173,10 +183,11 @@ void AshAttestationServiceImpl::ReturnResult(
   } else {
     LOG(ERROR) << "Device Trust TPM error: " << result.GetErrorMessage();
   }
-  std::move(callback).Run(
-      {encoded_response, encoded_response.empty()
-                             ? ToAttestationResult(result.result_code)
-                             : DTAttestationResult::kSuccess});
+  const DTAttestationResult result_code =
+      encoded_response.empty() ? ToAttestationResult(result.result_code)
+                               : DTAttestationResult::kSuccess;
+  pending_challenges_.erase(request_id);
+  std::move(callback).Run({encoded_response, result_code});
 }
 
 }  // namespace enterprise_connectors

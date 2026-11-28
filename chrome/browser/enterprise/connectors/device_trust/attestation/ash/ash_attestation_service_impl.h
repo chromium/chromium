@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_IMPL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -50,23 +52,29 @@ class AshAttestationServiceImpl : public AshAttestationService {
       AttestationCallback callback) override;
 
  private:
-  // Logs an error if the key preparation failed.
+  // Logs an error if the key preparation failed and removes the completed
+  // request from `pending_key_preparations_`.
   void KeyPrepareCallback(
-      std::unique_ptr<ash::attestation::TpmChallengeKeySubtle>
-          tpm_key_challenger,
+      uint64_t request_id,
       const ash::attestation::TpmChallengeKeyResult& result);
 
   // Runs the `callback` which resumes the navigation with the `result`
-  // challenge response. In case the challenge response was not successfully
-  // built. An empty challenge response will be used. `tpm_key_challenger` is
-  // also forwarded to ensure the instance lives as long as the callback runs.
-  void ReturnResult(
-      std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
-          tpm_key_challenger,
-      AttestationCallback callback,
-      const ash::attestation::TpmChallengeKeyResult& result);
+  // challenge response and removes the completed request from
+  // `pending_challenges_`. In case the challenge response was not successfully
+  // built, an empty challenge response will be used.
+  void ReturnResult(uint64_t request_id,
+                    AttestationCallback callback,
+                    const ash::attestation::TpmChallengeKeyResult& result);
 
   const raw_ptr<Profile> profile_;
+
+  uint64_t next_request_id_ = 0;
+  base::flat_map<uint64_t,
+                 std::unique_ptr<ash::attestation::TpmChallengeKeySubtle>>
+      pending_key_preparations_;
+  base::flat_map<uint64_t,
+                 std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>>
+      pending_challenges_;
 
   base::WeakPtrFactory<AshAttestationServiceImpl> weak_factory_{this};
 };
