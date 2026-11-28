@@ -47,20 +47,17 @@ control *candidate* only if one of the following is true:
 -   the policy-controlled feature [`autofill`] is enabled in the *candidate*'s
     [node document].
 
-Starting in Chrome 153 (October 2026), autofill suggestions will include a
-[warning] if they'd fill a field in whose [node document] [`autofill`] is
-disabled.
-
-In the long term, the first bullet point (and the warnings) will be removed.
+In the long term, the first bullet point will be removed.
 
 Note that the above conditions are necessary but not sufficient for Chrome to
 autofill a field. In particular, Chrome does not fill credentials across frames.
 Chrome also avoids autofilling sensitive data, such as credit card numbers,
-across origins.
+across origins (from the perspective of the autofill's origin; see valid
+cross-origin examples [below](#the-rationale)).
 
 The terminology used above is defined in the [appendix](#appendix-terminology).
 
-The policy is implemented in [FormForest::GetRendererFormsOfBrowserForm()].
+The policy is implemented in [AutofillDriverRouter::IsSafeToFill()].
 
 ## The rationale
 
@@ -105,7 +102,7 @@ The policy-controlled feature *[`autofill`] is enabled in a document* if the
 [Is feature enabled in document for origin?] algorithm on [`autofill`], the
 document, and the document's [origin] returns `Enabled`.
 
-[FormForest::GetRendererFormsOfBrowserForm()]: https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/form_forest.cc;l=618-623;drc=94fbbc584c5d42f0097a9cb28b355853d2b34658
+[AutofillDriverRouter::IsSafeToFill()]: https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/foundations/autofill_driver_router.cc;l=83-120
 [active document]: https://html.spec.whatwg.org/#nav-document
 [Is feature enabled in document for origin?]: https://w3c.github.io/webappsec-permissions-policy/#algo-is-feature-enabled
 [focused]: https://html.spec.whatwg.org/#focused
@@ -117,4 +114,3 @@ document, and the document's [origin] returns `Enabled`.
 [`autofill`]: https://github.com/explainers-by-googlers/safe-text-input/blob/main/autofill.md
 [top-level traversable]: https://html.spec.whatwg.org/#top-level-traversable
 [value]: https://html.spec.whatwg.org/#concept-fe-value
-[warning]: https://github.com/explainers-by-googlers/safe-text-input/raw/main/images/warning-autofill.png
