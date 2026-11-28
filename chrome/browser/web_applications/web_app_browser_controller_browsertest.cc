@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -108,8 +109,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
   EXPECT_FALSE(controller->ShouldShowCustomTabBar());
 }
 
+// TODO(crbug.com/591069534): Flaking with SIGSEGV on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToolbarAppearsOnReinstallNarrowing \
+  DISABLED_ToolbarAppearsOnReinstallNarrowing
+#else
+#define MAYBE_ToolbarAppearsOnReinstallNarrowing \
+  ToolbarAppearsOnReinstallNarrowing
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
-                       ToolbarAppearsOnReinstallNarrowing) {
+                       MAYBE_ToolbarAppearsOnReinstallNarrowing) {
   webapps::ManifestId manifest_id = webapps::ManifestId(
       embedded_test_server()->GetURL("/web_apps/scope_updating/"));
   GURL start_url =
