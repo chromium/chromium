@@ -1011,8 +1011,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Similar to SearchTabHidden, but the navigation starts out with a non-SRP
 // URL, that later redirects to SRP.
-// TODO(crbug.com/372878281): Re-enable on Mac builds.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372878281, crbug.com/591046646): Flaky on Mac and Win builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_NonSRPRedirectToSRP_Hidden DISABLED_NonSRPRedirectToSRP_Hidden
 #else
 #define MAYBE_NonSRPRedirectToSRP_Hidden NonSRPRedirectToSRP_Hidden
