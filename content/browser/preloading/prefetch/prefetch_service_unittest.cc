@@ -5352,6 +5352,123 @@ TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
 }
 
+// Tests that explicit `prefetch_loader_timeout` bounds a hung prefetch ahead of
+// an imminent navigation without enabling the default speculative timeout.
+//
+// Scenario:
+//
+// - Configure `prefetch_loader_timeout` to 5s (shorter than `kPrefetchTimeout`
+//   = 10s) and leave `use_prefetch_loader_timeout` false.
+// - Start an ahead-of-imminent-navigation prefetch and block navigation on it.
+// - Verify the navigation stays blocked at 4s, unblocks when the loader times
+//   out at 5s, and records 5s in `BlockUntilHeadDuration2`.
+TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
+       PrefetchLoaderTimeout_TimesOut) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPrefetchAheadOfImminentNavigation,
+      {
+          {"force_wait_no_vary_search_header_policy", "UseIfNoHint"},
+          {"prefetch_loader_timeout", "5s"},
+      });
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
+                                   /*use_prefetch_proxy=*/false);
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"), prefetch_type,
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_imminent_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Seconds(4));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+
+  const std::string histogram_suffix = GetMetricsSuffixTriggerTypeAndEagerness(
+      prefetch_type, test::kPreloadingEmbedderHistogramSuffixForTesting);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
+      base::Seconds(5), 1);
+}
+
+// Tests that a positive `prefetch_loader_timeout` takes precedence over
+// `use_prefetch_loader_timeout`.
+//
+// Scenario:
+//
+// - Set both `use_prefetch_loader_timeout` to true (`kPrefetchTimeout` = 10s)
+//   and `prefetch_loader_timeout` to 15s (longer than `kPrefetchTimeout`).
+// - Start an ahead-of-imminent-navigation prefetch and block navigation on it.
+// - Verify the navigation stays blocked at 10s and at `15s - 1ms`, then
+//   unblocks when the loader times out at 15s and records 15s in
+//   `BlockUntilHeadDuration2`.
+TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
+       PrefetchLoaderTimeout_OverridesUsePrefetchLoaderTimeout) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPrefetchAheadOfImminentNavigation,
+      {
+          {"force_wait_no_vary_search_header_policy", "UseIfNoHint"},
+          {"use_prefetch_loader_timeout", "true"},
+          {"prefetch_loader_timeout", "15s"},
+      });
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
+                                   /*use_prefetch_proxy=*/false);
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"), prefetch_type,
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_imminent_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kPrefetchTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Seconds(15) -
+                                    base::Milliseconds(kPrefetchTimeout) -
+                                    base::Milliseconds(1));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+
+  const std::string histogram_suffix = GetMetricsSuffixTriggerTypeAndEagerness(
+      prefetch_type, test::kPreloadingEmbedderHistogramSuffixForTesting);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration2.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
+      base::Seconds(15), 1);
+}
+
 // Tests that a prefetch ahead of an imminent navigation gets burst scheduler
 // priority (`kBurstAheadOfImminentNavigation`) with active set size limit
 // `base + 1`.

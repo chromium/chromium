@@ -90,16 +90,26 @@ bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
 
 base::TimeDelta PrefetchTimeoutDuration(
     const PrefetchRequest& prefetch_request) {
-  // Don't set a timeout for a prefetch ahead of an imminent navigation, for the
-  // same reason as `PrefetchBlockUntilHeadTimeout()`. Note that this timeout
-  // keeps running while a navigation is blocked until the head is received, so
-  // disabling only the block-until-head timeout is not enough.
+  // Don't set a timeout for a prefetch ahead of an imminent navigation by
+  // default, for the same reason as `PrefetchBlockUntilHeadTimeout()`. Note
+  // that this timeout keeps running while a navigation is blocked until the
+  // head is received, so disabling only the block-until-head timeout is not
+  // enough.
   if (base::FeatureList::IsEnabled(
-          features::kPrefetchAheadOfImminentNavigation) &&
-      prefetch_request.is_ahead_of_imminent_navigation() &&
-      !features::kPrefetchAheadOfImminentNavigationUsePrefetchLoaderTimeout
-           .Get()) {
-    return base::Seconds(0);
+          features::kPrefetchAheadOfImminentNavigation)) {
+    if (prefetch_request.is_ahead_of_imminent_navigation()) {
+      const base::TimeDelta custom_timeout =
+          features::kPrefetchAheadOfImminentNavigationPrefetchLoaderTimeout
+              .Get();
+      if (custom_timeout.is_positive()) {
+        return custom_timeout;
+      }
+
+      if (!features::kPrefetchAheadOfImminentNavigationUsePrefetchLoaderTimeout
+               .Get()) {
+        return base::Seconds(0);
+      }
+    }
   }
 
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
