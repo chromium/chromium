@@ -1459,6 +1459,8 @@ source_set("browser") {
     "preloading/prefetch/pre_prefetch_container.h",
     "preloading/prefetch/pre_prefetch_handle_impl.cc",
     "preloading/prefetch/pre_prefetch_handle_impl.h",
+    "preloading/prefetch/pre_prefetch_service_core.cc",
+    "preloading/prefetch/pre_prefetch_service_core.h",
     "preloading/prefetch/pre_prefetch_service_impl.cc",
     "preloading/prefetch/pre_prefetch_service_impl.h",
     "preloading/prefetch/prefetch_canary_checker.cc",

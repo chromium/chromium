@@ -25265,7 +25265,7 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/preloading/prefetch/pre_prefetch_service_impl.h:PrePrefetchStartResult) -->
+<!-- LINT.ThenChange(//content/browser/preloading/prefetch/pre_prefetch_service_core.h:PrePrefetchStartResult) -->
 
 <enum name="PrerenderBackNavigationEligibility">
   <int value="0" label="Eligible"/>

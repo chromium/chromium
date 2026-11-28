@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/browser_context_impl.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_service_core.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"

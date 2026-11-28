@@ -1,0 +1,270 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/preloading/prefetch/pre_prefetch_service_core.h"
+
+#include <atomic>
+
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/pre_prefetch_handle.h"
+#include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+
+namespace content {
+
+namespace {
+static std::atomic<bool>
+    g_should_prohibit_url_loader_factory_refresh_for_testing{false};
+
+void RecordPrePrefetchStartResultHistogram(PrePrefetchStartResult result) {
+  base::UmaHistogramEnumeration("Preloading.Prefetch.PrePrefetch.StartResult",
+                                result);
+}
+
+}  // namespace
+
+network::HttpRequestHeadersUpdateParams
+PreCalculatePrePrefetchHeadersOnUIThread(
+    BrowserContext* browser_context,
+    const PrePrefetchPreCalculatedHeadersKey& key) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  TRACE_EVENT("loading", "PreCalculatePrePrefetchHeadersOnUIThread");
+  // Create a tentative `PrefetchRequest` to pre-calculate headers based on
+  // `PrePrefetchPreCalculatedHeadersKey`.
+  // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
+  // calculate the header is redundant and ambiguous since some members do not
+  // affect the header construction. Once we sort out the general
+  // `PrefetchRequest` subset that is required for header construction, we can
+  // create and pass it to the utility function instead.
+  std::unique_ptr<const PrefetchRequest> tentative_prefetch_request =
+      PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
+          browser_context, key.origin.GetURL(),
+          PrefetchType(PreloadingTriggerType::kEmbedder,
+                       /*use_prefetch_proxy=*/false),
+          /*histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
+          key.javascript_enabled,
+          /*referring_origin=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
+          /*priority=*/std::nullopt,
+          /*preload_pipeline_info=*/
+          PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+          /*attempt=*/nullptr, /*additional_headers=*/{},
+          /*request_status_listener=*/nullptr,
+          /*ttl=*/PrefetchContainerDefaultTtlInPrefetchService(),
+          /*should_append_variations_header=*/
+          key.should_append_variations_header,
+          /*should_disable_block_until_head_timeout=*/false);
+
+  // We can safely assume `is_first_party_context_for_variations_header` to be
+  // `true` here because currently PrePrefetches always have no initiator
+  // origin. See `variations::IsFirstPartyContext()` for the details.
+  // Note: if `should_append_variations_header` is `false`, variations header
+  // will not be created anyway, so this value won't matter.
+  // TODO(crbug.com/470242977): Revisit once we set `request_initiator`.
+  const bool is_first_party_context_for_variations_header = true;
+
+  return PrepareInitialHeadersForPrefetchPhase2(
+      key.origin.GetURL(), *tentative_prefetch_request,
+      is_first_party_context_for_variations_header);
+
+  // If we will have additional UI thread dependent headers other than
+  // prefetch standard ones above, that should also be considered here,
+  // including the one that can come from embedders.
+}
+
+PrePrefetchServiceCore::PrePrefetchServiceCore(
+    base::WeakPtr<BrowserContext> browser_context,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory,
+    std::map<PrePrefetchPreCalculatedHeadersKey,
+             network::HttpRequestHeadersUpdateParams>
+        ui_thread_pre_calculated_headers_map,
+    std::vector<PrePrefetchUpdateHeadersCallback>
+        non_ui_thread_update_headers_callbacks)
+    : browser_context_weak_on_ui_thread_(std::move(browser_context)),
+      ui_thread_pre_calculated_headers_map_(
+          std::move(ui_thread_pre_calculated_headers_map)),
+      non_ui_thread_update_headers_callbacks_(
+          std::move(non_ui_thread_update_headers_callbacks)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+  TRACE_EVENT("loading", "PrePrefetchServiceCore::PrePrefetchServiceCore");
+
+  UpdateURLLoaderFactory(std::move(pending_factory));
+}
+
+PrePrefetchServiceCore::~PrePrefetchServiceCore() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void PrePrefetchServiceCore::StartPrePrefetchRequest(
+    base::PassKey<PrePrefetchServiceImpl> pass_key,
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchHandle>* out_handle,
+    base::ScopedClosureRunner on_done_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(prefetch_request);
+
+  TRACE_EVENT("loading", "PrePrefetchServiceCore::StartPrePrefetchRequest",
+              "url", prefetch_request->key().url());
+
+  // Handle cases where `factory_` is unexpectedly disconnected, including
+  // associated `NetworkContext` crash/restart.
+  if (!factory_.is_connected()) {
+    // Refreshing it requires a thread hop to the UI thread, which would
+    // delay this request and nullify the benefit of PrePrefetch. Instead,
+    // we fail the current request quickly. Refresh is handled by the
+    // disconnect handler of `factory_`.
+    RecordPrePrefetchStartResultHistogram(
+        PrePrefetchStartResult::kFailedURLLoaderFactoryDisconnected);
+    *out_handle = nullptr;
+    return;
+  }
+
+  const network::HttpRequestHeadersUpdateParams*
+      ui_thread_pre_calculated_headers = nullptr;
+  PrePrefetchPreCalculatedHeadersKey key;
+  key.origin = url::Origin::Create(prefetch_request->key().url());
+  key.javascript_enabled = prefetch_request->is_javascript_enabled();
+  key.should_append_variations_header =
+      prefetch_request->should_append_variations_header();
+  if (auto it = ui_thread_pre_calculated_headers_map_.find(key);
+      it != ui_thread_pre_calculated_headers_map_.end()) {
+    ui_thread_pre_calculated_headers = &it->second;
+  } else {
+    if (features::kPrefetchOffTheMainThreadUpdateMissingHeaderCache.Get()) {
+      // Refreshing the headers requires a thread hop to the UI thread, which
+      // would delay this request and nullify the benefit of PrePrefetch.
+      // Instead, we fail the current request quickly and asynchronously
+      // trigger pre-calculation for future requests.
+      PostPreCalculateHeadersToUIThread(key);
+    }
+    RecordPrePrefetchStartResultHistogram(
+        PrePrefetchStartResult::kFailedPreCalculatedHeadersNotMatched);
+    *out_handle = nullptr;
+    return;
+  }
+
+  // This `Clone()` doesn't interact with the UI thread and thus isn't
+  // blocked by the UI thread. This is because `factory_` represents a
+  // `URLLoaderFactory` that is directly connected to the network service, and
+  // thus the counterpart of this `Clone()` call is entirely processed by the
+  // network service.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> new_factory;
+  factory_->Clone(new_factory.InitWithNewPipeAndPassReceiver());
+
+  auto pre_prefetch_container = PrePrefetchContainer::CreateAndStart(
+      pass_key, std::move(prefetch_request), std::move(new_factory),
+      *ui_thread_pre_calculated_headers,
+      non_ui_thread_update_headers_callbacks_);
+  RecordPrePrefetchStartResultHistogram(PrePrefetchStartResult::kStarted);
+
+  // ----------------------------------------------------------------------
+  // Epilogue
+  //
+  // This is called via `AsyncCall()` to be run on the `core_task_runner_`.
+  // Thus, we set `out_handle` here, which is a substantial return value of
+  // this function. `on_done_runner` will automatically signal the event
+  // upon destruction.
+  *out_handle = std::make_unique<PrePrefetchHandleImpl>(
+      std::move(pre_prefetch_container));
+}
+
+// static
+void PrePrefetchServiceCore::
+    SetShouldProhibitURLLoaderFactoryRefreshForTesting(  // IN-TEST
+        bool should_prohibit) {
+  g_should_prohibit_url_loader_factory_refresh_for_testing.store(
+      should_prohibit);
+}
+
+void PrePrefetchServiceCore::PostGetNewURLLoaderFactoryToUIThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (g_should_prohibit_url_loader_factory_refresh_for_testing.load()) {
+    CHECK_IS_TEST();
+    return;
+  }
+  content::GetUIThreadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<BrowserContext> browser_context) {
+            CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+            return (browser_context && !browser_context->ShutdownStarted())
+                       ? CreatePrePrefetchURLLoaderFactoryOnUIThread(
+                             browser_context.get())
+                       : mojo::PendingRemote<
+                             network::mojom::URLLoaderFactory>();
+          },
+          browser_context_weak_on_ui_thread_),
+      base::BindOnce(&PrePrefetchServiceCore::UpdateURLLoaderFactory,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PrePrefetchServiceCore::UpdateURLLoaderFactory(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!factory) {
+    return;
+  }
+
+  factory_.reset();
+  factory_.Bind(std::move(factory));
+  factory_.set_disconnect_handler(base::BindRepeating(
+      &PrePrefetchServiceCore::PostGetNewURLLoaderFactoryToUIThread,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PrePrefetchServiceCore::PostPreCalculateHeadersToUIThread(
+    const PrePrefetchPreCalculatedHeadersKey& key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Avoid posting multiple tasks before the previous one has completed by
+  // `UpdatePreCalculatedHeaders()` for the same key.
+  if (!pending_pre_calculate_headers_keys_.insert(key).second) {
+    return;
+  }
+  content::GetUIThreadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<BrowserContext> browser_context,
+             PrePrefetchPreCalculatedHeadersKey key)
+              -> std::optional<network::HttpRequestHeadersUpdateParams> {
+            CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+            return (browser_context && !browser_context->ShutdownStarted())
+                       ? std::make_optional(
+                             PreCalculatePrePrefetchHeadersOnUIThread(
+                                 browser_context.get(), key))
+                       : std::nullopt;
+          },
+          browser_context_weak_on_ui_thread_, key),
+      base::BindOnce(&PrePrefetchServiceCore::UpdatePreCalculatedHeaders,
+                     weak_ptr_factory_.GetWeakPtr(), key));
+}
+
+void PrePrefetchServiceCore::UpdatePreCalculatedHeaders(
+    PrePrefetchPreCalculatedHeadersKey key,
+    std::optional<network::HttpRequestHeadersUpdateParams>
+        headers_update_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(pending_pre_calculate_headers_keys_.contains(key));
+  pending_pre_calculate_headers_keys_.erase(key);
+  if (!headers_update_params) {
+    return;
+  }
+  ui_thread_pre_calculated_headers_map_[std::move(key)] =
+      std::move(*headers_update_params);
+}
+
+}  // namespace content

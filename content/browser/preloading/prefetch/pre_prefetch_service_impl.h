@@ -24,42 +24,6 @@ namespace content {
 class PrefetchRequest;
 class PrePrefetchServiceCore;
 
-// The subset of `PrefetchRequest` members that `PrePrefetchService` has to
-// distinguish when comparing the pre-calculated headers. There are other
-// `PrefetchRequest` members that can affect header construction generally
-// (e.g., `browser_context`, `prefetch_type`, `referring_web_contents`), but
-// they are not included here since they are fixed values among the requests
-// handled by this `PrePrefetchService. `additional_headers` are not included in
-// the pre-calculation (see `MakeInitialResourceRequestForPrePrefetch()`), so it
-// is also omitted here.
-struct PrePrefetchPreCalculatedHeadersKey {
-  url::Origin origin;
-  bool javascript_enabled = false;
-  bool should_append_variations_header = true;
-
-  bool operator<(const PrePrefetchPreCalculatedHeadersKey& other) const {
-    return std::tie(origin, javascript_enabled,
-                    should_append_variations_header) <
-           std::tie(other.origin, other.javascript_enabled,
-                    other.should_append_variations_header);
-  }
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(PrePrefetchStartResult)
-enum class PrePrefetchStartResult {
-  // PrePrefetch has been successfully started.
-  kStarted = 0,
-  // PrePrefetch failed because the `URLLoaderFactory` was disconnected.
-  kFailedURLLoaderFactoryDisconnected = 1,
-  // PrePrefetch failed because the requested origin did not match the
-  // pre-calculated headers cache.
-  kFailedPreCalculatedHeadersNotMatched = 2,
-  kMaxValue = kFailedPreCalculatedHeadersNotMatched,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrePrefetchStartResult)
-
 // Responsible for starting PrePrefetches based on an associated
 // `BrowserContext` given via ctor.
 //
