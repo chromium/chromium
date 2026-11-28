@@ -2596,6 +2596,7 @@
 <translation id="3771721161825963003">Табыг босоогоор харуулах</translation>
 <translation id="3771851622616482156">Таныг энэ сайтаас гаргах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="3772951945682043324">Саяхан хаасан ямар ч таб байхгүй</translation>
+<translation id="3775389358290351377">Үйлчилгээ үзүүлэгчийг сэлгэх (Tab)</translation>
 <translation id="3775432569830822555">SSL серверийн сертификат</translation>
 <translation id="3776508619697147021">Сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
 <translation id="3776796446459804932">Энэ өргөтгөл нь Chrome Web Store-ын бодлогыг зөрчиж байна.</translation>
@@ -3060,6 +3061,7 @@
 <translation id="429530814437327574">Өрсөн байдлаар харуулах</translation>
 <translation id="4296632172536745000">Таны энэ сайтын эх нууц үгийг олон нийтийн өгөгдлийн зөрчлөөс оллоо. Та <ph name="DATE" />-нд <ph name="BRAND" />-с танд зориулж нууц үгийг тань автоматаар өөрчлөхийг хүссэн.</translation>
 <translation id="42981349822642051">Өргөтгөх</translation>
+<translation id="4298381759837744019">Тохиргооноос “<ph name="QUERY" />”-г хайх</translation>
 <translation id="4298660926525614540">Салгах боломжтой хадгалах сангийн нэрс</translation>
 <translation id="4299022904780065004">Шинэ &amp;Нууцлалтай цонх</translation>
 <translation id="4301231341924904092">Миний өмнөөс үүнийг өөрчил</translation>
@@ -4299,6 +4301,7 @@
 <translation id="5689516760719285838">Байршил</translation>
 <translation id="568984110402742489">Санал хүсэлт илгээх боломжгүй</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
+<translation id="5693100627879528952">Хайлтын систем, сайтын хайлтын тохиргооны талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5693255400847650006">Микрофоныг ашиглаж байна</translation>
 <translation id="5693806089748511108">Таны ур чадварууд</translation>
 <translation id="5694689722959820210">Табын бүлэг үүсгэх</translation>
