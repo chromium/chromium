@@ -108,7 +108,6 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
 
  protected:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
  private:
   void ChipCallback();

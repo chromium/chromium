@@ -31,7 +31,6 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/animation.h"
@@ -222,6 +221,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   label_->SetMultiLine(false);
   label_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
+  label_->SetEnabledColor(ui::kColorSysOnSurface);
   label_->SetProperty(views::kElementIdentifierKey, kAnchoredMessageLabelId);
 
   expand_button_ = top_row_->AddChildView(std::make_unique<MultiIconButton>(
@@ -249,7 +249,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
           features::IsRoundedIconsEnabled()
               ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon,
-          ui::kColorIcon, kAnchoredMessageIconSize));
+          ui::kColorSysOnSurfaceSubtle, kAnchoredMessageIconSize));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
   close_button_->SetProperty(views::kMarginsKey,
                              kAnchoreMessageActionIconMarginsInset);
@@ -265,10 +265,10 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
       l10n_util::GetStringUTF16(IDS_ANCHORED_MESSAGE_MENU_TOOLTIP));
   menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kMoreVertIcon
-                                         : kBrowserToolsChromeRefreshOldIcon,
-                                     ui::kColorIcon, kAnchoredMessageIconSize));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                            : kBrowserToolsChromeRefreshOldIcon,
+          ui::kColorSysOnSurfaceSubtle, kAnchoredMessageIconSize));
   menu_button_->SetProperty(views::kMarginsKey,
                             kAnchoreMessageActionIconMarginsInset);
   menu_button_->SetProperty(views::kElementIdentifierKey,
@@ -309,8 +309,6 @@ void AnchoredMessageBubbleView::UpdateContent(
       gfx::Insets::TLBR(
           0, add_padding_before_chip ? kAnchoredMessageSpaceLeftOfChip : 0, 0,
           0));
-
-  OnThemeChanged();
 }
 
 void AnchoredMessageBubbleView::AddedToWidget() {
@@ -415,38 +413,6 @@ void AnchoredMessageBubbleView::CloseWidget() {
   views::Widget* widget = GetWidget();
   if (widget && !widget->IsClosed()) {
     widget->Close();
-  }
-}
-
-void AnchoredMessageBubbleView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const ui::ColorProvider* color_provider = GetColorProvider();
-
-  if (!color_provider) {
-    return;
-  }
-
-  label_->SetEnabledColor(color_provider->GetColor(ui::kColorSysOnSurface));
-
-  if (close_button_) {
-    close_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled()
-                ? vector_icons::kCloseIcon
-                : vector_icons::kCloseChromeRefreshOldIcon,
-            color_provider->GetColor(ui::kColorSysOnSurfaceSubtle),
-            kAnchoredMessageIconSize));
-  }
-  if (menu_button_) {
-    menu_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            ::features::IsRoundedIconsEnabled()
-                ? kMoreVertIcon
-                : kBrowserToolsChromeRefreshOldIcon,
-            color_provider->GetColor(ui::kColorSysOnSurfaceSubtle),
-            kAnchoredMessageIconSize));
   }
 }
 
