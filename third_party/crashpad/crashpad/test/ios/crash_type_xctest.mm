@@ -465,13 +465,7 @@ bool HasMacOSBrokeDYLDTaskInfo() {
   XCTAssertFalse(reader.Pop(ringBufferEntry));
 }
 
-// TODO(crbug.com/590805901): Fails on devices.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testCrashWithExtraMemory DISABLED_testCrashWithExtraMemory
-#else
-#define MAYBE_testCrashWithExtraMemory testCrashWithExtraMemory
-#endif
-- (void)MAYBE_testCrashWithExtraMemory {
+- (void)testCrashWithExtraMemory {
 #if TARGET_OS_SIMULATOR
   // This test will fail on <iOS17 simulators when running on macOS >=14.3 or
   // <iOS18 simulators when running on macOS >=15.4 due to a bug in Simulator.
