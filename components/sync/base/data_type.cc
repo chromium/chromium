@@ -1409,11 +1409,10 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
 
 DataType GetDataTypeFromSpecificsFieldNumber(int field_number) {
   static constexpr auto kFieldNumberToType =
-      []<size_t... I>(std::index_sequence<I...>) {
-        return base::MakeFixedFlatMap<int, DataType>(
-            {{kDataTypeInfoTable[I].specifics_field_number,
-              kDataTypeInfoTable[I].type}...});
-      }(std::make_index_sequence<GetNumDataTypes()>());
+      base::MakeFixedFlatMap<int, DataType>(
+          kDataTypeInfoTable, /*comp=*/{}, [](const DataTypeInfo& info) {
+            return std::pair(info.specifics_field_number, info.type);
+          });
 
   auto it = kFieldNumberToType.find(field_number);
   return (it != kFieldNumberToType.end()) ? it->second : UNSPECIFIED;
