@@ -4,6 +4,7 @@
 
 #include "ui/compositor/total_animation_throughput_reporter.h"
 
+#include "base/check.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor.h"
 
@@ -18,8 +19,11 @@ TotalAnimationThroughputReporter::ScopedThroughputReporterBlocker::
 
 TotalAnimationThroughputReporter::ScopedThroughputReporterBlocker::
     ~ScopedThroughputReporterBlocker() {
-  if (reporter_)
-    reporter_->scoped_blocker_count_--;
+  if (reporter_) {
+    if (--reporter_->scoped_blocker_count_ == 0) {
+      reporter_->StopIfNotAnimating();
+    }
+  }
 }
 
 TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
@@ -66,27 +70,16 @@ void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
 
 void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
     ui::Compositor* compositor) {
-  if (has_finished_observing_ || IsBlocked()) {
+  if (has_finished_observing_) {
     return;
   }
 
   timestamp_last_animation_finished_at_ = base::TimeTicks::Now();
-
-  bool will_report = compositor_metrics_tracker_->Stop();
-  compositor_metrics_tracker_.reset();
-  // Stop observing if no need to report multiple times.
-  if (report_repeating_callback_.is_null()) {
-    has_finished_observing_ = true;
-    if (!will_report) {
-      if (compositor_) {
-        compositor_->RemoveObserver(this);
-        compositor_ = nullptr;
-      }
-      if (should_delete_) {
-        delete this;
-      }
-    }
+  if (IsBlocked()) {
+    return;
   }
+
+  StopTracking();
 }
 
 void TotalAnimationThroughputReporter::OnCompositingShuttingDown(
@@ -131,6 +124,33 @@ TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
   compositor_->AddObserver(this);
   if (!compositor->animation_observer_list_.empty())
     OnFirstAnimationStarted(compositor_);
+}
+
+void TotalAnimationThroughputReporter::StopIfNotAnimating() {
+  if (has_finished_observing_ || !compositor_metrics_tracker_ || !compositor_ ||
+      compositor_->IsAnimating()) {
+    return;
+  }
+  StopTracking();
+}
+
+void TotalAnimationThroughputReporter::StopTracking() {
+  CHECK(compositor_metrics_tracker_);
+  bool will_report = compositor_metrics_tracker_->Stop();
+  compositor_metrics_tracker_.reset();
+  // Stop observing if no need to report multiple times.
+  if (report_repeating_callback_.is_null()) {
+    has_finished_observing_ = true;
+    if (!will_report) {
+      if (compositor_) {
+        compositor_->RemoveObserver(this);
+        compositor_ = nullptr;
+      }
+      if (should_delete_) {
+        delete this;
+      }
+    }
+  }
 }
 
 void TotalAnimationThroughputReporter::Report(

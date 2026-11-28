@@ -14,10 +14,13 @@
 #include "ash/shell.h"
 #include "ash/test/animation_metrics_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -160,24 +163,28 @@ class TestShelfModel : public ShelfModel {
   }
 };
 
-void GiveItSomeTime(base::TimeDelta delta) {
+void FlushFramesUntil(base::RunLoop& run_loop) {
   // Due to the |frames_to_terminate_tracker|=3 constant in
   // FrameSequenceTracker::ReportSubmitFrame we need to continue generating
   // frames to receive feedback.
-  base::RepeatingTimer begin_main_frame_scheduler(
+  base::RepeatingTimer begin_main_frame_scheduler;
+  begin_main_frame_scheduler.Start(
       FROM_HERE, base::Milliseconds(16), base::BindRepeating([]() {
         auto* compositor =
             Shell::GetPrimaryRootWindow()->GetHost()->compositor();
         compositor->ScheduleFullRedraw();
       }));
-  begin_main_frame_scheduler.Reset();
 
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   auto* compositor = Shell::GetPrimaryRootWindow()->GetHost()->compositor();
   compositor->ScheduleFullRedraw();
+  run_loop.Run();
+}
+
+void GiveItSomeTime(base::TimeDelta delta) {
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), delta);
-  run_loop.Run();
+  FlushFramesUntil(run_loop);
 }
 
 }  // namespace
@@ -723,6 +730,84 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   GiveItSomeTime(base::Milliseconds(100));
 
   check_point.Call("animation_done");
+}
+
+// Verifies that login animation duration is reported when animations finish
+// while blocked waiting for window restore.
+TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
+       ReportLoginAnimationWhenAlreadyFinishedWhileBlocked) {
+  const bool has_display = GetParam();
+
+  StrictMock<MockPostLoginEventObserver> mock_observer(throughput_recorder());
+  StrictMock<MockFunction<void(const char* check_point_name)>> check_point;
+  base::TimeTicks reported_animation_end;
+  base::RunLoop animation_done_loop(base::RunLoop::Type::kNestableTasksAllowed);
+
+  {
+    ::testing::InSequence inseq;
+
+    EXPECT_CALL(mock_observer,
+                OnUserLoggedIn(_, /*is_ash_restarted=*/false,
+                               /*is_regular_user_or_owner=*/true))
+        .Times(1);
+
+    EXPECT_CALL(check_point, Call("login_animation_finished_while_blocked"))
+        .Times(1);
+
+    EXPECT_CALL(mock_observer, OnAllExpectedShelfIconLoaded(_)).Times(1);
+
+    EXPECT_CALL(mock_observer,
+                OnSessionRestoreDataLoaded(_, /*restore_automatically=*/true))
+        .Times(1);
+    EXPECT_CALL(mock_observer, OnAllBrowserWindowsCreated(_)).Times(1);
+    EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
+    EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
+
+    EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
+        .Times(1);
+    EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
+    EXPECT_CALL(mock_observer, OnDeferredTasksStarted(_)).Times(1);
+
+    EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
+
+    EXPECT_CALL(mock_observer, OnCompositorAnimationFinished(_, _))
+        .WillOnce(::testing::SaveArg<0>(&reported_animation_end));
+    EXPECT_CALL(mock_observer, OnShelfAnimationAndCompositorAnimationDone(_))
+        .WillOnce([&](base::TimeTicks) { animation_done_loop.Quit(); });
+
+    EXPECT_CALL(check_point, Call("animation_reported")).Times(1);
+  }
+
+  SetupDisplay(has_display);
+
+  LoginOwner();
+  test::RunSimpleAnimation();
+  const base::TimeTicks after_blocked_animation = base::TimeTicks::Now();
+  GiveItSomeTime(base::Milliseconds(100));
+
+  check_point.Call("login_animation_finished_while_blocked");
+
+  TestShelfModel model;
+  model.InitializeIconList({1, 2, 3});
+  model.AddBrowserIcon();
+  model.SetIconsLoadedFor({1, 2, 3});
+  model.SetIconLoadedForBrowser();
+  throughput_recorder()->InitShelfIconList(&model);
+
+  AddScheduledRestoreWindows({1, 2, 3});
+  RestoredWindowsCreated({1, 2, 3});
+  RestoredWindowsShown({1, 2, 3});
+  RestoredWindowsPresented({1, 2, 3});
+
+  check_point.Call("all_windows_presented");
+
+  // Flush frames without starting a new animation until the stopped tracker
+  // reports.
+  FlushFramesUntil(animation_done_loop);
+
+  check_point.Call("animation_reported");
+  EXPECT_FALSE(reported_animation_end.is_null());
+  EXPECT_LE(reported_animation_end, after_blocked_animation);
 }
 
 }  // namespace ash

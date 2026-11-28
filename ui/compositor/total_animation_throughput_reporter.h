@@ -46,8 +46,8 @@ namespace ui {
 class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
     : public CompositorObserver {
  public:
-  // This allows to temporarily ignore OnFirstNonAnimatedFrameStarted event
-  // until an interesting event happens.
+  // Delays reporting until the blocker is destroyed. If all animations have
+  // already finished when the last blocker is destroyed, stops tracking.
   class COMPOSITOR_EXPORT ScopedThroughputReporterBlocker {
    public:
     explicit ScopedThroughputReporterBlocker(
@@ -100,9 +100,11 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
     return compositor_metrics_tracker_.has_value();
   }
 
-  // The returned scope will delay the animation report until the next
-  // |OnFirstNonAnimatedFrameStarted| received after it is destructed. See
-  // |ScopedThroughputReporterBlocker| above.
+  // Delays the animation report until the returned scope is destructed. If
+  // animations have already finished by then, stops tracking immediately
+  // (which may delete `this` if `should_delete` is true); otherwise waits for
+  // the next `OnFirstNonAnimatedFrameStarted()`. See
+  // `ScopedThroughputReporterBlocker` above.
   std::unique_ptr<ScopedThroughputReporterBlocker> NewScopedBlocker();
 
  private:
@@ -113,6 +115,8 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
                                    ReportOnceCallback once_callback,
                                    bool should_delete);
 
+  void StopIfNotAnimating();
+  void StopTracking();
   void Report(const cc::FrameSequenceMetrics::CustomReportData& data);
 
   // Returns true if there is an active ScopedThroughputReporterBlocker.
@@ -125,11 +129,8 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   bool has_finished_observing_ = false;
   std::optional<CompositorMetricsTracker> compositor_metrics_tracker_;
 
-  // These are always recorded in pairs. Specifically,
-  // `timestamp_first_animation_started_at_` is recorded when
-  // `compositor_metrics_tracker_` is created/started, and
-  // `timestamp_last_animation_finished_at_` is recorded when the tracker is
-  // stopped/destructed.
+  // Start of the first animation and end of the last animation in the
+  // tracked sequence.
   base::TimeTicks timestamp_first_animation_started_at_;
   base::TimeTicks timestamp_last_animation_finished_at_;
 

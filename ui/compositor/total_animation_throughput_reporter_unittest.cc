@@ -134,12 +134,11 @@ TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
   EXPECT_FALSE(checker.reported());
 
   scoped_blocker.reset();
-  // No animation should be running yet, nothing to report.
-  EXPECT_FALSE(checker.reported());
-  Advance(base::Milliseconds(200));
-  EXPECT_FALSE(checker.reported());
+  EXPECT_FALSE(reporter.IsMeasuringForTesting());
+  EXPECT_TRUE(checker.WaitUntilReported());
 
   // Animation of opacity goes to 0.5.
+  checker.reset();
   SetLayerOpacity(layer, 0.5f, base::Milliseconds(48));
   Advance(base::Milliseconds(32));
   EXPECT_FALSE(checker.reported());
@@ -386,31 +385,84 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   // from compositor as observer.
   ObserverChecker observer_checker(compositor(), &reporter);
 
-  // Report data for animation of opacity goes to 1.
   SetLayerOpacity(layer, 1.0f, base::Milliseconds(48));
-  Advance(base::Milliseconds(100));
-
-  // No report should happen while scoped_blocker exists.
-  EXPECT_FALSE(checker.reported());
-
-  // Make sure there are no animations running.
   compositor_monitor.WaitForAllAnimationsEnd();
-
-  scoped_blocker.reset();
-  // No animation should be running yet, nothing to report.
-  EXPECT_FALSE(checker.reported());
   Advance(base::Milliseconds(100));
+  // No report should happen while scoped_blocker exists, even after the
+  // animation finishes.
   EXPECT_FALSE(checker.reported());
 
-  // Animation of opacity goes to 0.5.
+  // Start a second animation and destroy scoped_blocker while it is still
+  // running; reporting should wait until this animation finishes.
   SetLayerOpacity(layer, 0.7f, base::Milliseconds(48));
+  scoped_blocker.reset();
+  EXPECT_TRUE(reporter.IsMeasuringForTesting());
   EXPECT_TRUE(checker.WaitUntilReported());
 
-  // Report data for animation of opacity goes to 0.5.
+  // OnceReporter should not report subsequent animations.
   checker.reset();
   SetLayerOpacity(layer, 1.0f, base::Milliseconds(48));
+  compositor_monitor.WaitForAllAnimationsEnd();
   Advance(base::Milliseconds(100));
   EXPECT_FALSE(checker.reported());
+}
+
+// Tests that destroying the last ScopedThroughputReporterBlocker stops tracking
+// and reports animations that already finished while blocked.
+TEST_F(TotalAnimationThroughputReporterTest,
+       ScopedBlockerDestructionReportsFinishedAnimation) {
+  TestCompositorMonitor compositor_monitor(compositor());
+  LayerTextured layer;
+  layer.SetOpacity(0.5f);
+  root_layer()->Add(&layer);
+
+  CompositorMetricsReportChecker checker(this);
+  base::TimeTicks reported_first_started;
+  base::TimeTicks reported_last_finished;
+  TotalAnimationThroughputReporter reporter(
+      compositor(),
+      base::BindLambdaForTesting(
+          [&](const cc::FrameSequenceMetrics::CustomReportData& data,
+              base::TimeTicks first_animation_started_at,
+              base::TimeTicks last_animation_finished_at) {
+            reported_first_started = first_animation_started_at;
+            reported_last_finished = last_animation_finished_at;
+            checker.once_callback().Run(data);
+          }),
+      /*should_delete=*/false);
+  ObserverChecker observer_checker(compositor(), &reporter);
+
+  // Destroying a blocker before any animation starts is a no-op.
+  reporter.NewScopedBlocker().reset();
+  EXPECT_FALSE(reporter.IsMeasuringForTesting());
+  EXPECT_FALSE(checker.reported());
+
+  auto scoped_blocker_1 = reporter.NewScopedBlocker();
+  auto scoped_blocker_2 = reporter.NewScopedBlocker();
+  const base::TimeTicks before_first_animation = base::TimeTicks::Now();
+  SetLayerOpacity(layer, 1.0f, base::Milliseconds(48));
+  compositor_monitor.WaitForAllAnimationsEnd();
+
+  // Destroying one of multiple active blockers keeps the reporter blocked.
+  scoped_blocker_2.reset();
+  EXPECT_TRUE(reporter.IsMeasuringForTesting());
+  Advance(base::Milliseconds(50));
+  EXPECT_FALSE(checker.reported());
+
+  const base::TimeTicks before_second_animation = base::TimeTicks::Now();
+  SetLayerOpacity(layer, 0.7f, base::Milliseconds(48));
+  compositor_monitor.WaitForAllAnimationsEnd();
+  const base::TimeTicks after_second_animation = base::TimeTicks::Now();
+
+  Advance(base::Milliseconds(50));
+  scoped_blocker_1.reset();
+  EXPECT_FALSE(reporter.IsMeasuringForTesting());
+  EXPECT_TRUE(checker.WaitUntilReported());
+  EXPECT_FALSE(reported_first_started.is_null());
+  EXPECT_GE(reported_first_started, before_first_animation);
+  EXPECT_LE(reported_first_started, before_second_animation);
+  EXPECT_GE(reported_last_finished, before_second_animation);
+  EXPECT_LE(reported_last_finished, after_second_animation);
 }
 
 // One reporter marked as "should_delete" should be deleted when
@@ -461,15 +513,12 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
 
   // Make sure there are no animations running.
   compositor_monitor.WaitForAllAnimationsEnd();
-
-  scoped_blocker.reset();
-  // No animation should be running yet, nothing to report.
-  EXPECT_FALSE(deleted);
   Advance(base::Milliseconds(100));
   EXPECT_FALSE(deleted);
 
   // Animation of opacity goes to 0.5.
   layer.SetOpacity(0.7f);
+  scoped_blocker.reset();
   EXPECT_FALSE(deleted);
   Advance(base::Milliseconds(100));
   EXPECT_TRUE(deleted);
@@ -511,15 +560,12 @@ TEST_F(TotalAnimationThroughputReporterTest, ThreadCheck) {
 
   // Make sure there are no animations running.
   compositor_monitor.WaitForAllAnimationsEnd();
-
-  scoped_blocker.reset();
-  // No animation should be running yet, nothing to report.
-  EXPECT_FALSE(checker.reported());
   Advance(base::Milliseconds(100));
   EXPECT_FALSE(checker.reported());
 
   // Animation of opacity goes to 0.5.
   layer.SetOpacity(0.7f);
+  scoped_blocker.reset();
   EXPECT_TRUE(checker.WaitUntilReported());
 }
 

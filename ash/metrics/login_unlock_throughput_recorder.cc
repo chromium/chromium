@@ -386,7 +386,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
   scoped_throughput_reporter_blocker_.reset();
 
   // TotalAnimationThroughputReporter (login_animation_throughput_reporter_)
-  // reports only on next non-animated frame. Ensure there is one.
+  // reports on the next frame after tracking stops. Ensure there is one.
   aura::Window* shelf_container =
       Shell::Get()->GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_ShelfContainer);
