@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
@@ -27,7 +28,9 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1600,6 +1603,145 @@ TEST_F(AutofillManagerTest,
       autofill_manager().FindCachedFormById(initial_form.global_id()));
   EXPECT_EQ(cached_form.version(), updated_form.version());
   EXPECT_EQ(cached_form.form_signature(), initial_signature);
+}
+
+class TestAutofillManagerWithAutofillAi : public MockAutofillManager {
+ public:
+  using MockAutofillManager::AddCachedAutofillAiPredictions;
+  using MockAutofillManager::MockAutofillManager;
+};
+
+class AutofillManagerTest_AddCachedAutofillAiPredictions
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<
+          TestAutofillClient,
+          TestAutofillDriver,
+          TestAutofillManagerWithAutofillAi> {
+ public:
+  void SetUp() override {
+    InitAutofillClient();
+    CreateAndActivateAutofillDriver();
+    passport_form_ =
+        test::GetFormData({.fields = {{.name = u"First name"},
+                                      {.name = u"Last name"},
+                                      {.name = u"Passport number"},
+                                      {.name = u"Passport issue date"}}});
+  }
+
+  FormStructure& AddPassportForm(bool add_autofill_ai_prediction) {
+    auto form_structure = std::make_unique<FormStructure>(passport_form_);
+    if (add_autofill_ai_prediction) {
+      form_structure->field(2)->MaybeAddServerPrediction(
+          test::CreateFieldPrediction(PASSPORT_NUMBER,
+                                      FieldPrediction::SOURCE_AUTOFILL_AI));
+    }
+    FormStructure* fs_ptr = form_structure.get();
+    test_api(autofill_manager())
+        .AddSeenFormStructure(std::move(form_structure));
+    return *fs_ptr;
+  }
+
+  const FormData& passport_form() const { return passport_form_; }
+  MockAutofillAiModelCache& cache() { return cache_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
+  NiceMock<MockAutofillAiModelCache> cache_;
+  FormData passport_form_;
+};
+
+// Tests that cached Autofill AI model predictions populate field types and
+// valid format strings.
+TEST_F(AutofillManagerTest_AddCachedAutofillAiPredictions, CacheResultUsed) {
+  FormStructure& form_structure =
+      AddPassportForm(/*add_autofill_ai_prediction=*/false);
+  const FormData& form = passport_form();
+  const FieldSignature field_signature1 =
+      CalculateFieldSignatureForField(form.fields()[2]);
+  const FieldSignature field_signature2 =
+      CalculateFieldSignatureForField(form.fields()[3]);
+  const FormSignature form_signature = form_structure.form_signature();
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
+      {std::pair{
+           FieldIdentifier{.signature = field_signature1},
+           ModelFieldPrediction({PASSPORT_NUMBER, NATIONAL_ID_CARD_NUMBER})},
+       std::pair{
+           FieldIdentifier{.signature = field_signature2},
+           ModelFieldPrediction(
+               {PASSPORT_ISSUE_DATE},
+               AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
+
+  EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
+      .WillOnce(Return(predictions));
+
+  autofill_manager().AddCachedAutofillAiPredictions(cache(), form_structure);
+
+  const FormStructure* const fs =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(fs);
+  EXPECT_THAT(fs->field(2)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_NUMBER, NATIONAL_ID_CARD_NUMBER));
+  EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_ISSUE_DATE));
+  ASSERT_TRUE(fs->field(3)->format_string().has_value());
+  EXPECT_EQ(fs->field(3)->format_string()->value, u"D.M.YYYY");
+  EXPECT_EQ(fs->field(3)->format_string_source(),
+            AutofillFormatStringSource::kModelResult);
+}
+
+// Tests that invalid format strings from cache results are not applied to
+// fields.
+TEST_F(AutofillManagerTest_AddCachedAutofillAiPredictions,
+       CacheResultInvalidFormatStringIgnored) {
+  FormStructure& form_structure =
+      AddPassportForm(/*add_autofill_ai_prediction=*/false);
+  const FormData& form = passport_form();
+  const FieldSignature field_signature =
+      CalculateFieldSignatureForField(form.fields()[3]);
+  const FormSignature form_signature = form_structure.form_signature();
+
+  AutofillFormatString invalid_format_string;
+  invalid_format_string.value = u"invalid_format";
+  invalid_format_string.type = FormatString_Type_DATE;
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  auto predictions =
+      base::flat_map<FieldIdentifier, ModelFieldPrediction>({std::pair{
+          FieldIdentifier{.signature = field_signature},
+          ModelFieldPrediction({PASSPORT_ISSUE_DATE}, invalid_format_string)}});
+
+  EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
+      .WillOnce(Return(predictions));
+
+  autofill_manager().AddCachedAutofillAiPredictions(cache(), form_structure);
+
+  const FormStructure* const fs =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(fs);
+  EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_ISSUE_DATE));
+  EXPECT_FALSE(fs->field(3)->format_string().has_value());
+  EXPECT_EQ(fs->field(3)->format_string_source(),
+            AutofillFormatStringSource::kUnset);
+}
+
+// Tests that if the form has at least one existing Autofill AI prediction, then
+// the cache is not used for populating predictions.
+TEST_F(AutofillManagerTest_AddCachedAutofillAiPredictions,
+       CacheResultsDoNotOverrideAiServerPredictions) {
+  FormStructure& form_structure =
+      AddPassportForm(/*add_autofill_ai_prediction=*/true);
+
+  EXPECT_CALL(cache(), GetFieldPredictions).Times(0);
+
+  autofill_manager().AddCachedAutofillAiPredictions(cache(), form_structure);
 }
 
 }  // namespace

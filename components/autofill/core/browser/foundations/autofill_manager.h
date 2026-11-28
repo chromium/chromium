@@ -59,6 +59,7 @@
 namespace autofill {
 
 struct AutofillServerPrediction;
+class AutofillAiModelCache;
 class AutofillField;
 class CreditCardAccessManager;
 class FormData;
@@ -555,6 +556,11 @@ class AutofillManager
   void LogCurrentFieldTypes(
       std::variant<const FormData*, const FormStructure*> form);
 
+  // Retrieves the Autofill AI predictions for `form` in `cache` and adds them
+  // to `form`'s fields, then runs rationalization and sectioning.
+  void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
+                                      FormStructure& form);
+
  private:
   friend class AutofillManagerTestApi;
 
@@ -607,6 +613,11 @@ class AutofillManager
       base::TimeTicks detection_start_timestamp) = 0;
   virtual void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) = 0;
+
+  // Updates Autofill AI's model cache after server predictions were loaded.
+  // Empty by default so WebView does not link Autofill AI dependencies.
+  virtual void HandleLoadedServerPredictionsForAutofillAi(
+      base::span<const raw_ref<FormStructure>> forms) {}
 
   // Parses multiple forms in one go. The function proceeds in five stages:
   //

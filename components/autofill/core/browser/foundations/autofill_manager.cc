@@ -41,6 +41,8 @@
 #include "base/task/thread_pool.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -58,8 +60,10 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/ml_model/model_predictions.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/aliases.h"
@@ -980,6 +984,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // TODO(crbug.com/40232021): Consider merging OnFormProcessed() and
   // OnLoadedServerPredictionsImpl().
   OnLoadedServerPredictionsImpl(queried_forms);
+  HandleLoadedServerPredictionsForAutofillAi(queried_forms);
 }
 
 void AutofillManager::LogServerQueryResponseMetrics(
@@ -992,6 +997,60 @@ void AutofillManager::LogServerQueryResponseMetrics(
         *form, client().GetFormInteractionsUkmLogger(),
         driver().GetPageUkmSourceId());
   }
+}
+
+void AutofillManager::AddCachedAutofillAiPredictions(
+    const AutofillAiModelCache& cache,
+    FormStructure& form) {
+  // Mixing Autofill AI model predictions (which come from the online LLM) and
+  // Autofill AI server predictions (which come from the Autofill crowdsourcing
+  // server) may lead to too many false positives. We therefore favor server
+  // predictions over model predictions. (There's no specific reason for this
+  // precedence -- preferring model predictions may work just as well.)
+  if (std::ranges::any_of(form.fields(),
+                          [](const std::unique_ptr<AutofillField>& field) {
+                            return field->Type().GetGroups().contains(
+                                FieldTypeGroup::kAutofillAi);
+                          })) {
+    return;
+  }
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
+      cache.GetFieldPredictions(form.form_signature());
+  if (predictions.empty()) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    auto it = predictions.find(FieldIdentifier{
+        .signature = field->GetFieldSignature(),
+        .rank_in_signature_group = field->rank_in_signature_group()});
+    if (it == predictions.end()) {
+      continue;
+    }
+    const ModelFieldPrediction& prediction = it->second;
+    for (FieldType type : prediction.field_types) {
+      using ServerPrediction = AutofillQueryResponse::FormSuggestion::
+          FieldSuggestion::FieldPrediction;
+      ServerPrediction server_prediction;
+      server_prediction.set_type(type);
+      server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
+      field->MaybeAddServerPrediction(std::move(server_prediction));
+    }
+    if (prediction.format_string &&
+        AutofillFormatString::IsValid(prediction.format_string->value,
+                                      prediction.format_string->type)) {
+      field->set_format_string_unless_overruled(
+          *prediction.format_string, AutofillFormatStringSource::kModelResult);
+    }
+  }
+  form.RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
+                                    GetCurrentPageLanguage(), log_manager());
+  LogCurrentFieldTypes(&form);
+  NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
+                  Observer::FieldTypeSource::kAutofillAiModel,
+                  /*small_forms_were_parsed=*/client().IsTabInActorMode());
 }
 
 void AutofillManager::OnFieldTypesDetermined(PredictionContext& context,

@@ -404,6 +404,8 @@ class BrowserAutofillManager : public AutofillManager {
       const std::u16string& old_value) override;
   void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) override;
+  void HandleLoadedServerPredictionsForAutofillAi(
+      base::span<const raw_ref<FormStructure>> forms) override;
   void OnDidDetectJavaScriptAutofillImpl(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
@@ -682,15 +684,6 @@ class BrowserAutofillManager : public AutofillManager {
                                const AutofillProfile& filled_profile,
                                AutofillTriggerSource trigger_source,
                                bool is_refill);
-
-  // Updates Autofill Ai's model cache after server predictions were loaded.
-  void HandleLoadedServerPredictionsForAutofillAi(
-      base::span<const raw_ref<FormStructure>> forms);
-
-  // Retrieves the Autofill AI predictions for `form` in `cache` and adds them
-  // to `form`'s fields, then runs rationalization and sectioning.
-  void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
-                                      FormStructure& form);
 
   // Calls `OnDidIdentifyForms()` on all appropriate form event loggers,
   // depending on the form types of the `form_structure`.
