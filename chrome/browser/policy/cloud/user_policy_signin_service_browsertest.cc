@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -126,7 +127,8 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return identity_manager()
           ->FindExtendedAccountInfoByAccountId(account_id)
-          .IsValid();
+          .GetHostedDomain()
+          .has_value();
     }));
     disable_disclaimer.RunAndReset();
 
