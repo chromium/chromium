@@ -611,8 +611,6 @@ class AutofillManager
       const FieldGlobalId& trigger_field_id,
       const std::vector<JavaScriptFieldModification>& field_modifications,
       base::TimeTicks detection_start_timestamp) = 0;
-  virtual void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ref<FormStructure>> forms) {}
   // Invoked by `OnFieldTypesDetermined()` after updating `form_structures_`,
   // before logging field types and notifying `Observer`s.
   virtual void OnFieldTypesDeterminedImpl(base::span<const FormGlobalId> forms,

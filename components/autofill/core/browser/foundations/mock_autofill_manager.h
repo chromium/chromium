@@ -58,10 +58,6 @@ class MockAutofillManager : public AutofillManager {
        base::TimeTicks detection_start_timestamp),
       (override));
   MOCK_METHOD(void,
-              OnLoadedServerPredictionsImpl,
-              ((base::span<const raw_ref<FormStructure>>)),
-              (override));
-  MOCK_METHOD(void,
               OnFormSubmittedImpl,
               (const FormData& form, mojom::SubmissionSource source),
               (override));

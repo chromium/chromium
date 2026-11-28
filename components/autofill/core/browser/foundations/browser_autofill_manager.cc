@@ -2770,12 +2770,23 @@ void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
   }
 }
 
-void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
-    base::span<const raw_ref<FormStructure>> forms) {
-  for (const raw_ref<FormStructure>& form : forms) {
-    OnDidIdentifyFormForMetrics(
-        *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
-                   kAfterServerPredictions);
+void BrowserAutofillManager::OnFieldTypesDeterminedImpl(
+    base::span<const FormGlobalId> forms,
+    FieldTypeSource source) {
+  if (source != FieldTypeSource::kAutofillServer) {
+    return;
+  }
+  // TODO(crbug.com/40232021): This is currently a no-op because
+  // `OnLoadedServerPredictions()` also calls `OnFormProcessed()`, which invokes
+  // `OnDidIdentifyFormForMetrics()` with `kAfterLocalHeuristics` (a strict
+  // superset of `kAfterServerPredictions`). Deduplicate once
+  // `OnFormProcessed()` is folded into `OnFieldTypesDeterminedImpl()`.
+  for (FormGlobalId form_id : forms) {
+    if (const FormStructure* form = FindCachedFormById(form_id)) {
+      OnDidIdentifyFormForMetrics(
+          *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
+                     kAfterServerPredictions);
+    }
   }
 }
 

@@ -980,9 +980,6 @@ void AutofillManager::OnLoadedServerPredictions(
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }
-  // TODO(crbug.com/40232021): Consider merging OnFormProcessed() and
-  // OnLoadedServerPredictionsImpl().
-  OnLoadedServerPredictionsImpl(queried_forms);
   HandleLoadedServerPredictionsForAutofillAi(queried_forms);
 }
 

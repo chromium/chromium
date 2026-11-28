@@ -402,8 +402,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const std::u16string& old_value) override;
-  void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ref<FormStructure>> forms) override;
+  void OnFieldTypesDeterminedImpl(base::span<const FormGlobalId> forms,
+                                  FieldTypeSource source) override;
   void HandleLoadedServerPredictionsForAutofillAi(
       base::span<const raw_ref<FormStructure>> forms) override;
   void OnDidDetectJavaScriptAutofillImpl(
