@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -115,7 +116,6 @@ using base::TimeTicks;
 AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver) {
   StartNewLoggingSession();
-  autofill_manager_observation.Observe(this);
 }
 
 AndroidAutofillManager::~AndroidAutofillManager() {
@@ -258,13 +258,6 @@ void AndroidAutofillManager::OnHidePopupImpl() {
     provider->OnHidePopup(this);
 }
 
-void AndroidAutofillManager::OnFormProcessed(
-    const FormStructure& form_structure) {
-  for (AndroidFormEventLogger* logger : GetEventFormLoggers(form_structure)) {
-    logger->OnDidParseForm();
-  }
-}
-
 void AndroidAutofillManager::Reset() {
   // Inform the provider before resetting state in case it needs to access it.
   if (auto* rfh =
@@ -283,25 +276,30 @@ void AndroidAutofillManager::Reset() {
   StartNewLoggingSession();
 }
 
-void AndroidAutofillManager::OnFieldTypesDetermined(
-    AutofillManager& manager,
-    FormGlobalId form,
-    FieldTypeSource source,
-    bool small_forms_were_parsed) {
-  CHECK_EQ(&manager, this);
-  // The cached `PasswordForm` may be outdated now. `FindCachedPasswordForm()`
-  // parses it again when it's needed.
-  password_forms_.erase(form);
-  switch (source) {
-    case FieldTypeSource::kAutofillAiModel:
-    case FieldTypeSource::kAutofillServer:
-      forms_with_server_predictions_.insert(form);
-      if (auto* provider = GetAutofillProvider()) {
-        provider->OnServerPredictionsAvailable(*this, form);
+void AndroidAutofillManager::OnFieldTypesDeterminedImpl(
+    base::span<const FormGlobalId> forms,
+    FieldTypeSource source) {
+  for (FormGlobalId form : forms) {
+    // The cached `PasswordForm` may be outdated now. `FindCachedPasswordForm()`
+    // parses it again when it's needed.
+    password_forms_.erase(form);
+    switch (source) {
+      case FieldTypeSource::kAutofillAiModel:
+      case FieldTypeSource::kAutofillServer:
+        forms_with_server_predictions_.insert(form);
+        if (auto* provider = GetAutofillProvider()) {
+          provider->OnServerPredictionsAvailable(*this, form);
+        }
+        break;
+      case FieldTypeSource::kHeuristicsOrAutocomplete:
+        break;
+    }
+    if (const FormStructure* form_structure = FindCachedFormById(form)) {
+      for (AndroidFormEventLogger* logger :
+           GetEventFormLoggers(*form_structure)) {
+        logger->OnDidParseForm();
       }
-      break;
-    case FieldTypeSource::kHeuristicsOrAutocomplete:
-      break;
+    }
   }
 }
 

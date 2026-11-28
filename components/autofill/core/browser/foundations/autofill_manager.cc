@@ -1046,17 +1046,25 @@ void AutofillManager::OnFieldTypesDetermined(PredictionContext& context,
       break;
   }
   UpdateFormCache(context.forms, context, source, preserve_signatures);
-  for (const FormData& form : context.forms) {
-    if (const FormStructure* const form_structure =
-            FindCachedFormById(form.global_id())) {
-      LogCurrentFieldTypes(form_structure);
-      NotifyObservers(&Observer::OnFieldTypesDetermined,
-                      form_structure->global_id(), source,
-                      small_forms_were_parsed);
-    }
-  }
   if (context.log_manager && log_manager()) {
     context.log_manager->Flush(*log_manager());
+  }
+  std::vector<FormGlobalId> updated_forms;
+  updated_forms.reserve(context.forms.size());
+  for (const FormData& form : context.forms) {
+    if (FindCachedFormById(form.global_id())) {
+      updated_forms.push_back(form.global_id());
+    }
+  }
+  if (!updated_forms.empty()) {
+    OnFieldTypesDeterminedImpl(updated_forms, source);
+    for (FormGlobalId form_id : updated_forms) {
+      if (const FormStructure* form_structure = FindCachedFormById(form_id)) {
+        LogCurrentFieldTypes(form_structure);
+      }
+      NotifyObservers(&Observer::OnFieldTypesDetermined, form_id, source,
+                      small_forms_were_parsed);
+    }
   }
 }
 

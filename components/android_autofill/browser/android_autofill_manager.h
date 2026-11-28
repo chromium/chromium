@@ -30,8 +30,7 @@ class AutofillProvider;
 class AndroidFormEventLogger;
 
 // This class forwards AutofillManager calls to AutofillProvider.
-class AndroidAutofillManager : public AutofillManager,
-                               public AutofillManager::Observer {
+class AndroidAutofillManager : public AutofillManager {
  public:
   explicit AndroidAutofillManager(AutofillDriver* driver);
 
@@ -139,22 +138,12 @@ class AndroidAutofillManager : public AutofillManager,
           field_modifications,
       base::TimeTicks detection_start_timestamp) override {}
 
-  void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ref<FormStructure>> forms) override {}
+  void OnFieldTypesDeterminedImpl(base::span<const FormGlobalId> forms,
+                                  FieldTypeSource source) override;
 
   bool ShouldParseForms() override;
 
-  void OnBeforeProcessParsedForms() override {}
-
-  void OnFormProcessed(const FormStructure& form_structure) override;
-
  private:
-  // AutofillManager::Observer:
-  void OnFieldTypesDetermined(AutofillManager& manager,
-                              FormGlobalId form,
-                              FieldTypeSource source,
-                              bool small_forms_were_parsed) override;
-
   AutofillProvider* GetAutofillProvider();
 
   // Records metrics for the current loggers and starts a new logging session.
@@ -191,9 +180,6 @@ class AndroidAutofillManager : public AutofillManager,
   std::unique_ptr<AndroidFormEventLogger> loyalty_card_logger_;
   std::unique_ptr<AndroidFormEventLogger> payments_logger_;
   std::unique_ptr<AndroidFormEventLogger> password_logger_;
-
-  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
-      autofill_manager_observation{this};
 
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 };

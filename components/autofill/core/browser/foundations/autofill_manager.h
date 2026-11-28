@@ -542,10 +542,10 @@ class AutofillManager
   // Invoked before parsing the forms.
   // TODO(crbug.com/40219607): Rename to some consistent scheme, e.g.,
   // OnBeforeParsedForm().
-  virtual void OnBeforeProcessParsedForms() = 0;
+  virtual void OnBeforeProcessParsedForms() {}
 
   // Invoked when `form` has been processed into a `FormStructure`.
-  virtual void OnFormProcessed(const FormStructure& form) = 0;
+  virtual void OnFormProcessed(const FormStructure& form) {}
 
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
@@ -612,7 +612,11 @@ class AutofillManager
       const std::vector<JavaScriptFieldModification>& field_modifications,
       base::TimeTicks detection_start_timestamp) = 0;
   virtual void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ref<FormStructure>> forms) = 0;
+      base::span<const raw_ref<FormStructure>> forms) {}
+  // Invoked by `OnFieldTypesDetermined()` after updating `form_structures_`,
+  // before logging field types and notifying `Observer`s.
+  virtual void OnFieldTypesDeterminedImpl(base::span<const FormGlobalId> forms,
+                                          FieldTypeSource source) {}
 
   // Updates Autofill AI's model cache after server predictions were loaded.
   // Empty by default so WebView does not link Autofill AI dependencies.
@@ -682,9 +686,9 @@ class AutofillManager
   // `form_structures_`.
   void OnFormsParsed(const std::vector<FormData>& forms);
 
-  // Updates `form_structures_` with the predictions in `context`, logs field
-  // types, notifies `Observer::OnFieldTypesDetermined` with `source`, and
-  // flushes `context.log_manager`.
+  // Updates `form_structures_` with the predictions in `context`, flushes
+  // `context.log_manager`, invokes `OnFieldTypesDeterminedImpl()`, logs field
+  // types, and notifies `Observer::OnFieldTypesDetermined` with `source`.
   void OnFieldTypesDetermined(PredictionContext& context,
                               Observer::FieldTypeSource source,
                               bool preserve_signatures,

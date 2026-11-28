@@ -174,9 +174,8 @@ class TestAndroidAutofillManager
       AndroidAutofillManager>::TestAutofillManagerTemplate;
 
   void SimulatePropagateAutofillPredictions(FormGlobalId form_id) {
-    NotifyObservers(&Observer::OnFieldTypesDetermined, form_id,
-                    Observer::FieldTypeSource::kAutofillServer,
-                    /*small_forms_were_parsed=*/false);
+    OnFieldTypesDeterminedImpl(base::span_from_ref(form_id),
+                               FieldTypeSource::kAutofillServer);
   }
 };
 
