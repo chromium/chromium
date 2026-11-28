@@ -28,9 +28,9 @@ class CrossTabCopyPasteTracker : public KeyedService {
   // Records a copy action.
   void OnCopy(SessionID tab_id, size_t content_hash, ukm::SourceId source_id);
 
-  // Records a paste action and returns true if it completes a valid sequence
-  // (Paste in a different tab than the copy, within the time limit).
-  bool OnPaste(SessionID tab_id, ukm::SourceId source_id);
+  // Records a paste action and logs a UKM event if it completes a valid
+  // cross-tab copy-paste sequence within the time limit.
+  void OnPaste(SessionID tab_id, ukm::SourceId source_id);
 
  private:
   // Stores metadata about a clipboard copy event, which is used to correlate
