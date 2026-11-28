@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">红宝石</translation>
 <translation id="1921351128855867012">快进 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="1984328900355667246">无法播放</translation>
+<translation id="2009730553732772041">系统会将您当前所浏览页面的内容和网址与 Google 分享，以生成音频。您随时可以在设置中更新此选项。</translation>
 <translation id="2019727681730021602">标准播放</translation>
 <translation id="2224347680315897176">稳重</translation>
 <translation id="2575502321843437554">吸引力不足</translation>
 <translation id="2611765907167846862">平静</translation>
 <translation id="3023502830214299618">很抱歉，目前无法播放此网页。请稍后再试。</translation>
+<translation id="3431227249425330101">如要继续，是否允许 Chrome 将网页内容用于“朗读此网页的内容”功能？</translation>
 <translation id="3493899379487634969">有什么问题？</translation>
 <translation id="3730775656877876887">正在生成 AI 播放内容</translation>
 <translation id="3778044272390020426">负面反馈选项菜单</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“读出此网页的内容”播放器</translation>
 <translation id="7051308646573997571">珊瑚红色</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7161867604252594316">“朗读此网页的内容”功能已关闭</translation>
 <translation id="7221920857098237570">柔和</translation>
 <translation id="7237590978482584900">轻松</translation>
 <translation id="7282547042039404307">流畅</translation>

@@ -518,6 +518,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1570990174567554976">Dosja e faqeshënuesve "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
 <translation id="1571041387761170095">Nuk ka fjalëkalime të dobëta ose të ripërdorura</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
+<translation id="1571371559291327711">Gjej, modifiko dhe më shumë vegla (&amp;F)</translation>
 <translation id="1571738973904005196">Shiko skedën: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (vizitor)</translation>
 <translation id="1573127087832371028">Përshkruaj problemin</translation>
@@ -955,6 +956,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="204914487372604757">Krijo shkurtore</translation>
 <translation id="2050339315714019657">Vertikal</translation>
 <translation id="2051669996101374349">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë. Nuk mund ta ndryshosh këtë cilësim sepse ke të aktivizuar "Mbrojtjen e përparuar".</translation>
+<translation id="2052353138844549871">Përdorimi i Gemini Enterprise me një profil të pamenaxhuar mund të mos rekomandohet</translation>
 <translation id="2052723746739622752">Zhgozhdo Gemini</translation>
 <translation id="2061366302742593739">Nuk ka asgjë për të shfaqur</translation>
 <translation id="2061589908388230480">Nëse Chromium gjen një nga fjalëkalimet e tua në një nxjerrje të paautorizuar të të dhënave publike, "Menaxheri i fjalëkalimeve i Google" mund të ofrojë ta ndryshojë fjalëkalimin tënd për ty kur të jesh i identifikuar. <ph name="BEGIN_LINK" />Më shumë rreth ndryshimit automatik të fjalëkalimit<ph name="END_LINK" /></translation>
@@ -1221,6 +1223,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kërkohet leje, shtyp Ctrl + Përpara për t'u përgjigjur</translation>
 <translation id="2349610121459545414">Vazhdo ta lejosh këtë sajt që të ketë qasje te vendndodhja jote</translation>
 <translation id="2350133097354918058">U ringarkua</translation>
+<translation id="2351165193188463938">Tani po shfleton me Gemini Enterprise</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2353297238722298836">Kamera dhe mikrofoni lejohen</translation>
 <translation id="2353682139907904963">Gozhdo shtesat e reja te "Shiriti i veglave"</translation>
@@ -1268,6 +1271,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2409709393952490731">Përdor një telefon ose tablet</translation>
 <translation id="2410940059315936967">Një sajt që viziton mund të integrojë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Kukit e vendosura nga këto sajte të tjera quhen kuki të palëve të treta.</translation>
+<translation id="2412885537108786454">{NUM_TABS,plural, =1{Fokusuar në 1 skedë}other{Fokusuar në # skeda}}</translation>
 <translation id="2413009156320833859">Personalizoje edhe më shumë shfletuesin tënd me shtesat nga <ph name="BEGIN_LINK1" />Dyqani i uebit i Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Vazhdo të shfletosh për: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">E errët</translation>
@@ -1677,6 +1681,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2849926636739429924">Më shumë opsione për "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="285033512555869047">Mbyllur</translation>
 <translation id="2851291081585704741">Je offline</translation>
+<translation id="2851527955600412545">Organizata jote ka përditësuar politikat e saj për Gemini Enterprise në Chrome. Historiku yt i bisedës mund të mos bartet.</translation>
 <translation id="285237063405807022">(po ngarkohet)</translation>
 <translation id="2853121255651601031">Fjalëkalimi u ruajt</translation>
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
@@ -2626,6 +2631,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3810593934879994994"><ph name="ORIGIN" /> mund t'i shikojnë skedarët në dosjet e mëposhtme</translation>
 <translation id="3810770279996899697">"Menaxheri i fjalëkalimeve" ka nevojë për qasje te MacOS Keychain</translation>
 <translation id="3810973564298564668">Menaxho</translation>
+<translation id="3811424142236602772">Shfleto me Gemini, konfiguruar nga <ph name="DOMAIN" /> për punë. Bëj pyetje ndërsa shfleton duke ndarë skedat si kontekst dhe merr përgjigje të bazuara në skedarët dhe shërbimet e organizatës sate.</translation>
 <translation id="3812525830114410218">Certifikatë me probleme</translation>
 <translation id="3813296892522778813">Shko te <ph name="BEGIN_LINK_CHROMIUM" />ndihma e Google Chrome<ph name="END_LINK_CHROMIUM" /> nëse nuk gjen dot atë që kërkon</translation>
 <translation id="3815509884387832993">Dëgjoje këtë faqe sikur të ishte një podkast me luajtjen me IA-në duke përdorur butonin "Aktivizo 'Luajtjen me IA-në'" në shiritin e veglave të "Modalitetit të leximit"</translation>
@@ -3223,6 +3229,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4500055235123625757">Gemini mund t'u përgjigjet pyetjeve rreth videos ose audios që ke luajtur në <ph name="LINK_BEGIN" />disa uebsajte<ph name="LINK_END" />.</translation>
 <translation id="4500647907053779331">&amp;Përkthe përzgjedhjen në <ph name="LANGUAGE" /></translation>
 <translation id="4502477450742595012">Kliko me butonin djathtas në një skedë dhe zgjidh "Shto skedën në grup të ri"</translation>
+<translation id="450300557121092531">Skedat sipas pajisjes</translation>
 <translation id="4503362512377701151">Po i shikon grupet e skedave të përdorura së fundi për të të ndihmuar të vazhdosh me lehtësi aty ku e ke lënë.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3275,6 +3282,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4562155266774382038">Hiq sugjerimin</translation>
 <translation id="4563883094055457792">Restauro pamjen e ndarë</translation>
 <translation id="456449593072900590">Fshi në dalje</translation>
+<translation id="4564636746145660922">Kontrollo lidhjen tënde dhe më pas provo përsëri.</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4565465014351935093">Shfaq vetëm në faqen e "Skedës së re"</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
@@ -3448,6 +3456,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="475088594373173692">Përdoruesi i parë</translation>
 <translation id="4751925628341802838">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu shtesat dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4754590344707355551">Përmirëso shfletuesin tënd me shtesat</translation>
+<translation id="4754903312643763797">Mund të zbatohen kushte të ndryshme të privatësisë së të dhënave</translation>
 <translation id="4756130875344525429">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu informacionet e ruajtura dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4756378406049221019">Ndalo/Ringarko</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
@@ -4128,6 +4137,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5509914365760201064">Lëshuesi: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Merr përshkrimet e imazhit nga Google</translation>
 <translation id="5512739112435045339">Liro hapësirë në pajisjen tënde. Më pas, provo ta shkarkosh përsëri</translation>
+<translation id="5513121759801003159">Historiku yt i bisedës nuk do të transferohet</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Shiko opsione të tjera për <ph name="EXTENSION_NAME" /></translation>
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
@@ -4936,6 +4946,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6451861213630784801">Ke dalë</translation>
 <translation id="6453191633103419909">Cilësia e projektimit të skedës/ekranit</translation>
 <translation id="6453306703004115497">Përkthyer në <ph name="LANGUAGE" /></translation>
+<translation id="6454212815056355439">Kërko për IA-në në pajisje</translation>
 <translation id="645433497989692531">Kjo do të fshijë në mënyrë të përhershme të dhënat e shfletimit nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu si</translation>
 <translation id="6455264371803474013">Në sajte të caktuara</translation>
 <translation id="6455521402703088376">Joaktive • Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj</translation>
@@ -5106,6 +5117,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="663569763553406962">Shiko se cilat shtesa mund të lexojnë ose të ndryshojnë një sajt</translation>
 <translation id="6636258750460740634">Historiku</translation>
 <translation id="6636623428211296678">Eksploro më shumë cilësime më poshtë ose përfundo tani</translation>
+<translation id="6638255874883623697">Gemini Enterprise</translation>
 <translation id="6639405694338292402">Veçoria "Aftësitë" është çaktivizuar aktualisht. Përditëso "Cilësimet" e Chrome për të filluar.</translation>
 <translation id="6639554308659482635">Memoria e SQLite</translation>
 <translation id="6640268266988685324">Skeda e hapur</translation>
@@ -5239,6 +5251,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6785779729084003225">Përdor <ph name="FOCUS_TOGGLE_HOTKEY" /> për të hapur Gemini në Chrome</translation>
 <translation id="67862343314499040">Vjollcë</translation>
 <translation id="6786480815699355166">Vetëm gjuhët e mbështetura për "Titrat në çast" mund të përkthehen</translation>
+<translation id="6786498102134843646">Përgjigjet nuk do të bazohen në skedarët apo shërbimet e menaxhuara nga <ph name="DOMAIN" /></translation>
 <translation id="6786747875388722282">Shtesat</translation>
 <translation id="6786804673213172567">Niveli 3: E LARTË</translation>
 <translation id="6787531944787756058">Emri i përdoruesit i <ph name="USER_EMAIL" /> është ruajtur vetëm në këtë pajsije. Shiko detajet</translation>
@@ -5401,6 +5414,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6941514251635934269">Pyet për këtë dokument</translation>
 <translation id="694168622559714949">Administratori yt ka caktuar një gjuhë të parazgjedhur e cila nuk mund të modifikohet.</translation>
 <translation id="6941953303876950920">Nevojitet ta nisësh sërish për të vazhduar shfletimin me Gemini</translation>
+<translation id="6943803108751887058">Shtyp Escape për ta mbyllur</translation>
 <translation id="6944854424004126054">Restauro dritaren</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="694592694773692225">Ridrejtimi u bllokua në këtë faqe.</translation>
@@ -5726,6 +5740,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7293774463163321848">Historiku i kërkimeve, historiku i Gemini dhe fjalëkalimet mund të fshihen te cilësimet e tyre të menaxhimit</translation>
 <translation id="7296503797589217366">Zgjidh dosjen "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297228218361240128">Ruaj informacionet te "Portofoli i Google" nga faqet që shikon</translation>
+<translation id="7297535265731442945">Gemini Enterprise u përditësua</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
 <translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299515639584427954">Të ndryshohet aplikacioni i parazgjedhur për lidhjet e mbështetura?</translation>
@@ -5747,6 +5762,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="731827437403763009">Novacionet e IA-së</translation>
 <translation id="7319983568955948908">Ndalo ndarjen</translation>
 <translation id="7321545336522791733">Serveri i paarritshëm</translation>
+<translation id="7321838786611890851">Ndërveprimet e tua me Gemini mund të mos kenë mbrojtjet e konfiguruara nga <ph name="DOMAIN" /> dhe mund të zbatohen kushte të ndryshme të privatësisë së të dhënave</translation>
 <translation id="7322515217754205362">Lejet e sajtit</translation>
 <translation id="7324020307732396723">Hap cilësimet e gjuhës</translation>
 <translation id="7325209047678309347">Letra është bllokuar</translation>
@@ -6043,6 +6059,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7653354650639364202">{0,plural, =1{Mbyll dritaren e izoluar}other{Mbyll dritaret e izoluara (# dritare)}}</translation>
 <translation id="7654941827281939388">Kjo llogari tashmë po përdoret në këtë kompjuter.</translation>
 <translation id="7655411746932645568">Sajtet mund të kërkojnë të lidhen me portat seriale</translation>
+<translation id="7656674791025857763">Identifikohu për të përdorur <ph name="ASSISTANT_NAME" /></translation>
 <translation id="7657090467145778067">Kursime të vogla</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Forma të tjera aktiviteti<ph name="END_LINK_GOOGLE" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="7658239707568436148">Anulo</translation>
@@ -6254,6 +6271,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7904492297081735975">&amp;Hap menaxherin e faqeshënuesve</translation>
 <translation id="7907312522152480478">Për të marrë skedat nga pajisjet e tua të tjera, verifiko që je ti dhe sinkronizo historikun dhe skedat e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7907837847548254634">Shfaq një theksim të shpejtë të objektit të fokusuar</translation>
+<translation id="7908205867885088429">Mëso më shumë rreth restaurimit të cilësimeve të parazgjedhura</translation>
 <translation id="7908835530772972485">Fshiji të dhënat kur mbyll të gjitha dritaret</translation>
 <translation id="7909324225945368569">Riemërto profilin tënd</translation>
 <translation id="7909969815743704077">Shkarko në modalitetin "i fshehtë"</translation>
@@ -6645,6 +6663,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8323317289166663449">Lexo dhe ndrysho të gjitha të dhënat në kompjuterin tënd dhe të gjitha uebsajtet</translation>
 <translation id="8323518750352551353">Të ndahet shfletimi?</translation>
 <translation id="8323744572398547859">Për të marrë skedat nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
+<translation id="8324035203198677529">Organizata jote ka çaktivizuar Gemini Enterprise në Chrome. Mund të vazhdosh të përdorësh Gemini në Chrome, por ai nuk do të gjejë apo referojë më informacione të menaxhuara nga organizata jote. Historiku yt i bisedës mund të mos bartet.</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>
 <translation id="8327386430364625757">Font matematikor</translation>
@@ -6851,6 +6870,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8551388862522347954">Licencat</translation>
 <translation id="8552102814346875916">Ruaj te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="8552947739661397736">Merr kontrollin mbi detyrën, Gemini është aktualisht në kontroll</translation>
+<translation id="8555042096950728024">Zvarrit ose përdor tastet e shigjetave për të riorganizuar</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - përmbajtjet e zgjeruara të shfaqura</translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="8557100046150195444">Përdor Touch ID për të vazhduar</translation>
@@ -6943,6 +6963,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8651806635673244884">Mund t'i zhvendosësh skedat përsëri në krye duke klikuar me butonin djathtas te çdo skedë dhe duke zgjedhur "Shfaq skedat horizontalisht"</translation>
 <translation id="8652400352452647993">Gabim i shtesës së paketës</translation>
 <translation id="8654151524613148204">Skedari është tepër i madh për t'u përdorur nga kompjuteri yt. Na vjen keq.</translation>
+<translation id="8654872240409864765">Organizata jote ka konfiguruar Gemini Enterprise në Chrome. Pyet Gemini për çdo gjë ndërsa shfleton dhe merr përgjigje të bazuara në skedarët dhe shërbimet në organizatën tënde.</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
 <translation id="865857184419171576">Përkthe titrat në</translation>
 <translation id="865936634714975126">Shto një parametër të kërkesës në URL për të zgjedhur llojet pas ngarkimit të faqes. Shembull: chrome://device-log/?types=Bluetooth,USB</translation>
@@ -7106,6 +7127,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8813937837706331325">Kursime mesatare</translation>
 <translation id="8815742860876889867">Hape lidhjen në një dritare të i&amp;zoluar</translation>
 <translation id="881799181680267069">Fshihi të tjerat</translation>
+<translation id="8820301999480837183">Fokusuar në grupin "<ph name="GROUP_NAME" />"</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8821206216942230957">Llogaria jote nuk ka qasje te Gemini në Chrome</translation>
 <translation id="8823514049557262177">Kopjo tekstin e lidhjes</translation>
@@ -7145,6 +7167,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8863753581171631212">Hape lidhjen në dritaren e re të <ph name="APP" /></translation>
 <translation id="8864055848767439877">Po ndahet <ph name="TAB_NAME" /> te <ph name="APP_NAME" /></translation>
 <translation id="8864104359314908853">Fjalëkalimi yt u ruajt</translation>
+<translation id="8865924457197342642">Gemini Enterprise nuk disponohet më</translation>
 <translation id="8866424952450451412">Menaxho flukset e personalizuara të punës të mundësuara nga</translation>
 <translation id="8867102760244540173">Kërko skedat...</translation>
 <translation id="8867568208303837180">Po dërgohet...</translation>
@@ -7357,6 +7380,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9096776523567481218">nuk është instaluar në nivel lokal</translation>
 <translation id="9099383880226822604">Pyll tropikal</translation>
 <translation id="9100765901046053179">Cilësimet e përparuara</translation>
+<translation id="9100928301185810363">Fokusuar në grupin pa emër - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="9103341231213089378">Për të transmetuar, jepi Chrome qasje te: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rrjeti lokal &gt; Chrome</translation>
 <translation id="9103868373786083162">Shtyp për t'u kthyer prapa. Historiku mund të shihet nga menyja kontekstuale.</translation>
 <translation id="9107096627210171112">&amp;Përkthe...</translation>

@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Бадмаараг</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секундээр хурдан урагшлуулах</translation>
 <translation id="1984328900355667246">Дахин тоглуулах боломжгүй</translation>
+<translation id="2009730553732772041">Аудио үүсгэхийн тулд таны байгаа хуудасны контент, URL-г Google-тэй хуваалцана. Та энэ сонголтыг хүссэн үедээ тохиргооноос шинэчлэх боломжтой.</translation>
 <translation id="2019727681730021602">Стандарт дахин тоглуулах явц</translation>
 <translation id="2224347680315897176">Тогтвортой</translation>
 <translation id="2575502321843437554">Хангалттай сонирхолтой биш</translation>
 <translation id="2611765907167846862">Тайван</translation>
 <translation id="3023502830214299618">Харамсалтай нь одоогоор энэ хуудсанд дахин тоглуулах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
+<translation id="3431227249425330101">Үргэлжлүүлэхийн тулд Chrome-д Энэ хуудсыг сонсох онцлогт хуудасны контентыг ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="3493899379487634969">Ямар алдаа гарсан бэ?</translation>
 <translation id="3730775656877876887">ХОУ-ы дахин тоглуулах аудио тойм үүсгэж байна</translation>
 <translation id="3778044272390020426">Сөрөг санал хүсэлтийн сонголтуудын цэс</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“Энэ хуудсыг сонсох” тоглуулагч</translation>
 <translation id="7051308646573997571">Улбар шар туяатай бүдэг улаан</translation>
 <translation id="7138678301420049075">Бусад</translation>
+<translation id="7161867604252594316">“Энэ хуудсыг сонсох” унтраалттай байна</translation>
 <translation id="7221920857098237570">Аядуу</translation>
 <translation id="7237590978482584900">Авхаалжтай</translation>
 <translation id="7282547042039404307">Зөөлөн</translation>

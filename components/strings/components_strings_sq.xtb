@@ -78,6 +78,7 @@
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - Për të dalë nga ekrani i plotë, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="1132789342529761192">Ngarkimi nuk rekomandohet</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />; zgjedhur; artikull i menysë. Zgjidh për të çaktivizuar ndarjen</translation>
 <translation id="11370190534773372">Detajet e kartës u plotësuan</translation>
 <translation id="1138458427267715730">Merr sinjalizime kur çmimi ulet në çdo sajt në ueb</translation>
 <translation id="1142713751288681188">Lloji i letrës</translation>
@@ -928,6 +929,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2526062290525841862">Për ta ekzekutuar këtë aplikacion, aktivizo përsëri modalitetin "si zhvillues" për "Aplikacionin e izoluar të uebit"</translation>
 <translation id="2526280916094749336">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Numri CVC është në pjesën e përparme të kartës sate. Ai është kodi me 4 shifra në krye djathtas mbi numrin e kartës sate.</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />; zgjedhur</translation>
 <translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
 <translation id="2530042584066815841">Kyçja dhe përdorimi i miut</translation>
 <translation id="2535585790302968248">Hap një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
@@ -1012,6 +1014,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2666092431469916601">I sipërm</translation>
 <translation id="2666117266261740852">Mbyll skedat ose aplikacionet e tjera</translation>
 <translation id="266935134738038806">Vizito sajtin</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />; artikull i menysë. Zgjidh për të aktivizuar ndarjen</translation>
 <translation id="2672201172023654893">Shfletuesi yt nuk është i menaxhuar.</translation>
 <translation id="2674170444375937751">Je i sigurt se dëshiron t'i fshish këto faqe nga historiku?</translation>
 <translation id="2675716371350192683">Përmbajtjet e tua nuk do të përdoren për përmirësimin e IA-së. Organizata jote mund t'i ndryshojë këtë cilësime në çdo kohë.</translation>
@@ -1991,6 +1994,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> u përditësua</translation>
 <translation id="4298148761711700950">Paguaj në çast pa ngarkimin e kodit QR</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">Kukit për këtë sajt sinkronizohen në pajisjet e tua me ChromeOS. Për të menaxhuar se çfarë sinkronizohet, shko te <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4299360487321267760">Burimi <ph name="SOURCE_INDEX" /> i <ph name="APP_NAME" /></translation>
 <translation id="4299919199185766032">Emri i shkurtores tejkalon maksimumin e gjatësisë së lejuar prej <ph name="MAX_LENGTH" /> karakteresh.</translation>
@@ -2200,6 +2204,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
+<translation id="468826602575103388">Zgjidh për të çaktivizuar ndarjen</translation>
 <translation id="4690205240253392065">Zgjidh një ofrues të "Paguaj më vonë"</translation>
 <translation id="469028408546145398">Butoni "Mbyll dritaret e fshehta". Aktivizoje për të mbyllur të gjitha dritaret e fshehta që janë aktualisht të hapura</translation>
 <translation id="4692623383562244444">Motorët e kërkimit</translation>
@@ -4169,6 +4174,7 @@ Detaje shtesë:
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943397946612013052">Shkarkimi u bllokua</translation>
 <translation id="7943893128817522649">Mund të kërkojë të shkarkojë automatikisht shumë skedarë</translation>
+<translation id="7947144323420971076">Zgjidh për të aktivizuar ndarjen</translation>
 <translation id="7947285636476623132">Kontrollo vitin e skadimit dhe provo përsëri</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të mësuar për veçoritë e Chrome</translation>
 <translation id="7947964969544524438">Ruaj numrin e udhëtarit të njohur në mënyrë të sigurt</translation>
@@ -4296,6 +4302,7 @@ Detaje shtesë:
 <translation id="8172809706700703589">Krijo një listë paketimi për udhëtimin tim</translation>
 <translation id="8174047975335711832">Informacioni i pajisjes</translation>
 <translation id="8175053171643471349">Menaxho kartat e besnikërisë</translation>
+<translation id="817536628389054635">Informacionet e kontaktit u plotësuan: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je i identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
 <translation id="8176440868214972690">Administratori i kësaj pajisjeje ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> është bllokuar për shkak të përmbajtjes}other{<ph name="FILE_COUNT" /> skedarë janë bllokuar për shkak të përmbajtjes}}</translation>

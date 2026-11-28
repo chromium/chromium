@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1006344083777662909">Po e ndan këtë skedë me "Kërko"</translation>
 <translation id="1026101648481255140">Rifillo instalimin</translation>
 <translation id="1029669172902658969">Nise sërish për të përditësuar ChromiumOS</translation>
 <translation id="1040916596585577953">Chromium rekomandon që ta rinovosh këtë shtesë</translation>
@@ -85,6 +86,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1880495786739455486">Mund ta rihapësh "Kërko" në panelin anësor për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="1880677175115548835">Përzgjidh tekstin</translation>
 <translation id="188102464690227119">Butoni "'Kërko' në panelin anësor" në shiritin e veglave ka një ikonë të re. Kliko tek ai për të bërë pyetje ndërkohë që shfleton me "Kërko" në panelin anësor.</translation>
+<translation id="1888946382735994145"><ph name="WINDOW_TITLE" /> - Po e ndan këtë skedë me "Kërko"</translation>
 <translation id="1896836275755235458">Chromium kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e energjisë"<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
@@ -104,6 +106,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2086476982681781442">Chromium e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="208726765006323911">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chromium për iOS.</translation>
 <translation id="2099452623287920103">Fjalëkalimet e tua dhe të dhënat e tjera të Chromium që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
+<translation id="2104346008417283366">Mund të kalosh te Gemini i lidhur fillimisht me "Llogarinë tënde të Google" dhe që nuk menaxhohet nga <ph name="DOMAIN" />. Ndërrimi kërkon nisjen sërish të Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
 <translation id="2135919691573380097">Raportoje këtë sajt</translation>
@@ -271,6 +274,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="3945058413678539331">Chromium po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="3950481960271781644">Për të marrë informacionet e tua të ruajtura etj. në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
+<translation id="3956384805063254165">Ky shfletues i menaxhuar mund të përdorë Gemini të konfiguruar për punë nga <ph name="DOMAIN" />. Ai mund të gjejë informacione dhe të japë përgjigje të bazuara në skedarët dhe shërbimet e organizatës. Ndërrimi kërkon nisjen sërish të Chromium.</translation>
 <translation id="395904275706073188">Faqet e mbrojtura nuk mund të lexohen. Provo një faqe tjetër.</translation>
 <translation id="3962647064319009959">Mëso se si të mban të sigurt Chromium</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
@@ -363,6 +367,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="494490797786467921">Kliko për të mbyllur dialogun e identifikimit në Chromium</translation>
 <translation id="4950660488495335294">Me profilet e Chromium, mund t'i ndash të gjitha gjërat e tua të Chromium. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="4992938037305302429">Llogaria jote në Chromium</translation>
+<translation id="5088350632679445418">Fillo një bashkëbisedim të ri me "Kërko"</translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
 <translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="5171868502429358653">Identifikohu në Chromium</translation>
@@ -401,6 +406,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5473971139929175403">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në këtë version të Linux</translation>
 <translation id="5475924890392386523">Chromium e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale</translation>
 <translation id="5496810170689441661">Chromium po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
+<translation id="550687958592841318">{NUM_TABS,plural, =1{Anulo ndarjen e skedës me "Kërko"}other{Anulo ndarjen e # skedave me "Kërko"}}</translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Hap PDF-të në Chromium</translation>
 <translation id="5557035028197464376">"Kërko" në Chrome u gozhdua te shiriti i veglave!</translation>
@@ -411,8 +417,10 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chromium në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu informacionet e tua të ruajtura etj. nga <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5580770360767802657">Përdor Chromium si parazgjedhje dhe gozhdoje</translation>
+<translation id="5595526984151073167">{NUM_TABS,plural, =1{Ndaj skedën me "Kërko"}other{Ndaj # skeda me "Kërko"}}</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chromium për të zbatuar këtë përditësim. "Dritarja jote e izoluar" nuk do të rihapet.}other{Administratori yt kërkon që të nisësh sërish Chromium për të zbatuar këtë përditësim. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
+<translation id="5608863008645990586">Kalo te Gemini Enterprise që menaxhohet nga <ph name="DOMAIN" /></translation>
 <translation id="5614149501995591823">Një <ph name="IMPORTANT_UPDATE" /> është gati. Mund ta nisësh sërish tani ose caktoje Chromium që të përditësohet herën tjetër kur ekrani të mbetet i ndezur dhe i papërdorur për <ph name="IDLE_DURATION" />.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ofrohet një përditësim i Chromium}=1{Ofrohet një përditësim i Chromium}other{Një përditësim i Chromium ofrohet prej # ditësh}}</translation>
 <translation id="5643865575100044307">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chromium</translation>
@@ -506,6 +514,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6455857529632101747">Mirë se vjen në profilet e Chromium</translation>
 <translation id="6460614424172581323">Herën tjetër që të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur grupet e skedave.</translation>
 <translation id="6466344609055215035">Hiqe llogarinë nga Chromium</translation>
+<translation id="6475125381371849386">Fillo një bashkëbisedim të ri me "Kërko"</translation>
 <translation id="6475912303565314141">Gjithashtu kontrollon se cila faqe shfaqet kur fillon Chromium</translation>
 <translation id="6510925080656968729">Çinstaloje Chromium</translation>
 <translation id="651535675648445253">Shkurtoret janë hapur në Chromium</translation>
@@ -520,6 +529,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6598877126913850652">Shko te "Cilësimet e njoftimeve" të Chromium</translation>
 <translation id="6600016381025017075">Kërko për çdo gjë në këtë faqe</translation>
 <translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
+<translation id="6614182654067789793">{NUM_TABS,plural, =1{Ndaj skedën me "Kërko"}other{Ndaj # skeda me "Kërko"}}</translation>
 <translation id="6637855549677695722">Herën tjetër që do të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të marrë veçoritë më të mira të sigurisë të Chromium.</translation>
 <translation id="6637908313088374648">Chromium tani niset kur niset Windows që të mund të fillosh të shfletosh menjëherë. Mund ta çaktivizosh këtë te cilësimet.</translation>
 <translation id="6644846457769259194">Po përditëson pajisjen (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -534,6 +544,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili ose përdor një version më të ri të Chromium.</translation>
 <translation id="6729124504294600478">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chromium në "Aktivitetin e uebit dhe të aplikacioneve" dhe në shërbimet e lidhura të Google</translation>
 <translation id="6734291798041940871">Chromium është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
+<translation id="6737759643107005803">Kalo përsëri te Gemini që nuk menaxhohet nga <ph name="DOMAIN" /></translation>
 <translation id="6742093177587589736">Për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chromium. Ky faqeshënues do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="674891594898436429">Hiq kërkimin aktiv në këtë skedë</translation>
 <translation id="6751374565094704799">Shpejton sajtet me motorin V8 të Chromium, por e bën Chromium disi më pak rezistent ndaj sulmeve. Ky cilësim është aktiv.</translation>
@@ -727,6 +738,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8556055872671007529">Disa veçori dhe shtesa të Chromium vijnë me shkurtore. Mund të zgjedhësh që t'i aktivizosh përsëri.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
+<translation id="8570178520132427425">{NUM_TABS,plural, =1{Anulo ndarjen e skedës me "Kërko"}other{Anulo ndarjen e # skedave me "Kërko"}}</translation>
 <translation id="8576826849825683917">Disa organizata menaxhojnë Chromium</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>

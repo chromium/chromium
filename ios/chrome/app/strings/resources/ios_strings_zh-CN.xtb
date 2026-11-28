@@ -226,6 +226,7 @@
 <translation id="1621729191093924223">所有需要使用麦克风的功能都将无法正常运行</translation>
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1629162218487290695">验证身份…</translation>
+<translation id="1633084385573994059">不使用此网站</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
 <translation id="1641113438599504367">安全浏览</translation>
@@ -386,6 +387,7 @@
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
+<translation id="2113761902638026426">要允许 Gemini 访问 <ph name="SITE_DOMAIN" /> 吗？</translation>
 <translation id="2117650889962717098">切换到无痕模式，让浏览不留痕迹</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2119962645034852864">您的账号无法使用部分服务</translation>
@@ -766,6 +768,7 @@
 <translation id="3350976670663926380">修改已保存</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
 <translation id="3365529507898144230">保存到相册</translation>
+<translation id="3371168305258344914">Gemini 即将对某个可能包含您敏感信息的网站执行操作</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3378214228000661758">使用以下名称创建通行密钥</translation>
@@ -1508,6 +1511,7 @@
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">要使用 Google 账号中的密码或将密码保存到 Google 账号，请验证是您本人在操作。</translation>
 <translation id="5684761169742812828">此密码已在互联网上遭遇数据泄露。如果您现在没有时间更改密码，Google 建议您保留此警告，以便之后继续提醒自己。</translation>
+<translation id="5691020463738411542">在各设备间同步“安全浏览”偏好设置</translation>
 <translation id="5694848685995373177">已保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
 <translation id="570209299585559496">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
 <translation id="5702108177581350218">分享用户名和密码之后，家庭成员就可以通过 Google 密码管理工具填充这些信息。</translation>
@@ -1586,6 +1590,7 @@
 <translation id="5948605885471592910">查看和管理所有已打开的页面</translation>
 <translation id="5952641243319721872">确定要舍弃您所做的选择吗？</translation>
 <translation id="5956112131836209882">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
+<translation id="595662449352471176">开始任务</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
 <translation id="5963694076845073027">下次从此处打开链接</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
@@ -1806,6 +1811,7 @@
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565899972286925956">尽情创作</translation>
 <translation id="6571070086367343653">修改信用卡</translation>
+<translation id="6571502147204686607">防范不安全网站</translation>
 <translation id="6574092468346088891">开启安全检查通知</translation>
 <translation id="6579867704846662339">您可选择在无痕模式下打开来自其他应用的传入网址。</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
@@ -2246,6 +2252,7 @@
 <translation id="7921559948846049514">为背景选择主题、颜色等</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
+<translation id="7926290435065552539">确保密码安全无虞</translation>
 <translation id="7926975587469166629">卡的别名</translation>
 <translation id="792762900715361006">拍摄照片或视频</translation>
 <translation id="7927711904086083099">未选择</translation>
@@ -2664,6 +2671,7 @@
 <translation id="9144230693397287797">接收您在其他设备设置的提醒和标签页的最新动态</translation>
 <translation id="914781932147356857">全部标为…</translation>
 <translation id="9148126808321036104">重新登录</translation>
+<translation id="914964947703922647">查看任务</translation>
 <translation id="9149866541089851383">编辑...</translation>
 <translation id="9152637745605628097">选择主题、颜色，或上传图片</translation>
 <translation id="9153159728062222866">无需复制和粘贴</translation>
