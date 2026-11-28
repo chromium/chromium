@@ -23,7 +23,7 @@ common = importlib.import_module(
 ORDER = 5
 CANONICAL_BINARIES = ('chrome', 'd8')
 ENVIRONMENT_BINARIES = (('chrome-desktop', 'chrome'), ('d8', 'd8'))
-MANUAL_BUILDS = ('msan', 'ubsan', 'hwasan', 'debug', 'official')
+MANUAL_BUILDS = ('dcheck', 'msan', 'ubsan', 'hwasan', 'official')
 BUILDS = ('asan', 'release') + MANUAL_BUILDS
 ARCHES = ('x64', 'arm64', 'x86', 'arm')
 # Chrome switches that turn off the sandbox for all or some processes. A bug
@@ -108,7 +108,8 @@ SANITIZER_RE = re.compile(
 )
 CRASH_HEADER_RE = re.compile(
     r'(?:==\d+==(?:ERROR|WARNING):|CHECK failed:|DCHECK failed:|'
-    r'FATAL:|signal \d+ \(SIG\w+\)|Segmentation fault|SEGV)',
+    r'Debug check failed:|FATAL:|signal \d+ \(SIG\w+\)|'
+    r'Segmentation fault|SEGV)',
     re.IGNORECASE,
 )
 SYMBOLIZED_FRAME_RE = re.compile(
@@ -385,12 +386,27 @@ def _check_build(
 ) -> list[common.Check]:
     """Checks the `build` value against the list and the crash log.
 
-    A release or official build cannot produce a sanitizer trace (the
-    detailed memory-error report from tools like ASan), so that pair is a
-    conflict. Builds other than asan and release go to a human.
+    Debug builds (`is_debug=true`) are not supported for chrome or d8; V8
+    DCHECK crashes use a `dcheck` build instead. A release, official, or
+    dcheck build cannot produce a sanitizer trace (the detailed memory-error
+    report from tools like ASan), so that pair is a conflict. Builds other
+    than asan and release go to a human.
     """
     raw_build = values['build']
     build = raw_build.strip().lower()
+    # Debug builds (`is_debug=true`) are not built for chrome or d8. Name it
+    # explicitly so the researcher gets the replacement instead of a generic
+    # invalid-build error.
+    if build == 'debug':
+        submission.set_field('build', common.INVALID, None)
+        return _fail_both(
+            'config.build',
+            'Debug builds (`is_debug=true`) are not supported for chrome or'
+            ' d8.',
+            'Use "dcheck" (`is_asan=false is_debug=false'
+            ' dcheck_always_on=false v8_dcheck_always_on=true`) for V8 DCHECK'
+            ' crashes, or "asan" / "release" otherwise.',
+        )
     if build not in BUILDS:
         submission.set_field('build', common.INVALID, None)
         return _fail_both(
@@ -398,7 +414,9 @@ def _check_build(
             f'Invalid or unsupported build "{_quote(raw_build)}".',
             f'Use one of: {", ".join(BUILDS)}.',
         )
-    if build in ('release', 'official') and SANITIZER_RE.search(crash_text):
+    if build in ('release', 'official', 'dcheck') and SANITIZER_RE.search(
+        crash_text
+    ):
         submission.set_field('build', common.CONFLICT, build)
         return _fail_both(
             'config.build',

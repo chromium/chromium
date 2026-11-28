@@ -115,14 +115,20 @@ There are a few different possible build configurations of Chromium or of V8.
 The three that are most relevant for security purposes are:
 
 * "Release", which means `is_asan=false is_debug=false` in args.gn
-* "Debug", which means `is_asan=false is_debug=true` in args.gn
+* "DCHECK", which means
+  `is_asan=false is_debug=false dcheck_always_on=false v8_dcheck_always_on=true`
+  in args.gn
 * "ASAN", which means `is_asan=true is_debug=false` in args.gn
 
+We do not build `chrome` or `d8` with `is_debug=true`; do not use or require
+`is_debug=true` in your reports.
+
 There are several different ways that invariants in Chromium and V8 are
-enforced. The CHECK macro enforces an invariant even in released builds, and the
-DCHECK macro enforces an invariant in debug builds only. Some kinds of invariant
-violation, like indexing outside the bounds of a base::span, are also detected
-in release builds and cause an immediate crash.
+enforced. The CHECK macro enforces an invariant even in release builds, and the
+DCHECK macro enforces an invariant only when enabled at build time (such as in a
+DCHECK build for V8). Some kinds of invariant violation, like indexing outside
+the bounds of a base::span, are also detected in release builds and cause an
+immediate crash.
 
 ## Attacks
 
@@ -211,9 +217,9 @@ For this kind of bug, the proof of concept must either:
 * Cause the renderer process to crash with an ASAN failure indicating an
   out-of-bounds read, out-of-bounds write, use-after-free, or use-after-poison,
   or
-* Cause a debug renderer to crash with a DCHECK failure from V8
+* Cause a DCHECK build of the renderer to crash with a DCHECK failure from V8
 * Cause an ASAN build of d8 to crash with an ASAN failure
-* Cause a debug build of d8 to crash with a DCHECK failure
+* Cause a DCHECK build of d8 to crash with a DCHECK failure
 
 Not all DCHECK failures in V8 or d8 are security bugs, but many are, so to be
 conservative we assume that all of them are security bugs until we are confident
@@ -369,7 +375,7 @@ When reporting a bug:
   from reporters.
 * Do include these sections:
     * Written description of attack steps
-    * Symbolized ASAN stack trace or debug crash report, if relevant
+    * Symbolized ASAN stack trace or DCHECK crash report, if relevant
     * A short description of the security consequences of the attack, using the
       terms given above
     * Which revision, build arguments (args.gn), and command-line flags you

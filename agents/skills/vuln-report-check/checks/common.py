@@ -27,7 +27,7 @@ sys.modules.setdefault('common', sys.modules[__name__])
 sys.modules.setdefault('checks.common', sys.modules[__name__])
 
 MIN_PYTHON = (3, 10)
-VERSION = '0.9.4'
+VERSION = '0.9.5'
 # Largest attachment size the checker reads. Bigger files are cut off and
 # flagged as oversize, so a huge file cannot slow the checker down.
 MAX_FILE_BYTES = 1_000_000

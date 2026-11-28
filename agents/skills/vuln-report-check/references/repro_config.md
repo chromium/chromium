@@ -11,7 +11,7 @@ is required; use JSON `null` for "none". Unknown extra keys only give a tip.
 | `version`          | `1`                                                                                                           |
 | `environment`      | `chrome-desktop` or `d8` (automated), or a manual environment (below)                                         |
 | `binary`           | `chrome` or `d8`; `null` for manual environments                                                              |
-| `build`            | `asan`, `release`; `msan`, `ubsan`, `hwasan`, `debug`, `official` go to a human                               |
+| `build`            | `asan`, `release`; `dcheck`, `msan`, `ubsan`, `hwasan`, `official` go to a human                              |
 | `flags`            | List of switches, may be `[]`. d8 puts `--run-as-security-poc` (or `--run-as-sandbox-security-poc`) first     |
 | `poc`              | Attached `poc.html`, `index.html`, or `poc.js`; `null` when `server` serves the page inline                   |
 | `server`           | `{"file": "server.py", "port": 8000}` or `null`                                                               |
@@ -33,7 +33,11 @@ Rules worth knowing:
   `--no-zygote-sandbox`, `--disable-seccomp-filter-sandbox`,
   `--disable-namespace-sandbox`, `--disable-setuid-sandbox`) fails report
   quality only: a bug that needs the sandbox off is not a security bug.
-- `release` or `official` with a sanitizer trace in `crash_log` fails.
+- `debug` (`is_debug=true`) is not supported for `chrome` or `d8`. Use `dcheck`
+  (`is_asan=false is_debug=false dcheck_always_on=false v8_dcheck_always_on=true`)
+  for V8 `DCHECK` crashes.
+- `release`, `official`, or `dcheck` with a sanitizer trace in `crash_log`
+  fails.
 - `null` for `user_interaction` or `preconditions` fails when the report steps
   say "click" or edit `/etc/hosts`.
 
