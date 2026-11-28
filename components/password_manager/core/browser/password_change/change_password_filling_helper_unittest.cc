@@ -164,6 +164,51 @@ class ChangePasswordFillingHelperTest : public testing::Test {
     form_managers_.push_back(std::move(manager));
   }
 
+  autofill::FormData MakeSingleFieldFormData(uint32_t renderer_id,
+                                             bool is_autofilled = true) {
+    autofill::FormData form_data;
+    form_data.set_fields(
+        {MakeFormField(renderer_id, autofill::FormControlType::kInputPassword,
+                       is_autofilled)});
+    return form_data;
+  }
+
+  void ExpectCurrentPasswordFill(
+      uint32_t renderer_id,
+      const PasswordString& old_password,
+      std::optional<autofill::FormData> reply = std::nullopt) {
+    EXPECT_CALL(*driver(),
+                FillChangePasswordForm(autofill::FieldRendererId(renderer_id),
+                                       autofill::FieldRendererId(),
+                                       autofill::FieldRendererId(),
+                                       old_password, PasswordString(), _))
+        .WillOnce(base::test::RunOnceCallback<5>(std::move(reply)));
+  }
+
+  void ExpectNewPasswordFill(
+      uint32_t renderer_id,
+      const PasswordString& new_password,
+      std::optional<autofill::FormData> reply = std::nullopt) {
+    EXPECT_CALL(*driver(),
+                FillChangePasswordForm(autofill::FieldRendererId(),
+                                       autofill::FieldRendererId(renderer_id),
+                                       autofill::FieldRendererId(),
+                                       PasswordString(), new_password, _))
+        .WillOnce(base::test::RunOnceCallback<5>(std::move(reply)));
+  }
+
+  void ExpectConfirmPasswordFill(
+      uint32_t renderer_id,
+      const PasswordString& new_password,
+      std::optional<autofill::FormData> reply = std::nullopt) {
+    EXPECT_CALL(*driver(),
+                FillChangePasswordForm(autofill::FieldRendererId(),
+                                       autofill::FieldRendererId(),
+                                       autofill::FieldRendererId(renderer_id),
+                                       PasswordString(), new_password, _))
+        .WillOnce(base::test::RunOnceCallback<5>(std::move(reply)));
+  }
+
   autofill::FieldGlobalId MakeGlobalId(const autofill::LocalFrameToken& frame,
                                        uint32_t renderer_id) {
     return {frame, autofill::FieldRendererId(renderer_id)};
@@ -835,18 +880,8 @@ TEST_F(ChangePasswordFillingHelperTest,
   EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
   EXPECT_CALL(credentials_provider(), GetNewPassword(form_managers()[1].get()))
       .WillOnce(Return(kNewPassword));
-  autofill::FormData form_data;
-  form_data.set_fields(
-      {MakeFormField(20, autofill::FormControlType::kInputPassword,
-                     /*is_autofilled=*/true),
-       MakeFormField(30, autofill::FormControlType::kInputPassword,
-                     /*is_autofilled=*/true)});
-  EXPECT_CALL(*driver(),
-              FillChangePasswordForm(autofill::FieldRendererId(),
-                                     autofill::FieldRendererId(20),
-                                     autofill::FieldRendererId(30),
-                                     PasswordString(), kNewPassword, _))
-      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+  ExpectNewPasswordFill(20, kNewPassword, MakeSingleFieldFormData(20));
+  ExpectConfirmPasswordFill(30, kNewPassword, MakeSingleFieldFormData(30));
 
   TestFuture<ChangePasswordActionResult> future;
   helper().FillChangePasswordForm(future.GetCallback());
@@ -875,18 +910,8 @@ TEST_F(ChangePasswordFillingHelperTest,
   EXPECT_CALL(credentials_provider(), GetOldPassword()).Times(0);
   EXPECT_CALL(credentials_provider(), GetNewPassword(form_managers()[0].get()))
       .WillOnce(Return(kNewPassword));
-  autofill::FormData form_data;
-  form_data.set_fields(
-      {MakeFormField(20, autofill::FormControlType::kInputPassword,
-                     /*is_autofilled=*/true),
-       MakeFormField(30, autofill::FormControlType::kInputPassword,
-                     /*is_autofilled=*/true)});
-  EXPECT_CALL(*driver(),
-              FillChangePasswordForm(autofill::FieldRendererId(),
-                                     autofill::FieldRendererId(20),
-                                     autofill::FieldRendererId(30),
-                                     PasswordString(), kNewPassword, _))
-      .WillOnce(base::test::RunOnceCallback<5>(form_data));
+  ExpectNewPasswordFill(20, kNewPassword, MakeSingleFieldFormData(20));
+  ExpectConfirmPasswordFill(30, kNewPassword, MakeSingleFieldFormData(30));
 
   TestFuture<ChangePasswordActionResult> future;
   helper().FillChangePasswordForm(future.GetCallback());
@@ -959,7 +984,7 @@ TEST_F(ChangePasswordFillingHelperTest,
   ChangePasswordActionResult result = future.Take();
   EXPECT_EQ(result.code,
             actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
-  EXPECT_FALSE(result.requires_page_stabilization);
+  EXPECT_TRUE(result.requires_page_stabilization);
   EXPECT_EQ(result.message,
             "Filled old password into field with id 10 and "
             "new generated password into field with id 20. "
@@ -1177,6 +1202,259 @@ TEST_F(ChangePasswordFillingHelperTest,
   EXPECT_FALSE(future.IsReady());
   ChangePasswordActionResult result = future.Take();
   EXPECT_TRUE(result.IsOk());
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_FieldsAcrossMultipleForms_Succeeds) {
+  AddFormManager({MakeFormField(10)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(1), /*parse_form=*/true);
+  AddFormManager({MakeFormField(20)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(2), /*parse_form=*/true);
+  AddFormManager({MakeFormField(30)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(), /*parse_form=*/true);
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+
+  EXPECT_CALL(credentials_provider(), GetOldPassword())
+      .WillOnce(Return(PasswordString(kDefaultOldPassword)));
+  EXPECT_CALL(credentials_provider(), GetNewPassword(form_managers()[1].get()))
+      .WillOnce(Return(PasswordString(kDefaultNewPassword)));
+
+  ExpectCurrentPasswordFill(10, PasswordString(kDefaultOldPassword),
+                            MakeSingleFieldFormData(10));
+  ExpectNewPasswordFill(20, PasswordString(kDefaultNewPassword),
+                        MakeSingleFieldFormData(20));
+  ExpectConfirmPasswordFill(30, PasswordString(kDefaultNewPassword),
+                            MakeSingleFieldFormData(30));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "new generated password into field with id 20 and "
+            "confirmation password into field with id 30.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_TwoFieldsInOneFormAndOneUnowned_GroupsByForm) {
+  AddFormManager({MakeFormField(10), MakeFormField(20)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(1), /*parse_form=*/true);
+  AddFormManager({MakeFormField(30)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(), /*parse_form=*/true);
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+
+  autofill::FormData form1_data;
+  form1_data.set_fields(
+      {MakeFormField(10, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true),
+       MakeFormField(20, autofill::FormControlType::kInputPassword,
+                     /*is_autofilled=*/true)});
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(autofill::FieldRendererId(10),
+                                     autofill::FieldRendererId(20),
+                                     autofill::FieldRendererId(),
+                                     PasswordString(kDefaultOldPassword),
+                                     PasswordString(kDefaultNewPassword), _))
+      .WillOnce(base::test::RunOnceCallback<5>(form1_data));
+  ExpectConfirmPasswordFill(30, PasswordString(kDefaultNewPassword),
+                            MakeSingleFieldFormData(30));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "new generated password into field with id 20 and "
+            "confirmation password into field with id 30.");
+}
+
+TEST_F(
+    ChangePasswordFillingHelperTest,
+    FillChangePasswordForm_OutOfOrderCallbacks_PreservesCanonicalMessageOrder) {
+  AddFormManager({MakeFormField(10)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(1), /*parse_form=*/true);
+  AddFormManager({MakeFormField(20)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(2), /*parse_form=*/true);
+  AddFormManager({MakeFormField(30)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(), /*parse_form=*/true);
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+
+  using FillCallback =
+      base::OnceCallback<void(const std::optional<autofill::FormData>&)>;
+  FillCallback current_cb;
+  FillCallback new_cb;
+  FillCallback confirm_cb;
+
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(
+                  autofill::FieldRendererId(10), autofill::FieldRendererId(),
+                  autofill::FieldRendererId(),
+                  PasswordString(kDefaultOldPassword), PasswordString(), _))
+      .WillOnce([&](auto, auto, auto, const auto&, const auto&,
+                    FillCallback cb) { current_cb = std::move(cb); });
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(
+                  autofill::FieldRendererId(), autofill::FieldRendererId(20),
+                  autofill::FieldRendererId(), PasswordString(),
+                  PasswordString(kDefaultNewPassword), _))
+      .WillOnce([&](auto, auto, auto, const auto&, const auto&,
+                    FillCallback cb) { new_cb = std::move(cb); });
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(
+                  autofill::FieldRendererId(), autofill::FieldRendererId(),
+                  autofill::FieldRendererId(30), PasswordString(),
+                  PasswordString(kDefaultNewPassword), _))
+      .WillOnce([&](auto, auto, auto, const auto&, const auto&,
+                    FillCallback cb) { confirm_cb = std::move(cb); });
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  ASSERT_TRUE(current_cb);
+  ASSERT_TRUE(new_cb);
+  ASSERT_TRUE(confirm_cb);
+
+  // Resolve in reverse order (confirm -> new -> current).
+  std::move(confirm_cb).Run(MakeSingleFieldFormData(30));
+  std::move(new_cb).Run(MakeSingleFieldFormData(20));
+  std::move(current_cb).Run(MakeSingleFieldFormData(10));
+  EXPECT_FALSE(future.IsReady());
+
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "new generated password into field with id 20 and "
+            "confirmation password into field with id 30.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_PartialNulloptAcrossForms_ReportsDetails) {
+  AddFormManager({MakeFormField(10)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(1), /*parse_form=*/true);
+  AddFormManager({MakeFormField(20)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(2), /*parse_form=*/true);
+  AddFormManager({MakeFormField(30)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(), /*parse_form=*/true);
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+
+  ExpectCurrentPasswordFill(10, PasswordString(kDefaultOldPassword),
+                            MakeSingleFieldFormData(10));
+  ExpectNewPasswordFill(20, PasswordString(kDefaultNewPassword), std::nullopt);
+  ExpectConfirmPasswordFill(30, PasswordString(kDefaultNewPassword),
+                            MakeSingleFieldFormData(30));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_EQ(result.code,
+            actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "confirmation password into field with id 30. "
+            "Failed to fill new generated password into field with id 20.");
+}
+
+TEST_F(
+    ChangePasswordFillingHelperTest,
+    FillChangePasswordForm_PartialCallbackDroppedAcrossForms_ReportsDetails) {
+  AddFormManager({MakeFormField(10)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(1), /*parse_form=*/true);
+  AddFormManager({MakeFormField(20)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(2), /*parse_form=*/true);
+  AddFormManager({MakeFormField(30)}, /*driver=*/nullptr,
+                 autofill::FormRendererId(), /*parse_form=*/true);
+  ASSERT_TRUE(helper()
+                  .ValidateAndSetFieldIds(MakeGlobalId(frame_token(), 10),
+                                          MakeGlobalId(frame_token(), 20),
+                                          MakeGlobalId(frame_token(), 30))
+                  .has_value());
+  ASSERT_TRUE(helper()
+                  .ValidateDriverAndTargetFields(*driver(), main_frame_origin())
+                  .IsOk());
+
+  ExpectCurrentPasswordFill(10, PasswordString(kDefaultOldPassword),
+                            MakeSingleFieldFormData(10));
+  EXPECT_CALL(*driver(),
+              FillChangePasswordForm(
+                  autofill::FieldRendererId(), autofill::FieldRendererId(20),
+                  autofill::FieldRendererId(), PasswordString(),
+                  PasswordString(kDefaultNewPassword), _))
+      .WillOnce(Return());
+  ExpectConfirmPasswordFill(30, PasswordString(kDefaultNewPassword),
+                            MakeSingleFieldFormData(30));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_EQ(result.code,
+            actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "confirmation password into field with id 30. "
+            "Failed to fill new generated password into field with id 20.");
+}
+
+TEST_F(ChangePasswordFillingHelperTest,
+       FillChangePasswordForm_FormCacheClearedBeforeFill_FallsBackPerField) {
+  ASSERT_TRUE(PrepareHelperWithFields(/*has_current=*/true, /*has_new=*/true,
+                                      /*has_confirm=*/false));
+  form_managers().clear();
+
+  EXPECT_CALL(credentials_provider(), GetNewPassword(nullptr))
+      .WillOnce(Return(PasswordString(kDefaultNewPassword)));
+  ExpectCurrentPasswordFill(10, PasswordString(kDefaultOldPassword),
+                            MakeSingleFieldFormData(10));
+  ExpectNewPasswordFill(20, PasswordString(kDefaultNewPassword),
+                        MakeSingleFieldFormData(20));
+
+  TestFuture<ChangePasswordActionResult> future;
+  helper().FillChangePasswordForm(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  ChangePasswordActionResult result = future.Take();
+  EXPECT_TRUE(result.IsOk());
+  EXPECT_TRUE(result.requires_page_stabilization);
+  EXPECT_EQ(result.message,
+            "Filled old password into field with id 10 and "
+            "new generated password into field with id 20.");
 }
 
 }  // namespace

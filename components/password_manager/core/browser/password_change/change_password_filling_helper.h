@@ -28,6 +28,7 @@ struct ChangePasswordActionResult {
   static ChangePasswordActionResult Ok(bool requires_page_stabilization,
                                        std::string message);
   static ChangePasswordActionResult Error(actor::mojom::ActionResultCode code,
+                                          bool requires_page_stabilization,
                                           std::string message);
 
   bool IsOk() const { return code == actor::mojom::ActionResultCode::kOk; }
@@ -90,11 +91,13 @@ class ChangePasswordFillingHelper {
       PasswordManagerDriver& driver,
       const url::Origin& main_frame_origin);
 
-  // Fills the stored target password fields via the validated driver with
-  // credentials provided by the credentials provider, evaluates the returned
-  // `FormData`, and asynchronously invokes `callback` with the resulting status
-  // and message. Requires `ValidateDriverAndTargetFields()` to have succeeded.
-  // For evaluations and testing, the credentials provider can be overridden by
+  // Fills the stored target password fields via the validated driver (grouping
+  // fields by owning form so fields split across multiple forms or unowned
+  // inputs in the same frame are filled together per form) with credentials
+  // provided by the credentials provider, evaluates the returned `FormData`s,
+  // and asynchronously invokes `callback` with the resulting status and
+  // message. Requires `ValidateDriverAndTargetFields()` to have succeeded. For
+  // evaluations and testing, the credentials provider can be overridden by
   // command-line switches.
   void FillChangePasswordForm(
       base::OnceCallback<void(ChangePasswordActionResult)> callback);

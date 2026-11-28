@@ -12,11 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -105,38 +108,94 @@ PasswordFormManager* FindParsedPasswordFormManagerForNewPassword(
   return nullptr;
 }
 
-// TODO(crbug.com/580856538): `PasswordManagerDriver::FillChangePasswordForm()`
-// currently passes a single `form_data` here. If a page has password inputs
-// that do not share the same <form> element (or one is inside a <form> and
-// another is unowned), `form_data` only covers one form and fields filled in
-// other forms will be reported as unfilled.
-ChangePasswordActionResult BuildChangePasswordActionResult(
+struct TargetField {
+  std::string_view label;
+  autofill::FieldRendererId id;
+};
+
+struct FormFillRequest {
+  autofill::FieldRendererId current_id;
+  autofill::FieldRendererId new_id;
+  autofill::FieldRendererId confirm_id;
+};
+
+// Groups the set target fields by the `PasswordFormManager` that owns them so
+// fields belonging to the same form (or all unowned inputs) are filled in a
+// single `FillChangePasswordForm()` call, while fields split across multiple
+// forms produce one request per form. Any field no longer present in
+// `PasswordFormCache` is placed in its own single-field request so the renderer
+// still attempts to fill it and reports the outcome.
+// Note: Grouping relies on cached `PasswordFormManager` ownership, so if a page
+// dynamically reparents an `<input>` into a different `<form>` before Autofill
+// refreshes the cache, grouped fields may no longer share a form in the DOM.
+std::vector<FormFillRequest> GroupTargetFieldsByForm(
+    PasswordManagerDriver& driver,
     autofill::FieldRendererId current_password_field_id,
     autofill::FieldRendererId new_password_field_id,
-    autofill::FieldRendererId confirm_new_password_field_id,
-    const std::optional<autofill::FormData>& form_data) {
+    autofill::FieldRendererId confirm_new_password_field_id) {
+  base::span<const std::unique_ptr<PasswordFormManager>> form_managers =
+      GetFormManagers(driver);
+
+  struct FormGroup {
+    raw_ptr<const PasswordFormManager> manager;
+    FormFillRequest request;
+  };
+  std::vector<FormGroup> groups;
+  groups.reserve(3);
+
+  auto add_field = [&](autofill::FieldRendererId field_id,
+                       autofill::FieldRendererId FormFillRequest::* slot) {
+    if (!field_id) {
+      return;
+    }
+    const PasswordFormManager* manager =
+        FindPasswordFormManagerForField(driver, form_managers, field_id);
+    if (manager) {
+      auto it = std::ranges::find(groups, manager, &FormGroup::manager);
+      if (it != groups.end()) {
+        it->request.*slot = field_id;
+        return;
+      }
+    }
+    FormFillRequest request;
+    request.*slot = field_id;
+    groups.push_back({.manager = manager, .request = request});
+  };
+
+  add_field(current_password_field_id, &FormFillRequest::current_id);
+  add_field(new_password_field_id, &FormFillRequest::new_id);
+  add_field(confirm_new_password_field_id, &FormFillRequest::confirm_id);
+
+  return base::ToVector(groups, &FormGroup::request);
+}
+
+ChangePasswordActionResult BuildChangePasswordActionResult(
+    std::vector<TargetField> targets,
+    std::vector<std::optional<autofill::FormData>> replies) {
   // TODO(crbug.com/580865855): Tab & frame liveness checks. Handle general
   // form-filling error reporting when a tab/frame is destroyed while
   // `FillChangePasswordForm()` is in flight (returning `kTabWentAway` /
   // `kFrameWentAway` instead of `kFormFillingUnknownAutofillError`).
-  if (!form_data.has_value()) {
+  if (std::ranges::none_of(replies,
+                           [](const std::optional<autofill::FormData>& reply) {
+                             return reply.has_value();
+                           })) {
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        /*requires_page_stabilization=*/false,
         "Found no eligible form to fill.");
   }
 
   std::vector<std::string> filled_parts;
   std::vector<std::string> unfilled_parts;
-  for (auto [label, renderer_id] :
-       {std::pair{"old password", current_password_field_id},
-        std::pair{"new generated password", new_password_field_id},
-        std::pair{"confirmation password", confirm_new_password_field_id}}) {
-    if (!renderer_id) {
-      continue;
-    }
-    std::string part =
-        absl::StrFormat("%s into field with id %v", label, renderer_id.value());
-    if (WasFieldFilled(*form_data, renderer_id)) {
+  for (const TargetField& target : targets) {
+    std::string part = absl::StrFormat("%s into field with id %v", target.label,
+                                       target.id.value());
+    const bool filled = std::ranges::any_of(
+        replies, [&](const std::optional<autofill::FormData>& reply) {
+          return reply.has_value() && WasFieldFilled(*reply, target.id);
+        });
+    if (filled) {
       filled_parts.push_back(std::move(part));
     } else {
       unfilled_parts.push_back(std::move(part));
@@ -146,6 +205,7 @@ ChangePasswordActionResult BuildChangePasswordActionResult(
   if (filled_parts.empty()) {
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        /*requires_page_stabilization=*/false,
         absl::StrFormat("Failed to fill %s.",
                         base::JoinString(unfilled_parts, " and ")));
   }
@@ -155,6 +215,7 @@ ChangePasswordActionResult BuildChangePasswordActionResult(
   if (!unfilled_parts.empty()) {
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        /*requires_page_stabilization=*/true,
         absl::StrFormat("%s Failed to fill %s.", message,
                         base::JoinString(unfilled_parts, " and ")));
   }
@@ -171,10 +232,12 @@ ChangePasswordActionResult MapCredentialsProviderError(
     case PasswordChangeCredentialsProvider::Error::kNoPasswordChangeFlow:
       return ChangePasswordActionResult::Error(
           actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          /*requires_page_stabilization=*/false,
           "No active password change flow to provide credentials.");
     case PasswordChangeCredentialsProvider::Error::kGenerationFailed:
       return ChangePasswordActionResult::Error(
           actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          /*requires_page_stabilization=*/false,
           "Failed to generate a new password.");
   }
 }
@@ -232,10 +295,11 @@ ChangePasswordActionResult ChangePasswordActionResult::Ok(
 // static
 ChangePasswordActionResult ChangePasswordActionResult::Error(
     actor::mojom::ActionResultCode code,
+    bool requires_page_stabilization,
     std::string message) {
   CHECK(code != actor::mojom::ActionResultCode::kOk);
   return {.code = code,
-          .requires_page_stabilization = false,
+          .requires_page_stabilization = requires_page_stabilization,
           .message = std::move(message)};
 }
 
@@ -255,6 +319,7 @@ ChangePasswordActionResult ChangePasswordFillingHelper::ValidateProvidedFields(
   if (!has_current_password && !has_new_password && !has_confirm_new_password) {
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kArgumentsInvalid,
+        /*requires_page_stabilization=*/false,
         "At least one password field must be provided.");
   }
   return ChangePasswordActionResult::Ok();
@@ -279,6 +344,7 @@ ChangePasswordFillingHelper::ValidateAndSetFieldIds(
     if (!field_id.frame_token || !field_id.renderer_id) {
       return base::unexpected(ChangePasswordActionResult::Error(
           actor::mojom::ActionResultCode::kArgumentsInvalid,
+          /*requires_page_stabilization=*/false,
           "Invalid password field identifier."));
     }
     // Password form filling is scoped to a single frame, so all targeted
@@ -286,6 +352,7 @@ ChangePasswordFillingHelper::ValidateAndSetFieldIds(
     if (target_frame_token && field_id.frame_token != target_frame_token) {
       return base::unexpected(ChangePasswordActionResult::Error(
           actor::mojom::ActionResultCode::kArgumentsInvalid,
+          /*requires_page_stabilization=*/false,
           "All password fields must belong to the same frame."));
     }
     target_frame_token = field_id.frame_token;
@@ -294,6 +361,7 @@ ChangePasswordFillingHelper::ValidateAndSetFieldIds(
   if (!target_frame_token) {
     return base::unexpected(ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kArgumentsInvalid,
+        /*requires_page_stabilization=*/false,
         "At least one password field must be provided."));
   }
 
@@ -304,6 +372,7 @@ ChangePasswordFillingHelper::ValidateAndSetFieldIds(
        new_password_field_id == confirm_new_password_field_id)) {
     return base::unexpected(ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kArgumentsInvalid,
+        /*requires_page_stabilization=*/false,
         "Password field targets must be distinct."));
   }
 
@@ -326,6 +395,7 @@ ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
     // this case.
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kUrlBlocked,
+        /*requires_page_stabilization=*/false,
         "Target frame or origin is not eligible for password filling.");
   }
 
@@ -351,6 +421,7 @@ ChangePasswordFillingHelper::ValidateDriverAndTargetFields(
     // target fields that are not managed password inputs.
     return ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        /*requires_page_stabilization=*/false,
         absl::StrFormat("Target field is not a valid password field: %s.",
                         base::JoinString(invalid_fields, ", ")));
   }
@@ -368,6 +439,7 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
   if (!driver_) {
     std::move(callback).Run(ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kFrameWentAway,
+        /*requires_page_stabilization=*/false,
         "Target frame or password manager driver is unavailable."));
     return;
   }
@@ -376,6 +448,7 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
                                                 main_frame_origin_)) {
     std::move(callback).Run(ChangePasswordActionResult::Error(
         actor::mojom::ActionResultCode::kUrlBlocked,
+        /*requires_page_stabilization=*/false,
         "Target frame or origin is not eligible for password filling."));
     return;
   }
@@ -429,18 +502,36 @@ void ChangePasswordFillingHelper::FillChangePasswordForm(
     }
   }
 
-  // Unset (null) or missing `FieldRendererId`s are ignored by the renderer;
-  // `FillChangePasswordForm` fills whichever fields resolve to valid input
-  // elements and returns `std::nullopt` only if none of them can be filled.
-  driver_->FillChangePasswordForm(
-      current_password_field_id_, new_password_field_id_,
-      confirm_new_password_field_id_, old_password, new_password,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&BuildChangePasswordActionResult,
-                         current_password_field_id_, new_password_field_id_,
-                         confirm_new_password_field_id_)
-              .Then(std::move(callback)),
-          std::nullopt));
+  std::vector<TargetField> targets = {
+      {"old password", current_password_field_id_},
+      {"new generated password", new_password_field_id_},
+      {"confirmation password", confirm_new_password_field_id_}};
+  std::erase_if(targets, [](const TargetField& target) { return !target.id; });
+  CHECK(!targets.empty());
+
+  std::vector<FormFillRequest> requests = GroupTargetFieldsByForm(
+      *driver_, current_password_field_id_, new_password_field_id_,
+      confirm_new_password_field_id_);
+  CHECK(!requests.empty());
+
+  auto barrier_callback =
+      base::BarrierCallback<const std::optional<autofill::FormData>&>(
+          requests.size(),
+          base::BindOnce(&BuildChangePasswordActionResult, std::move(targets))
+              .Then(std::move(callback)));
+
+  // Dispatch one fill call per owning form so single-form pages fill in one
+  // round-trip while fields split across multiple forms (or unowned inputs)
+  // each return the `FormData` for their own form.
+  for (const FormFillRequest& request : requests) {
+    driver_->FillChangePasswordForm(
+        request.current_id, request.new_id, request.confirm_id,
+        request.current_id ? old_password : PasswordString(),
+        (request.new_id || request.confirm_id) ? new_password
+                                               : PasswordString(),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(barrier_callback), std::nullopt));
+  }
 }
 
 }  // namespace password_manager
