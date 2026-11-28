@@ -1111,8 +1111,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Test that if a navigation was abandoned by hiding multiple times, only the
 // first hiding will be logged.
-// TODO(crbug.com/372878281): flaky on Mac builds
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372878281, crbug.com/591046646): Flaky on Mac and Win builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_SearchTabHiddenMultipleTimes DISABLED_SearchTabHiddenMultipleTimes
 #else
 #define MAYBE_SearchTabHiddenMultipleTimes SearchTabHiddenMultipleTimes
