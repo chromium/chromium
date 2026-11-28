@@ -17,12 +17,17 @@
 @interface FakeGeminiContainerMutator : NSObject <GeminiContainerMutator>
 @property(nonatomic, assign) BOOL keyboardDidShowCalled;
 @property(nonatomic, assign) CGFloat actuationHeight;
+@property(nonatomic, assign) BOOL keyboardDidHideCalled;
 @end
 
 @implementation FakeGeminiContainerMutator
 - (void)containerKeyboardDidShowWithDuration:(NSTimeInterval)duration
                                        curve:(UIViewAnimationCurve)curve {
   self.keyboardDidShowCalled = YES;
+}
+
+- (void)keyboardDidHide {
+  self.keyboardDidHideCalled = YES;
 }
 
 - (void)containerDidChangeActuationHeight:(CGFloat)height {
@@ -141,6 +146,15 @@ TEST_F(GeminiContainerViewControllerTest,
   PostKeyboardWillShowNotification();
 
   EXPECT_TRUE(mutator_.keyboardDidShowCalled);
+}
+
+// Tests that `UIKeyboardDidHideNotification` is forwarded to the mutator.
+TEST_F(GeminiContainerViewControllerTest, HandleKeyboardDidHide) {
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIKeyboardDidHideNotification
+                    object:nil];
+
+  EXPECT_TRUE(mutator_.keyboardDidHideCalled);
 }
 
 // Tests that dismissKeyboard ends editing on the view.

@@ -15,6 +15,9 @@
 - (void)containerKeyboardDidShowWithDuration:(NSTimeInterval)duration
                                        curve:(UIViewAnimationCurve)curve;
 
+// Called after any keyboard dismissal, regardless of which view had focus.
+- (void)keyboardDidHide;
+
 // Called when the dynamic actuation height changes.
 - (void)containerDidChangeActuationHeight:(CGFloat)height;
 

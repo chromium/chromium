@@ -1783,6 +1783,52 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
 }
 
+// Tests that `keyboardDidHide` updates `mediumDetentHeight` from the
+// consumer's `contentHeight` while in zero state, and is a no-op outside zero
+// state.
+TEST_F(GeminiContainerMediatorTest,
+       TestKeyboardDidHideUpdatesZeroStateMediumDetentHeight) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeAssistantContainerCommandsHandler* fake_container_handler =
+      [[FakeAssistantContainerCommandsHandler alloc] init];
+  mediator_.containerHandler = fake_container_handler;
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  consumer.contentHeight = 382.4;
+  mediator_.consumer = consumer;
+
+  AppendActiveWebState();
+  [mediator_ didPresentContainer];
+  ASSERT_EQ(1, fake_container_handler.setMediumDetentHeightCallCount);
+  ASSERT_EQ(std::optional<NSInteger>(383),
+            fake_container_handler.mediumDetentHeight);
+
+  // Dismissing the keyboard in zero state recalculates `mediumDetentHeight`.
+  consumer.contentHeight = 410.2;
+  [mediator_ keyboardDidHide];
+  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::optional<NSInteger>(411),
+            fake_container_handler.mediumDetentHeight);
+
+  // Transitioning out of zero state resets `mediumDetentHeight` to
+  // `std::nullopt`, and subsequent keyboard dismissals are ignored.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:nil
+                 conversationID:nil];
+  ASSERT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
+  ASSERT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
+
+  consumer.contentHeight = 460.0;
+  [mediator_ keyboardDidHide];
+  EXPECT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
+}
+
 // Tests that fetching zero-state suggestions updates the consumer and adapts
 // the medium detent height of the assistant container when in zero state.
 TEST_F(GeminiContainerMediatorTest,

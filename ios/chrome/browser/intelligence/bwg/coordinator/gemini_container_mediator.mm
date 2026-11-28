@@ -1046,6 +1046,10 @@ class GeminiContainerMediatorTabHelperObserver
                                   curve:curve];
 }
 
+- (void)keyboardDidHide {
+  [self updateZeroStateMediumDetentHeight];
+}
+
 - (void)containerDidChangeActuationHeight:(CGFloat)height {
   if (!_stateManager.currentUIState.actuating) {
     return;

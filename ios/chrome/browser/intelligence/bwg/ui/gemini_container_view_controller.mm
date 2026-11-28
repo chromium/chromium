@@ -93,6 +93,10 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
                     selector:@selector(keyboardWillShow:)
                         name:UIKeyboardWillShowNotification
                       object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardDidHide:)
+                        name:UIKeyboardDidHideNotification
+                      object:nil];
 
   _geminiContentView = [[UIView alloc] init];
   _geminiContentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -424,6 +428,11 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
       [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
   [self.mutator containerKeyboardDidShowWithDuration:duration curve:curve];
+}
+
+// Called after the keyboard is hidden.
+- (void)keyboardDidHide:(NSNotification*)notification {
+  [self.mutator keyboardDidHide];
 }
 
 @end
