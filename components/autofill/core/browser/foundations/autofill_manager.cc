@@ -42,7 +42,6 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -63,7 +62,6 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/ml_model/model_predictions.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/aliases.h"
@@ -162,9 +160,9 @@ bool IsPrimaryMainFrame(AutofillDriver& driver) {
 
 }  // namespace
 
-// Holds the forms and predictions for local async parsing or crowdsourced
-// server responses. Can be passed to any sequence and its members can be
-// accessed on that sequence.
+// Holds the forms and predictions for local async parsing, crowdsourced server
+// responses, or cached Autofill AI model predictions. Can be passed to any
+// sequence and its members can be accessed on that sequence.
 struct AutofillManager::PredictionContext {
   PredictionContext(AutofillManager& manager, std::vector<FormData> forms)
       : forms(std::move(forms)),
@@ -179,6 +177,7 @@ struct AutofillManager::PredictionContext {
   std::vector<ModelPredictions> autofill_predictions;
   std::vector<ModelPredictions> password_manager_predictions;
   std::vector<ServerPredictions> server_predictions;
+  std::vector<AutofillAiModelPredictions> autofill_ai_predictions;
   GeoIpCountryCode country_code;
   LanguageCode current_page_language;
   std::unique_ptr<BufferingLogManager> log_manager;
@@ -1001,7 +1000,7 @@ void AutofillManager::LogServerQueryResponseMetrics(
 
 void AutofillManager::AddCachedAutofillAiPredictions(
     const AutofillAiModelCache& cache,
-    FormStructure& form) {
+    const FormStructure& form) {
   // Mixing Autofill AI model predictions (which come from the online LLM) and
   // Autofill AI server predictions (which come from the Autofill crowdsourcing
   // server) may lead to too many false positives. We therefore favor server
@@ -1015,42 +1014,20 @@ void AutofillManager::AddCachedAutofillAiPredictions(
     return;
   }
 
-  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
-  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
-  const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
-      cache.GetFieldPredictions(form.form_signature());
+  base::flat_map<AutofillAiModelCache::FieldIdentifier,
+                 AutofillAiModelCache::FieldPrediction>
+      predictions = cache.GetFieldPredictions(form.form_signature());
   if (predictions.empty()) {
     return;
   }
-  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-    auto it = predictions.find(FieldIdentifier{
-        .signature = field->GetFieldSignature(),
-        .rank_in_signature_group = field->rank_in_signature_group()});
-    if (it == predictions.end()) {
-      continue;
-    }
-    const ModelFieldPrediction& prediction = it->second;
-    for (FieldType type : prediction.field_types) {
-      using ServerPrediction = AutofillQueryResponse::FormSuggestion::
-          FieldSuggestion::FieldPrediction;
-      ServerPrediction server_prediction;
-      server_prediction.set_type(type);
-      server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
-      field->MaybeAddServerPrediction(std::move(server_prediction));
-    }
-    if (prediction.format_string &&
-        AutofillFormatString::IsValid(prediction.format_string->value,
-                                      prediction.format_string->type)) {
-      field->set_format_string_unless_overruled(
-          *prediction.format_string, AutofillFormatStringSource::kModelResult);
-    }
-  }
-  form.RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
-                                    GetCurrentPageLanguage(), log_manager());
-  LogCurrentFieldTypes(&form);
-  NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
-                  Observer::FieldTypeSource::kAutofillAiModel,
-                  /*small_forms_were_parsed=*/client().IsTabInActorMode());
+
+  PredictionContext context(*this, {form.ToFormData()});
+  context.autofill_ai_predictions = {
+      AutofillAiModelPredictions(std::move(predictions))};
+  OnFieldTypesDetermined(
+      context, Observer::FieldTypeSource::kAutofillAiModel,
+      /*preserve_signatures=*/false,
+      /*small_forms_were_parsed=*/client().IsTabInActorMode());
 }
 
 void AutofillManager::OnFieldTypesDetermined(PredictionContext& context,
@@ -1065,9 +1042,8 @@ void AutofillManager::OnFieldTypesDetermined(PredictionContext& context,
       CHECK_EQ(context.server_predictions.size(), context.forms.size());
       break;
     case Observer::FieldTypeSource::kAutofillAiModel:
-      // `kAutofillAiModel` predictions are applied directly to the cached
-      // `FormStructure` in `BrowserAutofillManager`.
-      NOTREACHED();
+      CHECK_EQ(context.autofill_ai_predictions.size(), context.forms.size());
+      break;
   }
   UpdateFormCache(context.forms, context, source, preserve_signatures);
   for (const FormData& form : context.forms) {
@@ -1130,9 +1106,8 @@ void AutofillManager::UpdateFormCache(
           context->server_predictions[i].ApplyTo(form_structure);
           break;
         case Observer::FieldTypeSource::kAutofillAiModel:
-          // `kAutofillAiModel` predictions are applied directly to the cached
-          // `FormStructure` in `BrowserAutofillManager`.
-          NOTREACHED();
+          context->autofill_ai_predictions[i].ApplyTo(form_structure);
+          break;
       }
       form_structure.RationalizeAndAssignSections(
           context->country_code, context->current_page_language,
@@ -1161,9 +1136,9 @@ void AutofillManager::UpdateFormCache(
 
     // TODO(crbug.com/590212450): Always require `>` once `AutofillDriverIOS`
     // and unit tests bypassing `AutofillDriver` set `FormVersion`. Until then,
-    // local updates allow equal versions while server updates require a
-    // strictly newer version so delayed responses do not overwrite unversioned
-    // edits.
+    // local updates allow equal versions while server and Autofill AI updates
+    // require a strictly newer version so delayed responses do not overwrite
+    // unversioned edits.
     const bool is_local_update =
         !source ||
         *source == Observer::FieldTypeSource::kHeuristicsOrAutocomplete;

@@ -556,10 +556,10 @@ class AutofillManager
   void LogCurrentFieldTypes(
       std::variant<const FormData*, const FormStructure*> form);
 
-  // Retrieves the Autofill AI predictions for `form` in `cache` and adds them
-  // to `form`'s fields, then runs rationalization and sectioning.
+  // Retrieves the Autofill AI predictions for `form` in `cache` and routes
+  // them through `OnFieldTypesDetermined()`.
   void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
-                                      FormStructure& form);
+                                      const FormStructure& form);
 
  private:
   friend class AutofillManagerTestApi;

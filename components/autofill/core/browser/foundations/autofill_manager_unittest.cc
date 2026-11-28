@@ -1677,8 +1677,17 @@ TEST_F(AutofillManagerTest_AddCachedAutofillAiPredictions, CacheResultUsed) {
                {PASSPORT_ISSUE_DATE},
                AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
 
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
+      observation{&observer};
+  observation.Observe(&autofill_manager());
+
   EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
       .WillOnce(Return(predictions));
+  EXPECT_CALL(observer,
+              OnFieldTypesDetermined(Ref(autofill_manager()), form.global_id(),
+                                     FieldTypeSource::kAutofillAiModel,
+                                     /*small_forms_were_parsed=*/false));
 
   autofill_manager().AddCachedAutofillAiPredictions(cache(), form_structure);
 
@@ -1717,8 +1726,17 @@ TEST_F(AutofillManagerTest_AddCachedAutofillAiPredictions,
           FieldIdentifier{.signature = field_signature},
           ModelFieldPrediction({PASSPORT_ISSUE_DATE}, invalid_format_string)}});
 
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
+      observation{&observer};
+  observation.Observe(&autofill_manager());
+
   EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
       .WillOnce(Return(predictions));
+  EXPECT_CALL(observer,
+              OnFieldTypesDetermined(Ref(autofill_manager()), form.global_id(),
+                                     FieldTypeSource::kAutofillAiModel,
+                                     /*small_forms_were_parsed=*/false));
 
   autofill_manager().AddCachedAutofillAiPredictions(cache(), form_structure);
 

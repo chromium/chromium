@@ -22,6 +22,8 @@
 
 namespace autofill {
 
+class FormStructure;
+
 // `AutofillAiModelCache` is an interface for storing and retrieving AutofillAI
 // model responses. The cache is per profile.
 class AutofillAiModelCache : public KeyedService {
@@ -83,6 +85,28 @@ class AutofillAiModelCache : public KeyedService {
   // `form_signature`.
   virtual base::flat_map<FieldIdentifier, FieldPrediction> GetFieldPredictions(
       FormSignature form_signature) const = 0;
+};
+
+// Holds cached Autofill AI model predictions for a single form.
+class AutofillAiModelPredictions {
+ public:
+  explicit AutofillAiModelPredictions(
+      base::flat_map<AutofillAiModelCache::FieldIdentifier,
+                     AutofillAiModelCache::FieldPrediction> predictions = {});
+  AutofillAiModelPredictions(const AutofillAiModelPredictions&);
+  AutofillAiModelPredictions(AutofillAiModelPredictions&&) noexcept;
+  AutofillAiModelPredictions& operator=(const AutofillAiModelPredictions&);
+  AutofillAiModelPredictions& operator=(AutofillAiModelPredictions&&) noexcept;
+  ~AutofillAiModelPredictions();
+
+  // Appends `SOURCE_AUTOFILL_AI` server predictions and model format strings
+  // to the matching fields of `form`.
+  void ApplyTo(FormStructure& form) const;
+
+ private:
+  base::flat_map<AutofillAiModelCache::FieldIdentifier,
+                 AutofillAiModelCache::FieldPrediction>
+      predictions_;
 };
 
 }  // namespace autofill

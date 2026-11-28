@@ -8,15 +8,21 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +32,7 @@ namespace autofill {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -265,6 +272,62 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
 // the form signature.
 TEST_F(AutofillAiModelCacheImplTest, GetNonExistentFieldPrediction) {
   EXPECT_THAT(cache().GetFieldPredictions(FormSignature(4565)), IsEmpty());
+}
+
+// Tests that `AutofillAiModelPredictions::ApplyTo()` appends
+// `SOURCE_AUTOFILL_AI` predictions and valid model format strings matched by
+// `{FieldSignature, rank_in_signature_group}`.
+TEST_F(AutofillAiModelCacheImplTest, AutofillAiModelPredictionsApplyTo) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWithDataSchema};
+  FormData form;
+  FormFieldData field_a;
+  field_a.set_name(u"dup_field");
+  FormFieldData field_b;
+  field_b.set_name(u"dup_field");
+  FormFieldData field_c;
+  field_c.set_name(u"date_field");
+  test_api(form).Append(field_a);
+  test_api(form).Append(field_b);
+  test_api(form).Append(field_c);
+
+  FormStructure form_structure(form);
+  const FieldSignature dup_sig = form_structure.field(0)->GetFieldSignature();
+  const FieldSignature date_sig = form_structure.field(2)->GetFieldSignature();
+  ASSERT_EQ(dup_sig, form_structure.field(1)->GetFieldSignature());
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using FieldPrediction = AutofillAiModelCache::FieldPrediction;
+  // Bypass the two-argument constructor's `DCHECK(IsValid())`.
+  AutofillFormatString invalid_format_string;
+  invalid_format_string.value = u"invalid";
+  invalid_format_string.type = FormatString_Type_DATE;
+  AutofillAiModelPredictions model_predictions({
+      {FieldIdentifier{.signature = dup_sig, .rank_in_signature_group = 0},
+       FieldPrediction(
+           {PASSPORT_NUMBER},
+           AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))},
+      {FieldIdentifier{.signature = dup_sig, .rank_in_signature_group = 1},
+       FieldPrediction({NATIONAL_ID_CARD_NUMBER}, invalid_format_string)},
+      {FieldIdentifier{.signature = date_sig, .rank_in_signature_group = 0},
+       FieldPrediction({PASSPORT_ISSUE_DATE})},
+  });
+
+  model_predictions.ApplyTo(form_structure);
+
+  EXPECT_THAT(form_structure.field(0)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_NUMBER));
+  EXPECT_EQ(form_structure.field(0)->format_string(),
+            AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE));
+  EXPECT_EQ(form_structure.field(0)->format_string_source(),
+            AutofillFormatStringSource::kModelResult);
+
+  EXPECT_THAT(form_structure.field(1)->Type().GetAutofillAiTypes(),
+              ElementsAre(NATIONAL_ID_CARD_NUMBER));
+  EXPECT_FALSE(form_structure.field(1)->format_string().has_value());
+
+  EXPECT_THAT(form_structure.field(2)->Type().GetAutofillAiTypes(),
+              ElementsAre(PASSPORT_ISSUE_DATE));
 }
 
 }  // namespace
