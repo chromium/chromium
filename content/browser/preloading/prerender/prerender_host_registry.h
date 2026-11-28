@@ -360,6 +360,17 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver,
   // when it succeeds, and returns an invalid PrerenderHostId if it's cancelled.
   PrerenderHostId StartPrerendering(PrerenderHostId prerender_host_id);
 
+  // Posts a task to start the pending prerender at the head of
+  // `pending_prerenders_`, unless such a task is already scheduled. Called from
+  // `OnVisibilityChanged()`, where starting a navigation synchronously can run
+  // arbitrary code under the caller that changed the visibility.
+  void StartPendingPrerenderingAsync();
+
+  // Called by the task posted by `StartPendingPrerenderingAsync()`. Starts the
+  // pending prerender at the head of `pending_prerenders_` if there is no
+  // running prerender.
+  void StartPendingPrerendering();
+
   // Cancels the existing hosts that were triggered by `trigger_types`.
   void CancelHostsForTriggers(std::vector<PreloadingTriggerType> trigger_types,
                               const PrerenderCancellationReason& reason);
@@ -481,6 +492,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver,
   std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   bool is_starting_prerendering_ = false;
+
+  // True while a task posted by `StartPendingPrerenderingAsync()` is pending.
+  bool is_start_pending_prerendering_scheduled_ = false;
 
   base::ObserverList<Observer> observers_;
 

@@ -866,11 +866,18 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
           }
           break;
         }
-        const PrerenderHostId started_prerender_host_id =
-            StartPrerendering(PrerenderHostId());
-        CHECK(started_prerender_host_id == prerender_host_id ||
-              started_prerender_host_id.is_null());
-        prerender_host_id = started_prerender_host_id;
+        // Note that the started prerender is not necessarily the new one. The
+        // queue can still have other pending requests here, for example, when
+        // the initiator has just become visible and the task to start them
+        // hasn't run yet (see `OnVisibilityChanged()`), or when a request to
+        // start the next prerender was dropped because `StartPrerendering()`
+        // was reentered. In that case, the new one stays pending and its id is
+        // returned below. If the new one failed to start and was cancelled,
+        // the lookup below returns a null id.
+        //
+        // TODO(crbug.com/553069087): Stop dropping reentrant
+        // `StartPrerendering()` requests so that the queue doesn't stall.
+        StartPrerendering(PrerenderHostId());
       }
       break;
     case PreloadingTriggerType::kEmbedder:
@@ -879,6 +886,11 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
       // the return value of `StartPrerendering` because the requested prerender
       // might be cancelled due to some restrictions and a null FrameTreeNodeId
       // should be returned in that case.
+      //
+      // TODO(crbug.com/553069087): If `StartPrerendering()` is reentered, it
+      // returns a null id, but the host is left in `prerender_host_by_id_`
+      // without being started or cancelled. Handle it together with the
+      // reentrancy issue above.
       const PrerenderHostId started_prerender_host_id =
           StartPrerendering(prerender_host_id);
       prerender_host_id = started_prerender_host_id;
@@ -1008,6 +1020,33 @@ PrerenderHostId PrerenderHostRegistry::StartPrerendering(
 
   RecordPrerenderTriggered(prerender_host.initiator_ukm_id());
   return prerender_host.prerender_host_id();
+}
+
+void PrerenderHostRegistry::StartPendingPrerenderingAsync() {
+  // Do nothing if a task has already been scheduled or there is nothing to
+  // start.
+  if (is_start_pending_prerendering_scheduled_ || pending_prerenders_.empty()) {
+    return;
+  }
+  is_start_pending_prerendering_scheduled_ = true;
+
+  // Post a non-nestable task so that the prerender doesn't start in a nested
+  // run loop either, which can also run under an arbitrary callstack.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
+      FROM_HERE,
+      base::BindOnce(&PrerenderHostRegistry::StartPendingPrerendering,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PrerenderHostRegistry::StartPendingPrerendering() {
+  is_start_pending_prerendering_scheduled_ = false;
+
+  // The state may have changed since the task was posted. For example, another
+  // prerender may have started. `StartPrerendering()` also checks the
+  // visibility of the initiator again.
+  if (running_prerender_host_id_.is_null()) {
+    StartPrerendering(PrerenderHostId());
+  }
 }
 
 std::set<PrerenderHostId> PrerenderHostRegistry::CancelHosts(
@@ -1739,9 +1778,13 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
     timeout_timer_for_embedder_.Stop();
     timeout_timer_for_speculation_rules_.Stop();
 
-    // Start the next prerender if needed.
+    // Start the next prerender if needed. Don't start it synchronously, as
+    // this is called while `WebContents` is notifying the visibility change,
+    // possibly deep inside the code that made the page visible. Starting a
+    // navigation can synchronously run arbitrary code, which may destroy
+    // objects that the caller still uses.
     if (running_prerender_host_id_.is_null()) {
-      StartPrerendering(PrerenderHostId());
+      StartPendingPrerenderingAsync();
     }
   }
 }

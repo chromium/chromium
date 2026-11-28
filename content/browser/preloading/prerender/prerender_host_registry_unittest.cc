@@ -9,7 +9,9 @@
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -378,7 +380,7 @@ class PrerenderStarterObserver : public WebContentsObserver {
     triggered_ = true;
     // 1. Trigger a new prerender (host1) while `is_starting_prerendering_` is
     // true.
-    registry_->CreateAndStartHost(attributes_);
+    created_host_id_ = registry_->CreateAndStartHost(attributes_);
 
     // 2. Cancel the starting prerender (host0) while
     // `is_starting_prerendering_` is true. Because `is_starting_prerendering_`
@@ -391,27 +393,44 @@ class PrerenderStarterObserver : public WebContentsObserver {
     }
   }
 
+  PrerenderHostId created_host_id() const { return created_host_id_; }
+
  private:
   raw_ptr<PrerenderHostRegistry> registry_;
   PrerenderAttributes attributes_;
   bool triggered_ = false;
+  PrerenderHostId created_host_id_;
 };
 
-// Repro of https://crbug.com/553069087
+// Regression test for crbug.com/553069087.
 //
 // Tests that creating a new prerender host when another prerender is already
-// queued in `pending_prerenders_` triggers a CHECK failure due to host ID
-// mismatch.
-//
-// TODO(crbug.com/553069087): Fix.
-TEST_F(PrerenderHostRegistryTest,
-       DISABLED_CreateAndStartHost_WhenPendingPrerendersExist) {
+// queued in `pending_prerenders_` doesn't crash, and the new host is kept
+// pending. The test param indicates whether the initiator is in background.
+class PrerenderHostRegistryPendingPrerendersTest
+    : public PrerenderHostRegistryTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsInitiatorInBackground() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderHostRegistryPendingPrerendersTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Background" : "Foreground";
+                         });
+
+TEST_P(PrerenderHostRegistryPendingPrerendersTest,
+       CreateAndStartHost_WhenPendingPrerendersExist) {
   const GURL kUrl0("https://example.com/page0");
   const GURL kUrl1("https://example.com/page1");
   const GURL kUrl2("https://example.com/page2");
 
-  // 1. Put tab in background.
-  contents()->WasHidden();
+  // 1. Put tab in background if needed.
+  if (IsInitiatorInBackground()) {
+    contents()->WasHidden();
+  }
 
   PrerenderStarterObserver observer(
       contents(), &registry(),
@@ -422,8 +441,8 @@ TEST_F(PrerenderHostRegistryTest,
 
   // 2. Create host0. While host0 is starting, DidStartNavigation creates host1
   // and cancels host0. This leaves host1 in `pending_prerenders_` while
-  // `running_prerender_host_id_` is null and
-  // `PrerenderCanBeStartedWhenInitiatorIsInBackground()` is true.
+  // `running_prerender_host_id_` is null (and, in the background case,
+  // `PrerenderCanBeStartedWhenInitiatorIsInBackground()` is true).
   const PrerenderHostId host_id0 =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kUrl0, PreloadingTriggerType::kSpeculationRule, "",
@@ -432,19 +451,247 @@ TEST_F(PrerenderHostRegistryTest,
   EXPECT_FALSE(host_id0);
   EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
 
-  // 3. Create host2 while still in background.
-  // Because `running_prerender_host_id_` is null and background starting is
-  // allowed, CreateAndStartHost calls `StartPrerendering(PrerenderHostId())`,
-  // which dequeues and starts host1 from the front of `pending_prerenders_`.
-  // Prior to the fix, this triggers CHECK(started_prerender_host_id ==
-  // prerender_host_id) because started_prerender_host_id (host1) !=
-  // prerender_host_id (host2).
+  // The nested `CreateAndStartHost()` should return the id of host1 that is
+  // kept pending.
+  const PrerenderHostId host_id1 = observer.created_host_id();
+  ASSERT_TRUE(host_id1);
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), host_id1);
+
+  // 3. Create host2.
+  // Because `running_prerender_host_id_` is null (and background starting is
+  // allowed), `CreateAndStartHost()` calls
+  // `StartPrerendering(PrerenderHostId())`, which dequeues and starts host1
+  // from the front of `pending_prerenders_`.
   const PrerenderHostId host_id2 =
       registry().CreateAndStartHost(GeneratePrerenderAttributes(
           kUrl2, PreloadingTriggerType::kSpeculationRule, "",
           blink::mojom::SpeculationEagerness::kImmediate,
           contents()->GetPrimaryMainFrame()));
-  EXPECT_TRUE(host_id2);
+  ASSERT_TRUE(host_id2);
+
+  // host1 should be started, and host2 should be kept pending.
+  EXPECT_TRUE(registry().FindNonReservedHostById(host_id1));
+  EXPECT_TRUE(registry().FindNonReservedHostById(host_id2));
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), host_id2);
+}
+
+// Helper observer to cancel a prerender for `url` when its initial prerendering
+// navigation starts. This makes `PrerenderHost::StartPrerendering()` fail.
+class PrerenderCancelOnStartObserver : public WebContentsObserver {
+ public:
+  PrerenderCancelOnStartObserver(WebContents* web_contents,
+                                 PrerenderHostRegistry* registry,
+                                 const GURL& url)
+      : WebContentsObserver(web_contents), registry_(registry), url_(url) {}
+
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() != url_) {
+      return;
+    }
+    PrerenderHostId host_id = registry_->GetPrerenderHostIdForNavigation(
+        static_cast<NavigationRequest*>(navigation_handle));
+    if (host_id) {
+      registry_->CancelHost(host_id, PrerenderFinalStatus::kDestroyed);
+    }
+  }
+
+ private:
+  raw_ptr<PrerenderHostRegistry> registry_;
+  const GURL url_;
+};
+
+// Regression test for crbug.com/553069087.
+//
+// Tests that creating a new prerender host doesn't crash after the pending
+// prerender at the head of the queue fails to start in the foreground.
+TEST_F(PrerenderHostRegistryTest,
+       CreateAndStartHost_AfterPendingPrerenderFailedToStart) {
+  const GURL kUrl0("https://example.com/page0");
+  const GURL kUrl1("https://example.com/page1");
+  const GURL kUrl2("https://example.com/page2");
+  const GURL kUrl3("https://example.com/page3");
+
+  auto create_and_start_host = [&](const GURL& url) {
+    return registry().CreateAndStartHost(GeneratePrerenderAttributes(
+        url, PreloadingTriggerType::kSpeculationRule, "",
+        blink::mojom::SpeculationEagerness::kImmediate,
+        contents()->GetPrimaryMainFrame()));
+  };
+
+  // 1. Start host0, and queue host1 and host2 while host0 is running.
+  const PrerenderHostId host_id0 = create_and_start_host(kUrl0);
+  ASSERT_TRUE(host_id0);
+  const PrerenderHostId host_id1 = create_and_start_host(kUrl1);
+  ASSERT_TRUE(host_id1);
+  const PrerenderHostId host_id2 = create_and_start_host(kUrl2);
+  ASSERT_TRUE(host_id2);
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 2u);
+
+  // 2. Finish the prerender initial navigation of host0. This starts host1, but
+  // host1 fails to start. The request to start the next prerender issued during
+  // the cancellation of host1 is dropped because `StartPrerendering()` is
+  // reentered. This leaves host2 in `pending_prerenders_` while
+  // `running_prerender_host_id_` is null.
+  PrerenderCancelOnStartObserver observer(contents(), &registry(), kUrl1);
+  CommitPrerenderNavigation(*registry().FindNonReservedHostById(host_id0));
+  EXPECT_FALSE(registry().FindNonReservedHostById(host_id1));
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), host_id2);
+
+  // 3. Create host3. This starts host2 at the head of the queue, and host3
+  // should be kept pending.
+  const PrerenderHostId host_id3 = create_and_start_host(kUrl3);
+  ASSERT_TRUE(host_id3);
+  EXPECT_TRUE(registry().FindNonReservedHostById(host_id2));
+  EXPECT_TRUE(registry().FindNonReservedHostById(host_id3));
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), host_id3);
+}
+
+// Regression tests for crbug.com/590484053.
+//
+// Tests that a pending prerender is started in a separate task, not
+// synchronously in `OnVisibilityChanged()`, when the initiator becomes visible.
+class PrerenderHostRegistryStartOnVisibleTest
+    : public PrerenderHostRegistryTest {
+ protected:
+  PrerenderHostId CreateAndStartHostForUrl(const GURL& url) {
+    return registry().CreateAndStartHost(GeneratePrerenderAttributes(
+        url, PreloadingTriggerType::kSpeculationRule, "",
+        blink::mojom::SpeculationEagerness::kImmediate,
+        contents()->GetPrimaryMainFrame()));
+  }
+
+  bool HasStarted(PrerenderHostId host_id) {
+    PrerenderHost* host = registry().FindNonReservedHostById(host_id);
+    return host && host->GetInitialNavigationId().has_value();
+  }
+
+  // Leaves `pending_host_id_` in `pending_prerenders_` while the initiator is
+  // hidden. `ready_host_id_` finishes its prerender initial navigation in the
+  // background, so `pending_host_id_` can't start until the initiator becomes
+  // visible.
+  void QueuePendingPrerenderInBackground() {
+    ready_host_id_ =
+        CreateAndStartHostForUrl(GURL("https://example.com/ready"));
+    ASSERT_TRUE(ready_host_id_);
+    pending_host_id_ =
+        CreateAndStartHostForUrl(GURL("https://example.com/pending"));
+    ASSERT_TRUE(pending_host_id_);
+
+    contents()->WasHidden();
+    CommitPrerenderNavigation(
+        *registry().FindNonReservedHostById(ready_host_id_));
+    ASSERT_FALSE(HasStarted(pending_host_id_));
+    ASSERT_EQ(registry().GetPendingPrerenderFrontForTesting(),
+              pending_host_id_);
+  }
+
+  PrerenderHostId ready_host_id_;
+  PrerenderHostId pending_host_id_;
+};
+
+// The pending prerender should start in a task posted when the initiator
+// becomes visible: not synchronously in `WasShown()`, and not in a nested run
+// loop that the caller of `WasShown()` may run.
+//
+// To check the latter, `WasShown()` is called from a posted task (the outer
+// task), and the outer task then runs a nested run loop. This needs the outer
+// task because a run loop started directly by the test body is not nested and
+// would run the start task. The task posted to the nested loop makes sure that
+// the loop actually runs tasks, while the pending prerender still doesn't
+// start in it. The pending prerender should start after the outer task
+// returns.
+TEST_F(PrerenderHostRegistryStartOnVisibleTest,
+       StartPendingPrerenderAsynchronously) {
+  ASSERT_NO_FATAL_FAILURE(QueuePendingPrerenderInBackground());
+
+  // The outer task.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // The pending prerender should not start synchronously.
+        contents()->WasShown();
+        EXPECT_FALSE(HasStarted(pending_host_id_));
+        EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+
+        // Nor in the nested run loop, even though it runs other tasks.
+        bool nested_task_ran = false;
+        base::RunLoop nested_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              nested_task_ran = true;
+              nested_loop.Quit();
+            }));
+        nested_loop.Run();
+        EXPECT_TRUE(nested_task_ran);
+        EXPECT_FALSE(HasStarted(pending_host_id_));
+      }));
+
+  // The pending prerender should start in the posted task after the outer task
+  // returns.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasStarted(pending_host_id_));
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 0u);
+}
+
+// The posted task should check the visibility of the initiator again when it
+// runs. If the initiator is hidden before the task runs, the pending prerender
+// should not start until the initiator becomes visible again.
+TEST_F(PrerenderHostRegistryStartOnVisibleTest,
+       DontStartPendingPrerenderIfHiddenBeforeTaskRuns) {
+  ASSERT_NO_FATAL_FAILURE(QueuePendingPrerenderInBackground());
+
+  // The initiator gets hidden again before the posted task runs. The pending
+  // prerender should not start.
+  contents()->WasShown();
+  contents()->WasHidden();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(HasStarted(pending_host_id_));
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+
+  // The pending prerender should start when the initiator becomes visible
+  // again.
+  contents()->WasShown();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasStarted(pending_host_id_));
+}
+
+// `CreateAndStartHost()` can be called while the posted task is pending. It
+// should start the pending prerender at the head of the queue, keep the new one
+// pending, and return the id of the new one. The posted task should then do
+// nothing.
+TEST_F(PrerenderHostRegistryStartOnVisibleTest,
+       CreateAndStartHostBeforeTaskRuns) {
+  ASSERT_NO_FATAL_FAILURE(QueuePendingPrerenderInBackground());
+
+  // A new prerender is triggered before the posted task runs.
+  contents()->WasShown();
+  ASSERT_FALSE(HasStarted(pending_host_id_));
+  const PrerenderHostId new_host_id =
+      CreateAndStartHostForUrl(GURL("https://example.com/new"));
+  ASSERT_TRUE(new_host_id);
+  EXPECT_TRUE(HasStarted(pending_host_id_));
+  EXPECT_FALSE(HasStarted(new_host_id));
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), new_host_id);
+
+  // The posted task should do nothing because a prerender is running.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasStarted(pending_host_id_));
+  ASSERT_TRUE(registry().FindNonReservedHostById(new_host_id));
+  EXPECT_FALSE(HasStarted(new_host_id));
+  EXPECT_EQ(registry().GetPendingPrerenderFrontForTesting(), new_host_id);
+}
+
+// Destroying `WebContents`, and thus the registry, while the posted task is
+// pending should be safe.
+TEST_F(PrerenderHostRegistryStartOnVisibleTest, DestroyRegistryBeforeTaskRuns) {
+  ASSERT_NO_FATAL_FAILURE(QueuePendingPrerenderInBackground());
+
+  contents()->WasShown();
+  ASSERT_FALSE(HasStarted(pending_host_id_));
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
