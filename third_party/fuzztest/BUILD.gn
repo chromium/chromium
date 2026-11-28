@@ -119,14 +119,14 @@ if (use_centipede) {
   source_set("centipede_runner_no_main") {
     testonly = true
     sources = [
+      "src/centipede/engine_flag_helper.cc",
+      "src/centipede/engine_flag_helper.h",
       "src/centipede/engine_worker.cc",
       "src/centipede/engine_worker_abi.h",
       "src/centipede/runner.cc",
       "src/centipede/runner.h",
       "src/centipede/runner_fork_server.cc",
       "src/centipede/runner_interface.h",
-      "src/centipede/runner_utils.cc",
-      "src/centipede/runner_utils.h",
       "src/framework_shared/internal/coverage_interceptors.cc",
       "src/framework_shared/internal/interceptor_utils.h",
       "src/framework_shared/internal/runner_dl_info.cc",
@@ -137,6 +137,8 @@ if (use_centipede) {
       "src/framework_shared/internal/sancov_object_array.h",
       "src/framework_shared/internal/sancov_state.cc",
       "src/framework_shared/internal/sancov_state.h",
+      "src/framework_shared/internal/sancov_utils.cc",
+      "src/framework_shared/internal/sancov_utils.h",
     ]
 
     deps = [
@@ -381,6 +383,7 @@ source_set("common") {
     "src/common/escaping.h",
     "src/common/hash.cc",
     "src/common/hash.h",
+    "src/common/logging.cc",
     "src/common/logging.h",
     "src/common/remote_file.cc",
     "src/common/remote_file.h",
