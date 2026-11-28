@@ -34,8 +34,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 // Swizzled in for -showDefinitionForAttributedString:atPoint: to record the
 // word, baseline point, and font size instead of showing the dictionary
@@ -213,6 +216,64 @@ class SitePerProcessMacHighDPIBrowserTest
     return gfx::PointF(values[0].GetDouble(), values[1].GetDouble());
   }
 
+  // The index of the "h" of "has" in title1.html's "This page has no title.".
+  // Half of the position of this character is on another word.
+  static constexpr uint32_t kCharacterIndex = 10;
+
+  // Returns the bounds of the character at `index` in the first text node of
+  // `rfh`'s body, in `rfh`'s coordinates.
+  gfx::RectF BoundsOfCharacter(RenderFrameHost* rfh, uint32_t index) {
+    const EvalJsResult result = EvalJs(rfh, JsReplace(R"(
+        (() => {
+          const range = document.createRange();
+          range.setStart(document.body.firstChild, $1);
+          range.setEnd(document.body.firstChild, $1 + 1);
+          const rect = range.getBoundingClientRect();
+          return [rect.left, rect.top, rect.width, rect.height];
+        })())",
+                                                      static_cast<int>(index)));
+    const base::ListValue& bounds = result.ExtractList();
+    return gfx::RectF(bounds[0].GetDouble(), bounds[1].GetDouble(),
+                      bounds[2].GetDouble(), bounds[3].GetDouble());
+  }
+
+  // Returns the center of the character at `index` in the first text node of
+  // `rfh`'s body, in `rfh`'s coordinates.
+  gfx::PointF CenterOfCharacter(RenderFrameHost* rfh, uint32_t index) {
+    return BoundsOfCharacter(rfh, index).CenterPoint();
+  }
+
+  // Does a dictionary lookup at the center of the character at
+  // `kCharacterIndex` in `rfh`, which shows title1.html and whose origin in
+  // the root view is `frame_origin`. The lookup is at a point in the root
+  // view, like the one of a lookup gesture (a force click or a three-finger
+  // tap). Verifies that it finds "has", at the position of "has" in the root
+  // view.
+  void LookUpWordAtCharacterAndVerify(RenderFrameHost* rfh,
+                                      const gfx::PointF& frame_origin) {
+    base::apple::ScopedObjCClassSwizzler swizzler(
+        GetRenderWidgetHostViewCocoaClassForTesting(),
+        [DictionaryOverlayWatcher class],
+        @selector(showDefinitionForAttributedString:atPoint:));
+    base::test::TestFuture<const std::string&, const gfx::PointF&, float>
+        future;
+    DictionaryOverlayCallback() = future.GetCallback();
+
+    const gfx::RectF bounds = BoundsOfCharacter(rfh, kCharacterIndex);
+    AskForLookUpDictionaryAtPoint(
+        web_contents()->GetRenderWidgetHostView(),
+        frame_origin + bounds.CenterPoint().OffsetFromOrigin());
+    EXPECT_EQ(future.Get<0>(), "has");
+
+    // The character is the first one of "has", so the baseline should start at
+    // its left edge. The baseline's vertical position depends on the font, so
+    // just verify that it's between the character's top and bottom.
+    const gfx::PointF& baseline = future.Get<1>();
+    EXPECT_NEAR(baseline.x(), frame_origin.x() + bounds.x(), 1);
+    EXPECT_GE(baseline.y(), frame_origin.y() + bounds.y());
+    EXPECT_LE(baseline.y(), frame_origin.y() + bounds.bottom());
+  }
+
   // Pinch-zooms the root frame by `scale` around `child_rfh`'s origin and waits
   // for `child_rfh`'s transform to the root view to reflect it.
   void PinchZoomRootFrame(float scale, RenderFrameHostImpl* child_rfh) {
@@ -328,6 +389,58 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
   EXPECT_NEAR(baseline.x(), frame_origin.x() + word[0].GetDouble(), 1);
   EXPECT_GE(baseline.y(), frame_origin.y() + word[1].GetDouble());
   EXPECT_LE(baseline.y(), frame_origin.y() + word[2].GetDouble());
+}
+
+// Verifies that a dictionary lookup at a point in the root view, which is what
+// a lookup gesture does, looks up the word at that point in the main frame.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       LookUpDictionaryOverlayAtPointMainFrame) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  LookUpWordAtCharacterAndVerify(web_contents()->GetPrimaryMainFrame(),
+                                 gfx::PointF());
+}
+
+// Like LookUpDictionaryOverlayAtPointMainFrame, for a point in a cross-site
+// child frame.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       LookUpDictionaryOverlayAtPointChildFrame) {
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
+  LookUpWordAtCharacterAndVerify(child_rfh, ChildFrameContentOrigin());
+}
+
+// Verifies that the character index at a point in the root view, which is what
+// -[NSTextInputClient characterIndexForPoint:] asks for, is the index of the
+// character at that point in the main frame.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       GetCharacterIndexAtPointMainFrame) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  uint32_t index = UINT32_MAX;
+  static_cast<RenderWidgetHostViewMac*>(
+      web_contents()->GetRenderWidgetHostView())
+      ->SyncGetCharacterIndexAtPoint(
+          CenterOfCharacter(web_contents()->GetPrimaryMainFrame(),
+                            kCharacterIndex),
+          &index);
+  EXPECT_EQ(kCharacterIndex, index);
+}
+
+// Like GetCharacterIndexAtPointMainFrame, for a point in a cross-site child
+// frame.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       GetCharacterIndexAtPointChildFrame) {
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
+
+  uint32_t index = UINT32_MAX;
+  static_cast<RenderWidgetHostViewMac*>(
+      web_contents()->GetRenderWidgetHostView())
+      ->SyncGetCharacterIndexAtPoint(
+          ChildFrameContentOrigin() +
+              CenterOfCharacter(child_rfh, kCharacterIndex).OffsetFromOrigin(),
+          &index);
+  EXPECT_EQ(kCharacterIndex, index);
 }
 
 // Verifies that the dictionary overlay's font for a word in a cross-site child

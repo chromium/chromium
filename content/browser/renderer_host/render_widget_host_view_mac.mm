@@ -2352,18 +2352,19 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
     return;
   }
 
-  // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
-  // which means we have to scale the point by device scale factor.
-  gfx::PointF root_point = root_point_in_dips;
-  root_point.Scale(GetDeviceScaleFactor());
-
+  // The hit test takes and returns DIPs.
   gfx::PointF transformed_point;
   auto* view =
       host()->GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
-          this, root_point, &transformed_point);
+          this, root_point_in_dips, &transformed_point);
   if (!view) {
     return;
   }
+
+  // The renderer's coordinate system is physical pixels, so convert from
+  // points. This has to happen after the hit test above, which takes points.
+  transformed_point = gfx::ConvertPointToPixels(transformed_point,
+                                                view->GetDeviceScaleFactor());
 
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       static_cast<RenderWidgetHostViewBase*>(view)->GetRenderWidgetHost());
@@ -2393,6 +2394,7 @@ bool RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
     return true;
   }
 
+  // The hit test takes and returns DIPs.
   gfx::PointF transformed_point;
   auto* view =
       host()->GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
@@ -2400,6 +2402,11 @@ bool RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
   if (!view) {
     return true;
   }
+
+  // The renderer's coordinate system is physical pixels, so convert from point
+  // points; see LookUpDictionaryOverlayAtPoint().
+  transformed_point = gfx::ConvertPointToPixels(transformed_point,
+                                                view->GetDeviceScaleFactor());
 
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       static_cast<RenderWidgetHostViewBase*>(view)->GetRenderWidgetHost());

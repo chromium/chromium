@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace content {
 
@@ -69,6 +70,13 @@ void AskForLookUpDictionaryForRange(RenderWidgetHostView* tab_view,
   RenderWidgetHostViewMac* tab_view_mac =
       static_cast<RenderWidgetHostViewMac*>(tab_view);
   tab_view_mac->LookUpDictionaryOverlayFromRange(range);
+}
+
+void AskForLookUpDictionaryAtPoint(RenderWidgetHostView* tab_view,
+                                   const gfx::PointF& point_in_dips) {
+  RenderWidgetHostViewMac* tab_view_mac =
+      static_cast<RenderWidgetHostViewMac*>(tab_view);
+  tab_view_mac->LookUpDictionaryOverlayAtPoint(point_in_dips);
 }
 
 }  // namespace content

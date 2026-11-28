@@ -27,8 +27,9 @@
 #endif
 
 namespace gfx {
+class PointF;
 class Range;
-}
+}  // namespace gfx
 
 namespace ui {
 struct ImeTextSpan;
@@ -361,6 +362,13 @@ class TextInputTestLocalFrame : public FakeLocalFrame {
 // RenderWidgetHost corresponding to |tab_view|.
 void AskForLookUpDictionaryForRange(RenderWidgetHostView* tab_view,
                                     const gfx::Range& range);
+
+// Requests the `tab_view` for the definition of the word at `point_in_dips`,
+// which is in the coordinate space of `tab_view`. This is what a lookup gesture
+// (a force click or a three-finger tap) does, and it includes finding the
+// RenderWidgetHost at the point.
+void AskForLookUpDictionaryAtPoint(RenderWidgetHostView* tab_view,
+                                   const gfx::PointF& point_in_dips);
 
 #endif
 
