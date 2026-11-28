@@ -1304,6 +1304,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8Flag_memory_reducer_limit_based"),
         Flag.baseFeature("V8Flag_minor_gc_task_with_lower_priority"),
         Flag.baseFeature("V8Flag_scavenger_updates_allocation_limit"),
+        Flag.baseFeature("V8Flag_shrink_string_table"),
         Flag.baseFeature("V8Flag_sparkplug_plus"),
         Flag.baseFeature("V8Flag_sqrt_allocation_limits"),
         Flag.baseFeature("V8Flag_turbofan"),

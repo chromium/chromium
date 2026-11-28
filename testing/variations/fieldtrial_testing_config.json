@@ -20949,6 +20949,28 @@
             ]
         }
     ],
+    "V8ShrinkStringTable": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_shrink_string_table"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SideStepTransitions": [
         {
             "platforms": [
